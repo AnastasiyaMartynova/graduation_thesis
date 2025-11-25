@@ -1,0 +1,863 @@
+ \renewcommand{\figurename}{\protect\bf Figure}
+\renewcommand{\tablename}{\protect\bf Table}
+\renewcommand{\bibname}{\protect\rmfamily References}
+
+\def\stat{frenkel}
+
+\def\tit{HOLOGRAPHIC CODING BY WALSH--HADAMARD TRANSFORMATION OF~RANDOMIZED AND~PERMUTED DATA$^{*}$}
+
+\def\titkol{Holographic coding by Walsh--Hadamard transformation of~randomized and~permuted data}
+
+\def\autkol{S.~Dolev, S.~Frenkel, and A.~Cohen}
+
+\def\aut{S.~Dolev$^1$, S.~Frenkel$^2$, and A.~Cohen$^3$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnotetext[1] {Partially 
+supported by Rita Altura trust chair in computer science and by the Russian 
+Foundation for Basic Research (grant RFBR 12-07-00109).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Department of Computer Science, Ben-Gurion University of the Negev, Beer-Sheva,
+Israel, dolev@cs.bgu.ac.il}
+\footnotetext[2]{IPI RAN; Moscow Institute of Radio, Electronics, and Automation (MIREA), fsergei@mail.ru}
+\footnotetext[3]{Department of Communication Systems Engineering, 
+Ben-Gurion University of the Negev, Beer-Sheva, Israel, coasaf@cse.bgu.ac.il}
+
+\vspace*{2pt}
+
+
+\Abste{Holographic coding has the very appealing property of obtaining partial information
+on the data from any part of the
+coded information. In the paper, holographic coding schemes  based on
+the Walsh--Hadamard orthogonal codes are studied.
+It is proposed to randomize the data so that the coefficient of the
+Walsh--Hadamard code would be approximately uniform and thus ensure, with
+high probability, a monotonic gain of information. The data are
+xored with randomly chosen bits from random data that have been
+stored during a preprocessing stage or pseudorandom data produced
+by a pseudorandom generator.
+Statistical properties of the
+truncated sums of the Inverse Walsh--Hadamard Transformation (IWHT),
+taking into account the ``white-noise nature'' and the mentioned above  holographic, 
+is considered.
+Furthermore, an enhancement of the algorithm, based on random  permutation and
+block coding is suggested. The results are compared to the Rate Distortion function and
+jpeg compression.}
+
+\vspace*{2pt}
+
+\KWE{holographic coding; Walsh--Hadamard transformation; Shannon bound}
+
+%\vspace*{6pt}
+
+
+\vskip 14pt plus 9pt minus 6pt
+
+      \thispagestyle{headings}
+
+      \begin{multicols}{2}
+
+            \label{st\stat}
+
+
+\section{Introduction}
+
+\noindent Holographic coding has the very appealing property of obtaining 
+information on the entire data, from any part of the coded information~[1]. 
+Thus, intuitively, any portion of holographic coded information (which is any 
+subset of the corresponding codewords) represents a blurred image of the entire 
+data. Traditionally, the  blurriness is considered as a {\it graceful 
+degradation} of a picture, just like the elimination of some Fourier components 
+of high frequency from a picture spectrum. For a binary input vector, the  
+error measure that is considered is the fraction of erroneous bits in the 
+reconstructed file. In this case,  the blurriness is defined as a uniform 
+distribution of the errors, namely, errors in the reconstructed input vector 
+are uniformly distributed over the entries. 
+
+The  goal of this work is to 
+consider the use of the holographic property to provide the robustness of 
+transmission to loses and erasures and to facilitate compression when possible. 
+The possibility of using data randomization and Walsh--Hadamard 
+coding is investigated. Walsh--Hadamard tramsformation and WHT-based codes of digital random 
+sequences are widely used in many computer and data transmission tasks, for 
+example, for image data transmission~[2]. Recently, the present authors
+proposed a method which 
+combines the  WHT  with  a randomization process that xors the data with bits 
+of random data (organized, say, as a pseudorandom vector) that have been 
+stored during a preprocessing stage~[3]. Namely, each bit of the output vector 
+is the exclusive or (xor) of the corresponding bit of the original binary vector 
+and a  bit of the pseudorandom data sequence. 
+
+As a result,  
+an uncorrelated random sequence with almost uniform spectrum (with properties of a 
+discrete white noise) was obtained. The decoding was performed in a reverse manner, 
+namely, inverse the WHT in order to get the xored sequence and then xoring with 
+the (same) pseudorandom sequence to reveal the original data file.
+{\looseness=1
+
+}
+
+As it was shown, this coding can be interpreted as a~holographic code. It is holographic 
+in the sense that any portion of the coded information (which is any subset of 
+corresponding codewords) represents a blurred image of the entire data.  The 
+Hamming distance between the original and the reconstructed binary files 
+is considered as a {\it blurreness} 
+measure.
+
+In this paper,  statistical properties of the truncated sums of 
+the IWHT are presented, taking into account the white-noise nature of the xored state 
+output and the mentioned above holographic properties of this encoding method 
+and considering the performance of the method based on the theoretic Rate 
+Distortion bound. Using this performance measure,  an improvement of 
+the authors' previous WHT-based holographic encoding method is suggested.
+
+\begin{figure*}[b] %fig1
+\vspace*{-6pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=164.886mm
+ \epsfbox{fre-1-2.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+  \Caption{Walsh--Hadamard transformation based holographic encoding~(\textit{a}) and decoding~(\textit{b}) }
+\end{figure*}
+
+\section{Holographic Encoding}
+
+
+\noindent
+In Fig.~1,  file F is xored with a pseudorandom binary matrix~$PN$, 
+then WHT is applied to the xored output to get the $l$ first largest coefficients 
+together with  their indexes, then CC Block either sends the outcome to a channel 
+or writes the outcome to a memory device (depending on the purpose of the encoding) 
+a total~$l$ of $n$ WHT coefficients, where $l$ is predefined for the encoding of the 
+given binary file~F. Rxored is the reconstructed xored vector. Each of the components 
+of the file Rxored is rounded to 0 or 1 and  then xored with the $PN$ to obtain a 
+reconstructed  blurred version R~file of the original file.
+
+Thus, the scheme is represented by the following encoding algorithm:
+\begin{itemize}
+\item[(a)] compute the {\it xored randomized data} by xoring each bit of the original file with a pseudorandom sequence $PN$;
+\item[(b)] compute the WHT coefficients~$c_i$;
+\item[(c)]  choose the $l<n$ first largest WHT coefficients for a predefined~$l$;
+\item[(d)]  transmit the pairs $(c_i,i)$ of these $l$ coefficients; and
+\item[(e)] request for additional WHT coefficients if the
+reconstructed file resolution (estimating the values of all missing coefficients 
+to be~0) is insufficient for the specific application requirements.
+\end{itemize}
+
+The number of coefficients $l$ that are chosen  depends on the application requirements.
+
+The decoding algorithm (Fig.~1\textit{b})
+is based on the IWHT and a threshold rule for 
+deciding on the binary value of the reconstructed xored random data which should 
+be reconstructed  by $l$ coefficients of~$n$ (see below).
+
+This method has the following features:  ($i$)~Walsh--Hadamard based coding that uses 
+only additions and shifts, implying low processing complexity; 
+($ii$)~input randomization for obtaining {\it blurred}, information revealing of the 
+data at a positive rate, starting
+with more than half of the data correctly revealed after the arrival of a very few coefficients; and
+($iii$)~encryption of information transmitted through the channel.
+
+\section{Reconstruction by~a~Subset of~Waslh--Hadamard Coefficients}
+
+\noindent
+The WHT is based on a complete set of orthogonal functions.
+ That is, if $b=(b_1,b_2,\ldots,b_m)$ is a
+binary file (modeled as a binary vector), then $n$-character encoding of $b$ 
+can be represented as $c=bW$, where $c=(c_1,\ldots,c_n)$, $n=2^k$, for an 
+integer $k$, are the Walsh--Hadamard coefficients. Table~1 depicts the eight 
+(0--7) first WHT entries. Note that the sum of the entries in each row (and column), 
+except the first one, is zero.
+
+
+In more details, the spectral coefficients of WHT are $c_h=(1/n) \sum\limits_{i=0}^{n-1} 
+b_i W(h,i)$,
+and the inverse transform is $b_i= \sum\limits_{h=0}^{n-1} c_h W(h,i)$.
+
+Let $b=b_0,b_2,\ldots,b_{n-1}$ be a random white-noise maximal entropy
+sequence of $n$ bits  that is obtained by xoring the original binary vector with a predefined pseudorandom 
+vector, $\mathrm{Prob}\left(b_i=1\right)=\mathrm{Prob}\left(b_i=0\right)$\linebreak $=1/2$.
+
+
+For compression, only the $l \ll n$ largest WHT
+coefficients $c_1,\ldots,c_l$ are used for the original sequence reconstruction.
+Correspondingly,   each bit $b_i$ of the randomized sequence~$b$ is  estimated by the
+WHT mentioned above as  $\tilde b_i = \sum\limits_{j=0}^{l} c_j W(j,i)$, 
+$j$ is the ordered index of the first $l$ largest coefficients, and  
+$ b_i=\tilde b_i +e_i(l)$, where  $e_i(l)= \sum\limits_{q=l+1}^{n-1} c_q W(q,i)$.
+
+The goal is to compute a metric that captures the difference of the bits $b_i$ 
+and~$\tilde b_i$.  The
+result may depend on the coefficients chosen for
+reconstruction and the requirements of the application in hand. 
+Each coefficient $c_i$ is transmitted/stored with its index~$i$ in the WHT matrix, 
+namely, the pairs ($c_i$, $i$) are stored as the representation of the data.
+
+Due to paper size limit,  an intuitive explanation for choosing the $l$ 
+largest coefficients   for reconstruction will\linebreak\vspace*{-12pt}
+
+
+\pagebreak
+
+%\begin{table*}
+{\small  %tabl1
+\begin{center}
+{{\tablename~1}\ \ \small{Walsh--Hadamard matrix}}
+\end{center}
+
+\tabcolsep=5.7pt
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|r|r|r|r|}
+\hline
+$W$(0,*)= & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1\\
+\hline
+$W$(1,*)= & 1 &$-1$ & 1 &$-1$ & 1 &$-1$ & 1 &$-1$\\
+\hline
+$W$(2,*)= & 1 & 1 &$-1$ &$-1$ & 1 & 1 &$-1$ &$-1$\\
+\hline
+$W$(3,*)= & 1 &$-1$ &$-1$ & 1 & 1 &$-1$ &$-1$ & 1\\
+\hline
+$W$(4,*)= & 1 & 1 & 1 & 1 &$-1$ &$-1$ &$-1$ &$-1$\\
+\hline
+$W$(5,*)= & 1 &$-1$ & 1 &$-1$ &$-1$ & 1 &$-1$ & 1\\
+\hline
+$W$(6,*)= & 1 & 1 &$-1$ &$-1$ &$-1$ &$-1$ & 1 & 1\\
+\hline
+$W$(7,*)= & 1 &$-1$ &$-1$ & 1 &$-1$ & 1 & 1 &$-1$\\
+\hline
+\end{tabular}
+\end{center}
+
+}
+%\end{table*}
+
+\vspace*{4pt}
+
+\addtocounter{table}{1}
+
+\begin{center}  %fig2
+  \mbox{%
+ \epsfxsize=77.744mm
+ \epsfbox{fre-4.eps}
+ }
+ \end{center}
+ \vspace*{-4pt}
+{{\figurename~2}\ \ \small{Fraction of correctly reconstructed bits of pseudorandom binary vector vs.\ 
+  number of $l$ first largest coefficients  of a 1K bits pseudorandom vectors}}
+
+
+
+%\pagebreak
+
+\vspace*{12pt}
+
+\addtocounter{figure}{1}
+
+
+
+
+
+\noindent
+ be just sketched. In a few words, the choice of the $l$ largest 
+coefficient is a consequence of the Parseval Identity:
+$$ n\sum\limits_{i=0}^{n-1} b_i^2 =\sum\limits_{i=0}^{n-1} c_i ^2\,.
+$$
+ That is, as the $l$ coefficients in the right side are bigger, then faster is 
+ the estimations $\tilde b_i$ convergence to the accurate (original) values~$b_i$.
+ This is a common technique in data compression.
+
+Figure~2 illustrates the accuracy of the xored random vector reconstruction using 
+only the first largest coefficients (partial sums) of the IWHT.
+
+
+As it can be seen in Fig.~2, a fairly small portion of the coefficients 
+can provide a rather large fraction of correct bits.
+Therefore, it would be interesting to have a probabilistic 
+characterization for the relationship between the $l$ largest 
+coefficients and the reconstruction error probability.
+
+
+The  estimation of a bit $b_i = \mathrm{round}\left(\tilde b_i\right)$,
+where $\tilde b_i$ is the estimation of the $i$th value before
+rounding (see Fig.~1\textit{b}), computed by a partial sum of IWHT, is determined
+by the following random events:
+
+$e_0:( b_i =0), e_1:( b_i =1)$, that is, the bit $b_i$ of
+randomized file $b$ is $0$ (event $e_0$) or $1$ (event $e_1$), $
+v_{i0}: {\tilde b_i \le 1/2}, v_{i1}:{\tilde b_i \ge x_0}$
+(defined on the space of the rational values  $\tilde b_i$), 
+where $x_0$ is the threshold used for the rounding. For example, 
+$x_0=1/2$ if  standard rounding function is used.
+
+Let $\mathrm{Pr}_{\mathrm{err}=0}(i)$ be the probability that the actually zero bit
+$b_i$ was erroneously reconstructed as $b_i=1$, and
+$\mathrm{Pr}_{\mathrm{err}=1}(i)$ be the probability that the bit $b_i=1$ was
+erroneously reconstructed as $b_i=0$.
+
+Both probabilities $\mathrm{Prob}\left(v_{i0}\right)$ and $\mathrm{Prob}\left(v_{i1}\right)$ are the
+probabilities that the partial sums mentioned above have values that exceed/not exceed~$1/2$.
+
+Formally, in order to estimate error of the sequence reconstruction by truncated number 
+of coefficients, one should know the joint distributions of the sum of  $l$ terms  of the 
+WHT $S_l = \sum\limits_{j=0}^{l} c_j W(j,i)$ and the sum of the residue 
+$S_R =  \sum\limits_{j=n-l+1}^{N} c_j W(j,i)$. Then, taking into account that the sum 
+$S_l + S_R $ is the exact value $b_i=0$ or~$1$,  the conditional error 
+probability can be characterized by  $\mathrm{Prob}\left(S_l\ge \mathrm{Tr}/S_l +S_R=0\right)$, 
+$\mathrm{Prob}\left(S_l\le \mathrm{Tr}/S_l +S_R=1\right)$, 
+where Tr is the threshold value.
+
+In accordance with Theorem~6.4 in~\cite{4-fr}, the WHT coefficients are distributed 
+(asymptotically) as some
+independent normal random values with zero mean and dispersion of
+$n\times f(i)$, where~$i$ is the WHT coefficient index and $f(i)$
+is the (dyadic) spectral density of~$b$.
+
+However, as the largest coefficients are used in the partial sums mentioned above, 
+this Gaussian  asymptotic cannot be used directly for relatively small number of 
+coefficients, as the joint distribution of maximal values of an ordered random 
+sequence  is not normal.
+
+In order to get, nevertheless, an idea about the distributions, histograms 
+of the partial sums $S_l$ of the~$l$ first largest coefficients for different values of~$l$ 
+have been computed (Fig.~3).
+
+\vspace*{-6pt}
+
+\section{Probabilistic Features of~the~Walsh--Hadamard Spectral Coefficients and~Partial Sums}
+
+\vspace*{-2pt}
+
+\noindent
+Figure~3 shows the histograms of  the partial sums (truncated IWHT) 
+for the  different number of coefficients used.
+
+Apparently, the distributions of sums yielded by small $l$'s (out of the
+$n$ possible) coefficients are far from normal, which, in turn, corresponds to the fact that the first largest coefficients
+have non-Gaussian distribution. Moreover, as the fractions $l/n$ increase, the distributions convergence
+ to a mixture of two normal distributions with meanings~0 and~1, respectively.
+ 
+ Next,  an analytical model is presented to explain these results.
+Obviously, when $l$ is equal to $n$, the value~$S_n$ is the original xored
+binary random value  $\tilde b_i$ with\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+ \vspace*{-6pt}
+\begin{center}  %fig3
+ \mbox{%
+ \epsfxsize=74.413mm
+ \epsfbox{fre-5.eps}
+ }
+ \end{center}
+% \vspace*{6pt}
+{{\figurename~3}\ \ \small{Histograms of partial sums with 80~(\textit{a}), 280~(\textit{b}),
+  and 500~(\textit{c}) first largest coefficients  of 1K vector}}
+
+
+
+%\pagebreak
+
+\vspace*{18pt}
+
+\addtocounter{figure}{1}
+
+
+
+
+\noindent
+ $\mathrm{Prob}\left(1\right) = \mathrm{Prob}\left(0\right) = 1/2$. That is,
+ any random value of the
+partial sums $S_l$ with~$l<n$ such that all~$n$ bits of the
+original xored vector
+are reconstructed correctly after rounding is a bounded (clipped) random value that
+forms a nonlinear function:
+$$
+y(x) = \begin{cases}
+1 & \  x \ge x_0\,;\\
+0 & \ x<x_0\,.
+\end{cases}
+$$
+
+For the standard round function, $x_0$ is equal to~$1/2$.
+   That is,  the  partial sums  behavior looks like  a clipping  to the levels~0 or~1 
+   of a random value (signal, random  process) with the values from domain  outranking 
+   (0,1) (see Fig.~3\textit{c}).
+
+The probability density of the random variable~$y$ is
+$$
+W(y)=[1- F (x_0)] \delta(x-1) +F(x_0) \delta(x)
+$$
+where $F(\ )$ is the cumulative probability function of $S_l$ that is,
+ $\mathrm{Prob}\left(S_l<x\right)$.
+
+The proximity of the mixture components to the normal distribution can follow from~\cite{5-fr}, 
+where it was proved that the sum of the largest $n-k$ out of $n$ normal random variables 
+is normal asymptotically under some conditions for the ratio $k/n$, $n \rightarrow \infty$  
+with $k$ remaining fixed. Comparisons are made as well with the asymptotic distribution 
+as both $n$ and $k \rightarrow \infty$   with $ k/n  \rightarrow \alpha> 0 $
+(these issues are not considered in this paper).
+
+Further, as the shape of the partial sums distribution with rather small $l/n$ does not 
+look like a mixture of distributions, it would be interesting to consider a possibility 
+of using the normal approximation of these sums  for the error reconstruction prediction.
+
+       Assume that it is possible to estimate the probability distribution functions 
+       of the $S_l$ sums. Then, in order to compute the error probabilities  
+       $\mathrm{Prob}\left(v_{i0}\right)$ and
+       $\mathrm{Prob}\left(v_{i1}\right)$, one should know the conditional probabilities of the sums 
+       (that is, the  bit values estimations $\tilde b_i$) given the random value $b_i$. But, obviously, the 
+       random values $S_l= \tilde b_i$ cannot influence $b_i $ as the bits are produced 
+       independently by a predefined pseudorandom sequence, and \textit{vice versa}.
+       Thus, it is enough to estimate only the marginal distribution of the 
+       partial sums, that is, the bits estimations $\tilde b_i$.
+       
+       \begin{figure*} %fig4
+       \vspace*{1pt}
+       \begin{minipage}[t]{78mm}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=75.453mm
+ \epsfbox{fre-9.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Computed variance of the partial sums~(\textit{1}) and the theoretical variance~(\textit{2}) 
+(under independence assumption)  
+vs.\ number of coefficients for a file of size 4K}
+%\end{figure*}
+%\begin{figure*} %fig5
+%\vspace*{1pt}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{80mm}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=78.498mm
+ \epsfbox{fre-8.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+  \Caption{Fractions of correctly reconstructed bits (for a 2K bit file) vs.\ 
+  number of coefficients: solid curve~---
+theoretical (Eqs.~(1)--(3)) and dashed curve~--- experimental results}
+\end{minipage}
+\vspace*{6pt}
+\end{figure*}
+
+Let use the normal approximation of the IWHT sums. Then, one gets that the error
+probability can be expressed as the probability of a normal
+distributed random variable $v$, taking the values in accordance
+with the events $v_{i0}$ and $v_{i1}$ that falls into an interval
+$[a,b]$, that is (see Fig.~3\textit{c}):
+\begin{multline}
+\mathrm{Prob}\left(a \le v \le b\right)=\Phi\left(\fr{b-E(v)}{s_v}\right)\\
+-\Phi\left(\fr{a-E(v)}{s_v}\right) 
+\label{e1-fr}
+\end{multline}
+where $s_v=\mathrm{sqrt}\left(\mathrm{Var}\left(v\right)\right)$;
+\begin{align}
+\mathrm{Prob}\left(v_{i0}\right) &= \mathrm{Prob}\left(b_{\min} \le v\le \fr{1}{2}\right)\,;
+ \label{e2-fr}
+\\
+\mathrm{Prob}\left(v_{i1}\right) &= \mathrm{Prob}\left(\fr{1}{2} \le v\le b_{\max}\right) \label{e3-fr}
+\end{align}
+where $b_{\min}$ and $b_{\max}$ are lower and upper bounds on~$v$.
+
+
+Note that in this computation,  the sampled variance $s_v$
+%=\mathrm{sqrt}\left(\mathrm{Var}\left(v\right)\right)$ 
+used as an analytical computation of the variance is difficult to compute, seems impossible, 
+as the first  largest $l$ components of the ordering statistics corresponding 
+to the set of all $n$ coefficients are dependent.
+ Indeed, Fig.~4 depicts that the curves of the variance values computed 
+ via simulation  and the variance analytically  
+ $\left[\mathrm{Var}\left(S_l\right) = \mathrm{Var}\left(\tilde b_i\right) 
+ = \mathrm{Var}\left(\sum\limits_{j=0}^{l} 
+ c_j W(j,i)\right)\right.$\linebreak $\left.= \mathrm{Var}
+ \left(\sum\limits_{j=0}^{l} ((1/n) \sum\limits_{i=0}^{n-1} b_i W(h,i)) W(j,i)\right)= 
+ l/(4n)\right]$ computed assuming independence of the first large coefficients 
+ and taking  into account 
+ that $\mathrm{Var}\left(b_i\right)=1/4 $ (Bernoulli trial with parameter $p=1/2$), are far from each other 
+ unless~$l$ is close to~$n$, that is, the first largest coefficients are strongly dependent.
+
+ A divergence between the formulas~(1)--(3) and the experiments (Fig.~5) 
+ in the vicinity of 100~percent  accuracy is  a consequence of the fact that the partial 
+ sums after achieving the correct (0,1) values that takes place by $l/n< 0.3$--0.4 
+ are not dependent on the values~$l$ and~$n$, whereas the authors'
+ formulae considers the partial   sums as a normal distributed random values.
+
+Standard intervals based on $\pm\sigma$ can be used for
+$b_{\min}$ and $b_{\max}$. Then, the number of correct
+reconstructed bits as $n\left(\sum\limits_{i=0}^{n} \mathrm{Pr}_{\mathrm{err}}(i)\right)$ is computed.
+%
+Thus, using Eqs.~(1) to~(3), one may compute the probability of
+erroneous reconstruction, which depends on the number of
+transmitted coefficients~$l$, the relationship between $l$ and the
+length of the vector~$n$, and the coefficients values (i.\,e., the
+value of the sum $\sum\limits_{j=0}^{l} |c_j|$). 
+
+Thereby, when the number 
+of coefficients is about 25\%--30\% of $n$, as in Fig.~1\textit{a}, 
+the historgrams of the truncated IWHT sums disintegrate into a mixture 
+of Gaussian distributions that is the result of the clipping effect mentioned above.
+
+\section{Comparison with~Rate Distortion Curve}
+
+\noindent
+In order to estimate a general measure (criterion) of the performance 
+of the method, the theoretic Rate-Distortion curve is considered:
+$$
+R=1-h_b(D)
+$$
+where $R$ is the rate;
+$
+h_b(D)= -D\log_2(D)-(1-D)$\linebreak $\times\log_2(1-D)$; and
+$D$ is the fraction of erroneous bits.
+
+ The value $R$ is the minimal rate of transmission which provides transmission 
+ of a message of size $n$ bits.
+Thus,  this equation is considered as a performance measure for the data
+transmission (coding) systems, based on reduction of
+ spectral coefficients number 
+transmitted to a receiver
+ (or stored in memory) as this equation, in fact, connects\linebreak\vspace*{-12pt}
+\begin{center}  %fig6
+\vspace*{12pt}
+\mbox{%
+ \epsfxsize=77.91mm
+ \epsfbox{fre-10.eps}
+ }
+ \end{center}
+ \vspace*{-3pt}
+{{\figurename~6}\ \ \small{Comparison to the rate distortion curve
+(4K file): \textit{1}~--- Shannon;
+  \textit{2}~--- largest coefficients, then 128, 512, 1024, 2048, 3500~blocks;
+  \textit{3}~--- largest coefficients only; \textit{4}~--- blocks only; and
+  \textit{5}~--- JPEG}}
+
+
+
+%\pagebreak
+
+%\vspace*{12pt}
+
+\addtocounter{figure}{1}
+
+
+
+\noindent
+the number of correctly reconstructed bits and resources needed for  receiving 
+appropriate information by a user, which, in fact, allows to integrate  the 
+reconstruction accuracy metric and  size of code (number of the code bits).
+
+As it can be seen in  Fig.~6, the usage of the $l$ largest coefficients (the curve 
+``largest coefficients only'') is not effective for rather suitable reconstruction 
+error probability. Below, it will be shown how to improve the performance by adding some 
+additional block (portions) of the xored randomly permuted file.
+
+
+\section{Enhancing Performance of~Holographic Coding}
+
+\noindent In order to improve the previously considered algorithm which deals 
+with  the $l$ first largest Walsh--Hadamard  coefficients of the xored original 
+file,  the present authors suggest  an algorithm  based on both 
+transmission of the first large coefficients and sending actual blocks of 
+the xored and randomly permutated  (original input) file.
+A block of xored and permuted bits of the original file allows recomputing 
+ (the conditional, in fact) the probability to improve the correct reconstruction of  
+ randomly chosen bit of the file.
+ At the sender, the  $l$ largest coefficients are chosen, 
+ and  both the probability of correct reconstruction $1-D$ 
+ and their rate (number of\ bits in the coefficient transmitted) are estimated (computed)
+ taking into 
+ account that the coefficients indexes must be known in order to compute the 
+ $\tilde b_i$ by the IWHT. In this case, the number of $R$ bits is the size of 
+ ($C_l$)+index($C_l$), which  is the sum of bits spent to represent the coefficients 
+ and their indexes.
+
+The usage of the largest coefficients implies a certain  fraction of correctly 
+reconstructed bits $1-D$. Then, if the receiver receives  $k<n$ actual bits 
+(the sender transmit a $k$-block of original file of size $n$ bits), the 
+probability to reconstruct correctly  the whole file is $(n-(n-k)D)/n $. Then, 
+the Walsh--Hadamard coefficients  may be recomputed (at the receiver part of the 
+channel)  for the left block (of size $n-k$ bits) as the bits of the sent 
+portion can be extracted from the Walsh--Hadamard  coefficients equation 
+(see section~3). Note that thanks to the permutation, the bits of the sent block 
+from the beginning of the (xored and permuted) file may  correspond to 
+arbitrary indexes of original file, that is,  the independence 
+of the reconstruction process of indexes is not violated and the blurriness property of  
+``holographic'' reconstruction is obtained.
+
+\smallskip
+
+\noindent \textbf{Proposition 1}. Let $C=(C_1,C_2,\ldots,C_n)$, where $n$ is the
+size of the original file, be the set of all $n$  WHT coefficients of the binary 
+vector, modeling xor-permuted file obtained from the original file (as 
+mentioned above). Eliminate from the whole vector a subset of the components 
+$P$ of size $k$ bits. Then, one can reconstruct the bits of the rest of the 
+vector using the following modification of Walsh--Hadamard  coefficients 
+recomputed as
+$$
+C{^P_i}=C_i- \sum\limits_{j\epsilon P} b_j W(j,i)
+$$
+and the rest of the bits of the vector (rest part of the file modeled by this vector) $b\backslash P$, 
+where $\backslash$ is the set difference, may be reconstructed as:
+$$
+\tilde b_i =C_i- \sum\limits_{j\epsilon I/P} b_j W(j,i)
+$$
+where $I$ is set of the $b$ vector components (bits) indexes, $I=\overline{1,n}$.
+Indeed, if the bits of $P$ are replaced by zeros, one gets $n=2^k $-bit vector for 
+which a WHT may be defined, but it is obvious that
+$$
+C{^P_i}=C_i-\sum\limits_{j\epsilon P} b_j W(j,i)=\sum\limits_{j\epsilon I/P} b_j W(j,i)
+$$
+if all items corresponding to indexes of $P$ are zeros.
+
+\smallskip
+
+\noindent
+\textbf{Proposition 2}. Let the sender transmit a $k$-block ($k<n$) of the original 
+input file and $D$ is the previous error. Then, the probability to reconstruct correctly the entire file is $(n-(n-k)D)/n$.
+
+\smallskip
+
+
+
+
+The receiver does the following steps, upon receiving the identities of the 
+(already stored and mutually agreed) chosen pseudorandom sequence: 
+\begin{itemize}
+\item[(a)] follows receiving the first coefficient and reconstructing the entire xored permuted file, by estimating the values of all missing coefficients to be~0;
+\item[(b)] the xored-permuted file  is reversed permuted to obtain  the xored-only bit vector  and then,
+in the last step, the receiver xors  
+this vector  with the original pseudorandom vector $PN$ obtaining the original vector (see 
+Fig.~1). Later upon receiving a signal for 
+stopping coefficient usage and starting blocks of $k$ bits, the receiver reconstruct the file by the coefficient and replace the first 
+$k$~bits and updates the already 
+received coefficient by eliminating the contribution of the received blocks to these coefficients;
+and
+\item[(c)] continue according to the procedure and flags sent by the sender.
+\end{itemize}
+
+The process may stop by either the sender or the receiver upon reaching a quality 
+criteria, for example, appropriate value of  $R$, or/and, for example, an appropriate 
+degree of blurreness of a picture transmitted.
+Note that since there are  used the already sent coefficients, updating them to be a  function of 
+only the rest of the file, they become more and more accurate.
+
+Let illustrate this approach by a simple example.
+Assume the original file is of 8~bits: 01001110.  Let perform the following steps: 
+(a)~choose a pseudorandom number of 8~bits, say, 10010110; 
+(b)~then xor the original file bits with the pseudorandom number to get 01100101; 
+(c)~choose a random permutation, say, 8, 4, 2, 7, 5, 3, 6, 1, and permute the result 
+of the previous step accordingly to get 10100110; 
+(d)~compute the Walsh--Hadamard coefficients which are (see Eq.~(1)):
+(4/8, 2/8, 0,2/8, 0,2/8, 0,2/8);  and (e)~send the largest coefficient $C_1=4$ and 
+check the result of reconstruction comparing with the desired 10100110.  In this case, 
+in accordance with the equation above, one gets all components $\tilde b_i =4/8$, 
+$i= (1,2,\ldots,8)$,  that is, the reconstructed vector is (1, 1, 1, 1, 1, 1, 1, 1), 
+that is, error rate $1-D=1/2$ (note that this rate can be achieved just with 
+xor-permuted  random file). Therefore, one should continue by sending the next 
+largest coefficient or sending an actual block of 10100110.  The next largest 
+coefficient 2/8 provides $ \tilde b_i$  vector (6/8, 2/8, 6/8, 2/8, 6/8, 2/8, 6/8, 2/8),  
+that is, the reconstructed file is (1, 0, 1, 0, 1, 0, 1, 0) for which the Hamming distance 
+from the WHT-file is 2, and the error rate is $1-D=1-6/8=1/4$.
+
+Let consider how the reconstruction accuracy will change if a 
+block consisting of the first 2~bits of the xored-permuted file is sent after sending 
+the coefficient  $C_1$  and the first largest coefficient $C{^P_1}$ is recomputed
+by the formula  of {Proposition~1} for the rest of file, that is, $P=(01)$. 
+In this case, the rest six reconstructed bits (in accordance  with formula~8)  
+$\tilde b_i =1$, and as  the first two bits of original xor-permuted vector are known, 
+one obtains its reconstruction as 10111111. In this case, $1-D=5/8$. It is worse than 
+in the case of using the 2~first largest coefficients, but, on the other hand, it 
+requires essentially less bits to send the data, that is, 8 bits (2~bit for the 
+2-bit portion and $3+3$ bits for the coefficient  $C{^P_1}$  and its index) instead of 
+12~bits in the previous case. Therefore, it is necessary to 
+define the trade-off between the factor 
+of code rate and the accuracy as a performance measure.
+
+Having the Shannon performance measure mentioned above, it is possible to guide the process of 
+the coefficients/blocks sending by examining which of the two implies better revealing 
+probability and act accordingly. Assume the block (portion of bits $P$) is found to be 
+more efficient, then  a flag of changing transmission to blocks is sent to the receiver 
+and then the first block (say, 10) is sent, then continue as if the xored permuted file 
+is, in fact, the rest of the file 100110 rather than 10100110  and the values of the 
+coefficient(s) sent so far are  recalculated (subtracting the related information sent 
+in blocks according to the formula mentioned above).
+
+As it can be seen in Fig.~6, the usage of the $l$ largest coefficients (curve~\textit{3}) 
+is not effective for rather suitable reconstruction 
+error probability, but adding some additional block portions of the xored randomly 
+permuted file can reduce the error probability dramatically, what shows  the gap 
+between the curves~\textit{3} and~\textit{2}. The point of the curves
+divergence corresponds to starting of blocks sending.
+Curve~\textit{4} shows that up to very high values of accuracy (about 85\%), 
+the present approach is more effective than JPEG.
+Note that  JPEG does not limit the operations to addition and does not achieve 
+a {\it blurred} image during sequential transmission, providing the suitable
+quality of the information requested by different devices. JPEG  is not 
+holographic coding in the sense that a lost part
+of the JPEG file can lead to destruction of the decoded original file rather than blurreness.
+Note that the method suggested herein
+sums up to diverging from the distortion curve of the ``largest coefficients first'' 
+compression method and continues  in a straight line representing uncoded transmission. 
+As the original curve is convex, the optimal point to diverge is simply the point where 
+the resulting  tangent is the lower.
+
+
+\section{Discussion and~Concluding Remarks}
+
+\noindent
+The probabilistic features of the recently suggested holographic 
+WHT-based encoding of binary sequences~\cite{2-fr, 8-fr}, 
+generated from an original binary data set has been studied. 
+These sequences (vectors) are random ones 
+thanks to a pseudorandom transformation of the original data by bitwise xoring with 
+a predefined pseudorandom sequence, and this generated  pseudorandom with almost 
+uniform Walsh--Hadamard spectrum, used to ensure symmetric encoding of the original 
+data. The goal of this research was to study the possibility of error in
+the data reconstruction using the IWHT
+truncated by the first $l$ largest coefficients. It is important 
+that the result of the computations of the  truncated IWHT are
+performed in the real domain whereas the estimation metric is formed for 
+the Hamming distance of $d(x; y) =| b-\hat b | $ that is an object from GF(2).
+
+It was shown that this effect can be modeled by the clipping-like nonlinear transformation 
+of the partial (truncated) inverse Walsh--Hadamard sums.
+It was shown that for the computation of rather accurate approximation 
+of the probability, it is enough to estimate only marginal distribution 
+of the partial sums, that is, the bits estimations $\tilde b_i$. Still the 
+estimation of the marginal distribution for rather small values of $l/n$ 
+remains very actual for future studies.
+Thanks to the symmetry property of the spectral Walsh--Hadamard coefficients, 
+they have actual holographic properties, namely, any portion of this set
+defines a {\em blurred} image of the original file. {\em Blurred} information 
+is received which becomes less and less {\em blurred}
+and more definite during a sequential transmission of 
+the encoded data. Therefore, the definition of a measure for the blurriness 
+is of independent importance.
+ Along with this characteristics, the authors consider the performance of this method 
+ using  the shape of Rate Distortion
+Curve (Shannon bound). Using this performance measure,  an enhancement 
+for the authors' previous WHT-based holographic encoding method is suggested.
+This enhancement is provided by adding both a permutation of the xored file 
+and a recomputation of the Walsh--Hadamard coefficients during the coefficients transmission.
+
+
+Note that there can be an ambiguity in the definition of the choice of $l$ 
+largest over absolute values coefficients if there exist a pair of
+coefficients $c_i$, $c_j$, such that $\mathrm{abs}\left(c_i\right)=\mathrm{abs}\left(c_j\right)$. Indeed, 
+there is a question in this case, which of the two coefficients
+should be included in the $l$-set. It is possible to use an 
+identification of all WHT coefficients indexes that contribute 
+significantly to the binary sequences energy. Following~\cite{6-fr}, 
+there is a polynomial-complex algorithm for choosing the coefficients.
+
+Thus, in both ways, the coefficients are kept in accordance with the mean square 
+(energy) criterion, but an $L_1$ metric is used in order to approve them. Further, 
+if the ordered 
+WHT coefficients are considered as an order statistic, the
+problem of the original file reconstruction by $l \ll n$ 
+coefficients can be reduced to a known method of a linear combination distribution
+estimation~\cite{7-fr}.
+
+
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+
+
+
+\bibitem{1-fr}
+\Au{Bruckstein  A.\,M.,  Holt R.\,J., Netravali~A.\,N.} 
+Holographic representations of images~// IEEE
+Trans. Image Processing, 1998. Vol.~7 (May--June). P.~1583--1597.
+\bibitem{2-fr}
+\Au{Jung H.\,Y. Prost~R., Choi~T.\,Y.} 
+A~unified mathematical form of the Walsh-Hadamard transform for lossless
+image data compression~// Signal Processing, 1997. Vol.~63. P.~35--43.
+
+\bibitem{3-fr}
+\Au{Dolev S., Frenkel S.}
+A~way of coding and decoding of digital data based on digital holography principles.
+Patent of Russian Federation No.\,2010145892/08(066164) of 11.11.2010.
+
+\bibitem{4-fr}
+\Au{Morettin P.\,A.}  
+Walsh spectral analysis~//  SIAM Review, 1981. Vol.~23. P.~277--291.
+
+\bibitem{5-fr}
+\Au{Wiens, D.\,P., Beaulieu~N.\,C., Loskot~P.} 
+On the exact distribution of the sum of the largest $n-k$ out of $n$~normal random 
+variables with differing mean values~//  Statistics, 2006. Vol.~40, No.\,2. P.~165--173.
+
+\bibitem{8-fr} %6
+\Au{Dolev S., Frenkel~S.}
+Multiplication free holographic coding~//  IEEE 26th
+Convention of Electrical and Electronics Engineers Proceedings.~---  Eilat, Israel, 2010.
+
+\bibitem{6-fr} %7
+\Au{Gilbert A.\,C.,  Guhay~S.,  Indykz~P.,  Muthukrishnan~S.,  Strauss~M.} 
+Near optimal sparse Fourier representations via sampling~// STOC 2002.~--- 
+Montreal, Quebec, Canada, 2002.
+\bibitem{7-fr} %8
+\Au{Arellano-Valle R., Genton A.}
+On the exact distribution of linear combinations of order statistics from dependent
+random variables~//  J.~Multivariate Anal., 2007. Vol.~98. P.~1876--1894.
+
+\end{thebibliography}
+}
+}
+
+
+\end{multicols}
+
+\vspace*{6pt}
+
+\hrule
+
+\vspace*{6pt}
+
+\def\tit{ГОЛОГРАФИЧЕСКОЕ КОДИРОВАНИЕ НА~ОСНОВЕ ПРЕОБРАЗОВАНИЯ УОЛША--АДАМАРА 
+РАНДОМИЗИРОВАННЫХ И~ПЕРЕМЕШАННЫХ ДАННЫХ}
+
+\def\aut{Ш.~Долев$^1$, С.~Френкель$^2$,  А.~Коен$^3$}
+
+\titelr{\tit}{\aut}
+
+\vspace*{6pt}
+
+\noindent
+$^1$Университет им.\ Бен-Гуриона в Негеве, Беэр-Шева, Израиль, dolev@cs.bgu.ac.il\\[1pt]
+\noindent
+$^2$ИПИ РАН; Московский государственный технический университет 
+радиотехники, электроники и авто-\linebreak
+\hphantom{$^1$}матики, fdergei@mail.ru\\[1pt] 
+$^3$Университет им.\ Бен-Гуриона в Негеве, Беэр-Шева, Израиль, coasaf@cse.bgu.ac.il
+
+
+\vspace*{6pt}
+
+
+\Abst{В статье содержатся результаты статистического и вероятностного анализа способа 
+кодирования и сжатия данных, основанного на перемешивании и рандомизации двоичных 
+данных, с последующим преобразованием Уолша--Адамара, и на основе выполненного анализа 
+предлагается метод улучшения производительности данного подхода.} 
+
+\label{end\stat}
+
+\vspace*{-3pt}
+
+\KW{голографическое кодирование; преобразование Уолша-Адамара; граница Шеннона} 
+
+\renewcommand{\figurename}{\protect\bf Рис.}
+\renewcommand{\tablename}{\protect\bf Таблица}
+\renewcommand{\bibname}{\protect\rmfamily Литература}
