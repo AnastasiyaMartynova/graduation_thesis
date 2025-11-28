@@ -1,0 +1,1545 @@
+
+\def\stat{agalarov}
+
+\def\tit{АЛГОРИТМ ВЫЧИСЛЕНИЯ ХАРАКТЕРИСТИК МОДЕЛИ 
+ТЕЛЕКОММУНИКАЦИОННОЙ СЕТИ С~ПОВТОРАМИ 
+ПЕРЕДАЧ И~НЕПОЛНОДОСТУПНОЙ СХЕМОЙ УПРАВЛЕНИЯ 
+БУФЕРАМИ$^*$}
+
+\def\titkol{Алгоритм вычисления характеристик модели 
+телекоммуникационной сети с~повторами 
+передач} % и~неполнодоступной схемой управления  буферами}
+
+\def\autkol{Я.\,М.~Агаларов}
+\def\aut{Я.\,М.~Агаларов$^1$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnotetext[1]
+{Работа выполнена при поддержке РФФИ, грант 11-07-00112.}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Российской академии наук, agglar@ya.ru}
+
+\vspace*{2pt}     
+
+      \Abst{Рассмотрена телекоммуникационная сеть со схемой управления буферами 
+узлов SMQMA (Sharing with Maximum Queue Length and Minimum Allocation) и 
+возможностью повтора передач из источника и в транзитных узлах. Предложен алгоритм 
+расчета усредненных характеристик сети (вероятностей блокировок узлов, суммарной 
+нагрузки на линиях, среднего числа пакетов в узлах и в сети, среднего числа пакетов, 
+ожидающих повтора в источниках, и~др.). Приведены доказательства утверждений о 
+свойствах алгоритма и результаты вычислительных экспериментов.}
+
+\vspace*{2pt}
+      
+      \KW{телекоммуникационная сеть; повторы передач; механизмы управления 
+буферами}
+
+%\vspace*{-12pt}
+
+\vskip 14pt plus 9pt minus 6pt
+
+      \thispagestyle{headings}
+
+      \begin{multicols}{2}
+
+            \label{st\stat}
+     
+\section{Введение}
+     
+     Эффективность принимаемых на этапе проектирования решений по 
+выбору варианта по\-стро\-ения телекоммуникационной сети в значительной 
+степени зависит от адекватности ис\-поль\-зу\-емых моде\-лей процессов 
+функционирования сетей и точ\-ности методов их расчета. Для обеспечения 
+адекватности в модели должны быть учтены все существенные (с точки 
+зрения цели исследования) свойства реальной сети. К таким свойствам, в 
+частности, относятся: ограниченность буферной памяти узлов коммутации, 
+механизмы управления буферами и многоканальность линий связи. 
+     
+     Ограниченность буферной памяти узлов коммутации является одной из 
+причин роста числа повторных передач в сетях с коммутацией пакетов и, как 
+следствие, резкого роста нагрузки на отдельные участки сети или сеть в 
+целом и снижение ее производительности. 
+     
+     Значения показателей производительности сети существенным образом 
+зависят и от механизмов управления буферами узлов коммутации, из 
+множества которых наиболее применяемыми на практике являются 
+статические схемы управления~[1, 2]: CS (Complete Sharing), CP (Complete 
+Partitioning), SMQ (Sharing with Maximum Queue Length), SMA (Sharing with 
+Minimum Allocation), SMQMA. Схема SMQMA является обобщением первых четырех 
+схем. Для оценки эффективности указанных схем управления буферами 
+разработаны различные модели узлов коммутации (см., например,~[1, 3, 4]) и 
+методы расчета их характеристик. 
+     
+     Необходимость учета многоканальности линий связи вызвана тем, что 
+замена в модели многоканальных линий одноканальными может внести 
+значительную погрешность в результаты расчета показателей 
+производительности сети. 
+     
+     В качестве модели сети с ограниченными буферами, как правило, 
+используется сеть массового обслуживания, узлы которой рассматриваются 
+как изолированные системы массового обслуживания (СМО) 
+с ограниченными накопителями и пуассоновскими 
+входящими потоками. Одной из первых работ, где предлагалась подобная 
+модель, является~\cite{5aga}, в которой исследовалась задача выбора 
+объемов буферной памяти узлов коммутации сети с датаграммным режимом 
+работы в рамках модели сети с одноканальными линиями связи и схемой 
+распределения буферов CS. В~этой же работе для расчета модели был 
+использован подход, который в дальнейшем нашел применение в работах 
+других исследователей (см., например,~[6--10]). 
+Cуть подхода заключается в следующем. Для стационарных характеристик 
+модели выводится система нелинейных уравнений вида 
+$y_i\hm=f_i\left(\overline{y},\overline{a}\right)$, $i\hm=1,\ldots , n$, где 
+$\overline{y}\hm=\left(y_1, \ldots ,y_n\right)$~--- вектор неизвестных переменных 
+(например, вероятностей блокировки); $\overline{a}$~--- вектор известных 
+па\-ра\-мет\-ров; $f_i$~--- обозначение функции. Для решения указанных 
+уравнений применялись алгоритмы, основанные, как правило, на 
+градиентном методе~\cite{4aga, 5aga} и методе простой итерации~[3, 5--10], 
+вопрос сходимости которых, за 
+исключением редких случаев, остается открытым. Среди работ, в которых 
+для сетей с повторами передач приводится данный подход и доказательство 
+сходимости алгоритма, следует выделить публикации~[4, 6--9], 
+из которых в~[6, 8] рассматривалась сеть 
+коммутации каналов, в~\cite{4aga}~--- случай сети с одноканальными 
+линиями связи, повторами передач из источника и схемой CS, в~\cite{8aga, 10aga}~--- 
+случаи сети с многоканальными линиями связи, повторами 
+передач из источника и схемами CS и SMQ соответственно. 
+     
+     Ниже предлагается алгоритм расчета усредненных характеристик 
+(вероятностей блокировки узлов, суммарной нагрузки линий, среднего числа 
+пакетов в узлах и в сети, среднего числа повторов пакета из источника 
+и~т.\,д.)\ для модели сети со схемой управления SMQMA, без потерь и 
+возможностью повтора пакетов в транзитных узлах и в источниках. 
+Алгоритм основан на указанном выше подходе. Приведено доказательство 
+сходимости алгоритма и численный пример использования алгоритма. 
+     
+\section{Модель сети и~постановка задачи}
+     
+     Модель сети представляется в виде графа, состоящего из $U$ вершин и 
+$V$~дуг. Вершины графа отождествляются с узлами связи, дуги~--- с 
+линиями связи. Заданы множества узлов-входов (узлов коммутации, в 
+которые извне сети поступают пакеты) и узлов-выходов (узлов коммутации, 
+через которые пакеты покидают сеть) и множество нециклических 
+путей~$L$, соединяющих узлы-входы с уз\-ла\-ми-выходами, причем для 
+каждой пары узел-вход и узел-выход существует единственный 
+соединяющий их путь. Для каждой пары узел-вход и узел-выход заданы 
+интенсивности внешних потоков пакетов, передача которых в сети 
+происходит по пути, соединяющему эти узлы. Узлы сети имеют 
+ограниченную буферную память со схемой распределения SMQMA, линии 
+связи имеют заданное число однородных каналов. 
+
+\begin{figure*} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=132.345mm
+ \epsfbox{aga-1.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Модель узла связи: $j\hm=1, \ldots ,k$~--- номера линий связи;
+стрелка~--- возможное направление <<движения>> пакета;
+надпись на стрелке~--- вероятность, с которой пакет выбирает указанное 
+стрелкой направление;
+окружность с номером~$j$~--- сток $j$-й линии; прямоугольник с номером~1 
+(блок~1)~--- место в накопителе узла, где хранятся пакеты (копии пакетов), 
+стоящие в очереди к линии для отправления в последующий узел;
+прямоугольник с номером~2 (блок~2)~--- место в накопителе узла, где 
+хранятся неуспешно переданные пакеты, ожидающие повторной передачи; 
+прямоугольник с номером~3 (блок~3)~--- место в накопителе, где хранятся 
+успешно переданные пакеты, ожидающие подтверждения}
+\end{figure*}
+
+     В качестве модели коммутационного узла используется СМО 
+     с ограниченным накопителем (буферной памятью) 
+и несколькими линиями из однотипных каналов, формализованная структура 
+которой приведена на рис.~1. 
+
+  
+  Отметим, что накопитель разбит на блоки~1, 2 и~3 условно и пакет 
+реально не передается из блока в блок, а хранится в одном месте, 
+прикрепляемом условно к одному из блоков в зависимости от состояния 
+процесса передачи в последующий узел. 
+     
+     Обозначим через $v$ линию связи, $u$~--- узел связи, 
+     $\Omega_u^+$~--- множество исходящих из узла $u$ линий, по 
+которым в последующие узлы передаются пакеты.
+  
+  В модели выполняются следующие условия:
+  \begin{enumerate}[1.]
+\item Места в накопителе распределяются согласно схеме SMQMA:
+\begin{itemize}
+\item за каждой линией $v$ закрепляется $a_v\hm\geq 1$ мест,  
+$\sum\limits_{v\in \Omega_u^+} a_v\hm\leq R_{0u}$;
+\item оставшиеся $R_u\hm=R_{0u}-\sum\limits_{v\in\Omega_u^+} a_v$ мест 
+общедоступны;
+\item максимальное число общедоступных мест, которые могут занять 
+$v$-пакеты (пакеты из потока, поступающего на линию~$v$), не должно 
+превышать заданную величину $0\hm\leq r_v\hm\leq R_u$, $v\hm\in 
+\Omega_u^+$, $\sum\limits_{v\in\Omega_u^+}r_v\hm\geq R_u$.
+\end{itemize}
+\item Поступившему в СМО пакету предоставляется место в блоке~1 (см.\ 
+рис.~1), если он передан без ошибок и в момент его поступления в 
+накопителе есть доступное свободное место (произошла успешная попытка 
+передачи из предыдущего узла), иначе пакет получает отказ (произошла 
+неуспешная попытка передачи) и в предыдущем узле может быть повторена 
+попытка его передачи.
+\item Количество попыток передачи пакета в узле регулируется 
+вероятностью повтора передачи, а именно: задается вероятность ($1\hm-a_v$) 
+того, что попытка передачи является последней для данного $v$-пакета. 
+Если попытка является не последней (происходит с вероятностью~$a_v$), то 
+в узле хранится копия $v$-пакета (место хранения которой закрепляется за 
+блоком~1 до отправления и передается блоку~2 или~3 после отправления в 
+последующий узел) и от последующего узла требуется подтверждение 
+успешной передачи, иначе после завершения передачи копия не хранится 
+(пакет освобождает место в накопителе) и подтверждения не требуется. Если 
+пакет принят в накопитель и предыдущий узел требует подтверждения, то в 
+предыдущий узел отправляется подтверждение, где при его получении 
+освобождается занятое пакетом место в накопителе (в блоке~3 предыдущего 
+узла). Если в течение заданного интервала времени (тайм-аута) с момента 
+отправления пакета (в течение этого времени копия хранится в блоке~2, если 
+попытка не последняя) узел не получает положительного подтверждения, то 
+пакет делает повторную попытку передачи из узла (копия пакета из блока~2 
+передается в блок~1), иначе делает повторную попытку через случайный 
+интервал времени из источника. 
+\item Если в накопителе освобождается место, закрепленное за линией~$v$, 
+и хотя бы одно общедоступное место в накопителе занимает $v$-пакет, то 
+освободившееся место становится общедоступным, а одно занятое 
+$v$-пакетом общедоступное место закрепляется за линией~$v$. 
+\item Суммарные потоки $v$-пакетов, поступающих на линии извне узла, 
+являются независимыми в совокупности пуассоновскими потоками. Для 
+обслуживания $v$-пакета требуется одновременно одно место хранения и 
+один канал типа~$v$, $v\hm\in\Omega_u^+$.
+\item Принятые в СМО $v$-пакеты обслуживаются в порядке поступления.
+\item Время занятия канала $v$-пакетом~--- экспоненциально 
+распределенная случайная величина с параметром $0 \hm<\mu_v\hm<\infty$, 
+$v\hm\in\Omega_u^+$.
+\item Интервал времени $\tau_v>0$ (тайм-аут), через который неуспешно 
+переданный $v$-пакет может быть передан повторно,~--- заданная 
+детерминированная величина. 
+\item Успешно переданный по линии~$v$ пакет освобождает место в 
+накопителе через случайное время~$t_v$ с заданным средним 
+значением~$\overline{t}_v$, $\tau_v\hm\geq t_v\hm>0$.
+\item Источники пакетов (абонентские узлы) имеют неограниченный 
+накопитель. Передача пакетов по абонентской линии, соединяющей 
+абонентский узел с уз\-лом-вхо\-дом (уз\-лом-вы\-хо\-дом), происходит без 
+ошибок. 
+\item Подтверждения успешной передачи не те\-ря\-ются.
+\end{enumerate}
+
+Введем следующие обозначения:
+\begin{description}
+\item[\,] $v^+$~--- узел-сток линии~$v$;
+\item[\,] $v^-$~--- узел-исток линии~$v$;
+\item[\,] $c_v$~--- канальная емкость линии~$v$;
+\item[\,] $l$~--- путь, соединяющий узел-вход с узлом-вы\-хо\-дом;
+\item[\,] $L_v$~--- множество путей, содержащих линию~$v$, 
+$L_v\hm\subseteq L$;
+\item[\,] $v_0(l), \ldots , v_{S_l}(l)$~--- линии, составляющие путь~$l$, 
+(т.\,е.\ $l\hm=\{v_0, \ldots , v_{S_l}\}$), где $(S_l+1)$~--- число линий на 
+пути~$l$; индексы $0, \ldots , S_l$ показывают порядок следования 
+элементов на пути; $v_i$~--- линия, исходящая из узла~$u_i$ пути~$l$; 
+$V_0(l)$~--- линия, соединяющая источник с узлом-вхо\-дом; $v_{S_l}$~--- 
+абонентская линия, исходящая из уз\-ла-вы\-хо\-да~$u_{S_l}$;
+\item[\,] $l_v^+$~--- множество различных линий, включающее $v$ и 
+линии, следующие после $v$ по направлению к адресату на пути~$l$, 
+включая~$v_{S_l}$;
+\item[\,] $V_v^+$~--- множество различных линий, включающее 
+$\Omega_{v^-}^+$ и линии $v^\prime \in l_v^+$, $v\hm\in \Omega^+_{v^-
+}$;
+\item[\,] $\lambda(l)$~--- интенсивность потока ($l$-потока) пакетов, 
+поступающих из источника на узел-вход и требующих передачи по 
+пути~$l$, $\lambda(l)\hm>0$, $l\hm\in L$;
+\item[\,] $\delta_v$~--- вероятность безошибочной передачи пакета по 
+каналу линии~$v$;
+\item[\,] $\Lambda^0_{v_{i(l)}}$~--- интенсивность суммарного $l$-потока 
+пакетов на выходе линии $v_{i-1}(l)$, $i\hm=1, \ldots , S_l$;
+\item[\,] $\Lambda^*_v(l)$~--- интенсивность суммарного $l$-потока 
+пакетов, поступающих на линию~$v$;
+\item[\,] $\pi_v$~--- вероятность блокировки узла для пакетов, требующих 
+передачи по исходящей линии~$v$.
+\end{description}
+   
+   Пусть $\overline{k}_u=\{\overline{k}_v, v\hm\in\Omega_u^+\}$~--- 
+состояние накопителя узла $u\hm\in U$, 
+где $\overline{k}_v\hm=\left(k_v,k_v^\prime,k_v^{\prime\prime}\right)$, $k_v$~--- чис\-ло 
+пакетов в накопителе узла (в блоке~1), стоящих в очереди к линии~$v$, 
+$k_v^\prime$~--- число пакетов в накопителе узла (в блоке~2), неуспешно 
+переданных по линии~$v$ и ожидающих повторной передачи, 
+$k_v^{\prime\prime}$~--- число пакетов в накопителе узла (в блоке~3), 
+успешно переданных по линии~$v$, ожидающих подтверждения:
+   \begin{align*}
+   A_{R_u,\overline{r}_u, \overline{a}_u} &=\left \{ 
+   \overline{k}_u\!: \sum\limits_{v\in\Omega_u^+}\left( 
+k_v+k_v^\prime+k_v^{\prime\prime}-a_v\right)^+\leq
+   R_u\,,
+   \right.\\ 
+&\left.    \vphantom{\sum\limits_{v\in\Omega_u^+}}
+  \hspace*{10mm}k_v+k_v^\prime+k_v^{\prime\prime}\leq r_v+a_v\,,\enskip v\in 
+\Omega_u^+\right\}\,;\\
+A^{0,m_v}_{R_u, \overline{r}_u, \overline{a}_u} &= \left\{ \overline{k}_u\in 
+A_{ R_u, \overline{r}_u, \overline{a}_u }:\ 
+k_v+k_v^\prime+k_v^{\prime\prime}=m_v\right\}\,;\\
+A^{1,m_v}_{ R_u, \overline{r}_u, \overline{a}_u }&= \left\{ \overline{k}_u\in 
+A_{ R_u, \overline{r}_u, \overline{a}_u}:\ k_v=m_v\right\}\,;\\
+A^{2,m_v}_{ R_u, \overline{r}_u, \overline{a}_u} &= \left\{ \overline{k}_u\in 
+A_{ R_u, \overline{r}_u, \overline{a}_u}:\ 
+k_v^\prime+k_v^{\prime\prime}=m_v\right\}\,,
+\end{align*}
+где 
+\begin{align*}
+(b)^+ & =\begin{cases}
+b\,, & \mbox{если}\ b\geq 0\,,\\
+0\,, & \mbox{если}\ b<0\,,
+\end{cases}\\
+m_v &= 0, \ldots , r_v+a_v\,.
+\end{align*}
+
+   Для данной модели узла с учетом введенных выше обозначений для 
+$\pi_v$~--- вероятности блокировки узла для пакетов, поступающих на 
+линию~$v$, $v\hm\in\Omega_u^+$, в стационарном режиме работы 
+справедлива формула~[2, 3]:
+   \begin{multline} 
+   \pi_v = {}\\
+   {}=\fr{1}{g\left(R_u, \overline{a}_u, \overline{r}_u, 
+\overline{\rho}_u^*\right)}\sum\limits_{\overline{k}\in A_{R_u, \overline{r}_u, 
+\overline{a}_u}} \hspace*{-3mm}p\left( \overline{c}_u, \overline{\pi}_u, 
+\overline{k}_u,\overline{\rho}_u^*\right).
+   \label{e1aga}
+   \end{multline}
+Здесь 
+\begin{align*}
+u&=v^-\,;\\[3pt]
+p\left( \overline{c}_u, \overline{\pi}_u, 
+\overline{k}_u,\overline{\rho}_u^*\right)&= \prod\limits_{v\in\Omega_u^+} 
+z_v\left(c_v, \overline{\pi}_{v^+}, \overline{\rho}^*_v, k_v, s_v\right)\,,
+\end{align*}
+где  
+$$
+s_v\hm=k_v^\prime\hm+k_v^{\prime\prime}\,,
+$$
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+z_v\left(c_v, \overline{\pi}_{v^+}, \overline{\rho}^*_v, k_v, s_v\right)={}\\
+{}=
+\begin{cases} 
+\fr{\left(\rho_v^{\prime *}+\rho_v^{\prime\prime 
+*}\right)^{s_v}}{s_v!}\,\fr{\rho_v^{*k_v}}{k_v!} &\ \mbox{при}\  k_v<c_v\,,\\
+\fr{\left(\rho_v^{\prime *}+\rho_v^{\prime\prime 
+*}\right)^{s_v}}{s_v!}\,\fr{\rho_v^{*k_v}}{c_v! c_v^{k_v-c_v}} &\ \mbox{при}\  
+k_v\geq c_v\,;
+\end{cases}
+\end{multline*}
+
+\vspace*{-9pt}
+
+\noindent
+$$
+g\left(R_u, \overline{a}_u, \overline{r}_u, \overline{\rho}_u^*\right) = 
+\sum\limits_{\overline{k_u}\in A_{R_u, \overline{r}_u, \overline{a}_u}} p\left(
+\overline{c}_u, \overline{k}_u, \overline{\rho}_u^*\right)\,;
+$$
+$$
+\overline{\rho}_u^*=\left\{ \overline{\rho}_v^*,\, v\in \Omega_u^+\right\}\,,
+$$
+где
+\begin{align*}
+\overline{\rho}_v^*&=\left( \rho_v^*, \rho_v^{\prime *}, \rho_v^{\prime\prime 
+*}\right)\,,
+\\
+\rho_v^* &= \sum\limits_{l\in L_v} \fr{\Lambda^*_v(l)}{\mu_v(1-
+\alpha_v\beta_v(l))}\,,\\
+\rho_v^{\prime *} &=\sum\limits_{l\in L_v} 
+\fr{\Lambda_v^*(l)\tau_v\alpha_v\beta_{v}(l)}{1-\alpha_v\beta_{v}(l)}\,,
+\\
+\rho_v^{\prime\prime *} &=\sum\limits_{l\in L_v} \fr{\Lambda_v^*(l) 
+\overline{t}_v\alpha_v(1-\beta_v(l))}{1-\alpha_v\beta_v(l)}\,,
+\end{align*}
+$$
+ \beta_v(l)=1-(1-
+\delta_v)\left(1-\pi_{v(l)^+}\right)\,,\ v\in\Omega_u^+\,;
+$$
+$$
+\overline{\pi}_u =\left \{ \overline{\pi}_{v^+},\,v\in \Omega_u^+\right\}\,,
+$$
+где
+$$ 
+\overline{\pi}_{v^+} =\left\{ \pi_{v^\prime}, 
+v^\prime\in\Omega^+_{v^+}\right\}\,.
+$$
+
+   
+   Ставится задача расчета значений параметров $\overline{\rho}^*_v$, 
+$\pi_v$, $v\hm\in V$.
+   
+\section{Метод решения}
+   
+   В установившемся режиме работы рассматриваемой сети для потоков в 
+узлах справедливы следующие соотношения:
+   \begin{multline}
+   \Lambda^0_{v_j(l)}(l)= \fr{\Lambda^0_{v_{j+1}(l)}(l)}{1-\beta_{v_{j-
+1}(l)}(l)}\left( 1-\alpha_{v_j(l)}\beta_{v_j(l)}(l)\right)\,,\\ j=1, \ldots ,S_l\,,
+   \label{e2aga}
+   \end{multline}
+   где $\Lambda^0_{v_{S_l+1}(l)}(l)=\lambda(l)$, $\delta_{v_0(l)}\hm=0$, 
+$\pi_{v_0(l)}\hm=0$. 
+   
+   Физический смысл формулы заключается в том, что пакет, принятый в 
+накопитель узла~$v_j^-(l)$, делает повторные попытки передачи в 
+после\-ду\-ющий узел~$v_j^+(l)$ в среднем $(1-
+\alpha_{v_j(l)}\beta_{v_j(l)}(l))^{-1}$ раз и интенсивность потока таких 
+попыток, делаемых всеми пакетами $l$-потока, равна величине 
+   $\Lambda^*_{v_j(l)}(l)(1-\beta_{v_{j-1}(l)}(l))/\left(1-
+\alpha_{v_j(l)}\beta_{v_j(l)}(l)\right)$.
+   
+   Из~(\ref{e2aga}) получаем формулы:
+   \begin{multline}
+   \Lambda^*_{v_j(l)}(l) ={}\\
+\hspace*{-2mm}{}= \fr{\lambda(l)}{1-
+\pi_{v_i(l)}}\prod\limits_{j=1}^{S_l}\left( \fr{1-\alpha_{v_j(l)}}{1-
+\beta_{v_j(l)}(l)}+\alpha_{v_j(l)}\right)\,,\ l\in L.
+   \label{e3aga}
+   \end{multline}
+   
+   Переобозначив в~(\ref{e1aga}) для краткости изложения $1-\pi_v$ 
+через~$y_v$, $z_v\left(c_v, \overline{\pi}_{v^+}, \rho_v^*, k_v, l_v\right)$ через 
+$z_v\left(k_v, l_v, \overline{\Lambda}_v^*, \overline{y}_{v^+}\right)$,
+   $p\left(\overline{c}_u, \overline{\pi}_u, \overline{k}_u,\overline{\rho}_u^*\right)$ 
+через $p_{\overline{k}_u}\left(\overline{\Lambda}_u^*, \overline{y}_u\right)$, $g\left(R_u, 
+\overline{a}_u, \overline{r}_u, \overline{\rho}_u^*\right)$ через $g\left(\overline{a}_u, 
+\overline{\Lambda}_u^*,\overline{y}_u\right)$, выражение в правой части равенства 
+для~$\pi_v$ через $1\hm- q_{R_u, \overline{r}_u, 
+\overline{a}_u}(\overline{\Lambda}_u^*, \overline{y}_u)$, где $u\hm=v^-$, 
+$\overline{\Lambda}_u^*\hm= \left\{ \overline{\Lambda}_v^*, v\in\Omega_u^+\right\}$, 
+$\overline{\Lambda}_v^*\hm=\left\{ \Lambda_v^*(l),l\in L_v\right\}$, 
+$\overline{y}_u\hm= \left\{\overline{y}_v, v\in\Omega_u^+\right\}$, $\overline{y}_v\hm= 
+\left\{ y_{v^\prime}, v^\prime\in\Omega_u^+\right\}$, получим систему нелинейных 
+уравнений относительно неизвестных переменных~$y_v$:
+   \begin{equation}
+   y_v=q_v\left( \overline{\Lambda}^*_u, \overline{y}_u\right)\,,\enskip v\in 
+V\,,\ u=v^-\,.
+   \label{e4aga}
+   \end{equation}
+%
+     Заметим, что $ q_v\left( \overline{\Lambda}^*_u, \overline{y}_u
+     \right)$~--- функция, зависящая от $y_{v^\prime}$, $v^\prime\hm\in 
+V_v^+$ .
+     
+     Обозначим набор $\{y_v, \ v\in V\}$ через $\overline{y}$. Будем 
+говорить, что набор~$\overline{y}$ положителен, если $y_v\hm\in (0,\,1]$ для 
+всех $v\in V$.
+    
+    Пусть задана последовательность $\overline{y}[n]\hm=\{y_v[n],\ v\in 
+V\}$, $n\hm\geq0$, где 
+$y_v[n+1]\hm=q_v(\overline{\Lambda}_u^*[n],\,\overline{y}_u[n])$, 
+$y_v[0]\hm=1$, $v\hm\in V$, а $\overline{\Lambda}_u^*[n]$~--- это 
+$\overline{\Lambda}_u^*$, вычисленный при $y_{v^\prime} \hm=1-
+\pi_{v^\prime}\hm= y_{v^\prime}[n]$, $v^\prime\hm\in l_v^+$, $l\in L_v$. 
+В~дальнейшем будем писать $\overline{y}[n+1]\hm< \overline{y}[n]$, если 
+при заданном $n\hm\geq 0$ выполняется неравенство $y_v[n+1]\hm< y_v[n]$ 
+для всех $v\hm\in V$.
+     
+     Введем обозначения: $\overline{a}_u =\{ a_v, v\in\Omega_u^+\}$, 
+$\overline{r}_u\hm= \{ r_v, v\hm\in \Omega_u^+\}$,
+      $
+      \overline{a}_u -\overline{1}_{v^\prime} \hm= \overline{a}_u^\prime = \left\{ 
+a^\prime_v, v\hm\in\Omega_u^+\right\}$,
+     где 
+     $$
+     a^\prime_v=\begin{cases}
+     a_v & \ \mbox{при}\ v\not=v^\prime\,;\\
+     a_v-1 & \ \mbox{при}\ v=v^\prime\,.
+     \end{cases}
+     $$
+     
+     В дальнейшем параметры $(\overline{a}_u,\overline{r}_u)$ будем 
+называть ограничениями доступа узла (СМО).
+     
+     \medskip
+     
+     \noindent
+     \textbf{Теорема.} \textit{Существует $\lim\limits_{n\rightarrow\infty} 
+\overline{y}[n]\hm=\overline{y}^0\hm\geq 0$. Система}~(\ref{e4aga}) \textit{имеет 
+положительное решение тогда и только тогда, когда 
+$\lim\limits_{n\rightarrow\infty} \overline{y}[n]\hm=\overline{y}^0\hm>0$.}
+     
+     \medskip
+     
+     \noindent
+     Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ Докажем две вспомогательные 
+леммы.
+     
+     Введем обозначения: $d_{v,\overline{a}_u}\left(\overline{a}_u, 
+\overline{\Lambda}_u^*,\overline{y}\right)$~--- среднее число $v$-пакетов в 
+узле $u\hm=v^- $ с параметрами $R_u$, $\overline{a}_u$ и $\overline{r}_u$;  
+$d_{1, v, \overline{a}_u}\left(\overline{\Lambda}_u^*, \overline{y}_u\right)$~--- среднее 
+число $v$-пакетов в блоке~1 узла $u\hm=v^-$ с параметрами $R_u$, 
+$\overline{a}_u$ и $\overline{r}_u$; $d_{2,v,\overline{a}_u}\left( 
+\overline{\Lambda}_u^*, \overline{y}_u\right)$~--- среднее число $v$-пакетов в 
+блоках~2 и~3 узла $u\hm=v^-$ с параметрами $R_u$, $\overline{a}_u$ и
+$\overline{r}_u$, $v\hm\in \Omega_u^+$.
+     
+     Из~(\ref{e1aga}) следуют равенства:
+     \begin{multline}
+     d_{v,\overline{a}_u} \left( \overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right) ={}\\
+{}= \fr{1}{g(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u)}\sum\limits_{m_v=1}^{r_v+a_v}\! m_v
+\sum\limits_{\overline{k}\in A^{0,m_v}_{R_u, \overline{r}_u, 
+\overline{a}_u} } \!\!\!\!\!\!\! p_{\overline{k}_u}(\overline{\Lambda}_u^*,\overline{y}_u)\,; 
+     \label{e5aga}
+     \end{multline}
+     
+     \vspace*{-9pt}
+     
+     \noindent
+     \begin{multline*}
+     d_{1,v,\overline{a}_u} \left( \overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right) ={}\\
+{}= \fr{1}{g(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u)}\sum\limits_{m_v=1}^{r_v+a_v} m_v
+\sum\limits_{\overline{k}\in A^{1,m_v}_{R_u, \overline{r}_u, 
+\overline{a}_u} }  p_{\overline{k}_u}(\overline{\Lambda}_u^*,\overline{y}_u)\,; 
+\end{multline*}
+
+\vspace*{-9pt}
+
+\noindent
+\begin{multline*}
+     d_{2,v, \overline{a}_u} \left( \overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right) ={}\\
+\hspace*{-3pt}{}= \fr{1}{g(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u)}\sum\limits_{m_v=1}^{r_v+a_v} m_v
+\!\!\!\!\!\!\!\!\sum\limits_{\overline{k}\in A^{2,m_v}_{R_u, \overline{r}_u, 
+\overline{a}_u} } \!\!\!\!\!\!\!\!\! p_{\overline{k}_u}(\overline{\Lambda}_u^*,\overline{y}_u)\,, 
+\ v\in\Omega_u^+.
+\end{multline*}
+     
+     \noindent
+     \textbf{Лемма 1.} \textit{В~рамках модели, задаваемой 
+соотношениями}~(\ref{e1aga}), \textit{для любого узла~$u$ и любой линии 
+$v\hm\in\Omega_u^+$ справедливы неравенства:}
+     \begin{gather*}
+     d_{1,v^\prime, \overline{a}_{u}}\left( \overline{a}_u, 
+\overline{\Lambda}_u^*, \overline{y}_u\right) -d_{1,v^\prime, \overline{a}_u-
+1_v}\left( \overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right)>0\,;\\
+ d_{2,v^\prime, \overline{a}_{u}}\left( \overline{a}_u, 
+\overline{\Lambda}_u^*, \overline{y}_u\right) -d_{2,v^\prime, \overline{a}_u-
+1_v}\left( \overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right)>0\,,\\
+\hspace*{35mm}v^\prime\in \Omega_u^+\,.
+     \end{gather*}
+     
+     \noindent
+     Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ Пусть заданы~$R_u$~--- емкость 
+накопителя; $(\overline{a}_u\hm-1_v,\,\overline{r}_u)$~--- параметры 
+ограничения доступа узла~$u$. Назовем систему с ограничениями доступа 
+$(\overline{a}_u\hm-1_v,\,\overline{r}_u)$ первой СМО, с ограничениями 
+$(\overline{a}_u, \overline{r}_u)$~--- второй СМО и обозначим их 
+соответственно через СМО$_1$ и СМО$_2$. Выделим в СМО$_2$ 
+произвольное место хранения и обозначим его номером 
+$\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u$. Остальные места пронумеруем 
+числами $1,\ldots , \sum\limits_{v\in\Omega_u^+}a_v\hm+R_u\hm-1$, и пусть 
+пакету присваивается номер соответствующего места, где он хранится. 
+Место с номером  $\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u$ могут 
+занимать только $v$-пакеты. 
+     
+     Рассмотрим СМО$_3$, отличающуюся от СМО$_2$ только дисциплиной 
+обслуживания пакетов, и назовем ее третьей СМО. В~СМО$_3$ $v$-пакеты в 
+первую очередь занимают место с номером 
+$\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u$, если оно свободно, иначе 
+занимают свободные места с номерами $1,\ldots , 
+\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u\hm-1$. Номер пакета за время 
+пребывания в системе не меняется. Пакеты с номерами $1,\ldots , 
+\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u\hm-1$ обслуживаются в каждом из 
+блоков~1, 2, 3 в порядке поступления, и $v$-пакеты с этими номерами имеют 
+абсолютный приоритет с дообслуживанием перед $v$-пакетом с номером 
+$\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u$. Заметим, что $v$-пакет с 
+номером $\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u$ поступает на 
+обслуживание в соответствующий блок только при отсутствии в очереди к 
+этому блоку $v$-пакетов с меньшими номерами (в блоках~2 и~3 очереди 
+всегда отсутствуют).
+     
+     Очевидно, интенсивность потока пакетов каж\-до\-го типа, допускаемых в 
+накопитель СМО$_3$, больше, чем в СМО$_1$ (так как занятие $v$-пакетами 
+места с номером $\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u$ разгружает 
+места с меньшими номерами и не влияет на процессы обслуживания пакетов 
+с этими номерами). А~поскольку времена обслуживания в блоках и 
+вероятность повтора пакета каждого типа в СМО$_3$ и СМО$_1$ одинаковы, 
+то интенсивность выходного потока каждого из блоков~1, 2, 3 в СМО$_3$ 
+больше, чем интенсивность выходного потока соответствующего блока 
+СМО$_1$. Следовательно, среднее число пакетов каж\-до\-го типа в каждом из 
+блоков~1, 2, 3 в СМО$_3$ больше, чем в соответствующем блоке СМО$_1$.
+     
+     Отметим следующие свойства СМО$_3$:
+     \begin{itemize}
+\item времена обслуживания пакетов каждого типа с номерами из интервала 
+$1,\ldots , \sum\limits_{v\in\Omega_u^+}a_v\hm+R_u\hm-1$ не зависят от их 
+номеров;
+\item время дообслуживания $v$-пакета с номером 
+$\sum\limits_{v\in\Omega_u^+}a_v\hm+R_u$ и время обслуживания 
+любого вновь поступившего $v$-пакета~--- одинаково распределенные 
+случайные величины.
+     \end{itemize}
+     
+     Из указанных свойств следует, что если в СМО$_3$ в момент 
+поступления нового $v$-пакета менять мес\-то его хранения и место хранения 
+обслуживаемого или ожидающего обслуживания в этот момент 
+неприоритетного $v$-пакета, то процессы изменения числа пакетов каждого 
+типа в системе не изменятся. Таким образом, процессы изменения числа 
+пакетов каждого типа в СМО$_3$ и СМО$_2$ совпадают. Следовательно, 
+среднее число пакетов каждого типа в каждом из блоков~1, 2, 3 в СМО$_2$ 
+больше, чем в соответствующем блоке СМО$_1$. 
+     
+     \medskip
+     
+     \noindent
+     \textbf{Лемма 2.}\ \textit{Для всех $v\in V$ функции 
+$q_v(\overline{\Lambda}_u^*,\,\overline{y}_u)$ монотонно возрастают по} 
+$y_{v^\prime}$, $v^\prime\hm\in V_v^+$.
+     
+     \medskip
+     
+     \noindent
+     Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ Покажем, что для любых~$v$ и 
+$v^\prime\hm\in V_v^+$ справедливо неравенство:
+     \begin{equation}
+     \fr{dq_v\left(\overline{\Lambda}_u^*, \overline{y}_u 
+\right)}{dy_{v^\prime}}>0\,,
+     \label{e6aga}
+     \end{equation}
+где $d$~--- знак производной. 
+     
+     Фиксируем произвольные линии $v\hm\in V$, $v^\prime\hm\in V_v^+$. 
+Приведем ряд вспомогательных равенств~(\ref{e7aga})--(\ref{e12aga}). Как 
+следует из определения схемы SMQMA, накопитель системы доступен для 
+     $v$-пакета тогда и только тогда, когда 
+$k_v\hm+k_v^\prime\hm+k_v^{\prime\prime}\hm<a_v$, или одновременно 
+выполняются условия 
+$$
+a_v\leq  k_v+k_v^\prime+k_v^{\prime\prime}\leq a_v+r_v-1
+$$ 
+и 
+\begin{multline*}
+\sum\limits_{\substack{{v^\prime\in\Omega_u^+,}\\{v^\prime\not=v}}}\left( 
+k_{v^\prime}+k^\prime_{v^\prime}+k_{v^\prime}^{\prime\prime} - 
+a_{v^\prime}\right)^+\leq{}\\
+{}\leq R_u-1-
+\left(k_v+k_v^\prime+k_v^{\prime\prime}-a_v\right)^+\,.
+\end{multline*}
+     
+     Тогда, использовав обозначения из~(\ref{e1aga}), получим:
+     \begin{multline}
+     q_v\left(\overline{\Lambda}^*_u, \overline{y}_u\right) = 
+\left(\sum\limits_{m_v=0}^{a_v-1}\sum\limits_{\overline{k}_u \in 
+A^{0,m_v}_{R_u, \overline{r}_u, \overline{a}_u}}\!\!\!\!\!\! p\left(\overline{c}_u, 
+\overline{k}_u, \overline{\rho}_u^*\right)+{}\right.\\
+\left.\hspace*{-5pt}{}+\sum\limits_{m_v=a_v}^{r_v+a_v-1} 
+\sum\limits_{\overline{k}_u \in A^{0,m_v}_{R_u-1, \overline{r}_u, 
+\overline{a}_u}}\!\!\!\!\!\!\!\!\!\!\!
+p\left(\overline{c}_u, \overline{k}_u, \overline{\rho}_u^*\right)\right)\!\!\Bigg/\!\!
+g(\overline{a}_u, \overline{\Lambda}^*_u, \overline{y}_u)={}\\
+{}=
+\fr{g(\overline{a}_u-\overline{1}_v,\overline{\Lambda}_u^*, 
+\overline{y}_u)}{ g\left(\overline{a}_u, \overline{\Lambda}^*_u, \overline{y}_u\right) }\,.
+     \label{e7aga}
+     \end{multline}
+      
+%\noindent
+     Для производной функции $q_v(\overline{\Lambda}_u^*, 
+\overline{y}_u)$ по $y_{v^\prime}$, $v^\prime\hm\in V_u^+$, 
+использовав~(\ref{e7aga}), получим:
+     \begin{multline}
+     \fr{\partial q_v\left(\overline{\Lambda}_u^*, \overline{y}_u\right)}{\partial 
+y_{v^\prime}}=\fr{1}{g^2(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u)}\times{}\\
+     {}\times \left[ g\left(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right)\fr{\partial g \left(\overline{a}_u-
+\overline{1}_v,\overline{\Lambda}_u,\overline{y}_u\right)}{\partial y_{v^\prime}}-{}\right.\\
+\left.{}-
+g\left(\overline{a}_u-\overline{1}_v, \overline{\Lambda}_u^*, 
+\overline{y}_u\right)\fr{\partial g \left(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right)}{\partial y_{v^\prime}}\right]\,.
+     \label{e8aga}
+     \end{multline}
+     
+     Из определения $g(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u)$, данного в~(\ref{e1aga}), получим:
+%\end{multicols}
+
+ %    \hrule
+
+  \noindent
+  \begin{multline}
+     \fr{\partial g \left(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right)}{\partial y_{v^\prime}}={}\\
+\hspace*{-3pt}{}=
+\fr{\partial}{\partial 
+y_{v^\prime}}\hspace*{-3pt}\sum\limits_{\overline{k} \in A_{R_u, \overline{r}_u, 
+\overline{a}_u}} \prod\limits_{v^{\prime\prime\prime}\in\Omega_u^+ } 
+\!\!\!\!\!z_{ v^{\prime\prime\prime}}\!\left(k_{ v^{\prime\prime\prime}}, 
+s_{v^{\prime\prime\prime}}, \overline{\Lambda}_{ v^{\prime\prime\prime}}^*, 
+\overline{y}_{ v^{\prime\prime\prime +}}\right)={}\\
+     {}=\!\!\!\!\!\sum\limits_{v^{\prime\prime}\in \Omega_u^+} 
+     \sum\limits_{\overline{k}\in A_{R_u, \overline{r}_u, \overline{a}_u}} 
+     \prod\limits_{\substack{{v^{\prime\prime\prime}\in \Omega_u^+,}\\ 
+{v^{\prime\prime\prime}\not=v^{\prime\prime}}}}
+\!\!\!\!\!     z_{ v^{\prime\prime\prime}}\!\left(
+     k_{ v^{\prime\prime\prime}},
+     s_{ v^{\prime\prime\prime}}, \overline{\Lambda}^*_{ 
+v^{\prime\prime\prime}}, \overline{y}_{ v^{\prime\prime\prime +}}\right)\times{}\\
+{}\times
+     \fr{\partial z_{ v^{\prime\prime}}
+     \left(k_{v^{\prime\prime}}, s_{ v^{\prime\prime}}, \overline{\Lambda}_{ 
+v^{\prime\prime}}, \overline{y}_{v^{\prime\prime +}}\right)} 
+     {\partial y_{v^\prime}}\,.
+     \label{e9aga}
+     \end{multline}
+     
+%     \hrule
+     
+%     \begin{multicols}{2}
+   
+\noindent
+   Для производной функции 
+   $z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+\overline{\Lambda}^*_{ v^{\prime\prime}}, \overline{y}_{ v^{\prime\prime 
++}}\right)$ из~(\ref{e1aga}) следует:
+\begin{equation}
+\left.
+   \begin{array}{rl}
+   \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ 
+v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, \overline{y}_{ 
+v^{\prime\prime +}}\right)}{\partial \rho^*_{ v^{\prime\prime}}}&={}\\[9pt]
+&\hspace*{-35mm}{}=
+   \fr{k_{ v^{\prime\prime}}}{\rho^*_{ v^{\prime\prime}}}\,z_{ 
+v^{\prime\prime}} \left(k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+\overline{\Lambda}_{ v^{\prime\prime}}^*, \overline{y}_{ v^{\prime\prime +}}\right)\,;
+ \\[9pt]
+   \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ 
+v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, \overline{y}_{ 
+v^{\prime\prime +}}\right)}{\partial \rho_{ v^{\prime\prime}}^{\prime *}}&={}\\[9pt]
+&\hspace*{-35mm}{}=
+   \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, 
+   s_{ v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, 
+\overline{y}_{ v^{\prime\prime +}}\right)}{\partial \rho_{ 
+v^{\prime\prime}}^{\prime\prime *}}={}\\[9pt]
+&{}\hspace*{-40mm}=\fr{s_{ v^{\prime\prime}}}
+   {\rho^{\prime *}_{ v^{\prime\prime}}+\rho_{ 
+v^{\prime\prime}}^{\prime\prime *}}\,z_{v^{\prime\prime}}\left(
+   k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+   \overline{\Lambda}_{v^{\prime\prime}}^*, \overline{y}_{ v^{\prime\prime +}}\right)\,.
+   \end{array}
+   \right\}
+   \label{e10aga}
+   \end{equation}
+   
+\noindent
+Для производной функции $z_{ v^{\prime\prime}} \left(k_{ v^{\prime\prime}}, 
+s_{ v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, 
+\overline{y}_{ v^{\prime\prime +}}\right)$ по $y_{v^\prime}$ при $v^\prime\not= 
+v^{\prime\prime}$, $v^\prime\not\in \Omega^+_{v^{\prime\prime +}}$ получим:
+   \begin{multline}
+      \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ 
+v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, \overline{y}_{ 
+v^{\prime\prime +}}\right)}{\partial y_{v^\prime}}={}\\
+{}=
+   \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ 
+v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, \overline{y}_{ 
+v^{\prime\prime +}}\right)}{\partial \rho^*_{ v^{\prime\prime}}}\,\fr{\partial \rho^*_{ 
+v^{\prime\prime}}}{\partial y_{v^\prime}}+{}\\
+{}+
+   \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}},s_{ 
+v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}},
+\overline{y}_{v^{\prime\prime +}}\right)}{\partial \rho^{\prime *}_{ v^{\prime\prime}}}\,
+   \fr{\partial \rho_{ v^{\prime\prime}}^{\prime *}}{\partial 
+y_{v^\prime}}+{}\\
+   {}+ \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ 
+v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, 
+\overline{y}_{v^{\prime\prime +}}\right)}{\partial \rho_{ v^{\prime\prime}}^{\prime\prime *}}\,
+\fr{\partial \rho_{v^{\prime\prime}}^{\prime\prime *}}{\partial y_{v^\prime}}\,.
+   \label{e11aga}
+   \end{multline}
+     
+     Из определений переменных $\rho_v^*$, $\rho_v^{\prime *}$ и
+$\rho_v^{\prime\prime *}$ в~(\ref{e1aga}) и из~(\ref{e3aga}) следуют 
+формулы:
+     \begin{equation}
+     \left.
+    \hspace*{-2mm} \begin{array}{rl}
+     \rho^*_{v^{\prime\prime}} &=\fr{1}{y_{ v^{\prime\prime}}}\sum\limits_{l 
+\in L_{ v^{\prime\prime}} } \lambda(l) \fr{1}{1-\beta_{ v^{\prime\prime}}(l)}\times{}\\[9pt]
+&\hspace*{7mm}{}\times
+     \prod\limits_{\substack{{v^\prime\in l_{ v^{\prime\prime}}^+,}\\{v^\prime 
+\not=v^{\prime\prime}}}}\left( 
+     \fr{1-\alpha_{v^\prime}}{1-
+\beta_{v^\prime}(l)}+\alpha_{v^\prime}\right)\,;\\[9pt]
+ \rho^{\prime *}_{ v^{\prime\prime}}&=\fr{\alpha_{ 
+v^{\prime\prime}}\tau_{ v^{\prime\prime}}}{y_{ 
+v^{\prime\prime}}}\sum\limits_{l\in L_{ v^{\prime\prime}}}
+     \lambda(l) \left( \fr{1}{1-\beta_{ v^{\prime\prime}}(l)}-1\right) \times{}\\[9pt]
+&    \hspace*{7mm}{}\times
+\prod\limits_{\substack{{v^\prime\in l^+_{ v^{\prime\prime}},}\\ 
+{v^\prime\not=v^{\prime\prime}}}}
+     \left(\fr{1-\alpha_{v^\prime}}{1-
+\beta_{v^\prime}(l)}+\alpha_{v^\prime}\right)\,;\\[9pt]
+     \rho_{ v^{\prime\prime}}^{\prime\prime *} &= \fr{\alpha_{ 
+v^{\prime\prime}} \overline{t}_{ v^{\prime\prime}}}
+{y_{v^{\prime\prime}}}\sum\limits_{l\in L_{ v^{\prime\prime}}}\lambda(l) \times{}\\[9pt]
+&\hspace*{7mm}{}\times
+\prod\limits_{\substack{{v^\prime\in l^+_{ v^{\prime\prime}},}\\ {v^\prime\not=v^{\prime\prime}}}}\left( \fr{1-\alpha_{v^\prime}}{1-
+\beta_{v^\prime}(l)}+\alpha_{v^\prime}\right)\,.
+\end{array}
+\right\}
+\label{e12aga}
+\end{equation}
+   
+   Фиксируем $v^{\prime\prime}\hm\in\Omega_u^+$. Рассмотрим случай 
+$v^\prime\not= v^{\prime\prime}$, $v^\prime\not\in\Omega^+_{v^{\prime\prime +}}$. 
+Обозначим для $l\hm\in L_v$ через $j(v,l)$ номер линии~$v$ на пути~$l$. 
+Взяв производную переменных $\rho_v^*$, $\rho_v^{\prime *}$ и
+$\rho_v^{\prime\prime *}$ по~$y_{v^\prime}$, из~(\ref{e1aga}) и~(\ref{e3aga}) 
+получим: 
+   \begin{multline*}
+   \fr{\partial \rho^*_{ v^{\prime\prime}}}{\partial 
+y_{v^\prime}}=\sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}} 
+\fr{\partial \Lambda^*_{ v^{\prime\prime}}(l)}
+   {\mu_{ v^{\prime\prime}}\left(1-\alpha_{ v^{\prime\prime}}\beta_{ 
+v^{\prime\prime}}(l)\right)\partial y_{v^\prime}}={}\\
+   {}=
+   -\fr{1}{\mu_{ v^{\prime\prime}} y_{v^\prime}} 
+   \sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}} 
+   \fr{1}{1-\alpha_{ v^{\prime\prime}} \beta_{v^{\prime\prime}}(l)}\times{}\\
+{}\times\fr{1-\alpha_{v_{j(v^\prime,l)-1}}}{1-
+\alpha_{v_{j(v^\prime,l)-1}}\beta_{ v_{j(v^\prime,l)-1}}}\, 
+\fr{\lambda(l)}{y_{ 
+v_{j(v^\prime,l)}}} \times{}\\
+{}\times
+\prod\limits_{r=i(v^{\prime\prime},l)}^{S_l}\left(
+   \fr{1-\alpha_{v_r(l)}}{1-\beta_{v_r(l)}}+\alpha_{v_r(l)}\right)={}\\
+   {}=
+    -\fr{1}{\mu_{v^{\prime\prime}}y_{v^\prime}}
+\sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}}
+      \fr{1}{1-\alpha_{ v^{\prime\prime}}\beta_{ v^{\prime\prime}}(l)}\times{}\\
+      {}\times
+      \fr{1-\alpha_{ v_{j(v^\prime,l)-1}}}{1-\alpha_{ v_{j(v^\prime,l)-
+1}}\beta_{v_{j(v^\prime,l)-1}}}\, \Lambda^*_{ v^{\prime\prime}}(l);
+      \end{multline*}
+      
+      \vspace*{-9pt}
+      
+      \noindent
+  \begin{multline*}
+      \fr{\partial \rho_{v^{\prime\prime}}^{\prime *} }
+      {\partial y_{v^\prime}} =-\fr{\alpha_{v^{\prime\prime}}\tau_{v^{\prime\prime}}}{y_{v^\prime}}
+      \sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}}  
+      \fr{\beta_{ v^{\prime\prime}}(l)}{1-\alpha_{ v^{\prime\prime}}\beta_{ 
+v^{\prime\prime}}(l)}\times{}\\
+{}\times
+      \fr{1-\alpha_{ v_{j(v^\prime,l)-1}}}{1-\alpha_{ v_{j(v^\prime,l)-
+1}}\beta_{v_{j(v^\prime,l)-1}}}\, \Lambda^*_{ v^{\prime\prime}}(l)\,;
+     \end{multline*}
+     
+     \vspace*{-12pt}
+     
+     \noindent
+  \begin{multline*}
+      \fr{\partial \rho_{}^{\prime\prime *}}{\partial y_{v^{\prime\prime}}}=
+      -\fr{\alpha_{ v^{\prime\prime}} \overline{t}_{ v^{\prime\prime}}}{y_{v^\prime}}
+      \sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}}
+      \fr{1-\beta_{ v^{\prime\prime}}(l)}
+      {1-\alpha_{ v^{\prime\prime}}\beta_{v^{\prime\prime}}(l)}\times{}\\
+      {}\times
+      \fr{1-\alpha_{v_{j(v^\prime,l)-1}}}{1-\alpha_{ v_{j(v^\prime,l)-1}}\beta_{ 
+v_{j(v^\prime,l)-1}}}\, \Lambda^*_{ v^{\prime\prime}}(l)\,.
+     \end{multline*}
+   
+   Подставив правые части последних трех равенств в~(\ref{e11aga}), в 
+случае $v^\prime\not= v^{\prime\prime}$, $v^\prime\not\in 
+\Omega^+_{v^{\prime\prime +}}$ получим:
+   \begin{multline}
+   \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ 
+v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, \overline{y}_{ 
+v^{\prime\prime +}}\right)}{\partial y_{v^\prime}}={}\\
+{}=-
+\fr{k_{v^{\prime\prime}}}{y_{v^\prime}}\,z_{v^{\prime\prime}}
+\left(k_{v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+\overline{\Lambda}_{v^{\prime\prime}}^*, \overline{y}_{ v^{\prime\prime +}}\right)
+   \fr{1}{\mu_{ v^{\prime\prime}}\rho^*_{ v^{\prime\prime}}}\times{}\\
+   \hspace*{-1pt}{}\times\hspace*{-5.5pt}
+   \sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}} \hspace*{-4pt}
+   \fr{1}{1-\alpha_{ v^{\prime\prime}}\beta_{v^{\prime\prime}}(l)}\,
+   \fr{1-\alpha_{v_{j(v^\prime,l)-1}}}{1-\alpha_{ v_{j(v^\prime,l)-1}}
+   \beta_{{v_{j(v^\prime,l)-1}}}}\,\Lambda^*_{ v^{\prime\prime}}(l)-{}\\
+   {}-
+   \fr{s_{ v^{\prime\prime}}}{y_{v^\prime}}\,z_{v^{\prime\prime}}
+   \left(k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, \overline{\Lambda}^*_{ 
+v^{\prime\prime}}, \overline{y}_{ v^{\prime\prime +}}\right)\times{}\\
+   {}\times \fr{\alpha_{ v^{\prime\prime}}}{\rho_{ v^{\prime\prime}}^{\prime 
+*}+\rho_{ v^{\prime\prime}}^{\prime\prime *}}
+   \sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}}
+   \fr{\tau_{ v^{\prime\prime}} \beta_{ v^{\prime\prime}}(l) +\overline{t}_{ 
+v^{\prime\prime}} \left(1-\beta_{ v^{\prime\prime}}(l)\right)}{1-
+\alpha_{v^{\prime\prime}}\beta_{ v^{\prime\prime}}(l)}\times{}\\
+{}\times
+\fr{1- \alpha_{v_{j(v^\prime,l)-1}}}{1-\alpha_{v_{j(v^\prime,l)-
+1}}\beta_{v_{j(v^\prime,l)-1}}}\,\Lambda^*_{ v^{\prime\prime}}(l)\,.
+   \label{e13aga}
+   \end{multline}
+   
+   \end{multicols}
+   
+   Для случая $v^\prime=v^{\prime\prime}$ из~(\ref{e12aga}) получим:
+   $$
+   \fr{\partial \rho_{v^{\prime\prime}}^*}{\partial y_{v^{\prime\prime}}}=-
+\fr{\rho^*_{v^{\prime\prime}}}{y_{v^{\prime\prime}}}\,;\qquad 
+   \fr{\partial \rho_{v^{\prime\prime}}^{\prime *}}
+   {\partial y_{v^{\prime\prime}}}=
+   -\fr{\rho^{\prime *}_{v^{\prime\prime}}}{y_{v^{\prime\prime}}}\,;\qquad
+   \fr{\partial \rho^{\prime\prime *}_{v^{\prime\prime}}}
+   {\partial y_{v^{\prime\prime}}}=-
+   \fr{\rho_{v^{\prime\prime}}^{\prime\prime *}}
+   {y_{v^{\prime\prime}}}\,.
+   $$
+   
+   Подставив правые части последних равенств и равенств~(\ref{e10aga}) 
+в~(\ref{e11aga}), для случая $v^\prime=v^{\prime\prime}$ получим:
+   \begin{equation}
+   \fr{dz_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+\overline{\Lambda}^*_{ v^{\prime\prime}}, \overline{y}_{ v^{\prime\prime 
++}}\right)}{\partial y_{ v^{\prime\prime}}}=
+-\fr{\left(k_{ v^{\prime\prime}}+s_{ 
+v^{\prime\prime}}\right)z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, 
+s_{v^{\prime\prime}}, \overline{\Lambda}^*_{ v^{\prime\prime}}, \overline{y}_{ 
+v^{\prime\prime +}}\right)}{y_{ v^{\prime\prime}}}\,.
+   \label{e14aga}
+   \end{equation}
+   
+   Пусть $v^\prime\in\Omega^+_{v^{\prime\prime *}}$. Заменив переменные 
+$\rho^*_{ v^{\prime\prime}}$, $\rho^{\prime *}_{ v^{\prime\prime}}$ и
+$\rho^{\prime\prime *}_{ v^{\prime\prime}}$ соответственно правыми 
+частями равенств~(\ref{e12aga}), для производной по 
+$v^\prime\hm\in \Omega^+_{v^{\prime\prime +}}$ функции 
+   $z_{ v^{\prime\prime}} \left(k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+\Lambda^*_{ v^{\prime\prime}}, \overline{y}_{ v^{\prime\prime +}}\right)$ для 
+случая $v^\prime\hm\in \Omega^+_{v^{\prime\prime +}}$ получим:
+   \begin{multline}
+   \fr{\partial z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, 
+   s_{v^{\prime\prime}}, 
+   \Lambda^*_{ v^{\prime\prime}}, \overline{y}_{ v^{\prime\prime 
++}}\right)}{\partial y_{v^\prime}}= %{}\\{}=
+z_{v^{\prime\prime}}\left( k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+\Lambda^*_{ v^{\prime\prime}}, \overline{y}_{ v^{\prime\prime +}}\right)
+   \left[ \fr{s_{ v^{\prime\prime}}}{\rho_{ v^{\prime\prime}}^{\prime 
+*}+\rho_{ v^{\prime\prime}}^{\prime\prime *}}\,
+   \fr{\partial \rho_{ v^{\prime\prime}}^{\prime *}}{\partial y_{v^\prime}}+
+   \fr{k_{ v^{\prime\prime}}}{\rho^*_{ v^{\prime\prime}}}\,
+   \fr{\partial \rho^*_{ v^{\prime\prime}}}{\partial y_{v^\prime}}\right]={}\\
+   {}= -z_{ v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+\Lambda^*_{ v^{\prime\prime}}, \overline{y}_{ v^{\prime\prime +}}\right)\left[
+\vphantom{   \sum\limits_{\substack{{l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}} }
+   \fr{s_{ v^{\prime\prime}}}{\rho_{ v^{\prime\prime}}^{\prime *}+\rho_{ 
+v^{\prime\prime}}^{\prime\prime *}}\,
+   \fr{\alpha_{ v^{\prime\prime}}\tau_{ v^{\prime\prime}}}
+   {y_{v^\prime}\{ 1-\alpha_{ v^{\prime\prime}}[1-\left(1-\delta_{ 
+v^{\prime\prime}}\right)y_{v^\prime}]\}}
+\sum\limits_{\substack{{l\in L_{v^{\prime\prime}},}\\{v^\prime \in l}}}
+\Lambda^*_{v^{\prime\prime}(l)}(l)-{}\right.\\
+\left.   {}- \fr{k_{ v^{\prime\prime}}}{\rho^*_{ v^{\prime\prime}}}\,
+   \fr{1}{\mu_{ v^{\prime\prime}} y_{v^\prime}\{1-\alpha_{ 
+v^{\prime\prime}}[1-\left(1-\delta_{ v^{\prime\prime}}\right)y_{v^\prime}]\}}
+   \sum\limits_{\substack{{l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}} 
+\Lambda^*_{v^{\prime\prime}(l)}(l)\right]={}\\
+   {}= -z_{v^{\prime\prime}}\left(k_{ v^{\prime\prime}}, s_{ v^{\prime\prime}}, 
+\Lambda^*_{ v^{\prime\prime}}, \overline{y}_{ v^{\prime\prime +}}\right)
+   \fr{1}{y_{v^\prime}\{ 1-\alpha_{ v^{\prime\prime}}[1-\left(1-\delta_{ 
+v^{\prime\prime}}\right)y_{v^\prime}]\}} 
+   \sum\limits_{\substack{{l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}}
+   \Lambda^*_{v^{\prime\prime}(l)}(l)\left[
+   \fr{k_{ v^{\prime\prime}}}{\mu_{ v^{\prime\prime}} 
+   \rho_{v^{\prime\prime}}^*}+\fr{\alpha_{ v^{\prime\prime}}\tau_{ v^{\prime\prime}} 
+s_{ v^{\prime\prime}}}{\rho_{ v^{\prime\prime}}^{\prime *}+
+\rho_{ v^{\prime\prime}}^{\prime\prime *}}\right]\,.
+\label{e15aga}
+   \end{multline}
+   
+   Подставив правые части равенств (\ref{e13aga})--(\ref{e15aga}) 
+в~(\ref{e9aga}) и использовав обозначения~(\ref{e5aga}), для произвольных 
+$v^\prime\hm\in V_v^+$ получим:
+   \begin{equation}
+   \fr{\partial g \left(\overline{a}_u, \overline{\Lambda}_u^*, 
+\overline{y}_u\right)}{\partial y_{v^\prime}} =-g\left(\overline{a}_u, 
+\overline{\Lambda}_u^*, \overline{y}_u\right)\sum\limits_{v^{\prime\prime} \in \Omega_u^+} W_{\overline{a}_u, 
+v^{\prime\prime},v^\prime}\,,
+   \label{e16aga}
+   \end{equation}
+где 
+\begin{align*}
+W_{\overline{a}_u, v^{\prime\prime}, v^\prime}&=
+\begin{cases}
+\fr{1}{y_{v^\prime}} \left[ \Psi_{1, v^{\prime\prime}, v^\prime} d_{1, 
+v^{\prime\prime}, \overline{a}_u}\left(\overline{\Lambda}_u^*, \overline{y}_u\right) 
++\Psi_{2, v^{\prime\prime}, v^\prime} d_{2, v^{\prime\prime}, \overline{a}_u}
+\left(\overline{\Lambda}_u^*, \overline{y}_u\right) \right]\,,\ &\hspace*{-20mm} 
+v^\prime \not= v^{\prime\prime}\,, v^\prime\not\in\Omega^+_{v^{\prime\prime +}}\,;\\
+\fr{1}{y_{v^{\prime\prime\prime}}}\, d_{v^{\prime\prime}, \overline{a}_u} 
+\left(\overline{\Lambda}_u^*, \overline{y}_u\right)\,,\ & \hspace*{-20mm}v^\prime=v^{\prime\prime}\,;\\
+\fr{1}{y_{v^\prime}}\left[ 
+\fr{d_{1, v^{\prime\prime}, \overline{a}_u}\left(\overline{\Lambda}^*_u, 
+\overline{y}_u\right)}{\mu_{ v^{\prime\prime}} \rho_{ v^{\prime\prime}}^*}+
+\fr{\alpha_{ v^{\prime\prime}}\tau_{ v^{\prime\prime}} d_{2, v^{\prime\prime}, 
+\overline{a}_u}\left(\overline{\Lambda}_u^*, \overline{y}_u\right)}
+{\rho_{ v^{\prime\prime}}^{\prime *}+\rho_{ v^{\prime\prime}}^{\prime\prime 
+*}}\right] \fr{\sum\limits_{l\in L_{ v^{\prime\prime}}, v^\prime \in l} 
+\Lambda^*_{v^{\prime\prime}(l)}(l)}{1-\alpha_{ v^{\prime\prime}}[1-\left(1-
+\delta_{ v^{\prime\prime}}\right)y_{v^\prime}]}\,,\ & v^\prime\in\Omega^+_{v^{\prime\prime +}}\,;
+\end{cases}
+\\
+   \Psi_{1, v^{\prime\prime}, v^\prime} &=\fr{1}{\mu_{ v^{\prime\prime}} 
+\rho^*_{ v^{\prime\prime}}}  %\times{}\\{}\times
+\sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}} \fr{1}{1-\alpha_{ v^{\prime\prime}}\beta_{ 
+v^{\prime\prime}}(l)}\,
+   \fr{1-\alpha_{v_{j(v^\prime,l)-1}}}{1-\alpha_{ v_{j(v^\prime,l)-1}}
+   \beta_{ v_{j(v^\prime,l)-1}}}\, \Lambda^*_{ v^{\prime\prime}}(l)\,;
+\\
+   \Psi_{2, v^{\prime\prime}, v^\prime} &=
+   \fr{\alpha_{ v^{\prime\prime}}}{\rho_{ v^{\prime\prime}}^{\prime 
+*}+\rho_{ v^{\prime\prime}}^{\prime\prime *}} %\times{}\\
+%{}\times
+   \sum\limits_{\substack{{l:\ l\in L_{ v^{\prime\prime}},}\\ {v^\prime\in l}}} 
+   \fr{\tau_{ v^{\prime\prime}}\beta_{ v^{\prime\prime}}(l)+\overline{t}_{ 
+v^{\prime\prime}}\left(1-\beta_{ v^{\prime\prime}}(l)\right)}
+   {1-\alpha_{ v^{\prime\prime}}\beta_{ v^{\prime\prime}}(l)}
+   \fr{1-\alpha_{v_{j(v^\prime,l)-1}}}{1-\alpha_{ v_{j(v^\prime,l)-1}}
+   \beta_{ v_{j(v^\prime,l)-1}}}\, \Lambda^*_{ v^{\prime\prime}}(l)\,.
+   \end{align*}
+   
+   
+   Подставив~(\ref{e16aga}) в~(\ref{e8aga}), получим:
+   \begin{equation}
+   \fr{\partial q_v\left(\overline{\Lambda}_u^*, \overline{y}_u\right)}{\partial 
+y_{v^\prime}}=q_v\left( \overline{\Lambda}_u^*, 
+\overline{y}_u\right)\sum\limits_{ v^{\prime\prime}\in \Omega_u^+} 
+D_{\overline{a}_u, v^{\prime\prime}, v^\prime}\,,
+   \label{e17aga}
+   \end{equation}
+   
+%      \hrule
+   
+   \begin{multicols}{2}
+   
+   \noindent
+   где 
+   \begin{multline*}
+   D_{\overline{a}_u, v^{\prime\prime}, v^\prime}={}\\
+   {}=
+   \begin{cases}
+   \fr{1}{y_{v^\prime}}\left[ \Psi_{1, v^{\prime\prime}, v^\prime}
+   \Delta_{1, v^{\prime\prime}, \overline{a}_u} \left(\overline{\Lambda}_u^*, 
+\overline{y}_u\right)+{}\right.\\
+   \hspace*{8mm}\left.{}+\Psi_{2, v^{\prime\prime}, v^\prime}
+   \Delta_{2, v^{\prime\prime}, \overline{a}_u} \left(\overline{\Lambda}_u^*, 
+\overline{y}_u\right)\right]\,, \\
+ \hspace*{33mm}v^\prime\not= v^{\prime\prime}\,,\enskip 
+v^\prime\not=\Omega^+_{v^{\prime\prime +}}\,;\\
+   \fr{1}{y_{v^\prime}}\,\Delta_{v^{\prime\prime}, 
+\overline{a}_u}\left(\overline{\Lambda}_u^*, \overline{y}_u\right)\,,\hspace*{19mm} 
+v^\prime=v^{\prime\prime}\,;\\
+   \fr{1}{y_{v^\prime}}\left[ 
+   \fr{\Delta_{1,v^{\prime\prime}, 
+\overline{a}_u}\left(\overline{\Lambda}_u^*,\overline{y}_u\right)}
+   {\mu_{v^{\prime\prime}} \rho_{ v^{\prime\prime}}^*}+{}\right.\\
+\left.   \hspace*{5mm}{}+
+   \fr{\alpha_{ v^{\prime\prime}}\tau_{ v^{\prime\prime}}\Delta_{2, 
+v^{\prime\prime}, \overline{a}_u}\left(\overline{\Lambda}_u^*, \overline{y}_u\right)}
+   {\rho_{ v^{\prime\prime}}^{\prime *}+\rho_{ v^{\prime\prime}}^{\prime\prime *}}\right] \times{}\\
+   {}\hspace*{3mm}\times
+   \fr{\sum\limits_{l\in L_{ v^{\prime\prime}}, v^\prime\in l} 
+\Lambda^*_{v^{\prime\prime}(l)}(l)}
+   {1-\alpha_{ v^{\prime\prime}}[1-\left(1-\delta_{ 
+v^{\prime\prime}}\right)y_{v^\prime}]}\,,\ v^\prime \in \Omega^+_{v^{\prime\prime 
++}}\,;
+   \end{cases}
+   \end{multline*}
+   
+   \vspace*{-12pt}
+   
+   \noindent
+\begin{multline*}
+   \Delta_{v^{\prime\prime},\overline{a}_u}\left(\overline{\Lambda}^*_u, 
+\overline{y}_u\right) = d_{ v^{\prime\prime},\overline{a}_u} 
+\left(\overline{\Lambda}_u^*, \overline{y}_u\right) -{}\\
+{}-d_{ v^{\prime\prime},\overline{a}_u-
+1_v}\left(\overline{\Lambda}_u^*, \overline{y}_u\right)\,;
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+   \Delta_{1,v^{\prime\prime},\overline{a}_u}\left(\overline{\Lambda}^*_u, 
+\overline{y}_u\right) =
+   d_{1, v^{\prime\prime},\overline{a}_u} \left(\overline{\Lambda}_u^*, 
+\overline{y}_u\right) -{}\\
+{}-d_{1, v^{\prime\prime},\overline{a}_u-
+1_v}\left(\overline{\Lambda}_u^*, \overline{y}_u\right)\,;
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+   \Delta_{2,v^{\prime\prime},\overline{a}_u}\left(\overline{\Lambda}^*_u, 
+\overline{y}_u\right) =
+   d_{2, v^{\prime\prime},\overline{a}_u} \left(\overline{\Lambda}_u^*, 
+\overline{y}_u\right) -{}\\
+{}-d_{2, v^{\prime\prime},\overline{a}_u-
+1_v}\left(\overline{\Lambda}_u^*, \overline{y}_u\right)\,.
+\end{multline*}
+   
+   Отметим, что согласно лемме~1 
+   $\Delta_{v^{\prime\prime}, \overline{a}_u} \left(\overline{\Lambda}_u^*, 
+\overline{y}_u\right)\hm>0$,  $\Delta_{1, v^{\prime\prime}, \overline{a}_u} 
+\left(\overline{\Lambda}_u^*, \overline{y}_u\right)\hm>0$ и $\Delta_{2, 
+v^{\prime\prime}, \overline{a}_u} \left(\overline{\Lambda}_u^*, 
+\overline{y}_u\right)\hm>0$. Тогда, так как $0\hm\leq \alpha_{v^{\prime\prime}}\leq 1$,
+$0\hm\leq \delta_{v^{\prime\prime}}\hm<1$, $0\hm< y_{ v^{\prime\prime}}\hm\leq 1$, 
+$\Psi_{1, v^{\prime\prime}, v^\prime}\hm>0$, $\Psi_{2, v^{\prime\prime}, 
+v^\prime}\hm>0$  для всех $v^\prime,  v^{\prime\prime}\hm\in V$ таких, что 
+$v^\prime, v^{\prime\prime}\hm\in l$ хотя бы для одного $l\hm\in L$, 
+из~(\ref{e17aga}) получим неравенство~(\ref{e6aga}) и, следовательно, 
+доказательство леммы~2.
+     
+     Продолжим доказательство теоремы. Из определения 
+последовательности $\overline{y}[n]$, $n\hm\geq 0$, и из леммы~2 следует, 
+что $\overline{y}[n+1]\hm< \overline{y}[n]$, $n\hm\geq 0$. Существование 
+предела последовательности $\overline{y}[n]$, $n\hm\geq 0$,\linebreak
+ следует 
+непосредственно из свойства мо\-но\-тон\-ности и ограниченности этой 
+последовательности. 
+     
+     Пусть $\overline{y}^\prime =\{ y_v^\prime \in (0,\,1],\ v\in V\}$~--- 
+положительное решение системы уравнений~(\ref{e4aga}), 
+$\overline{\Lambda}_u^\prime$~--- значение 
+переменной~$\overline{\Lambda}^*_u$ при~$\overline{y}^\prime$, 
+$\overline{\Lambda}_u^*[n]$~--- значение 
+переменной~$\overline{\Lambda}^*_u$ при $\overline{y}_u[n]$. Очевидно, что
+$y_v^\prime \hm<1$, $v\in V$, так как $q_v\left(\overline{\Lambda}_u^*, 
+\overline{y}_u\right)\hm<1$ при любых положительных~$\overline{y}$. Пусть 
+ $\overline{y}[n]\hm>\overline{y}^\prime$  для 
+некоторого $n\hm\geq 0$
+(существование такого $n$ вытекает из того, что $y_v[0]\hm=1$ и 
+$y_v^\prime \hm<1$, $v\hm\in V$). Тогда, как следует из леммы~2, 
+$y_v[n+1]\hm=q_v\left(\overline{\Lambda}^*_u[n], 
+\overline{y}_u[n]\right)\hm > q_v\left(\overline{\Lambda}_u^\prime, 
+\overline{y}_u^\prime\right)\hm=y_v^\prime$
+для 
+каждой линии $v\hm\in V$, т.\,е.\ последовательность 
+$\overline{y}[n]$, $n\hm\geq 0$, ограничена снизу 
+величиной~$\overline{y}^\prime$. Значит, существуют пределы 
+$\lim\limits_{n\rightarrow\infty} y_v[n]\hm=y_v^0\hm\geq y_v^\prime\hm>0$ 
+для всех $v\hm\in V$. Так как $\overline{\Lambda}^*_u$, 
+$q_v\left(\overline{\Lambda}_u^*, \overline{y}_u\right)$, $v\hm\in V$,~--- непрерывные 
+по~$y_{v^\prime}$, $v^\prime\hm\in V^+_v$, функции, то можно написать: 
+$$
+\lim\limits_{n\rightarrow\infty} q_v \left(\overline{\Lambda}_u^*[n], 
+\overline{y}_u[n]\right)= q_v\left(\overline{\Lambda}_u^0, 
+\overline{y}_u^0\right)=y_v^0\,,
+$$ 
+где 
+$\overline{\Lambda}_u^0$~--- значение 
+переменной~$\overline{\Lambda}_u^*$ при~$y^0_{v^\prime}$, 
+$v^\prime\hm\in V_v^+$, $u\hm=v^-$, т.\,е.\ $\overline{y}^0\hm=\{ y^0_v\in 
+(0,1),\ v\in V\}$~--- положительное решение системы 
+уравнений~(\ref{e4aga}). 
+     
+     Пусть теперь $\lim\limits_{n\rightarrow\infty} y_v[n]\hm=y_v^0\hm>0$ 
+для всех $v\hm\in V$. Тогда, так как $\overline{\Lambda}_u^*$, 
+$q_v\left(\overline{\Lambda}_u^*, \overline{y}_u\right)$, $v\hm\in V$,~--- непрерывные по 
+$y_{v^\prime}$, $v^\prime\hm\in V_v^+$, функции, выполняется 
+$q_v\left(\overline{\Lambda}_u^0, \overline{y}_u^0\right)\hm=y_v^0$, т.\,е.\ 
+$\overline{y}^0\hm=\{ y_v^0\in (0,\,1), \ v\hm\in V\}$~--- положительное 
+решение системы уравнений~(\ref{e4aga}). 
+     \medskip
+     
+     \noindent
+     \textbf{Следствие~1.} Система~(\ref{e4aga}) не имеет положительного 
+решения тогда и только тогда, когда $\lim\limits_{n\rightarrow\infty} 
+y_v[n]\hm=y_v^*\hm=0$ хотя бы для одного $v\hm\in V$.
+     
+     \smallskip
+     
+     \noindent
+     \textbf{Следствие~2.} Первичные потоки~--- реали\-зу\-емые (т.\,е.\ 
+интенсивности первичных входных потоков равны интенсивностям 
+соответствующих выходных потоков) тогда и только тогда, когда 
+$\lim\limits_{n\rightarrow\infty} y_v[n]\hm=y_v^*\hm>0$ для всех $v\hm\in V$. 
+     
+\section{Алгоритм и~пример расчета}
+     
+     Предлагается следующий алгоритм вычисления загруженности 
+линий~$\overline{\rho}_v^*$, $v\hm\in V$, и вероятностей блокировки 
+пакетов~$\pi_v$, $v\hm\in V$, основывающийся на изложенном выше методе 
+поиска решения системы~(\ref{e4aga}) (методе простой итерации). Для 
+обозначения значений, вычисляемых на $k$-м шаге алгоритма, к 
+обозначениям соответствующих параметров приписывается знак~[$k$]. 
+     
+     \textbf{Шаг 1.} \textit{Инициализация}. Используя рекуррентную 
+формулу (см.~(\ref{e3aga})) 
+$$
+\Lambda^*_v[0](l)\hm=\lambda(l)\prod\limits_{v^\prime\in l_v^+} \fr{1-
+\alpha_{ v^\prime }\delta_{ v^\prime }}{1-\delta_{v^\prime}},\ l\in L_v, \
+v\hm\in V\,,
+$$
+и соответствующие формулы из~(\ref{e1aga}), вычислить 
+начальные значения параметров $\overline{\rho}_v^*$, $y_v$, $v\in V$: 
+$\overline{\rho}_v^*[0]\hm= \left(\rho_v^* [0], \rho_v^{\prime *}[0], 
+\rho_v^{\prime\prime *}[0]\right)$, $y_v[0]\hm=1$.
+
+\begin{figure*} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=148.986mm
+ \epsfbox{aga-2.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Структура сети}
+\vspace*{12pt}
+\end{figure*}
+     
+     Положить $k=1$.
+     
+     \pagebreak
+     
+
+     \textbf{Шаг $k$ ($k\geq 1$)}.
+     \begin{enumerate}[1.]
+\item \textit{Вычисление вероятностей блокировки}. Используя значения 
+параметров $\overline{\rho}_v^*[k-1]$, $v\in V$, с\linebreak
+помощью 
+соответствующих формул из~(\ref{e1aga}) вы\-чис\-лить $y_v[k]\hm=1-\pi_v[k]$, 
+$v\hm\in V$. При этом используется метод свертки Базена, позволяющий 
+производить рекуррентные вычисления~\cite{3aga}.
+\item \textit{Проверка условий останова алгоритма}. Если хотя бы для одной 
+$v\hm\in V$ выполняется условие $y_v[k]\hm <\varepsilon$, где 
+$\varepsilon\hm >0$~--- значение требуемой точности результатов, алгоритм 
+завершает работу, выдав сообщение: <<Первичные потоки заявок не 
+реализуемы>>. 
+\item \textit{Вычисление значения параметра} 
+$\overline{\rho}_v^*[k]$ с по\-мощью рекуррентной формулы~(\ref{e3aga}) и 
+формул~(\ref{e1aga}), подставив $y_v\hm=y_v[k]$, $v\hm\in V$.
+\item \textit{Проверка условий останова алгоритма}. Если хотя бы для одной 
+$v\in V$ выполняется условие
+$$
+\fr{\left\vert \rho^*_v[k]-\rho^*_v[k-1]\right\vert}{\rho_v^*[k]}>\varepsilon\,,
+$$
+то перейти к шагу $k+1$, положив~$k$ равным $k+1$, иначе алгоритм 
+завершает работу.
+     \end{enumerate}
+     
+     По завершении алгоритма либо выявляется, что система уравнений не 
+имеет положительного решения (первичные потоки не реализуемы), либо 
+вычисляются загруженности линий $\overline{\rho}_v^*\hm=\left(\rho^*_v, 
+\rho_v^{\prime *}, \rho_v^{\prime\prime *}\right)$ и вероятности блокировки узлов 
+для $v$-пакетов~$\pi_v$, $v\hm\in V$. Далее с помощью известных формул 
+(в том числе формулы~(\ref{e1aga})) и полученных значений параметров 
+$\lambda^*_v(l)$, $\overline{\rho}_v^*$, $\pi_v$, $l\hm\in L$, $v\hm\in V$, 
+могут быть вычислены другие характеристики сети: среднее значение 
+задержки пакета в узлах, среднее число повторов пакета в узлах и из 
+источника, среднее число пакетов, находящихся в сети и в ожидании повтора 
+из источника, и~др. 
+
+\columnbreak
+   
+   Число арифметических операций, выпол\-ня\-емых на одном шаге алгоритма 
+при использовании метода свертки Базена, имеет порядок
+   $$
+   Q=K\sum\limits_{u\in U}\left\vert \Omega_u^+\right\vert 
+R_u+\sum\limits_{l\in L}\left\vert l\right\vert\,,
+   $$
+где $K$~--- константа; $\vert l\vert$~--- длина пути~$l$.
+     
+     В качестве примера использования разработанного алгоритма 
+проведены расчеты характеристик сети с четырьмя узлами, топология 
+которой задается графом, показанным на рис.~2. Фиксированы следующие 
+входные данные: 
+
+\noindent
+     \begin{gather*}
+     U=\{ 1,2,3,4\}\,;\ V=\{ 1,2,3,4,5,6\}\,;\\
+      L=\{ l_1, \ldots ,l_{12}\}\,,\\ 
+l_1=\{1\},\ l_2=\{1,2\}\,,\ 
+l_3=\{1,2,3\}\,,\\
+     l_4=\{2\}\,, \ l_5=\{2,3\}\,, l_6=\{3\}\,,\ l_7=\{4\}\,,\\
+      l_8=\{4,5\}\,,\
+     l_9=\{4,5,6\}\,,\ l_{10}=\{5\}\,,\ l_{11}=\{5,6\}\,,\\
+     l_{12}=\{6\}\,;\ R_1=R_4=20\,;\ R_2=R_3=25\,;\\
+      r_1=r_4=20\,;\ 
+r_2=r_3=r_5=r_6=25\,;\\
+     a_i=0\,;\ \mu_i=1\,; \ \delta_i=0{,}001\,;\ c_i=c_j\,;\\ 
+     \alpha_i=\alpha_j\,,\enskip 
+i,j=1, \ldots , 10\,;\\
+\lambda(l_i)=\lambda(l_j)\,,  i,j=1, \ldots , 12\,.
+     \end{gather*}
+     
+     
+
+     
+     
+     При расчете $\overline{N}_{\mathrm{повт}}$~--- среднего суммарного 
+числа пакетов, ожидающих повтора, использована формула:
+     $$
+     \overline{N}_{\mathrm{повт}}= \sum\limits_{l\in L}
+     \left( \Lambda^*_{v_1(l)}(l)-\lambda(l)\right) t_{\mathrm{повт}}(l)\,,
+     $$
+     где $v_{1(l)}$~--- первая линия в составе пути~$l$, 
+$t_{\mathrm{повт}}(l)$~--- интервал времени ожидания пакетом 
+потока~$\lambda(l)$ повторного поступления с момента отказа в передаче, 
+$t_{\mathrm{повт}}(l)\hm=10$.
+
+
+
+     В таблице и на рис.~3 приведены зависимости от интенсивности 
+первичных потоков $\lambda(l)$, $l\hm\in L$, среднего числа пакетов в сети 
+(ряды с нечетными номерами), суммарного среднего числа пакетов в сети и в 
+источниках в ожидании повтора (ряды с четными номерами). 
+
+\end{multicols}
+
+%\begin{table*}
+\noindent
+{\small
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\multicolumn{13}{c}{Зависимости среднего числа пакетов от интенсивности первичных потоков}\\[6pt]
+\hline
+Номер &\multicolumn{1}{c|}{\raisebox{-6pt}[0pt][0pt]{$a_i$}}&
+\multicolumn{1}{c|}{\raisebox{-6pt}[0pt][0pt]{$c_i$}}&\multicolumn{10}{c|}{$\lambda(l)$}\\
+\cline{4-13}
+ряда&&&0,05&0,25&0,45&0,65&0,85&1,05&1,25&1,45&1,6&1,8\\
+\hline
+1&1&8&4,805&24,024&43,277&65,483&$\infty$&$\infty$&$\infty$&$\infty$&$\infty$&$\infty$\\
+2&1&8&4,805&24,024&43,327&70,086&$\infty$&$\infty$&$\infty$&$\infty$&$\infty$&$\infty$\\
+3&0&8&1,602&\hphantom{9}8,008&14,414&20,828&27,283&33,889&40,917&49,126&59,651&$\infty$\\
+4&0&8&1,612&\hphantom{9}8,058&14,504&20,958&27,455&34,15&41,813&54,234&88,368&$\infty$\\
+5&0&8&1,603&\hphantom{9}7,999&14,411&20,814&27,325&33,995&40,964&49,215&$\infty$&$\infty$\\
+6&0&8&1,619&\hphantom{9}8,083&14,566&21,044&27,632&34,465&42,6\hphantom{99}&55,123&$\infty$&$\infty$\\
+7&1&1&3,408&17,13\hphantom{9}&31,036&45,252&61,404&$\infty$&$\infty$&$\infty$&$\infty$&$\infty$\\
+8&1&1&3,408&17,130&31,037&45,390&64,929&$\infty$&$\infty$&$\infty$&$\infty$&$\infty$\\
+9&0&1&0,204&\hphantom{9}1,114&\hphantom{9}2,207&\hphantom{9}3,546&\hphantom{9}5,229&7,42&10,415&14,83\hphantom{9}&22,201&34,70561\\
+10\hphantom{9}&0&1&0,214&\hphantom{9}1,164&\hphantom{9}2,297&\hphantom{9}3,676&5,4\hphantom{9}&7,63&10,669&15,214&23,873&46,70904\\
+\hline
+\end{tabular}
+\end{center}
+
+}     
+
+\vspace*{12pt}
+
+    \begin{multicols}{2}
+
+
+\noindent
+\begin{center} %fig3
+\vspace*{1pt}
+\mbox{%
+   \epsfxsize=77.808mm
+ \epsfbox{aga-3.eps}
+}
+\end{center}
+%\begin{center}
+\vspace*{3pt}
+{{\figurename~3}\ \ \small{Зависимости среднего числа пакетов от интенсивности 
+первичных потоков: 1--10~--- ряды~1--10}}
+%\end{center}
+\vspace*{10pt}
+
+%\smallskip
+\addtocounter{figure}{1}
+
+     
+
+
+\section{Заключение}
+
+     Заметим, что погрешность, которую вносит алгоритм, ограничивается 
+заранее задаваемой малой величиной $\varepsilon \hm>0$ и достоверность 
+результатов работы алгоритма зависит только от адекватности модели сети. 
+Результаты исследований разветвленных сетей показывают, что 
+использованные выше в модели упрощающие предположения о 
+пуассоновских входных потоках и независимости времен обслуживания в 
+узлах на практике подтверждаются (см., например,~[3, 4, 7--10]). 
+Отметим также, что анализ результатов вычислительных 
+экспериментов, проведенных с использованием имитационных моделей, 
+показал слабую зависимость вероятностей блокировки узлов, среднего числа 
+пакетов в сети и среднего числа пакетов, ожидающих повтора в источниках, 
+от вида функции распределения интервала ожидания повторной передачи 
+пакета из источника. 
+
+Открытым остается вопрос единственности решения системы 
+уравнений~(\ref{e4aga}). Для некоторых частных случаев вопрос решается 
+положительно. Приведем доказательство единственности решения 
+системы~(\ref{e4aga}) для следующего частного случая сети. Рассмотрим 
+сеть, в которой передача пакетов по каждой линии происходит только в 
+одном на\-прав\-ле\-нии и используется полнодоступная схема управ\-ле\-ния 
+буферами (CS). Заметим, что для схемы CS при всех $v\hm\in\Omega_u^+$ 
+верны $\pi_v\hm=\pi_u$, $\pi_u$~--- вероятность блокировки узла~$u$
+
+Пусть $M_0$~--- множество абонентских узлов-сто\-ков 
+(або\-нен\-тов-адре\-са\-тов): $M_i$~--- множество узлов связи $u^\prime 
+\not\in \mathop{\cup}\limits_{j=1}^{i-1} M_j$ таких, что для всех 
+$v\hm\in\Omega^+_{u^\prime}$ выполняется $v^+\hm\in \mathop{\cup}\limits_{j=1}^{i-
+1} M_j$, $i\hm=1, \ldots , l_{\max}$, где $l_{\max} \hm=\max\limits_{l\in L} S_l$~--- 
+длина максимально протяженного пути на множестве~$L$. Легко показать, 
+что $M_1, \ldots ,M_{l_{\max}}$ обладают свойствами:
+\begin{enumerate}[(1)]
+\item
+   $M_i\frown M_j =\Theta$, $i,j\hm=1, \ldots , l_{\max}$, $i\not=j$;
+   \item 
+   $\mathop{\cup}\limits_{j=1}^{l_{\max}} M_j=U$;
+   \item  максимальная длина пути (число линий, входящих в путь), 
+соединяющего $u\hm\in M_i$ с або\-нен\-том-ад\-ре\-са\-том, равна~$i$; 
+   \item  множество $\mathop{\cup}\limits_{j=1}^{i-1} M_j$~--- множество всех 
+различных узлов, следующих после любого $u\hm\in M_i$ по направлению к 
+адресату на путях, содержащих~$u$.
+     \end{enumerate}
+     
+     Пусть $u\in M_1$. Тогда для любой $v\hm\in \Omega_u^+$ верно 
+$\Lambda_v^*=\sum\limits_{l\in L_v} \lambda(l)/y_u$ (так как $v$~--- 
+абонентская линия). Так как при схеме CS для всех $v\hm\in \Omega_u^+$ 
+выполняется $y_v\hm=y_u\hm=1-\pi_u$, то уравнение~(\ref{e4aga}) 
+эквивалентно уравнению: 
+     \begin{equation}
+     y_u=q_u\left(\overline{\Lambda}^*_u, y_u\right)
+     \label{e18aga}
+     \end{equation}
+и имеет одну неизвестную переменную~$y_u$. 
+     
+     Введем параметры:
+     \begin{gather*}
+     \Lambda_v(l) =\lambda(l)\prod\limits_{v^\prime\in l_v} \left( \fr{1-
+\alpha_{v^\prime}}{1-\beta_{v^\prime}}+\alpha_{v^\prime}\right)\,;\\
+     \Lambda_v=\sum\limits_{l\in L_v}(l)\,;\enskip 
+\delta_v^\prime=\alpha_v\beta_v\,;\\
+     t_v^\prime=\fr{\overline{t}_v\alpha_v\left(1-\beta_v\right)}{1-\alpha_v\beta_v}\,,\ 
+\enskip v\in\Omega_u^+\,.
+     \end{gather*}
+Как видим, введенные параметры для любого $u\hm\in M_i$ однозначно 
+определяются переменными~$y_{u^\prime}$, $u^\prime\hm\in 
+\mathop{\cup}\limits_{j=1}^{i-1} M_j$ (следует из приведенных выше выражений для 
+введенных параметров и из свойства 4 множеств~$M_j$).
+     
+     Заметим, что~(\ref{e18aga}) сводится к уравнению~(3.3) из 
+работы~\cite{9aga}, если в нем положить $\alpha_v\hm=1$, 
+$\lambda_v\hm=\Lambda_v$, $\delta_v\hm=\delta_v^\prime$, 
+$t_v\hm=t_v^\prime$, $v\hm\in\Omega_u^+$. Тогда из теоремы~1 
+работы~\cite{9aga} следует, что в рассматриваемом случае 
+уравнение~(\ref{e18aga}) имеет единственное решение.
+     
+     Фиксируем некоторое $i\hm\in \overline{2,\ldots ,l_{\max}}$. 
+Предположим, что для всех $u^\prime\in \mathop{\cup}\limits_{j=1}^{i-1} M_j$ 
+существуют единственные решения~$y_{u^\prime}$ уравнений~(\ref{e4aga}) 
+(выражения правых частей этих уравнений не включают переменные 
+$y_u\not\in \mathop{\cup}\limits_{j=1}^{i-1} M_j$). Тогда для случая любого $u\hm\in M_i$ 
+аналогично случаю $u\hm\in M_1$ получим уравнение вида~(\ref{e18aga}), 
+которое имеет единственное решение. Следовательно, для любого $u\hm\in 
+\mathop{\cup}\limits_{j=1}^{l_{\max}} M_j$ уравнение~(\ref{e18aga}) имеет 
+единственное решение. Так как $\mathop{\cup}\limits_{j=1}^{l_{\max}} M_j\hm=U$ 
+(см.\ выше свойство~2 множеств $M_j$), то получаем доказательство 
+единственности решения системы~(\ref{e4aga}) для рассматриваемого 
+случая. 
+     
+     Отметим также следующие свойства разработанного алгоритма: 
+     \begin{itemize}
+\item при реализуемых первичных потоках последовательность 
+$\overline{y}[n]$, $n\hm\geq 0$, сходится к положительному решению 
+системы уравнений~(\ref{e4aga});
+\item если последовательность $\overline{y}[n]$, $n\hm\geq 0$, сходится к 
+неположительному вектору~$\overline{y}^0$, то входные первичные 
+потоки не реализуемы в сети;
+\item при реализуемых первичных потоках алгоритм вычисляет 
+вероятности блокировки узлов и загруженности узлов и каналов связи с 
+приемлемой для предварительного анализа сети точ\-ностью 
+(относительная погрешность вероятности блокировки $\sim 0{,}1$) .
+   \end{itemize}
+   
+   Алгоритм рекомендуется использовать для оценки эффективности 
+решений по выбору канальных и вычислительных ресурсов, схем управления 
+буферами и маршрутизации на этапе предварительного проектирования 
+современных сетей коммутации пакетов. 
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+     
+\bibitem{1aga}
+\Au{Kamoun F., Kleinrock L.}
+Analysis of shared finite storage in a computer networks node environment under 
+general traffic conditions~// IEEE Trans. on Communications, 1980. Vol.~28. 
+No.\,7. P.~992--1003.
+
+\bibitem{2aga}
+\Au{Ефимушкин В.\,А., Ледовских Т.\,В., Салькова~М.\,В.}
+Механизмы управления трафиком в сетях АТМ~// Электросвязь, 2003. №\,1. 
+С.~39--41.
+
+\bibitem{3aga}
+\Au{Башарин Г.\,П., Бочаров П.\,П., Коган~Я.\,А.}
+Анализ очередей в вычислительных сетях.~--- М.: Наука, 1989.
+
+\bibitem{4aga}
+\Au{Вишневский В.\,М.}
+Теоретические основы проектирования компьютерных сетей.~--- М.: 
+Техносфера, 2003.
+
+\bibitem{5aga}
+\Au{Simon S.\,L.}
+Store-and-forward buffer requirements in a packet switching network~// IEEE 
+Trans. on Communications, 1976. Vol.~COM-24. No.\,4. P.~394--403.
+
+\bibitem{6aga}
+\Au{Kelly F.\,P.}
+Blocking probabilities in large circuit-switched networks~// Advances Appl. 
+Probability, 1986. Vol.~18. P.~473--505.
+
+\bibitem{8aga} %7
+\Au{Агаларов Я.\,М.}
+Приближенный метод вычисления характеристик узла 
+телекоммуникационной сети с повторными передачами~// Информатика и её 
+применения, 2009. Т.~3. Вып.~2. С.~2--10.
+
+\bibitem{7aga} %8
+\Au{Степанов С.\,Н.}
+Основы телетрафика мультисервисных сетей.~--- М.: Эко-Трендз, 2010. 
+
+
+\bibitem{10aga}
+\Au{Agalarov Y.}
+Algorithm of nodes load estimation in the network with repetitions from source 
+and static buffer management scheme~// 2010 Congress (International) on Ultra 
+Modern Telecommunications and Control Systems (ICUMT) Proceedings.~--- 
+M., 2010. P.~1073--1077.
+
+\label{end\stat}
+
+\bibitem{9aga} %10
+\Au{Агаларов Я.\,М.}
+Об одном численном методе вычисления стационарных характеристик узла 
+коммутации с повторными передачами~// Автоматика и телемеханика, 2011. 
+№\,1. С.~95--106.
+ \end{thebibliography}
+}
+}
+
+
+\end{multicols}
+       

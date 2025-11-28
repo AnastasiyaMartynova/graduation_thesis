@@ -1,0 +1,995 @@
+
+%\definecolor{KwColor}{rgb}{0,0,0.6}
+%\newcommand{\vkKw}[1]{{\bf\color{KwColor} #1}}
+
+\renewcommand{\algorithmicrequire}{\rule{0pt}{2.5ex}\bf{Вход:}}
+\renewcommand{\algorithmicif}{\bf{если}}
+\renewcommand{\algorithmicthen}{\bf{то}}
+\renewcommand{\algorithmicelse}{\bf{иначе}}
+\renewcommand{\algorithmicelsif}{\algorithmicelse\ \algorithmicif}
+\renewcommand{\algorithmicendif}{\algorithmicend\ \algorithmicif}
+\renewcommand{\algorithmicfor}{\bf{для}}
+\renewcommand{\algorithmicforall}{\bf{для всех}}
+\renewcommand{\algorithmicdo}{}
+\renewcommand{\algorithmicendfor}{\algorithmicend\ \algorithmicfor}
+\renewcommand{\algorithmicwhile}{\bf{пока}}
+\renewcommand{\algorithmicendwhile}{\algorithmicend\ \algorithmicwhile}
+\renewcommand{\algorithmicloop}{\bf{цикл}}
+\renewcommand{\algorithmicendloop}{\algorithmicend\ \algorithmicloop}
+% Мои дополнительные команды для описания алгоритмов
+\newcommand{\BEGIN}{\\[1ex]\hrule\vskip 1ex}
+\newcommand{\END}{\vskip 1ex\hrule\vskip 1ex}
+\newcommand{\vkReturn}{\bf{вернуть} }
+\newcommand{\OUT}{\STATE\bf{конец}}
+\newcommand{\RET}{\STATE\vkReturn}
+\newcommand{\EXIT}{\STATE\bf{выход}}
+\newcommand{\CONTINUE}{\STATE\bf{следующий} }
+\newcommand{\IFTHEN}[1]{\STATE\algorithmicif\ #1 {\algorithmicthen}}
+\newcommand{\vkProcedure}[1]{\text{#1}\:}
+\newcommand{\vkProc}[1]{\text{#1}\:}
+\newcommand{\PROCEDURE}[1]{\medskip\STATE\bf{ПРОЦЕДУРА} \vkProcedure{#1}}
+
+\def\stat{tokmakova}
+
+\def\tit{ОЦЕНИВАНИЕ ГИПЕРПАРАМЕТРОВ ЛИНЕЙНЫХ РЕГРЕССИОННЫХ МОДЕЛЕЙ ПРИ~ОТБОРЕ
+ШУМОВЫХ~И~КОРРЕЛИРУЮЩИХ ПРИЗНАКОВ$^*$}
+
+\def\titkol{Оценивание гиперпараметров линейных регрессионных моделей при отборе
+шумовых и коррелирующих признаков}
+
+\def\autkol{А.\,А.~Токмакова, В.\,В.~Стрижов}
+
+\def\aut{А.\,А.~Токмакова$^1$, В.\,В.~Стрижов$^2$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnotetext[1]
+{Работа выполнена при поддержке РФФИ, грант № 10-07-00422.}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский физико-технический институт, aleksandra-tok@yandex.ru}
+\footnotetext[2]{Вычислительный центр Российской академии наук, strijov@ccas.ru}
+
+\vspace*{-6pt}
+
+
+\Abst{Решается задача отбора признаков при восстановлении линейной регрессии. 
+Принята гипотеза о нормальном распределении вектора зависимой переменной 
+и~параметров модели. Для оценки ковариационной матрицы параметров используется 
+аппроксимация Лапласа: логарифм функции ошибки приближается функцией плот\-ности 
+нормального распределения. Исследуется проблема присутствия в~выборке шумовых 
+и~коррелирующих признаков, так как при их наличии матрица ковариаций параметров 
+модели становится вырожденной. Предлагается алгоритм, производящий отбор информативных 
+признаков. В~вычислительном эксперименте приводятся результаты исследования 
+на~временн$\acute{\mbox{о}}$м  ряде.}
+
+\KW{байесовский вывод; ковариационная матрица; гиперпараметры модели; 
+отбор признаков; регрессия}
+
+\vskip 14pt plus 9pt minus 6pt
+
+      \thispagestyle{headings}
+
+      \begin{multicols}{2}
+
+            \label{st\stat}
+
+
+%\vspace*{-12pt}
+
+
+\section{Введение}
+
+Часто при анализе временных рядов требуется рассмотрение большого
+числа признаков.  В~связи с этим возникают проблемы, связанные с
+наличием в~выборке большого количества мультикоррелирующих признаков
+или с высокой зашумленностью выборки. В~работе выдвинута  гипотеза о
+нормальном распределении вектора зависимой переменной и~вектора
+параметров модели~\cite{strijov1, weber}. Необходимо оценить
+ковариационные матрицы этих распределений и~установить связь между
+пространством данных и~пространством параметров, что позволит
+произвести отбор шумовых и~коррелирующих признаков.
+
+Развитие методов отбора признаков имеет богатую историю. Начиная с
+1960~г.\ активно развивались шаговые методы (Stepwise
+Regression)~\cite{stepwise}. Главная идея этих методов состоит
+в~отборе признаков, вносящих наибольший вклад в~зависимую
+переменную. Вводится критерий, на~основании которого алгоритм
+добавляет или удаляет признаки. Широкое применение получили частные
+случаи шаговой регрессии~--- алгоритмы  LARS (Least Angle
+Regression)~\cite{lars} и~LASSO (Least Absolute Shrinkage and
+Selection Operator)~\cite{lasso}. 
+
+Алгоритм LARS заключается
+в~последовательном добавлении признаков. На~каж\-дом шаге веса
+признаков меняются таким образом, чтобы обеспечить наибольшую
+корреляцию восстановленного вектора зависимых переменных с вектором
+регрессионных остатков. Алгоритм позволяет сократить количество
+свободных переменных и~избежать проб\-ле\-мы неустойчивой оценки весов.
+
+Метод LASSO вводит ограничения на~норму вектора коэффициентов
+модели, что приводит к~обращению в~ноль некоторых коэффициентов
+модели. Метод приводит к~повышению устойчивости модели и позволяет
+отбирать признаки, ока\-зы\-ва\-ющие наибольшее влияние на~вектор ответов.
+
+Одной из причин возникновения задачи отбора признаков является их
+мультиколлинеарность. Первые шаги по решению этой проблемы были
+сделаны в 1963~г.\ А.\,И.~Тихоновым, который ввел понятие
+регуляризации~--- дополнительного ограничения
+на~задачу~\cite{regular}. В~работе~\cite{ridzh1} введено понятие
+регуляризации и~описан общий метод решения задач. Но поскольку
+работы Тихонова были опуб\-ли\-ко\-ва\-ны на~Западе только лишь в
+1977~г., в 1970~г.\ Hoerl и Kennard предложили метод
+гребневой регрессии~\cite{ridzh2}. В~минимизируемую функцию
+вводилось дополнительное слагаемое, что повышало устойчивость
+решения~\cite{ridzh3}, однако не~позволяло производить отбор
+признаков. 
+
+Позднее стали появляться методы, ис\-поль\-зу\-ющие качественно
+иной подход к~решению проб\-ле\-мы муль\-ти\-кол\-ли\-неар\-ности. Например,
+Belsley предложил метод для удаления признаков~\cite{belsly},
+использующий сингулярное разложение матрицы плана. Алгоритм находит
+коэффициент, характеризующий степень зависимости признаков друг от
+друга. Позднее появился метод фактора инфляции дис\-пер\-сии (Variance
+Inflation Factor)~\cite{vif}, оценивающий увеличение дисперсии
+заданного коэффициента регрессии, что свидетельствует о высокой
+корреляции данных.
+
+В данной работе для отбора признаков линейной регрессионной модели
+предлагается выполнить анализ пространства параметров. Вектор
+па\-ра\-мет\-ров рассматривается как многомерная случайная величина.
+Оценивается наиболее вероятное значение параметров. При оценке
+используется связный байесовский вывод~\cite{nabney, mackay}.
+
+Основываясь на~гипотезе о нормальном распределении параметров
+модели~\cite{weber}, оценивается ковариационная матрица
+распределения па\-ра\-мет\-ров~\cite{strijov1, strijov2}. На~ее главной
+диагонали стоят дис\-пер\-сии случайных величин, что позволяет
+установить степень значимости данного конкретного па\-ра\-мет\-ра
+в~модели. При таком подходе к~ отбору признаков не~возникает
+необходимости разбиения выборки на~обучение и~контроль. Для оценки
+ковариационной матрицы в работе используется аппроксимация
+Лапласа~\cite{laplace}. Логарифм функции ошибки приближается
+функцией плотности нормального распределения, и~появляется
+воз\-мож\-ность вы\-чис\-ле\-ния нормировочной константы.
+
+
+
+\section{Постановка задачи}
+
+Дана регрессионная выборка: 
+$D\hm=\{\mathbf{x}_i,y_i\}_{i=1}^m\hm=(X,\mathbf{y})$, 
+где~$\mathbf{x}_i \hm\in \mathbb{R}^n$, $i \hm= 1, \dots, m,$~--- 
+векторы независимой переменной, а $y_i \hm\in \mathbb{R}$, $i \hm= 1, \dots, m,$~--- 
+значения зависимой переменной. Решается задача восстановления регрессии
+\begin{equation}
+\label {eq: y}
+\mathbf{y}=\mathbf{f}(\mathbf{w}, X)\,,
+\end{equation}
+ где~$\mathbf{f}(\mathbf{w}, X)$~--- некоторая параметрическая век\-тор-функ\-ция. 
+ Пусть многомерная случайная величина~$\mathbf{y}$ имеет нормальное распределение: 
+ $$
+ \mathbf{y}\sim\mathcal{N}(\mathbf{f},\sigma^2 I_m)\,,
+ $$ 
+ где~$\mathbf{f}$~--- век\-тор-функ\-ция, $\sigma^2$~--- дисперсия распределения, 
+ $I_m$~--- единичная матрица размерности~$m$.
+
+ Требуется приблизить функцию~$\mathbf{f}(\mathbf{w}, X)$ 
+ параметрической функцией~$\widehat{\mathbf{f}}(X,\mathbf{w})$ 
+ из заданного класса~$\mathcal{F}$ (линейные функции), 
+ причем~$|\mathcal{F}|$ конечно. Отображение
+ $\mathbf{f}:\mathbb{R}^m \times \mathbb{W}^n \rightarrow \mathbb{R}^m$ будем называть 
+ моделью. Здесь~$\mathbb{R}^m$~--- пространство данных,\linebreak 
+ а~$\mathbb{W}^n \hm\subseteq \mathbb{R}^n$~--- пространство параметров. 
+ В~задаче линейной регрессии задача приближения функции~$\mathbf{f}(\mathbf{w}, X)$ 
+ эквивалентна задаче отбора приз\-наков. В~данном случае модель определяется \mbox{параметрами}, 
+ которые соответствуют множеству индексов активных признаков 
+ $\mathcal{A}\hm\subseteq \mathcal{J} = \{1,2,\ldots ,n\}$. Таким образом, при 
+ выборе модели требуется найти такое множество индексов~$\mathcal{A}^{*}$, 
+ которое бы обеспечивало минимум функции
+ $$
+ \mathcal{A}^{*}=\arg \min\limits_{\mathcal{A} 
+ \subseteq \mathcal{J}} S(\mathbf{f}_{\mathcal{A}}|\mathbf{w}^{*},D)\,,
+ $$
+ где $S(\mathbf{f}|\mathbf{w},D)$~--- функция ошибки, 
+ $\mathbf{f}_{\mathcal{A}}$~--- па\-ра\-мет\-ри\-че\-ская век\-тор-функ\-ция, вычисляемая 
+ только на множестве активных признаков, заданном индексами из множества~$\mathcal{A}$.
+ При этом параметры~$\mathbf{w}^{*}$ модели должны обеспечивать минимум функции
+ $$
+ \mathbf{w}^{*}=\arg \min \limits_{\mathbf{w}\in\mathbb{W}} 
+ S(\mathbf{w}|\mathbf{f}_{\mathcal{A}},D)\,.
+ $$
+
+\section{Вид функции ошибки}
+
+Пользуясь предположением о том, что вектор зависимой переменной~--- многомерная 
+случайная величина с нормальным распределением, запишем конкретный вид функции 
+ошибки~$S(\mathbf{w})$ для по\-став\-лен\-ной задачи.
+
+Пусть многомерная случайная величина~$\mathbf{y}$ имеет нормальное распределение. 
+Обозначим~$\beta^{-1}\hm=\sigma^{2}$. Тогда распределение зависимой переменной~$\mathbf{y}$ 
+можно представить в~виде:
+\begin{multline}
+\label {eq: NormB}
+p(\mathbf{y})={}\\
+\hspace*{-2mm}{}=\left(2\pi\beta^{-1}\right)^{-{m}/{2}}
+\exp\left(-\fr{1}{2}\left(\mathbf{y}-\mathbf{f}\right)^{\mathrm{T}}\beta 
+I(\mathbf{y}-\mathbf{f})\right).\!
+\end{multline}
+Рассмотрим функцию правдоподобия данных, которая имеет вид:
+\begin{equation}
+\label {eq: exp(-ED)}
+p(\mathbf{y}|X,\mathbf{w},\beta,\mathbf{f})\mathrel{\stackrel{\mathrm{def}}{=}}p(D|\mathbf{w},\beta,
+\mathbf{f})=\fr{\exp(-\beta E_D)}{Z_{D}\left(\beta\right)}\,.
+\end{equation}
+Здесь~$E_D$~--- функция ошибки. Из выражений~(\ref{eq: NormB}) и~(\ref{eq: exp(-ED)}) 
+определим ее как
+$$
+E_D=\fr{1}{2}\left(\mathbf{y}-\mathbf{f}\right)^{\mathrm{T}}(\mathbf{y}-\mathbf{f})\,.
+$$
+Коэффициент~$Z_D$ нормирует плотность нормального распределения и равен
+\begin{equation}
+\label {eq: ZD}
+Z_{D}(\beta)=(2\pi\beta^{-1})^{{m}/{2}}\,.
+\end{equation}
+
+Рассмотрим равенство~(\ref{eq: y}). Слева стоит многомерная случайная величина~$\mathbf{y}$, 
+име\-ющая нормальное распределение. Матрица~$X$ не является случайной величиной, 
+поэтому предположим, что~$\mathbf{w} \hm\in \mathbb{W}^n$ также является многомерной 
+случайной величиной с нормальным распределением. Параметрами этого распределения 
+будут математическое ожидание~$\mathbf{w}_0$ и матрица ковариаций~$A^{-1}$:
+\begin{equation}
+\label {eq: exp(-Ew)}
+p(\mathbf{w}|A,\mathbf{f})=\fr{\exp\left(-E_{\mathbf{w}}\right)}{Z_{\mathbf{w}}(A)}\,.
+\end{equation}
+
+Определим функцию-штраф за большое значение параметров модели для принятого 
+распределения как 
+$E_\mathbf{w}\hm=({1}/{2})\left(\mathbf{w} \hm- \mathbf{w}_0\right)^{\mathrm{T}}A(\mathbf{w} 
+\hm- \mathbf{w}_0)$. Нормирующая константа~$Z_\mathbf{w}$ в этом случае равна
+\begin{equation}
+\label {eq: Zw}
+Z_\mathbf{w}(A)=(2\pi)^{{n}/{2}}|A^{-1}|^{{1}/{2}}\,.
+\end{equation}
+Апостериорное распределение параметров модели для заданных~$A$
+и~$\beta$ имеет вид:
+\begin{align}
+\label {eq: 4p}
+p(\mathbf{w}|D,A,\beta,\mathbf{f})&=
+\fr{p(D|\mathbf{w},\beta,\mathbf{f})p(\mathbf{w}|A,\mathbf{f})}{p(D|A,\beta,\mathbf{f})}\,,
+\\
+%\label {eq: 4pE}
+\fr{p(D|\mathbf{w},\beta,\mathbf{f})p(\mathbf{w}|A,\mathbf{f})}
+{p(D|A,\beta,\mathbf{f})}&=\fr{\exp\left(-\beta E_D\right)
+\exp\left(-E_\mathbf{w}\right)}{Z_{D}
+(\beta)Z_{\mathbf{w}}(A)}={}\notag\\
+&\hspace*{5mm}{}=
+\fr{\exp\left(-\left(\beta E_D+E_\mathbf{w}\right)\right)}{Z_{D}(\beta)Z_{\mathbf{w}}(A)}\,.\notag
+\end{align}
+В выражении~(\ref{eq: 4p}) приняты следующие обозначения:
+$p(\mathbf{w}|D,A,\beta,\mathbf{f})$~--- апостериорное распределение параметров;
+$p(D|\mathbf{w},\beta,\mathbf{f})$~--- функция правдоподобия данных;
+$p(\mathbf{w}|A,\mathbf{f})$~--- априорное распределение па\-ра\-мет\-ров;
+$p(D|A,\beta,\mathbf{f})$~--- функция правдоподобия модели.
+Записывая функцию ошибки как
+\begin{multline}
+\label {eq: S(w)}
+S=E_\mathbf{w}+\beta E_D=\fr{1}{2}\left(\mathbf{w}-\mathbf{w}_0\right)^{\mathrm{T}}
+A(\mathbf{w}-\mathbf{w}_0)+{}\\
+{}+\fr{1}{2}\left(\mathbf{y}-\mathbf{f}\right)^{\mathrm{T}}
+\beta I(\mathbf{y}-\mathbf{f})\,,
+\end{multline}
+получим следующее выражение для апостериорного распределения параметров: 
+$$
+p(\mathbf{w}|D,A,\beta,\mathbf{f})=
+\fr{\exp\left(-S(\mathbf{w})\right)}{Z_S(A,\beta)}\,,
+$$ 
+где $Z_S\hm=Z_{S}(A,\beta)$~--- нормирующий коэффициент. Оценка нормировочного 
+коэффициента производится с помощью аппроксимации Лапласа.
+
+\section{Аппроксимация Лапласа}
+
+Аппроксимация Лапласа позволяет оценить нормировочный коэффициент для ненормированной 
+плот\-ности вероятности. Пусть задано ненормированное распределение~$p^{*}(\mathbf{w})$. 
+Требуется найти нормировочную константу
+$$
+Z=\int p^{*}\left(\mathbf{w}\right) d\mathbf{w}\,,
+$$
+при которой распределение $p(\mathbf{w})\hm=Z^{-1}p^{*}(\mathbf{w})$. 
+Предположим, что~$p^{*}(\mathbf{w})$ имеет максимум в точке~$\mathbf{w}_0$, т.\,е.\ 
+$$
+\left. \fr{d p(\mathbf{w})}{d w} \right|_{\mathbf{w}=\mathbf{w}_0}  = 0\,.
+$$ 
+Прологарифмируем и разложим~$p^{*}(\mathbf{w})$ по Тейлору в~окрестности~$\mathbf{w}_0$:
+\begin{multline}
+\label {eq: p(w)}
+\ln p^{*}(\mathbf{w}) = \ln p^{*}(\mathbf{w}_0) + 0 -{}\\
+{}- \fr{1}{2}\left(\mathbf{w}-
+\mathbf{w}_0\right)^{\mathrm{T}}A\left(\mathbf{w}-\mathbf{w}_0\right) + \cdots\,,
+\end{multline}
+где матрица Гессе $A\hm=[\alpha_{ij}]$ определена как
+$$
+\left. \alpha_{ij}=-\fr{\partial \ln p^{*}(\mathbf{w})}{\partial w_{i}
+\partial w_{j}} \right|_{\mathbf{w}=\mathbf{w}_0}\,,
+$$ 
+т.\,е.\ $A\hm=-\nabla\nabla \ln p^{*}(\mathbf{w})|_{\mathbf{w}\hm=\mathbf{w}_0}$, 
+где~$\nabla$~--- градиент функции.
+
+Отбрасывая все члены выше квадратичного в~разложении и~беря экспоненту обеих частей 
+выражения~(\ref{eq: p(w)}), получим:
+
+\noindent
+$$
+p^{*}(\mathbf{w})\approx p^{*}(\mathbf{w}_0)\exp \left( 
+-\fr{1}{2}\left(\mathbf{w}-\mathbf{w}_0\right)^{\mathrm{T}}
+A\left(\mathbf{w}-\mathbf{w}_0\right) \right)\,.
+$$
+Тогда нормальное распределение~$\widehat{p}(\mathbf{w})$, приближающее нормированное 
+распределение~$p(\mathbf{w})$, имеет вид:
+
+\noindent
+\begin{multline*}
+\widehat{p}(\mathbf{w}) = \mathcal{N}(\mathbf{w}_0,A^{-1}) = 
+\fr{1}{(2\pi)^{{n}/{2}}\left\vert A^{-1}\right\vert^{{1}/{2}}}\times{}\\
+{}\times
+\exp\left( -\fr{1}{2}\left(\mathbf{w}-\mathbf{w}_0\right)^{\mathrm{T}}A
+\left(\mathbf{w}-\mathbf{w}_0\right) \right)\,.
+\end{multline*}
+Следовательно, нормировочная константа имеет вид:
+
+\noindent
+\begin{equation*}
+%\label {eq: ZP}
+Z=p^{*}(\mathbf{w}_0)\fr{(2\pi)^{{n}/{2}}}{|A|^{{1}/{2}}}\,.
+\end{equation*}
+
+
+\section{Оценка ковариационных матриц}
+
+Анализируя функцию ошибки~$S(\mathbf{w})$, построим алгоритм, позволяющий 
+выявлять шумовые и~ коррелирующие признаки.
+
+Пусть нам известен локальный минимум~$S(\mathbf{w})$ и он находится
+в~точке~$\mathbf{w}_0$. Рассмотрим матрицу Гессе функции ошибок 
+$H\hm= - \nabla \nabla S(\mathbf{w})|_{\mathbf{w=w}_0}$, где $\nabla$~---
+градиент функции. При появлении в выборке шумовых или коррелирующих
+признаков происходит резкое возрастание некоторых элементов
+матрицы~$H$. Необходимо установить связь между компонентами матрицы
+Гессе и~ ковариационной матрицей параметров, для того чтобы
+произвести отбор активных параметров~$\mathcal{A}$ и повысить
+устойчивость решения.
+
+Рассмотрим ряд Тейлора второго порядка логарифма числителя~(\ref{eq: 4p}):
+
+\noindent
+\begin{equation}
+\label {eq: -S(w)}
+-S(\mathbf{w}) \approx -S(\mathbf{w}_0)-\fr{1}{2}\,\Delta\mathbf{w}^{\mathrm{T}}H\Delta\mathbf{w}\,,
+\end{equation}
+где $\Delta\mathbf{w}\hm=\mathbf{w}\hm-\mathbf{w}_0$.
+В~выражении~(\ref{eq: -S(w)}) нет сла\-га\-емо\-го первого порядка, так
+как предполагается, что точка~$\mathbf{w}_0$ доставляет локальный
+минимум функции~$S(\mathbf{w})$. Следовательно,
+$$
+\left. \fr{\partial S(\mathbf{w})}{\partial w} \right|_{\mathbf{w} = \mathbf{w}_0}  = 0\,.
+$$
+Применяя экспоненту к~обеим частям выражения~(\ref{eq: -S(w)}), получим необходимое приближение:
+\begin{multline}
+\label {eq: exp(-S(w))}
+\exp\left(-S(\mathbf{w})\right) \approx {}\\
+{}\approx\exp\left(-S(\mathbf{w}_0)\right)
+\exp\left(-\fr{1}{2}\,\Delta\mathbf{w}^{\mathrm{T}}H\Delta\mathbf{w}\right)\,.
+\end{multline}
+При полученном приближении выражение~(\ref{eq: exp(-S(w))}) будет выглядеть следующим образом:
+\begin{multline}
+\label {eq: p(w|D,A,B)}
+p(\mathbf{w}|D,A,\beta) \approx{}\\
+{}\approx \fr{\exp\left(-S(\mathbf{w}_0)\right)
+\exp\left(-({1}/{2})\Delta\mathbf{w}^{\mathrm{T}}H\Delta\mathbf{w}\right)}{Z_{S}(A,\beta)}\,,
+\end{multline}
+где~$Z_S(A,\beta)$ выступает в~роли нормировочного коэффициента
+плотности вероятностного распределения. Оценка для
+коэффициента~$Z_S$ получена с помощью аппроксимации Лапласа
+(пояснения см.\ в~гл.~4):
+\begin{equation}
+\label {eq: ZS}
+Z_S=\fr{\exp\left(-S(\mathbf{w}_0)\right)(2\pi)^{{n}/{2}}}{|H|^{{1}/{2}}}\,.
+\end{equation}
+Подставив~(\ref{eq: ZS}) в~(\ref{eq: p(w|D,A,B)}), получим оценку
+правдоподобия модели, на~основании которой будем производить отбор
+оптимальных гиперпараметров модели
+\begin{equation*}
+%\label {eq: approx}
+p(\mathbf{w}|D,A,\beta)=\fr{|H|^{{1}/{2}}\exp\left(-({1}/{2})\,\Delta\mathbf{w}^{\mathrm{T}} H 
+\Delta \mathbf{w}\right)}{(2\pi)^{{n}/{2}}}\,.
+\end{equation*}
+Выражение~(\ref{eq: p(w|D,A,B)}) определяет выбор наиболее
+правдоподобной модели. Для нахождения ги\-пер\-па\-ра\-мет\-ров воспользуемся
+принципом максимума правдоподобия~$p(D|A,\beta)$ относительно~$A$ 
+и~$\beta$. Запишем $p(D|A,\beta)$ в~следующем виде:
+\begin{equation*}
+%\label {eq: 1p(D|A,B)}
+p(D|A,\beta)=\int p(D|\mathbf{w},A,\beta)p(\mathbf{w}|A)\,d\mathbf{w}\,.
+\end{equation*}
+Используя выражения~(\ref{eq: exp(-Ew)}) и~(\ref{eq: exp(-ED)}), 
+перепишем функцию правдоподобия в~виде:
+\begin{multline}
+\label {eq: 2p(D|A,B)}
+p(D|A,\beta)={}\\
+{}=\fr{1}{Z_{\mathbf{w}}(A)}\,\fr{1}{Z_{D}(\beta)}
+\int \exp\left(-S(\mathbf{w})\right)d\mathbf{w}\,.
+\end{multline}
+Из соображений нормировки интеграл выражения~(\ref{eq: 4p}) равен единице, т.\,е.\
+$$
+\int p(\mathbf{w}|D,\beta)d\mathbf{w}=\int 
+\fr{\exp\left(-S(\mathbf{w})\right)}{Z_{S}(A,\beta)}\,d\mathbf{w}=1\,.
+$$
+Следовательно, интеграл в~правой части~(\ref{eq: 2p(D|A,B)}) в точ\-ности равен~$Z_S$. Поэтому
+\begin{multline}
+\label {eq: pdab}
+p(D|A,\beta)={}\\
+\hspace*{-3mm}{}=\fr{1}{Z_{\mathbf{w}}(A)}\,\fr{1}{Z_{D}(\beta)}
+\exp\left(-S(\mathbf{w}_0)\right)(2\pi)^{{n}/{2}}|H|^{-{1}/{2}}\,.\!
+\end{multline}
+Подставив значение~$Z_\mathbf{w}$ из~(\ref{eq: Zw}) и~$Z_D$ из~(\ref{eq: ZD}) 
+в~(\ref{eq: pdab}), получим:
+\begin{multline*}
+%\label {eq: pdabr}
+\hspace*{-2.5mm}p(D|A,\beta)=(2\pi)^{-{n}/{2}}|A^{-1}|^{-{1}/{2}}(2\pi)^{-{m}/{2}}(\beta^{-1})^{{m}/{2}} \times{}\\
+{}\times
+\exp\left(-S(\mathbf{w}_0)\right)(2\pi)^{{n}/{2}}|H|^{-{1}/{2}}\,.
+\end{multline*}
+Получим оценку логарифма правдоподобия:
+\begin{multline}
+\label {eq: lnpdabf}
+\ln p(D|A,\beta,\mathbf{f})=-\fr{1}{2}\,\ln|A^{-1}|-\fr{m}{2}\,\ln 2\pi + {}\\
+{}+
+\fr{m}{2}\,\ln\beta^{-1}-S(\mathbf{w}_0)-\fr{1}{2}\,\ln|H|\,.
+\end{multline}
+Поочередно приравнивая частные производные по~$A$ и~$\beta$ выражения~(\ref{eq: lnpdabf}) 
+к нулю, найдем максимум~(\ref{eq: lnpdabf}) по гиперпараметрам.
+
+Пусть матрица~$A$ диагональна. Введем
+обозначение~$\boldsymbol{\alpha}\hm=[\alpha_1, \ldots ,\alpha_n]^{\mathrm{T}}$ для
+вектора, состоящего из элементов диагонали матрицы~$A$. Представим
+гессиан в~виде:
+\begin{multline*}
+H=- \nabla \nabla S(\mathbf{w})=-\nabla\nabla\left(\beta E_D + E_\mathbf{w}\right)={}\\
+{}=
+-\beta\nabla\nabla E_D-\nabla\nabla E_\mathbf{w}=H_D+H_{\mathbf{w}}\,,
+\end{multline*}
+где~$H_D$ зависит от~$\beta$, а~$H_\mathbf{w}$ зависит от~$A$.
+Так как $\nabla\nabla E_{w_i}\hm=({\partial^2}/{\partial w_i}) 
+\left((1/2)\alpha_i (w_i\hm-w_{0i})^2\right)\hm=\alpha_i$, то часть гессиана~$H_\mathbf{w}$ 
+диагональна. Покажем, что при некоторых допущениях~$H_D$ также будет диагональной матрицей. 
+Для этого рассмотрим два случая:
+\begin{enumerate}[(1)]
+  \item если все признаки независимы, то матрица~$H_D$ будет диагональной, 
+  так как недиагональные элементы матрицы Гессе отражают степень зависимости 
+  измеряемых величин;
+  \item при наличии в~выборке шумовых или коррелирующих признаков будет 
+  наблюдаться возрас\-та\-ние диагональных элементов матрицы (дисперсий признаков), 
+  в сравнении с которыми недиагональными элементами можно пре\-неб\-речь; т.\,е.\ 
+  и в этом случае матрицу~$H_D$ можно считать диагональной (на диагонали~--- 
+  собственные числа).
+\end{enumerate}
+
+Итак, представим~$H_D$ в следующем виде: $H_D \hm=
+\mathrm{diag}\left(h_1, \ldots ,h_n\right).$ Для выявления связи между параметрами
+и гиперпараметрами модели рас\-смот\-рим выражение~(\ref{eq: lnpdabf}).
+Воспользуемся необходимым условием минимума и приравняем к нулю
+первые производные выражения~(\ref{eq: lnpdabf}) по~$\alpha_i$:
+\begin{equation*}
+%\label {eq: dlnp}
+\fr{1}{\alpha_i}-\left(w_{i}-w_{0}\right)^2-\fr{1}{\beta h_i+\alpha_i}=0\,.
+\end{equation*}
+
+Данное уравнение имеет два корня. Однако один из них не~имеет
+смысла, так как~$A^{-1}$~--- диагональная ковариационная
+(положительно определенная) матрица, следовательно, по критерию
+Сильвестра (симметричная квадратная матрица является положительно
+определенной тогда и~только тогда, когда все ее главные миноры
+положительны) не имеет отрицательных компонент:
+\begin{equation}
+\label {eq: alfa}
+\alpha_i=\fr{1}{2}\,\lambda_i\left(\sqrt{1+\fr{4}{(w_{i}-w_{0})^{2}\lambda_i}}-1\right)\,,
+\end{equation}
+где $\lambda_i\hm=\beta h_i.$
+
+Приравняв производную по~$\beta$ выражения~(\ref{eq: lnpdabf}), найдем оптимальное 
+значение~$\beta$:
+$$
+\fr{m}{2\beta}-E_D-\fr{1}{2\beta}\,\gamma=0\,,
+$$
+где
+$$
+\gamma=\sum\limits_{j=1}^W \fr{\lambda_j}{\lambda_j + \alpha_j}\,.
+$$
+Таким образом,
+\begin{equation}
+\label {eq: beta}
+\beta=\fr{m-\gamma}{2E_D}\,.
+\end{equation}
+
+Выражения~(\ref{eq: alfa}) и~(\ref{eq: beta}) не~позволяют явно вы\-чис\-лить 
+значения~$\boldsymbol{\alpha}$ и~$\beta$. Поэтому итерационный процесс 
+организуется следующим образом. На каж\-дом шаге вычисляем~$\mathbf{w}$ 
+(минимизируя функцию\linebreak ошибки из выражения~(\ref{eq: S(w)})), далее, 
+используя полученное приближение, находим вектор гиперпараметров~$\boldsymbol{\alpha}$, 
+затем значение гиперпараметра~$\beta$. \mbox{Процедура} продолжается до сходимости как па\-ра\-мет\-ров, 
+так и~гиперпараметров, т.\,е.\ до сходимости функции правдоподобия 
+модели~$p(D|A,\beta,\mathbf{w})$.
+
+При появлении шумовых или коррелирующих признаков происходит возрастание диагональных 
+элементов (большое значение дисперсии свидетельствует о неинформативности признака). 
+Вследствие этого недиагональные элементы становятся настолько малы, что можно считать 
+матрицу~$H_D$ диагональной. Поэтому необходимо принудительно занижать возрастающие 
+диагональные элементы, тем самым производя отсеивание шумовых и коррелирующих признаков.
+
+Ниже приведен псевдокод алгоритма оценки гиперпараметров регрессионной модели.
+
+\begin{algorithmic}
+\REQUIRE вектор зависимой переменной~$\mathbf{y}$, модель~$\text{mdl}(\mathbf{w}, X)$
+\STATE $\mathbf{w}_0=0$;
+\STATE $\mathbf{w}=0$;
+\STATE $A = \text{diag}(n,1)$;
+\STATE $\beta=1$;
+\FOR{$k=2,\dots,\mathrm{MaxIterations}$} вычислить $A, \beta, \mathbf{w}:$
+    \STATE$\mathbf{w}=\textbf{FindParameters}(S(\mathbf{w}), A, \beta, \mathbf{w}, \mathbf{w}_0, \mathbf{y});$
+    \FOR{$j=2,\dots,\mathrm{MaxIterations}$} добиться сходимости $A$ и~$\beta$ при данном векторе $\mathbf{w}$:
+            \STATE$H=\textbf{CalcHessian}(S(\mathbf{w}), A, \beta, \mathbf{w}, \mathbf{w}_0, \mathbf{y});$
+            \IF{${\max(H)}/{\min(H)}>10^6$}
+                \STATE$\mathrm{idx}\;= \text{find} (\max(H));$ \COMMENT {индекс строки/cтолбца (диагональный элемент) с max элементом}
+                \STATE занулить строку и~столбец Гессиана, содержащие максимальный элемент;
+            \ENDIF
+            \EXIT ;
+            \STATE$\lambda=\beta*\text{diag}(H);$
+            \STATE$A=\fr{1}{2}\,\lambda(\sqrt{1+\fr{4}{(\mathbf{w}-\mathbf{w}_0)^{2}\lambda}}-1);$
+            \IF {$\mathrm{idx}\;\neq 0$}
+                \STATE занулить соответствующие диагональные элементы матрицы $A$ (необходимо для сходимости гиперпараметра $\alpha$);
+            \ENDIF
+            \EXIT ;
+            \STATE$\gamma=\sum \fr{\lambda_j}{\lambda_j + \alpha_j};$
+            \STATE$\mathbf{f}=\text{mdl}(\mathbf{w},X);$
+            \STATE$E_D=\fr{1}{2}(\mathbf{y}-\mathbf{f})^{\mathrm{T}}(\mathbf{y}-\mathbf{f});$
+            \STATE$\beta = \fr{(m - \gamma)}{2 E_D};$
+            \IF {$\sum (\alpha_k - \alpha_{k-1})^2 < \mathrm{Convergency}$ и $(\beta_k-\beta_{k-1})^2 < \mathrm{Convergency}$;}
+                \STATE {закончить выполнение цикла на~текущей итерации;}
+            \ENDIF
+            \EXIT ;
+            \IF {$j=\mathrm{MaxIterations}$}
+                \STATE {вывести сообщение о величине ошибки и~закончить выполнение программы;}
+            \ENDIF
+            \EXIT;
+    \ENDFOR
+    \IF {$\sum (w_k-w_{k-1})^2 < \mathrm{Convergency}$}
+        \STATE {закончить выполнение программы;}
+    \ENDIF
+\ENDFOR
+\OUT
+\end{algorithmic}
+
+\vspace*{-12pt}
+
+\begin{algorithmic}
+    \PROCEDURE {\textbf{FindParameters}$((S\left(\mathbf{w}\right),$} 
+    \STATE {\hspace*{50mm}$\left.A, \beta, \mathbf{w}, \mathbf{w}_0, \mathbf{y}\right)$}
+    \WHILE {не найден минимум функции $S(\mathbf{w})$ по $\mathbf{w}$}
+        \STATE$\mathbf{f} = \text{mdl}(\mathbf{w}, X);$
+        \STATE$S(\mathbf{w}) = ({1}/{2})(\mathbf{w}-\mathbf{w}_0)^{\mathrm{T}}
+        A(\mathbf{w}-\mathbf{w}_0)$
+        \STATE$+({1}/{2})(\mathbf{y}-\mathbf{f})^{\mathrm{T}}\beta I(\mathbf{y}-\mathbf{f});$
+    \ENDWHILE
+    \EXIT ;
+    \STATE{\vkReturn {$\mathbf{w};$}}
+\end{algorithmic}
+
+\begin{algorithmic}
+\PROCEDURE {\textbf{CalcHessian}$(S(\mathbf{w}), A, \beta, \mathbf{w}, \mathbf{w}_0, \mathbf{y})$}
+    \STATE$h=10^{-6};$ \COMMENT {шаг разностной схемы}
+    \FOR {$i=1,...,l$}
+        \FOR {$j=1,...,l$}
+        \STATE посчитать элемент матрицы Гессе:
+        \STATE $\mathbf{e}_i=0;$ \COMMENT {вектор приращения}
+        \STATE $e_i(i)=1;$
+        \STATE $\mathbf{e}_j=0;$
+        \STATE $e_j(j)=1;$
+        \STATE $H(i,j) =
+        \left(S(\mathbf{w}+(\mathbf{e}_i+\mathbf{e}_j)h)-S(\mathbf{w}+\mathbf{e}_{i}h)-{}\right.$
+        \STATE $\left.{}-S(\mathbf{w}+\mathbf{e}_{j}h)+S(\mathbf{w})\right)/h^2;$
+        \ENDFOR
+        \EXIT ;
+    \ENDFOR
+    \EXIT ;
+    \STATE {\vkReturn {$H;$}}
+\end{algorithmic}
+
+\section{Алгоритмы отбора признаков}
+
+Для того чтобы подчеркнуть особенности описанного в работе
+алгоритма, приведем примеры ранее предложенных методов
+регуляризации, приводящих к~повышению устойчивости решения и  отбору
+признаков в~задаче линейной регрессии~\cite{lasso, ridzh2}.
+
+\smallskip
+
+\textbf{Гребневая регрессия.}
+Запишем функцию ошибки для линейной модели вида~(\ref{eq: y}):
+$$
+Q(\mathbf{w})=||X\mathbf{w}-\mathbf{y}||^2\,.
+$$
+Для минимизации функции воспользуемся необходимым условием минимума
+$$
+\fr{\partial Q}{\partial \mathbf{w}}=2X^{\mathrm{T}}(X\mathbf{w}-\mathbf{y})=0\,,
+$$
+откуда следует, что $X^{\mathrm{T}}X\mathbf{w}\hm=X^{\mathrm{T}}\mathbf{y}$. 
+Если матрица~$X^{\mathrm{T}}X$ не вырождена, то решением системы является вектор
+$$
+\mathbf{w}^{*}=\left(X^{\mathrm{T}}X\right)^{-1}X^{\mathrm{T}}\mathbf{y}\,.
+$$
+
+Если ковариационная матрица~$X^{\mathrm{T}}X$ имеет неполный ранг, то ее
+обращение невозможно.  Также выделяют случай мультиколлинеарности:
+матрица~$X^{\mathrm{T}}X$ имеет полный ранг, но близка к~некоторой матрице
+неполного ранга. В~этом случае увеличивается разброс
+коэффициентов~$\mathbf{w}^{*}$, появляются большие по абсолютной
+величине коэффициенты. Решение становится неустойчивым (небольшие
+изменения матрицы~$X$ ведут к большим изменениям
+величины~$\mathbf{w}^{*}$).
+
+Для решения проблемы мультиколлинеарности к функционалу~$Q$
+добавляют регуляризатор, штрафующий большие значения нормы
+вектора~$\mathbf{w}$:
+$Q_\tau\hm=||X\mathbf{w}\hm-\mathbf{y}||^2\hm+\tau||\mathbf{w}||^2$. Решением
+полученной задачи является вектор
+$$
+\mathbf{w}^{*}=\left(X^{\mathrm{T}}X+\tau I_m\right)^{-1}X^{\mathrm{T}}\mathbf{y}\,.
+$$
+
+Увеличение~$\tau$ приводит к~уменьшению нормы вектора~$\mathbf{w}$,
+однако при этом ни один из параметров не~обращается в~ноль. Это означает, что,
+повышая устойчивость модели, гребневая регрессия не~производит отбор
+признаков.
+
+\smallskip
+
+\textbf{Лассо Тибширани.}
+В данном методе вместо до-\linebreak бав\-ле\-ния штрафного слагаемого к~функционалу
+качест\-ва вводится ограничение-неравенство, запрещающее большие
+абсолютные значения коэффициентов:
+\begin{align*}
+Q(\mathbf{w})=||X\mathbf{w}-\mathbf{y}||^2 &\rightarrow \min\limits_\mathbf{w\in\mathbb{W}}\,;\\[9pt]
+\sum\limits_{j=1}^W |w_j|&<\theta\,.
+\end{align*}
+
+Чем меньше значение~$\theta$, тем больше коэффициентов~$w_j$
+обнуляется, таким образом происходит исключение $j$-го признака.
+Недостатком этого метода относительно алгоритма, представленного
+в работе, является необходимость в разделении выборки на~две части:
+для обучения и контроля.
+
+Также при использовании методов регуляризации возникает проблема
+выбора константы регуляризации. Для ее вычисления обычно используют
+скользящий контроль, что значительно повышает трудоемкость всей
+задачи в целом.
+
+\section{Вычислительный эксперимент}
+
+Результатом вычислительного эксперимента является отбор шумовых
+и коррелирующих признаков. Тестирование алгоритма производится
+на временн$\acute{\mbox{о}}$м ряде продаж нарезного хлеба в зависимости от времени.
+Ряд содержит 195~записей. Модель, аппроксимирующая ряд:
+$\mathbf{y}\hm=0{,}2256\hm+0{,}1996\boldsymbol{\xi}\hm+0{,}0496\sin(10\boldsymbol{\xi}),$
+где~$\boldsymbol{\xi} \hm\in \mathbb{R}^n$~--- регрессионная выборка.
+Введем следующие обозначения:~$\boldsymbol{\xi}^0$,
+$\boldsymbol{\xi}^1$~--- значение каждого элемента выборки в нулевой
+и первой степени соответственно, $\sin(10\boldsymbol{\xi})$~---
+поэлементное применение элементарной функции
+к вектору~$\boldsymbol{\xi}$. На~ рис.~1 представлены
+выборка и аппроксимирующая ее модель.
+
+
+
+Пусть матрица плана~$X$ представлена в~сле\-ду\-ющем
+виде $X\hm=[\boldsymbol{\chi}_1,\ldots ,\boldsymbol{\chi}_n],$
+где $\boldsymbol{\chi}\hm \in \mathbb{R}^m$. В~данном случае она
+состоит из трех столбцов: $\boldsymbol{\xi}^0$,
+$\boldsymbol{\xi}^1$, $\sin(10\boldsymbol{\xi})$.
+
+\setcounter{figure}{1}
+\begin{figure*}[b] %fig2
+\vspace*{-3pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=161.853mm
+ \epsfbox{tok-2.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Итерационный процесс для матрицы Гессе (случай шумового параметра)}
+\label{fig:noise}
+\end{figure*}
+
+
+%\vspace*{2pt}
+\begin{center}  %fig1
+ \mbox{%
+ \epsfxsize=77.76mm
+ \epsfbox{tok-1.eps}
+ }
+ \end{center}
+% \vspace*{6pt}
+{{\figurename~1}\ \ \small{Данные (точки) и аппроксимирующая модель (кривая)}}
+
+
+
+%\pagebreak
+
+\vspace*{12pt}
+
+%\addtocounter{figure}{1}
+
+
+
+
+\smallskip
+
+\textbf{Отбор шумовых признаков.}
+Шумовая выборка сформирована при помощи добавления столбца случайных
+чисел с нормальным распределением. Модель, аппроксимирующая данные
+в эксперименте:
+$\mathbf{y}\hm=w_{1}\boldsymbol{\chi}_{1}\hm+w_{2}\boldsymbol{\chi}_{2}
+\hm +w_{3}\boldsymbol{\chi}_{3}\hm+w_{4}\boldsymbol{\chi}_{4},$
+где $\boldsymbol{\chi}_1\hm=\boldsymbol{\xi}^0$,
+$\boldsymbol{\chi}_2\hm\sim\mathcal{N}(0,2)$,
+$\boldsymbol{\chi}_3\hm=\boldsymbol{\xi}^1$,
+$\boldsymbol{\chi}_4\hm=\sin(10\boldsymbol{\xi})$. При наличии
+в выборке шумового элемента процедура сходится за восемь итераций.
+На~рис.~\ref{fig:noise} про\-ил\-люст\-ри\-ро\-ва\-ны изменения матрицы
+Гессе~$H$ на каждом шаге процедуры.
+
+
+На 2-й итерации наблюдается резкое отличие диагонального
+элемента~(2,\,2). В~течение итераций~2 и~3 он продолжает возрастать,
+пока не достигает критической относительной величины\linebreak (принята
+эмпирическая оценка отношения максимального элемента матрицы
+к минимальному~$10^6$). Далее на 4-й итерации выполняется его
+зануление. Таким образом происходит выявление шумового приз\-нака.
+
+На рис.~\ref{fig:A2n}~и~\ref{fig:A134n}~представлены диагональные
+элементы матрицы~$A$. Рисунок~3 иллюстрирует изменения второго
+диагонального элемента~$\alpha_2$, который соответствует шумовому
+параметру модели. Резкий скачок объясняется тем, что на данной
+итерации алгоритм находится вблизи локального
+минимума~$\mathbf{w}_0$ и, несмотря на возрастание диагональных
+элементов матрицы~$H$, знаменатель формулы~(\ref{eq: alfa}) мал.
+Далее происходит зануление элементов мат\-ри\-цы Гессе и
+соответствующий гиперпараметр~$\alpha$ становится равным нулю.
+
+\begin{figure*} %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=162.304mm
+ \epsfbox{tok-3.eps}
+ }
+ \end{center}
+ \vspace*{-17pt}
+ \begin{minipage}[t]{80mm}
+  \Caption{Элемент матрицы~$A$, соответствующий шумовому параметру модели}
+  \label{fig:A2n}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{80mm}
+  \Caption{Элементы матрицы~$A$, соответствующие нешумовым параметрам модели}
+  \label{fig:A134n}
+  \end{minipage}
+%\end{figure*}
+%\begin{figure*} %fig5
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=161.497mm
+ \epsfbox{tok-5.eps}
+ }
+ \end{center}
+ \vspace*{-17pt}
+ \begin{minipage}[t]{80mm}
+  \Caption{Скалярный гиперпараметр~$\beta$ (случай шумового па\-ра\-мет\-ра)}
+  \label{fig:Bn}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{80mm}
+  \Caption{Параметры модели~$\mathbf{w}$ (случай шумового па\-ра\-мет\-ра)}
+  \label{fig:Wn}
+  \end{minipage}
+%\end{figure}
+%\begin{figure*} %fig7
+\vspace*{3pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=164.79mm
+ \epsfbox{tok-7.eps}
+ }
+ \end{center}
+ \vspace*{-12pt}
+\Caption{Итерационный процесс для матрицы Гессе (случай коррелирующих па\-ра\-мет\-ров модели)}
+\label{fig:korrelation}
+\end{figure*}
+
+
+На рис.~\ref{fig:Bn}~и~\ref{fig:Wn} представлены скалярный 
+гиперпараметр~$\beta$ и процесс изменения параметров модели~$w_i$ соответственно.
+
+\pagebreak
+
+
+\end{multicols}
+
+\begin{figure} %fig8
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=162.372mm
+ \epsfbox{tok-8.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+ \begin{minipage}[t]{80mm}
+  \Caption{Элементы матрицы~$A$, соответствующие независимым параметрам модели}
+  \label{fig:A2k}
+  \end{minipage}
+  \hfill
+\begin{minipage}[t]{80mm}
+  \Caption{Элемент матрицы~$A$, соответствующий коррелирующему параметру модели}
+  \label{fig:A134k}
+  \end{minipage}
+%\end{figure*}
+%\begin{figure*} %fig10
+\vspace*{12pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=161.595mm
+ \epsfbox{tok-10.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+ \begin{minipage}[t]{80mm}
+  \Caption{Скалярный гиперпараметр~$\beta$ (случай зависимых параметров)}
+  \label{fig:Bk}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{80mm}
+  \Caption{Вектор параметров модели~$\mathbf{w}$ (случай зависимых параметров)}
+  \label{fig:Wk}
+  \end{minipage}
+\end{figure}
+
+\begin{multicols}{2}
+
+
+
+%\smallskip
+
+\textbf{Отбор коррелирующих признаков.}
+Выборка с коррелирующими признаками сформирована при помощи
+добавления в матрицу плана столбца $1{,}3\boldsymbol{\chi}_2$. 
+Таким
+образом, модель, аппрок\-си\-ми\-ру\-ющая данные в эксперименте:
+$y\hm=w_1\boldsymbol{\chi}_{1}\hm+w_2\boldsymbol{\chi}_{2}\hm+
+w_3\boldsymbol{\chi}_{3}\hm+w_4\boldsymbol{\chi}_{4},$
+где~$\boldsymbol{\chi}_1\hm=\boldsymbol{\xi}^0$,
+$\boldsymbol{\chi}_2\hm=\boldsymbol{\xi}^1$,
+$\boldsymbol{\chi}_3\hm=1{,}3\boldsymbol{\xi}^1$,
+$\boldsymbol{\chi}_4\hm=\sin(10\boldsymbol{\xi})$.
+На~рис.~\ref{fig:korrelation} поэлементно про\-ил\-люст\-ри\-ро\-ва\-на мат\-ри\-ца
+Гессе~$H$.
+
+
+При наличии коррелирующих признаков также наблюдается возрастание
+диагональных элементов. Это происходит из-за того, что алгоритм
+выбирает ближайший вектор~$\boldsymbol{\chi}$ к вектору~$\mathbf{y}$
+(в пространстве векторов матрицы~$X$), а коррелирующий с ним считает
+шумовым.
+
+На рис.~\ref{fig:A2k} и~\ref{fig:A134k} 
+представлены диагональные элементы матрицы~$A$.
+
+
+
+На рис.~\ref{fig:Bk} представлены изменения скалярного
+гиперпараметра~$\beta$. На рис.~\ref{fig:Wk} представлены изменения
+параметров модели~$w_i$ в течение итерационного процесса.
+Коррелирующий параметр~$w_2$ сначала возрастает, а затем стремится
+к нулю. Это происходит из-за того, что пространство па\-ра\-мет\-ров
+модели многоэкстремально.
+
+
+\section{Заключение}
+
+В работе предложен способ отсеивания шумовых и коррелирующих
+признаков, а также алгоритм оценки ковариационной матрицы параметров
+модели. Данный алгоритм имеет следующие преимущества  перед
+методами, описанными во введении: (1)~нет необходимости разделения
+данных на обуча\-ющую и контрольную выборку; (2)~алгоритм не содержит
+никаких параметров, которые необходимо оценивать или задавать
+дополнительно (как, например, в методах регуляризации); (3)~добиваясь
+сходимости как параметров, так и ги\-пер\-па\-ра\-мет\-ров, предложенный
+алгоритм повышает устойчивость выбранной регрессионной модели.
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+
+\bibitem{strijov1} 
+\Au{Стрижов В.\,В.} Поиск параметрической регрессионной модели в индуктивно заданном
+множестве~// Вычислительные технологии, 2007. Т.~1. С.~93--102.
+
+\bibitem{weber} 
+\Au{Strijov~V.\,V., Weber~G.-W.} Nonlinear regression model generation using 
+hyperparameter optimization~// Computers Math. Appl., 2010. Vol.~60. No.\,4. P.~981--988.
+
+\bibitem{stepwise} 
+\Au{Efroymson M.\,A.} Multiple regression analysis~// 
+Mathematical methods for digital computers. Vol.~1~/ Eds. A.~Ralston, H.\,S.~Wilf.~--- 
+New York: John Wiley and Sons, 1960. P.~191.
+
+\bibitem{lars} 
+\Au{Efron B., Hastie T., Johnstone~J., Tibshirani~R.} 
+Least angle regression~// Ann. Stat., 2004. Vol.~32. No.\,3. P.~407--499.
+
+\bibitem{lasso} 
+\Au{Tibshirani R.} Regression shrinkage and Selection via the Lasso~//
+J.~R. Stat. Soc., 1996. Vol.~32. No.\,1.  P.~267--288.
+
+\bibitem{regular} 
+\Au{Ильин В.\,А.} О~работах А.\,Н.~Тихонова по методам решения некорректно поставленных задач~//
+Успехи математичексих наук, 1997. Т.~1. С.~168--175.
+
+\bibitem{ridzh1} 
+\Au{Тихонов А.\,Н.} Решение некорректно поставленных задач и метод регуляризации~//
+Докл.\ АН СССР, 1963. Т.~151. С.~501--504.
+
+\bibitem{ridzh2} 
+\Au{Hoerl A.\,E., Kennard~R.\,W.} Ridge regression: Biased estimation for nonorthogonal problems~//
+Technometrics, 1970. Vol.~3. No.\,12. P.~55--67.
+
+\bibitem{ridzh3} 
+\Au{Bjorkstrom A.} Ridge regression and inverse problems. Technical Report.~--- Stockholm: 
+Stockholm University, 2001.
+
+\bibitem{belsly} 
+\Au{Belsley D.\,A.} Conditioning diagnostics: Collinearity and weak data in regression.~--- 
+New York: John Wiley and Sons, 1991.
+
+\bibitem{vif} 
+\Au{Marquardt D.\,W.} Generalized inverses, ridge regression, biased linear estimation, 
+and nonlinear estimation~// Technometrics, 1996. Vol.~12. No.\,3. P.~605--607.
+
+\bibitem{nabney} %12
+\Au{Nabney I.} Bayesian techniques~// Netlab: Algorithms for pattern recognition.~--- 
+New York: Springer, 2002. P.~325--366.
+
+\bibitem{mackay}  %13
+\Au{MacKay D.} Laplace's method~// Information theory, inference, and learning algotirhms.~--- 
+Cambridge: Cambridge University Press, 2005. P.~341--351.
+
+
+\bibitem{strijov2} 
+\Au{Стрижов В.\,В.} Методы выбора регрессионных моделей.~--- М.: ВЦ РАН, 2010.
+
+
+\label{end\stat}
+
+\bibitem{laplace} 
+\Au{Bishop C.\,M.} Linear models for classification~// 
+Pattern recognition and machine learning~/ Eds.\ M.~Jordan, J.~Kleinberg, B.~Scholkopf.~--- 
+New York: Springer Science\;+\;Business Media, 1960. P.~213--216.
+\end{thebibliography}
+}
+}
+
+
+\end{multicols}

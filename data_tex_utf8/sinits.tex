@@ -1,0 +1,724 @@
+\def\stat{sinit}
+
+\def\tit{АНАЛИТИЧЕСКОЕ МОДЕЛИРОВАНИЕ РАСПРЕДЕЛЕНИЙ 
+С~ИНВАРИАНТНОЙ МЕРОЙ В~СТОХАСТИЧЕСКИХ СИСТЕМАХ 
+С~АВТОКОРРЕЛИРОВАННЫМИ ШУМАМИ$^*$}
+
+\def\titkol{Аналитическое моделирование распределений 
+с~инвариантной мерой в~стохастических системах 
+с %автокоррелированными 
+шумами}
+
+\def\autkol{И.\,Н.~Синицын}
+
+\def\aut{И.\,Н.~Синицын$^1$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnotetext[1]
+{Работа поддержана РФФИ (проект № 10-07-00021) и Программой <<Интеллектуальные информационные 
+технологии, системный анализ и автоматизация>> (проект~1.7).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Российской академии наук, sinitsin@dol.ru}     
+
+
+\vspace*{-9pt}
+     
+  \Abst{Для многомерных нелинейных гауссовских (нормальных) 
+дифференциальных сис\-тем с некоррелированными и автокоррелированными 
+помехами на базе метода нормальной аппроксимации разработаны 
+корреляционные алгоритмы аналитического моделирования стохастических 
+режимов с инвариантной мерой. На тес\-то\-вых примерах с по\-мощью 
+инструментального программного обеспечения в среде MATLAB показана 
+достаточная для многих приложений точность алгоритмов.}
+
+\vspace*{-3pt}
+  
+  \KW{автокоррелированная помеха; аналитическое моделирование; 
+корреляционный алгоритм; метод нормальной аппроксимации; многомерная 
+нелинейная дифференциальная стохастическая сис\-те\-ма; распределение с 
+инвариантной мерой}
+
+\vspace*{-6pt}
+
+\vskip 14pt plus 9pt minus 6pt
+
+      \thispagestyle{headings}
+
+      \begin{multicols}{2}
+
+            \label{st\stat}
+     
+\section{Введение}
+     
+    Будем рассматривать в общем случае неста\-ционарный стохастический 
+режим $Z\hm=Z(t)$,\linebreak явля\-ющий\-ся сильным решением следующего нормального 
+(гауссовского) стохастического дифференциального урав\-не\-ния Ито~[1, 2]:
+    \begin{equation}
+    \dot{Z}=a(Z,t)+b(Z,t)V\,,\enskip Z(t_0)=Z_0\,.
+    \label{e1-sin}
+    \end{equation}
+Здесь $Z$~--- $k$-мер\-ный вектор со\-сто\-яния $Z\hm\in \Delta$ ($\Delta$~--- 
+многообразие со\-сто\-яний), $a\hm=a(Z,t)$ и $b\hm=b(Z,t)$~--- 
+детерминированные ($k\times1$)- и ($k\times m)$-функ\-ции отмечен\-ных 
+аргументов, $V\hm=V(t)$~---\linebreak $m$-мер\-ный вектор нормально распределенных 
+\mbox{белых} шумов с нулевыми математическими ожиданиями и 
+($m\times m$)-мат\-ри\-цей интенсивностей $v\hm=v(t)$ и пред\-став\-ля\-ющий 
+собой среднеквадратичную\linebreak производную винеровского процесса $W\hm=W(t)$, %\linebreak 
+$V\hm=\dot{W}$. Начальное со\-сто\-яние~$Z_0$ будем считать нормальной 
+(гауссовой) случайной величиной, не зависящей от приращений винеровского 
+процесса $W(t)$ для $t\hm>t_0$.
+    
+    Если существуют все многомерные плот\-ности вектора со\-сто\-яния~$Z$, то, 
+определив сначала одномерную плот\-ность $f_1\hm=f_1(z;t)$ и переходную 
+плот\-ность $f\hm=f(z;t\vert \xi;\tau)$ путем интегрирования урав\-не\-ния 
+    Фок\-ке\-ра--План\-ка--Кол\-мо\-го\-ро\-ва (ФПК) с соответствующими 
+начальными услови\-ями~[1, 2]:
+
+\noindent
+    \begin{multline}
+%    \left.
+%    \begin{array}{c}
+    \fr{\partial f_1}{\partial t} = -\fr{\partial^{\mathrm{T}}}{\partial z}\left( af_1\right) 
++\fr{1}{2}\,\mathrm{tr}\left[ \fr{\partial}{\partial z}\,\fr{\partial^{\mathrm{T}}}{\partial z}\left( 
+\sigma f_1\right) \right]\,,\\
+    \sigma=b\nu b^{\mathrm{T}}\,,\enskip f_1(z;t_0)=f_0(z)\,;
+ %   \end{array}
+%    \right\}
+    \label{e2-sin}
+    \end{multline}
+    
+%    \vspace*{-9pt}
+    
+    \noindent
+    \begin{multline}
+%    \left.
+%    \begin{array}{c}
+    \fr{\partial f}{\partial t} = -\fr{\partial^{\mathrm{T}}}{\partial z}\left( af\right) 
++\fr{1}{2}\,\mathrm{tr}\left[ \fr{\partial}{\partial z}\,\fr{\partial^{\mathrm{T}}}{\partial z}\left( 
+\sigma f\right)\right]\,,\\
+    f(z;t\vert \xi;\tau)=\delta(z-\xi)\,,
+ %   \end{array}
+%    \right\}
+    \label{e3-sin}
+    \end{multline}
+можно найти все многомерные плот\-ности $f_n\hm= f_n(z_1, \ldots , z_n; 
+t_1,\ldots , t_n)$ по рекуррентной фор\-муле:
+
+\vspace*{-3pt}
+
+\noindent
+\begin{multline*}
+f_n=f_n(z_1,\ldots ,z_n; t_1,\ldots ,t_n) ={}\\
+{}=f_1(z_1;t_1)f(z_2;t_2\vert z_1;t)\cdots f(z_n;t_n\vert z_{n-1};t_{n-1})\,,\\
+t_1\leq t_2\leq \cdots \leq t_n\,, \ 
+n=2,3,\ldots
+%\label{e4-sin}
+\end{multline*}
+
+
+    
+    Для нахождения стационарных в узком смысле одно- и многомерных 
+распределений стохастических режимов в стохастических сис\-те\-мах (СтС), 
+определяемых~(\ref{e2-sin}), в~(\ref{e3-sin}) следует положить $\partial  
+f_1/\partial  t\hm=0$. 
+    
+    В~[1--12] рассмотрены точные методы аналитического моделирования 
+одно- и многомерных плот\-но\-стей стохастических стационарных и 
+нестационарных режимов, основанные на построении интегральных 
+инвариантов специально подобранных обыкновенных дифференциальных 
+уравнений. В~[13] на основе теории потенциала предложены методы расчета 
+стационарных распределений с инвариантной мерой для гамильтоновых СтС в 
+стохастической среде.
+    
+    Стохастические сис\-те\-мы с автокоррелированными помехами обычно 
+описывают следующими уравнениями Ито~[1, 2]:
+%\noindent
+    \begin{equation}
+    \dot{Z}=a(Z,t)+b_U(z,t)U\,.
+    \label{e5-sin}
+    \end{equation}
+    
+%    \pagebreak
+    
+    
+    \noindent
+    Здесь векторная помеха~$U$ удовлетворяет следующему стохастическому 
+линейному дифференциальному уравнению фильтра, формирующего~$U$ из 
+гауссового (нормального) белого шума~$V$ интенсивности $\nu\hm=\nu(t)$:
+    \begin{equation}
+    \sum\limits_{i=0}^l \alpha_i U^{(i)} =\sum\limits_{j=0}^l \beta_j 
+V^{(j)}\enskip (h<l)\,,
+    \label{e6-sin}
+    \end{equation}
+где $\alpha_i$ и $\beta_j$~--- коэффициенты формирующего фильт\-ра (ФФ), в 
+общем случае зависящие от времени.
+    
+    Поставим задачу разработки на основе метода нормальной аппроксимации 
+(МНА)~[1, 2] корреляционных алгоритмов аналитического моделирования 
+одно- и двумерных нормальных (гауссовских) плот\-но\-стей стохастических 
+режимов $Z\hm=Z(t)$ в СтС~(1) и~(\ref{e5-sin}) с инвариантной мерой, т.\,е.\ 
+удовлетворяющих условию: 
+    \renewcommand{\theequation}{\arabic{equation}$^\prime$}
+    \begin{equation}
+    \fr{\partial  f_1(z;t)}{\partial t} +\fr{\partial^{\mathrm{T}}}{\partial z}\left[ 
+a(z,t)f_1(z;t)\right]=0\,,
+     \label{e7-1-sin}
+     \end{equation}
+     \setcounter{equation}{5}
+     
+\noindent
+где $f_1=f_1(z;t)$~--- одномерная плот\-ность распределения. Для стационарных 
+режимов условие~(\ref{e7-1-sin}) принимает вид 
+    \renewcommand{\theequation}{\arabic{equation}$^{\prime\prime}$}
+    \begin{equation}
+    \fr{\partial^{\mathrm{T}}}{\partial z} \left[ a^*(z)f_1^*(z)\right] =0\,,
+    \label{e7-2-sin}
+    \end{equation}
+    \renewcommand{\theequation}{\arabic{equation}}
+    \setcounter{equation}{6}
+  
+  Рассмотрим случаи некоррелированной помехи (разд.~2) и 
+автокоррелированной помехи, явля\-ющей\-ся менее (более) гладкой, чем 
+стохастический режим (разд.~3).
+  
+\section{Аналитическое моделирование при~некоррелированных 
+помехах}
+  
+  Пусть нелинейная СтС (1) допускает применение МНА~[1, 2]. Тогда 
+одномерная нормальная плот\-ность $f_1^N(z;t)$, вектор математического 
+ожидания $m_t\hm={\sf M}Z(t)$, ковариационная мат\-ри\-ца $K_t\hm= {\sf M}X^{0\mathrm{T}}(t) 
+Z^0(t)$ и мат\-ри\-ца ковариационных\linebreak функций 
+$K(t_1,t_2)\hm={\sf M}Z^{0\mathrm{T}}(t_1)Z^0(t_2)$ $(t_1\hm<t_2)$ опре\-де\-ля\-ют\-ся 
+следующими урав\-не\-ни\-ями~[1, 2]:
+  \begin{multline}
+  f_1^N(z;t,m_t,K_t) =\left[ (2\pi)^k\vert K_t\vert \right]^{-1/2}\times{}\\
+  {}\times \exp \left\{ -
+\fr{1}{2} \left( z^{\mathrm{T}}-m_t^{\mathrm{T}}\right) K_t^{-1}(z-m_t)\right\}\,;\label{e8-sin}
+  \end{multline}
+  
+  \vspace*{-12pt}
+  
+  \noindent
+  \begin{multline}
+     \dot{m}_t=a_1(m_t,K_t,t)={}\\
+     {}=\int\limits_{-\infty}^\infty a(z,t)f_1^N 
+(z;t,m_t,K_t)\,dz\,;\label{e9-sin}
+     \end{multline}
+     
+     \noindent
+     \begin{multline}
+     \dot{K}_t =a_2(m_t,K_t,t)=\int\limits_{-\infty}^\infty \left[ a(z,t)(z^{\mathrm{T}}-
+m_t^{\mathrm{T}})+{}\right.\\
+\hspace*{-1mm}{}+(z-m_t)a^{\mathrm{T}}(z,t)+ %{}\\
+\left.\sigma(z,t)\right] f_1^N(z,t,m_t,K_t)\,dz,\!
+     \label{e10-sin}
+     \end{multline}
+     где
+     \begin{equation*}
+     \sigma(z,t)=b(z,t)\nu(t) b(z,t)^{\mathrm{T}}\,;
+     \end{equation*}
+     
+     \vspace*{-12pt}
+     
+     \noindent
+     \begin{multline}
+     \fr{\partial K(t_1,t_2)}{\partial t_2}=a_3(m_{t_1},m_{t_2}, K(t_1,t_2))={}\\
+     {}=\left[ 
+(2\pi)^{2k}\vert \overline{K}_2\vert \right]^{-1/2}\int\limits_{-\infty}^\infty  
+\int\limits_{-\infty}^\infty (z_1-m_{t_1})a(z_{t_1},t_2)\times{}\\
+     {}\times 
+     \exp \left\{ -\left(\left [ z_1^{\mathrm{T}}\ z_2^{\mathrm{T}}\right] -
+     \overline{m}_2^{\mathrm{T}}\right) 
+\overline{K}_2^{-1} \times{}\right.\\
+\left.{}\times\left( \left[ z_1^{\mathrm{T}}\ z_2^{\mathrm{T}}\right]^{\mathrm{T}} -\overline{m}_2\right) 
+\right\}dz_1dz_2\,,
+     \label{e11-sin}
+     \end{multline}
+где
+\begin{gather*}
+z_1= z_1(t_1)\,;\  z_2=z_2(t_2)\,;\  \overline{m}_2=\left[ 
+m^{\mathrm{T}}_{t_1},m^{\mathrm{T}}_{t_2}\right]\,;\\
+\overline{K}_2=\begin{bmatrix}
+K(t_1,t_1) & \ \ K(t_1,t_2)\\[6pt]
+K(t_2,t_{1})&\ \  K(t_2,t_2)
+\end{bmatrix}\,.
+\end{gather*}
+     
+     Для стационарной сис\-те\-мы~(1) уравнения для $m_t\hm=m^*\hm=const$, 
+$K_t\hm=K^*\hm=const$ получаются из (\ref{e9-sin})--(\ref{e11-sin}) при 
+усло\-ви\-ях $\dot{m}_t\hm=0$, $\dot{K}_t\hm=0$:
+     \begin{equation}
+     a_1^* (m^*,K^*)=0\,;\quad a_2^*(m^*,K^*)=0\,;\label{e12-sin}
+     \end{equation}
+     \begin{equation}
+     \left.
+     \begin{array}{c}
+     \fr{dk(\tau)}{d\tau} =k_1^a(m^*, K^*)k(\tau)\,;\\[9pt]
+      k(\tau)=k(-\tau)^{\mathrm{T}}\,;\ 
+k(0)=K\,.
+\end{array}
+\right\}
+\label{e13-sin}
+     \end{equation}
+    Здесь $k_1^a=k_1^a(m_t,K_t)$ представляет собой коэффициент 
+статистической гауссовской линеаризации нелинейной функ\-ции
+  \begin{equation*}
+  a(Z,t) =a_1(m_t,K_t)+k_1^a(m_t,K_t)(Z-m_t)\,,
+%  \label{e14-sin}
+  \end{equation*}
+причем при $m_t=m^*$, $K_t\hm=K^*$ он определяется формулой:
+\begin{equation*}
+k_1^a=a_{21}(m_t,K_t) K_t^{-1}\,,
+%\label{e15-sin}
+\end{equation*}
+где
+\begin{multline*}
+a_{21}=a_{21}(m_t,K_t) ={}\\
+{}=\!\!\!\int\limits_{-\infty}^\infty\!\! a(z,t)(z^{\mathrm{T}}-m_t^{\mathrm{T}}) 
+f_1^N(z;t,m_t,K_t)\,dz%={}\\
+= \!\left[ \fr{\partial}{\partial m_t}\,a_1^{\mathrm{T}}\right]^{\mathrm{T}}\!\!\!\!.\hspace*{-7.34363pt}
+%\label{e16-sin}
+\end{multline*}
+      \renewcommand{\theequation}{\arabic{equation}$^{\prime}$}
+  
+  \noindent
+  При этом условия (\ref{e7-1-sin}) и~(\ref{e7-2-sin}) примут следующий вид:
+  \pagebreak
+  
+  \noindent
+  \begin{multline}
+  \fr{\partial f_1^N (z;t,m_t,K_t)}{\partial t}+\fr{\partial^{\mathrm{T}}}{\partial z}\left\{ \left[ 
+a_1(t,m_t,K_t, t) +{}\right.\right.\\
+\hspace*{-2.5mm}\left.\left.{}+k_1^a(t,m_t,K_t,t)(z-m_t)\right] f_1^N (z; t,m_t,K_t)\right\}=0,\!\!\!\!\!
+  \label{e17-1-sin}
+  \end{multline}
+    \renewcommand{\theequation}{\arabic{equation}$^{\prime\prime}$}
+    \setcounter{equation}{12}
+    
+\vspace*{-12pt}
+
+    \noindent
+    \begin{multline}
+    \fr{\partial^{\mathrm{T}}}{\partial z}\left\{\left[ a_1^*(m^*,K^*)+{}\right.\right.\\
+\hspace*{-3mm}\left.\left.    {}+k_1^a(m^*,K^*)(z-
+m^*)\right] f_1^N (z;m^*,K^*)\right\}=0.
+    \label{e17-2-sin}
+  \end{multline}
+    \renewcommand{\theequation}{\arabic{equation}}
+    \setcounter{equation}{13}
+  
+  Таким образом, имеет место утверждение.
+  
+  \medskip
+  
+  \noindent
+  \textbf{Теорема 1.} \textit{Если мат\-ри\-ца $k_1^a\hm=k_1^a(m_t,K_t)$ 
+асимп\-то\-тически устойчива, то корреляционный алгоритм аналитического 
+моделирования нестационарных режимов МНА в СтС}~(1) \textit{определяется 
+уравнениями}~(\ref{e8-sin})--(\ref{e12-sin}), (\ref{e17-1-sin}), \textit{а для 
+стационарных режимов~--- урав\-не\-ни\-ями} (\ref{e8-sin})--(\ref{e10-sin}), 
+(\ref{e13-sin}), (\ref{e17-2-sin}).
+  
+
+\section{Аналитическое моделирование при~автокоррелированных 
+помехах}
+  
+  Сначала рассмотрим СтС~(\ref{e5-sin}) и (\ref{e6-sin}) при 
+  условиях~(\ref{e7-1-sin}) и~(\ref{e7-2-sin}) в предположении, что 
+стохастический режим~$Z(t)$ является более гладким, чем помеха (имеет 
+производные более высокого порядка, чем помеха). Преобразуем 
+урав\-не\-ние~(\ref{e5-sin}), записанное в виде:
+  \begin{equation}
+  \mathrm{Э}\left( Z,U,t\right) =\dot{Z}=a(Z,t)+b_U U\,,
+  \label{e18-sin}
+  \end{equation}
+сис\-те\-мой, обратной ФФ~(\ref{e6-sin}). Как известно~[1, 2], сис\-те\-ма, обратная к 
+ФФ~(\ref{e6-sin}), представляет собой параллельное соединение сис\-те\-мы, 
+осуществляющей линейную дифференциальную операцию
+\begin{equation*}
+L=\sum\limits_{k=0}^{l-h} \gamma_k D^k\,,\enskip D=\fr{d}{dt}\,,
+%\label{e19-sin}
+\end{equation*}
+и сис\-те\-мы, описываемой дифференциальным урав\-не\-нием
+\begin{equation}
+\sum\limits_{i=0}^h \beta_i y^{(i)} =\sum\limits_{j=0}^{h-l} \tilde{\alpha}_j 
+x^{(j)}\,.
+\label{e20-sin}
+\end{equation}
+    Здесь введены следующие обозначения:
+  \begin{align*}
+%  \left.
+%  \begin{array}{c}
+  \gamma_{l-h}&=\beta_h^{-1}\alpha_l\,;\\
+  \gamma_k&=\beta_h^{-1}\left[ 
+\alpha_{h+k}-\hspace*{-5mm}\hspace*{-9.52328pt}\sum\limits^{h-1}_{r=\max(0,k-l+2h)} 
+\sum\limits_{j=0}^{h-r} 
+C^r_{r+j}\beta_{r+j}\gamma^{(j)}_{h+k-r}\right] \\
+&\hspace*{35mm}(k=0,1,\ldots , l-h-1)\,;\\
+  \tilde{\alpha}_k&=\alpha_k- \hspace*{-2mm}\sum\limits^k_{r=\max(0,k-l+2h)} \sum\limits_{j=0}^{h-r}
+C^r_{r+j} \beta_{r+j} \gamma^{(j)}_{k-r}\\
+&\hspace*{35mm}(k=0,1,\ldots , l-h-1)\,.
+%  \end{array}
+%  \right\}
+ % \label{e21-sin}
+  \end{align*}
+  
+  Пропустив сигнал $\mathrm{Э}(Z,t)$, определяемый 
+  урав\-не\-ни\-ем~(\ref{e18-sin}), через сис\-те\-му, со\-сто\-ящую из усилителя с 
+коэффициентом~$b_U^{-1}$ и сис\-те\-мы, обратной ФФ~(\ref{e6-sin}), получим 
+на выходе сигнал
+  \begin{equation*}
+  \mathrm{Э}_1=L\left[ b_U^{-1} a(Z,t)\right] +Z_1^\prime +V\,,
+%  \label{e22-sin}
+  \end{equation*}
+где $Z_1^\prime$~--- выходной сигнал сис\-те\-мы~(\ref{e20-sin}) при 
+$\mathrm{Э}(Z,t)=b_U^{-1} a(Z,t)$:
+\begin{equation}
+\sum\limits_{i=0}^h \beta_i Z_1^{\prime(i)}= \sum\limits_{j=0}^{h-1} 
+\tilde{\alpha}_j\left( b_U^{-1} a(Z,t)\right)^{(i)}\,.
+\label{e23-sin}
+\end{equation}
+  
+  Приведя уравнение~(\ref{e23-sin}) к сис\-те\-ме урав\-не\-ний первого порядка 
+согласно~[1, 2], получим дифференциальное урав\-не\-ние, определяющее век\-тор 
+$Z^\prime\hm= \left[ Z_1^{\prime \mathrm{T}}\cdots Z_h^{\prime \mathrm{T}}\right]^{\mathrm{T}}$:
+  \begin{equation*}
+  \dot{Z}^\prime = c(Z,Z^\prime)\,.
+%  \label{e24-sin}
+  \end{equation*}
+  
+  Наконец, введя расширенный век\-тор со\-сто\-яния $\overline{Z}\hm= \left[ Z^{\mathrm{T}}\, 
+Z^{\prime T}\right]^{\mathrm{T}}$, получим урав\-не\-ние вида~(\ref{e1-sin}):
+  \begin{equation}
+  \dot{\overline{Z}}=\overline{a}\left(\overline{Z},t\right) +\overline{b}V\,,
+  \label{e25-sin}
+  \end{equation}
+где
+\begin{equation}
+\overline{a}=\begin{bmatrix} a\\ c\end{bmatrix}\,;\qquad
+\overline{b}= \begin{bmatrix} b_U\\ 0\end{bmatrix}\,.
+\label{e26-sin}
+\end{equation}
+Таким образом, имеем следующий результат.
+  
+  \medskip
+  
+  \noindent
+  \textbf{Теорема~2.} \textit{Если мат\-ри\-ца $k_1^{\overline{a}}$ 
+асимптотически устойчива, а стохастический режим в}~(\ref{e5-sin}) 
+\textit{является более гладким, чем помеха, то корреляционный алгоритм 
+аналитического моделирования МНА определяется теоремой}~1 \textit{для 
+уравнения}~(\ref{e25-sin}) \textit{при условии}~(\ref{e26-sin}).
+  
+  \smallskip
+  
+  В случае, когда стохастический режим не менее гладкий, чем помеха~$U$, 
+достаточно применить процедуру расширения вектора со\-сто\-яния путем 
+дифференцирования~(\ref{e18-sin}) и исключения помехи~$U$ и ее 
+производных, не содержащих белого шума~$V$, из урав\-не\-ний 
+  ФФ~(\ref{e6-sin}) с по\-мощью урав\-не\-ния~(\ref{e18-sin}) и урав\-не\-ний, 
+полученных из него дифференцированием.
+  
+  С этой целью продифференцируем уравнение~(\ref{e18-sin}), умноженное 
+слева на $b_U^{-1}$, до появления в нем белого шума. Тогда получим:
+  \begin{multline}
+  \fr{d^i}{dt^i}\left[ b_U^{-1}(t) \mathrm{Э}(Z,U,t)\right] ={}\\
+  {}=\fr{d^i}{dt^i}\left[ 
+b_U^{-1} (t) a(Z,t)\right] + U_{i+1}\enskip (i=0,1,\ldots ,s)\,,
+  \label{e27-sin}
+  \end{multline}
+если
+$$
+\fr{d^s}{dt^s}\left[ b_U^{-1}(t) a(Z,t)\right] \ \mbox{при}\ s<l-h
+$$
+содержит белый шум, и
+\begin{equation}
+\left.
+\begin{array}{rl}
+\fr{d^i}{dt^i}\left[ b_U^{-1}(t)\mathrm{Э}(Z,U,t)\right] &={}\\[9pt]
+&\hspace*{-56.57764pt}{}= \fr{d^i}{dt^i}\left[ 
+b_U^{-1}(t)a(Z,t)\right]+U_{i+1}\\[9pt]
+&\hspace*{-19pt}(i=0,1,\ldots , l-h-1)\,;\\[9pt]
+\fr{d^{l-h}}{dt^{l-1}}\left[ b_U^{-1}(t)\mathrm{Э}(Z,U,t)\right] &={}\\
+&\hspace*{-106.57764pt}{}= \fr{d^{l-
+h}}{dt^{l-h}}\left[ b_U^{-1}(t)a(Z,t)\right]+U_{l-h+1}+q_{l-h}V\,,
+  \end{array}
+  \right\}
+  \label{e28-sin}
+  \end{equation}
+если ни при каком $s\hm<l\hm-h$ производная $d^s\left[ b_U^{-1}(t) 
+a(Z,t)\right]/dt^s$ не содержит белого шума~$V$.
+  
+  В первом случае, если согласно~[1, 2] при\-вес\-ти~(\ref{e6-sin}) к сис\-те\-ме 
+уравнений первого порядка:
+  \begin{equation}
+  \left.
+  \begin{array}{rl}
+  U_1&=U\,;\\[9pt]
+  \dot{U}_i &=U_{i+1}\enskip (i=1,\ldots , l-h-1)\,;\\[9pt]
+  \dot{U}_i &= U_{i+1}+q_iV \enskip (i=l-h,\ldots , l-1)\,;\\[9pt]
+  \dot{U}_l &=\displaystyle -\alpha_i^{-1}\sum\limits_{i=1}^{l-1} \alpha_i U_{i+1}+q_l V\,,
+  \end{array}
+  \right\}
+  \label{e29-sin}
+  \end{equation}
+где $q_i$ и $q_l$ определены в~[1, 2] и зависят от~$\alpha_i$ и~$\beta_j$, 
+можно исключить помехи $U_1,\ldots , U_s$ с по\-мощью~(\ref{e18-sin}) и 
+урав\-не\-ний, полученных ($s-1$)-крат\-ным дифференцированием.
+  
+  Во втором случае следует из~(\ref{e29-sin}) исключить помехи $U_1, \ldots , 
+U_{l-h-1}$ и белый шум~$V$ с по\-мощью~(\ref{e18-sin}) и всех урав\-не\-ний, 
+полученных из него дифференцированием.
+  
+  В обоих случаях получим уравнения $U_{s+1}, \ldots , U_l$ ($s\hm\leq l\hm-
+h$). При этом можно рас\-чле\-нить каждую из этих переменных на две, одна из 
+которых зависит от~$Z$, а другая зависит от $\mathrm{Э}(Z,t)$ и его 
+производных, и тогда будем иметь
+  \begin{equation}
+  U_{s+k} =Z^\prime_k-Y_k\,,
+  \label{e30-sin}
+  \end{equation}
+где $Z_1^\prime, \ldots , Z^\prime_{l-s}$ определяются дифференциальными 
+уравнениями~(\ref{e25-sin}):
+\begin{equation}
+\dot{Z}^\prime =c^\prime\,,\ c^\prime=c^\prime(Z,t)\,,\ Z^\prime=\left[ Z_1^\prime, 
+\ldots , Z^\prime_{l-s}\right]^{\mathrm{T}}\,,
+\label{e31-sin}
+\end{equation}
+а $Y_1^\prime, \ldots Y^\prime_{l-s}$~--- урав\-не\-ни\-ями
+\begin{equation}
+\left.
+\begin{array}{c}
+\dot{Y}^\prime=c^{\prime\prime}\,,\enskip c^{\prime\prime}= 
+c^{\prime\prime}\left(\mathrm{Э}, \dot{\mathrm{Э}}, \ldots , \mathrm{Э}^{(l-
+s)}\right)\,;\\[9pt]
+Y^\prime= \left[ Y_1^\prime, \ldots , Y^\prime_{l-s}\right]^{\mathrm{T}}\,.
+\end{array}
+\right\}
+\label{e32-sin}
+\end{equation}
+Правые части $c^\prime$ и $c^{\prime\prime}$ определяются 
+согласно~(\ref{e29-sin}) и~(\ref{e30-sin}).
+
+  Расширив вектор со\-сто\-яния~$Z$ для $\overline{Z}\hm=\left[ Z^{\mathrm{T}}\ Z_1^{\prime 
+\mathrm{T}} \cdots Z_{l-s}^{\prime \mathrm{T}}\right]^{\mathrm{T}}$, придем к окончательным 
+урав\-не\-ни\-ям~(\ref{e25-sin}), (\ref{e26-sin}) при $c\hm=c^\prime$.
+  
+  Таким образом, получен следующий результат.
+  
+  \medskip
+  
+  \noindent
+  \textbf{Теорема~3.} \textit{Если мат\-ри\-ца $k_1^{\overline{a}}$ 
+асимптотически устойчива, а стохастический режим в}~(\ref{e5-sin}) 
+\textit{не менее гладкий, чем помеха, то корреляционный алгоритм 
+аналитического моделирования МНА определяется уравнениями тео\-ре\-мы}~1 
+\textit{для сис\-те\-мы}~(\ref{e25-sin}) \textit{при 
+  условиях}~(\ref{e27-sin})--(\ref{e32-sin}).
+  
+\section{Тестовые примеры}
+     
+     
+     \noindent
+1.~Стохастическое уравнение Дуффинга~[1, 2]
+\begin{equation}
+\ddot{X}+\omega^2 X-\mu X^3 =-\delta \dot{X}+U_0+V
+\label{e33-sin}
+\end{equation}
+при $U_0=0$ допускает режим стационарных стохастических колебаний, 
+определяемых формулой Гиббса 
+\begin{equation*}
+f_1(x,\dot{x})=C\exp \left[ -\fr{2\delta}{\gamma}\,H(x,\dot{x})\right]\,,
+%\label{e34-sin}
+\end{equation*}
+где $H(x,\dot{x})\hm= \dot{x}^2/2\hm+\omega^2x^2/2\hm- \mu x^4/4$. В~основе 
+корреляционного алгоритма аналитического моделирования стационарных и 
+нестационарных режимов лежат следующие урав\-не\-ния~[1, 2]:
+\begin{multline*}
+X^3\approx m_X(m_X^2+3D_X)+3(m^2_X+D_X)X^0={}\\
+{}=k_0 m_X+k_1 X^0\enskip 
+(X^0=X-m_X)\,;
+%\label{e35-sin}
+\end{multline*}
+\begin{equation*}
+\dot{m}_X = m_{\dot{X}}\,,\enskip \dot{m}_X=U_0-\omega^2_{\mathrm{э}} 
+m_X-\delta m_{\dot{X}}\,;
+%\label{e36-sin}
+\end{equation*}
+      \begin{gather*}
+     \dot{D}_X=2K_{X\dot{X}}\,,\enskip \dot{D}_X =\nu -2(\omega^2_{1\mathrm{э}} 
+K_{X\dot{X}}+\delta D_{\dot{X}})\,;\\
+ \dot{K}_{X\dot{X}}=D_{\dot{X}}- 
+\omega^2_{1\mathrm{э}} D_X-\delta K_{X\dot{X}}\,,
+    \end{gather*}
+где
+\begin{equation}
+\hspace*{-4mm}\left.
+\begin{array}{rl}
+\omega^2_{\mathrm{э}} &=\omega^2\left[ 1-
+\fr{\mu(m_X^2+3D_X)}{\omega^2}\right]\,;\\[9pt]
+\omega^2_{1\mathrm{э}} &=\omega^2\left[ 1-
+\fr{3\mu(m^2_X+D_X)}{\omega^2}\right] \enskip 
+(\omega_{\mathrm{э}}>\omega_{1\mathrm{э}})\,.
+\end{array}
+\right\}
+\label{e37-sin}
+\end{equation}
+
+  При $U_0=0$ в стационарном случае $m_X^*\hm=0$, 
+$m^*_{\dot{X}}\hm=0$, $K^*_{X\dot{X}}\hm=0$, $D^*_{\dot{X}}\hm = 
+\nu/(2\delta)$, а $D_X^*$ определяются путем решения урав\-не\-ния 
+$\nu/(2\delta)\hm= \omega_{1\mathrm{э}}^2(D^*_{X})D^*_{X}$.
+  
+  Таким образом, МНА для $D_{\dot{X}}^*$ дает решение, совпадающее с 
+точным, а для $D^*_{{X}}$~--- приближенное, точ\-ность которого 
+зависит от коэффициента~$\mu$. Процесс установления стационарных 
+\mbox{колебаний} происходит в два этапа: сначала устанавливается $D_{\dot{X}}^*$, а 
+затем $D_{{X}}^*$.
+
+\pagebreak
+  
+  Условие (\ref{e7-2-sin}) требует консерватизма статистически 
+линеаризованной сис\-те\-мы левой час\-ти~(\ref{e33-sin}). Для значений~$\mu$, 
+отвечающих колебаниям, точ\-ность со\-став\-ля\-ет~10\%. 
+
+\noindent
+2.~Для системы 
+\begin{equation}
+\ddot{X}+\omega^2 X -\mu X^3=-\delta \dot{X}+U_0+U\,,\ \dot{U}=-\gamma 
+U+V
+\label{e38-sin}
+\end{equation}
+уравнения МНА для $Z=\left[ X\, \dot{X}\, U\right]^{\mathrm{T}}$ имеют вид~(\ref{e9-sin}) 
+и~(\ref{e10-sin}) при
+\begin{gather*}
+a_1=\begin{bmatrix}
+m_{\dot{X}}\\ -\omega^2_{\mathrm{э}} m_X-\delta m_{\dot{X}}+U_0\\ -m_U
+\end{bmatrix};\enskip
+\alpha = \begin{bmatrix}
+0 & 1 & 0\\
+-\omega^2_{1\mathrm{э}} & -\delta & 0\\
+0 & 0& -\gamma
+\end{bmatrix};\hspace*{-0.26428pt}\\
+\beta=\begin{bmatrix} 0&0&0\\
+0&0&0\\
+0&0&1
+\end{bmatrix}\,;\  
+a_2=\alpha K_t+K_t\alpha^{\mathrm{T}} +\beta\nu \beta^{\mathrm{T}}\,,
+\end{gather*}
+где $\nu$~--- интенсивность белого шума~$V$; $\omega_{\mathrm{э}}$, 
+$\omega_{1\mathrm{э}}$ определяются~(\ref{e37-sin}). Отсюда аналитическим 
+моделированием определяются стационарные режимы стохастических 
+колебаний, а также режимы установления. Условие~(\ref{e7-2-sin}) 
+выполняется в силу консерватизма левой час\-ти~(\ref{e38-sin}).
+  
+  Сравнивая оба примера, заключаем, что точность метода за счет 
+<<профильтрованности>> помех значительно повышается и достигает 
+  2\%--4\%.
+  
+  \noindent
+  3.~В инструментальном программном обеспечении CStS-Analysis тестовые 
+примеры описаны в~[14, 15].
+  
+\section{Заключение}
+  
+  Для многомерных нелинейных дифференциальных нормальных 
+(гауссовских) сис\-тем с некоррелированными и автокоррелированными 
+гауссовскими помехами на базе метода нормальной аппроксима\-ции 
+разработаны корреляционные ал\-го\-рит\-мы аналитического моделирования 
+стохастических режимов с инвариантной мерой. Результаты допускают 
+обобщение на случай негауссовских помех, а также недифференцируемых 
+функций $a\hm=a(Z,t)$ в урав\-не\-ни\-ях~(1) и~(\ref{e5-sin}).
+  
+  С помощью разработанного в среде MATLAB инструментального 
+программного обеспечения на тестовых примерах показана достаточная для 
+многих приложений точность корреляционных ал\-го\-ритмов.
+  
+  
+  {\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+     \bibitem{1-sin}
+     \Au{Пугачев В.\,С., Синицын И.\,Н.} Стохастические дифференциальные 
+сис\-те\-мы. Анализ и фильтрация.~--- 2-е изд., доп.~--- М.: Наука, 1990.
+     \bibitem{2-sin}
+     \Au{Пугачев В.\,С., Синицын И.\,Н.} Теория стохастических сис\-тем.~--- 
+     2-е изд.~--- М.: Логос, 2004.
+     \bibitem{3-sin}
+     \Au{Moshchuk N.\,K., Sinitsyn I.\,N.} On stationary distributions in nonlinear 
+stochastic differential systems: Preprint.~--- Coventry, CV4 7AL, UK: Mathematics 
+Institute, University of Warwick, 1989. 15~p. 
+     \bibitem{4-sin}
+     \Au{Moshchuk N.\,K., Sinitsyn I.\,N.} On stochastic nonholonomic systems: 
+Preprint.~--- Coventry, CV4 7AL, UK: Mathematics Institute University of Warwick, 
+1989. 32~p. 
+     \bibitem{5-sin}
+     \Au{Мощук Н.\,К., Синицын И.\,Н.} О~стохастических неголономных 
+сис\-те\-мах~// Прикладная механика и математика, 1990. Т.~54. Вып.~2. 
+     С.~213--223.
+     \bibitem{6-sin}
+     \Au{Moshchuk N.\,K., Sinitsyn I.\,N.} On stationary distributions in nonlinear 
+stochastic differential systems~// Quart. J.~Mech. Appl. Math., 1991. Vol.~44. Pt.~4. 
+P.~571--579.
+     \bibitem{7-sin}
+     \Au{Мощук Н.\,К., Синицын И.\,Н.} О~стационарных и приводимых к 
+стационарным режимах в нормальных стохастических сис\-те\-мах~// Прикладная 
+механика и математика, 1991. Т.~55. Вып.~6. С.~895--903.
+     \bibitem{8-sin}
+     \Au{Мощук Н.\,К., Синицын И.\,Н.} Распределения с инвариантной мерой 
+в механических стохастических нормальных сис\-те\-мах~// Докл. АН СССР, 1992. 
+Т.~322. №\,4. С.~662--667.
+     \bibitem{9-sin}
+     \Au{Синицын И.\,Н.}
+     Конечномерные распределения с инвариантной мерой в стохастических 
+механических сис\-те\-мах~// Докл. РАН, 1993. Т.~328. №\,3. С.~308--310.
+     \bibitem{10-sin}
+     \Au{Синицын И.\,Н.} Конечномерные распределения с инвариантной 
+мерой в стохастических нелинейных дифференциальных сис\-те\-мах.~--- М.: 
+Диалог МГУ, 1997. С.~129--140.
+     \bibitem{11-sin}
+     \Au{Синицын И.\,Н., Корепанов~Э.\,Р., Белоусов~В.\,В.} Точные методы 
+рас\-че\-та стационарных режимов с инвариантной мерой в стохастических 
+сис\-те\-мах управ\-ле\-ния~// Кибернетика и технологии XXI~века (C\&T'2002): Тр. 
+II Междунар. научно-технич. конф.~--- Воронеж: Саквое, 2002. С.~124--131.
+     \bibitem{12-sin}
+     \Au{Синицын И.\,Н., Корепанов Э.\,Р., Белоусов~В.\,В.} Точные 
+аналитические методы в статистической динамике нелинейных 
+ин\-фор\-ма\-ци\-он\-но-управ\-ля\-ющих сис\-тем~// Сис\-те\-мы и средства информатики. 
+Спец. вып. Математическое и алгоритмическое обеспечение 
+     ин\-фор\-ма\-ци\-он\-но-те\-ле\-ком\-му\-ни\-ка\-ци\-он\-ных сис\-тем.~--- 
+М.: Наука, 2002. С.~112--121.
+     \bibitem{13-sin}
+     \Au{Soize C.} The Fokker--Plank equation for stochastic dynamical systems 
+and its explicit steady state solutions.~--- Singapore: World Scientific, 1994.
+     \bibitem{14-sin}
+     \Au{Sinitsyn I.\,N.} Lectures on PC-based nonlinear stochastic mechanical 
+systems research: U$\hat{\mbox{c}}$ebni Texty $\acute{\mbox{u}}$snavu 
+Termomechaniky.~--- Praha: {\ptb {\v{C}}}AV, 1992. 63~p.
+
+\label{end\stat}
+     \bibitem{15-sin}
+     \Au{Синицын И.\,Н.} Стохастические информационные технологии для 
+исследования нелинейных круговых сис\-тем~// Информатика и её применения, 
+2011. Т.~5. Вып.~4. С.~78--99.
+
+
+
+%     \bibitem{16-sin}
+%     \Au{Синицын И.\,Н.} Математическое обеспечение для анализа 
+%нелинейных многоканальных круговых сис\-тем, основанное на па\-ра\-мет\-ри\-за\-ции 
+%распределений~// Информатика и её применения, 2012. Т.~6. Вып.~1. С.~11--17.
+\end{thebibliography}
+}
+}
+
+
+\end{multicols}     
+     
+     
+     
+     
