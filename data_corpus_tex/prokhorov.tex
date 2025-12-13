@@ -1,0 +1,489 @@
+%vsgtu727
+
+
+
+% \input{../preamblw}
+%
+% \begin{document}
+%
+% \tableofcontents
+% \newpage
+
+\renewcommand{\firstpage}{140}
+\renewcommand{\lastpage}{146}
+%\Partition{Для авторов}{Writer's Guidelines} % Раздел Вестника, в который подаётся статья
+% Названия разделов см. на сайте при подаче заявки
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Информация о статье и об авторах на русском и английском языках
+
+% Номер УДК
+\udk{517.587:519.216}%Пластичность
+\msc{93B40, 42C05, 33C45}
+
+\title{Численно-аналитический подход к~вычислению интегралов при построении ортогональных моделей}% Полный заголовок
+{Численно-аналитический подход к~вычислению интегралов \dots}% Заголовок, который идёт в верхний колонтитул
+
+\author{С.\,А.~Прохоров, И.\,М.~Куликовских}% Автор(ы) для заголовка, если авторов несколько укать
+{П\,р\,о\,х\,о\,р\,о\,в~С.\,А., К\,у\,л\,и\,к\,о\,в\,с\,к\,и\,х~И.\,М.}% Автор(ы) для оглавления и колонтитула через \,
+
+\institute{\sgau.}
+
+
+\email{E-mails}{sp@smr.ru, eirisan@rambler.ru}
+
+\otherinf{\fullauthor{Сергей Антонович Прохоров} \regalia{д.т.н., проф.} \position{зав. кафедрой} \dept{каф. информационных систем и технологий}
+\fullauthor{Илона Марковна Куликовских} \position{аспирант} \dept{каф. информационных систем и технологий} }
+
+\keywords{метод вычисления интегралов, ортогональная модель, рекуррентные соотношения, корреляционная функция, случайный процесс}
+
+\workabstract{Предложен численно"=аналитический метод вычисления интегралов, используемых при построении ортогональных моделей.
+Данный метод позволяет повысить точность ортогональных моделей за счёт полученных алгебраических и рекуррентных соотношений
+для используемых интегралов. Проведен сравнительный анализ различных ортогональных функций, являющихся частными случаями базисов Якоби и
+Сонина"--~Лагерра, при решении поставленной задачи.
+Приведена реализация разработанных алгоритмов на примере построения корреляционной ортогональной модели в базисе Лагерра. }
+
+\engtitle{Numeric-analytical Approach to Integrals Calculation at Construction of Orthogonal Models}
+
+\engauthor{S.\,A.~Prokhorov, I.\,M.~Kulikovskikh}{P\,r\,o\,k\,h\,o\,r\,o\,v~S.\,A., K\,u\,l\,i\,k\,o\,v\,s\,k\,i\,k\,h~S.\,A.}
+
+
+\enginstitute{\engsgau.}
+
+
+\otherenginf{\fullauthor{Sergey A. Prokhorov} \regalia{Dr. Sci. (Techn.)} \position{Head of Dept.}
+\dept{Dept. of Information Systems~\& Technologies}
+\fullauthor{Ilona M. Kulikovskikh} \position{Postgraduate Student}  \dept{Dept. of Information Systems~\& Technologies} }
+
+\engabstract{The numeric-analytical method of calculation of the integrals is proposed for construction of orthogonal models. The given method allows to increase the accuracy of orthogonal models due to obtained algebraic and recurrent relations for integrals used. Comparative analysis of various orthogonal functions which are the specific cases of Jacobi and Sonin--Laguerre bases is carried out when solving the posed problem. Realization of the developed algorithms is given by the example of construction of correlation orthogonal model in the Laguerre basis.
+}
+
+\engkeywords{method of integrals calculation, orthogonal model, recurrence relations, correlation function, stochastic process}
+
+
+
+
+\date{14/VIII/2009} % Дата поступления статьи в редакцию.
+\revisiondate{12/X/2009} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+При построении ортогональной модели функциональной характеристики $f (\tau )$ необходимо:
+1)~выбрать ортогональный базис $\psi _k  ( \tau, \gamma )$; 2)~определить число членов ряда $m$ и~параметр масштаба
+ортогональных функций $\gamma $; 3)~рассчитать коэффициенты Фурье ортогонального ряда $\beta _k$, удовлетворяющие минимуму взвешенной
+квадратичной погрешности аппроксимации в общем случае [1, 2]:
+\begin{equation}
+\label{prosha:eq1}
+\Delta =\int_0^\infty  \biggl[ f (\tau) -\sum\limits_{k=0}^m \hat \beta  _k \psi _k  (\tau, \gamma )   \biggr]^2\mu  ( \tau , \gamma  )d\tau
+ \to \min ,
+\end{equation}
+где
+\begin{equation}
+\label{prosha:eq2}
+\hat \beta_k =\hat \beta_{k,1}
+=\frac{1}{ \| \psi _k  \|^2} \Phi \bigl( \hat f  ( \Delta \tau \cdot i  ) \psi _k  ( \Delta \tau \cdot i, \gamma  ) \mu  (\Delta \tau \cdot i, \gamma), \tau _{k\,\max }, N  \bigr)
+\end{equation}
+"--- оценка коэффициента разложения
+\begin{equation}
+\label{prosha:eq3}
+\beta _k =\frac{1}{ \|\psi _k \|^2}\int_0^\infty f (\tau ) \psi _k  (\tau , \gamma )\mu (\tau , \gamma)d\tau ;
+\end{equation}
+$\tau _{k\,\max } $ "--- максимальный интервал корреляции;
+$\Delta \tau $ "--- шаг дискретизации; $i \hm \equiv 1, 2, \dots, J_{\max }$;
+$J_{\max } = {\rm ent} [ \tau _{k\,\max }/ \Delta \tau ]$ "--- число ординат, необходимых для построения
+функциональной зависимости;
+$N$ "--- объём выборки;
+$\Phi (\,{\cdot}\,)$ "--- функционал, зависящий от численного метода интегрирования;
+$\mu  (\tau , \gamma )$ "--- весовая функция ортогонального базиса;
+$ \| {\psi _k }  \|^2$ "--- норма ортогональных функций.
+
+Выражение (\ref{prosha:eq1}) представим в виде [3]
+\begin{equation}
+\label{prosha:eq4}
+\Delta =\Delta _{\min } +\Delta _1,
+\end{equation}
+где
+\begin{equation}
+\label{prosha:eq5}
+\Delta _{\min} =\int_0^\infty f^2 (\tau )\mu (\tau, \gamma) d\tau  -
+\sum\limits_{k=0}^m \beta _k^2  \| \psi _k  \|^2
+\end{equation}
+"--- минимальная погрешность аппроксимации;
+\begin{equation}
+\label{prosha:eq6}
+\Delta _1 =\sum\limits_{k=0}^m \Delta _{\beta _k } ^2 \| \psi _k  \|^2
+\end{equation}
+"--- погрешность аппроксимации, вызванная оценкой коэффициентов разложения;
+$\Delta _{\beta _k } ^2= ( \hat \beta  _k -\beta _k   )^2$.
+
+Из выражений (\ref{prosha:eq5}) и (\ref{prosha:eq6}) видно, что значение погрешности $\Delta _{\min } $
+уменьшается с~увеличением числа членов разложения ряда $m$, в~то время как
+значение погрешности $\Delta _1 $ возрастает [1, 2].
+Следовательно, для уменьшения результирующей погрешности аппроксимации (\ref{prosha:eq4}) необходимо
+минимизировать составляющую (\ref{prosha:eq6}).
+
+Решение этой проблемы можно получить,  применяя следующий подход.
+В общем виде,  используя линейную интерполяцию $f ( \tau  )$,
+можно записать:
+\begin{equation}
+\label{prosha:eq7}
+f (\tau)=\sum\limits_{j=0}^{J_{\max } -1}  ( a_j +b_j \tau  )\delta _j ,
+\end{equation}
+где $\delta _j = \left\{ \begin{array}{cl}
+ 1, & \text{если } \tau \in [\tau _j, \tau _{j+1}], \\
+ 0, & \text{если } \tau \not\in [\tau _j, \tau _{j+1}]
+\end{array} \right.$ "--- индикатор состояния.
+Тогда, подставив (\ref{prosha:eq7}) в (\ref{prosha:eq3}), получим
+\begin{equation}
+\label{prosha:eq8}
+\hat \beta_{k,2} =\frac{1}{ \| \psi _k \|^2}
+\sum\limits_{j=0}^{J_{\max } -1}
+ \biggl( a_j \int_{\tau_j }^{\tau _{j+1} }
+\psi _k  (\tau , \gamma )d\tau  +b_j \int_{\tau _j }^{\tau _{j+1} } \psi _k  (\tau, \gamma ) \tau d\tau \biggr) .
+\end{equation}
+
+Для оценки коэффициентов разложения (\ref{prosha:eq8}) необходимо определить интегралы $\displaystyle \int \psi _k  (\tau , \gamma )d\tau $
+и~$\displaystyle \int \tau \psi _k  (\tau, \gamma )d\tau $.
+
+
+
+Представим решение данной задачи для ортогональных функций Лагерра $L_k  (\tau , \gamma )$ и Лежандра ${\rm Leg}_k  (\tau , \gamma )$,
+являющихся простейшими представителями ортогональных базисов Сонина"--~Лагерра $L_k^{ ( \alpha  )}  (\tau, \gamma )$
+и Якоби $P_k^{ ( \alpha , \beta )}  (\tau , \gamma )$ с~нулевыми параметрами ортогональных базисов
+$\alpha $, $\beta $ и~единичной весовой функцией $\mu  (\tau, \gamma )$~[3].
+
+Для решения данной задачи воспользуемся рекуррентным соотношением
+\begin{equation}
+\label{prosha:eq9}
+L_k  ( \tau , \gamma  )=\frac{  2k-1-\gamma \tau }{k}L_{k-1}  (\tau , \gamma )-\frac{k-1}{k}L_{k-2} ( \tau , \gamma  ).
+\end{equation}
+Здесь  $L_0  ( \tau , \gamma  )=\exp\bigl({-\frac{\gamma \tau }{2}}\bigr)$,
+$L_1 ( \tau , \gamma  )=\exp\bigl({-\frac{\gamma \tau }{2}}\bigr) ( 1-\gamma \tau  )$, причём
+\begin{equation}
+\label{prosha:eq10}
+\frac{dL_k  (\tau , \gamma  )}{d\tau }=-\gamma L_{k-1}^{ (1)}  ( \tau, \gamma  )-\frac{\gamma }{2}L_k  (\tau, \gamma )
+\end{equation}
+и
+\begin{equation}
+\label{prosha:eq11}
+L_k^{ (1)}  (\tau , \gamma)=\sum\limits_{\nu =0}^k L_\nu  (\tau, \gamma ) .
+\end{equation}
+В (\ref{prosha:eq10}) полагается $L_0^{ ( 1 )}  ( \tau , \gamma  )=L_0( \tau , \gamma  )$.
+
+Проведя ряд преобразований над выражениями (\ref{prosha:eq9})--(\ref{prosha:eq10}), получим рекуррентные
+соотношения для интегралов$\displaystyle \int \psi _k  (\tau , \gamma )d\tau $
+и~$\displaystyle \int \tau \psi _k  (\tau, \gamma )d\tau $:
+\[
+\int L_k  ( \tau , \gamma  )d\tau  =-\frac{2}{\gamma }L_k ( \tau , \gamma  )
+-2\sum\limits_{\nu =0}^{k-1} \int L_\nu  ( \tau , \gamma  )d\tau ,
+\]
+\begin{multline*}
+\int \tau  L_k  ( \tau , \gamma  )d\tau  =-\frac{k+1}{\gamma}
+\int L_{k+1}  ( \tau , \gamma  )d\tau  + \\
++\frac{2k+1}{\gamma } \int L_k  ( \tau , \gamma  )d\tau  -\frac{k}{\gamma }\int
+L_{k-1}  ( \tau , \gamma  )d\tau ,
+\end{multline*}
+где ${\displaystyle \int L_0  ( \tau , \gamma  )d\tau  }=-\frac{2}{\gamma}\exp\bigl({-\frac{\gamma \tau }{2}}\bigr)$.
+
+Подобным образом для ортогональных функций Лежандра будем иметь следующие
+рекуррентные соотношения:
+\begin{equation}
+\label{prosha:eq12}
+{\rm Leg}_k ( \tau , \gamma  )=\frac{2k-1}{k} \bigl( 1-2\exp({-2\gamma \tau })  \bigr){\rm Leg}_{k-1}  ( \tau , \gamma  )-\frac{k-1}{k}{\rm Leg}_{k-2}  ( \tau , \gamma  ),
+\end{equation}
+\begin{multline}
+\label{prosha:eq13}
+ \frac{d\,{\rm Leg}_k  ( \tau , \gamma  )}{d\tau }=\frac{d\,{\rm Leg}_{k-2}  (\tau , \gamma  ) }{d\tau }-
+\gamma \Bigl[
+(2k+1) {\rm Leg}_k  ( \tau , \gamma  )-\\
+-2 (2k-1){\rm Leg}_{k-1}  (\tau, \gamma  )
++ (2k-3){\rm Leg}_{k-2}  ( \tau , \gamma  ) \Bigr ],
+\end{multline}
+где
+$${\rm Leg}_0  ( \tau , \gamma  )=\exp(-\gamma \tau ), \quad
+{\rm Leg}_1  (\tau , \gamma  )=\bigl( 1-2\exp({-2\gamma \tau })  \bigr)\exp(-\gamma \tau );$$
+$$\frac{d\,{\rm Leg}_0  ( \tau , \gamma  )}{d\tau }=-\gamma \exp(-\gamma \tau ), \quad
+\frac{d\,{\rm Leg}_1  ( \tau , \gamma  )}{d\tau}=-\gamma \bigl( 1-6\exp(-2\gamma \tau )  \bigr) \exp(-\gamma \tau ).$$
+Из выражений (\ref{prosha:eq12}), (\ref{prosha:eq13}) следуют искомые рекуррентные соотношения:
+\begin{multline*}
+\int {\rm Leg}_k  ( \tau , \gamma  )d\tau  =
+\frac{2 (2k-1)}{2k+1} \int {\rm Leg}_{k-1}  ( \tau , \gamma  )d\tau - \\
+- \frac{2k-3}{2k+1}\int {\rm Leg}_{k-2}  ( \tau , \gamma )d\tau
+-\frac{1}{\gamma (2k+1)} \bigl[ {\rm Leg}_k  ( \tau, \gamma   )-{\rm Leg}_{k-2}  ( \tau , \gamma  ) \bigr ],
+\end{multline*}
+\begin{multline*}
+\int \tau \,{\rm Leg}_k  ( \tau , \gamma  )d\tau  =\frac{2(2k-1)}{2k+1}
+\int \tau {\rm Leg}_{k-1}  ( \tau , \gamma  )d\tau  - \\ \end{multline*}
+\begin{multline*}
+- \frac{2k-3}{2k+1}\int \tau {\rm Leg}_{k-2}  ( \tau , \gamma  )d\tau  -
+\frac{1}{\gamma (2k+1)} \biggl[ \tau \bigl( {\rm Leg}_k  ( \tau , \gamma  )- {\rm Leg}_{k-2}  ( \tau , \gamma  )  \bigr)   - \\
+- {\int {{\rm Leg}_k  ( \tau , \gamma  )d\tau }
++\int {{\rm Leg}_{k-2}  ( \tau , \gamma  )d\tau } }  \biggr],
+\end{multline*}
+где
+\[
+\begin{split}
+ \int {\rm Leg}_0 ( \tau , \gamma  )d\tau  &=-\frac{1}{\gamma} \exp(-\gamma \tau ),\\
+\int {\rm Leg}_1  ( \tau , \gamma  )d\tau  &=-\frac{1}{\gamma}\Bigl( 1-\frac23\exp(-2\gamma \tau )  \Bigr) \exp(-\gamma \tau );\\
+\int \tau {\rm Leg}_0  ( \tau , \gamma  )d\tau  &=- \Bigl( \frac{\tau }{\gamma }+\frac{1}{\gamma ^2}  \Bigr)\exp(-\gamma \tau),\\
+\int \tau {\rm Leg}_1  ( \tau , \gamma  )d\tau  &=-\Bigl( \frac{\tau }{\gamma }+\frac{1}{\gamma ^2}  \Bigr)\exp(-\gamma\tau )+2\Bigl(\frac{\tau }{3\gamma }+\frac{1}{9\gamma ^2}  \Bigr)\exp(-3\gamma \tau)
+.
+\end{split}
+\]
+
+
+
+Полученные аналитические выражения, представленные в~виде рекуррентных
+соотношений, позволяют вычислять коэффициенты разложения высоких порядков
+при реализации на ЭВМ.
+При этом погрешность вычисления коэффициентов
+разложения в~данном случае зависит лишь от шага дискретизации, являющегося
+исходным параметром при обработке информационных массивов.
+
+Заметим, что с учётом выражения (\ref{prosha:eq7}) возможна более точная оценка минимальной
+погрешности аппроксимации (\ref{prosha:eq5}) при аналитическом взятии
+соответствующего интеграла с~последующей подстановкой пределов интегрирования, а именно
+\[
+\Delta _{\min } =\sum\limits_{j=0}^{J_{\max } -1}
+\int_{\tau _j}^{\tau _{j+1} }   ( a_j +b_j \tau )^2\mu  (\tau , \gamma)d\tau -
+\sum\limits_{k=0}^m \beta _k^2  \| \psi _k  \|^2 .
+\]
+
+
+Сравним представленные методики определения коэффициентов разложения (\ref{prosha:eq2})
+и~(\ref{prosha:eq8}) при проведении имитационного моделирования, состоящего в~построении
+ортогональной модели нормированной корреляционной функции (НКФ) вида $\rho_x  ( \tau  )=\exp(-\lambda  | \tau  |)\cos \omega _0 \tau $
+с~показателем колебательности $\mu =\omega _0 /\lambda =5$,
+объёмом выборки $N=5000$, $\Delta \tau =0,0816$ и $J_{\max } =37$ с~помощью
+ортогональных функций Лагерра и оценке погрешностей, соответствующих
+выражениям (\ref{prosha:eq1}), (\ref{prosha:eq4})--(\ref{prosha:eq6}).
+Заметим, что согласно РТМ~25~139--74~[4], имитационное моделирование проводилось по 29 экспериментам.
+
+На рис. 1 представлены результаты оценки коэффициентов разложения $\hat \beta _{k,1} $ и $\hat \beta  _{k,2} $,
+соответствующие выражению (\ref{prosha:eq6}), при заданном диапазоне изменения $m\in [0, 30]$ и~значении
+параметра $\gamma =\sqrt {\lambda ^2+\omega _0 ^2} =4,899$ [1, 3].
+
+\begin{figure}[b!]
+ \centering
+\includegraphics{prosha1.eps}
+\caption{Отклонения $\Delta _{\beta _k } ^2$ при оценке коэффициентов разложения по разным методикам:
+\scriptsize \mbox{{\sl a}) отклонение оценок $\hat \beta_{k,1}$; }
+{\sl б}) отклонение оценок $\hat \beta_{k,2}$}
+\vspace{5mm}
+\includegraphics{prosha2.eps}
+\caption{Квадратическая погрешность аппроксимации при оценке коэффициентов разложения по разным методикам:
+\scriptsize \mbox{{\sl a}) при оценке $\hat \beta_{k,1}$; }
+{\sl б}) при оценке $\hat \beta_{k,2}$}
+
+
+\end{figure}
+
+Из рис. 1, {\sl б} видно, что при дальнейшем увеличении числа членов рядов
+отклонения $\Delta _{\beta _k } ^2$ уменьшаются, и~величина этих отклонений
+при прочих равных параметрах ниже более чем на порядок.
+Отсюда следует, что вклад погрешности вычисления коэффициентов,
+вызванной случайными отклонениями, в результирующую погрешность аппроксимации
+значительно снижается.
+
+На рис. 2 приведены квадратичные погрешности аппроксимации (\ref{prosha:eq1}) при оценке
+коэффициентов разложения по различным методикам.
+
+
+Из рис. 2, {\sl а} видно, что из-за убывания минимальной погрешности аппроксимации
+(\ref{prosha:eq5}) погрешность вычисления коэффициентов разложения возрастает
+(\ref{prosha:eq6}). Поэтому существует некое оптимальное значение параметра $m$, при котором
+достигается минимум"=миниморум суммарной погрешности аппроксимации~[1].
+
+В свою очередь, рис. 2, {\sl б} демонстрирует выполнение равенства Парсеваля~[3],
+согласно которому результирующая погрешность аппроксимации (\ref{prosha:eq1}) уменьшается
+с~увеличением $m$.
+
+Следовательно, полученный результат позволяет строить ортогональные модели с
+некоторой допустимой либо наперёд заданной погрешностью \linebreak \mbox{$\Delta \leqslant \Delta _{\text{доп}} $. }
+По заданной погрешности $\Delta_{\text{доп}} $ определяется
+необходимое число членов разложения, которое может быть достаточно большим.
+
+Проведём сравнительный анализ широкого спектра ортогональных функций при
+решении задачи построения ортогональной модели теоретической
+НКФ вида $\rho _x  ( \tau  )=\exp(-\lambda  | \tau  |)\cos \omega _0 \tau $
+с~показателем колебательности \mbox{$\mu =5$}, $\Delta \tau =0,0816$ и $J_{\max } =37$  с~использованием
+предложенного подхода при одном~и том же числе членов разложения ряда $m=30$.
+Результаты представлены в~таблице.
+
+
+
+\begin{table}[h!]
+\centering \footnotesize
+{\bf
+Сравнительный анализ ортогональных функций при построении~ортогональной~модели~НКФ }\vspace{1mm}
+
+\begin{tabular}{l|c|c}
+\hline
+Функции базиса&
+$\gamma $&
+$\delta$ \\
+\hline
+Лагерра $L_k(\tau, \gamma)$&
+{4,899}&
+{0,02254} \\
+%\hline
+\it Сонина"--~Лагерра $(1)$ $L_k^{(1)}(\tau, \gamma)$&
+4,899&
+0,05168 \\
+%\hline
+\it Сонина"--~Лагерра $(2)$ $L_k^{(2)}(\tau, \gamma)$&
+4,899&
+0,0902 \\
+%\hline
+Лежандра ${\rm Leg}_k (\tau, \gamma)$&
+0,080311&
+0,02454 \\
+%\hline
+Якоби $(-\frac12,\, 0)$ $P_k^{(-\frac12,\, 0)} (\tau, \gamma)$&
+0,080975&
+0,02451 \\
+% \hline
+Якоби $(\frac12, 0)$ $P_k^{(\frac12,\, 0)} (\tau, \gamma)$&
+0,079658&
+0,02455 \\
+% \hline
+Якоби $(1, 0)$ $P_k^{(1,\, 0)} (\tau, \gamma)$&
+0,15803&
+0,02449 \\
+% \hline
+Якоби $(2, 0)$ $P_k^{(2,\, 0)} (\tau, \gamma)$&
+0,077762&
+0,02418 \\
+% \hline
+\it Якоби $(0, 1)$ $P_k^{(0,\, 1)} (\tau, \gamma)$&
+0,080311&
+0,05198 \\
+% \hline
+\it Якоби $(0, 2)$ $P_k^{(0,\, 2)} (\tau, \gamma)$&
+0,080311&
+0,08511 \\
+\hline
+\end{tabular}
+
+\end{table}
+
+Из таблицы видно, что наименьшая относительная погрешность аппроксимации
+$$\delta  =\Delta\cdot  \biggl(\int_0^\infty \rho _x^2  ( \tau  )\mu  ( \tau , \gamma  )d\tau  \biggr)^{-1}
+$$ получена при
+построении ортогональной модели в базисе Лагерра (верхняя строчка).
+Также следует отметить, что для функций с весом (выделены в таблице курсивом), отличным от единицы, указаны
+значения, соответствующие взвешенной погрешности аппроксимации.
+
+
+
+Как показали полученные результаты, значительных различий при построении
+ортогональных функций в различных базисах не наблюдается.
+Однако ортогональный базис Сонина"--~Лагерра, как частный случай функции Лагерра,
+является более приоритетным по ряду причин.
+Одна из таких причин "--- удобство выбора параметра масштаба $\gamma $.
+Во-первых, параметр масштаба не зависит
+от числа членов разложения ряда $m$, следовательно, нет необходимости
+пересчёта $\gamma $ при изменении $m$.
+Во-вторых, при большом значении $m$ область нахождения локальных оптимумов, близких к минимуму"=миниморумуму,
+значительно расширяется.
+Следовательно, квазиоптимальный алгоритм подбора
+параметра масштаба дает значения, близкие к оптимуму, без усложнения
+процедуры вычисления [5].
+
+Пример обработки экспериментальных данных в базисе Лагерра представлен на рис. 3 и~4.
+Здесь приведены вид входного сигнала, вид НКФ, построенной по
+сигналу, и вид ортогональной модели НКФ ($\delta =0,0058$, $\gamma =1000$,
+$m=600)$.
+
+\begin{figure}[h!]
+ \centering
+\includegraphics{prosha3-4.eps}
+\begin{minipage}{.48\textwidth} \vspace{-5mm}
+ \caption{Вид входного сигнала}
+\end{minipage} \hfill
+\begin{minipage}{.48\textwidth} \vspace{3mm}
+ \caption{Вид НКФ, построенной по сигналу (сплошная линия), и ортогональной модели НКФ (пунктирная линия)}
+\end{minipage}
+
+\end{figure}
+
+
+\vspace{5mm}
+
+
+\begin{thebibliography}{9}
+\RBibitem{prosha:1}
+\by Прохоров~С.\,А., Графкин~А.\,В., Графкин~В.\,В. и~др.
+\book Прикладной анализ случайных процессов
+\ed С.\,А.~Прохоров
+\publaddr Самара
+\publ СНЦ РАН
+\yr 2007
+\finalinfo 582~с
+%http://window.edu.ru/window/library?p_rid=58665
+
+\RBibitem{prosha:2}
+\book Программный комплекс корреляционно"=спектрального анализа в ортогональных базисах
+\by Прохоров~С.\,А., Графкин~А.\,В.
+\publaddr Самара
+\publ СНЦ РАН
+\yr 2005
+\finalinfo 198~с
+%http://window.edu.ru/window/library?p_rid=58664
+
+\RBibitem{prosha:3}
+\book Ортогональные модели корреляционно"=спектральных характеристик случайных процессов
+\bookinfo Лабораторный практикум
+\by Прохоров~С.\,А., Куликовских~И.\,М.
+\publaddr Самара
+\publ СНЦ РАН
+\yr 2008
+\finalinfo 301~с
+% http://window.edu.ru/window/library?p_rid=58666
+
+\RBibitem{prosha:4}
+\book Методы нормирования метрологических характеристик, оценки и контроля характеристик погрешностей средств статистических измерений
+\bookinfo РТМ~25~139--74
+\publ Минприбор
+\yr 1974
+\finalinfo 76~с
+
+\RBibitem{prosha:5}
+\paper Алгоритм оценки параметра масштаба ортогональных функций, обеспечивающий минимум"=миниморум квадратической погрешности аппроксимации
+\by Прохоров~C.\,A., Куликовских~И.\,М.
+\inbook Компьютерные технологии в науке, практике и образовании
+\publaddr Самара
+\publ СамГТУ
+\yr 2008
+\pages 10--12
+
+\RBibitem{prosha:6}
+\paper Частотные характеристики ортогональных функций Сонина"--~Лагерра
+\by Прохоров~C.\,A., Куликовских~И.\,М.
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\yr 2007
+\issue 2(15)
+\pages 123--127
+
+\RBibitem{prosha:7}
+\paper Аппроксимация корреляционных функций и спектральных плотностей мощности ортогональными функциями Сонина"--~Лагерра
+\by Прохоров~C.\,A., Куликовских~И.\,М.
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\yr 2008
+\issue 2(17)
+\pages 185--191
+\end{thebibliography}
+
+%\newpage
+
+\makeengtitle
+
+% \chead[\fancyplain{}{\scriptsize \sl P\,r\,o\,k\,h\,o\,r\,o\,v~S.\,A., K\,u\,l\,i\,k\,o\,v\,s\,k\,i\,k\,h~S.\,A.}]{\fancyplain{}{\scriptsize  The Numeric-analytical Approach to Integrals Calculation  \dots}}
+
+
+
+% \end{document}

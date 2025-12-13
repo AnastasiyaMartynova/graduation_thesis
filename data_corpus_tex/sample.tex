@@ -1,0 +1,406 @@
+%vsgtu709
+
+ \input{preamblw}
+
+%
+\usepackage[pdftex]{graphicx}
+\usepackage{epstopdf}        %%% Пакеты для работы с рисунками (компиляция PDF/LaTeX) и др.
+\usepackage{graphicx}
+\usepackage{wrapfig}
+%
+
+ \begin{document}
+ \tableofcontents
+ \newpage
+
+\renewcommand{\firstpage}{99}
+\renewcommand{\lastpage}{106}
+% \newcommand{\bigcom}{\text{\usefont{T2A}{cmfib}{m}{n}\large{\raisebox{1pt}{,}}}} % Cимвол производной в ТФКП (ковариантная)
+\Partition{Вычислительная математика}{Computational mathematics}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Информация о статье и об авторах на русском и английском языках
+
+\udk{519.6}%Вычислительная математика, численный анализ
+\msc{97N40}% Коды MSC см. http://www.ams.org/msc/
+
+\title{Об одной вычислительной реализации блочного метода Гаусса-Зейделя для нормальных систем уравнений}% Полный заголовок
+{Об одной вычислительной реализации блочного метода Гаусса-Зейделя\dots}% Заголовок, который идёт в верхний колонтитул
+
+\author{А.\,И.~Жданов, Е.\,Ю.~Богданова}% Автор(ы) для заголовка, если авторов несколько укать \inst
+{Ж\,д\,а\,н\,о\,в~А.\,И., Б\,о\,г\,д\,а\,н\,о\,в\,а~Е.\,Ю.}% Автор(ы) для оглавления и колонтитула через \,
+
+\institute{\samgtu.}
+
+\email{E-mails}{zhdanovaleksan@yandex.ru, fwinter@yandex.ru} %E-mail's авторов
+
+\otherinf{
+\fullauthor{Александр Иванович Жданов}\regalia{д.ф.-м.н., профессор}\position{декан} \dept{факультет дистанционного и дополнительного образования, заведующий каф. высшей математики и прикладной информатики}
+\fullauthor{Богданова Екатерина Юрьевна}\position{аспирант}\dept{каф. высшей математики и прикладной информатики}
+}
+
+\keywords{нормальные уравнения, блочный метод Гаусса-Зейделя, метод Холецкого, линейные алгебраические системы большой размерности}
+
+\workabstract{Данная статья посвящена модификации блочного варианта метода Гаусса-Зейделя для нормальных систем уравнений, который является одним из достаточно эффективных методов решения, в общем случае переопределенных, систем линейных алгебраических уравнений большой размерности. Основным недостатком методов, основанных на нормальных системах уравнений, является тот факт, что число обусловленности нормальной системы равно квадрату числа обусловленности исходной задачи. Этот факт отрицательно влияет на скорость сходимости итерационных методов, основанных на нормальных системах уравнений. Для повышения скорости сходимости итерационных методов, основанных на нормальных системах уравнений, при решении плохо обусловленных задач в настоящее время используются различные варианты предобуславливателей, позволяющие снизить число обусловленности исходной системы уравнений. Однако универсального предобуславливателя для всех задач не существует. Одним из эффективных подходов, позволяющих повысить скорость сходимости итерационного метода Гаусса-Зейделя для нормальных систем уравнений, является использование его блочного варианта. Недостатком блочного метода Гаусса-Зейделя для нормальных систем является тот факт, что на каждой итерации необходимо вычислять псевдообратную матрицу. Известно, что нахождение псевдообратной матрицы является достаточно сложной вычислительной процедурой. В настоящей работе предлагается процедуру псевдообращения матрицы заменить на задачу решения нормальных систем уравнений методом Холецкого. Нормальные уравнения, возникающие на каждой итерации метода Гаусса-Зейделя, имеют сравнительно невысокую размерность по сравнению с исходной системой. Приводятся результаты вычислительных эксперементов, демонстрирующие эффективность предлагаемого подхода.
+}
+
+\engtitle{On a computer implementation of the block Gauss-Seidel method for the normal equations}
+
+\engauthor{A.\,I.~Zhdanov, E.\,Y.~Bogdanova}{Z\,h\,d\,a\,n\,o\,v~A.\,I., B\,o\,g\,d\,a\,n\,o\,v\,a~E.\,Y.}
+
+
+\enginstitute{\engsamgtu.}% Место работы каждого из авторов на англ. языке
+
+\otherenginfm{
+\fullauthor{Alexander I. Zhdanov} \regalia{Dr. Phys. \& Math. Sci.} \position{Dean} \dept{Faculty of the Distance and Additional Education, Head of Dept. of Higher Mathematics \& Applied Computer Science}
+\fullauthor{Ekaterina Y. Bogdanova} \position{Postgraduate Student} \dept{Dept. of Higher Mathematics \& Applied Computer Science}
+}
+
+\engabstract{This article focuses on the modification of the block option Gauss-Seidel method for normal systems of equations, which is a sufficiently effective methods of solving generally overdetermined, systems of linear algebraic equations of high dimensionality. The main disadvantage of methods based on normal equations systems is the fact that the condition number of the normal system is equal to the square of the condition number of the original problem. This fact has a negative impact on the rate of convergence of iterative methods based on normal equations systems. To increase the speed of convergence of iterative methods based on normal equations systems, for solving ill-conditioned problems currently use different preconditioners options that reduce the condition number of the original system of equations. However, universal preconditioner for all applications does not exist. One of the effective approaches that improve the speed of convergence of the iterative Gauss-Seidel method for normal systems of equations, is to use its version of the block. The disadvantage of the block Gauss-Seidel method for production systems is the fact that it is necessary to calculate the pseudoinverse matrix for each iteration. We know that finding the pseudoinverse is a difficult computational procedure. In this paper, we propose a procedure to replace the matrix pseudo-solutions to the problem of normal systems of equations by Cholesky. Normal equations arising at each iteration of Gauss-Seidel method, have a relatively low dimension compared to the original system. The results of numerical experimentation, demonstrating the effectiveness of the proposed approach.
+}
+
+\engkeywords{normal equations, block Gauss-Seidel method, Cholesky method, linear algebraic systems of large dimension}
+
+\date{17/V/2016} % Дата поступления статьи в редакцию.
+\revisiondate{17/V/2016}} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+\Section{Введение}
+В статье рассматривается блочный метод Гаусса-Зейделя для нормальных систем уравнений [\citen{Saad}]. Данный метод является одним из достаточно эффективных итерационных методов решения, в общем случае переопределенных, систем линейных алгебраических уравнений (СЛАУ), которые возникают в многочисленных приложениях [\citen{Golub}].
+
+Пусть задана СЛАУ:
+\begin{eqnarray}
+Ax=b, \label{f1}
+\end{eqnarray}
+где $A\in \mathbb{R}^{m\times n}$, $m\geq n$, $\mathrm{rank}(A)=n$.
+
+Необходимо вычислять, в общем случае псевдорешение:
+\begin{eqnarray}
+x_{\ast}=A^{+}b. \label{f2}
+\end{eqnarray}
+Здесь $A^{+}$ "--- псевдообратная матрица Мура-Пенроуза матрицы $A$ [\citen{Bjorck}].
+Как хорошо известно [\citen{Saad}], [\citen{Bjorck}], вычисление $x_{\ast}$ эквивалентно решению нормальных систем уравнений:
+\begin{eqnarray}
+A^{T}Ax=A^{T}b. \label{f3}
+\end{eqnarray}
+Если $m=n$, то $x_{\ast}=A^{-1}b$, то есть $x_{\ast}$ является решением исходной СЛАУ (\ref{f1}).
+
+Важной характеристикой итерационных методов является скорость сходимости, которая зависит от числа обусловленности исходной задачи. Плохая обусловленность приводит к значительному снижению скорости сходимости итерационных методов. Многие практические задачи имеют достаточно высокое число обусловленности, а у методов, основанных на решении нормальных систем уравнений, оно равно квадрату числа обусловленности исходной задачи:
+\[
+\mathrm{\mu}_{2}(A^{T}A)= \mathrm{\mu}_{2}^{2}(A),
+\]
+где $\mu_{2}(A)=\|A\|_{2} \cdot \|A^{+}\|_{2}$
+"--- спектральное число обусловленности матрицы $A$, $\|\cdot\|_{2}$ "--- спектральная матричная норма.
+
+Существуют различные подходы для увеличения скорости сходимости итерационных методов решения плохо обусловленных задач [\citen{Young}],[\citen{Ma}]. Один из таких подходов основывается на предобуславливании исходной задачи [\citen{Gill}]-[\citen{Benzi3}]. Однако не для всех задач удается получить эффективную процедуру предобуславливания. При этом использование предобуславливателя приводит к сильному увеличению вычислительной сложности алгоритма, что крайне нежелательно при решении задач большой размерности.
+
+Для увеличения скорости сходимости итерационных методов Качмажа~[\citen{Ilin}] и Гаусса-Зейделя для нормальных систем уравнений в последнее время так же используется подход, основанный на идее рандомизации [\citen{Gower}]-[\citen{Gdanov}]. Однако применение такого подхода не всегда оказывается достаточно эффективным. В таких случаях наиболее перспективным способом увеличения скорости сходимости является блочный вариант этих методов. В данной статье рассматривается блочный вариант метода Гаусса-Зейделя для нормальных систем уравнений [\citen{Bjorck}]. При использовании этого метода возникает необходимость вычисления псевдообратных матриц на каждой итерации, что, в свою очередь, резко повышает вычислительную сложность алгоритма.
+
+Целью данной работы является получение эффективной вычислительной реализации блочного метода Гаусса-Зейделя для нормальных систем уравнений.
+В работе предлагается заменить операцию псевдообращения матрицы, на каждой итерации, на задачу решения нормальных систем с помощью метода Холецкого [\citen{Horn}]. Нормальные уравнения, возникающие на каждой итерации метода Гаусса-Зейделя, имеют сравнительно невысокую размерность по сравнению с исходной системой. Это позволяет снизить вычислительную сложность метода, и тем самым повысить скорость сходимости алгоритма.
+
+\Section{Описание метода}
+Рассмотрим блочный вариант метода Гаусса-Зейделя для нормальных систем уравнений (\ref{f3}):
+\begin{eqnarray}
+d^{j}_{k}=A^{+}_{j}r_{k}^{j}, \nonumber \\
+x_{k+1}^{j}=x_{k}^{j}+\omega d^{j}_{k}, \label{1} \\
+r_{k}^{j+1}=r_{k}^{j}-\omega A_{j}d^{j}_{k},\nonumber
+\end{eqnarray}
+где $j=1,2,\ldots , s$, $k=0,1,\ldots $, $A=(A_{1} \; A_{2} \; \ldots \; A_{s})$, $s$"--- количество блоков матрицы $A$, $A_{j}\in \mathbb{R}^{m\times n_{j}}$, $\sum \limits_{j=1}^{s}n_{j}=n$, $0< \omega <2$ "--- параметр релаксации.
+
+Алгоритм (\ref{1}) можно записать с использованием "микроитераций" [\citen{Ivanov}]:
+\begin{eqnarray}
+d_{k}=A^{+}_{j}r_{k}, \nonumber \\
+x_{k+1}=x_{k}+\omega E_{j} d_{k}, \label{2} \\
+r_{k+1}=r_{k}-\omega A_{j} d_{k},\nonumber
+\end{eqnarray}
+где $j=j(k)=(k ~ \mathrm{mod}~ p)+1$,
+$\{j(k)\}^{\infty}_{k=0}$
+"--- периодическая последовательность вида $1, 2, \ldots, s, 1, 2, \ldots, s, \ldots $,
+$E=(E_{1} \; E_{2} \; \ldots \; E_{s})$,
+$E_{j}\in \mathbb{R}^{n\times n_{j}}$, $E$
+"--- единичная матрица порядка $n$.
+
+Если $x_{0}$
+"--- произвольный вектор, а $r_{0}$ удовлетворяет условию согласования $r_{0}=b-Ax_{0}$, то, как показано в \cite{Saad}, $x_{k}\xrightarrow{k\rightarrow\infty}x_{\ast}$, где
+$x_{\ast}$ "--- псевдорешение системы уравнений (\ref{f1}).
+
+Для вычисления псевдообратной матрицы $A_{j}^{+}$ можно использовать различные алгоритмы, например, сингулярное разложение [\citen{Malishev}] или метод Гревилля [\citen{Grantmaher}]. Данные методы вычисления псевдообратной матрицы имеют много недостатков, которые снижают скорость решения задачи.
+
+Пусть $\mathrm{rank}(A_{j})=n_{j}$, тогда псевдообратная матрица каждого блока определяется по формуле [\citen{Beklemehev}]:
+\begin{equation}
+A^{+}_{j}=(A^{T}_{j}A_{j})^{-1}A^{T}_{j}.
+ \label{3_1}
+\end{equation}
+
+Однако данная процедура требует обращение матрицы $A^{T}_{j}A_{j}$, что в свою очередь сильно усложняет вычислительную процедуру. Из (\ref{2}) и (\ref{3_1}) следует, что вычисление $d_{k}$ можно свести к решению линейной системы уравнений:
+\begin{equation}
+A_{j}^{T}A_{j}d_{k}=A_{j}^{T}r_{k}.\label{3}
+\end{equation}
+
+Поскольку $\mathrm{rank}(A_{j})=n_{j}$, то $A_{j}^{T}A_{j}$
+"--- симметричная положительно определенная матрица и для решения линейной системы (\ref{3}) можно использовать метод, основанный на разложении Холецкого:
+\[
+A_{j}^{T}A_{j}=L_{j}L_{j}^{T},
+\]
+\[
+L_{j}y=A_{j}^{T}r_{j}^{k},
+\]
+\[
+L_{j}^{T}d_{j}=y.
+\]
+Здесь $L_{j}$"--- нижняя треугольная матрица (фактор Холецкого).
+
+Таким образом, предлагается вариант реализации блочного метода Гаусса-Зейделя для нормальных уравнений, который не требует на каждой итерации вычисления псевдообратной матрицы, а $d_{k}$ вычисляется на основании решения системы (\ref{3}), используя разложение Холецкого, что, в конечном счете, позволит снизить вычислительную сложность и повысить скорость итерационного метода.
+
+\Section{Тестовые исследования}
+
+В данном разделе продемонстрируем преимущество предлагаемого вычислительного варианта блочного метода Гаусса-Зейделя для нормальных систем уравнений по сравнению с методом, требующим непосредственного вычисления псевдообратной матрицы.
+
+Численные тестовые исследования проводились с использованием программного математического пакета SciLab. Предлагаемый вариант блочного метода Гаусса-Зейделя проиллюстрируем на следующем примере: $A\in \mathbb{R}^{m\times n}$, $A=(a_{ij})$, элементы $a_{ij}$ имеют равномерный закон распределения на интервале $(0;10)$ и сформированы с помощью генератора случайных чисел,  $b\in \mathbb{R}^{m}$, элементы $b_{i}$ вектора $b$ имеют равномерный закон распределения на интервале $(0;10)$.
+
+Проводилось численное исследование для различной размерности блоков матрицы $A$, с целью решения вопроса о выборе оптимального размера блоков. В рассматриваемых примерах параметр релаксации $\omega=1$, $m=2200$, $n=700$, число обусловленности матрицы $A$ равно $\mu_{2}(A)=3,1256$.
+
+%%%%%%%%% Вставка таблицы %%%%%%%%%%%%%
+\begin{table}[htbp]
+\caption{Численные результаты полученные блочным методом Гаусса-Зейделя для нормальных систем уравнений с использованием разложения Холецкого}\vspace*{2mm}
+\centering \small\label{tabl_3}
+
+\begin{tabular}{c|c|c|c|c|c|c|c|c|c}
+\hline
+$N_{col}$ & 1 & 2 & 14 & 28 & 50 & 700\\
+\hline
+$k$ & 9800 & 8750 & 900 & 550 & 266 & 1\\
+\hline
+$Time$, сек. & 31,0156 & 26,9531 & 4,0312 & 3,8437 & 3,4375 & 9,1718\\
+\hline
+$\|x-x_{*}\|_{2}$ & $2,5\cdot10^{-6}$ & $0,4\cdot10^{-6}$ & $5,29\cdot10^{-8}$ & $4,68\cdot10^{-8}$ & $5,08\cdot10^{-8}$ & $5,92\cdot10^{-8}$\\
+\end{tabular}
+\end{table}
+Здесь приведены результаты решения данной задачи блочным методом Гаусса-Зейделя с использованием разложения Холецкого, где $N_{col}$
+"--- размер блока (количество столбцов в блоке), $k$
+"--- количество всех выполненных итераций, $Time$
+"--- время выполнения алгоритма в секундах,
+$x_{\ast}$"--- точное псевдорешение, которое было найдено SVD-методом.
+Условием остановки итерационного процесса является критерий:
+\begin{equation}
+\|x_{k+1}-x_{k}\|_{2}/\|x_{k+1}\|_{2}\leq 10^{-5}. \nonumber
+\end{equation}
+
+Проведен аналогичный эксперемент (таблица 2) при такой же матрице $A$ и векторе $b$, только поставленная задача была решена блочным методом Гаусса-Зейделя с использованием метода Гревилля для вычисления псевдообратной матрицы.
+\newpage
+%%%%%%%%% Вставка таблицы %%%%%%%%%%%%%
+\begin{table}[htbp]
+\caption{Численные результаты полученные блочным методом Гаусса-Зейделя для нормальных систем уравнений с использованием метода Гревилля}\vspace*{2mm}
+
+\centering \small\label{tabl_4}
+\begin{tabular}{c|c|c|c|c|c|c|c|c|c}
+\hline
+$N_{col}$ & 1 & 2 & 14 & 28 & 50 & 700\\
+\hline
+$k$ & 9800 & 8750 & 900 & 550 & 266 & 1\\
+\hline
+$Time$, сек. & 32,5937 & 26,8593 & 4,3281 & 4,4062 & 4,2187 & 31,5937\\
+\hline
+$\|x-x_{*}\|_{2}$ & $2,5\cdot10^{-6}$ & $5,29\cdot10^{-8}$ & $4\cdot10^{-7}$ & $4,68\cdot10^{-8}$ & $6,82\cdot10^{-8}$ & $5,92\cdot10^{-8}$\\
+\end{tabular}
+\end{table}
+
+Согласно данным таблиц 1 и 2 видно, что время решения задачи убывает до $N_{col}=50$, а потом начинает возрастать. Увеличение времени решения задачи методом Гаусса-Зейделя, при использовании метода Гревилля для вычисления псевдообратной матрицы, происходит более резко, чем в предложенном методе. При увеличении количества столбцов в блоке, то есть увеличении размера $N_{col}$ блоков, количество итераций, которые требуются для решения задачи, уменьшается.
+
+Более наглядно увидеть разницу между двумя численными алгоритмами можно на следующем рисунке.
+
+%%%%%%%%% Вставка рисунка %%%%%%%%%%%%%
+\begin{figure}[htbp]
+    \centering
+%\includegraphics[width=85mm]{ris2.eps}
+%\includegraphics[width=50mm]{ris2.png}
+\includegraphics[width=70mm]{ris2.pdf}
+\caption*{Численные результаты}
+\end{figure}
+
+Из рисунка видно, что решение задачи блочным методом Гаусса-Зейделя с использованием разложения Холецкого выполняется быстрее, чем тот же алгоритм с использованием метода Гревилля для вычисления псевдообратной матрицы. При этом чем больше размерность блоков, тем больше разница во времени решения задачи между этими двумя алгоритмами.
+
+С увеличением размерности блоков возрастает вычислительная сложность вычислений для каждого блока, и тем самым объясняется вид графика на приведенном рисунке.
+
+\newpage
+\Section{Заключение}
+
+В данной статье предлагается оригинальная модификация блочного метода Гаусса-Зейделя для нормальных систем уравнений, которая заключается в замене операции псевдообращения матрицы на задачу решения методом Холецкого нормальных систем уравнений для каждого отдельного блока.
+
+Приведены численные результаты демонстрирующие эффективность данного подхода. Было показано, что увеличение размерности блока, то есть увеличение числа столбцов в блоке, приводит, соответственно, к снижению числа требуемых итераций. Однако каждая итерация становится вычислительно более сложной, и в этом случае требуется определять оптимальный размер блока.
+
+
+\begin{thebibliography}{20}
+
+\RBibitem{Saad}
+\by Saad~Y.
+\book Iterative Methods for Sparse Liner Systems
+\publ SIAM
+\yr 2003
+\finalinfo 547~p
+
+\RBibitem{Golub}
+\by Голуб~Дж., Ван~Лоун~Ч.
+\book Матричные вычисления
+\publaddr М.
+\publ Мир
+\yr 1999
+\finalinfo 548~c
+
+\RBibitem{Bjorck}
+\by Bjorck~A.
+\book Numerical methods in matrix computations
+\publ Springer
+\yr 2015
+\finalinfo 800~p
+
+\RBibitem{Young}
+\by Young~D.
+\book Iterative Solutions of Large Linear Systems
+\publaddr New York
+\publ Academic Press
+\yr 1971
+\finalinfo 591~p
+
+\RBibitem{Ma}
+\paper Convergence properties of the randomized extended gauss-seidel and kaczmarz methods
+\by Ma~A., Needell~D., Ramdas~A.
+\jour Numerical Analysis
+\yr 2015
+\issue 36(4)
+\pages 1590--1604
+
+\RBibitem{Gill}
+\paper Preconditioners for indefinite systems arising in optimization
+\by Gill~P.\,E., Murray~W., Saunders~M.\,A.
+\jour SIAM. Matrix Analysis and Applications
+\yr 1992
+\issue 13(1)
+\pages 292–-311
+
+\RBibitem{Benzi}
+\paper Preconditioning Techniques for Large Linear Systems
+\by Benzi~M.
+\jour Computational Physics
+\yr 2002
+\issue 182
+\pages 418–-477
+
+\RBibitem{Benzi2}
+\paper A comparative study of sparse approximate inverse preconditioners
+\by Benzi~M., Tuma~M.
+\jour Computational Physics. Appl. Numer.Math.
+\yr 1999
+\issue 30
+\pages 305–-340
+
+\RBibitem{Bergamaschi}
+\paper Approximate inverse preconditioning in the parallel solution of sparse eigenproblems
+\by Bergamaschi~L., Pini~G., Sartoretto~F.
+\jour Numer. Linear Algebra Appl
+\yr 2000
+\issue 7
+\pages 1--18
+
+\RBibitem{Benzi3}
+\paper Numerical experiments with parallel orderings for ILU preconditioners
+\by Benzi~M., Joubert~W.\,D., Mateescu~G.
+\jour Electron. Trans. Numer. Anal.
+\yr 1999
+\issue 8
+\pages 88--114
+
+\RBibitem{Ilin}
+\paper Об итерационном методе Качмажа и его обобщениях
+\by Ильин~В.\,П.
+\jour Сиб. журн. индустр. матем.
+\yr 2006
+\issue 9(3)
+\pages 39–-49
+
+\RBibitem{Gower}
+\paper Randomized Iterative Methods for Linear Systems
+\by Gower~R.\,M., Richtarik~P.
+\jour SIAM. Matrix Analysis and Applications
+\yr 2015
+\issue 36(4)
+\pages 1660--1690
+
+\RBibitem{Strohmer}
+\paper A randomized Kaczmarz algorithm for linear systems with exponential convergence
+\by Strohmer~T.\,A.
+\jour ourier Anal. Appl.
+\yr 2009
+\issue 15
+\pages 262--278
+
+\RBibitem{Gdanov}
+\paper Параллельная реализация рандомизированного регуляризованного алгоритма Качмажа
+\by Жданов~А.\,И., Сидоров Ю.\,В.
+\jour Комп. опт.
+\yr 2015
+\issue 39(4)
+\pages 536–-541
+
+\RBibitem{Horn}
+\by Хорн~Р., Джонсон~Ч.
+\book Матричный анализ
+\publaddr М.
+\publ Мир
+\yr 1989
+\finalinfo 655~с
+
+\RBibitem{Ivanov}
+\paper Проекционный регуляризирующий алгоритм для решения некорректных линейных алгебраических систем большой размерности
+\by Жданов~А.\,И., Иванов~А.\,А.
+\jour  Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\yr 2010
+\issue 5(21)
+\pages 309--312
+
+\RBibitem{Malishev}
+\by Малышев~А.\,Н.
+\book Введение в вычислительную линейную алгебру
+\publaddr Новосибирск
+\publ Наука
+\yr 1991
+\finalinfo 229~с
+
+\RBibitem{Grantmaher}
+\by Гантмахер~Ф.\,Р.
+\book Теория матриц
+\publaddr М.
+\publ Наука
+\yr 1966
+\finalinfo 576~с
+
+\RBibitem{Beklemehev}
+\by Беклемишев~Д.\,В.
+\book Дополнительные главы линейной алгебры
+\publaddr М.
+\publ Наука
+\yr 1983
+\finalinfo 336~с
+
+\end{thebibliography}
+
+
+\newpage
+
+\chead[\fancyplain{}{
+\scriptsize \sl Z\,h\,d\,a\,n\,o\,v~A.\,I., B\,o\,g\,d\,a\,n\,o\,v\,a~E.\,Y.}]{\fancyplain{}{\scriptsize \sl On a computer implementation of the block Gauss-Seidel method for the normal equations}
+}
+
+\makeengtitlem
+
+% \newpage
+%
+% \tableofengcontents
+%
+\end{document}

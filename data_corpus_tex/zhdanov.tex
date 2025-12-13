@@ -1,0 +1,550 @@
+%\input{preamble}
+%\usepackage{samgtu-name}
+%
+%
+%
+\renewcommand{\RuCitation}{\noindent\textbf{\CYRO\cyrb\cyrr\cyra\cyrz\cyre\cyrc\ \cyrd\cyrl\cyrya\ \cyrc\cyri\cyrt\cyri\cyrr\cyro\cyrv\cyra\cyrn\cyri\cyrya\\}\selectlanguage{english}{\EnAuthorInContents} {\EnTitleInContents}, \textit{\EnJournalName}\/ [\ParallelJournalName],  \JournalYear, vol.~\JournalVolume, no.~\JournalNumber,  pp.~\thefirstpage--\thelastpage. \doiurl. \selectlanguage{russian}\smallskip}
+
+\renewcommand{\EnCitation}{\noindent\textbf{Please cite this article in press as:\\} {\EnAuthorInContents} {\EnTitleInContents}, \textit{\EnJournalName}\/ [\ParallelJournalName],  \JournalYear, vol.~\JournalVolume, no.~\JournalNumber,  pp.~\thefirstpage--\thelastpage.  \midoiurl. }
+
+\vsgtu{1592} %registration number
+\FirstPage{549}
+\LastPage{556}
+%
+%
+%
+%\pdfcrop
+%\draft
+%
+\ResearchArticle
+%
+%\begin{document}
+
+$\;$
+\vspace{1mm}
+
+\hfill \qrcode[hyperlink,height=.8in]{http://doi.org/10.14498/vsgtu1592}
+\vspace{-.8in}
+
+\udc{519.612}
+\msc{65F10, 65F22}
+
+
+
+\rutitle{Неявные итерационные схемы на основе сингулярного разложения и регуляризирующие алгоритмы}
+%\rutitleshort{Короткое название статьи, если необходимо}
+
+\entitle{Implicit iterative schemes based on~singular decomposition and regularizing algorithms}
+\entitlehack{Implicit iterative schemes  based  \\ on~singular~decomposition \\ and regularizing algorithms}
+\entitleshort{Implicit iterative schemes based on singular decomposition\dots}
+
+
+\ruauthor{А.~И.~Жданов}{Ж\,д\,а\,н\,о\,в~А.~И.}
+\enauthor{A.~I.~Zhdanov}{Z\,h\,d\,a\,n\,o\,v~A.\,I.}
+
+\ruaffil{\rusamgtu.}
+
+\enaffil{\ensamgtu.}
+\ruauthorsdetails{1}{% Количество авторов
+\fullauthor{\rupid{41724}{Александр Иванович Жданов}}
+\CAuthor % Автор-корреспондент
+\orcid{0000-0001-6082-9097} % ORCID ID автора
+\regalia{доктор физико-математических наук, профессор}
+\position{заведующий кафедрой}
+\dept{каф. высшей математики и прикладной информатики}
+\email{zhdanovaleksan@yandex.ru}
+}
+
+\enauthorsdetails{1}{
+\fullauthor{\enpid{41724}{Alexander I. Zhdanov}}
+\CAuthor % Автор-корреспондент
+\orcid{0000-0001-6082-9097} % ORCID ID
+\regalia{Dr. Phys. \& Math. Sci., Professor}
+\position{Head of Department}
+\dept{Dept. of Higher Mathematics \& Applied Computer Science}
+\email{zhdanovaleksan@yandex.ru}
+}
+
+\rukeywords{неявные итерационные схемы, сингулярное разложение, вычислительная устойчивость итерационных схем,  скорость сходимости, итерационные методы регуляризации}
+\enkeywords{implicit iterative schemes, singular value decomposition, computational stability of iterative schemes, convergence rate, iterative regularization methods}
+
+\ruabstract{Предложен новый вариант неявного метода простых итераций на основе сингулярного разложения. Показано, что данный вариант неявного метода простых итераций позволяет существенно повысить вычислительную устойчивость алгоритма и при этом обеспечивает высокую скорость его сходимости. Рассмотрено применение неявного метода простых итераций на основе сингулярного разложения для разработки итерационных регуляризирующих алгоритмов. Предлагаемые алгоритмы могут  быть  эффективно использованы для решения широкого класса некорректных и~плохо обусловленных вычислительных задач.}
+
+\enabstract{A new version of the simple iterations implicit method based on the singular value decomposition is proposed. It is shown that this variant of the simple iterations implicit method can significantly improve the computational stability of the algorithm and at the same time provides a high rate of its convergence. The application of the simple iterations implicit method based on the singular value decomposition for the development of iterative regularization algorithms is considered. The proposed algorithms can be effectively used to solve a wide class of ill-posed and ill-conditioned computational problems.}
+
+\newdate{zhdanova}{20}{12}{2017}
+\date{\displaydate{zhdanova}}
+\newdate{zhdanovb}{22}{08}{2018}
+\revisiondate{\displaydate{zhdanovb}}
+\newdate{zhdanovc}{03}{09}{2018}
+\accepteddate{\displaydate{zhdanovc}}
+
+\newdate{zhdanove}{09}{11}{2018}
+\renewcommand{\JournalDataOnline}{\displaydate{zhdanove}}
+
+%\ForPeerReview
+\makeentitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section[n]{Introduction}
+Iterative methods of regularization play an exceptionally important role in solving a large class of ill-posed and discrete ill-conditioned problems [\citen{zhdanov:bib:bb1}--\citen{zhdanov:bib:bb6}]. They can be used to solve problems encountered in dynamics and kinetics, mathematical economics, geophysics, potential theory, antenna synthesis, acoustics, automatic processing of physical experiment results, determination of the shape of a radio pulse emitted by a source, plasma diagnostics, in ground or air geological prospecting (mathematical processing of measurements), in solving the inverse kinematic task of seismic, space research (spectroscopy), medicine (computed tomography), and processing image task.
+
+Iterative regularizing algorithms are obtained from classical iterative- schemes using special stopping criteria that provide them with regularizing properties. The regularization effect in these algorithms is achieved due to matching the number of iterations with initial errors---as a regularization parameter is the number of iterations of the iterative algorithm (iterative residual principle of Tikhonov). Such a choice of the regularization parameter is easily realized, especially in iterative methods, and in most practical problems leads to results on accuracy close to optimal.
+
+Most of the practically used iterative regularizing algorithms apply explicit or implicit iterative schemes (methods) of simple iterations [\citen{zhdanov:bib:bb1}--\citen{zhdanov:bib:bb3}]. In terms of the convergence rate, implicit iterative schemes have significant advantage over explicit schemes. In this connection, implicit iterative schemes play a more important role for the methods of iterative regularization.
+
+The computational stability of implicit iterative schemes is important. This stability strongly depends on the method of solving systems of linear algebraic equations (SLAE) at each iteration. It is known that the methods of solving SLAE on the basis of singular decomposition (SVD-methods) have the largest computational stability \cite{zhdanov:bib:bb7, zhdanov:bib:bb8}. These methods allow to solve effectively even SLAE with ill-determined rank \cite{zhdanov:bib:bb9, zhdanov:bib:bb10}. A disadvantage (when solving problems large dimension) is the fact that the SVD method is poorly implemented on parallel high-performance platforms. However, in recent years some researches eliminating this lack have recently appeared [\citen{zhdanov:bib:bb11}--\citen{zhdanov:bib:bb15}].
+
+In this paper, we propose a variant of the implicit method of simple iterations based on the use of singular decomposition (SVD-method). The speed and the numeric stability of this iteration algorithm are studied. The application of the proposed method for constructing iterative regularization algorithms is considered here.
+
+\smallskip
+
+\Section{Problem formulation and implicit method of simple iterations}
+We consider the problem of solving systems of linear equations of the form:
+$$ 
+Ax=b,
+$$
+where $A\in\mathbb{R}^{m \times n}$, $m \geq n$.
+
+The pseudo-solving of the initial SLAE is defined as follows
+$$ 
+x_*=A^{+}b, 
+$$
+where $A^+$ is a pseudo-inverse Moore--Penrose matrix.
+
+If $\mathrm{rank}\,A=n$, then $A^{+}=(A^\top A)^{-1}A^\top $.
+
+Applying the Gauss symmetrization, the original SLAE lead to:
+$$ 
+A^\top Ax=A^\top b 
+$$
+or
+$$ 
+A^{\top}Ax+\alpha x=A^\top b+\alpha x, \qquad \alpha>0. 
+$$
+For this system, the classical implicit method of simple iterations has the following form  \cite{zhdanov:bib:bb1, zhdanov:bib:bb2,  zhdanov:bib:bb16}:
+\begin{equation}
+\label{zhd:eq1}
+(\alpha E_n+A^\top A)x_{k+1}=\alpha x_k+A^\top b, 
+\end{equation}
+where $k=0, 1, \dots$.
+
+This algorithm is widely used to obtain iterative regularizing algorithms  [\citen{zhdanov:bib:bb1}--\citen{zhdanov:bib:bb3}].
+
+\Section{An implicit iteration method based on SVD}
+Using the singular value decomposition [\citen{zhdanov:bib:bb7}--\citen{zhdanov:bib:bb9}], an arbitrary matrix $A$ can be represented as follows:
+\begin{equation}
+\label{zhd:eq2}
+ A=U\Sigma V^\top, 
+\end{equation}
+where $U=[u_1 \: \: u_2 \: \: \cdots \:\: u_m]\in\mathbb{R}^{m \times m}$ and 
+$V=[v_1 \:\: v_2 \:\: \cdots \:\: v_n]\in\mathbb{R}^{n \times n}$ are  orthogonal matrixes,
+$\Sigma=\mathrm{diag}(\sigma_1,\dots,\sigma_n)$,
+$ \sigma_1\geq\sigma_2\geq\dots\geq\sigma_n, $
+$\sigma_i$ are singular numbers, and $u_i$ and $v_j$ are respectively left and right singular vectors of matrix $A$.
+
+The iterative process \eqref{zhd:eq1} can be written as:
+$$ 
+x_{k+1}=(\alpha E_n+A^\top A)^{-1}(\alpha x_k+A^\top b) 
+$$
+or
+\begin{equation}
+\label{zhd:eq3}
+ x_{k+1}=\Phi_\alpha x_k+g_\alpha, 
+ \end{equation}
+where $\Phi_\alpha$ is the transition matrix,
+$$ 
+\Phi_\alpha=\alpha(A^\top A+\alpha E_n)^{-1}  \quad \mbox{and} \quad
+ g_\alpha=(A^\top A+\alpha E_n)^{-1}A^\top b. 
+ $$
+
+Using the SVD decomposition \eqref{zhd:eq2}, let us perform the following transformations:
+\begin{multline*}
+\Phi_\alpha=\alpha(A^\top A+\alpha E_n)^{-1}=
+   \alpha[V(\Sigma^2+\alpha E_n)V^\top]^{-1}=
+   \alpha V(\Sigma^2+\alpha E_n)^{-1}V^\top=
+\\
+ =\alpha\sum_{i=1}^n\frac{v_{i}v_{i}^\top}{\sigma_i^2+\alpha},
+\end{multline*}
+\begin{multline*}
+g_\alpha=(A^\top A+\alpha E_n)^{-1}A^\top b=
+  [V(\Sigma^2+\alpha E_n)V^\top]^{-1}V\Sigma U^\top b=
+\\
+ =V(\Sigma^2+\alpha E_n)^{-1}V^\top V\Sigma U^\top b=V(\Sigma^2+\alpha E_n)^{-1}\Sigma  U^\top b=
+\\
+=\sum_{i=1}^nv_i\frac{\sigma_i}{\sigma_i^2+\alpha}u_i^\top b. 
+\end{multline*}
+
+Therefore, the iterative process \eqref{zhd:eq3} (implicit method of simple iterations) can be described on the basis of the singular decomposition in the form of:
+\begin{equation}
+ x_{k+1}=\alpha\sum_{i=1}^n\frac{v_i^\top  x_k}{\sigma_i^2+\alpha}v_i+g_{\alpha},
+\label{zhd:eq4} 
+\end{equation}
+where
+\begin{equation}
+\label{zhd:eq5} 
+g_\alpha=\sum_{i=1}^n\frac{\sigma_i u_i^\top b}{\sigma_i^2+\alpha}v_i, 
+\end{equation}
+$k=0, 1, \dots$; $\alpha>0$, $x_0$ is an arbitrary initial condition.
+
+If $x_0=0$, then $x_1=g_\alpha$ and, respectively,
+\begin{equation}
+\label{zhd:eq6} 
+x_{k+1}=\alpha\sum_{i=1}^n\frac{v_i^\top  x_k}{\sigma_i^2+\alpha}v_i+g_{\alpha},
+\end{equation}
+where $k=1, 2, \dots$.
+
+\smallskip
+
+\Section{Algorithm convergence and conditionality}
+The necessary and sufficient condition for convergence of the simple iterations implicit method \eqref{zhd:eq3}  is determined by the spectral radius of the transition matrix
+$\Phi_\alpha$:
+$$ 
+\rho(\Phi_\alpha)=\lambda_{\max}\left[(E_n+\alpha^{-1} A^\top  A)^{-1}\right]=
+\frac{1}{\lambda_{\min}(E_n+\alpha^{-1} A^\top  A)}=\frac{1}{1+\alpha^{-1}\sigma^2_n(A)}. 
+$$
+
+Since $\mathrm{rank}\,A=n$, then $\sigma_n>0$ and, therefore, the convergence condition of the simple iterations implicit method can be written as follows
+\begin{equation}
+\label{zhd:eq7} 
+\rho(\Phi_\alpha)=\frac{1}{1+\gamma^2}<1, 
+\end{equation}
+where $\gamma=\sigma_n/\sqrt{\alpha}$.
+
+It follows directly from \eqref{zhd:eq7} that the smaller $\alpha$ is, the smaller the spectral radius of the transition matrix of the iterative process \eqref{zhd:eq3}  is and, accordingly, the higher the rate of its convergence is.
+
+However, the parameter $\alpha$ has the opposite effect on the computational conditionality of the simple iterations implicit method \eqref{zhd:eq3}---the smaller the parameter $\alpha$ is, the greater the number of the algorithm is.
+
+We show that for the same parameter $\alpha$ of the condition number of the classical simple iterations implicit method \eqref{zhd:eq2} and simple iterations implicit method \eqref{zhd:eq4}--\eqref{zhd:eq6} on the basis of SVD are essentially different.
+
+In general, the simple iterations implicit method can be written as follows:
+\begin{equation}
+x_{k+1}=\mathop{\mathrm{argmin}}_{x\in\mathbb{R}^{n}}\left\|\left(
+                                                 \begin{array}{c}
+                                                   A \\
+                                                   \sqrt{\alpha}E_n  \\
+                                                 \end{array}
+                                               \right)x-\left(
+                                                          \begin{array}{c}
+                                                            b \\
+                                                            \sqrt{\alpha}x_k \\
+                                                          \end{array}
+                                                        \right)
+                                               \right\|_2^2. 
+\label{zhd:eq8}
+\end{equation}
+
+Different variants of implementing the simple iterations implicit method differ only in the method of solving the least squares problem at each iteration:
+\begin{equation}
+\min_{x\in\mathbb{R}^{n}}\left\|\left(
+                                                 \begin{array}{c}
+                                                   A \\
+                                                   \sqrt{\alpha}E_n  \\
+                                                 \end{array}
+                                               \right)x-\left(
+                                                          \begin{array}{c}
+                                                            b \\
+                                                            \sqrt{\alpha}x_k \\
+                                                          \end{array}
+                                                        \right)
+                                               \right\|_2^2.   
+\label{zhd:eq9}
+\end{equation}
+Let
+$$ 
+\left\|\left(\begin{array}{c}
+                 A \\
+                 \sqrt{\alpha}E_n  \\
+                  \end{array}
+                  \right)x-\left(
+                                                          \begin{array}{c}
+                                                            b \\
+                                                            \sqrt{\alpha}x_k \\
+                                                          \end{array}
+                                                        \right)
+                                               \right\|_2^2=
+  \|A_{\alpha}x-b_{\alpha}^{(k)}\|_2^2,
+$$
+then \eqref{zhd:eq8} can be presented in the following way:
+$$ 
+x_{k+1}=A_{\alpha}^{+}b_{\alpha}^{(k)}, 
+$$
+where $A_{\alpha}^{+}$ is a Moore--Penrose pseudoinverse matrix.
+
+Since $\mathrm{rank}A_{\alpha}=n$, then $A_{\alpha}^{+}$ can be calculated by the formula:
+$$ 
+A_{\alpha}^{+}=(A_{\alpha}^\top  A_{\alpha})^{-1}A_{\alpha}^\top . 
+$$
+In this case, the expression \eqref{zhd:eq9} will correspond to the classical form of the simple iterations implicit method, i.e.
+\begin{multline*}
+x_{k+1}=(A_{\alpha}^\top  A_{\alpha})^{-1}A_{\alpha}^\top  b_{\alpha}^{(k)}=
+   (A^\top A+\alpha E_n)^{-1}\left[(A^\top  \vdots \sqrt{\alpha}E_n)\left(
+                                                          \begin{array}{c}
+                                                            b \\
+                                                            \sqrt{\alpha}x_k \\
+                                                          \end{array}
+                                                        \right)\right]=  
+                                                        \\
+=(A^\top A+\alpha E_n)^{-1}(A^\top b+\alpha x_k). 
+\end{multline*}
+
+Thus, the spectral condition number of the problem at each $k$ iteration for the classical simple iterations implicit method \eqref{zhd:eq1} is equal to
+\begin{multline*}
+\mathrm{cond}_2(A^\top A+\alpha E_n)=\|(A^\top A+\alpha E_n)\|_2 \|(A^\top A+\alpha E_n)^{-1}\|_2=
+\\
+=\frac{\lambda_{\max}(A^\top A+\alpha E_n)}{\lambda_{\min}(A^\top A+\alpha E_n)}=\frac{\sigma_1^2+\alpha}{\sigma_n^2+\alpha}.
+\end{multline*}
+
+The implicit SVD-based simple iteration method is applied directly to the problem \eqref{zhd:eq9} and hence the condition number for this algorithm is determined by the matrix condition number
+$$ 
+A_\alpha=\left(\begin{array}{c}
+                 A \\
+                 \sqrt{\alpha}E_n  \\
+                  \end{array}
+                  \right).
+$$
+Thus, the spectral condition number for the algorithm \eqref{zhd:eq4} is equal to
+$$ \mathrm{cond}_2(A_\alpha)=\|A_\alpha\|_2\cdot\|A^{+}_\alpha\|_2=
+   \left(\frac{\sigma_1^2+\alpha}{\sigma_n^2+\alpha}\right)^{1/2}.
+$$
+
+This means that the SVD-based algorithm \eqref{zhd:eq4} has a significant advantage over the classical algorithm \eqref{zhd:eq1} in solving ill-conditioned problems.
+
+\smallskip
+
+\Section{Regularizing iterative algorithms}
+Let us take approximate values $(A, \tilde{b})$ instead of the exact source data $(A, b)$, where $\|\tilde{b}-b\|\leq\delta$.
+
+Then the regularized variant of the simple iterations implicit method based on SVD  \eqref{zhd:eq4}, \eqref{zhd:eq5} will have the following form
+\begin{equation}
+\label{zhd:eq10}
+x_{k+1}=\alpha\sum_{i=1}^n\frac{v_i^\top  x_k}{\sigma_i^2+\alpha}v_i+\tilde{g}_{\alpha},   
+\end{equation}
+where
+$$ 
+\tilde{g}_\alpha=\sum_{i=1}^n\frac{\sigma_i u_i^\top \tilde{b}}{\sigma_i^2+\alpha}v_i,
+$$
+$k=0, 1, \dots, k_\delta$; $\alpha>0$, $x_0$ is arbitrary initial condition, and
+\begin{equation}
+\label{zhd:eq11}
+k_\delta=\min\{k\in\mathbb{N}: \|Ax_k-\tilde{b}\|\leq\tau\delta\}, 
+\end{equation}
+$\tau\geq 1$ is some parameter. Often chosen in practice $\tau=1+\epsilon_\mathrm{mach}$, where $\epsilon_\mathrm{mach}$ is machine Epsilon.
+
+Here, the stop number of $k_\delta$ plays the role of the regularization parameter, and the parameter $\alpha$ is the convergence rate controller \eqref{zhd:eq10}. Expression \eqref{zhd:eq11} is the iteration discrepancy Tikhonov's principle.
+
+If $x_0=0$, then $x_1=g_\alpha$ and, respectively,
+$$ 
+x_{k+1}=\alpha\sum_{i=1}^n\frac{v_i^\top  x_k}{\sigma_i^2+\alpha}v_i+\tilde{g}_{\alpha},
+$$
+where $k=0, 1, \dots, k_\delta$.
+
+\smallskip
+
+\Section[n]{Conclusion}
+In this report, a new variant of the simple iterations implicit method based on the singular value decomposition (SVD method) is proposed. The iterative regularization algorithms obtained on the basis of the proposed implicit iteration schemes are considered. The main advantage of the proposed implicit singular value iteration schemes is to increase the computational stability of the implicit simple iteration method. This fact is especially important in solving poorly conditioned computational problems.
+\smallskip 
+ 
+
+\AdditionalContent{Competing interests}{I declare that I have no competing interests.} 
+\AdditionalContent{Author's Responsibilities}{I take full responsibility for submitting the final manuscript in print. I approved the final version of the manuscript.} 
+
+\AdditionalContent{Funding}{This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.}
+
+
+
+
+\begin{thebibliography}{99}
+
+\Bibitem{zhdanov:bib:bb1}
+\by Vainikko~G.~M., Veretennikov~A.~Yu.
+\book Iteration Procedures in Ill-Posed Problems
+\publaddr Moscow
+\publ Nauka
+\yr 1986
+\totalpages 186 
+\lang In Russian
+
+\Bibitem{zhdanov:bib:bb2}
+\lang In Russian
+\by  Bakushinsky~A.~B., Goncharsky~A.~V.
+\book Iterative methods for solving ill-posed problems
+\publaddr Moscow
+\publ Nauka
+\yr 1986
+\totalpages 186 
+
+\Bibitem{zhdanov:bib:bb3}
+\lang In Russian
+\by  Matysik~O.~V.
+\book  Explicit and implicit iteration procedures of solving ill-posed problems
+\publaddr Brest
+\publ Brest State Univ.
+\yr 1986
+\totalpages 186
+
+\Bibitem{zhdanov:bib:bb4}
+\paper On nondecreasing sequences of regularization parameters for nonstationary iterated Tikhonov
+\by  Donatelli~M.
+\jour Numer. Algor.
+\yr 2012
+\vol 60
+\issue 4
+\pages 651--668
+\crossref{10.1007/s11075-012-9593-7}
+
+\Bibitem{zhdanov:bib:bb5}
+\paper  A stopping criterion for iterative regularization methods
+\by Landi~G., Loli Picolomini~E., Tomba~I.
+\jour Appl. Numer. Math.
+\yr 2016
+\vol 106
+\pages 53--68
+\crossref{10.1016/j.apnum.2016.03.006}
+
+
+\Bibitem{zhdanov:bib:bb6}
+\paper Iterated Tikhonov regularization with a general penalty term
+\by Buccini~A., Donatelli~M., Reichel~L.
+\jour Numer Linear Algebra Appl.
+\yr 2017
+\vol 24
+\issue 4 
+\papernumber e2089
+\crossref{10.1002/nla.2089}
+
+\Bibitem{zhdanov:bib:bb7}
+\by Golub~G.~H., Van Loan~C.~F.
+\book Matrix computations
+\zmath{0733.65016}
+\serial Johns Hopkins Series in the Mathematical Sciences
+\vol 3
+\publaddr Baltimore, etc.
+\publ The Johns Hopkins University Press.
+\totalpages  xix+642
+\yr 1989
+
+\Bibitem{zhdanov:bib:bb8}
+\by  Bj\"ork \AA. 
+\book  Numerical Methods in Matrix Computations
+\serial Texts in Applied Mathematics
+\vol 59
+\publaddr  Cham
+\publ Springer
+\yr 2015
+\totalpages xvi+800~pp \nofrills 
+\crossref{10.1007/978-3-319-05089-8}
+
+\Bibitem{zhdanov:bib:bb9}
+\lang In Russian
+\by Malyshev~A.~N.
+\book Introduction to numerical linear algebra (with an application of algorithms on FORTRAN)
+\zmath{0757.65020}
+\publaddr Novosibirsk
+\publ Nauka
+\yr 1991
+\totalpages 229 
+
+\Bibitem{zhdanov:bib:bb10}
+\by   Hansen~P.~C.
+\book Rank-deficient and discrete ill-posed problems. Numerical aspects of linear inversion
+\zmath{0890.65037}
+\serial SIAM Monographs on Mathematical Modeling and Computation
+\vol 4
+\publaddr Philadelphia, PA
+\publ SIAM, Society for Industrial and Applied Mathematics
+\totalpages 247 
+\yr 1997
+
+\Bibitem{zhdanov:bib:bb11}
+\paper Sampling Algorithms to Update Truncated SVD
+\by Yamazaki~I., Tomov~S., Dongarra~J. 
+\inbook  IEEE International Conference on Big Data (Big Data)
+\yr 2017
+\crossref{10.1109/BigData.2017.8257997}
+
+
+\Bibitem{zhdanov:bib:bib12}
+\paper Accelerating the SVD Two StageBidiagonal Reduction and Divide and Conquer Using GPUs
+\by Gates~M., Tomov~S., Dongarra~J.
+\jour  Parallel Computing
+\yr 2018
+\vol 74
+\pages 3--18
+\crossref{10.1016/j.parco.2017.10.004}
+
+
+
+\Bibitem{zhdanov:bib:bb13}
+\paper A Framework for Out of Memory SVD Algorithms
+\by Kabir~K., Haidar~A., Tomov~S., Bouteiller~A., Dongarra~J.
+ \eds J.~Kunkel, R.~Yokota, P.~Balaji, D.~Keyes  
+ \inbook High Performance Computing
+ \bookinfo ISC 2017. Lecture Notes in Computer Science
+ \bookvol 10266
+ \publ Springer
+ \publaddr Cham
+\pages 158--178
+\crossref{10.1007/978-3-319-58667-0_9}
+
+
+\Bibitem{zhdanov:bib:bb14}
+\paper Optimizing the SVD Bidiagonalization Process for a Batch of Small Matrices
+\by Dong~T., Haidar~A., Tomov~S., Dongarra~J.
+\jour Procedia Computer Science
+\yr 2017
+\vol 108
+\pages 1008--1018
+\crossref{10.1016/j.procs.2017.05.237}
+
+
+\Bibitem{zhdanov:bib:bb15}
+\paper  Out Of Memory SVD Solver for Big Data
+\by Haidar~A., Kabir~K., Fayad~D., Tomov~S., Dongarra~J.
+\inbook 2017 IEEE High Performance Extreme Computing Conference (HPEC)
+\yr 2017
+\crossref{10.1109/HPEC.2017.8091029}
+
+\Bibitem{zhdanov:bib:bb16}
+\lang In Russian
+\by Verzhbitskij~V.~M.
+\book Numerical Methods (Linear Algebra and Nonlinear Equations)
+\publaddr Moscow
+\publ Oniks 21 Century Publishing House
+\yr 2005
+\totalpages 432 
+
+\end{thebibliography}
+
+
+\newpage
+
+\selectlanguage{russian}
+
+$\;$
+
+
+
+\makerutitle
+
+\vspace{-7mm}
+
+\AdditionalContent{Конкурирующие интересы}{Конкурирующих интересов не имею.}
+
+\AdditionalContent{Авторский вклад и ответственность}{Я несу полную ответственность за предоставление окончательной версии рукописи в печать. Окончательная версия 
+рукописи мною одобрена.}
+
+\AdditionalContent{Финансирование}{Исследование выполнялось без финансирования.}
+
+
+
+\renewcommand{\baselinestretch}{0.9}
+
+\renewcommand{\RuCitation}{\noindent\textbf{\CYRO\cyrb\cyrr\cyra\cyrz\cyre\cyrc\ \cyrd\cyrl\cyrya\ \cyrc\cyri\cyrt\cyri\cyrr\cyro\cyrv\cyra\cyrn\cyri\cyrya\\} {\RuAuthorInContents} {\RuTitleInContents}~/\!/ \textit{\RuJournalName}, \JournalYear.  \CYRT.~\JournalVolume, \textnumero~\JournalNumber.  \CYRS.~\thefirstpage--\thelastpage. \doiurl.}
+
+\renewcommand{\EnCitation}{\noindent\textbf{Please cite this article in press as:\\} {\EnAuthorInContents} {\EnTitleInContents}, \textit{\EnJournalName}\/ [\ParallelJournalName],  \JournalYear, vol.~\JournalVolume, no.~\JournalNumber,  pp.~\thefirstpage--\thelastpage.  \midoiurl\ (In Russian).}
+
+
+
+%\end{document} 

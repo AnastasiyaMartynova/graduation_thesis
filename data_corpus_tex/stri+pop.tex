@@ -1,0 +1,884 @@
+\newcommand{\fD}{\mathfrak{D}}
+
+\def\stat{stri+pop}
+
+\def\tit{МЕТРИЧЕСКАЯ КЛАССИФИКАЦИЯ ВРЕМЕННЫХ РЯДОВ 
+С~ВЫРАВНИВАНИЕМ ОТНОСИТЕЛЬНО ЦЕНТРОИДОВ КЛАССОВ$^*$}
+
+\def\titkol{Метрическая классификация временных рядов 
+с~выравниванием} % относительно центроидов классов}
+
+\def\autkol{А.\,В.~Гончаров, М.\,С.~Попова,  В.\,В.~Стрижов}
+
+
+\def\aut{А.\,В.~Гончаров$^1$,     М.\,С.~Попова$^2$,  В.\,В.~Стрижов$^3$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при финансовой поддержке РФФИ (проект 13-07-00678) 
+и~в~рамках инициативы <<MIT-Сколтех>>.}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский физико-технический институт, alex.goncharov@phystech.edu}
+\footnotetext[2]{Московский физико-технический институт, maria$\_$popova@phystech.edu}
+\footnotetext[3]{Вычислительный центр им.\ А.\,А.~Дородницына Федерального исследовательского
+  центра <<Информатика и~управление>> Российской академии наук, strijov@ccas.ru}
+
+\label{st\stat}
+
+                  \thispagestyle{headings}
+
+\Abst{Рассматривается задача многоклассовой классификации временн$\acute{\mbox{ы}}$х рядов. 
+Классификация производится с~помощью метрических методов, использующих матрицу 
+попарных расстояний между временн$\acute{\mbox{ы}}$ми рядами. Вычисление такой 
+матрицы является трудоемким, так как ее размерность равна числу объектов выборки. 
+С~целью снижения размерности предлагается предварительно выделять эталонные объекты, 
+а~именно: центроиды каждого класса, и~строить матрицу попарных расстояний между объектами 
+выборки и~эталонными объектами классов. Для вычисления попарных расстояний между объектами 
+предлагается использовать метод динамического выравнивания временн$\acute{\mbox{ы}}$х рядов. 
+В~качестве прикладной задачи рассматривается задача распознавания типа движения 
+по данным акселерометра мобильного телефона. Метрический алгоритм классификации, 
+исследованный в~этой работе, сравнивается по точности с~алгоритмом разделяющей 
+классификации.}
+
+\KW{метрическая классификация; динамическое выравнивание; классификация временных 
+рядов; центроид; функция расстояния}
+
+\DOI{10.14357\!/\!08696527150404} 
+
+%\vspace*{-12pt}
+
+
+
+\vskip 12pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+
+
+\section{Введение}
+
+В работе решается задача идентификации движений человека по временн$\acute{\mbox{ы}}$м 
+рядам акселерометра~\cite{Kwapisz2010Activity}. Данные~\cite{Data} представляют собой 
+измерения акселе\-ро\-мет\-ра некоторого носимого устройства, например мобильного телефона, 
+находящегося в~кармане человека, и~используются для идентификации действия человека 
+в~конкретный момент времени~\cite{Gluhak2013survey}. Метками классов движений служат: 
+ходьба, бег, подъем по лестнице, спуск по лестнице, сидение, лежание.
+
+В работах~\cite{Kuznetsov,Popova2015} приведены методы, решающие задачу классификации 
+временн$\acute{\mbox{ы}}$х рядов акселерометра.
+В~\cite{Kuznetsov} исследованы различные методы построения признакового описания 
+временн$\acute{\mbox{ы}}$х рядов, в~частности метод экспертного построения признаков 
+и~метод построения признакового описания на основе гипотезы порождения данных. 
+Результаты показывают, что построенное признаковое пространство достаточным 
+образом описывает зависимую переменную и~приводит к~высокой точности классификации.
+В~\cite{Popova2015} для решения задачи использованы нейронные сети с~небольшим числом 
+связей между нейронами, которые достаточно точно решают задачу классификации и~обладают 
+свойством устойчивости к~возмущениям данных.
+
+Особенность этой работы заключается в~использовании метрических способов 
+классификации с~предварительным отбором эталонных объектов. Предлагается 
+ввести функции расстояния между объектами выборки, определить признаковое 
+пространство при помощи этой функции и~провести дальнейшую классификацию 
+объектов методом~$k$~ближайших соседей.
+
+Функция расстояния между временн$\acute{\mbox{ы}}$ми рядами может быть задана 
+различными способами: евклидово расстояние~\cite{Faloutsos1994}, метод динамического 
+выравнивания временн$\acute{\mbox{ы}}$х рядов~\cite{Berndt1994,Keogh2005Exact}, 
+метод, основанный на нахождение наибольшей общей последовательности~\cite{Vlachos2002discovering}, 
+Edit Distance with Real Penalty~\cite{Chen2004On}, Edit Distance on Real 
+sequence~\cite{Chen2005Robust}, DISSIM~\cite{Frentzos2007Index}, Sequence 
+Weighted Alignment model~\cite{Morse2007An}, Spatial Assembling 
+Distance~\cite{Chen2007Spade} и~др.
+
+В \cite{Ding} показано, что разность между значениями временн$\acute{\mbox{о}}$го 
+ряда, соответствующими различным временн$\acute{\mbox{ы}}$м отсчетам, не может рассматриваться 
+в~качестве описания расстояния между двумя объектами: эта мера расстояния 
+чувствительна к~шуму и~локальным временн$\acute{\mbox{ы}}$м сдвигам. Для решения задачи 
+предлагается использовать метод динамического выравнивания временн$\acute{\mbox{ы}}$х 
+рядов (\textit{англ}.\ Dynamic Time Warping~--- DTW)~\cite{Keogh}. Как показано в~\cite{Salvador}, 
+этот метод находит наилучшее соответствие между двумя временн$\acute{\mbox{ы}}$ми рядами, если они 
+нелинейно деформированы друг относительно друга~--- растянуты, сжаты или смещены 
+вдоль оси времени. Метод DTW используется для определения сходства между ними 
+и~введения расстояния между двумя объектами.
+
+Для снижения размерности признакового пространства предлагается искать расстояния 
+от некоторого объекта до эталонных объектов каждого класса. Этими эталонными объектами 
+предлагается назначать центроиды классов. Для определения центроида требуется 
+одновременно выравнять все временн$\acute{\mbox{ы}}$е ряды, принадлежащие данному 
+классу. Эта задача обладает степенной сложностью~$m^2n^2$, где $m$~--- число 
+объектов класса; $n$~--- длина каждого временн$\acute{\mbox{о}}$го ряда.
+
+Процедура классификации выполняется в~три шага. Первый~--- отбор эталонных 
+объектов каждого класса. Второй~--- построение матрицы попарных расстояний 
+сниженной размерности между временн$\acute{\mbox{ы}}$ми рядами и~эталонными объектами 
+каждого класса. Третий~--- классификация временн$\acute{\mbox{ы}}$х рядов 
+методом~$k$~ближайших соседей с~по\-мощью матрицы попарных расстояний.
+
+С целью сравнения результатов классификации методом, предложенным в~этой работе, 
+и~результатов, полученных в~\cite{Popova2015}, проведен вычислительный эксперимент 
+на исходных данных~\cite{Data}.
+
+\section{Постановка задачи}
+
+\vspace*{-2pt}
+
+ Задана выборка $\fD = \{(\textbf{s}_i,y_i)\}^m_{i=1}$, состоящая из пар объект--от\-вет. 
+ Объектами служат временн$\acute{\mbox{ы}}$е ряды $\textbf{s}_i \hm\in \mathbb{R}^n$, 
+ а~ответами являются метки класса~--- $y_i \hm \in Y\hm =\{1,\ldots,E\}$, 
+ где $E \ll m$. Примеры временн$\acute{\mbox{ы}}$х рядов показаны на рис.~1. Выборка разбита на 
+ обуча\-ющую $\fD_l$ и~контрольную~$\fD_t$.
+
+Принята функция ошибки $S$. Требуется построить модель 
+классификации $f:\ \mathbb{R}^n \hm\rightarrow~Y$, 
+минимизирующую функцию~ошибки $S$ на контрольной выборке:
+\begin{equation}
+f =  \mathop{\mathrm{argmin}}\limits_{{f}}\left(S(f(\textbf{s}_i),y_i|\fD_t)\right) 
+= \mathop{\mathrm{argmin}}\limits_{{f}}\left(\fr{1}{|\fD_t|}
+\sum\limits_{i=1}^{|\fD_t|} \left[f(\textbf{s}_i)\neq y_i\right]\right)\,.
+\label{e1-p}
+\end{equation}
+
+
+\begin{figure}[h] %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=81.674mm
+ \epsfbox{pop-1.eps}
+ }
+\end{center}
+ \vspace*{-11pt}
+\Caption{Примеры временн$\acute{\mbox{ы}}$х рядов измерений акселерометра 
+для разных видов физической активности: \textit{1}~--- бег;
+\textit{2}~--- ходьба; \textit{3}~--- подъем; \textit{4}~--- спуск;
+\textit{5}~--- сидение; \textit{6}~--- стояние
+\label{draw:1}
+}
+\vspace*{-3pt}
+\end{figure}
+
+
+\vspace*{-4pt}
+
+\section{Описание алгоритма метрической классификации}
+
+Модель метрической классификации состоит из трех функций. Первая функция выделяет 
+центроиды классов, вторая функция строит матрицу попарных расстояний между 
+центроидами и~объектами, а~третья функция классифицирует объекты по полученной матрице.
+
+\subsection{Отбор эталонных объектов}
+
+В общем случае матрица попарных расстояний~$\textbf{A}$ имеет размерность $m\times m$, 
+где $m$~--- число объектов выборки~$\fD$. Для снижения размерности матрицы 
+попарных расстояний предлагается строить ее не для всех пар элементов выборки~$\fD$, 
+а~для пар $(\textbf{s}_i,\textbf{z}_e)$, где $\textbf{s}_i$~--- 
+элемент выборки, а~$\textbf{z}_e$~--- эталонный объект класса~$e$ из~$Y$. 
+Предлагается в~качестве эталонного объекта использовать \textit{центроид} 
+этого класса. Это решение даст значительное снижение размерности матрицы 
+попарных расстояний до $m\times E$, где $E$~---~число меток классов.
+
+\smallskip
+
+\noindent
+\textbf{Определение~1.}\
+\textit{Пусть $\fD_e$~--- множество элементов из~$\fD$, принадлежащих одному 
+классу~$e$ из~$Y$. Центроидом множества векторов $\fD_e \hm= \{\textbf{s}_i|y_i\hm=e\}_{i=1}^{m}$ 
+по расстоянию~$\rho$ назовем вектор $\textbf{z}_e \hm\in \mathbb{R}^n$ такой, что}
+
+\vspace*{2pt}
+
+\noindent
+$$
+\textbf{z}_e = \mathop{\mathrm{argmin}}\limits_{{\textbf{z} \in \mathbb{R}^n}}
+\sum\limits_{\textbf{s}_i \in \fD_e}{\rho(\textbf{s}_i ,\textbf{z})}\,.
+$$
+
+\vspace*{-2pt}
+
+
+\smallskip
+
+Опишем метод оценки \textit{центроида} $\textbf{z}_e$ из множества векторов 
+$\fD_e \hm\subset \mathbb{R}^n$. Строим матрицу попарных расстояний~$\textbf{A}$ 
+между всеми элементами множества~$\fD_e$.
+С~помощью метода главных компонент снижаем размерность пространства 
+столбцов матрицы~$\textbf{A}$. Построим такие проекции исходных объектов 
+на новую систему координат, называемых главными компонентами, чтобы сумма 
+квадратов расстояний от объектов до их проекций на первые~$h$ $( h \hm<  n)$ 
+главных компонент была минимальной. Опишем этот метод более подробно.
+Рассмотрим такую ортогональную матрицу~$\textbf{W}$ в~линейной комбинации 
+$\mathbf{B} = \mathbf{W}\mathbf{A}^{\mathrm{T}}$ 
+век\-то\-ров-строк матрицы~$\mathbf{A}$, что век\-то\-ры-столбцы 
+$\mathbf{b}_1, \ldots , \mathbf{b}_n$ матрицы \textbf{B} 
+будут иметь максимальную сумму их дисперсий:
+
+\vspace*{-2pt}
+
+\noindent
+ $$ 
+ \sum\limits_{j=1}^{n}{\sigma^2
+ \left(\mathbf{b}_j\right)}\rightarrow \max\,,$$
+ где
+ 
+ \noindent
+ $$
+ \sigma^2(\mathbf{b}) = \fr{1}{m}\sum\limits_{i=1}^{m}
+ \left(\mathbf{b}_i - \overline{\mathbf{b}}\right)^2\,;\qquad\overline{\mathbf{b}} = 
+ \fr{1}{m}\sum\limits_{i=1}^{m}{\mathbf{b}_i}\,.
+ $$
+Матрица попарных расстояний между объектами в~пространстве меньшей размерности~$\textbf{A}^{\mathrm{T}} 
+\hm= \mathbf{W}^{'}\mathbf{A}^{\mathrm{T}}$ есть проекция 
+век\-то\-ров-строк матрицы~$\textbf{A}$ на~$h$ первых главных компонент.
+
+Центроидом множества векторов~$\fD_e$~по расстоянию~$\rho$ будем приближенно 
+считать вектор~$\mathbf{z}_e \hm\in \fD_e$~такой, что в~пространстве первых~$h$~главных 
+компонент~$\fD_e$ он оказывается ближайшим к~остальным объектам, т.\,е.
+\begin{equation}
+\mathbf{z}_e =\mathop{\mathrm{argmin}}\limits_{{\mathbf{z} \in \fD_e}}
+\sum\limits_{\mathbf{s}_i \in \fD_e}{\rho(\mathbf{W}^{'{\mathrm{T}}}\mathbf{s}_i ,
+\mathbf{W}^{'{\mathrm{T}}}\mathbf{z})}\,.
+\label{e2-p}
+\end{equation}
+
+Рассматривая подмножества объектов каждого класса по отдельности, 
+вводим функцию~$g_{\rho}$, которая каждому классу из~$Y$ ставит 
+в~соответствие центроид данного класса по расстоянию~$\rho$ по формуле~(\ref{e2-p}):
+$$
+g_{\rho}: Y \rightarrow \fD'\,,
+$$
+где $\fD' \subset \fD_l$~--- множество центроидов каждого класса.
+
+\pagebreak
+
+\subsection{Введение функции расстояния между объектами}
+
+В данной работе в~качестве метрического расстояния между объектами предлагается 
+использовать стоимость \textit{пути наменьшей стоимости} между этими объектами.
+
+Дадим определение пути наименьшей стоимости. 
+Пусть $\boldsymbol{\Omega}^{n \times n}$~--- это мат\-ри\-ца, такая что ее 
+элемент~$\Omega_{ij}$ равен разности между $i$-м и~$j$-м элементами 
+последовательностей~$\mathbf{s}_1$ и~$\mathbf{s}_2$:
+\begin{equation*}
+\boldsymbol{\Omega}_{ij}=\left\vert \mathbf{s}_{1i} - \mathbf{s}_{2j}\right\vert\,.
+\end{equation*}
+
+\noindent
+\textbf{Определение~2.}\
+\textit{Путем $\boldsymbol{\pi}$ между последовательностями $\mathbf{s}_1$ 
+и~$\mathbf{s}_2$ назовем упорядоченное множество пар индексов 
+элементов матрицы~$\boldsymbol{\Omega}$}: 
+$$
+\boldsymbol{\pi} = \{\pi_r\} = \{(i_r,j_r)\},\quad r = 1, \dots, R,\quad 
+i,j \in \{1,\ldots,n\} \,,
+$$ 
+\textit{где $R$~--- длина пути, зависящая от выбора пути. Он должен удовлетворять 
+следующим условиям}:
+
+{\bfseries\textit{Граничные условия:}}
+  ${\pi}_1\hm = (1,1)$ \textit{и} ${\pi}_R \hm= (n,n)$, 
+  \textit{т.\,е.\ начало и~конец $\boldsymbol{\pi}$ находятся на 
+  диагонали в~противоположных углах}~$\boldsymbol{\Omega}.$
+
+{\bfseries\textit{Непрерывность.}}
+\textit{Пусть ${\pi}_r \hm= (p_1,p_2)$ и~ ${\pi}_{r-1} \hm= (q_1,q_2)$, 
+$r \hm= 2,\ldots,R$. Тогда 
+$$
+p_1-q_1\leq1\,;\qquad p_2-q_2\leq1\,.
+$$ 
+Это ограничение нужно, чтобы в~шаге пути~$\boldsymbol{\pi}$ участвовали 
+только соседние элементы матрицы (включая соседние по диагонали)}.
+
+{\bfseries\textit{Монотонность.}}
+\textit{Пусть ${\pi}_r \hm= (p_1,p_2)$ и~${\pi}_{r-1} \hm= (q_1,q_2)$, 
+$r \hm= 2,\ldots ,R$. Тогда выполняется хотя бы одно из условий 
+$$
+p_1-q_1\geq1\,;\qquad p_2-q_2\geq1\,.
+$$
+ Это ограничение обусловлено природой рассматриваемых последовательностей 
+ и~предназначено для монотонности функции выравнивания времени.}
+
+
+\smallskip
+
+\noindent
+\textbf{Определение~3.}\
+\textit{Стоимостью $\mathrm{Cost}\left(\mathbf{s}_1,\mathbf{s}_2,{\boldsymbol{\pi}}\right)$ 
+пути~$\boldsymbol{\pi}$ между последовательностями $\mathbf{s}_1$ 
+и~$\mathbf{s}_2$ назовем} 
+$$
+\mathrm{Cost}\left(\mathbf{s}_1,\mathbf{s}_2,{\boldsymbol{\pi}}\right) = 
+\sum\limits_{(i,j) \in \boldsymbol{\pi}}\boldsymbol{\Omega}_{ij}\,.
+$$
+
+\smallskip
+
+\noindent
+\textbf{Определение~4.}\
+\textit{Путем наименьшей стоимости (выравнивающим путем) $\hat{\boldsymbol{\pi}}$ 
+между последовательностями $\mathbf{s}_1$ и~$\mathbf{s}_2$ назовем путь, 
+который имеет наименьшую стоимость среди всех возможных путей 
+между последовательностями $\mathbf{s}_1$ и~$\mathbf{s}_2$}:
+$$
+\hat{\boldsymbol{\pi}} = \mathop{\mathrm{argmin}}\limits_{{\boldsymbol{\pi}}} 
+\mathrm{Cost}\left(\mathbf{s}_1,\mathbf{s}_2,\boldsymbol{\pi}\right)\,.
+$$
+
+
+%\smallskip
+
+
+Обозначим стоимость выравнивающего пути между последовательностями~$\mathbf{s}_1$ 
+и~$\mathbf{s}_2$ через 
+$\delta(\mathbf{s}_1,\mathbf{s}_2) \hm= 
+\mathrm{Cost}\left(\mathbf{s}_1,\mathbf{s}_2,\hat{\boldsymbol{\pi}}\right)$.
+
+Для вычисления стоимости выравнивающего пути в~данной работе используется метод DTW. 
+Согласно этому методу необходимо построить новую матрицу~$\boldsymbol{\gamma}$, 
+элементы которой определяются следующим образом:
+\begin{gather*}
+\gamma_{1j} = \Omega_{1j}\,,\quad \gamma_{i1} = \Omega_{i1},\quad i,j = 1, \dots , n\,;
+\\
+\gamma_{ij} = \Omega_{ij}+\min(\gamma_{i,j-1},\gamma_{i-1,j},\gamma_{i-1,j-1})\,,\quad 
+i,j = 2 , \dots , n\,.
+\end{gather*}
+
+Элемент $\gamma_{ij}$ матрицы $\boldsymbol{\gamma}$ равен стоимости выравнивающего 
+пути между последовательностями $\{{s}_{1a}\}_{a=1}^i$ и~$\{{s}_{2a}\}_{a=1}^j$.
+
+В качестве значения функции расстояния между двумя объектами выберем 
+стоимость выравнивающего пути между ними из определения~3: 
+$$
+\rho(\mathbf{s}_1,\mathbf{s}_2)=\delta(\mathbf{s}_1,\mathbf{s}_2) = \gamma_{nn}\,.
+$$
+Иначе говоря, для множеств декартова произведения $\fD\times\fD'$ 
+$$
+{\rho}: \fD\times\fD'\rightarrow \mathbf{X}\,,
+$$ 
+где $\mathbf{X}$~--- матрица попарных расстояний между объектами и~центроидами классов.
+Ее элементы равны $X_{ij} \hm= \rho(\mathbf{s}_i,\mathbf{d}_j),$ 
+$\mathbf{s}_i\hm \in~\fD$, $\mathbf{d}_j\hm\in~\fD'$.
+
+\subsection{Описание алгоритма классификации}
+
+Считаем матрицу $\mathbf{X}$ множеством векторов-строк, служащих 
+описанием объектов~$\{\mathbf{x}_i\}_{i=1}^m$. Матрица $\mathbf{X}$ 
+используется как матрица объект-признак в~алгоритме классификации.
+Применяется метод~$k$~ближайших соседей. При этом 
+$\mathbf{X}^l\hm = {\rho}(\fD^l\times\fD')$~--- обучающая выборка из 
+множества $\mathbf{X}$, а~$\mathbf{X}^t \hm= {\rho}( (\fD\setminus\fD^l)\times\fD')$~--- 
+тестовая. Каждому объекту обучающей выборки $\mathbf{x}_i \in \mathbf{X}^l$, 
+соответствующему исходному объекту $\mathbf{s}_i\hm \in \fD$, поставлена 
+в~соответствие метка класса~$y_i$.
+
+Для произвольного объекта $\mathbf{u}\hm\in \mathbf{X}$ расположим элементы 
+обучающей выборки ${\mathbf{x}_1,\ldots,\mathbf{x}_{|X^l|}} \hm= X^l$ 
+в~порядке возрастания расстояний до~$\mathbf{u}$:
+$$
+\eta(\mathbf{u},\mathbf{x}^{(1)}_\mathbf{u})\leq\eta(\mathbf{u},\mathbf{x}^{(2)}_{\mathbf{u}})\leq\cdots
+\leq\eta(\mathbf{u},\mathbf{x}^{(|X^l|)}_{\mathbf{u}}),$$
+где $\eta(\mathbf{u},\mathbf{x}^{(i)}_{\mathbf{u}})$~--- 
+евклидово расстояние между объектами $\mathbf{u}$ и~$\mathbf{x}^{(i)}_{\mathbf{u}}$, 
+вычисленное по матрице объект-признак~$\mathbf{X}$.
+ Будем относить объект~$\mathbf{u}$ к~тому классу, элементов которого окажется больше 
+ среди~$k$~его ближайших соседей $\mathbf{x}^{(i)}_{\mathbf{u}}$, $i \hm= 1,\ldots,k$:
+\begin{equation*}
+h_{\mathbf{u}}\left(\mathbf{u},\mathbf{X}^l,k\right) = 
+\mathop{\mathrm{argmax}}\limits_{{y \in Y}}
+\sum\limits_{i=1}^{k}\left[y^{(i)}_{\mathbf{u}} = y\right]\,.
+\end{equation*}
+
+Оптимальное значение параметра $k$ определяется по 
+критерию скользящего контроля с~исключением объектов группами: 
+производится~$T$~исключений из обучающей выборки произвольных групп 
+$\mathbf{X}^{l_t}$ , $t \hm= 1, \ldots ,T$, размер которых 
+составляет~30\%~обучающей выборки. Измеряется величина ошибки 
+классификации на этих группах при фиксированном числе~$k$~ближайших соседей. 
+Эта ошибка суммируется для всех таких групп и~минимизируется по числу ближайших 
+соседей:
+\begin{equation}
+\mathrm{S}(k,\mathbf{X}^l) = \sum\limits_{t=1}^{T}
+\sum\limits_{i=1}^{l_t}
+\left[h_{\mathbf{u}_i}(\mathbf{u}_i,\mathbf{X}^l
+\backslash\{\mathbf{X}^{l_t}\},k)\neq y_i\right]\rightarrow 
+\min\limits_{k \in \mathbb{N}}.
+\label{e3-p}
+\end{equation}
+
+Таким образом, предлагаемая модель метрической классификации~$f$ 
+может быть представлена в~виде композиции нескольких функций:
+\begin{equation*}
+f(\fD,k) = h\left(\rho\left(\fD\times g_{\rho}(Y)\right), 
+\rho\left(\fD^l\times g_{\rho}(Y)\right), k\right).
+\end{equation*}
+При этом решаемая задача~(\ref{e1-p}) выбора структуры модели классификации имеет вид:
+ \begin{equation*}
+f(\fD,k) = \mathop{\arg\min}\limits_{{k\in\mathbb{N}}}(S(f(\fD,k),Y|\fD_t).
+\end{equation*}
+
+\section{Вычислительный эксперимент}
+
+С целью получения оценки ошибки предложенной модели 
+и~ее сравнения с~моделью классификации из~\cite{Popova2015} был проведен 
+вычислительный эксперимент. Использовались данные акселерометра мобильного телефона. 
+Данные представляли собой 1260~временн$\acute{\mbox{ы}}$х рядов длиной~600~точек, 
+каждый из которых последовательно объединял три временн$\acute{\mbox{ы}}$х ряда: 
+временн$\acute{\mbox{о}}$й ряд ускорения по оси~$X$ (200~измерений), оси~$Y$ 
+(200~измерений) и~оси~$Z$ (200~измерений). Выделено шесть типов физической 
+активности: ходьба, бег, сидение, стояние, подъем, спуск. Временн$\acute{\mbox{ы}}$е 
+ряды записывались акселерометром, который находился в~кармане у~человека, 
+выполняющего один из типов физической активности, после чего разделялись на 
+10-се\-кунд\-ные сегменты.
+
+Для предварительной оценки качества классификации описанного алгоритма 
+были построены диаграммы рассеяния для множества признаков~$\mathbf{X}$. 
+Пример диаграммы рассеяния для признаков~6 и~2~приведен на рис.~2 
+для всех объектов обучающей выборки. По оси~$X$ отложены значения признака два, 
+т.\,е.\ расстояние до центроида второго класса, а~по оси~$Y$~--- значения шестого 
+признака, т.\,е.\ расстояние до центроида шестого класса. Из-за плохой визуальной 
+разделимости на диаграммах рассеяния выдвигается предположение о низком качестве 
+классификации объектов, принадлежащих классам <<спуск~--- ходьба вниз по лестнице>> 
+и~<<подъем~--- ходьба вверх по лестнице>>. Остальные же классы визуально разделимы на 
+этих диаграммах. Предполагается, что на них величина ошибки будет значительно ниже.
+
+\begin{figure} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=84.326mm
+ \epsfbox{pop-2.eps}
+ }
+\end{center}
+ \vspace*{-11pt}
+\Caption{Диаграмма рассеяния для признаков~6 и~2,
+ по которой выдвигаются предположения о качестве классификации: \textit{1}~--- бег;
+\textit{2}~--- ходьба; \textit{3}~--- подъем; \textit{4}~--- спуск;
+\textit{5}~--- сидение; \textit{6}~--- стояние
+\label{draw:2}}
+\end{figure}
+
+В табл.~1 показаны средние расстояние между объектами различных классов. 
+Для большинства классов средние расстояния до объектов других классов больше, 
+чем среднее расстояние между объектами самого класса. Выдвигается предположение 
+о~низкой величине ошибки на таких классах.
+
+\begin{table}\small
+\vspace*{-3pt}
+\begin{center}
+\Caption{Средние расстояния между объектами различных классов
+\label{tab:1}}
+\vspace*{2ex}
+
+
+\begin{tabular}{|l|c|c|c|c|c|c|c|}
+\hline
+       Класс  & Бег & Ходьба & Вверх & Вниз & Сидение & Стояние \\
+        \hline
+        Бег   &\textbf{1,7221}  &  2,7483  &  3,3432  &  3,2631  &  3,4754  &  3,8243\\
+        Ходьба   & 2,7483  &  \textbf{1,0665} &   1,4622  &  1,3133  &  2,9301  &  2,1336\\
+        Подъем   & 3,3432    &     1,4622 &   \textbf{1,4405}    &1,3760&    3,1055   & 1,8948\\
+        Спуск   & 3,2631   &      1,3133  &       1,3760   & \textbf{1,2323} &   3,1764  &  1,9166\\
+        Сидение   & 3,4754  &       2,9301   &      3,1055  &       3,1764  &  \textbf{1,5114} &   3,2813\\
+        Стояние   & 3,8243 &        2,1336    &     1,8948 &        1,9166   &      3,2813&   \textbf{ 1,2692}\\
+        \hline
+\end{tabular}
+\end{center}
+\vspace*{-9pt}
+\end{table}
+
+Все вышеизложенные предположения подтверждаются последующими результатами эксперимента.
+
+При выполнении классификации методом~$k$~ближайших соседей при помощи метода 
+скользящего контроля~(\ref{e3-p}) было найдено наилучшее~$k$. На 
+рис.~3 показано среднее значение функции ошибки~$S$ из выражения~(\ref{e1-p}) 
+и~ее стандартное отклонение в~зависимости от величины~$k$. Имеется минимум при $k\hm=1$.
+
+\begin{figure} %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=63.157mm
+ \epsfbox{pop-3.eps}
+ }
+\end{center}
+ \vspace*{-13pt}
+\Caption{Зависимость ошибки от величины $k$}
+\vspace*{-4pt}
+\end{figure}
+
+В вычислительном эксперименте исследовалась точность модели
+метрической классификации, описанной в~разд.~3. Оценивалась
+точность модели по критерию скользящего контроля~(\ref{e3-p}). В~табл.~2
+приводится сравнение результатов работы модели, основанной на методе
+DTW, и~модели, описанной в~\cite{Popova2015}. Качество классификации
+в~классе <<ходьба>> ухудшилось, в~то время как в~классах <<подъем>> 
+и~<<спуск>> увеличилось. У~построенной модели качество классификации
+выше, чем у модели разделяющей классификации.
+
+\begin{table}\small
+\begin{center}
+\Caption{Сравнение эффективности предложенного метрического алгоритма классификации 
+и~алгоритма разделяющей классификации на данных \cite{Data} 
+\label{tab:2}}
+\vspace*{2ex}
+
+\tabcolsep=3.3pt
+\begin{tabular}{|l|c|c|c|c|c|c|c|}
+        \hline
+       \multicolumn{1}{|c|}{Классификация} & Бег & Ходьба & Подъем& Спуск & Сидение & Стояние& Общее \\
+        \hline
+        \tabcolsep=0pt\begin{tabular}{l}Метрическая\\ классификация.\\
+        Точность по критерию\\  
+        скользящего контроля, \% \end{tabular}& 100 & 83 & 80 & 87 & \hphantom{9}99 & 100 & 91\\
+        \hline
+\tabcolsep=0pt\begin{tabular}{l} Разделяющая\\
+ классификация~\cite{Popova2015}.\\ 
+        Относительная точность \\
+           на тестовых данных, \%  \end{tabular} &  \hphantom{9}98 & 96 & 75 & 72 & 100 & \hphantom{9}89 & 88\\
+           \hline
+\end{tabular}
+\end{center}
+\vspace*{-9pt}
+\end{table}
+
+\vspace*{-4pt}
+
+\section*{Заключение}
+
+\vspace*{-2pt}
+
+В работе представлена модель метрической классификации. 
+В~рамках модели предложено использование расстояния, вычисленного методом 
+динамического выравнивания временн$\acute{\mbox{ы}}$х рядов, использование 
+центроидов для снижения размерности задачи и~последующей классификации внутри 
+построенного таким образом признакового пространства. 
+С~целью сравнения качества классификации предложенной модели и~модели разделяющей 
+классификации был проведен вычислительный эксперимент, демонстрирующий высокое 
+качество классификации модели метрической классификации. Программная реализация 
+алгоритма метрической классификации в~среде разработки MatLab находится 
+в~свободном доступе~\cite{StrategyCode}.
+
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+\bibitem{Kwapisz2010Activity}
+    \Au{Kwapisz~J.\,R., Weiss~G.\,M., Moore~S.} 
+    Activity recognition using cell phone accelerometers~/\!\!/ 
+    SIGKDD Explorations, 2010. Vol.~12. No.\,2. P.~74--82.
+\bibitem{Data}
+\Au{Kwapisz~J.\,R.}  Data from accelerometer~/\!\!/ Sourceforge.net: 
+веб-сайт для разработчиков открытого программного обеспечения, 2010. 
+{\sf http://sourceforge.net/p/ mlalgorithms/TSLearning/data/preprocessed\_large.csv}.
+\bibitem{Gluhak2013survey} %3
+\Au{Hoseini-Tabatabaei~S.\,A., Gluhak~A., Tafazolli~R.} 
+A~survey on smartphone-based systems for opportunistic user context recognition~/\!\!/ 
+ACM Comput. Surv., 2013. Vol.~45. No.\,3. P.~27.
+%\bibitem{Bernecker2010Activity}
+    %\BibAuthor{Bernecker\;T., Graf\;F., Kriegel\;H.} Activity recognition on 3d accelerometer data (technical report)~//
+\bibitem{Kuznetsov} %4
+\Au{Кузнецов~М.\,П.} Признаковая классификация временных рядов~/\!\!/ 
+Sourceforge.net: веб-сайт для разработчиков открытого программного обеспечения, 2014.
+{\sf https://sourceforge.net/p/mlalgorithms/code/HEAD/tree/TSLearning/doc/TSClas sification/TSClassification.pdf}.
+\bibitem{Popova2015}
+\Au{Попова~М.\,С., Стрижов~В.\,В.} Выбор оптимальной модели классификации физической 
+активности по измерениям акселерометра~/\!\!/ Информатика и~её применения, 2015. 
+Т.~9. Вып.\,~1. С.~79--89.
+\bibitem{Faloutsos1994}
+\Au{Faloutsos~C., Ranganathan~M., Manolopoulos~Y.} 
+Fast subsequence matching in time-series databases~/\!\!/ ACM Conference 
+(International) on Management of Data (SIGMOD), 1994. 
+Minneapolis, MN, USA.  P.~419--429.
+\bibitem{Berndt1994}
+\Au{Berndt~D.\,J., Clifford~J.} 
+Using dynamic time warping to find patterns in time series~/\!\!/ 
+Workshop on Knowledge Discovery in Databases (KDD Workshop), 1994. 
+Seattle, WA, USA. P.~359--370.
+\bibitem{Keogh2005Exact}
+\Au{Keogh~E.\,J., Ratanamahatana~C.\,A.} Exact indexing of dynamic time warping~/\!\!/ 
+Knowl. Inf. Syst., 2005. Vol.~7. No.\,3. P.~358--386.
+\bibitem{Vlachos2002discovering}
+\Au{Vlachos~M., Gunopulos~D., Kollios~G.} 
+Discovering similar multidimensional trajectories~/\!\!/ 
+IEEE  Conference (International) on Data Engineering (ICDE), 2002. San Jose, CA,
+USA. P.~673--684.
+\bibitem{Chen2004On}
+\Au{Chen\;L., Ng\;R.\,T.} On the marriage of lp-norms and edit distance~/\!\!/ 
+Very Large Data Bases (VLDB) Conference, 2004.  Toronto, Ontario, Canada.   P.~792--803.
+\bibitem{Chen2005Robust}
+\Au{Chen~L., $\ddot{\mbox{O}}$zsu~M.\,T., Oria~V.} 
+Robust and fast similarity search for moving object trajectories~/\!\!/ 
+ACM  Conference (International) on Management of Data (SIGMOD), 2005. 
+Baltimore, MD, USA. P.~491--502.
+\bibitem{Frentzos2007Index}
+\Au{Frentzos~E., Gratsias~K., Theodoridis~Y.} 
+Index-based most similar trajectory search~/\!\!/ 
+IEEE Conference (International) on Data Engineering (ICDE), 2007. 
+Istanbul, Turkey. P.~816--825.
+\bibitem{Morse2007An}
+\Au{Morse~M.\,D., Patel~J.\,M.} 
+An efficient and accurate method for evaluating time series similarity~/\!\!/ 
+ACM  Conference (International) on Management of Data (SIGMOD), 2007. 
+Beijing, China. P.~569--580.
+\bibitem{Chen2007Spade}
+   \Au{Chen~Y., Nascimento~M.\,A., Ooi~B.\,C., Tung~A.\,K.\,H.} 
+   SpADe: On shape-based pattern detection in streaming time series~/\!\!/ 
+   IEEE  Conference (International) on Data Engineering (ICDE), 2007. 
+   Istanbul, Turkey. P.~786--795.
+\bibitem{Ding}
+\Au{Scheuermann~P., Wang~X., Ding~H., Trajcevski~G., Keogh~E.} 
+Querying and mining of time series data: 
+Experimental comparison of representations and distance measures~/\!\!/ 
+Very Large Data Bases (VLDB) Conference, 2008. Auckland, New Zealand. P.~1542--1552.
+
+
+\bibitem{Keogh}
+   \Au{Keogh~E.\,J., Pazzani~M.\,J.} Scaling up dynamic time warping to massive datasets~/\!\!/ 
+   Principles of data mining and knowledge discovery~/
+   Eds. J.\,M.~Zytkow, J.~Rauch.~--- Lecture notes in
+   artificial intelligence ser.~--- Berlin--Heidelberg: Springer-Verlag, 1999. 
+   Vol.~1704. P.\,1--11. 
+   %это книга, издательство springer Berlin Heidelberg, 
+   %Book Subtitle Third European Conference, PKDD'99, 
+   %Prague, Czech Republic, September 15-18, 1999. Proceedings,  
+   %Editors Jan M. Zytkow , Jan Rauch.
+\bibitem{Salvador}
+    \Au{Salvador~S., Chan~P.} Fastdtw: Toward accurate dynamic time warping in linear time and space~/\!\!/ 
+    Workshop on Mining Temporal and Sequential Data, 2004. 
+    Seattle, WA, USA. P.~11.
+\bibitem{StrategyCode}
+    \Au{Гончаров~А.\,В.} Реализация метрической классификации временных рядов~/\!\!/ 
+    Sourceforge.net, 2015. 
+    {\sf http://sourceforge.net/p/mlalgorithms/code/HEAD/tree/ Group274/Goncharov2015MetricClassification/code/main.m}
+
+   \end{thebibliography}
+} }
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 16.07.15}}
+
+
+
+
+\vspace*{9pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{METRIC TIME SERIES CLASSIFICATION USING DYNAMIC WARPING 
+RELATIVE TO CENTROIDS OF CLASSES}
+
+\def\titkol{Metric time series classification using dynamic warping 
+relative to centroids of classes}
+
+
+\def\aut{A.\,V.~Goncharov$^1$,  M.\,S.~Popova$^1$, and~V.\,V.~Strijov$^2$}
+\def\autkol{A.\,V.~Goncharov,  M.\,S.~Popova, and~V.\,V.~Strijov}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Moscow Institute of Physics and Technology, 
+9~Institutskiy Per., Dolgoprudny,\linebreak
+$\hphantom{^1}$Moscow Region 141700,
+Russian Federation
+
+
+\noindent
+$^2$Dorodnicyn Computing Center,
+ Federal Research Center ``Computer Science\linebreak 
+$\hphantom{^1}$and Control'' of the Russian Academy of Sciences, 
+40~Vavilov Str., Moscow\linebreak
+$\hphantom{^1}$119333, Russian Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2015 vol~25 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2015   vol~25   no\,4
+\hfill \textbf{\thepage}}}
+
+\Abste{The paper discusses the problem of time series classification in the 
+case of several classes. The proposed classification model uses the matrix of 
+distance between time series. This distance measure is defined by the dynamic 
+time warping method. The dimension of the distance matrix is very high. The paper 
+introduces centroids of each class as reference objects used to decrease this 
+dimension. The distance matrix with lower dimension describes the distance between 
+all objects and reference objects. This method is used for human activity recognition. 
+The quality of classification on data from a mobile accelerometer is investigated. 
+This metric algorithm of classification is compared with the separating classification 
+algorithm.}
+
+
+\KWE{metric classification; dynamic time warping; time series classification; 
+centroid; distance function}
+
+\DOI{10.14357\!/\!08696527150404} 
+
+%\vspace*{-24pt}
+
+\Ack
+\noindent
+The work was financially supported by the Russian Foundation for Basic
+Research (project 13-07-00678) and under the initiative ``MIT-Skoltech.''
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{Kwapisz2010Activity-1}
+\Aue{Kwapisz, J.\,R., G.\,M.~Weiss, and S.~Moore.} 2010. 
+Activity recognition using cell phone accelerometers. \textit{SIGKDD Explorations} 
+12(2):74--82.
+
+\bibitem{Data-1}
+\Aue{Kwapisz, J.\,R.} 2010.  Data from accelerometer. Available at: 
+{\sf http://sourceforge. net/p/mlalgorithms/TSLearning/data/preprocessed\_large.csv} (accessed April~21, 2014).
+
+\bibitem{Gluhak2013survey-1}
+\Aue{Hoseini-Tabatabaei, S.\,A., A.~Gluhak, and R.~Tafazolli.} 2013. 
+A~survey on smartphone-based systems for opportunistic user context recognition. 
+\textit{ACM Comput. Surv.} 45(3):27.
+
+\bibitem{Kuznetsov-1}
+\Aue{Kuznecov, M.\,P.} 
+Priznakovaya klassifikatsiya vremennykh ryadov [Time series feature-based classification]. 
+Available at:
+{\sf https://sourceforge.net/p/mlalgorithms/ code/HEAD/tree/TSLearning/doc/TSClassification/TSClassification.pdf} (accessed June~18, 2015).
+
+\bibitem{Popova2015-1}
+\Aue{Popova, M.\,S., and V.\,V.~Strijov.} 2015. 
+Vybor optimal'noy modeli klassifikatsii fizicheskoy aktivnosti po izmereniyam 
+akselerometra [Selection of optimal physical activity classification model using 
+measurements of accelerometer]. 
+\textit{Informatika i ee Primeneniya}~--- \textit{Inform. Appl.} 9(1):79--89.
+
+\bibitem{Faloutsos1994-1}
+\Aue{Faloutsos, C., M.~Ranganathan, and Y.~Manolopoulos.} 1994. 
+Fast subsequence matching in time-series database. \textit{ACM  Conference 
+(International) on Management of Data (SIGMOD)}. Minneapolis, MN. 419--429.
+
+\bibitem{Berndt1994-1}
+\Aue{Berndt, D.\,J., and J.~Clifford.} 1994. 
+Using dynamic time warping to find patterns in time series. 
+\textit{Workshop on Knowledge Discovery in Databases (KDD Workshop)}. 
+Seattle, WA. 359--370.
+
+\bibitem{Keogh2005Exact-1}
+\Aue{Keogh,  E.\,J., and C.\,A. Ratanamahatana.} 2005. 
+Exact indexing of dynamic time warping. \textit{Knowl. Inf. Syst}. 7(3):358--386.
+
+\bibitem{Vlachos2002discovering-1}
+\Aue{Vlachos, M., D. Gunopulos, and G.~Kollios.} 2002. 
+Discovering similar multidimensional trajectories. \textit{IEEE  Conference 
+(International) on Data Engineering (ICDE)}. San Jose, CA. 673--684.
+
+\bibitem{Chen2004On-1}
+\Aue{Chen, L., and R.\,T. Ng.} 2004. On the marriage of lp-norms and edit distance.
+\textit{Very Large Data Bases (VLDB) Conference}. Toronto, Ontario, Canada. 792--803.
+
+\bibitem{Chen2005Robust-1}
+\Aue{Chen,~L., M.\,T.~$\ddot{\mbox{O}}$zsu, and V.~Oria.} 2005. 
+Robust and fast similarity search for moving object trajectories. \textit{ACM 
+Conference (International) on Management of Data (SIGMOD)}. Baltimore, MD. 491--502.
+
+\bibitem{Frentzos2007Index-1}
+\Aue{Frentzos, E., K.~Gratsias, and Y.~Theodoridis.} 2007. 
+Index-based most similar trajectory search. \textit{IEEE 
+ Conference (International) on Data Engineering (ICDE)}. Istanbul, Turkey. 816--825.
+
+\bibitem{Morse2007An-1}
+\Aue{Morse, M.\,D., and J.\,M. Patel}. 2007. 
+An efficient and accurate method for evaluating time series similarity. \textit{ACM 
+Conference (International) on Management of Data (SIGMOD)}. Beijing, China. 569--580.
+
+\bibitem{Chen2007Spade-1}
+\Aue{Chen, Y., M.\,A. Nascimento,  B.\,C.~Ooi,  and A.\,K.\,H.~Tung.} 2007. 
+SpADe: On shape-based pattern detection in streaming time series. 
+\textit{IEEE  Conference (International) on Data Engineering (ICDE)}. Istanbul, Turkey. 786--795.
+
+\bibitem{Ding-1}
+\Aue{Scheuermann, P., X. Wang, H. Ding, G. Trajcevski, and E.~Keogh.} 2008. 
+Querying and mining of time series data: Experimental comparison of 
+representations and distance measures. \textit{Very Large Data Bases (VLDB) Conference}.
+ Auckland, New Zealand. 1542--1552.
+
+\bibitem{Keogh-1}
+\Aue{Keogh, E.\,J., and M.\,J. Pazzani.} 1999. 
+    Scaling up dynamic time warping to massive datasets. 
+\textit{Principles of data mining and knowledge discovery}.
+   Eds. J.\,M.~Zytkow and J.~Rauch. Lecture notes in
+   artificial intelligence ser. Berlin--Heidelberg: 
+   Springer-Verlag. 1704:1--11.
+
+\bibitem{Salvador-1}
+\Aue{Salvador, S., and P. Chan.} 2004. 
+Fastdtw: Toward accurate dynamic time warping in linear time and space. 
+\textit{3rd SIGKDD Workshop on Mining Temporal and Sequential Data (KDD/TDM)}. 
+Seattle, WA. 11.
+
+\bibitem{StrategyCode-1}
+\Aue{Goncharov, A.\,V.} 
+Programmnaya realizatsiya [Program realization]. Available at: 
+{\sf http://sourceforge.net/p/mlalgorithms/code/HEAD/tree/Group274/Goncharov2015 MetricClassification/code/main.m} (accessed April~20, 2015).
+\end{thebibliography}
+} }
+
+
+\vspace*{-1pt}
+
+\hfill{\small\textit{Received July 16, 2015}}
+    
+    \Contr
+
+\noindent
+\textbf{Goncharov Alexey V.} (b.\ 1995)~---
+ student, Moscow Institute of Physics and Technology, 9~Institutskiy Per., 
+ Dolgoprudny, Moscow Region 141700, Russian Federation; alex.goncharov@phystech.edu
+ 
+ \vspace*{3pt}
+
+\noindent
+\textbf{Popova Maria S.} (b.\ 1994)~--- 
+student, Moscow Institute of Physics and Technology, 9~Institutskiy Per., 
+Dolgoprudny, Moscow Region 141700, Russian Federation; mariewelt@gmail.com
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Strijov Vadim V.} (b.\ 1967)~---
+ Doctor of Science in physics and mathematics, leading scientist, 
+ Dorodnicyn Computing Center, Federal Research Center 
+ ``Computer Science and Control'' of the Russian Academy of Sciences, 
+ 40~Vavilov Str., Moscow 119333, Russian Federation; strijov@ccas.ru
+
+ \label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература} 

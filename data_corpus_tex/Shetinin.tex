@@ -1,0 +1,600 @@
+\def\stat{shetinin}
+
+\def\tit{О МЕТОДАХ ПЕРЕНОСА ГЛУБОКОГО ОБУЧЕНИЯ В~ЗАДАЧАХ 
+КЛАССИФИКАЦИИ БИОМЕДИЦИНСКИХ ИЗОБРАЖЕНИЙ$^*$}
+
+\def\titkol{О методах переноса глубокого обучения в~задачах 
+классификации биомедицинских изображений}
+
+\def\aut{Е.\,Ю.~Щетинин$^1$, Л.\,А.~Севастьянов$^2$}
+
+\def\autkol{Е.\,Ю.~Щетинин, Л.\,А.~Севастьянов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Щетинин Е.\,Ю.}
+\index{Севастьянов Л.\,А.}
+\index{Shchetinin E.\,Yu.}
+\index{Sevastianov L.\,A.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Публикация выполнена при поддержке Программы стратегического академического лидерства РУДН.}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Финансовый университет при Правительстве РФ, riviera-molto@mail.ru}
+\footnotetext[2]{Российский университет дружбы народов; Объединенный институт ядерных исследований, 
+\mbox{leonid.sevast@gmail.com}}
+
+\vspace*{-9pt}
+  
+  \Abst{Проведены компьютерные исследования эффективности применения 
+методов переноса глубокого обучения для решения задачи распознавания опухолей 
+головного мозга человека на основе его МРТ-сним\-ков. Предложены и~реализованы 
+различные стратегии глубокого обучения и~тонкой настройки моделей. В
+~качестве базовых моделей были использованы глубокие сверточные сети VGG-16, ResNet-50, 
+Xception и MobileNetV2, предварительно обученные на наборе изображений ImageNet. 
+Также разработана и~обучена глубокая сверточная нейронная сеть 2D\_CNN. Компьютерный анализ показателей 
+их производительности показал, что стратегия тонкой настройки модели Xception на 
+расширенном наборе данных продемонстрировала более высокие значения точности по сравнению 
+с~другими моделями глубокого обучения: точ\-ность классификации опухолей головного мозга по МРТ-сним\-кам 
+со\-ста\-ви\-ла~96\%, precision~--- 99,9\%, recall~--- 96,03\%, f1-score~--- 98\%, 
+AUC~--- 98,92\%.} 
+  
+  \KW{МРТ-снимки; опухоль головного мозга; перенос глубокого обучения; сверточные 
+нейронные сети}
+
+\DOI{10.14357/19922264210408}
+
+%\vspace*{8pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+  
+\section{Введение }
+
+  В последние годы глубокие сверточные нейронные сети (convolutional neural networks, CNN) 
+продемонстрировали впе\-чат\-ля\-ющие успехи в~самых разнообразных задачах 
+циф\-ро\-вой медицины~[1, 2].\linebreak
+ В~об\-ласти рентгенографии и~медицинской 
+визуализации CNN используются в~анатомии и~физио\-ло\-гии для сегментации 
+анатомических структур и~органов, поражений тканей и~т.\,д.  
+Маг\-нит\-но-ре\-зо\-нанс\-ная томография (МРТ) стала одним из 
+общепринятых медицинских методов диагностики опухолей различного 
+про\-ис\-хож\-де\-ния. Рентгенолог обычно проводит диагностику МРТ-сним\-ков 
+вручную, однако такая процедура может быть трудоемкой и~ее результаты 
+зависят от опыта врача. Кроме того, большое чис\-ло МРТ-сним\-ков невозможно 
+про\-смот\-реть за короткое время и~не допустить ошибки. Поэтому актуальным 
+подходом становится разработка автоматизированных сис\-тем обработки 
+и~анализа МРТ-сним\-ков. 
+  
+  На практике обучение CNN с~нуля может оказаться достаточно сложной 
+задачей, поскольку, как правило, невозможно иметь набор данных 
+с~достаточным числом образцов. Вместе с~тем информация, полученная 
+в~результате обучения нейронной сети на одном или нескольких наборах 
+данных, может быть использована для решения другой задачи и~на других 
+данных. Например, если нейронная сеть научилась распознавать объекты на 
+изображениях, таких как повреждения кожи, эти знания могут быть 
+использованы для идентификации других объектов в~радиологической 
+диагностике~[3]. Такой подход в~глубоком обучении называется переносом 
+обучения, или трансферным обучением (Transfer Learning, TL)~[4, 5]. 
+  
+  Настоящая работа посвящена исследованиям эффективности применения 
+методов TL в~обнаружении опухолей головного мозга на основе анализа  
+МРТ-сним\-ков с~использованием предварительно обученных глубоких 
+сверточных нейронных сетей. Для проведения компьютерных экспериментов 
+и~возможности сравнения производительности использовались нейронные сети 
+с~предварительно обученными весами на базе данных ImageNet (набор данных 
+из~15~млн маркированных изображений высокого разрешения, 
+принадлежащих более чем 22\,000~категориям)~[6]. Цель работы состояла 
+в~разработке эффективных стратегий обучения и~тонкой настройки глубоких 
+нейронных сетей для распознавания опухолей головного мозга человека 
+с~высокой точностью. 
+  
+\vspace*{-3pt}
+
+\section{Методы переноса обучения в~распознавании 
+изображений}
+
+   Наиболее известный метод переноса обучения состоит в~том, что в~качестве 
+базовой модели клас-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+сификатора используется одна из предварительно 
+обученных глубоких сверточных сетей, у~которой заморожены (отключены) все 
+сверточные (Convolutional) и~пулинг (Pooling) слои, а~также удалены выходные 
+слои, отвечающие за настройки классификатора тех данных, на которых она 
+была обучена. Под операцией заморозки здесь понимается процедура фиксации 
+значений весов сверточных слоев таким образом, что они не будут обновляться 
+во время обучения модели. Далее к~базовой модели\linebreak подключается слой 
+выравнивания (Flatten), не\-сколь\-ко полностью связанных слоев (Fully Connected 
+Layers) с~прореживанием и~плотных слоев (Dense Layers) с~целью избежать 
+переобучения. Наконец, к~модели присоединяются последний полностью 
+связанный слой с~функцией активации <<softmax>> с~указанием необходимого 
+числа классов и~выполняется ее компиляция. Построенная таким образом 
+модель может быть уже обучена для решения конкретной поставленной задачи.
+  
+  Еще один подход связан с~необходимостью тонкой настройки модели (Fine 
+Tuning Model)~[7]. В~то время как в~вышеописанном методе классификатор 
+просто подключается к~предварительно обученной нейронной сети, тонкая 
+настройка вносит в~нее изменения таким образом, чтобы она была более 
+адап\-ти\-ру\-емой и~эффективной в~решении по\-став\-лен\-ной задачи, например путем 
+последовательного подключения замороженных сверточных слоев модели 
+и~оптимизации ее па\-ра\-мет\-ров. 
+  
+  В работе предложен сле\-ду\-ющий алгоритм тонкой настройки па\-ра\-мет\-ров 
+нейронной сети: 
+  \begin{enumerate}[(1)]
+\item загрузить базовую модель с~ее весами, обученными на базе ImageNet;
+\item заменить ее последний пол\-ностью связанный слой новым пол\-ностью 
+связанным слоем;
+\item заморозить слои модели до последнего сверточного блока базовой 
+модели;
+\item переучить последний блок свертки и~пол\-ностью связанные слои 
+с~подбором ско\-рости обучения.
+\end{enumerate}
+
+  Стратегия обучения построенной таким образом модели глубокой нейронной 
+сети существенно зависит от ряда факторов. Если используемый набор данных 
+велик по размерам и~похож на \mbox{ImageNet}, то предварительно обученная модель 
+будет хорошим решением для поставленной задачи. При реализации модели 
+классификатора на ее основе в~качестве дополнительных слоев необходимо 
+использовать нужное число плотных слоев. Если новый набор данных невелик, 
+но похож на ImageNet, то следует применить классический метод переноса 
+обучения. В~этом случае также настройка сети будет рассматриваться как 
+обучение клас\-си\-фи\-ка\-тора. 
+{\looseness=1
+
+}
+  
+  Если набор данных мал и~сильно отличается от набора изображений 
+ImageNet, то наилучшей стратегией настройки модели будет ее обучение 
+с~последовательным размораживанием сверточных слоев предобученной 
+модели, начиная с~последнего, до тех пор пока не будет достигнута приемлемая 
+точность классификации на использу\-емом наборе изображений. Если набор 
+данных достаточно велик, но значительно отличается от \mbox{ImageNet}, то лучшей 
+стратегией будет обучение модели глубокой сверточной сети с~нуля, однако 
+по-прежнему инициализировать ее следует весами из \mbox{ImageNet}.
+{\looseness=1
+
+}
+  
+  Существует ряд предварительно обученных моделей, которые можно 
+использовать для классификации изображений МРТ с~помощью предложенных 
+выше стратегий передачи обучения. Их выбор был связан как с~их 
+популярностью у исследователей, так и~с желанием применить наиболее 
+современные и~эффективные из них. 
+  
+\section{Описание наборов исследуемых данных и~их 
+предварительная обработка}
+
+  В качестве базы данных для сравнительного анализа производительности 
+исследуемых моделей глубокого обучения в~работе использовались наборы 
+МРТ-сним\-ков головного мозга из работы~[8]. В~наборе имеются 
+253~изображения, 155 из которых принадлежат классу <<Tumor>> (опухоль), 
+а~98~изоб\-ражений~--- классу <<No Tumor>> (нет опухоли). Поскольку 
+ис\-поль\-зу\-емые предварительно обучен\-ные модели требуют, чтобы изображения 
+имели размеры $224\times224\times3$~пикселей, то изображения из набора 
+данных были приведены к~этому фор\-мату. 
+
+  
+ \begin{table*}[b]\small
+  \begin{center}
+  \tabcolsep=4pt
+  \begin{tabular}{|l|c|c|c|c|c|}
+  \multicolumn{6}{c}{Показатели производительности стратегий обучения базовых моделей и~их тонкой настройки}\\
+  \multicolumn{6}{c}{\ }\\[-6pt]
+  \hline
+\multicolumn{1}{|c|}{Модель сети %Model of network
+}&\tabcolsep=0pt\begin{tabular}{c}Accuracy, tumor, \%\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Precision, tumor, \%\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Recall, tumor, \%\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}f1-metric, tumor, \%\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}AUC\_macro, \%\end{tabular}\\
+\hline
+Xception&94,11&94,44&97,2\hphantom{9}&95,77&97,32\\
+Xception fine-tuned&98\hphantom{0,0}&99,9\hphantom{0}&96,03&98\hphantom{0,0}&98,92\\
+ResNet50&77,3\hphantom{0}&64,7\hphantom{0}&68\hphantom{0,0}&71,35&74\hphantom{0,0}\\
+VGG-16&91,42&95,2\hphantom{0}&91,4\hphantom{0}&93,3\hphantom{0}&95,6\hphantom{0}\\
+VGG-16 fine-tuned&93,14&97,44&92,26&94,34&96,12\\
+2D\_CNN&82,37&83,2\hphantom{0}&81,4\hphantom{0}&84,1\hphantom{0}&85,8\hphantom{0}\\
+MobileNetV2&81,23&76,66&77,54&83,68&87,42\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-3pt}
+\end{table*}
+ 
+  Объем исходного набора данных был очень мал, что могло привести 
+  к~большим ошибкам в~прогнозах модели~[9]. Чтобы решить эту проб\-ле\-му, 
+использован метод расширения данных (data aug\-men\-ta\-tion)~[10]. Используя 
+этот метод, можно уве\-ли\-чить размер данных в~несколько раз. После введения 
+вариации в~обуча\-ющий набор данных модель становится обобщенной и, как 
+следствие, менее склонной к~переобучению. Расширенный набор  изображений, 
+таким образом, содержал 2064~изоб\-ра\-же\-ния, в~том чис\-ле 1085~изображений 
+класса <<Tumor>> и~979~изображений класса <<No Tumor>>. Далее он был 
+разделен на обуча\-ющую (train\_set, 1444~снимков), проверочную (test\_set, 
+310~сним\-ков) и~тестовую (valid\_set, 310~снимков) вы\-борки.
+{\looseness=-1
+
+}
+
+  
+\section{Компьютерные эксперименты по~применению методов 
+трансферного обучения в~распознавании опухолей головного мозга}
+
+  Были проведены компьютерные эксперименты по применению 
+предложенных выше стратегий переноса глубокого обучения для 
+распознавания опухолей головного мозга на описанном выше\linebreak наборе  
+МРТ-сним\-ков. Для этого в~качестве базовых моделей обучения были выбраны 
+глубокие сверточные сети VGG-16, MobileNetV2, Xception 
+и~\mbox{ResNet-50}~[11--14]. Прежде всего было необходимо импортировать веса базовых 
+моделей из биб\-лио\-те\-ки ImageNet и~<<заморозить>> их, установив значение 
+параметра обучения для каждого сверточного слоя как <<False>>. Далее 
+следовало создать модель Sequential из библиотеки глубокого обучения 
+Keras~[15]. Затем последовательно присоединить к~замороженным слоям 
+предобученной модели слой выравнивания Flatten, два плотных слоя 
+с~функциями активации <<relu>> и~<<softmax>> соответственно, разделенных 
+слоями прореживания Dropout(0.2), и~слой BatchNormalization, чтобы 
+избежать переобучения. Кроме того, было необходимо изменить выходной 
+слой предварительно обучен\-ных моделей, поскольку он был настроен на 
+классификацию 1000~классов изображений, а~в~вычислительном 
+эксперименте присутствовали только два класса (<<Tumor>> и~<<No Tumor>>). 
+
+Обучение построенной таким образом модели проводилось с~функцией потерь 
+<<binary\_crossentropy>> и~показателями точности accuracy, precision, recall,  
+f1-score и~AUC (Area Under Curve)~\cite{9-shet, 15-shet}. Начальная ско\-рость 
+обучения была установлена равной $1e - 4$, и~модель обучалась в~течение 
+20~эпох с~параметром batch\_size\;=\;20. После\linebreak обучения выбиралась лучшая 
+предварительно обучен\-ная модель на основе вышеуказанных мет\-рик  
+точ\-ности, полученных на тестовом наборе\linebreak (test\_set). 
+
+В~таблице приведены 
+показатели точности классификации на тестовом наборе МРТ-сним\-ков 
+головного мозга человека для двух классов (<<Tumor>> и~<<No Tumor>>). Для 
+сравнения результатов TL также была построена и~обучена глубокая сверточная 
+нейронная сеть, состоящая из трех последовательно соединенных сверточных 
+блоков, каждый из которых содержал 2D\_CNN сверточный слой, слой 
+BatchNormalization и~слой Dropout(0.2). Результаты ее обучения также 
+приведены в~таблице. На этом этапе компьютерных экспериментов были 
+выявлены две модели, показавшие наилучшую производительность по 
+сравнению с~остальными. Ими оказались модели VGG-16 и~Xception 
+с~показателями точности accuracy, precision и~recall, равными 91,42\%, 95,2\%, 
+91,4\% и~94,11\%, 94,44\%, 97,2\% соответственно.
+  
+  
+  Далее, на втором этапе, для этих моделей были реализованы стратегии 
+тонкой настройки. Для модели Xception был применен метод 5-блоч\-ной 
+перекрестной проверки и~построены оценки accuracy, precision, recall, AUC. 
+Они оказались выше, чем в~базовой стратегии переноса обучения. При\linebreak этом 
+точность классификации возросла до значений~98\%, precision~--- 99,9\%, 
+recall~--- 96,03\%, а~показатель AUC оказался равен~98,92\%. Точность 
+классификации МРТ-сним\-ков из класса <<Tumor>> \mbox{составила}~96\%, точ\-ность 
+классификации МРТ-сним\-ков из класса <<No Tumor>> со\-ста\-ви\-ла~100\%.
+  
+  Затем была проведена тонкая настройка базовой модели VGG-16 следующим 
+образом. Была реализована последовательная модель библиотеки Keras, 
+в~которую предварительно был включен сверточный слой Conv\_2D 
+с~параметрами: \mbox{kernel\_size(3,3)}, padding\;=\;`same', input\_shape\;=\;(64, 64, 3). 
+Затем %\linebreak 
+присоединена базовая модель VGG-16 с~весами, полученными 
+в~результате ее обучения на предыду\-щей стадии (базовая стратегия переноса 
+обучения). Вслед за этим были последовательно присоединены слои 
+\mbox{GlobalAveragePooling2D}, BatchNormalization и~Dropout(0.25). Наконец, к~модели 
+были присоединены полносвязные слои, такие\linebreak как Dense(units\;=\;512, 
+activation\;=\;`relu'), BatchNormalization, Dropout(0.5) и~Dense(1, 
+activation\;=\linebreak =\;`sigmoid'). В~качестве оптимизатора был использован Adam 
+с~па\-ра\-мет\-ром learning rate\;=\;0,0001, мет\-ри\-ка\-ми точ\-ности accuracy, precision, 
+recall, AUC, number epochs\;=\;100. 
+  
+  В результате применения построенной модели для классификации 
+МРТ-снимков головного мозга были получены следующие результаты: 
+accuracy\;=\;93,14\%, precision\;=\;97,44\%, recall\;=\;92,26\%, AUC\;=\;96,12\%. 
+Точность классификации изображений из класса <<Tumor>> составила~91\%, 
+точность классификации МРТ-сним\-ков из класса <<No Tumor>> 
+составила~92\%. Они превосходят аналогичные для этой же модели, но 
+обученной по базовой стратегии переноса обучения. 
+  
+  Сравнительный анализ показателей точности исследуемых глубоких моделей 
+  и~стратегий переноса обучения в~задаче классификации МРТ-сним\-ков 
+головного мозга показал, что модель Xception в~целом превосходит модель 
+VGG-16 по всем показателям точности. Кроме того, модель Xception менее 
+затратна по объему занимаемой памяти и~требует меньше времени для 
+обучения. 
+
+\section{Заключение}
+
+  В работе исследована эффективность методов переноса обучения глубоких 
+нейронных сетей и~их тонкая настройка в~контексте анализа медицинских 
+изображений в~качестве альтернативы обучению глубоких сверточных 
+нейронных сетей с~нуля. Анализ проводился на наборах МРТ-сним\-ков, 
+содержащих изображения опухолей головного мозга человека (<<Tumor>>), 
+и~изображения головного мозга здорового человека (<<No Tumor>>). 
+В~качестве базовых моделей стратегий переноса обучения были использованы 
+такие популярные глубокие нейронные сети, как Xception, VGG-16, ResNet50 
+и~\mbox{MobileNetV2}. 
+  
+  Как показали результаты компьютерных экспериментов по классификации 
+МРТ-сним\-ков головного мозга с~использованием предложенных стратегий, 
+модели Xception и~VGG-16 продемонстрировали превосходство над всеми 
+глубокими моделями, обучен\-ны\-ми по базовой стратегии переноса обуче\-ния, 
+а~так\-же глубокой сверточной нейронной \mbox{сетью}, обучен\-ной с~нуля. Если на 
+этапе применения базовой стратегии трансферного обуче\-ния показатели 
+точности классификации МРТ-сним\-ков глубокими моделями были 
+сопоставимы, то на этапе применения стратегии тонкой настройки они 
+существенно превзошли их. В~\mbox{целом} можно сделать вывод о~том, что 
+предложенные стратегии обуче\-ния глубоких моделей позволяют получать 
+более точные результаты классификации ис\-сле\-ду\-емой задачи классификации 
+по~сравнению с~обуче\-ни\-ем глубоких моделей с~\mbox{нуля}. 
+{\looseness=1
+
+}
+  
+  Таким образом, основываясь на результатах проведенных численных 
+экспериментов и~полученных оценках производительности моделей глубокого 
+обучения, можно заключить, что методы тонкой настройки и~переноса 
+обучения на глубоких нейронных сетях более эффективны для обнаружения 
+опухолей головного мозга по его МРТ-сним\-кам, осуществляя его значительно 
+лучше, чем обученные с~нуля сверточные нейронные сети, и~превосходя их при 
+ограниченных возможностях на увеличение размеров данных. 
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+%\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{2-shet} %1
+\Au{Louis D.\,N., Ohgaki~H., Wiestler~O.\,D., Cavenee~W.\,K., Burger~P.\,C., Jouvet~A., 
+Scheithauer~B.\,W., Kleihues~P.} The 2007 WHO classification of tumours of the Central Nervous 
+System~// Acta Neuropathol., 2007. Vol.~114. No.\,2. P.~97--109.
+\bibitem{1-shet} %2
+\Au{Bakas S., Akbari~H., Sotiras~A., Bilello~M., Rozycki~M., Kirby~J.\,S., Freymann~J.\,B., 
+Farahani~K., Davatzikos~C.} Advancing the cancer genome atlas glioma MRI collections with 
+expert segmentation labels and radiomic features // Scientific Data, 2017. Vol. 4. Art. 170117. 13~p.
+\bibitem{3-shet} %3
+\Au{Gillies R.\,J., Kinahan P.\,E., Hricak~H.} Radiomics: Images are more than pictures, they are 
+data~// Radiology, 2015. Vol.~278. P.~563--577.
+\bibitem{5-shet} %4
+Learning to learn~/ Eds. Th.~Sebastian, L.~Pratt.~--- Berlin: Springer Science and Business Media, 
+2012. 354~p.
+\bibitem{4-shet} %5
+\Au{Shin H.-C., Roth~H.\,R., Gao~M., Lu~L., Xu~Z., Nogues~I., Yao~J., Mollura~D., 
+Summers~R.\,M.} Deep convolutional neural networks for computer-aided detection: CNN 
+architectures, dataset characteristics and transfer learning~// IEEE T. Med. Imaging, 2016. 
+Vol.~35. No.\,5. P.~1285--1298.
+{\looseness=1
+
+}
+\bibitem{6-shet} %6
+\Au{Krizhevsky A., Sutskever~I., Hinton~G.\,E.} Imagenet classification with deep convolutional 
+neural networks~// Adv. Neur. In., 2012. Vol.~25.  
+P.~1097--1105.
+\bibitem{7-shet} %7
+\Au{Liang H., Fu~W., Yi~F.} A~survey of recent advances in transfer learning~// 19th  
+Conference (International) on Communication Technology.~--- Piscataway, NJ, USA: IEEE, 2019. 
+P.~1516--1523.
+\bibitem{8-shet} %8
+\Au{Chakrabarty N.} Brain MRI images for brain Tumor detection~// Kaggle, 2019. {\sf 
+https://www.kaggle.com/ navoneel/brain-mri-images-for-brain-tumor-detection}.
+\bibitem{9-shet}
+\Au{Щетинин Е.\,Ю., Севастьянов~Л.\,А.} О~методах повышения точности 
+в~многоклассовой классификации на несбалансированных данных~// Информатика и~её 
+применения, 2020. Т.~14. Вып.~1. С.~63--70. 
+\bibitem{10-shet}
+\Au{Shorten C., Khoshgoftaar~T.\,M.} A~survey on image data augmentation for deep learning~// 
+J.~Big Data, 2019. Vol.~6. No.\,1. P.~1--48.
+\bibitem{11-shet} %11
+\Au{Simonyan K., Zisserman~A.} Very deep convolutional networks for large-scale image 
+recognition~// arXiv.org, 4 Sep 2014. arXiv:1409.1556 [cs.CV].
+\bibitem{14-shet} %12
+\Au{He K., Zhang~X., Ren~Sh., Sun~J.} Deep residual learning for image recognition~//
+Conference on Computer Vision and Pattern Recognition.~--- Piscataway, NJ, USA: IEEE, 2016.  
+P.~770--778.
+\bibitem{13-shet} %13
+\Au{Szegedy~C., Vanhoucke~V., Ioffe~S., Shlens~J., Wojna~Z.} Rethinking the inception 
+architecture for computer vision~// Conference on Computer Vision and Pattern 
+Recognition.~--- Piscataway, NJ, USA: IEEE, 2016. P.~2818--2826.
+\bibitem{12-shet} %14
+\Au{Sandler M., Howard~A., Zhu~M.,  Zhmoginov~A., Chen~L.-C.} MobileNetV2: Inverted 
+residuals and linear bottlenecks~// arXiv.org, 2019. 14~p. arXiv:1801.04381  [cs.CV].
+\bibitem{15-shet}
+\Au{Шолле Ф.} Глубокое обучение на Python~/ Пер. с~англ.~--- СПб.: Питер, 2018. 400~с. 
+(\Au{Chollet~F.} Deep learning with Python.~--- New York, NY, USA: Manning, 2017. 384~p.) 
+ \end{thebibliography}
+
+}
+}
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 12.09.2021}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{ON TRANSFER LEARNING METHODS IN~BIOMEDICAL IMAGES CLASSIFICATION 
+TASKS}
+
+
+\def\titkol{On transfer learning methods in~biomedical images classification 
+tasks}
+
+\def\aut{E.\,Yu.~Shchetinin$^1$ and~L.\,A.~Sevastianov$^{2,3}$}
+
+\def\autkol{E.\,Yu.~Shchetinin and~L.\,A.~Sevastianov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+\noindent
+$^1$Financial University under the Government of the Russian Federation, 49~Leningradsky 
+Prospekt, Moscow\linebreak $\hphantom{^1}$125993, Russian Federation
+
+\noindent
+$^2$Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian\linebreak $\hphantom{^1}$Federation
+
+\noindent
+$^3$Joint Institute for Nuclear Research, 6~Joliot-Curie Str., Dubna, Moscow Region 141980, 
+Russian Federation
+
+ 
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 4}
+}%
+\def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+\Abste{Computer studies of the effectiveness of deep transfer learning methods for solving the 
+problem of human brain tumors recognition based on magtetic resonance imaging (MRI) are carried out. Various 
+strategies of transfer learning and fine-tuning of the models are proposed and implemented. Deep 
+convolutional networks VGG-16, ResNet-50, Xception, and MobileNetV2 were used as the baseline 
+models, pre-trained on ImageNet. Also, a deep convolutional neural network 2D\_CNN was built 
+and trained from scratch. Computer analysis of their performance metrics showed that when using 
+the strategy of fine-tuning models on augmented MRI-scans data set, Xception model demonstrated 
+higher accuracy values compared to other deep learning models. For Xception model, the accuracy 
+of classification of MRI-scans with brain tumors was 96\%, precision 99.43\%,  
+recall 96.03\%, f1-score 97.7\%, and AUC 98.92\%.}
+
+\KWE{MRI scans; brain tumor; deep learning transfer; convolutional neural networks}
+
+\DOI{10.14357/19922264210408}
+
+\vspace*{-12pt}
+
+\Ack
+\noindent
+The paper has been supported by the RUDN University Strategic Academic Leadership Program.
+
+%\vspace*{12pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{2-shet-1} %1
+\Aue{Louis, D.\,N., H.~Ohgaki, O.\,D.~Wiestler, W.\,K.~Cavenee, P.\,C.~Burger, A.~Jouvet, 
+B.\,W.~Scheithauer, and P.~Kleihues.} 2007. The 2007 WHO classification of tumours of the Central 
+Nervous System. \textit{Acta Neuropathol.} 114(2):97--109.
+\bibitem{1-shet-1} %2
+\Aue{Bakas, S., H. Akbari, A.~Sotiras, M.~Bilello, M.~Rozycki, J.\,S.~Kirby, J.\,B.~Freymann, 
+K.~Farahani, and C.~Davatzikos.} 2017. Advancing the cancer genome atlas glioma MRI collections 
+with expert segmentation labels and radiomic features. \textit{Scientific Data} 4:170117. 13~p.
+\bibitem{3-shet-1} %3
+\Aue{Gillies, R.\,J., P.\,E.~Kinahan, and H.~Hricak.} 2015. Radiomics: Images are more than 
+pictures, they are data. \textit{Radiology} 278:563--577.
+\bibitem{5-shet-1} %4
+Sebastian, Th., and L.~Pratt, eds. 2012. \textit{Learning to learn}. Berlin: Springer Science and 
+Business Media. 354~p.
+\bibitem{4-shet-1} %5
+\Aue{Shin, H.-C., H.\,R.~Roth, M.~Gao, L.~Lu, Z.~Xu, I.~Nogues, J.~Yao, D.~Mollura, and R.\,M.~Summers.}
+ 2016. Deep convolutional neural networks for computer-aided detection: CNN 
+architectures, dataset characteristics and transfer learning. \textit{IEEE T. Med. Imaging} 
+35(5):1285--1298.
+{\looseness=1
+
+}
+\bibitem{6-shet-1} %6
+\Aue{Krizhevsky, A., I.~Sutskever, and G.\,E.~Hinton.} 2012. Imagenet classification with deep 
+convolutional neural networks. \textit{Adv. Neur. In.} 25:1097--1105.
+\bibitem{7-shet-1}
+\Aue{Liang, H., W.~Fu, and F.~Yi.} 2019. A~survey of recent advances in transfer learning. 
+\textit{19th  Conference (International) on Communication Technology Proceedings}. IEEE. 1516--1523.
+\bibitem{8-shet-1}
+\Aue{Chakrabarty, N.} 2019. Brain MRI images for brain tumor detection. Available at:  
+{\sf https://www.kaggle.com/ navoneel/brain-mri-images-for-brain-tumor-detection} (accessed November~9, 2021).
+\bibitem{9-shet-1}
+\Aue{Sevastyanov, L.\,A., and E.\,Yu.~Shchetinin.} 2020. O~metodakh povysheniya tochnosti 
+v~mnogoklassovoy klassifi\-ka\-tsii na nesbalansirovannykh dannykh [On methods of improving the 
+accuracy of multiclass classification on unbalanced data]. \textit{Informatika i~ee Primeneniya~--- Inform. 
+Appl.} 14(1):63--70.
+\bibitem{10-shet-1}
+\Aue{Shorten, C., and T.\,M.~Khoshgoftaar.} 2019. A~survey on image data augmentation for deep 
+learning. \textit{J.~Big Data} 6(1):1--48.
+\bibitem{11-shet-1}
+\Aue{Simonyan, K., and A.~Zisserman.} 2014. Very deep convolutional networks for large-scale 
+image recognition. \mbox{arXiv.org.} 14~p. Available at: 
+{\sf https://arxiv.org/abs/ 1409.1556} (accessed November~9, 2021).
+\bibitem{14-shet-1} %12
+\Aue{He, K., X.~Zhang, Sh.~Ren, and J.~Sun.} 2016. Deep residual learning for image recognition. 
+\textit{Conference on Computer Vision and Pattern Recognition Proceedings}. IEEE. 770--778.
+\bibitem{13-shet-1} %13
+\Aue{Szegedy, C., V. Vanhoucke, S.~Ioffe, J.~Shlens, and Z.~Wojna.} 2016. Rethinking the 
+inception architecture for computer vision. \textit{Conference on Computer Vision and Pattern 
+Recognition Proceedings}. IEEE. 2818--2826.
+\bibitem{12-shet-1} %14
+\Aue{Sandler, M., A.~Howard, M.~Zhu, A.~Zhmoginov, and L.-C. Chen.} 2019. MobileNetV2: 
+Inverted Residuals and Linear Bottlenecks. arXiv.org. 14~p. Available at: 
+{\sf https://arxiv.org/abs/1801.04381} (accessed November~9, 2021).
+\bibitem{15-shet-1}
+\Aue{Chollet, F.} 2017. \textit{Deep learning with Python}. New York, NY: Manning. 384~p.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+  \hfill{\small\textit{Received September~12, 2021}}
+
+
+%\pagebreak
+
+%\vspace*{-12pt}  
+
+\Contr
+
+\noindent
+\textbf{Shchetinin Eugene Yu.} (b.\ 1962)~--- Doctor of Science in physics and mathematics, 
+professor, Department of Mathematics, Financial University under the Government of the Russian 
+Federation, 49~Leningradsky Prosp., Moscow 125993, Russian Federation;  
+\mbox{riviera-molto@mail.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Sevastianov Leonid A.} (b.\ 1949)~--- Doctor of Science in physics and mathematics, 
+professor, Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian Federation; professor, Joint Institute for Nuclear Research,  
+6~Joliot-Curie, Dubna, Moscow Region 141980, Russian Federation; 
+\mbox{leonid.sevast@gmail.com}
+
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}

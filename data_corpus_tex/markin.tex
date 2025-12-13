@@ -1,0 +1,974 @@
+\newcommand{\cov}{\textrm{cov}}
+%\newcommand{\indic}{\mathbb{1}}
+\newcommand{\Obig}{\textsf{O}}
+\newcommand{\osml}{\textsf{o}}
+\newcommand{\hsig}{\hat\sigma^2}
+\newcommand{\Yljk}{Y_{\lambda;j,\mathbf{k}}}
+
+\newcommand{\Yljks}{Y_{\lambda';j',\mathbf{k'}}}
+\newcommand{\muljk}{\mu_{\lambda;j,\mathbf{k}}}
+\newcommand{\solj}{\sigma_{\lambda;j}}
+\newcommand{\soljs}{\sigma_{\lambda';j'}}
+\newcommand{\solz}{\sigma_{\lambda;0}}
+\newcommand{\silz}{\sigma_{1;0}}
+\newcommand{\siilz}{\sigma_{2;0}}
+\newcommand{\siiilz}{\sigma_{3;0}}
+\newcommand{\slj}{\solj^2}
+\newcommand{\sljs}{\soljs^2}
+\newcommand{\hslj}{\hat\sigma^2_{\lambda;j}}
+\newcommand{\hsljs}{\hat\sigma^2_{\lambda';j'}}
+\newcommand{\hslz}{\hat\sigma_{\lambda;0}^2}
+\newcommand{\Tlj}{T_{\lambda;j}}
+\newcommand{\hTlj}{\hat T_{\lambda;j}}
+
+\newcommand{\indYjklTj}{\Ik_{\left|\Yljk\right|\leqslant \Tlj}}
+\newcommand{\indYjkgTj}{\Ik_{\left|\Yljk\right|>\Tlj}}
+\newcommand{\prbYjkgTj}{\p\left( \left|\Yljk\right|>\Tlj \right)}
+\newcommand{\indYjklhTj}{\Ik_{\left|\Yljk\right|\leqslant \hTlj}}
+\newcommand{\indYjkghTj}{\Ik_{\left|\Yljk\right|>\hTlj}}
+\newcommand{\sumljk}{\sum\limits_{\lambda,j,\mathbf{k}}}
+
+\def\stat{markin}
+
+\def\tit{АСИМПТОТИКИ ОЦЕНКИ РИСКА ПРИ ПОРОГОВОЙ ОБРАБОТКЕ ВЕЙВЛЕТ-ВЕЙГЛЕТ КОЭФФИЦИЕНТОВ В ЗАДАЧЕ ТОМОГРАФИИ}
+
+\def\titkol{Асимптотики оценки риска при пороговой обработке вейвлет-вейглет коэффициентов в задаче томографии}
+
+\def\autkol{А.\,В.~Маркин, О.\,В.~Шестаков}
+\def\aut{А.\,В.~Маркин$^1$, О.\,В.~Шестаков$^2$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnotetext[1]
+%{Исследования выполнены при частичной поддержке РФФИ, гранты 08-01-00567, 08-01-91205, 09-01-12180.}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский государственный университет им.\ М.\,В.~Ломоносова, 
+факультет вычислительной математики и кибернетики, кафедра математической статистики, artem.v.markin@mail.ru}
+\footnotetext[2]{Московский государственный университет им.\ М.\,В.~Ломоносова, 
+факультет вычислительной математики и кибернетики, кафедра математической статистики,
+oshestakov@cs.msu.su}
+
+
+\Abst{Рассмотрена задача реконструкции изображения по радоновскому образу с помощью вейв\-лет-вейг\-лет разложения. 
+Исследованы свойства оценки риска пороговой обработки вейг\-лет-коэф\-фи\-ци\-ен\-тов, такие как состоятельность и 
+асимптотическая нормальность.}
+
+\KW{вейвлеты; томография; пороговая обработка; оценка риска; предельное распределение}
+
+     \vskip 18pt plus 9pt minus 6pt
+
+      \thispagestyle{headings}
+
+      \begin{multicols}{2}
+
+      \label{st\stat}
+
+
+\section{Введение}
+
+Вейвлет-преобразование является весьма популярным и удобным методом обработки нестационарных сигналов и 
+изображений. Одна из основных задач, для которых используются вейв\-ле\-ты,~---
+удаление шума и сжатие. Эти операции производятся путем пороговой обработки 
+вейв\-лет-коэффициентов. Кроме того, вейвлеты могут быть использованы для обращения 
+линейных операторов, таких, например, как преобразование Радона. В этом случае 
+пороговая обработка выполняет задачу регуляризации соответствующей формулы обращения.
+
+Пусть на плоскости $(x,\,y)$ задана функция~$f$. Определим образ 
+(или проекции) Радона~$\mathcal{R}f$ как набор интегралов от~$f$ по всевозможным прямым плоскости
+\begin{equation}
+\label{eq_radonTransform}
+\mathcal{R}f(s,\theta)=\int\limits_{L_{s,\theta}}f\left(x,\,y\right)\,dl\,,
+\end{equation}
+где
+\begin{equation*}
+L_{s,\theta}=\left\{ (x,\,y): x\cos\theta+y\sin\theta-s=0 \right \}\,.
+\end{equation*}
+Формула обращения преобразования~(\ref{eq_radonTransform}) впервые была получена 
+Радоном, ее можно записать в следующем виде~\cite{Natterer}:
+\begin{equation}
+\label{eq_radonInverse}
+f = \fr{1}{2}\mathcal{R}^{\#}\mathcal{I}^{-1}\mathcal{R}f\,,
+\end{equation}
+где $\mathcal{R^{\#}}$~--- оператор обратного проецирования:
+\begin{equation*}
+\left(\mathcal{R^{\#}}g\right)(x,y)=\int\limits_0^{2\pi}g(x\cos\theta+y\sin\theta,\theta)\,d\theta\,;
+\end{equation*}
+$\mathcal{I}$~--- потенциал Рисса:
+\begin{equation}
+\label{eq_RieszPoten}
+\left(\mathcal{F}_1\mathcal{I}^\alpha g\right) (\omega) = |\omega|^{-\alpha}\left(\mathcal{F}_1 g\right)(\omega)\,,
+\end{equation}
+а $\mathcal{F}_k$~--- $k$-мерное преобразование Фурье.
+
+Для точного восстановления~$f$ требуется точное знание всевозможных проекций~$\mathcal{R}f(s,\,\theta)$. 
+На практике же имеют дело с конечным числом проекций, причем в проекциях присутствует шум.
+При этом задача томографии является некорректной, т.\,е.\ малые изменения в проекциях могут 
+при\-вес\-ти к восстановлению изображения, существенно отличающегося от исходного. Математически
+это выражается в наличии множителя~$|\omega|$ в формуле~(\ref{eq_RieszPoten}) (и, следовательно, 
+в~(\ref{eq_radonInverse})), который <<подчеркивает>> высокие частоты.
+
+Выход видится в регуляризации~(\ref{eq_radonInverse}) путем умножения~$|\omega|$ на некоторый множитель, 
+называемый частотным фильтром (или стабилизирующим множителем)~\cite{TikhonovArsenin}. 
+Общая идея регуляризации такова:\linebreak
+немного <<испортить>> проекционные данные, подавив влияние 
+высоких частот, но при этом обеспечить реконструкцию, близкую к оригиналу. Подроб\-нее о 
+регуляризации формулы обращения можно прочитать в монографии~\cite{Herman}.
+
+\section{Вейвлет-вейглет разложение}
+
+Задачу томографии можно решить и с помощью вейвлетов. Пусть~$\phi(t)$ и~$\psi(t)$~--- 
+одномерные отцовский и материнский вейвлеты. Определим
+\begin{align*}
+\phi_{j,k_1,k_2}(x,y) &= 2^{j} \phi\left(2^jx-k_1\right) \phi\left(2^jy-k_2\right)\,;\\
+\psi^{[1]}_{j,k_1,k_2}(x,y) &= 2^{j} \phi\left(2^jx-k_1\right) \psi\left(2^jy-k_2\right)\,;
+\end{align*}
+
+\noindent
+\begin{align*}
+\psi^{[2]}_{j,k_1,k_2}(x,y) &= 2^{j} \psi\left(2^jx-k_1\right) \phi\left(2^jy-k_2\right)\,;\\
+\psi^{[3]}_{j,k_1,k_2}(x,y) &= 2^{j} \psi\left(2^jx-k_1\right) \psi\left(2^jy-k_2\right)\,.
+\end{align*}
+Заметим, что параметр масштаба~$j$ контролирует сразу обе функции в произведении. 
+Это так называемое тензорное произведение двух одномерных кратномасштабных анализов~\cite{Daub}. 
+Тогда набор функций $\left\{ \phi_{j_0,k_1,k_2}, \, \psi^{[\lambda]}_{j,k_1,k_2}, \right\}$, 
+где $j$, $k_1$, $k_2\in\mathbb{Z}$, $j\geq j_0$, $\lambda=\overline{1,3}$, 
+будет ортонормированным базисом~$\mathbf{L}^2(\mathbb{R}^2)$.
+
+Донохо~\cite{DonohoWVD} решил задачу обращения ряда линейных операторов 
+с помощью вейвлетов и родственных им функций специального вида, названных вейглетами (\textit{vaguelettes}). 
+Вейглеты для обращения оператора Радона выглядят так:
+\begin{multline*}
+\xi^{[\lambda]}_{j,k_1,k_2}(s,\,\theta)=
+\int\limits_{-\infty}^\infty|\omega|\left(\mathcal{F}_2\psi^{[\lambda]}_{j,k_1,k_2}\right)\times{}\\
+{}\times \left( \omega\cos\theta,\,\omega\sin\theta \right)\exp(i2\pi s\omega)\,d\omega\,.
+%\label{eq_vagueletteDef}
+\end{multline*}
+Идея метода реконструкции заключается в том, что вейглет-коэффициенты проекций~$\mathcal{R}f(s,\theta)$ 
+равны вейвлет-коэффициентам исходной функции~$f(x,y)$:
+\begin{equation*}
+\left[\mathcal{R}f,\,\xi^{[\lambda]}_{j,k_1,k_2}\right] = \left\langle f,\,\psi^{[\lambda]}_{j,k_1,k_2}\right\rangle\,,
+\end{equation*}
+и поэтому
+\begin{multline}
+f = \sum\limits_{k_1,k_2}\left[\mathcal{R}f,\,\tau_{j_0,k_1,k_2}\right] \phi_{j_0,k_1,k_2} +{}\\
+{}+ \sum\limits_{j\geqslant j_0,k_1,k_2,\lambda} \left[\mathcal{R}f,\,\xi^{[\lambda]}_{j,k_1,k_2}\right] \psi^{[\lambda]}_{j,k_1,k_2}\,,
+\label{eq_radonInverseWVD}
+\end{multline}
+где
+\begin{multline*}
+\tau_{j_0,k_1,k_2}(s,\,\theta)=\int\limits_{-\infty}^\infty|\omega|\left(\mathcal{F}_2\phi_{j_0,k_1,k_2}\right)\times{}\\
+{}\times \left( \omega\cos\theta,\,\omega\sin\theta \right)
+\exp\left(i2\pi s\omega\right)\,d\omega\,.
+\end{multline*}
+Регуляризация вейвлет-вейглет формулы~(\ref{eq_radonInverseWVD}) производится с 
+помощью мягкой пороговой обработки вейглет-коэффициентов (см.\ разд.~\ref{sect_ThreshholdingTomo}).
+
+\section{Дискретизация и модель шума}
+
+Пусть функция $f(x,y)$ задана на квадрате $[0,\,1]\;\times$\linebreak $\times\;[0,\,1]$. Разбив стороны квадрата на~$N=2^J$ 
+равных частей и вычислив значения~$f$ в точках отсчета, получим дискретизованную версию~$f$. Одна\-ко на практике 
+нередко бывает удобно нормировать длину отрезка разбиения и рас\-сматривать вместо~$f$ ее <<растянутую>>
+версию~--- функцию~$\bar f(Nx,Ny)\;=$\linebreak $={f}(x,y)$. Тогда для вейвлет-коэффициентов функции~$f$ справедливо равенство:
+\begin{multline}
+\left\langle f,\, \psi^{[\lambda]}_{j,u_1,u_2}\right\rangle ={}\\
+{}= \iint f(x,y)\,2^j\overline{\psi^{[\lambda]}\left(2^jx-k_1,\,2^jy-k_2\right)}\,dx\,dy ={}\\
+{}=\left(\mathcal{W}^{[\lambda]}f\right)\left(2^{-j},k_1,k_2\right)={}\\
+{}=\fr{1}{N}\left(\mathcal{W}^{[\lambda]}\bar f\right)\left(N\,2^{-j},k_1,k_2\right)\,.
+\label{eq_contToDiscrCoeff}
+\end{multline}
+Заметим, что при работе с растянутой функцией растягиваются и вейвлет-функции.
+Коэффициенты аппроксимации, получаемые через скалярное произведение~$f$ и~$\phi$, не рассматриваются, 
+так как пороговая обработка (см.\ разд.~4) применяется к коэффициентам деталей, которые дают функции~$\psi^{[\lambda]}$. 
+Далее везде, кроме разд.~\ref{sect_RegularityTomo}, предполагается, что используются именно коэффициенты 
+растянутой версии функции~$f$.
+
+Задача томографии ставится следующим образом. Имеются наблюдения~$X$, состоящие из 
+проекций~$\mathcal{R}f$ функции~$f$ и шума~$\epsilon$:
+\begin{equation*}%\label{eq_tomoTask}
+X=\mathcal{R}f+\epsilon\,, 
+\end{equation*}
+$\epsilon$~--- независимые нормальные случайные величины с нулевым средним и дисперсией~$\sigma^2$. 
+Необходимо восстановить~$f$ по~$X$. При этом при достаточно большом~$N$~\cite{KolaczykArticle}
+\begin{equation}
+\left.
+\begin{array}{rl}
+\e \left[X,\,\xi^{[\lambda]}_{j,k_1,k_2}\right] &= \left[\mathcal{R}f,\,\xi^{[\lambda]}_{j,k_1,k_2}\right]\,;\\[9pt]
+\D \left[X,\,\xi^{[\lambda]}_{j,k_1,k_2}\right] &= \sigma^2 \left\|\xi^{[\lambda]}_{j,k_1,k_2}\right\|_2^2=\sigma^2_{\lambda;j}\,;\\[9pt]
+\left\|\xi^{[\lambda]}_{j,k_1,k_2}\right\|_2^2 &= 2^j \left\|\xi^{[\lambda]}_{0,0,0}\right\|_2^2\,.
+\end{array}
+\right \}
+\label{eq_expctVageuletteCoef}
+\end{equation}
+Как видим, дисперсия коэффициентов растет вмес\-те с уровнем разложения. Это является следствием 
+некорректности задачи томографии. При этом вейглеты не ортогональны, а почти ортогональны. И, 
+стало быть, вейг\-лет-коэф\-фи\-ци\-ен\-ты не независимы, а почти независимы. Однако нередко 
+этим фактом пренебрегают, так как исследование этой зависимости сопряжено с рядом трудностей. 
+И потому порог выбирается исходя из предположения независимости коэффициентов. Как будет видно 
+далее, уже только тот факт, что дисперсия растет на каждом уровне, заметно влияет на оценку 
+риска пороговой обработки.
+
+\section{Пороговая обработка}\label{sect_ThreshholdingTomo}
+
+Мягкая пороговая функция определяется следующим образом:
+\begin{equation*}
+\rho(x, T)=
+\begin{cases}
+x-T & \text{при } x>T\,;\\
+x+T & \text{при } x<-T\,;\\
+0 & \text{при } |x|\leq T\,.
+\end{cases} 
+\end{equation*}
+Эта функция применяется к вейглет-ко\-эф\-фи\-ци\-ен\-там проекций.
+
+Допустим, что размер изображения равен $N^2\;=$\linebreak $=2^{2J}=L$, разложение идет до уровня~$J-1$. 
+В~качестве порога взят порог Колашика~\cite{KolaczykArticle, KolaczykThesis}:
+\begin{equation*}
+\Tlj = \sqrt{2\ln 2^{2j}} \, 2^{j/2}\sigma  \left\|\xi^{[\lambda]}_{0,0,0}\right\|_2\,.
+\end{equation*}
+В случае использования оценки дисперсии шума~$\hsig$ порог принимает вид
+\begin{equation*}
+\hTlj = \sqrt{2\ln 2^{2j}}\,2^{j/2}\hat\sigma \left\|\xi^{[\lambda]}_{0,0,0}\right\|_2\,.
+\end{equation*}
+Идея выбора такого порога схожа с идеей выбора порога~\textit{VisuShrink} 
+$T=\sigma\sqrt{2\ln N}$ (одномерный случай, $N$~--- размер сигнала): при таком пороге 
+убирается почти весь шум~\cite{DJideal, DJunkn}. Это следует из того факта, что если $Z_1,\ldots,Z_N$~--- 
+независимые стандартные нормальные случайные величины, то
+\begin{equation*}
+\p\left( \underset{1\leqslant i\leqslant N}{\max}|Z_i| > \sqrt{2\ln N} \right) \rightarrow 0\
+\mbox{при}\ N\rightarrow\infty\,.
+\end{equation*}
+
+Пороговая обработка идет с уровня~$j_M$, т.\,е.\ в формуле~(\ref{eq_radonInverseWVD}) 
+$j_0=j_M$ ($j_M$ определим ниже). Риск~$r(f)$ такой пороговой обработки определяется следующим образом:
+\begin{multline}
+r(f)=\sum\limits_{j=j_M}^{J-1}\sum_{\lambda=1}^3\sum_{k_1=0}^{2^j-1}
+\sum_{k_2=0}^{2^j-1}\e
+\left\{ \left\langle f,\,\psi^{[\lambda]}_{j,k_1,k_2}\right\rangle - {}\right.\\
+\left.{}-\rho\left(\left[X,\,\xi^{[\lambda]}_{j,k_1,k_2}\right],\,\Tlj\right) \right\}^2\,.
+\label{eq_riskEstimDefTomo}
+\end{multline}
+Так как на практике коэффициенты $\left\langle f,\,\psi^{[\lambda]}_{j,k_1,k_2}\right\rangle$ 
+неизвестны, то строят оценку риска. Например,
+на основе функции~$\Phi(x,T)$~\cite{Mallat}:
+\begin{equation*}
+\Phi(x,\Tlj)=
+\begin{cases}
+x-\slj & \text{при } x\leqslant \Tlj^2\,;\\
+\slj+\Tlj^2 & \text{при } x> \Tlj^2\,.
+\end{cases} 
+\end{equation*}
+Оценка риска принимает вид:
+\begin{equation*}
+\tilde r(f)=\sum\limits_{j=j_M}^{J-1}\sum\limits_{\lambda,k_1,k_2}\Phi\left( 
+\left| \left[X,\,\xi^{[\lambda]}_{j,k_1,k_2}\right] \right|^2 ,\,\Tlj\right)\,.
+\end{equation*}
+Если вместо~$\sigma^2$ используется оценка~$\hsig$, то
+\begin{equation*}
+\hat r(f)=\sum\limits_{j=j_M}^{J-1}
+\sum\limits_{\lambda,k_1,k_2}\hat\Phi\left( 
+\left| \left[X,\,\xi^{[\lambda]}_{j,k_1,k_2}\right] \right|^2 ,\,\hTlj\right)\,,
+\end{equation*}
+где
+\begin{equation*}
+\hat\Phi(x,\hTlj)=
+\begin{cases}
+x-\hslj & \text{при } x\leqslant \hTlj^2\,;\\
+\hslj+\hTlj^2 & \text{при } x> \hTlj^2\,.
+\end{cases} 
+\end{equation*}
+
+
+В работах~\cite{MarkinShestakovConsist, MarkinLimitDistr} рассмотрены асимптотические свойства оценки 
+риска пороговой обработки вейв\-лет-коэффициентов в одномерном случае при прямом наблюдении~$f$. 
+Показано, что $(\hat r -r)/N^a$ сходится по вероятности к нулю и по распределению к нормальному 
+закону при соответствующих~$a$.
+Величина~$a$ существенно зависит от свойств оценки~$\hsig$. Однако даже при весьма общих ограничениях 
+на моменты~$\hsig$ порядок $a=1$ обеспечивал
+сходимость по вероятности к нулю. Ниже будет показано, что в задаче томографии для сходимости 
+по вероятности к нулю недостаточно делить на число коэффициентов ($N^2=L$),
+т.\,е.\ некоторый аналог закона больших чисел уже не выполнен. Важнейшим фактором 
+является то, что~$f$ наблюдается через оператор Радона~$\mathcal{R}$, обратный к 
+которому не является непрерывным (т.\,е.\ ограниченным).
+
+\section{Регулярность функции и~вейвлет-коэффициенты}\label{sect_RegularityTomo}
+
+Известно (см., например,~\cite{Mallat}), что если функция~$f(x,y)$ является регулярной по Липшицу 
+с параметром $0\leq\alpha\leq 1$, т.\,е.\
+\begin{multline*}
+\left|f(x_1,y_1)-f(x_2,y_2)\right|\leq{}\\
+{}\leq C \left( |x_1-x_2|^2 + |y_1-y_2|^2 \right)^{\alpha/2}
+\end{multline*}
+для некоторой константы~$C$, не зависящей от $(x_1,y_1)$ и $(x_2,y_2)$, то существует не зависящая от~$J$, 
+$j$, $k_1$ и $k_2$ константа~$A$ такая, что
+\begin{equation*}
+\left(\mathcal{W}^{[\lambda]}f\right)\left(2^{-j},k_1,k_2\right)\leq \fr{A}{2^{j(\alpha+1)}}\,.
+\end{equation*}
+В отечественной литературе вместо регулярности по Липшицу обычно используется термин <<непрерывность 
+по Гёльдеру>>.
+С учетом~(\ref{eq_contToDiscrCoeff}) получаем
+\begin{equation*}
+\left(\mathcal{W}^{[\lambda]}\bar f\right)\left(N\cdot 2^{-j},k_1,k_2\right) \leqslant \frac{A\cdot 2^J}{2^{j(\alpha+1)}}\,.
+\end{equation*}
+
+\textit{Предположение о регулярности~$f$: будем полагать, что функция~$f$ является регулярной по Липшицу с 
+показателем~$\alpha>0$}. Будем считать, что пороговая обработка ведется с уровня 
+$j_M\geq J/(\alpha+1)$. Заметим, что $J-j_M\rightarrow\infty$ при $J\rightarrow\infty$. 
+Тогда при определенном выборе вейвлет-базиса~\cite{Mallat} найдется константа~$C_1$ такая, что для 
+всех $j\geq j_M$ выполнено
+\begin{equation}
+\label{eq_WaveletCoeffUpperBoundTomo}
+\left(\mathcal{W}^{[\lambda]}\bar f\right)\left(N\cdot 2^{-j},k_1,k_2\right) \leqslant C_1\,,
+\end{equation}
+причем $C_1$ не зависит от~$N$. Значит, математические ожидания в~(\ref{eq_expctVageuletteCoef}) ограничены.
+
+В работе используется буква~$C$ (с индексом или без индекса) для обозначения констант, причем в 
+разных местах~--- вообще говоря, разных.
+
+\section{Асимптотика оценки риска при~известной дисперсии шума}\label{sect_ConsitKnownSTomo}
+
+В работе~\cite{MarkinLimitDistr} показано, что в одномерном случае при известной дисперсии шума 
+разность риска и оценки риска при делении на $\sqrt{N}$ сходится по распределению к нормальному 
+закону. В задаче томографии уже надо делить не на~$\sqrt{L}$, а на~$L$.
+
+Для краткости введем обозначения:
+\begin{align*}
+\Yljk &= \left[X,\,\xi^{[\lambda]}_{j,k_1,k_2}\right]\,;\\
+\muljk &= \left\langle f,\,\psi^{[\lambda]}_{j,k_1,k_2}\right\rangle\,,
+\end{align*}
+где $\mathbf{k}=\left(k_1,\,k_2\right)$. Еще раз напомним, что~$\muljk$ рассматриваются 
+как коэффициенты растянутой версии дискретизованной функции~$f$. С учетом предположения об 
+ортогональности вейглетов получаем
+\begin{equation}
+\label{eq_YljkNormalDistributed}
+\Yljk \sim \mathcal{N}\left(\muljk,\,\slj\right)\,,
+\end{equation}
+причем $\Yljk$~--- независимые случайные величины.
+
+\medskip
+
+\noindent
+\textbf{Теорема 1.}
+\textit{Пусть справедливы предположения о регулярности~$f$ из разд.~\ref{sect_RegularityTomo}. 
+При известной дисперсии шума в задаче томографии}
+\begin{equation*}
+\fr{\tilde r(f)-r(f)}{L \sqrt{ b_2 \left( \silz^4 + \siilz^4 + \siiilz^4 \right) }} \Rightarrow \mathcal{N}(0,\,1)
+\end{equation*}
+\textit{при} $L\rightarrow\infty$, \textit{где} $b_2=2/(2^4-1)=2/15$.
+
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о.\ 
+Представим разность оценки риска и самого риска в виде
+\begin{multline*}
+\tilde r-r=\sumljk\left(\Yljk^2-\slj\right)\indYjklTj +{}\\
+\!\!\!\!{}+ \sumljk\left(\slj+\Tlj^2\right)\indYjkgTj - {}
+\end{multline*}
+
+\noindent
+\begin{multline}
+\ \ {}- \sumljk\e\left(\Yljk^2-\slj\right)\indYjklTj -{}\\
+{}- \sumljk\e\left(\slj+\Tlj^2\right)\indYjkgTj ={}\\
+{}= \sumljk\left(\Yljk^2-\e\Yljk^2\right) -{}\\
+{}- \sumljk\left(\Yljk^2-\slj\right)\indYjkgTj + {}\\
+{}+ \sumljk\e\left(\Yljk^2-\slj\right)\indYjkgTj +{}\\
+{}+ \sumljk\left(\slj+\Tlj^2\right)\indYjkgTj -{}\\
+{}- \sumljk\left(\slj+\Tlj^2\right)\prbYjkgTj\,.
+\label{eq_diffRiskEstimKnownS}
+\end{multline}
+Покажем, что при делении на~$L$ первая сумма в~(\ref{eq_diffRiskEstimKnownS}) сходится по распределению
+к нормальному закону, а остальные суммы~--- к нулю по вероятности.
+
+Итак, рассмотрим первую сумму в~(\ref{eq_diffRiskEstimKnownS}). Имеем
+\begin{multline}
+D_L^2 = \D\sumljk\Yljk^2 = \sumljk \D \Yljk^2={}\\
+{}=\sum\limits_\lambda \sum_{j=j_M}^{J-1} \sum_{\mathbf{k}}
+\left( 2\solj^4 + 4\muljk^2\slj \right)={}\\
+{}= \sum\limits_\lambda \sum_{j=j_M}^{J-1}\left\{ 2\cdot 2^{2j}
+\solz^4 \cdot 2^{2j} + \sum_{\mathbf{k}}4\muljk^2 2^j \solz^2 \right\} \simeq{}\\
+{}\simeq \sum\limits_\lambda \sum_{j=j_M}^{J-1} 2\cdot 2^{4j}
+\solz^4 = \sum\limits_\lambda 2\solz^4 \frac{2^{4J} - 2^{4j_M}}{2^4 - 1} \simeq{}\\
+{}\simeq \fr{2}{15} 2^{4J} \left( \silz^4 + \siilz^4 + \siiilz^4 \right)\,.
+\label{eq_DLknownS}
+\end{multline}
+Знак~$\simeq$ означает, что при $J\rightarrow\infty$ предел отношения левой и правой частей~(\ref{eq_DLknownS}) 
+равен единице. Если выполнено условие Линдеберга, т.\,е.\ для любого~$\delta>0$
+\begin{multline}
+\fr{1}{D_L^2}\sumljk\e\left\{ \left( \Yljk^2 - \muljk^2 - \slj \right)^2\times{}\right.\\
+\left.{}\times \Ik_{\left|\Yljk^2 - \muljk^2 - \slj\right|>\delta D_L} \right\} \rightarrow 0\,,
+\label{eq_LindCondTomo}
+\end{multline}
+то будет иметь место сходимость к нормальному распределению. Так как~$D_L$ имеет порядок~$L$ и чис\-ло слагаемых 
+в~(\ref{eq_LindCondTomo}) имеет порядок~$L$, то достаточно показать, что при $L\rightarrow\infty$
+\begin{multline*}
+\e\left\{ \fr{\left( \Yljk^2 - \muljk^2 - \slj \right)^2}{D_L} \times{}\right.\\
+\left.{}\times\Ik_{\left(\Yljk^2 - \muljk^2 - \slj\right)^2/D_L>\delta^2 D_L} \right\} \rightarrow 0\,.
+\end{multline*}
+А последнее выполнено потому, что у случайных величин вида $\left( \Yljk^2 - \muljk^2 - \slj \right)^2\!/D_L$ 
+конечные математические ожидания и $D_L\rightarrow\infty$.
+
+Теперь рассмотрим вторую сумму в~(\ref{eq_diffRiskEstimKnownS}). В силу~(\ref{eq_YljkNormalDistributed}) имеем
+\begin{multline*}
+\p\left( |\Yljk| > \Tlj \right) < {}\\
+{}< \frac{\exp\left( -(\Tlj-\muljk)^2/(2\slj) \right)}{\Tlj} +{}\\
+{}+ \frac{\exp\left( -(\Tlj+\muljk)^2/(2\slj) \right)}{\Tlj} \leqslant \fr{C}{2^{5j/2} \sqrt{j} }
+\end{multline*}
+при $J \rightarrow \infty$ (и, следовательно, $j \rightarrow \infty$). Это можно получить из 
+следующей цепочки равенств:
+\begin{multline*}
+\exp\left( -\fr{(\Tlj-\muljk)^2}{2\slj} \right) = {}\\
+{}=\exp\left( -\fr{\Tlj^2}{2\slj} + \fr{2\Tlj\muljk}{2\slj} - \fr{\muljk^2}{2\slj} \right) ={}\\
+{}= \exp\left( -\ln 2^{2j} + \fr{\sqrt{2\ln(2^{2j})}\muljk}{2^{j/2}\solz} - 
+\fr{\muljk^2}{2\slj} \right) \simeq{}\\
+{}\simeq 2^{-2j}\mbox{ при }j \rightarrow \infty\,,
+\end{multline*}
+так как
+\begin{equation*}
+\fr{\sqrt{2\ln(2^{2j})}\muljk}{2^{j/2}\solz} \rightarrow 0\quad\text{и}\quad\fr{\muljk^2}{2\slj} \rightarrow 0\,.
+\end{equation*}
+С помощью неравенств Чебышёва и Коши--Бу\-ня\-ков\-ского получаем для любого $\delta>0$ при $J\rightarrow\infty$
+\begin{multline*}
+\p\left( \fr{ \left|\sumljk\left(\Yljk^2-\slj\right)\indYjkgTj \right|}{D_L} > \delta \right) \leq{}\\
+{}\leq \fr{ \e\left| \sumljk\left(\Yljk^2-\slj\right)\indYjkgTj \right| }{\delta D_L} \leq {}\\
+{}\leq \fr{ \sumljk \e\left| \Yljk^2-\slj\right|\indYjkgTj }{\delta D_L} \leq{}\\
+{}\leq \fr{ \sumljk \sqrt{ \e\left( \Yljk^2-\slj\right)^2 \p\left( |\Yljk| > \Tlj \right) } }{\delta D_L} 
+\leq{}
+\end{multline*}
+
+\noindent
+\begin{multline*}
+{}\leq \fr{1}{\delta D_L}\sumljk 
+\left  ( \vphantom{4\cdot 2^j\solz^2\muljk^2  C\cdot 2^{-5j/2} j^{-1/2}}
+\left(
+\muljk^4 + 2\cdot 2^{2j}\solz^4 + {}\right.\right.\\
+\left.\left.{}+4\cdot 2^j\solz^2\muljk^2 
+\right) C\cdot 2^{-5j/2} j^{-1/2} 
+\right )^{1/2} \rightarrow 0\,.
+\end{multline*}
+Аналогично проводятся рассуждения для оставшихся сумм в~(\ref{eq_diffRiskEstimKnownS}).~$\square$
+
+\section{Свойства оценки риска при~использовании оценки дисперсии шума}
+
+В работе~\cite{MarkinShestakovConsist} показано, что при достаточно слабых ограничениях 
+на моменты оценки дисперсии шума для сходимости разности риска и его оценки к нулю по 
+вероятности ее надо нормировать числом вейвлет-коэффициентов, т.\,е.\ порядок знаменателя 
+вырастает почти на~1/2. Покажем, что в задаче томографии порядок тоже повышается почти на~1/2, 
+но знаменатель уже будет много больше числа коэффициентов.
+
+Введем обозначение
+\begin{equation*}
+\hslj = 2^j \hsig \left\|\xi^{[\lambda]}_{0,0,0}\right\|_2^2\,.
+\end{equation*}
+
+\medskip
+\noindent
+\textbf{Теорема 2.} \textit{Пусть справедливы предположения о регулярности~$f$. 
+Пусть $\hsig$~--- оценка дисперсии, $\e\hsig-\sigma^2=\nu_L$ и 
+$\D\hsig=\theta_L=\Obig(L^{-\beta})$, $\nu_L=\osml(1)$, $\beta>0$. 
+Тогда при $L\rightarrow\infty$ выполнено}
+\begin{equation}
+\label{eq_ConsistTomo32}
+\fr{\hat r(f)-r(f)}{L^{3/2}} \xrightarrow{\textsf{P}} 0\,.
+\end{equation}
+
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о.\
+Подобно доказательству теоремы~3 в~\cite{MarkinShestakovConsist} запишем
+\begin{equation*}
+\hat r-r = S_1 + S_2\,,
+\end{equation*}
+где
+\begin{multline}
+S_1 = \sumljk\left(\Yljk^2-\hslj\right) -{}\\
+{}- \sumljk\e\left(\Yljk^2-\slj\right)\,; \label{eq_riskSplitSoTomo}
+\end{multline}
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+S_2 = - \sumljk\left(\Yljk^2-\hslj\right)\indYjkghTj +{}\\
+\!\!{}+ \sumljk\left(\hslj+\hTlj^2\right)\indYjkghTj +{} 
+\end{multline*}
+
+\noindent
+\begin{multline}
+{}+ \sumljk\e\left(\Yljk^2-\slj\right)\indYjkgTj -{}\\
+{}- \sumljk\e\left(\slj+\Tlj^2\right)\indYjkgTj\,.
+\label{eq_riskSplitStTomo}
+\end{multline}
+Далее будет показано, что при делении на $L^{3/2}$ и~$S_1$, и~$S_2$ сходятся к нулю по вероятности.
+
+Сначала рассмотрим~$S_1$: по неравенству Чебышёва при любом $\delta>0$
+\begin{multline}
+\p\left( \fr{|S_1|}{L^{3/2}} > \delta \right) \leq{}\\
+{}\leq
+\fr{ \e\left( \sumljk \left( \Yljk^2 - \hslj - \e\Yljk^2 + \slj \right) \right)^2 }{\delta^2 L^3} ={}\\
+{}= \fr{ \sumljk \e\left( \Yljk^2 - \hslj - \e\Yljk^2 + \slj \right)^2 }{ \delta^2 L^3 } + {}\\
+{}+ \fr{1}{\delta^2 L^3}
+ \sum \e\left( \Yljk^2 - \hslj - \e\Yljk^2 + \slj \right)\times{}\\
+ {}\times \left( \Yljks^2 - \hsljs - \e\Yljks^2 + \sljs \right)\,.
+\label{eq_riskSplitUnknSTomo}
+\end{multline}
+Во второй сумме~(\ref{eq_riskSplitUnknSTomo}) суммирование идет по индексам 
+$(\lambda,j,\mathbf{k})\ne(\lambda',j',\mathbf{k}')$. Понятно, что первое слагаемое в~(\ref{eq_riskSplitUnknSTomo}) 
+стремится к нулю~--- в сумме всего порядка~$L$ слагаемых, они имеют порядок не выше~$L$ и 
+сумма делится на~$L^3$ (напомним, что $L=2^{2J}$).
+
+Рассмотрим одно из слагаемых второй суммы~(\ref{eq_riskSplitUnknSTomo}):
+\begin{multline*}
+\e\left( \Yljk^2 - \hslj - \e\Yljk^2 + \slj \right) \times{}\\
+{}\times\left( \Yljks^2 - \hsljs - \e\Yljks^2 + \sljs \right) = {}\\
+{}= \e\Yljk^2\Yljks^2 - \e\Yljk^2\hsljs - \e\Yljk^2 \e\Yljks^2 +{}\\
+{}+ \sljs \e\Yljk^2 - 
+ \e\hslj\Yljks^2 + \e\hslj\hsljs +{}\\
+ {}+ \e\hslj\e\Yljks^2 - \sljs\e\hslj 
+- \e\Yljk^2 \e\Yljks^2 +{}\\
+{}+ \e\hsljs\e\Yljk^2 + \e\Yljk^2 \e\Yljks^2 - \sljs\e\Yljk^2 
++ {}\\
+{}+\slj\e\Yljks^2 - \slj\e\hsljs - \slj\e\Yljks^2 +{}\\
+{}+ \slj\sljs = 
+ - \cov\left( \hsljs,\,\Yljk^2 \right) -{}\\
+ {}- \cov\left( \hslj,\,\Yljks^2 \right) +
+ \fr{\slj\sljs}{\sigma^4}\left( \nu_L^2 + \theta_L \right)\,.
+\end{multline*}
+С учетом того, что $\D\Yljk^2$ имеет порядок~$2^{2j}$, а ковариацию можно оценить по неравенству Коши--Бу\-ня\-ков\-ско\-го, 
+получаем, что каждое слагаемое второй суммы~(\ref{eq_riskSplitUnknSTomo}) можно оценить как 
+$2^{j+j'}\cdot\osml(1)$. Всего таких слагаемых порядка~$L^2$, а максимальное значение $2^{j+j'}$ 
+равно $2^{J-1+J-1}=L/4$. Следовательно, после суммирования получаем, что второе сла\-га\-емое 
+в~(\ref{eq_riskSplitUnknSTomo}) оценивается как~$\osml(1)$. Значит, $S_1/L^{3/2}$ сходится к нулю по вероятности.
+
+Для оценки~$S_2$ используем другую модификацию неравенства Чебышёва:
+\begin{equation*}
+\p\left( \fr{|S_2|}{L^{3/2}} > \delta \right) \leq \fr{\e|S_2|}{\delta L^{3/2}} = 
+\fr{\e\left[|S_2|/L^{1/2}\right]}{\delta L}\,.
+\end{equation*}
+Величину $\e|S_2|$ можно оценить сверху суммой математических ожиданий модулей сумм, входящих в~$S_2$, 
+а эти суммы, в свою очередь,~--- суммой математических ожиданий входящих в них слагаемых.
+
+По формуле полной вероятности для некоторого $0<\gamma<1$ получаем
+\begin{multline*}
+\p\left( |\Yljk| > \hTlj \right)={}\\
+{}=\p\left( |\Yljk| > \hTlj \,|\, \hTlj \leqslant (1-\gamma)\solj\sqrt{2\ln 2^{2j}} \right)\times{}\\
+{}\times \p\left( \hTlj \leq (1-\gamma)\solj\sqrt{2\ln 2^{2j}} \right) + {}\\
+{}+ \p\left( |\Yljk| > \hTlj \,,\, \hTlj > (1-\gamma)\solj\sqrt{2\ln 2^{2j}} \right)\,.
+\end{multline*}
+В силу свойств~$\hsig$
+\begin{multline*}
+\p\left( \hTlj \leq (1-\gamma)\solj\sqrt{2\ln 2^{2j}} \right)={}\\
+{}=\p\left(\hsig\leqslant (1-\gamma)^2\sigma^2\right)\leq{}\\
+{}\leq\p\left(|\hsig-\sigma^2-\nu_L|\geqslant(2\gamma-\gamma^2)\sigma^2+\nu_L\right)\leq{}\\
+{}\leq \fr{\D\hsig}{\left((2\gamma-\gamma^2)\sigma^2+\nu_L\right)^2}=\Obig\left(L^{-\beta}\right)
+\end{multline*}
+для достаточно большого~$L$. Далее
+\begin{multline}
+\p\left( |\Yljk| > \hTlj \,,\, \hTlj > (1-\gamma)\solj\sqrt{2\ln 2^{2j}} \right) \leq{}\\
+{}\leq \p\left( |\Yljk| > (1-\gamma)\solj\sqrt{2\ln 2^{2j}} \right) = {}\\
+{}=
+\fr{ C }{ 2^{2j(1-\gamma)^2}\cdot 2^{j/2}\sqrt{j} }\,.
+\label{eq_prbSplitGammaTomo}
+\end{multline}
+Теперь оцениваем математические ожидания компонентов сумм из~$S_2$ при делении на~$L^{1/2}$:
+\begin{multline*}
+\e\left[\fr{\left| \Yljk^2 - \hslj \right|}{L^{1/2}}\indYjkghTj\right] \leq {}\\
+{}\leq\sqrt{ \e\left[\fr{ \left(\Yljk^2 - \hslj\right)^2 }{2^{2J}}\right]  \p\left( |\Yljk| > \hTlj \right) } 
+\rightarrow 0\,;
+\end{multline*}
+
+\vspace*{-6pt}
+\noindent
+\begin{multline*}
+\e\left[\fr{\left| \hslj + \hTlj^2 \right|}{L^{1/2}}\indYjkghTj\right] \leq{}\\
+{}\leq 
+\left( 2\ln 2^{2j} + 1 \right) 2^{j-J} \times{}\\
+{}\times\sqrt{ \e\left(\hslz\right)^2 \p\left( |\Yljk| > \hTlj \right) } \rightarrow 0
+\end{multline*}
+при $j\geq j_M$ и $J\rightarrow\infty$.
+Остальные слагаемые оцениваются аналогично. Итак, $S_2/L^{3/2}$ тоже сходится к нулю по вероятности.~$\square$
+
+\smallskip
+
+Как и в одномерном случае (см.~\cite{MarkinLimitDistr}), порядок знаменателя в~(\ref{eq_ConsistTomo32}) 
+можно понизить, введя дополнительные ограничения на~$\nu_L$.
+
+\medskip
+
+\noindent
+\textbf{Теорема 3.}
+\textit{Пусть справедливы предположения о регулярности~$f$. Пусть $\hsig$~--- 
+оценка дисперсии, $\e\hsig-\sigma^2=$\linebreak $=\nu_L=\Obig(L^{-\upsilon})$ и 
+$\D\hsig=\theta_L=\Obig(L^{-\beta})$, $\upsilon$, $\beta>0$. Тогда
+при любом $a>1/2-c$, $c=\min\left\{1/2, \upsilon, \beta/2\right\}$ и $L\rightarrow\infty$ выполнено
+\begin{equation*}
+\fr{\hat r(f)-r(f)}{L^{a+1}} \xrightarrow{\textsf{P}} 0\,.
+\end{equation*}}
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о.
+Заметим, что $0<c\leq 1/2$ и, стало быть, $a>0$. Так же, как и в доказательстве теоремы~2, 
+разобьем $\hat r - r$ на те же суммы~$S_1$ и~$S_2$ (см.\ формулы~(\ref{eq_riskSplitSoTomo})
+и~(\ref{eq_riskSplitStTomo})), только~$S_1$ запишем в виде
+\begin{multline*}
+S_1 = \sumljk\left(\Yljk^2-\e\Yljk^2\right) - \sumljk \left(\hslj-\slj\right) = {}\\
+{}= \sumljk\left(\Yljk^2-\e\Yljk^2\right) - {}\\
+{}-\sum\limits_\lambda \sum_j 2^{2j}\,2^j \left(\hslz-\solz^2\right)\,.
+%\label{eq_riskSplitSoLimTomo}
+\end{multline*}
+Первая сумма при делении на~$L$ сходится по распределению к нормальному закону 
+(см.\ разд.~\ref{sect_ConsitKnownSTomo}) и, следовательно, сходится по вероятности к нулю при делении 
+на~$L^{a+1}$, где $a>0$. Вторая сумма пред\-став\-ля\-ет собой произведение 
+$\left(\hsig-\sigma^2\right)$ и множителя, имеющего порядок $2^{3J}=L^{3/2}$. Легко видеть, что
+\begin{equation*}
+\fr{L^{3/2}\left(\hsig-\sigma^2\right)}{L^{a+1}} \xrightarrow{\textsf{P}} 0
+\end{equation*}
+при указанных в формулировке теоремы ограничениях на~$a$.
+
+Покажем теперь, что $S_2/L^{a+1}$ сходится к нулю по вероятности. 
+Обозначим $\varkappa = a-1/2+c>$\linebreak $>\;0$. В теореме~2 есть оценки для вероятности 
+$\p\left( |\Yljk| > \hTlj \right)$:
+\begin{multline}
+\p\left( |\Yljk| > \hTlj \right) = {}\\
+{}=\max\left\{ \fr{C_1}{2^{2J\beta}},\,\fr{C_2}{2^{2j(1-\gamma)^2}\cdot 2^{j/2}\sqrt{j}} \right\} 
+\label{eq_ProbYghTOrdersTomo}
+\end{multline}
+для некоторого $0<\gamma<1$. При $J\rightarrow\infty$ имеем
+\begin{multline}
+\label{eq_restEstimConsistTomo1}
+\fr{\e \left(\Yljk^2\right)^2 C_1/2^{2J\beta}}{L^{2a}} \leq \fr{C_3\cdot 2^{2j}
+\cdot 2^{-2j\beta}}{2^{2J(1-2c+2\varkappa)}} ={}\\
+{}= \fr{C_3\cdot 2^{2j}\cdot2^{2J\min\left\{1, 2\upsilon, \beta\right\}}}{2^{2J}\cdot 2^{2J\beta}\cdot 2^{4J\varkappa}}  \rightarrow 0,
+\end{multline}
+
+\columnbreak 
+%\vspace*{-6pt}
+
+\noindent
+\begin{multline}
+\fr{\e \left(\Yljk^2\right)^2 C_2\cdot 2^{-2j(1-\gamma)^2}\cdot 2^{-j/2}/\sqrt{j}}{L^{2a}} \leq {}\\
+{}\leq
+\fr{C_4\cdot 2^{2j}\cdot 2^{2J\min\left\{1, 2\upsilon, \beta\right\}}}{2^{2j(1-\gamma)^2+j/2}\cdot 2^{2J}\cdot 2^{4J\varkappa}\sqrt{j}} \rightarrow 0
+\label{eq_restEstimConsistTomo2}
+\end{multline}
+для достаточно малого~$\gamma$. Отсюда имеем для произвольного $\delta>0$
+\begin{multline*}
+\p\left(\fr{\sumljk \Yljk^2 \indYjkghTj }{L^{a+1}}>\delta\right) \leq{}\\
+{}\leq
+\fr{\sumljk \e \left[\Yljk^2/L^a\right] \indYjkghTj  }{\delta L} \rightarrow 0
+\end{multline*}
+при $J\rightarrow\infty$ в силу неравенств Чебышёва и Коши--Бу\-ня\-ков\-ско\-го. Оценки для суммы 
+с членами вида $\hslj \indYjkghTj$ получаются аналогично. А для сумм, в которые входят $\indYjkgTj$, 
+оценки получены в теореме~1.~$\square$
+
+Можно сформулировать и доказать теорему сходимости по распределению к нетривиальному пределу.
+
+\medskip
+
+\noindent
+\textbf{Теорема 4.} 
+\textit{Пусть справедливы предположения о регулярности~$f$. 
+Пусть $\hsig$~--- оценка дисперсии, 
+$\e\hsig-\sigma^2=\nu_L=\Obig(L^{-\upsilon})$ и 
+$\D\hsig=\theta_L=\Obig(L^{-\beta})$, $\upsilon>0$, $\beta>1/2$. 
+Пусть $\hsig$ не зависит от $\Yljk$ и $\sqrt{L}\left( \hsig - \sigma^2 \right) 
+\Rightarrow \mathcal{N}\left(0,\,\Sigma^2\right)$ при $L\rightarrow\infty$, тогда
+\begin{multline*}
+\fr{\hat r(f)-r(f)}{ L \sqrt{ b_2 \left( \silz^4 + \siilz^4 + \siiilz^4 \right) } } \Rightarrow{}\\
+{}\Rightarrow \mathcal{N}\left( 0, 1+\frac{ \left( \silz^2 + \siilz^2 + \siiilz^2 \right)^2 \Sigma^2 }{ d_2 \,\sigma^4 \left( \silz^4 + \siilz^4 + \siiilz^4 \right) } \right)\,,
+\end{multline*}
+где $b_2=2/(2^4-1)=2/15$, $d_2 = (2(2^3-1)^2)/(2^4-1)=$\linebreak $=98/15$.}
+
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о.
+В теореме~3 было существенным наличие~$\varkappa>0$, которое давало сходимость к нулю 
+в~(\ref{eq_restEstimConsistTomo1}) (в~(\ref{eq_restEstimConsistTomo2}) это несущественно). 
+Сейчас же $\varkappa=0$, поэтому доказательство необходимо изменить.
+
+Оценим $S_2$ более тонко. Имеем
+\vspace*{-9pt}
+
+\noindent
+\begin{multline*}
+\Yljk^2 \indYjkghTj - \e \Yljk^2 \indYjkgTj = {}\\[3pt]
+{}= \Yljk^2 \indYjkghTj - \Yljk^2 \indYjkgTj +{}\\[3pt]
+{}+ \Yljk^2 \indYjkgTj - \e \Yljk^2 \indYjkgTj\,.
+\vspace*{-3pt}
+\end{multline*}
+\vspace*{-18pt}
+
+\pagebreak
+
+Вопрос о двух последних слагаемых решен в теореме~1. Рассмотрим два первых:
+\begin{multline*}
+\e \left| \Yljk^2 \indYjkghTj - \Yljk^2 \indYjkgTj \right| = {}\\
+{}=\e \Yljk^2 \Ik_{\Tlj<|\Yljk|\leqslant\hTlj} +{}\\
+{}+ \e \Yljk^2 \Ik_{\hTlj<|\Yljk|\leqslant\Tlj}\,.
+\end{multline*}
+При этом
+\begin{multline*}
+\e \Yljk^2 \Ik_{\Tlj<|\Yljk|\leqslant\hTlj} \leq \e \hTlj^2 \indYjkgTj \leq{}\\
+{}\leq \sqrt{\fr{C\cdot j^2\cdot 2^{2j}}{2^{2j+j/2}\sqrt{j}}}\rightarrow 0,\quad J\rightarrow\infty\,,
+\end{multline*}
+
+%\vspace*{-3pt}
+
+\noindent
+и
+
+%\vspace*{-3pt}
+\noindent
+\begin{multline}
+\e \Yljk^2 \Ik_{\hTlj<|\Yljk|\leq\Tlj} \leq {}\\
+{}\leq \Tlj^2 \e \Ik_{\hTlj<|\Yljk|\leq 
+ \Tlj} \leq{}\\
+{}\leq C j\cdot 2^{j}
+\e \indYjkghTj\,.
+\label{eq_FineRestEstimTomo}
+\end{multline}
+С учетом~(\ref{eq_ProbYghTOrdersTomo}) получаем, что
+\begin{equation*}
+\e \Yljk^2 \Ik_{\hTlj<|\Yljk|\leqslant\Tlj} \rightarrow 0
+\end{equation*}
+при $J\rightarrow\infty$ и $\beta>1/2$. Отметим, что, в отличие от работы~\cite{MarkinLimitDistr}, 
+требование на~$\beta$ повысилось (там требовалось только $\beta>0$). Это является следствием роста дисперсии с 
+ростом~$j$, которое выражается в наличии множителя~$2^j$ в~(\ref{eq_FineRestEstimTomo}). 
+Аналогично получаем соотношения для~$\hTlj$:
+\begin{multline*}
+\e \hTlj^2 \Ik_{\Tlj<|\Yljk|\leq\hTlj} \leq \e \hTlj^2 \indYjkgTj \leq{}\\
+{}\leq \sqrt{ \fr{ C j^2 \cdot 2^{2j} }{ 2^{2j+j/2}\sqrt{j} } } \rightarrow 0\,;
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\e \hTlj^2 \Ik_{\hTlj<|\Yljk|\leq\Tlj} \leq{}\\
+{}\leq \Tlj^2 \e\Ik_{\hTlj<|\Yljk|\leq\Tlj} \rightarrow 0\,.
+\end{multline*}
+Для $\hslj$ заметим, что $\hslj\leqslant\hTlj^2$. После применения неравенства Чебышёва получим, что 
+$S_2/L$ сходится к нулю по вероятности.
+
+В~$S_1$ оба слагаемых сходятся по распределению к нормальному закону и при этом независимы. 
+Поэтому их сумма тоже сходится по распределению к нормальному закону. Осталось убедиться в 
+правильности параметров. Имеем
+\begin{multline*}
+\sumljk \left(\hslj-\slj\right) = \sum\limits_\lambda \sum_j 2^{2j}\cdot 2^j \left(\hslz-\solz^2\right) = {}\\
+{}= \left( \left\|\xi^{[1]}_{0,0,0}\right\|_2^2 + \left\|\xi^{[2]}_{0,0,0}\right\|_2^2 + 
+\left\|\xi^{[3]}_{0,0,0}\right\|_2^2 \right)\times{}\\
+{}\times \fr{2^{3J}-2^{3j_M}}{2^3-1} \left(\hsig-\sigma^2\right) = {}
+\end{multline*}
+
+\noindent
+$$%\begin{multline*}
+{}= \fr{  \silz^2 + \siilz^2 + \siiilz^2 }{ \sigma^2 }\, \fr{2^{3J}-2^{3j_M}}{7} \left(\hsig-\sigma^2\right)\,.\hfil\square
+$$%\end{multline*}
+
+%\columnbreak
+\medskip
+
+\noindent
+\textbf{Замечание}. 
+Если функция $f$ регулярная с параметром $\alpha\geq 1/4$, а $j_M\geq 4J/5$, то можно ослабить требования 
+на~$\hsig$. Достаточно потребовать только состоятельность, асимптотическую нормальность и независимость от~$\Yljk$.
+
+\smallskip
+
+В теоремах~2 и~3 при оценке $\p\left( |\Yljk| > \hTlj \right)$ использовалось число $0<\gamma<1$. 
+Можно заменить~$\gamma$ бесконечно малой последовательностью~$\gamma_L$, которая не испортит порядок знаменателя 
+в~(\ref{eq_prbSplitGammaTomo}).
+
+По формуле полной вероятности для любого $\delta>0$
+\begin{multline}
+\label{eq_sumOfIndicTomo}
+\p\left( \sumljk\indYjkghTj > \delta \right) ={}\\
+{}= \p\left( \hTlj \leqslant \left( 1-\gamma_L \right)\solj\sqrt{2\ln 2^{2j}} \right) \times{} \\
+{}\times \p\left( \sumljk \indYjkghTj>\delta\,|\,\hTlj \leqslant{}\right.\\
+\left.{}\vphantom{\sumljk\indYjkghTj}\leq \left(1-\gamma_L\right) \solj\sqrt{2\ln 2^{2j}} \right) +{} \\
+{}+ \p\left(\sumljk\indYjkghTj>\delta\,,\right. \\
+\left.\vphantom{\sumljk\indYjkghTj}\hTlj > \left( 1-\gamma_L \right) \solj\sqrt{2\ln 2^{2j}}\right)\,,
+\end{multline}
+где
+$\gamma_L = 1/J$.
+При таком $\gamma_L$ получаем
+\begin{multline*}
+\p\left( |\Yljk| > (1-\gamma_L)\solj\sqrt{2\ln 2^{2j}} \right) = {}\\
+{}=\fr{C}{ 2^{2j(1-\gamma_L)^2}\cdot 2^{j/2}\sqrt{j} } \leq \fr{C_1}{ 2^{2J} \sqrt{j} }
+\end{multline*}
+в силу выбора $j_M$ и того, что
+\begin{equation*}
+2^{2j\left(1-\gamma_L\right)^2} = 2^{2j\left( 1-2/J + 1/J^2 \right)} > 2^{2j-4}\,.
+\end{equation*}
+По неравенству Чебышёва
+\begin{multline*}
+\p\left(\sumljk\indYjkghTj>\delta\,, \right.\\
+\left. \vphantom{\sumljk\indYjkghTj}\hTlj > \left( 1-\gamma_L \right) \solj\sqrt{2\ln 2^{2j}}\right) \leq{}\\
+{}\leq \p\left( \sumljk \Ik_{ |\Yljk| > (1-\gamma_L)\solj\sqrt{2\ln 2^{2j}} } > \delta \right) \leq{}
+\end{multline*}
+
+\noindent
+\begin{multline*}
+{}\leq \fr{ \sumljk \p\left( |\Yljk| > (1-\gamma_L)\solj\sqrt{2\ln 2^{2j}} \right) }{\delta} = {}\\
+{}=\Obig\left( \fr{1}{\sqrt{j}} \right)\,.
+\end{multline*}
+
+Используя свойство асимптотической нормальности~$\hsig$, можно для любого $\delta'>0$ оценить
+\begin{equation}
+\label{eq_hatTdevProbAsympTomo}
+\p\left( \hTlj \leq (1-\gamma_L)\solj\sqrt{2\ln 2^{2j}} \right)< \delta'\,,
+\end{equation}
+причем отметим, что~$\delta$ здесь фиксировано, а~$\delta'$ можно делать произвольно малым. Имеем
+\begin{multline*}
+%\label{eq_hatTdevProbAsymp}
+\p\left(\hTlj\leqslant(1-\gamma_L)\solj\sqrt{2\ln 2^{2j}}\right) ={}\\
+{}= \p\left(\hsig\leqslant(1-\gamma_L)^2\sigma^2\right)={}\\
+{}= \p\left( \left(\hsig-\sigma^2\right) \leqslant \sigma^2\left(-2\gamma_L+\gamma_L^2\right) \right) ={}\\
+{}= \p\left( \sqrt{L}\left(\hsig-\sigma^2\right) \leqslant -\fr{\sqrt{L}\sigma^2(2J-1)}{J^2} \right)\,.
+\end{multline*}
+Для произвольного~$\delta'>0$ найдется $J_0$ ($L_0=2^{2J_0}$) такое, что
+\begin{equation*}
+F_\Sigma\left( -\fr{\sqrt{L_0}\sigma^2(2J_0-1 )}{J_0^2} \right) < \fr{\delta'}{2}\,,
+\end{equation*}
+где $F_\Sigma$~--- функция распределения нормального закона с нулевым средним и дисперсией~$\Sigma^2$. 
+При этом для любого $J\geq J_0$
+\begin{multline*}
+\p\left( \sqrt{L}\left(\hsig-\sigma^2\right) \leq -\fr{\sqrt{L}\sigma^2(J -1 )}{J^2} \right) \leq{} \\
+{}\leq \p\left( \sqrt{L}\left(\hsig-\sigma^2\right) \leq -\fr{\sqrt{L_0}\sigma^2(2J_0 -1 )}{J_0^2}  \right)\,.
+\end{multline*}
+В силу асимптотической нормальности~$\hsig$ и непрерывности~$F_\Sigma$ для этого же~$\delta'$ 
+найдется~$J_1$ $\left(L_1=2^{2J_1}\right)$ такое, что для любого $J\geq J_1$
+\begin{equation*}
+\left| \p\left( \sqrt{L_1}\left(\hsig-\sigma^2\right) \leq x \right) - F_\Sigma(x)\right| < \fr{\delta'}{2}\,,
+\end{equation*}
+причем $J_1$ не зависит от~$x$. Возьмем $x_0 =$\linebreak $= -\sqrt{L_0}\sigma^2(2J_0-1)/J_0^2$ и 
+$J_2 = \max\{J_0,J_1\}$. Для любого $J\geq J_2$ имеем
+\begin{equation*}
+\p\left( \sqrt{L}\left(\hsig-\sigma^2\right) \leq x_0 \right) < \delta'\,,
+\end{equation*}
+а значит, справедливо~(\ref{eq_hatTdevProbAsympTomo}).
+
+Получаем, что сумма индикаторов в~(\ref{eq_sumOfIndicTomo}) сходится к нулю по вероятности:
+\begin{equation*}
+%\label{eq_sumIndConsisthTTomo}
+\p\left( \sumljk\indYjkghTj > \delta \right) \rightarrow 0 \mbox{ при }J\rightarrow\infty\,.
+\end{equation*}
+Для суммы индикаторов с неслучайным порогом аналогично получаем
+\begin{equation*}%\label{eq_sumIndConsistTTomo}
+\p\left( \sumljk\indYjkgTj > \delta \right) \rightarrow 0\,.
+\end{equation*}
+Далее воспользуемся дискретной версией неравенства Коши--Буняковского:
+\begin{multline*}
+\fr{ \sumljk \Yljk^2\indYjkghTj }{ L } \leq{}\\
+{}\leq \sqrt{ \fr{\sumljk \Yljk^4/L}{L} \, \sumljk \indYjkghTj } \,\xrightarrow{\textsf{P}} 0\,,
+\end{multline*}
+так как $\e\left[ \Yljk^4/L \right]$ ограничено,
+\begin{equation*}
+\fr{ \sumljk \hTlj^2 \indYjkghTj }{L} \leq \fr{ \sumljk \Yljk^2 \indYjkghTj }{L} \xrightarrow{\mathsf{P}} 0
+\end{equation*}
+и
+\begin{equation*}
+\hslj\indYjkghTj \leqslant \hTlj^2\indYjkghTj\,.
+\end{equation*}
+Оценки для слагаемых с $\indYjkgTj$ получены в теореме~1.
+
+\medskip
+
+\noindent
+\textbf{Замечание}. 
+Всюду выше в этом разделе предполагалось, что пороговая обработка и суммирование в выражении для 
+риска~(\ref{eq_riskEstimDefTomo}) ведутся с уровня~$j_M$, причем $j_M\rightarrow\infty$ при 
+$J\rightarrow\infty$. Однако если ввести дополнительные ограничения на регулярность~$f$, 
+то можно вести пороговую обработку и суммирование с уровня $j_0\nrightarrow\infty$. Если 
+$j_M=J/(\alpha+1)$, то для коэффициентов, соответствующих $j<j_M$, неравенство~(\ref{eq_WaveletCoeffUpperBoundTomo}), 
+вообще говоря, не выполнено. Оценим вклад больших коэффициентов в оценку риска:
+\begin{multline*}
+L^{-1} \sum\limits_{j=j_0}^{j_M-1}\sum\limits_{\lambda,\mathbf{k}} \left\{\left|\Yljk^2-\hslj\right|\indYjklhTj +{}\right.\\
+\left.{}+ \left(\hslj+\hTlj^2\right)\indYjkghTj \right\} \leq{}\\
+{}\leq L^{-1} \sum\limits_{j=j_0}^{j_M-1}\sum\limits_{\lambda,\mathbf{k}} \left\{ \left(\hslj+\hTlj^2\right) +
+ \left(\hslj+\hTlj^2\right) \right\} \xrightarrow{\mathsf{P}}{}\\
+\xrightarrow{\mathsf{P}} {} 0
+\end{multline*}
+в силу состоятельности~$\hsig$ и того, что
+
+\noindent
+\begin{multline*}
+L^{-1}\left\{\sum\limits_{j=j_0}^{j_M-1}j2^j\cdot2^{2j}\right\} \leq 2^{-2J}
+\left\{j_M\sum\limits_{j=j_0}^{j_M-1}2^{3j}\right\} \simeq{}\\
+{}\simeq 2^{2J}\cdot j_M\cdot2^{3j_M}\rightarrow 0
+\end{multline*}
+при $J\rightarrow\infty$, если $3j_M<2J$, т.\,е.\ 
+$\alpha>1/2$. Слагаемые риска оцениваются аналогично. Итак, 
+при $\alpha>1/2$ суммирование в~(\ref{eq_riskEstimDefTomo}) можно начинать с произвольного~$j_0$.
+
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+\bibitem{Natterer} %1
+\Au{Наттерер Ф.} 
+Математические аспекты компьютерной томографии.~--- М.: Мир, 1990.
+
+\bibitem{TikhonovArsenin}  %2
+\Au{Тихонов А.\,Н., Арсенин В.\,Я.} 
+Методы решения некорректных задач.~--- М.: Наука, 1979.
+
+\bibitem{Herman}  %3
+\Au{Хермен Г.} 
+Восстановление изображений по проекциям: основы реконструктивной томографии.~--- М.: Наука, 1983.
+
+\bibitem{Daub}  %4
+\Au{Добеши И.} 
+Десять лекций по вейвлетам.~--- Ижевск: НИЦ <<Регулярная и хаотическая динамика>>, 2001.
+
+\bibitem{DonohoWVD} 
+\Au{Donoho D.\,L.} 
+Nonlinear solution of linear inverse problems by wavelet-vaguelette decomposition~// 
+Appl. Comput. Harmonic Anal., 1995. Vol.~2. P.~101--126.
+
+\bibitem{KolaczykArticle}  %7
+\Au{Kolaczyk E.\,D.} 
+A wavelet shrinkage approach to tomographic image reconstruction~// J. Amer. Statistical Association, 1996. 
+Vol.~91. No.\,435. P.~1079--1090.
+
+\bibitem{KolaczykThesis} %6
+\textit{Kolaczyk E.\,D.} 
+Wavelet methods for the inversion of certain homogeneous linear operators in the presence of noisy data.  Ph.D.\ 
+Thesis, 1994.
+
+\bibitem{DJideal} 
+\textit{Donoho D.\,L., Johnstone I.\,M.} 
+Ideal spatial adaptation via wavelet shrinkage~// Biometrika, 1994. Vol.~81. No.\,3. P.~425--455.
+
+\bibitem{DJunkn}  %9
+\textit{Donoho D.\,L., Johnstone I.\,M.} 
+Adapting to unknown smoothness via wavelet shrinkage~// J. Amer.\ Statistical Association, 1995. Vol.~90. P.~1200--1224.
+
+\bibitem{Mallat} %10
+\Au{Mallat S.} 
+A wavelet tour of signal processing.~--- Academic Press, 1999.
+
+
+\bibitem{MarkinLimitDistr}  %11
+\Au{Маркин А.\,В.} 
+Предельное распределение оценки риска при пороговой обработке вейвлет-ко\-эф\-фи\-ци\-ен\-тов~// 
+Информатика и её применения, 2009. Т.~3. Вып.~4. С.~57--63.
+
+\label{end\stat}
+
+\bibitem{MarkinShestakovConsist}  %12
+\Au{Маркин А.\,В., Шестаков О.\,В.} 
+О состоятельности оценки риска при пороговой обработке вейвлет-ко\-эф\-фи\-ци\-ен\-тов~// Вестник Московского университета. 
+Сер.~15. Вычислительная математика и кибернетика, 2010. №\,1. С.~26--33.
+
+
+ \end{thebibliography}
+}
+}
+
+\end{multicols}

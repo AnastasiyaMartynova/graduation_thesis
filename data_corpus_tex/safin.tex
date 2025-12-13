@@ -1,0 +1,817 @@
+
+
+\def\stat{safin}
+
+\def\tit{ОПРЕДЕЛЕНИЕ ЗАИМСТВОВАНИЙ В ТЕКСТЕ БЕЗ~УКАЗАНИЯ~ИСТОЧНИКА$^*$}
+
+\def\titkol{Определение заимствований в~тексте без указания источника}
+
+\def\aut{К.\,Ф.~Сафин$^1$, М.\,П.~Кузнецов$^2$, М.\,В.~Кузнецова$^3$}
+
+\def\autkol{К.\,Ф.~Сафин, М.\,П.~Кузнецов, М.\,В.~Кузнецова}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Сафин К.\,Ф.}
+\index{Кузнецов М.\,П.}
+\index{Кузнецова М.\,В.}
+\index{Safin K.\,F.}
+\index{Kuznetsov M.\,P.}
+\index{Kuznetsova M.\,V.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа 
+поддержана РФФИ (проект 16-07-01155).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский физико-технический институт; %(государственный  университет); 
+ЗАО <<Анти-плагиат>>, \mbox{kamil.safin@phystech.edu}}
+\footnotetext[2]{ООО <<Форексис>>, \mbox{mikhail.kuznecov@phystech.edu}}
+\footnotetext[3]{Московский физико-технический институт; %(государственный  университет); 
+ЗАО <<Анти-плагиат>>, \mbox{kuznetsova@ap-team.ru}}
+
+%\vspace*{-18pt}
+
+
+
+\Abst{Для задачи поиска заимствований в~тексте существуют два подхода: обнаружение 
+<<внешних>> и~<<внутренних>> заимствований. При поиске внешних заимствований 
+известен корпус, из которого возможны заимствования. При поиске внутренних 
+заимствований исследуемый текст анализируется изолированно, т.\,е.\ возможные 
+источники заимствований неизвестны. Данная работа посвящена поиску внутренних 
+заимствований в~тексте. Предполагается, что большая часть текста написана одним 
+автором. Необходимо выделить участки текста, написанные другим автором, если 
+таковые имеются. В~работе предлагается алгоритм, строящий статистику сегментов 
+текста, по которой определяется факт зависимости. Эксперимент проводится на 
+коллекции конкурса  PAN-2011.}
+
+\KW{обработка естественного языка; детектирование внутренних заимствований; поиск 
+выбросов в~статистике}
+
+\DOI{10.14357/19922264170308} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+
+
+\section{Введение}
+
+Текстовые заимствования являются большой проблемой в~сфере образования и~научных 
+исследований~\cite{Stud_plag}. Развитие сети Интернет, в~част\-ности,
+и~информационных технологий, в~целом, сделало возможным некорректное заимствование 
+информации.
+
+В задаче обнаружения заимствований существуют два глобальных подхода: выявление 
+<<внешних>> (external plagiarism detection) и~<<внутренних>> (intrinsic 
+plagiarism detection) заимствований. При поиске внешних заимствований 
+предполагается, что в~распоряжении исследователя есть некоторый корпус, из 
+которого возможны заимствования. Таким образом, задача состоит в~попарном 
+сравнении участков подозрительного текста и~текстов из корпуса заимствований.
+
+Задача поиска <<внутренних>> заимствований состоит в~анализе исключительно 
+подозрительного текста. Алгоритмы должны анализировать стиль письма и~выделять 
+характерные признаки, свойственные данному автору.
+
+Алгоритмы разбивают исходный текст на сегменты и~сравнивают текст сегмента со 
+всем текстом. Разбиение проводится по предложениям~\cite{Graz, Innsbruck}, или 
+же определяется окно заданной ширины, согласно которому производится 
+сегментирование текс\-та~\cite{Aegean, Weimar, Chile, Valencia}. Выбор меры 
+схожести сегмента со всем текс\-том или, наоборот, меры различия является ядром 
+алгоритма. Работы~\cite{Graz, Innsbruck, Weimar} используют стилистические, 
+синтаксические, лексические характеристики: частотность частей речи, порядок 
+следования частей речи в~предложении, пунктуацию, среднюю длину предложения 
+и~подобные признаки. Возможно использование символьных $n$-грамм (чаще других 
+применяют 3-грам\-мы) в~качестве признака, 
+а~точнее, час\-тот их использования~\cite{Aegean, Valencia}. 
+
+Метод~\cite{Surrey} использует кластеризацию абзацев по 
+час\-то\-те встречаемости существительных. 
+
+В~статье \cite{AP} описан алгоритм 
+диаризации текстов, т.\,е.\ классификации сегментов текста по авторству, что 
+является обобщением задачи поиска внутренних заимствований. 
+
+В~2011~г.\ был 
+проведен конкурс PAN-2011, посвященный поиску заимствований в~текстах. 
+Метод 
+Oberreuter~\cite{Chile}, ставший победителем в~конкурсе PAN-2011, использует 
+функцию, характеризующую письменный стиль автора. Функция строит вектор час\-тот 
+встречаемости слов во всем документе и~в~выделенном сегменте. Эти векторы 
+используются для определения величины отклонения сегмента от всего текста. 
+Данный алгоритм показал результат~0,32 по F1-ме\-ре. Это демонстрирует тот факт, 
+что алгоритма, решающего данную задачу в~большинстве случаев, до сих пор нет.
+
+\begin{figure*}[b] %fig1
+    \vspace*{-3pt}
+\begin{center}
+\mbox{%
+\epsfxsize=164.328mm
+\epsfbox{saf-1.eps}
+}
+\end{center}
+\vspace*{-12pt}
+\Caption{Распределение текстов по количеству заимствованных фрагментов~(\textit{а})
+и~по доле заимствований~(\textit{б})} 
+\end{figure*}
+    
+
+Предлагаемый алгоритм строит статистическое описание текста, которое 
+используется для на\-хож\-де\-ния заимствованных сегментов текста. Статистика должна 
+удовлетворять следующим условиям: на оригинальных сегментах текста иметь 
+небольшой разброс значений по сравнению со значением на всем тексте, а на 
+заимствованных сегментах иметь значительные отличия.
+
+В работе используются данные конкурса PAN-2011 \cite{PAN}. Для оценки работы 
+алгоритма определяются микро- и~макромеры качества precision и~recall (точность 
+и~полнота) и~затем вычисляется F1-мера как среднее гармоническое для precision 
+и~recall.
+Данная мера представляет качество работы алгоритма.
+
+\vspace*{-4pt}
+
+\section{Постановка задачи}
+
+Пусть $D$~--- коллекция текстовых документов, $d$~--- текстовый документ, 
+$t_i$~--- сегмент текста $(d \hm= \bigcup t_{i}$, $d \hm\in D)$. Среди сегментов 
+текста~$t_i$ необходимо выделить те, значение статистики которых $\sigma 
+(\mathbf{t}_i)$ превосходит некоторый заданный порог значений~$\delta_{\mathrm{susp}}$.
+
+\vspace*{-8pt}
+
+\paragraph*{Описание выборки.}
+В работе используется блок текстовых документов конкурса PAN-2011~\cite{PAN}. 
+В~текстах присутствуют сегменты настоящих, имитированных и~искусственных 
+заимствований. Каж\-дый сегмент текста соответственно полностью взят из другого 
+источника, либо заимствованный текст переписан человеком другими словами, либо 
+специально обученный алгоритм строит текст, стараясь повторить стиль автора.
+
+Выборка состоит из~4753~текс\-тов, разделенных на~10~час\-тей, к~каждому из текстов 
+прилагается файл с~экспертной разметкой заимствованных сегментов.
+
+Для анализа корпуса была собрана подвыборка корпуса, состоящая из~30~документов, 
+которые были просмотрены вручную. Анализ показал, что большая часть документов 
+содержит в~себе заимствования, сильно отличающиеся от остального текста по 
+тематике и~набору используемых слов. К~примеру, в~текст по экономике вставляется 
+фрагмент, вырезанный из художественного текста.
+
+Также тексты корпуса были исследованы на то, какая доля заимствований содержится 
+в~каждом текс\-те (отношение длины заимствованных фрагментов к~длине текс\-та 
+в~символах) и~сколько различных фрагментов заимствований присутствует в~текс\-те. На 
+рис.~1 приведены гистограммы результатов.
+
+Как видно, тексты в~среднем содержат от~1 до~7~фрагментов заимствований. 
+В~большинстве текстов доля заимствований не превышает~4\%--5$\%$, что усложняет 
+задачу поиска этих заимствований.
+
+\vspace*{-6pt}
+
+\paragraph*{Критерии качества.}
+В экспериментах используют\-ся критерии качества, применявшиеся в~PAN-2011 \cite{PAN}. 
+Обозначим за пару $(s, d)$ последовательность символов, помеченную 
+экспертом как заимствование в~документе~$d$. $S \hm= \bigcup s_{i}$~--- 
+совокупность всех заимствованных сегментов. За пару~$(r, d)$ обозначим 
+последовательность, помеченную алгоритмом как заимствованную. Аналогично $R \hm= 
+\bigcup r_{i}$~--- совокупность всех сегментов, которые алгоритм 
+классифицировал как заимствованные. Рас\-смот\-рим меры качества {Precision} 
+и~{Recall}:
+
+\noindent
+\begin{gather*}
+\text{Prec}(S,R)=\fr{1}{|R|}\sum\limits_{r_j\in 
+R}\fr{\left\vert \bigcup\limits_{s_i\in S}(s_i\cap r_j)\right\vert}{|r_j|}\,;\\ 
+\text{Rec}(S,R)=\fr{1}{|S|}\sum\limits_{s_i\in S}\fr{\left\vert
+\bigcup\limits_{r_j\in 
+R}(s_i\cap r_j)\right\vert}{|s_i|}\,.
+\end{gather*}
+
+\noindent
+Данные величины отражают точность (доля правильного распознавания заимствований 
+по отношению ко всем выделенным сегментам) и~полноту (доля правильного 
+распознавания заимствований по отношению ко всем заимствованиям в~тексте) работы 
+алгоритма.
+
+Вычисляется {F1-мера} как среднее гармоническое между {Precision} 
+и~{Recall}:
+$$
+\mathrm{F}1(S,R) = \fr{\text{Prec} (S, R) \cdot \text{Rec} (S, R)}{\text{Prec} (S, R) + 
+\mathrm{Rec}\, (S, R)}\,.
+$$
+Вычисляется величина гранулярности
+
+\vspace*{2pt}
+
+\noindent
+$$
+\mathrm{gran}\,(S,R)=\fr{1}{|S_R|}\sum\limits_{s_i\in S_R}|R_{s_i}|\,,
+$$
+где $S_R$~--- множество заимствованных сегментов, обнаруженных алгоритмом; 
+$R_s$~--- сегменты, отмеченные алгоритмом, которые детектируют данный сегмент 
+заимствований~$s$:
+
+\vspace*{-2pt}
+
+\noindent
+\begin{gather*}
+S_R = \lbrace s | s \in S \wedge \exists r \in R: r\ \mathrm{detects}\ s \rbrace\,;
+\\
+R_S = \lbrace r | r \in R  \wedge r\ \mathrm{detects}\ s\rbrace\,;
+\\
+r\ \mathrm{detects}\ s: \mathrm{if}\ r\cap s \neq \emptyset\,.
+\end{gather*}
+
+\vspace*{-2pt}
+
+\noindent
+Таким образом, гранулярность показывает то, насколько мелко алгоритм разбивает 
+заимствованные сегменты текста. Если заимствованные сегменты разделяются 
+алгоритмом на много мелких, то гранулярность будет иметь высокие значения.
+
+По описанным величинам вычисляется итоговая мера качества {pladget}:
+$$
+\text{pladget}(S,R)=\fr{F1(S,R)}{\log_2 (1+\text{gran}(S,R))}\,.
+$$
+
+\vspace*{-10pt}
+
+\paragraph*{Формальная постановка задачи.}
+Для обнаружения заимствований исходный текст~$d$ разбивается на сегменты~$t_i$:
+$$
+d=\cup t_i\,.
+$$
+Для каждого сегмента вычисляется вектор признаков~$\mathbf{t}_i$ и~строится 
+статистика~$\sigma(\mathbf{t}_i)$.
+Затем происходит детектирование выбросов среди значений статистики на основании 
+ее отклонения от среднего значения $$
+\sigma_{\mathrm{avr}}(d) = 
+\fr{1}{N}\sum\limits_{i=1}^N \sigma(\mathbf{t}_i)\,,
+$$
+ где $N$~--- число 
+сегментов в~тексте. Если отклонение превышает заданный порог~$\delta_{\mathrm{susp}}$, то 
+сегмент считается заимствованным:
+$$
+\left\vert \sigma(\mathbf{t}_i))-\sigma_{\mathrm{avr}}(d)\right\vert > \delta_{\mathrm{susp}}\,.
+$$
+
+Корпус документов~$D$ разбивается на обуча\-ющую и~тестовую выборки: 
+$$
+D=D_{\mathrm{test}}\cup D_{\mathrm{learn}}\,.
+$$
+При обучении параметры алгоритма~$\mathbf{w}$ настраиваются таким образом, чтобы 
+улучшить меры качества работы алгоритма. При фиксированном способе разбиения 
+текста мера {Granularity} не изменяется, так как она зависит от мелкости 
+разбиения. Тогда для увеличения итоговой меры качества {Pladget} достаточно 
+улучшить {F1-меру}:
+
+\vspace*{-2pt}
+
+\noindent
+$$
+\hat{\mathbf{w}}= \underset{\mathbf{w} \in \mathbf{W}}{\arg\max}\ \mathrm{F}1(S,  R)\,, 
+$$
+
+\vspace*{-2pt}
+
+\noindent
+т.\,е.\ требуется вектор параметров $\mathbf{w} \hm= (l_{\mathrm{segm}}, 
+n, \delta_{\mathrm{susp}})$, 
+максимизирующий {F1-меру}.
+Здесь $l_{\mathrm{segm}}$~--- минимальная длина сегмента; $n$~--- ширина окна 
+сглаживания; $\delta_{\mathrm{susp}}$~--- порог выброса.
+ Более подробно параметры описаны 
+в~вычислительном эксперименте (см.\ разд.~5).
+
+
+
+\section{Базовый эксперимент}
+
+Целью базового эксперимента ставилась проверка гипотезы о том, что 
+заимствованные сегменты текста имеют отличные от среднего вектора значения 
+признаков.
+
+В качестве такого признака была выбрана час\-то\-та встречаемости слов. Каждому 
+слову ставится в~соответствие число
+
+\noindent
+\begin{equation}
+  \label{1-saf}
+  \text{fr\_class}_w = \log_2 \fr{n_{\max}}{n_w}\,,
+\end{equation}
+где $n_{\max}$~--- число вхождений наиболее часто употребимого слова в~тексте; 
+$n_w$~--- частота вхождений слова~$w$ в~этом предложении.
+
+В качестве основного признака использовались квантили распределения данной 
+величины внутри окна фиксированной ширины.
+
+Обозначим за $m^j \hm=\overline{x^j}$ среднее значение $j$-го признака для 
+рассматриваемого документа, за $r^j$~--- среднеквадратичное отклонение. Тогда 
+нормализованный признак~$j$ для сегмента~$i$ рассчитывается по формуле:
+$$
+t_i^j=\fr{x^j-m^j}{r^j}\,. 
+$$
+
+За сегменты~$t_i$ были выбраны предложения текс\-та. Для каждого предложения~$t_i$ 
+строился вектор признаков~$\mathbf{t}_i$ и~затем подсчитывалось отклонение от 
+усредненного по всему текс\-ту вектора~$\mathbf{t}_{\mathrm{avr}}$ в~L1-мет\-рике:
+
+\vspace*{-2pt}  
+
+  \noindent
+\begin{equation}
+  \sigma(\mathbf{t}_i)=||\mathbf{t}_i-\mathbf{t}_{\mathrm{avr}}|| = 
+\sum\limits_{j=1}^l|t_i^j-t_{\mathrm{avr}}^j|\,.
+  \label{2-saf}
+\end{equation}
+
+\vspace*{-2pt}
+
+Эксперимент проводился на одном из текстов конкурсной коллекции PAN-2011.
+
+На рис.~2 показано отклонение признакового вектора каждого предложения от 
+усредненного вектора. Пунктирными линиями выделены предложения, помеченные 
+экспертом как заимствованные.
+
+\begin{figure*} %fig2
+    \vspace*{1pt}
+\begin{center}
+\mbox{%
+\epsfxsize=160.138mm
+\epsfbox{saf-3.eps}
+}
+\end{center}
+\vspace*{-9pt}
+\Caption{Отклонение признакового вектора от среднего}
+\vspace*{-3pt}
+\end{figure*}
+
+Видно, что заимствованные фрагменты имеют характерные выбросы из области средних 
+значений отклонения. Однако некоторые предложения, не являющиеся 
+заимствованными, также сильно отличаются от усредненного признакового вектора. 
+На основании этого можно сделать вывод, что использование только данного 
+признака недостаточно для решения поставленной задачи.
+
+\section{Описание алгоритма}
+
+%\vspace*{-8pt}
+
+\paragraph*{Модель.}
+Предлагаемый алгоритм работает с~час\-тот\-ны\-ми признаками, предоставляющими 
+описание текста. В~качестве такого признака выбран признак частоты встречаемости 
+слов, описанный в~формуле~(\ref{1-saf}).
+
+Исходный текст подвергается предобработке: удаляются служебные символы, все 
+буквы переводятся в~нижний регистр. Также  из текста удаляются стоп-слова.
+
+\vspace*{-8pt}
+
+\paragraph*{Сегментирование текста.}
+Текст разбивается на предложения. Затем формируется разбиение текста на 
+сегменты~$t_i$: если длина очередного предложения
+ меньше минимальной длины 
+сегмента~$l_{\mathrm{segm}}$,\linebreak к~этому предложению добавляется следующее за ним~--- процесс 
+повторяется, пока длина сегмента~$t_i$ не превысит заданную минимальную длину. 
+Минимальная длина сегмента~$l_{\mathrm{segm}}$ является настраиваемым параметром 
+алгоритма.
+
+\vspace*{-8pt}
+
+\paragraph*{Построение статистики и~детектирование аномалий.}
+Для каждого сегмента~$t_i$ текста строится  вектор признаков. Затем строится 
+статистика~$\sigma (\mathbf{t}_i)$ на основе\linebreak\vspace*{-12pt}
+
+\columnbreak
+
+\noindent
+ отклонения вектора признаков от 
+усредненного по всему тексту вектора~(\ref{2-saf}).
+
+Полученная статистика сглаживается методом скользящего среднего: новые значения 
+статистики~$\sigma'(\mathbf{t}_i)$ вычисляются по формуле:
+
+\noindent
+$$
+\sigma'(\mathbf{t}_i) = \fr{1}{2n+1}\sum\limits_{k=i-
+n}^{i+n}\sigma(\mathbf{t}_i)\,,
+$$
+где $n$~--- ширина сглаживания, которая также является настраиваемым параметром. 
+Значения в~крайних точках вычисляются по формулам ($N$~--- число сегментов):
+
+\noindent
+\begin{align*}
+\sigma'(\mathbf{t}_i) &= 
+\fr{1}{i+n+1}\sum\limits_{k=0}^{i+n}\sigma(\mathbf{t}_i)\,;
+\\
+\sigma'(\mathbf{t}_i)& = \fr{1}{i+n+1}\sum\limits_{k=i- n}^{N}\sigma(\mathbf{t}_i)\,.
+\end{align*}
+
+Полученные значения статистики $\sigma'(\mathbf{t}_i)$ исследуются на выбросы. 
+Если в~ряде статистики присутствует аномалия, превышающая заданный 
+порог~$\delta_{\mathrm{susp}}$, то сегмент~$t_i$, отвечающий этому выбросу, помечается как 
+заимствованный.
+
+Минимальная длина сегмента, ширина окна сглаживания и~порог выброса 
+настраиваются на обучающей выборке путем максимизации {F1-меры}.
+
+\vspace*{-6pt}
+
+\section{Вычислительный эксперимент}
+
+Алгоритм настраивался на частях~1--5 корпуса PAN-2011 путем максимизации 
+{F1-ме\-ры}. Тестирование проводилось на частях~6--10 корпуса.
+Оптимальные параметры после настройки: $\hat{l}_{\mathrm{segm}}\hm=450$; $\hat{n}\hm=8$; 
+$\hat{\delta}_{\mathrm{susp}}\hm=0{,}37$.
+
+
+
+На рис.~3 и~4 приведены примеры работы алгоритма. Серые участки обозначают 
+заимствованные %\linebreak\vspace*{-12pt}
+ фрагменты, пунктирными линиями обозначен порог выброса значений стилевой 
+функции.
+
+%\pagebreak
+
+\end{multicols}
+
+\begin{figure*} %fig3
+    \vspace*{1pt}
+\begin{center}
+\mbox{%
+\epsfxsize=163.257mm
+\epsfbox{saf-4.eps}
+}
+\end{center}
+\vspace*{-9pt}
+\Caption{Результаты на обучающей выборке}
+%\end{figure*}
+%\begin{figure*} %fig4
+    \vspace*{12pt}
+\begin{center}
+\mbox{%
+\epsfxsize=162.463mm
+\epsfbox{saf-5.eps}
+}
+\end{center}
+\vspace*{-9pt}
+\Caption{Результаты на тестовой выборке}
+\end{figure*}
+
+\begin{table*}\small
+\vspace*{6pt}
+\begin{center}
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\multicolumn{6}{c}{Сравнение качества алгоритмов на корпусе  PAN-2011}\\
+\multicolumn{6}{c}{\ }\\[-6pt]
+\hline
+Алгоритм & Precision & Recall& F1& Granularity& Pladget\\
+\hline
+ Предлагаемый авторами &  0,27& 0,28& 0,28& 1,04& 0,28\\
+ Oberreuter & 0,34& 0,31& 0,33& 1,00& 0,33\\
+ Kestemont& 0,11& 0,43& 0,17& 1,03& 0,17\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{6pt}
+\end{table*}
+
+\begin{multicols}{2}
+
+%\noindent
+
+
+
+
+Результаты работы и~сравнение с~двумя алгоритмами приведены в~таблице.
+
+
+
+Описанный алгоритм использует частоты распределения слов. Сегментирование текста 
+происходит по группам предложений. Для определения заимствованных фрагментов 
+исследуются значения статистики каждого сегмента.
+
+На корпусе PAN-2011 алгоритм показал сравнимые результаты с~победителем конкурса~--- 
+алгоритмом Oberreuter. Также было проведено сравнение с~алгоритмом 
+Kestemont'a, занявшим второе место на конкурсе. Качество работы предлагаемого 
+алгоритма значительно превышает качество работы алгоритма Kestemont'a.
+
+
+\section{Анализ ошибок}
+
+Результаты работы предлагаемого алгоритма зави\-сят от длины документа. При 
+анализе небольших по объему текстов сглаживание приводит к~существенной потере 
+информации об аномальных значениях статистики. При малой ширине сглаживания 
+шумовые выбросы вызывают ложное срабатывание алгоритма.
+
+\vspace*{-14pt}
+
+\section{Заключение}
+
+Предлагаемый алгоритм использует распределение частот слов внутри текста для 
+нахождения заимствованных сегментов. Сегментирование текста осуществляется по 
+группам предложений. Для каждого сегмента строится статистика. Затем ряд 
+статистики для всего текста  сглаживается методом скользящего среднего. 
+Полученные значения исследуются на отклонение от среднего значения для выявления 
+заимствованных сегментов.
+
+Алгоритм был настроен и~протестирован на корпусе PAN-2011. Алгоритм 
+Oberreuter~\cite{Chile}, модификацией которого является предлагаемый алгоритм, показал на 
+этом же корпусе результаты в~0,32 по {F1-мере}. Таким образом, описанный 
+алгоритм показал сравнимые результаты при работе с~тем же корпусом документов.
+
+Дальнейшие исследования могут быть на\-прав\-ле\-ны на более точную настройку 
+параметров алгоритма, подбор параметров в~зависимости от длины рассматриваемого 
+текста, поиск новых признаков, которые будут точнее выявлять заимствованные\linebreak 
+фрагменты, а~также поиск новых способов на\-хож\-де\-ния заимствований.
+
+\bigskip
+
+Авторы выражают свою благодарность доктору фи\-зи\-ко-ма\-те\-ма\-ти\-че\-ских 
+наук В.\,В.~Стрижову, а~также 
+кандидату фи\-зи\-ко-ма\-те\-ма\-ти\-че\-ских наук Ю.\,В.~Чеховичу 
+за ценные советы при планировании исследования и~рекомендации по оформлению статьи.
+
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{Stud_plag}
+  \Au{Никитов А.\,В., Орчаков О.\,А., Чехович~Ю.\,В.} Плагиат в~работах 
+студентов и~аспирантов: проблема и~методы противодействия~// Университетское 
+управление: практика и~анализ, 2012. №\,5. С.~61--68.
+
+\bibitem{Graz} %2
+\Au{Zechner M., Muhr~M., Kern~R., Granitzer~M.} External and intrinsic 
+plagiarism detection using vector space models~// CEUR Workshop Proceedings, 2009. 
+Vol.~502. P.~47--55.
+
+\bibitem{Innsbruck} %3
+  \Au{Tschuggnall M., Specht G.} Countering plagiarism by exposing 
+irregularities in authors grammars~// European Intelligence and Security 
+Informatics Conference.~--- IEEE, 2013. P.~15--22.
+
+
+
+\bibitem{Weimar} %4
+\Au{Eissen S.\,M., Stein B.} Intrinsic plagiarism detection~// 
+Advances in information retrieval~/ Eds.\ M.~Lalmas, A.~MacFarlane, 
+S.\,M.~R$\ddot{\mbox{u}}$ger,
+\textit{et al.}~--- Lecture 
+notes in computer science ser.~--- Springer, 2006. Vol.~3936. 
+P.~565--569.
+
+\bibitem{Aegean} %5
+\Au{Stamatatos E.} Intrinsic plagiarism detection using character 
+$n$-gram profiles~// CEUR Workshop Proceedings, 2009. Vol.~502. P.~38--46.
+
+\bibitem{Chile} %6
+\Au{Oberreuter G., L'Huillier~G., R$\acute{\!\!\mbox{{\ptb{\i}}}}$os~S.\,A., Vel$\acute{\mbox{a}}$squez~J.\,D.} 
+Outlier-based approaches for intrinsic and external plagiarism detection~// 
+Knowlege-based and intelligent 
+information and engineering systems~/
+Eds. A.~K$\ddot{\mbox{o}}$nig, A.~Dengel, K.~Hinkelmann, \textit{et al.}~--- Lecture 
+notes in computer science ser.~--- Springer, 
+2011. Vol.~6882.  P.~11--20.
+
+\bibitem{Valencia} %7
+\Au{Bensalem I. Rosso~P., Chikhi~S.} Intrinsic plagiarism detection 
+using $n$-gram classes~// Conference on Empirical Methods 
+in Natural Language Processing Proceedings.~--- 
+Stroudsburg, PA, USA: 
+Association for Computational Linguistics, 2014. P.~1459--1464.
+
+\bibitem{Surrey}
+\Au{Vartapetiance A., Gillam~L.} Quite simple approaches for authorship 
+attribution, intrinsic plagiarism detection and sexual predator identification. 
+{\sf http:// epubs.surrey.ac.uk/id/eprint/766727}.
+
+\bibitem{AP}
+\Au{Kuznetsov M., Motrenko A., Kuznetsova R., Strijov V.} Methods for 
+intrinsic plagiarism detection and author diarization. 
+{\sf http://ceur-ws.org/Vol-1609/16090912.pdf}.
+
+\bibitem{PAN}
+\Au{Potthast M., Stein~B., Barron-Cedeno~A., Rosso~P.} An evaluation 
+framework for plagiarism detection~// 23rd  
+Conference (International) on Computational Linguistics Proceedings.~--- 
+Stroudsburg, PA, USA: Association for Computational 
+Linguistics, 2010. P.~997--1005.
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 30.01.17}}
+
+\vspace*{8pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{-2pt}
+
+
+\def\tit{METHODS FOR~INTRINSIC PLAGIARISM DETECTION\\[-5pt]}
+
+\def\titkol{Methods for intrinsic plagiarism detection}
+
+\def\aut{K.\,F.~Safin$^{1,2}$, M.\,P.~Kuznetsov$^3$, and~M.\,V.~Kuznetsova$^{1,2}$\\[-5pt]}
+
+\def\autkol{K.\,F.~Safin, M.\,P.~Kuznetsov, and~M.\,V.~Kuznetsova}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-14pt}
+
+
+\noindent
+$^1$Moscow Institute of Physics and Technology, 9~Institutskiy Per., 
+Dolgoprudny, Moscow Region 141700, Russian\linebreak
+$\hphantom{^1}$Federation
+
+\noindent
+$^2$Antiplagiat JSC, 33~Varshavskoe Shosse, 
+Moscow 117105, Russian Federation
+
+\noindent
+$^3$``Forecsys'' LLC, 42~Vavilov Str., Moscow 119333, Russian Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{2pt}
+
+
+\Abste{There are two ways to find plagiarism in documents: ``external'' 
+and ``intrinsic'' plagiarism detection. External plagiarism detection is the task 
+with a known set of possible references. Intrinsic plagiarism detection aims at 
+discovering plagiarism by analyzing only the document by itself. The paper 
+investigates the  methods of intrinsic plagiarism detection. The authors developed 
+a~plagiarism detection method based on constructing statistics from the features 
+of the document parts and detecting outliers. The proposed algorithm was tested on 
+the PAN-2011 collection for intrinsic plagiarism detection.}
+
+\KWE{natural language processing; intrinsic plagiarism detection; outliers detection}
+
+
+\DOI{10.14357/19922264170308} 
+
+%\vspace*{-18pt}
+
+\Ack
+\noindent
+The work was supported by the Russian Foundation for Basic Research (project 16-07-01155).
+
+
+
+%\vspace*{3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-saf}
+\Aue{Nikitov, A.\,V., O.\,A.~Orchakov, and Ju.\,V.~Chehovich.} 
+2012. Plagiat v~rabotakh studentov i~aspirantov: 
+Problema i~metody protivodeystviya [Plagiarism in works of undergraduate 
+and graduate students: Problem and methods of counteraction]. 
+\textit{Universitetskoe upravlenie: Praktika i~analiz} 
+[University Management: Practice and Analysis] 5:61-68.
+
+\bibitem{2-saf}
+\Aue{Zechner, M., M.~Muhr, R.~Kern, and M.~Granitzer.} 2009. 
+External and intrinsic plagiarism detection using vector space models. 
+\textit{CEUR Workshop Proceedings}.
+ 502:47--55.
+
+\bibitem{3-saf} %3
+\Aue{Tschuggnall, M., and G.~Specht.} 2013. 
+Countering pla\-gi\-arism by exposing irregularities in authors grammars. 
+\textit{European Intelligence and Security Informatics Conference 
+ Proceedings}. IEEE. 15--22.
+
+
+
+
+\bibitem{6-saf} %4
+\Aue{Eissen, S.\,M., and B.~Stein.} 2006. 
+Intrinsic plagiarism detection. 
+\textit{Advances in information retrieval}.
+Eds.\ M.~Lalmas, A.~MacFarlane, 
+S.\,M.~R$\ddot{\mbox{u}}$ger,
+\textit{et al.}
+Lecture notes in computer science ser. Springer. 3936:565--569.
+
+\bibitem{4-saf} %5
+\Aue{Stamatatos, E.} 2009. 
+Intrinsic plagiarism detection using character $n$-gram profiles. 
+\textit{CEUR Workshop Proceedings}. 
+502:38--46.
+
+\bibitem{7-saf} %6
+\Aue{Oberreuter, G., G.~L'Huillier, S.~R$\acute{\mbox{{\!\ptb{\i}}}}$os, 
+and~J. Vel$\acute{\mbox{a}}$squez}. 2011. 
+Outlier-based approaches for intrinsic and external plagiarism detection. 
+\textit{Knowlege-based and intelligent information and engineering systems}.
+Eds.\ A.~K$\ddot{\mbox{o}}$nig, A.~Dengel, K.~Hinkelmann, \textit{et al.}
+Lecture notes in computer science ser. Springer. 6882:11--20.
+
+\bibitem{8-saf} %7
+\Aue{Bensalem, I., P.~Rosso, and S.~Chikhi.} 2014. 
+Intrinsic plagiarism detection using $n$-gram classes. 
+\textit{Conference on Empirical Methods in Natural Language Processing}.
+ Stroudsburg, PA: Association for Computational Linguistics. 1459--1464.
+
+\bibitem{9-saf} %8
+\Aue{Vartapetiance, A., and L.~Gillam.}
+Quite simple approaches for authorship attribution, intrinsic plagiarism detection
+ and sexual predator identification. 
+ Avail-\linebreak able at: 
+ {\sf http://epubs.surrey.ac.uk/id/eprint/766727}\linebreak (accessed September~23, 2013).
+
+\bibitem{10-saf} %9
+\Aue{Kuznetsov, M., A.~Motrenko, R.~Kuznetsova, and V.~Strijov}. 
+Methods for intrinsic plagiarism detection and author diarization. 
+Available at: 
+{\sf http://ceur-ws.org/Vol-1609/16090912.pdf} (accessed September~6, 2016).
+
+\bibitem{11-saf} %10
+\Aue{Potthast, M., B.~Stein, A.~Barr$\acute{\mbox{o}}$n-Cede$\tilde{\mbox{n}}$o, 
+and P.~Rosso.} 2010.
+ An evaluation framework for plagiarism detection. 
+ \textit{23rd  Conference (International) on Computational Linguistics 
+ Proceedings}. Stroudsburg, PA: 
+ Association for Computational Linguistics. 997--1005.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received January 30, 2017}}
+
+
+\Contr
+
+\noindent
+\textbf{Safin Kamil F.} (b.\ 1995)~--- 
+student, Moscow Institute of Physics and Technology, 
+9~Institutskiy Per., Dolgoprudny, Moscow Region 141700, Russian Federation; 
+junior researcher, Antiplagiat JSC,  33~Varshavskoe Shosse, 
+Moscow 117105, Russian Federation; \mbox{kamil.safin@phystech.edu}
+
+\noindent
+\textbf{Kuznetsov  Mikhail P.} (b.\ 1989)~--- 
+Candidate of Science (PhD) in physics and mathematics; 
+analyst, ``Forecsys'' LLC, 42~Vavilov Str.,  
+Moscow 119333, Russian Federation; \mbox{mikhail.kuznecov@phystech.edu} 
+
+
+\noindent
+\textbf{Kuznetsova Margarita V.} (b.\ 1990)~---
+PhD student, Moscow Institute of Physics and Technology, 
+9~Institutskiy Per., Dolgoprudny, Moscow Region 141700, Russian Federation; 
+Head of Departament, Antiplagiat JSC,  33~Varshavskoe shosse, 
+Moscow 117105, Russian Federation; \mbox{kuznetsova@ap-team.ru}
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература} 

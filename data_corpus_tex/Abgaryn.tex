@@ -1,0 +1,636 @@
+\def\stat{abgaryan}
+
+\def\tit{ИНТЕГРАЦИОННАЯ ПЛАТФОРМА ДЛЯ 
+МНОГОМАСШТАБНОГО МОДЕЛИРОВАНИЯ НЕЙРОМОРФНЫХ 
+СИСТЕМ$^*$}
+
+\def\titkol{Интеграционная платформа для многомасштабного 
+моделирования нейроморфных систем}
+
+\def\aut{К.\,К.~Абгарян$^1$, Е.\,С.~Гаврилов$^2$}
+
+\def\autkol{К.\,К.~Абгарян, Е.\,С.~Гаврилов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Абгарян К.\,К.}
+\index{Гаврилов Е.\,С.}
+\index{Abgaryan K.\,K.}
+\index{Gavrilov E.\,S.}
+ 
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при финансовой поддержке РФФИ (проект 19-29-03051~мк).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Вычислительный центр им.\ А.\,А.~Дородницына Федерального 
+исследовательского центра <<Информатика и~управление>> Российской академии наук; 
+Московский авиационный институт (национальный исследовательский университет), 
+\mbox{kristal83@mail.ru}}
+\footnotetext[2]{Вычислительный центр им.\ А.\,А.~Дородницына Федерального 
+исследовательского центра <<Информатика и~управление>> Российской академии наук; 
+Московский авиационный институт (национальный исследовательский университет), 
+\mbox{eugavrilov@gmail.com}}
+
+%\vspace*{-6pt}
+
+     \Abst{Актуальные сегодня многоуровневые элементы резистивной памяти позволяют 
+увеличить плотность интеграции энергонезависимой памяти, а~также спроектировать 
+и~создать системы с~механизмом параллельных вычислений. В~основе таких устройств лежат 
+мемристорные элементы, необходимые для разработки основ аналоговых нейроморфных сетей, 
+которые используются для решения задач интеллектуального анализа данных. Однако 
+использование мемристоров в~составе нейроморфных устройств сталкивается с~рядом 
+проблем, таких как разброс значений параметров переключения (напряжение, окно памяти) от 
+ячейки к~ячейке, асимметричность и~нелинейные эффекты и~др. Такие проблемы диктуют 
+необходимость создания оригинальных имитационных моделей и~новых программных 
+инструментов, которые позволят оценить влияние возмущающих факторов на 
+предсказательную точность и~процесс обучения сети. В~данной работе для решения задачи 
+многомасштабного моделирования нейроморфных систем применяется оригинальная 
+информационная технология построения многомасштабных моделей. Для ее практической 
+реализации построена интеграционная платформа, которая позволяет оценить влияние 
+возмущающих факторов на предсказательную точность и~процесс обучения нейроморфной 
+сети, а~в~дальнейшем сможет обеспечить формирование информации для обоснованного 
+выбора материалов, конфигурации и~топологии ячеек памяти компьютеров нового поколения.}
+     
+     \KW{многомасштабное моделирование; многоуровневые элементы памяти; 
+нейроморфные сети; предсказательное моделирование; мемристор; интеграционная платформа; 
+программный комплекс}
+     
+\DOI{10.14357/19922264200215} 
+ 
+\vspace*{-6pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+     
+\section{Введение}
+
+    В настоящее время искусственные нейронные сети стали мощным 
+инструментом интеллектуального анализа данных, построения 
+аппрок\-си\-ма\-ционных моделей сложных систем и~процессов, распознавания 
+образов, классификации и~кластеризации. Актуальные сегодня многоуровневые 
+элементы резистивной памяти позволяют увеличить плотность интеграции 
+энергонезависимой памяти, а~также спроектировать и~создать системы 
+с~механизмом параллельных вычислений, которые необходимы для разработки 
+основ аналоговых нейроморфных сетей. Ожидается, что на основе таких 
+яче\-ек/мат\-риц резистивной памяти будет создана элементная база компьютеров 
+следующего поколения, работающих на новых физических прин\-ципах.
+{\looseness=1
+
+}
+    
+     \begin{table*}\small %tabl1
+     \begin{center}
+
+    %\tabcolsep=0pt
+    \begin{tabular}{|c|l|l|}
+     \multicolumn{3}{c}{Распределение БК по масштабным 
+уровням}\\
+     \multicolumn{3}{c}{\ }\\[-6pt]
+     \hline
+\tabcolsep=0pt\begin{tabular}{c}№\\ масштаб-\\ ного \\ уровня\end{tabular}&
+\multicolumn{1}{c|}{\tabcolsep=0pt\begin{tabular}{c} 
+Обозначение и~название БК\end{tabular}}&
+\multicolumn{1}{c|}{\tabcolsep=0pt\begin{tabular}{c} Название\\ масштабного\\
+ уровня\end{tabular}}\\
+\hline
+0&$\mathbf{MC}_0^1$ <<АТОМ $A_0^i$>>&\tabcolsep=0pt\begin{tabular}{l} 
+Уровень\\ химических\\ элементов\end{tabular}\\
+\hline
+1&\tabcolsep=0pt\begin{tabular}{l}$\mathbf{MC}_1^1$<<КРИСТАЛЛОХИМИЧЕСКАЯ ФОРМУЛА>>\\
+$\mathbf{MC}_1^2$  
+<<КВАНТОВО-МЕХАНИЧЕСКАЯ 
+ЯЧЕЙКА>>\end{tabular}&\tabcolsep=0pt\begin{tabular}{l} Квантово-\\ 
+механический\\ уровень\end{tabular}\\
+\hline
+2&\tabcolsep=0pt\begin{tabular}{l} 
+$\mathbf{MC}_2^1$ <<АТОМНЫЙ КЛАСТЕР\,--\,СТАТИКА>>\\
+$\mathbf{MC}_2^2$ <<АТОМНЫЙ КЛАСТЕР\,--\,ДИНАМИКА>> 
+\end{tabular}&\tabcolsep=0pt\begin{tabular}{l} Нано-\\ уровень\end{tabular}\\
+\hline
+3&\tabcolsep=0pt\begin{tabular}{l} 
+$\mathbf{MC}_3^1$ <<Модель генерации/рекомбинации ионов кислорода\\ 
+\hspace*{5mm}и~кислородных вакансий (GR-model)>>\\
+$\mathbf{MC}_3^2$ <<Модель дрейфа-диффузии ионов кислорода (DD-model)>>\\
+$\mathbf{MC}_3^3$ <<Модель силового поля (E-model)>>\\
+$\mathbf{MC}_3^4$ <<Модель переноса электронов (электрического тока) 
+(J-model)>>\\
+$\mathbf{MC}_3^5$ <<Модель теплопереноса (HT-model)>>\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l} Уровень\\ элемента\\ 
+резистивной\\ памяти\\ (мемристора) \end{tabular}\\
+\hline
+4&\tabcolsep=0pt\begin{tabular}{l} 
+$\mathbf{MC}_4^1$ <<Фитинг моделей. ВАХ>>\\
+$\mathbf{MC}_4^2$ <<Cхемотехническое представление>>\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l} Уровень\\ 
+формирования\\ нейроморфной\\ сети\end{tabular}\\
+\hline
+5&\tabcolsep=0pt\begin{tabular}{l}$\mathbf{MC}_5^1$ 
+<<Нейросетевое моделирование>>. Обучение по прецедентам\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l} Логический\\ уровень\end{tabular}\\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+    Вместе с~тем для решения задач интеллектуального анализа данных 
+использование мемристорных элементов в~составе нейроморфных устройств 
+сталкивается с~рядом проблем. Среди них~--- разброс значений параметров 
+переключения (напряжение, окно памяти) от ячейки к~ячейке, асимметричность 
+и~нелинейные эффекты, сложность применения градиентных алгоритмов 
+обучения в~связи с~дискретным характером синаптических весов. 
+
+Такие 
+проблемы диктуют необходимость создания оригинальных имитационных 
+моделей и~новых программных инструментов, которые позволят оценить влияние 
+возмущающих факторов на предсказательную точность и~процесс обучения сети. 
+Кроме того, такие модели обеспечат формирование информации для 
+обоснованного выбора материалов, конфигурации и~топологии ячеек памяти, 
+селекторов и~электродов, выработки оптимальных схемных и~алгоритмических 
+решений. 
+
+Сложность создания моделей данного класса связана, в~первую 
+очередь, с~необходимостью учета широкого спектра 
+про\-стран\-ст\-вен\-но-вре\-мен\-н$\acute{\mbox{ы}}$х масштабов. В~случаях, когда необходимо в~рамках одной модели 
+провести исследование многомасштабного физического процесса или явления, 
+возникает проб\-ле\-ма взаимосогласованности име\-ющих\-ся моделей, что требует 
+разработки теоретических основ их объединения. 
+
+В~настоящей работе для 
+решения задачи многомасштабного моделирования нейроморфных сис\-тем 
+применяется оригинальная информационная технология построения 
+многомасштабных моделей, основанная на теоретико-множественном 
+пред\-став\-ле\-нии фи\-зи\-ко-ма\-те\-ма\-ти\-че\-ских моделей и~использовании 
+информационных структур, объ\-еди\-ня\-ющих данные и~методы их обработки~[1, 
+2]. Для ее практической реализации была разработана интеграционная платформа 
+для многомасштабного моделирования, объединяющая информационные потоки 
+на разных масштабных уровнях: на уровне элементов резистивной памяти, на 
+уровне\linebreak нейроморфной сети, на уровне имитации обучения нейроморфной сети по 
+прецедентам (логический уровень). Для более детального и~последовательного 
+построения схемы многомасштабного\linebreak моделирования можно выделить шесть 
+характерных масштабных уровней: уровень элементов таб\-ли\-цы Менделеева; 
+кван\-то\-во-ме\-ха\-ни\-че\-ский уровень и~наноуровень (их объединение ранее 
+условно называли уровнем атомарной структуры); уровень элемента памяти 
+(мемристора); уровень нейроморфной сети; логический уровень (см.\ таблицу).
+ 
+    В данной работе представлена оригинальная интеграционная платформа для 
+многомасштабного моделирования нейроморфных систем, размещенная на 
+гибридном кластере ЦКП ФИЦ ИУ РАН, которая позволяет проводить 
+эффективное параллельное решение задач разных масштабов с~учетом 
+постоянного обмена данными. Далее приведено описание используемых 
+теоретических моделей и~сценариев работы комплекса, на\-прав\-лен\-ных на 
+решение существенных проблем, которые возникают при проектировании 
+элементов мем\-ристора на основе магнитных туннельных пе\-реходов (МТП) при 
+последовательной миниатюризации этих устройств. Это придает задаче 
+\mbox{междисциплинарный} характер и~обусловливает актуальность применения 
+информационной технологии многомасштабного моделирования в~контексте 
+поставленной задачи
+
+\section{Принципы формирования информационной поддержки 
+многомасштабного моделирования физических явлений 
+и~процессов}
+
+    В данной работе при построении многомасштабной модели для имитации 
+работы нейроморфных систем используются подходы, разработанные ранее 
+и~представленные в~[1, 2]. В~их основе лежит идея о~том, что спецификация 
+информационных объектов предметной области может быть сформулирована 
+в~терминах 
+ ко\-неч\-но-мно\-жест\-вен\-ных представлений~[3] которые, в~част\-ности, могут 
+быть реализованы посредством доменных моделей~[4, 5]~--- конечных наборов 
+(множеств) данных с~поддержкой операций по их обработке. 
+В~\mbox{статье}~\cite{2-ab} даны понятия и~определения, применяемые при описании информационной 
+технологии многомасштабного моделирования. Вводится понятие <<базовая 
+мод\-ель-ком\-по\-зи\-ция>> (БК), для ее описания применяется 
+тео\-ре\-ти\-ко-мно\-жест\-вен\-ный аппарат. Используется обозначение базовой  
+мо\-де\-ли-ком\-по\-зи\-ции: $\mathbf{MC}_i^j$, где~$i$~--- номер 
+масштабного уровня; $j$~--- номер данной БК на этом масштабном уровне~[1, 
+2]. 
+    
+    Как было показано в~работах~[1, 2], БК служат информационными 
+аналогами базовых  
+фи\-зи\-ко-ма\-те\-ма\-ти\-че\-ских моделей, которые применяются 
+в~вычислительном процессе для решения \mbox{конкретных} задач на своем масштабном 
+уровне. Их можно представить в~виде таблиц данных разного структурного типа 
+(вход\-ных/вы\-ход\-ных данных,\linebreak моделей и~алгоритмов и~др.). Экземпляры БК 
+(таб\-ли\-цы с~конкретными данными) представляются объектами классов~--- 
+наследников БК  
+в~объект\-но-ори\-ен\-ти\-ро\-ван\-ном языке программирования. Они хранятся 
+в~виде документов 
+    в~до\-ку\-мент\-но-ори\-ен\-ти\-ро\-ван\-ной базе данных~\cite{6-ab}. 
+Многомасштабная композиция представляет собой коллекцию, состоящую из 
+сгруппированных документов с~иерархической структурой, отражающей 
+последовательность передачи данных в~общем вычислительном процессе.
+    
+    Покажем, как при решении задачи о~применении методов 
+многомасштабного моделирования для имитации работы нейроморфной сети 
+с~по\-мощью данной технологии из конкретных БК\linebreak 
+ со\-став\-ля\-ют\-ся многомасштабные композиции (МК)~--- информационные 
+аналоги многомасштабных моделей, передающие содержание многомасштабных 
+вычислительных процессов. 
+
+\section{Интеграционная платформа для~моделирования 
+работы нейроморфной сети}
+ 
+    Интеграционная платформа для мно\-го\-мас\-штабного моделирования 
+нейроморфной сети объединяет информационные потоки на разных мас\-штаб\-ных 
+уровнях~--- на кван\-то\-во-ме\-ха\-ни\-че\-ском и~наноуровнях, на уровне 
+элементов резистивной памяти, на уровне нейроморфной сети, на уровне 
+имитации обучения нейроморфной сети по прецедентам. Для более детального 
+описания моделируемого вы\-чис\-ли\-тель\-но\-го уровня введем дополнительные 
+уровни.
+
+    Общее представление о~распределении БК 
+по масштабным уровням, задействованным в~вы\-чис\-ли\-тель\-ном процессе, 
+показано в~таблице. 
+
+   Покажем, как организуется вычислительным процесс, имитирующий работу 
+нейроморфной сети, в~основе которой лежит мемристивный элемент на базе 
+оксида гафния.
+   
+    На нулевом масштабном уровне с~БК $\mathbf{MC}_0^1$ <<АТОМ $A_0^i$>> ($i$~--- номер элемента 
+в~таблице Менделеева) задаются основные данные по конкретным химическим 
+элементам, входящим в~состав соединений, участвующих в~вычислительном 
+процессе (атомный номер химического элемента, масса атома, заряд ядра, радиус 
+атома, электронная конфигурация, структура решетки и~др.). В~данном случае 
+формируются экземпляры БК 
+$\mathbf{MC}_0^{72}$ <<АТОМ $\mathrm{Hf}_0^{72}$>> и~$\mathbf{MC}_0^{16}$ 
+<<АТОМ $\mathrm{O}_0^{16}$>>.
+
+    К первому масштабному уровню отнесены БК
+$\mathbf{MC}_1^1$ <<КРИСТАЛЛОХИМИЧЕСКАЯ ФОРМУЛА>> 
+и~$\mathbf{MC}_1^2$ <<КВАН\-ТО\-ВО-МЕ\-ХА\-НИ\-ЧЕ\-СКАЯ ЯЧЕЙКА>>. C~их по\-мощью 
+данные, полученные с~нулевого масштабного уровня из 
+$\mathbf{MC}_0^{72}$ <<АТОМ $\mathrm{Hf}_0^{72}$>> и~$\mathbf{MC}_0^{16}$ 
+<<АТОМ $\mathrm{O}_0^{16}$>>, передаются на кван\-то\-во-ме\-ха\-ни\-че\-ский уровень 
+первоначально в~$\mathbf{MC}_1^1$ <<КРИСТАЛЛОХИМИЧЕСКАЯ ФОРМУЛА>>, 
+где, используя знания о~химическом составе и~кристаллографической структуре, 
+с~помощью простых фи\-зи\-ко-ма\-те\-ма\-ти\-че\-ских моделей 
+(ион\-но-атом\-ных радиусов и~др.)\ определяется кристаллохимическая структура соединения 
+(метрические параметры крис\-тал\-ли\-че\-ской решетки, координаты базисных атомов 
+и~др.). Данная БК программно реализована в~двух расчетных модулях (модель 
+<<Плотная упаковка>> и~программный комплекс Materials Studio ({\sf 
+https://www.3dsbiovia.com/products/collaborative-science/biovia-materials-studio})).
+     
+     Далее полученные в~ходе вычислительного процесса данные передаются 
+в~БК $\mathbf{MC}_1^2$ <<КВАН\-ТО\-ВО-МЕ\-ХА\-НИ\-ЧЕ\-СКАЯ 
+ЯЧЕЙКА>>. Данная БК программно реализована в~двух 
+расчетных модулях (про\-грам\-мный комплекс VASP ({\sf https://www.\linebreak vasp.at}) 
+и~пакет программ с~открытым кодом Quantum Espresso 
+({\sf https://www.quantum-espresso.org})). Здесь на базе теории функционала электронной плотности решается 
+задача по определению итоговых значений параметров кристаллической решетки, 
+рассчитывается электронная плотность~[7], полная энергия для заданной 
+конфигурации базисных атомов. Далее проводятся расчеты констант упругости, 
+поляризация, фононное рассеяние, рассчитываются энергетические барьеры, 
+энергия активации и~др.
+    
+На втором масштабном уровне, используя данные, полученные на предыдущем 
+уровне, проводится выбор потенциалов межатомного взаимодействия с~учетом 
+типа связи моделируемого \mbox{соединения} (в~данном случае~--- оксида гафния). 
+Например, используется модель погруженного атома (embedded atom model, 
+EAM)~[8] либо потенциал межатомного взаимодействия MEAM~[9]. При 
+помощи БК~$\mathbf{MC}_2^1$ <<АТОМНЫЙ КЛАСТЕР\,--\,СТА\-ТИ\-КА>> 
+проводится идентификация параметров потенциала межатомного 
+взаимодействия. Далее потенциал с~идентифицированными параметрами 
+используется в~ходе мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ско\-го моделирования 
+в~рамках БК~$\mathbf{MC}_2^2$ <<АТОМНЫЙ КЛАС\-ТЕР\,--\,ДИ\-НА\-МИ\-КА>>. 
+
+Ранее полученные данные о~координатах позиций атомов 
+кислорода, рассчитанные данные об энергии активации, энергии рекомбинации, 
+энергетических барьерах миграции и~другие поступают на третий масштабный 
+уровень. Туда же поступают дополнительные данные, такие как значения 
+потенциалов на электродах, коэффициенты, учитывающие вклад поляризации 
+света в~энергетические барьеры, и~др.\ (см.\ рисунок) 
+    
+На третьем масштабном уровне сформирована математическая модель 
+обра\-зо\-ва\-ния/раз\-ру\-ше\-ния\linebreak
+ проводящих каналов (филаментов) в~мемристорных 
+элементах на основе оксидных пленок. Ей\linebreak соответствует <<Композитный модуль 
+расчета мемристора>>. Необходимо отметить, что в~мире весьма активно ведутся 
+работы по исследованию возможностей проектирования и~оптимизации ячеек 
+памяти на основе оксидов металлов. Так, в~\mbox{статье}~\cite{10-ab} пред\-став\-лен 
+электротермический симулятор, позволяющий исследовать физику и~потенциал 
+ячеек резистивной памяти на основе SiO$_x$ с~произвольным доступом (RRAM,
+resistive random-access memory). 
+В~данной же работе в~контексте многомасштабного подхода используется 
+модельное пред\-став\-ле\-ние, вклю\-ча\-ющее в~себя~5~взаимосвязанных 
+подмоделей, каждой из которых по\-став\-ле\-ны в~соответствие БК: 
+$\mathbf{MC}_3^1$ <<Модель  
+ге\-не\-ра\-ции/ре\-ком\-би\-на\-ции ионов кислорода и~кис\-ло\-род\-ных вакансий  
+(GR-model)>>; $\mathbf{MC}_3^2$ <<Модель дрей\-фа-диф\-фу\-зии ионов 
+кислорода  
+(DD-model)>>; $\mathbf{MC}_3^3$ <<Модель силового поля (E-model)>>; 
+$\mathbf{MC}_3^4$ <<Модель переноса электронов (электрического тока) (J-model)>>;
+$\mathbf{MC}_3^5$ <<Модель теплопереноса  
+(HT-model)>>. Из~5~БК формируется композиция для расчета свойств 
+мемристора $K_3^{3,1; 3,2; 3,3; 3,4; 3,5}$. Здесь\linebreak нижний индекс $i\hm=3$, так как 
+все БК, об\-ра\-зующие композицию,~--- с~треть\-его уровня;\linebreak верхние индексы 
+(3,1;3,2;3,3;3,4;3,5) через точку с~запятой обозначают, какие именно БК 
+ис\-поль\-зу\-ются.
+ 
+     
+     На четвертом масштабном уровне многомасштабной модели для имитации работы 
+нейроморфной сети представлена БК
+$\mathbf{MC}_4^1$ <<Фитинг моделей. ВАХ>> 
+и~БК~$\mathbf{MC}_4^2$ <<Схемотехническая>>. На 
+вход~$\mathbf{MC}_4^1$ подаются сведения (графики) по вольтамперным 
+характеристикам (ВАХ) моделируемого соединения с~нижнего масштабного 
+уровня либо сведения о~модели и~начальном наборе ее па\-ра\-мет\-ров. На выходе 
+получаем уточненные значения па\-ра\-мет\-ров модели. Далее полученные данные 
+передаются в~БК~$\mathbf{MC}_4^2$ <<Схемотехническая>>, туда же 
+по\-сту\-па\-ют данные по па\-ра\-мет\-рам электронной схемы.
+     
+     На пятом масштабном уровне проводится моделирование работы аналоговой 
+нейроморфной сети~$\mathbf{MC}_5^1$ <<Нейросетевое моделирование>>. 
+Данные, рассчитанные на нижних масштабных уровнях (электронная схема, 
+уточненные ВАХ, уточненные названия параметров модели и~др.), а~также 
+параметры нейроморфной сети и~наборы паттернов распознавания подаются на 
+вход~$\mathbf{MC}_5^1$ <<Нейросетевое моделирование>>. С~помощью 
+данной модели проводится имитация обучения нейроморфной сети. Более 
+подробно работа модели этого масштабного уровня описана в~работе~[11].
+    
+    На рисунке представлена архитектурная схема расчетных модулей 
+и~основных потоков данных. В~общем случае модуль представлен программным 
+компонентом, состоящим:
+    \begin{itemize}
+\item из программы, непосредственно выполняющей расчет в~пакетном 
+режиме; 
+\item микросервиса~[12], обеспечивающего связь с~расчетной программой 
+и~предоставляющего программный интерфейс (API, application programming interface) для интеграции 
+в~общий сценарий расчета~[13];
+\item интерфейса пользователя для ввода параметров и~мониторинга расчета;
+\item локальной базы данных расчетного модуля для хранения внутренних 
+данных и~промежуточных результатов.
+\end{itemize}
+
+\begin{figure*} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=156.22mm 
+\epsfbox{abg-1.eps}
+ }
+\vspace*{12pt}
+
+{\small Интеграционная платформа для многомасштабного моделирования нейроморфных 
+систем}
+ \end{center}
+\end{figure*}
+
+      На следующем этапе с~помощью созданной интеграционной платформы 
+    планируется проведение серии вычислительных экспериментов. Будут 
+    рассмотрены различные модели многоуровневых устройств памяти с~
+    мемристивными системами на основе оксидов металлов и~широкозонных 
+    полупроводников, таких как MgO, VO$_2$, TiO$_2$, SiO$_2$, ZrO$_2$, HfO$_2$, 
+TaO$_x$ и~др. 
+      
+    В связи с~тем, что разработанная интеграционная платформа позволяет 
+оценить влияние возмущающих факторов на предсказательную точность 
+и~процесс обучения нейроморфной сети, накопление большого числа данных 
+вычислительных экспериментов в~дальнейшем может обеспечить формирование 
+информации для обоснованного выбора материалов, конфигурации и~топологии 
+ячеек памяти компьютеров нового поколения.
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+  
+ \bibitem{1-ab}
+ \Au{Абгарян К.\,К.} Многомасштабное моделирование в~задачах структурного 
+материаловедения.~--- М.: МАКС Пресс, 2017. 284~с.
+ \bibitem{2-ab}
+ \Au{Абгарян К.\,К.} Информационная технология по\-стро\-ения многомасштабных моделей 
+в~задачах вычислительного материаловедения~// Системы высокой доступности, 
+2018. Т.~14.  №\,2. С.~9--15.
+ \bibitem{3-ab}
+ \Au{Бродский Ю.\,И.} Модельный синтез и~модельно-ори\-ен\-ти\-ро\-ван\-ное 
+ программирование.~--- М.: ВЦ РАН, 2013. 142~с.
+ \bibitem{4-ab}
+ \Au{Evans E.} Domain-driven design: Tackling complexity in the heart of software.~--- 
+ Addison-Wesley Professional, 2003. 560~p.
+ \bibitem{5-ab}
+ \Au{Абгарян~К.\,К., Гаврилов~Е.\,С., Марасанов~А.\,М.} Информационная поддержка задач 
+многомасштабного моделирования композиционных материалов~// Int.~J. Open Information 
+Technologies, 2017. №\,12. C.~24--29.
+ \bibitem{6-ab}
+ \Au{Fowler M., Sadalage~P.\,J.} NoSQL distilled: 
+ A~brief guide to the emerging world of polyglot 
+persistence.~--- Addison-Wesley Professional, 2012. 190~p.
+ \bibitem{7-ab}
+ \Au{Kohn W., Sham L.\,J.} Self-consistent equations including exchange and correlation effects~// 
+Phys. Rev.~A, 1965. Vol.~140. P.~1133--1138.     
+ \bibitem{8-ab}
+ \Au{Gao~D., Deng~H., Heinisch~H., Kurtz~R.} A~new Fe--He interatomic potential based on 
+\textit{ab initio} calculations in $\alpha$-Fe~// J. Nucl. Mater., 2011. Vol.~418. Iss.~1. P.~115--120. 
+ \bibitem{9-ab}
+ \Au{Lee B.-J., Baskes M.\,I., Kim~H., Cho~Ya.\,K.} Second nearest-neighbor modified embedded 
+atom method potentials for bcc transition metals~// Phys. Rev.~B, 2001. Vol.~64. Art. ID: 184102. 
+doi: 10.1103/PhysRevB.64.184102.
+  \bibitem{10-ab}
+ \Au{Sadi T., Mehonic~A., Montesi~L., Buckwell~M., Kenyon~A., Asenov~A.} Investigation of 
+resistance switching in SiO$_x$ RRAM cells using a~3D multi-scale kinetic Monte Carlo simulator~// 
+J.~Phys. Condens. Matter, 2018. Vol.~30. Iss.~8. Art. ID: 084005. doi: 
+10.1088/1361-648X/aaa7C1.
+ \bibitem{11-ab}
+ \Au{Морозов А.\,Ю., Ревизников~Д.\,Л., Абгарян~К.\,К.} Вопросы реализации нейросетевых 
+алгоритмов на мемристорных кроссбарах~// Известия высших учебных заведений. Материалы 
+электронной техники, 2019. Т.~22. №\,4. %doi: 10.17073/1609-3577-2019-4-. @@@
+ \bibitem{12-ab}
+ \Au{Newman S.} Building microservices.~--- Sebastopol, CA, USA: O'Reilly Media, 2015. 282~p.
+ \bibitem{13-ab}
+ \Au{Абгарян К.\,К., Гаврилов~Е.\,С.} Информационная поддержка интеграционной платформы 
+многомасштабного моделирования~// Системы и~средства информатики, 2019. Т.~29. №\,1. 
+С.~53--62.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.04.20}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{INTEGRATION PLATFORM FOR MULTISCALE MODELING OF~NEUROMORPHIC SYSTEMS}
+
+
+\def\titkol{Integration platform for multiscale modeling of neuromorphic systems}
+
+\def\aut{K.\,K.~Abgaryan$^{1,2}$ and E.\,S.~Gavrilov$^{1,2}$}
+
+\def\autkol{K.\,K.~Abgaryan and E.\,S.~Gavrilov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Dorodnicyn Computing Center, Federal Research Center 
+``Computer Science and Control'' of the Russian\linebreak
+$\hphantom{^1}$Academy of Sciences, 40~Vavilov Str., Moscow 119333, Russian Federation
+
+\noindent
+$^2$Moscow Aviation Institute (National Research University),
+ 4~Volokolamskoe Shosse, Moscow 125080, Russian\linebreak 
+$\hphantom{^1}$Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt} 
+
+\Abste{ The current multilevel resistive memory elements allow increasing the integration density of 
+nonvolatile memory as well as designing and creating systems with a~parallel computing mechanism. Such devices 
+are based on memristor elements necessary for developing the foundations of analog neuromorphic networks 
+that are used to solve data mining problems. However, the use of memristors as a~part of neuromorphic devices 
+encounters a~number of problems such as the scatter of the switching parameters 
+(voltage and memory window) 
+from cell to cell, asymmetry and nonlinear effects, and others. Such problems dictate the need to create original 
+simulation models and new software tools that will allow one to evaluate the influence of disturbing factors on 
+the predictive accuracy and network learning process. In this paper, to solve the problem of multiscale 
+modeling of neuromorphic systems, the authors use the original information technology for constructing 
+multiscale models. For its practical implementation, an integration platform has been built that allows one to evaluate 
+the influence of disturbing factors on the predictive accuracy and learning process of a~neuromorphic 
+network 
+and in the future, it will be able to provide information for 
+a~reasonable choice of materials, configuration, and 
+topology of memory cells of new-generation computers.}
+
+\KWE{multi-scale modeling; multilevel memory elements; neuromorphic networks; predictive modeling; 
+memristor; integration platform; software package}
+
+\DOI{10.14357/19922264200215} 
+
+%\vspace*{-20pt}
+
+\Ack
+\noindent
+The work was supported by the Russian Foundation for Basic Research (project 19-29-03051~mk).
+
+%\vspace*{6pt}
+
+ \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+ \bibitem{1-ab-1}
+\Aue{Abgaryan, K.\,K.} 2017. \textit{Mnogomasshtabnoe modelirovanie v~zadachakh strukturnogo 
+materialovedeniya} [Multiscale modeling in material science problems]. Moscow: MAKS Press. 284~p.
+ \bibitem{2-ab-1}
+\Aue{Abgaryan, K.\,K.} 2018. Informatsionnaya tekhnologiya postroyeniya mnogomasshtabnykh modeley 
+v~zadachakh vychislitel'nogo materialovedeniya 
+[Information technology is the construction of multi-scale 
+models in problems of computational materials science]. \textit{Sistemy Vysokoy Dostupnosti} [High 
+Availability Systems] 14(2):9--15.
+ \bibitem{3-ab-1}
+\Aue{Brodskiy, Yu.\,I.} 2013. \textit{Model'nyy sintez i~model'no-oriyentirovannoe programmirovanie} 
+[Model synthesis and model oriented programming]. Moscow: CC RAS. 142~p.
+ \bibitem{4-ab-1}
+\Aue{Evans, E.} 2003. \textit{Domain-driven design: Tackling complexity in the heart of software}. 
+Addison-Wesley Professional. 560~p.
+ \bibitem{5-ab-1}
+\Aue{Abgaryan, K.\,K., E.\,S. Gavrilov, and A.\,M.~Marasanov.} 2017. Informatsionnaya podderzhka zadach 
+mno\-go\-mas\-shtab\-no\-go modelirovaniya kompozitsionnykh materialov [Multiscale modeling for composite 
+materials computer simulation support]. \textit{Int.~J. Open Information Technologies} 12:24--29.
+ \bibitem{6-ab-1}
+\Aue{Fowler, M., and P.\,J. Sadalage.} 2012. \textit{NoSQL distilled: A~brief guide to the emerging world of 
+polyglot persistence}. Addison-Wesley Professional. 190~p.
+ \bibitem{7-ab-1}
+\Aue{Kohn, W., and L.\,J. Sham.} 1965. Self-consistent equations including exchange and correlation effects. 
+\textit{Phys. Rev.~A} 140:1133--1138.
+ \bibitem{8-ab-1}
+\Aue{Gao, D., H. Deng, H.~Heinisch, and R.~Kurtz.} 2011. A new Fe--He interatomic potential based on 
+\textit{ab initio} calculations in $\alpha$-Fe. \textit{J.~Nucl. Mater.} 418(1):115--120.
+ \bibitem{9-ab-1}
+\Aue{Lee, B.-J., M.\,I. Baskes, H.~Kim, and Ya.\,K.~Cho.} 2001. Second nearest-neighbor modified embedded 
+atom method potentials for bcc transition metals. \textit{Phys. Rev.~B} 64:184102. doi: 
+10.1103/PhysRevB.64.184102.
+ \bibitem{10-ab-1}
+\Aue{Sadi, T., A. Mehonic, L.~Montesi, M.~Buckwell, A.~Kenyon, and A.~Asenov.} 2018. Investigation of 
+resistance switching in SiOx RRAM cells using a~3D multi-scale kinetic Monte Carlo simulator. 
+\textit{J.~Phys. Condens. Matter} 30(8):084005. doi: 10.1088/1361-648X/aaa7C1.
+ \bibitem{11-ab-1}
+\Aue{Morozov, A.\,Yu., D.\,L. Reviznikov, and K.\,K.~Abgaryan.} 2019. Voprosy realizatsii neyrosetevykh 
+algoritmov na memristornykh krossbarakh [Implementation of neural network algorithms using memristor 
+crossbars]. \textit{Izvestiya Vysshikh Uchebnykh Zavedeniy. Materialy Elektronnoy Tekhniki } [Proceedings of 
+Higher Educational Institutions. High Materials of Electronics Engineering] 
+22(4). %Available at: {\sf 
+%https://met.misis.ru/jour/article/view/346} (accessed April~15, 2020). 
+ \bibitem{12-ab-1}
+\Aue{Newman, S.} 2015. \textit{Building microservices}. Sebastopol, CA: O'Reilly Media. 282~p.
+ \bibitem{13-ab-1}
+\Aue{Abgaryan, K.\,K., and E.\,S.~Gavrilov.} 2019. In\-for\-ma\-tsi\-on\-naya podderzhka integratsionnoy platformy 
+mnogomasshtabnogo modelirovaniya [Informational support of the multiscale modeling integration platform]. 
+\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 29(1):53--62.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received April 15, 2020}}
+
+%\pagebreak
+
+%\vspace*{-24pt}
+
+
+
+\Contr
+
+\noindent
+\textbf{Abgaryan Karine K.} (b.\ 1963)~--- Doctor of Science in physics and mathematics, principal scientist, 
+Dorodnicyn Computing Center, Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 40~Vavilov Str., Moscow 119333, Russian Federation; Head of Department, Moscow 
+Aviation Institute (National Research University), 4~Volokolamskoe Shosse, Moscow 125080, Russian 
+Federation; \mbox{kristal83@mail.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Gavrilov Evgeny S.} (b.\ 1982)~--- scientist, Dorodnicyn Computing Center, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 40~Vavilov Str., Moscow 119333, 
+Russian Federation; senior lecturer, Moscow Aviation Institute (National Research University), 
+4~Volokolamskoe Shosse, Moscow 125080, Russian Federation; \mbox{eugavrilov@gmail.com}
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

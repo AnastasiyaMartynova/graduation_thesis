@@ -1,0 +1,1029 @@
+
+
+\def\stat{isachenko}
+
+\def\tit{МЕТРИЧЕСКОЕ ОБУЧЕНИЕ В ЗАДАЧАХ МУЛЬТИКЛАССОВОЙ КЛАССИФИКАЦИИ 
+ВРЕМЕННЫХ РЯДОВ$^*$}
+
+\def\titkol{Метрическое обучение в~задачах мультиклассовой классификации 
+временных рядов}
+
+\def\aut{Р.\,В.~Исаченко$^1$, В.\,В.~Стрижов$^2$}
+
+\def\autkol{Р.\,В.~Исаченко, В.\,В.~Стрижов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Исаченко Р.\,В.}
+\index{Стрижов В.\,В.}
+\index{Isachenko R.\,V.}
+\index{Strijov V.\,V.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при финансовой поддержке РФФИ (проект 16-07-01158).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский физико-технический институт, isa-ro@yandex.ru}
+\footnotetext[2]{Вычислительный центр им.\ А.\,А.~Дородницына 
+Федерального исследовательского
+центра <<Информатика и~управление>> Российской академии наук, strijov@ccas.ru}
+
+
+\Abst{Работа посвящена построению модели многоклассовой классификации временн$\acute{\mbox{ы}}$х рядов.
+    Предлагается выравнивать временн$\acute{\mbox{ы}}$е ряды относительно центроидов классов.
+    Процедура нахождения центроидов и~выравнивания временн$\acute{\mbox{ы}}$х рядов осуществляется с~помощью алгоритма динамической трансформации 
+    времени.
+    Для повышения качества классификации в~данной работе используются методы метрического обучения.
+    Метрическое обучение позволяет модифицировать расстояния между временн$\acute{\mbox{ы}}$ми рядами, сближая 
+    временн$\acute{\mbox{ы}}$е ряды из одного класса и~отдаляя временн$\acute{\mbox{ы}}$е ряды из разных классов.
+    Расстояние между временн$\acute{\mbox{ы}}$ми рядами измеряется с~помощью метрики Махаланобиса.
+    Процедура метрического обучения состоит в~определении оптимальной матрицы трансформаций 
+    в~метрике Махаланобиса.
+    Для анализа качества построенного алгоритма проведен вычислительный эксперимент на синтетических и~реальных данных показаний с~акселерометра мобильного телефона.}
+
+
+\KWE{классификация временных рядов; выравнивание; метрическое обучение; алгоритм LMNN}
+
+\DOI{10.14357/19922264160205} 
+
+%\vspace*{-4pt}
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+Решается задача мультиклассовой классификации временн$\acute{\mbox{ы}}$х 
+рядов~\cite{popova2015multiclass, ignatov2015multiclass}.
+Для решения этой задачи ранее использовались: метод опорных 
+векторов~\cite{guler2007mccsvm, ubeyli2007mccsvm2}, нейронные 
+сети~\cite{anand1995mccnn}, байесовский подход~\cite{kafai2012mccbn}.
+В данной работе для классификации временн$\acute{\mbox{ы}}$х рядов используется идея 
+ближайших соседей~\cite{chaovalitwongse2007knn}.
+
+Для повышения качества классификации предлагается использовать методы 
+метрического обучения~[8--10].
+%\cite{bellet2013mlsurvey, yang2006mlsurvey2, wang2015mlsurvey3}.
+Метрическое обучение позволяет модифицировать расстояния между временн$\acute{\mbox{ы}}$ми 
+рядами с~помощью линейного преобразования признакового пространства объектов.
+В~результате преобразования временн$\acute{\mbox{ы}}$е ряды одного класса оказываются ближе 
+друг к~другу по выбранной метрике, а~временн$\acute{\mbox{ы}}$е ряды, принадлежащие разным классам, 
+отдаляются друг от друга.
+Методы метрического обучения применяются при ранжировании поисковой 
+выдачи~\cite{mcfee2010mlranking}, идентификации лиц~\cite{guillaumin2009mlface}, 
+распознавании рукописных цифр~\cite{weinberger2008mldigits}.
+В~данной работе в~качестве алгоритма метрического обучения был выбран 
+алгоритм LMNN (Large Margin Nearest Neighbor)~\cite{weinberger2005lmnn}.
+Данный алгоритм основан на идеях метода $k$ ближайших соседей.
+Алгоритм для каж\-до\-го объекта минимизирует расстояния до~$k$~ближайших соседей, 
+принадлежащих тому же классу, и~штрафует объекты из других классов, попавшие 
+на расстояние порядка расстояния до~$k$-го ближайшего соседа.
+
+Алгоритм LMNN позволяет произвести отбор признаков.
+С~помощью линейного преобразования алгоритм помещает объекты в~новое пространство.
+Если размерность нового пространства меньше размерности исходного пространства, 
+то происходит снижение размерности, т.\,е.\ отбор признаков.
+
+Для вычисления расстояний между временн$\acute{\mbox{ы}}$ми рядами в~данной работе 
+производится 
+их выравнивание относительно центроидов классов 
+методом динамической трансформации времени DTW 
+(Dynamic Time Warping)~\cite{berndt1994dtw}.
+Задача поиска оптимального центроида класса решается с~помощью метода 
+выравненного взвешенного усреднения DBA (DTW Barycenter Averaging)~\cite{petitjean2011dba}.
+Классификация, основанная на идее ближайших соседей, чувствительна 
+к~изменению масштабов признаков.
+Для повышения устойчивости классификации выравненные временн$\acute{\mbox{ы}}$е ряды были 
+отнормированы.
+
+Таким образом, полученная модель классификации представляет собой 
+суперпозицию алгоритмов построения центроидов, выравнивания временн$\acute{\mbox{ы}}$х 
+рядов относительно центроидов классов, метрического обучения и~классификации.
+
+\renewcommand{\figurename}{\protect\bf Алгоритм}
+
+\begin{figure*}[b]
+\vspace*{9pt}
+\hrule
+
+\vspace*{-4pt}
+
+\noindent
+\Caption{Нахождение центроида $\mathrm{DBA}(\mathbf{X}_e, \mathrm{n}\_\mathrm{iter})$}
+\label{DBA_pseudo}
+
+\vspace*{6pt}
+
+\hrule
+
+\vspace*{6pt}
+
+\noindent
+\textbf{Вход:}\ $\mathbf{X}_e$~--- множество временн$\acute{\mbox{ы}}$х рядов, принадлежащих 
+одному и~тому же классу, n\_iter~--- количество
+
+\ \ \ \ \ \  итераций алгоритма.
+
+\noindent
+\textbf{Выход:}\ $\mathbf{c}$~--- центроид множества $\mathbf{X}_e$.
+
+\ 1:\ \ задать начальное приближение приближение центроида $\mathbf{c}$;
+
+\ 2:\ \ \textbf{для}\ $i = 1, \dots, \text{n\_iter}$
+
+\ 3:\ \ \ \ \textbf{для} $\mathbf{x} \in \mathbf{X}_e$
+
+\ 4:\ \ \ \ \ \ вычислить выравнивающий путь между $\mathbf{c}$ и~$\mathbf{x}$\newline
+\hphantom{\ 4:}\ \ \ \ \ \ $\mathrm{alignment}(\mathbf{x}) := \mathrm{DTWalignment}(\mathbf{c}, \mathbf{x})$;
+
+\ 5:\ \ \ \ объединить поэлементно множества индексов для каждого отсчета времени\newline
+\hphantom{\ 4:}\ \ \ \ $\mathrm{alignment} := \bigcup_{\mathbf{x} \in \mathbf{X}_e} \text{alignment}(\mathbf{x})$;
+
+\ 6:\ \ \ \ $\mathbf{c} = \text{mean}(\text{alignment})$
+
+\
+
+
+ПРОЦЕДУРА $\mathrm{DTWalignment}(\mathbf{c}, \mathbf{x})$
+
+\noindent
+\textbf{Вход:}\ $\mathbf{c}, \mathbf{x}$~--- временн$\acute{\mbox{ы}}$е ряды.
+
+\noindent
+\textbf{Выход:}\ alignment~--- выравнивающий путь.~// {каждый индекс 
+временного ряда~$\mathbf{x}$ поставлен в~однозначное\newline
+\hphantom{\ 1:}\ \ соответствие индексу временного ряда~$\mathbf{c}$}
+
+\ 1:\ \  {построить $n \times n$-матрицу деформаций DTW}\newline
+\hphantom{\ 1:}\ \ $\mathrm{cost} := \mathrm{DTW}(\mathbf{c}, \mathbf{x})$;
+
+\ 2:\ \ {вычислить выравнивающий путь по матрице деформаций}\newline
+\hphantom{\ 1:}\ \ $\mathrm{alignment} := \mathrm{DTWpath}(\mathrm{cost})$;
+
+\vspace*{6pt}
+
+\hrule
+\end{figure*}
+
+В данной работе вычислительный эксперимент проводился на синтетических временн$\acute{\mbox{ы}}$х 
+рядах, представляющих аналитические функции, и~реальных данных показаний акселерометра 
+мобильного телефона.
+Цель эксперимента~--- определить вид активности человека по форме сигнала акселерометра.
+Получена оценка качества работы построенного алгоритма и~проведен анализ его свойств.
+
+\section{Постановка задачи}
+
+Пусть объект $\mathbf{x}_i \hm\in \mathbb{R}^n$~--- временн$\acute{\mbox{о}}$й ряд, последовательность 
+измерений некоторой исследуемой величины в~различные моменты времени.
+Пусть $\mathbf{X}$~--- множество всех временн$\acute{\mbox{ы}}$х рядов фиксированной длины~$n$; 
+$Y \hm= \{1, \dots, K\}$~--- множество меток классов.
+Пусть задана выборка $\mathfrak{D} \hm= \{(\mathbf{x}_i, y_i)\}_{i=1}^\ell$~--- 
+множество объектов с~известными метками классов $y_i \hm\in Y$.
+
+Требуется построить точную, простую, устойчивую модель классификации
+$$
+    a: \mathbf{X} \to Y\,.
+$$
+Данную модель представим в~виде суперпозиции
+\begin{equation*}
+%\label{eq:classifiers}
+a(\mathbf{x}) = b \circ \mathbf{f} \circ G(\mathbf{x}, \{\mathbf{c}_e\}_{e = 1} ^ K)\,,
+\end{equation*}
+ где $G$~--- процедура выравнивания временн$\acute{\mbox{ы}}$х рядов относительно 
+ центроидов классов~$\{\mathbf{c}_e\}_{e = 1} ^ K$; $\mathbf{f}$~--- 
+ алгоритм метрического обучения; $b$~--- алгоритм многоклассовой классификации.
+
+\subsection{Выравнивание временн$\acute{\mbox{ы}}$х рядов}
+
+Для повышения качества и~устойчивости алгоритма классификации предлагается 
+провести выравнивание временн$\acute{\mbox{ы}}$х рядов каждого класса относительно центроида.
+
+Пусть $\mathbf{X}_e$ --- множество объектов обучающей выборки $\mathfrak{D}$, 
+принадлежащих одному классу $e \hm\in \{1, \dots, K\}$.
+Центроидом множества объектов $\mathbf{X}_e \hm= \{\mathbf{x}_i|y_i=e\}_{i=1}^\ell$ 
+по расстоянию~$\rho$ назовем вектор $\mathbf{c}_e \hm\in \mathbb{R}^n$ такой, что
+\begin{equation}
+\label{centroid_task}
+    \mathbf{c}_e = \mathop{\mathrm{argmin}}\limits_{{\mathbf{c} 
+    \in \mathbb{R}^n}}\sum\limits_{\mathbf{x}_i \in \mathbf{X}_e}
+    {\rho(\mathbf{x}_i ,\mathbf{c})}\,.
+\end{equation}
+
+Для нахождения центроида предлагается в~качестве расстояния между 
+временн$\acute{\mbox{ы}}$ми рядами использовать путь наименьшей стоимости~\cite{goncharov2015cost}, 
+найден\-ный методом динамической трансформации времени.
+Псевдокод решения оптимизационной задачи~(\ref{centroid_task}) приведен 
+в~алгоритме~1.
+
+
+
+Общая процедура выравнивания имеет сле\-ду\-ющий вид:
+\begin{enumerate}[(1)]
+    \item
+    построить множество центроидов классов $\{\mathbf{c}_e\}_{e = 1}^K$;
+    \item
+    по множеству центроидов найти пути наименьшей стоимости между каждым
+    временн$\acute{\mbox{ы}}$м рядом~$\mathbf{x}_i$ и~центроидом его класса~$\mathbf{c}_{y_i}$;
+    \item
+    по каждому пути восстановить выравненный временной ряд;
+    \item
+        привести множества выравненных временн$\acute{\mbox{ы}}$х рядов к~нулевому среднему и~нормировать на дисперсию.
+\end{enumerate}
+
+Результатом выравнивания должно стать множество выравненных временн$\acute{\mbox{ы}}$х рядов.
+
+\subsection{Метрическое обучение}
+
+Введем на множестве выравненных временн$\acute{\mbox{ы}}$х рядов расстояние Махаланобиса
+$$
+    d_\mathbf{A} (\mathbf{x}_i, \mathbf{x}_j) = \sqrt{(\mathbf{x}_i - \mathbf{x}_j)^\mathsf{T} \mathbf{A} (\mathbf{x}_i - \mathbf{x}_j)}\,,
+$$
+где матрица трансформаций $\mathbf{A} \hm\in \mathbb{R}^{n \times n}$ 
+является симметричной и~неотрицательно определенной ($\mathbf{A}^\mathsf{T} \hm= 
+\mathbf{A}$, $\mathbf{A} \succeq 0$).
+Представим матрицу~$\mathbf{A}$ в~виде разложения 
+$\mathbf{A} \hm= \mathbf{L}^\mathsf{T}  \mathbf{L}$.
+Матрица $\mathbf{L}\hm \in \mathbb{R}^{p \times n}$~--- мат\-ри\-ца линейного преобразования, 
+где~$p$ задает раз\-мер\-ность преобразованного пространства. Если па\-ра\-метр $p\hm < n$, 
+то происходит снижение размерности признакового пространства.
+
+Расстояние $d_\mathbf{A} (\mathbf{x}_i, \mathbf{x}_j)$ есть евклидово 
+рас\-сто\-яние между $\mathbf{Lx}_i$ и~$\mathbf{Lx}_j$:
+\begin{multline*}
+    d_\mathbf{A} (\mathbf{x}_i, \mathbf{x}_j) = \sqrt{(\mathbf{x}_i - 
+    \mathbf{x}_j)^\mathsf{T} \mathbf{L}^\mathsf{T} \mathbf{L} (\mathbf{x}_i - 
+    \mathbf{x}_j)} = {}\\
+    {}=\sqrt{(\mathbf{L} (\mathbf{x}_i - \mathbf{x}_j))^\mathsf{T} 
+    (\mathbf{L} (\mathbf{x}_i - \mathbf{x}_j))} =
+     \|\mathbf{L} (\mathbf{x}_i - \mathbf{x}_j)\|_2\,.
+\end{multline*}
+
+В качестве алгоритма метрического обучения в~данной работе был выбран 
+алгоритм LMNN. \mbox{Данный} алгоритм сочетает в~себе идеи метода~$k$~ближайших соседей. 
+Первая идея заключается в~минимизации расстояний между~$k$~ближайшими объектами, 
+находящимися в~одном клас\-се. Запишем функционал качества в~виде
+$$
+    Q_1(\mathbf{L}) = \sum\limits_{j \rightsquigarrow i} \|\mathbf{L}(\mathbf{x}_i - 
+    \mathbf{x}_j)\|^2 \rightarrow \min\limits_{\mathbf{L}}\,,
+$$
+где $j \rightsquigarrow i$ означает, что $\mathbf{x}_j$ является одним из~$k$~ближайших соседей для $\mathbf{x}_i$.
+Вторая идея состоит в~максимизации расстояния между каждым объектом и~его 
+объ\-ек\-та\-ми-на\-ру\-ши\-те\-ля\-ми. 
+Объек\-том-на\-ру\-ши\-те\-лем для $\mathbf{x}_i$ назовем объект~$\mathbf{x}_l$ 
+такой, что
+\begin{equation}
+\label{impostor}
+    \|\mathbf{L}(\mathbf{x}_i - \mathbf{x}_l)\|^2 \leq 
+    \|\mathbf{L}(\mathbf{x}_i - \mathbf{x}_j)\|^2 + 1,  
+    \mbox{ где } j \rightsquigarrow i.
+\end{equation}
+Таким образом, необходимо минимизировать следующий функционал:
+\begin{multline*}
+    Q_2(\mathbf{L}) = \sum\limits_{j \rightsquigarrow i} 
+    \sum\limits_l(1 - y_{il})
+    \bigl[1 + \|\mathbf{L}(\mathbf{x}_i - \mathbf{x}_j)\|^2 -{}\\
+    {}- \|\mathbf{L}
+    (\mathbf{x}_i - \mathbf{x}_l)\|^2\bigr]_+ 
+    \rightarrow \min\limits_{\mathbf{L}}\,,
+\end{multline*}
+где $y_{il} = 1$, если $y_i \hm= y_l$, и~$y_{il} \hm= 0$ в~противном случае.
+Положительная срезка позволяет штрафовать только те объекты, которые 
+удовлетворяют условию~(\ref{impostor}).
+
+Задача метрического обучения состоит в~на\-хож\-де\-нии линейного 
+преобразования $\mathbf{f}(\mathbf{x}) \hm= \mathbf{Lx}$, т.\,е.\ 
+нахождении матрицы~$\mathbf{L}$ в~виде решения оптимизационной задачи
+\begin{equation}
+\label{Qmin}
+    Q(\mathbf{L}) = \mu Q_1(\mathbf{L}) + (1 - \mu) Q_2(\mathbf{L}) 
+    \rightarrow \min\limits_{\mathbf{L}}\,,
+\end{equation}
+где $\mu \in (0, 1)$~--- весовой параметр, определяющий вклад каждого из функционалов.
+Задача~(\ref{Qmin}) представляет собой задачу полуопределенного 
+программирования~\cite{vandenberghe1996semidefinite} и~может быть решена 
+сущест\-ву\-ющи\-ми оптимизационными пакетами.
+
+\subsection{Классификация временн$\acute{\mbox{ы}}$х рядов}
+
+Пусть $\mathbf{x} \in \mathbf{X}$~--- неразмеченный временной ряд. 
+Выравниваем временной ряд~$\mathbf{x}$ относительно всех центроидов классов
+$    \mathbf{\hat{x}}_e = G(\mathbf{x}, \mathbf{c}_e)\,,  \mbox{ где } 
+    e \hm= \{1, \dots, K\}.$
+
+Отнесем временной ряд к~классу, для которого минимально расстояние 
+до соответствующего центроида. В~качестве расстояния используем обучен\-ную метрику 
+Махаланобиса с~фиксированной мат\-ри\-цей~$\mathbf{A}$:
+$$
+    \hat{y} = \mathop{\mathrm{argmin}}\limits_{e \in \{1, \dots, K\}}
+    d_\mathbf{A}\left(\mathbf{\hat{x}}_e, \mathbf{c}_e\right)\,.
+$$
+После нахождения оптимальных центроидов классов и~нахождения 
+оптимальной матрицы трансформаций процедура классификации заключается 
+в~измерении расстояния между найденными центроидами и~новыми неразмеченными объектами.
+
+Для оценки качества работы алгоритма будем вычислять ошибку классификации 
+как долю неправильно классифицированных объектов тестовой выборки~$\mathfrak{U}$:
+$$
+    \mathrm{error} = \fr{1}{|\mathfrak{U}|} 
+    \sum\limits_{i = 1} ^ {|\mathfrak{U}|}\left[a\left(\mathbf{x}_i\right) \ne y_i\right].
+$$
+
+\section{Вычислительный эксперимент}
+
+Цель вычислительного эксперимента~--- проверить работоспособность предложенного 
+подхода.
+Предполагается, что построенный алгоритм мультиклассовой классификации 
+способен определить тип активности человека по форме сигнала акселерометра 
+мобильного телефона.
+
+\renewcommand{\figurename}{\protect\bf Рис.}
+\setcounter{figure}{0}
+
+
+\begin{figure*} %fig1
+\vspace*{1pt}
+ \begin{center}  
+\mbox{%
+ \epsfxsize=79.311mm
+ \epsfbox{isa-1.eps}
+ }
+\end{center} 
+\vspace*{-15pt}
+\Caption{Центроиды синтетических временн$\acute{\mbox{ы}}$х рядов двух
+    классов: \textit{1}~--- $\sin (x\hm+b)$; \textit{2}~--- пилообразные функции
+    с~различными сдвигами по временн$\acute{\mbox{о}}$й шкале}
+%\end{figure*}
+%\begin{figure*} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=163.735mm
+ \epsfbox{isa-2.eps}
+ }
+ \end{center}
+ \vspace*{-15pt}
+    \Caption{Центроиды временн$\acute{\mbox{ы}}$х рядов акселерометра: (\textit{а})~ходьба;
+(\textit{б})~подъем; (\textit{в})~спуск; (\textit{г})~сидение; 
+(\textit{д})~стояние; (\textit{е})~лежание}
+\label{centroids_real}
+\vspace*{-0.15556pt}
+\end{figure*}
+
+%\end{multicols}
+
+
+%\begin{multicols}{2}
+
+Для проведения базового вычислительного эксперимента были подготовлены 
+синтетические временн$\acute{\mbox{ы}}$е ряды, принадлежащие двум классам~\cite{Isachenko2015code}.
+
+Первый класс~--- синусы вида $\sin(x \hm+ b)$, где параметр~$b$ определяет сдвиг 
+каждого временн$\acute{\mbox{о}}$го ряда.
+
+Второй класс~--- пилообразные функции с~различными сдвигами по временн$\acute{\mbox{о}}$й шкале.
+На каж\-дый временной ряд был наложен нормальный шум.
+Число временн$\acute{\mbox{ы}}$х рядов каждого клас\-са\;=\;60.
+Длина каждого временн$\acute{\mbox{о}}$го ряда $n \hm= 50$.
+%
+Построенные центроиды классов проиллюстрированы на рис.~1.
+Видно, что процедура корректно определяет сдвиги временн$\acute{\mbox{ы}}$х 
+рядов.
+
+
+Чтобы убедиться в~целесообразности применения метрического обучения, данные
+временн$\acute{\mbox{ы}}$е\linebreak
+ ряды классифицировались в~пространстве с~евклидовой метрикой 
+и~в~пространстве с~мет\-ри\-кой Махаланобиса.
+Число ближайших соседей $k \hm= 5$; размерность преобразованного пространства 
+$p \hm= 40$. Полученные ошибки классификации составили:
+\begin{itemize}
+\item евклидова метрика --- $27\%$;
+\item
+метрика Махаланобиса --- $6\%$.
+\end{itemize}
+
+\end{multicols}
+
+\begin{figure*}[b] %fig3
+\vspace*{-12pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=164.279mm
+ \epsfbox{isa-3.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+    \Caption{Временн$\acute{\mbox{ы}}$е ряды акселерометра:
+    (\textit{а})~ходьба;
+(\textit{б})~подъем; (\textit{в})~спуск; (\textit{г})~сидение; 
+(\textit{д})~стояние; (\textit{е})~лежание}
+\label{raw_ts}
+%\vspace*{-12pt}
+\end{figure*}
+
+\begin{multicols}{2}
+
+
+
+
+Реальные данные~\cite{UCI_HarDataset} представляли собой вре\-мен\-н$\acute{\mbox{ы}}$е 
+ряды  акселерометра мобильного телефона.
+Каж\-дый из шести классов соответствовал определенной физической активности испытуемых.
+Для проведения вычислительного эксперимента было выбрано по~200~объектов каж\-до\-го класса.
+Длина каж\-до\-го временн$\acute{\mbox{о}}$го ряда равнялась $n \hm= 128$ отсчетам времени.
+
+
+
+Построенные центроиды классов изображены на рис.~\ref{centroids_real}.
+Найденные центроиды обладают периодичностью, свойственной временн$\acute{\mbox{ы}}$м 
+рядам 
+по-\linebreak %\vspace*{-12pt}
+
+\columnbreak
+
+\noindent
+казаний активности человека.
+На рис.~\ref{raw_ts} показаны примеры временн$\acute{\mbox{ы}}$х рядов каждого класса. 
+Эти же временн$\acute{\mbox{ы}}$е ряды после процедуры выравнивания относительно построенных 
+центроидов изображены на рис.~\ref{aligned_ts}.
+
+
+
+
+Ошибка классификации без использования мет\-ри\-ческого обучения составила~37,5\%.
+Алгоритм LMNN позволяет настроить параметры: число ближайших соседей~$k$,
+размерность преобразованного евклидова пространства~$p$.
+Для выбора оптимальных параметров воспользуемся процедурой кросс-\linebreak %\vspace*{-12pt}
+
+\end{multicols}
+
+\begin{figure*}[b] %fig4
+\vspace*{-24pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=164.306mm
+ \epsfbox{isa-4.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+    \Caption{Выравненные временн$\acute{\mbox{ы}}$е ряды акселерометра:
+    (\textit{а})~ходьба;
+(\textit{б})~подъем; (\textit{в})~спуск; (\textit{г})~сидение; 
+(\textit{д})~стояние; (\textit{е})~лежание}
+\label{aligned_ts}
+%\vspace*{-12pt}
+\end{figure*}
+
+\pagebreak
+
+
+
+\begin{figure*} %fig5
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=109.202mm
+ \epsfbox{isa-5.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+    \Caption{Ошибка классификации в~зависимости от параметров}
+\label{heat_map}
+\vspace*{9pt}
+\end{figure*}
+
+%\pagebreak
+
+\begin{multicols}{2}
+
+ 
+
+\noindent
+ про\-вер\-ки.
+На рис.~\ref{heat_map} показана ошибка классификации алгоритма 
+в~зависимости от его параметров.
+На данной выборке алгоритм LMNN оказывается слабо чувствителен 
+к~числу ближайших соседей,
+и~при уменьшении размерности пространства объектов ошибка классификации растет.
+
+
+Настроим алгоритм LMNN со следующими параметрами: число 
+ближайших соседей $k \hm= 30$, размерность
+выходного пространства $p \hm= 128$.
+Ошибка
+ классификации составила~17,25\%, что вдвое меньше ошибки классификации 
+с~использованием евклидовой метрики.
+
+
+В табл.~1 представлены матрицы несоответствий 
+результатов классификации при использовании
+евклидовой метрики и~метрики Махаланобиса.
+Столбцы соответствуют истинным меткам классов объектов, 
+строки~--- предсказанным меткам.
+Диагональное преобладание матрицы несоответствий указывает на 
+высокую предсказательную способность алгоритма.
+
+В табл.~\ref{improvement} продемонстрировано увеличение точности классификации 
+при использовании в~качестве меры расстояния метрики Махаланобиса.
+Пересече\-ние $i$-го столбца и~$j$-й строки отвечает\linebreak изменению доли объектов класса~$i$, 
+отнесенных к~классу~$j$. Положительное суммарное значе\-ние диагональных элементов 
+таблицы соответствует увеличению качества классификации. Значительное улучшение 
+предсказания происходит при классификации первых трех классов.
+Данные клас-\linebreak
+
+\noindent
+ \begin{center}  %tabl
+ \vspace*{-12pt}
+{{\tablename~1}\ \ \small{Матрицы несоответствий}}
+
+{\small 
+\tabcolsep=4pt
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\multicolumn{7}{c}{\ }\\[-6pt]
+    \hline
+ Предсказанные& \multicolumn{6}{c|}{Истинные метки классов}\\
+  \cline{2-7}
+   метки& 1  & 2  & 3  & 4  & 5  & 6  \\ 
+   \hline
+   \multicolumn{7}{|c|}{Евклидова метрика}\\
+   \hline
+1  & 80\hphantom{9} & \hphantom{9}0  & \hphantom{9}5  & \hphantom{9}0  & \hphantom{9}0  & \hphantom{9}0   \\
+%\hline
+2  & 4  & 56 & 33 & \hphantom{9}0  & \hphantom{9}0  & \hphantom{9}0  \\
+%\hline
+3  & 5  & \hphantom{9}5  & 86 & \hphantom{9}0  & \hphantom{9}0  & \hphantom{9}0\\
+%\hline
+4  & 7  & \hphantom{9}8  & \hphantom{9}5  & 168\hphantom{9}& \hphantom{9}4  & 21 \\
+%\hline
+5  & 51\hphantom{9} & 61 & 57 & 12 & 192\hphantom{9}& 11 \\
+%\hline
+6  & 53\hphantom{9} & 70 & 14 & 20 & \hphantom{9}2  & 168\hphantom{9}\\
+\hline
+\multicolumn{7}{|c|}{Метрика Махаланобиса}\\
+\hline
+1& 151\hphantom{9} & 12 & 13    & \hphantom{9}0     & \hphantom{9}0    & \hphantom{9}0 \\ 
+%\hline
+  2  & 10  & 142\hphantom{9}& 14    & \hphantom{9}0     & \hphantom{9}0    & \hphantom{9}0 \\ 
+%  \hline
+  3  & \hphantom{9}9   & 10 & 171\hphantom{9}   & \hphantom{9}0     & \hphantom{9}0    & \hphantom{9}0 \\
+%  \hline
+   4  & 10  & \hphantom{9}7  & \hphantom{9}0     & 173\hphantom{9}   & \hphantom{9}9    & 21\\  
+%   \hline
+     5  & \hphantom{9}2   & 11 & \hphantom{9}0     & 12    & 186\hphantom{9}  & \hphantom{9}9 \\ 
+%     \hline
+       6  & 18  & 18 & \hphantom{9}2     & 15    & \hphantom{9}5    & 170\hphantom{9}\\ 
+\hline
+\end{tabular}}
+\end{center} 
+
+ \vspace*{9pt}
+ 
+ \noindent
+ сы соответствуют следующим видам физической активности: ходьба, 
+подъем, спуск.
+
+
+
+
+\addtocounter{table}{1}
+
+
+\begin{table*}\small
+\begin{center}
+\parbox{348pt}{\Caption{Увеличение точности классификации при использовании адекватной оценки матрицы трансформаций}
+\label{improvement}
+
+}
+
+\begin{tabular}{|c|r|r|c|c|c|c|}
+\multicolumn{7}{c}{\ }\\[-4pt]
+\hline
+\multicolumn{1}{|c|}{Предсказанные}& \multicolumn{6}{c|}{Истинные метки классов}       \\ 
+\cline{2-7}
+\multicolumn{1}{|c|}{метки}    & \multicolumn{1}{c|}{1} & \multicolumn{1}{c|}{2} & 3 & 4 & 5 & 6\\ 
+    \hline
+1 & $\mathbf{0{,}355}$& 0,06\hphantom{9,} & \hphantom{$-$}0,04\hphantom{9} & 0 & 0\hphantom{,999}& 0\hphantom{9}     \\ 
+%\hline
+2 & 0,03\hphantom{9,}   & $\mathbf{0{,}43}$\hphantom{9}   & $-0{,}095$ & 0& 0\hphantom{,999} & 0\hphantom{9} \\ 
+%\hline
+3 & 0,02\hphantom{9,}   & 0,025\hphantom{,}  & \hphantom{9,}$\mathbf{0{,}425}$  & 0  & 0\hphantom{,999} & 0\hphantom{9}\\ 
+%\hline
+4 & 0,015\hphantom{,}  & $-0{,}005$\hphantom{,} & $-0{,}025$ & \hphantom{9.9.9}$\mathbf{0{,}025}$ & 0,025 & 0\hphantom{9}\\ 
+%\hline
+5 & $-0{,}245$\hphantom{,} & $-0{,}25$\hphantom{9,}  & $-0{,}28$\hphantom{9}  & 0 & $\mathbf{-0{,}03}$\hphantom{99} & $-0{,}01$ \\ 
+%\hline
+6 & $-0{,}175$\hphantom{,} & $-0{,}26$\hphantom{9,}  & $-0{,}06$\hphantom{9}  & \hphantom{$-$,}$-0{,}025$ & 0,005 & $\mathbf{-0{,}01}$ \\ 
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+\vspace*{-6pt}
+
+\section{Заключение}
+
+В данной работе предложен новый подход к~решению задачи многоклассовой 
+классификации временн$\acute{\mbox{ы}}$х рядов.
+Сравнивались результаты классификации множества временн$\acute{\mbox{ы}}$х рядов, 
+основанных на измерении расстояний
+с помощью евклидовой метрики и~обученной метрики Махаланобиса.
+Проведен вычислительный эксперимент на реальных данных показаний 
+акселерометра мобильного телефона.
+Построенная модель классификации показала высокое качество распознавания 
+активности человека по форме сигнала акселерометра.
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{popova2015multiclass}
+\Au{Попова~М.\,С., Стрижов~В.\,В.}
+Выбор оптимальной модели классификации физической активности по
+измерениям акселерометра~// Информатика и~её применения,
+2015. Т.~9. Вып.~1. С.~79--89.
+
+\bibitem{ignatov2015multiclass}
+\Au{Ignatov~A.\,D., Strijov~V.\,V.}
+Human activity recognition using quasiperiodic time series collected
+  from a~single tri-axial accelerometer~// Multimed. Tools  Appl., 2015. 14~p.
+  doi: 10.1007/s11042-015-26430.
+
+\bibitem{guler2007mccsvm}
+\Au{G$\ddot{\mbox{u}}$ler~I., $\ddot{\mbox{\!U}}$beyli~E.~D.}
+Multiclass support vector machines for eeg-signals classification~//
+IEEE Trans. Inf. Technol. Biomedicine, 2007. Vol.~11. No.\,2. P.~117--126.
+
+\bibitem{ubeyli2007mccsvm2}
+\Au{$\ddot{\mbox{U}}$beyli~E.\,D.}
+Ecg beats classification using multiclass support vector machines
+  with error correcting output codes~// Digit. Signal Process., 2007. Vol.~17. No.\,3. P.~675--684.
+
+\bibitem{anand1995mccnn}
+\Au{Anand~R., Mehrotra~K., Mohan~C.~K., Ranka~S.}
+Efficient classification for multiclass problems using modular neural
+  networks~// IEEE Trans. Neural Networ., 1995. Vol.~6. No.\,1. P.~117--124.
+
+\bibitem{kafai2012mccbn}
+\Au{Kafai~M., Bhanu~B.}
+Dynamic bayesian networks for vehicle classification in video~// IEEE Trans. 
+Ind. Inform., 2012. Vol.~8. No.\,1. P.~100--109.
+
+\bibitem{chaovalitwongse2007knn}
+\Au{Chaovalitwongse~W.\,A., Fan~Y.-J., Sachdeo~R.\,C.}
+On the time series $k$-nearest neighbor classification of abnormal
+  brain activity~// IEEE Trans. Syst. Man  Cy. A,
+2007. Vol.~37. No.\,6. P.~1005--1016.
+
+\bibitem{yang2006mlsurvey2} %8
+\Au{Yang~L., Jin~R.}
+Distance metric learning: A~comprehensive survey.~--- 
+Michigan State University, 2006. Vol.~2. 51~p.
+
+\bibitem{bellet2013mlsurvey} %9
+\Au{Bellet~A., Habrard~A., Sebban~M.}
+A~survey on metric learning for feature vectors and structured data.
+arXiv preprint arXiv:1306.6709, 2013.
+
+
+
+\bibitem{wang2015mlsurvey3}
+\Au{Wang~F., Sun~J.}
+Survey on distance metric learning and dimensionality reduction in data mining~//
+Data Min. Knowl. Disc., 2015. Vol.~29. No.\,2. P.~534--564.
+
+\bibitem{mcfee2010mlranking}
+\Au{McFee~B., Lanckriet~G.\,R.}
+Metric learning to rank~// 27th  Conference (International) on Machine
+  Learning Proceedings, 2010. P.~775--782.
+
+\bibitem{guillaumin2009mlface}
+\Au{Guillaumin~M., Verbeek~J., Schmid~C.}
+Is that you? Metric learning approaches for face identification~// 
+IEEE 12th  Conference (International) on Computer Vision Proceedings.~--- IEEE, 2009. P.~498--505.
+
+\bibitem{weinberger2008mldigits}
+\Au{Weinberger~K.\,Q., Saul~L.\,K.}
+Fast solvers and efficient implementations for distance metric
+  learning~// 25th  Conference (International) on Machine
+Learning Proceedings, 2008. P.~1160--1167.
+
+\bibitem{weinberger2005lmnn}
+\Au{Weinberger~K.\,Q., Blitzer~J., Saul~L.\,K.}
+Distance metric learning for large margin nearest neighbor
+  classification~// Advances in
+  Neural Information Processing Systems.~--- Cambridge, MA,
+  USA: MIT Press, 2006. P.~1473--1480.
+
+\bibitem{berndt1994dtw}
+\Au{Berndt~D.\,J., Clifford~J.}
+Using dynamic time warping to find patterns in time series~// KDD Workshop, 
+1994. Vol.~10. No.\,16. P.~359--370.
+
+\bibitem{petitjean2011dba}
+\Au{Petitjean~F., Ketterlin~A., \mbox{Gan\!{\!\ptb{\c{c}}}arski}~P.}
+A~global averaging method for dynamic time warping, with applications
+  to clustering~// Pattern Recogn., 2011. Vol.~44. No.\,3. P.~678--693.
+
+\bibitem{goncharov2015cost}
+\Au{Гончаров~А.\,В., Попова~М.\,С., Стрижов~В.\,В.}
+Метрическая классификация временных рядов с~выравниванием
+  относительно центроидов классов~// Системы 
+  и~средства информатики, 2015. Т.~25. №\,4. С.~52--64.
+
+\bibitem{vandenberghe1996semidefinite}
+\Au{Vandenberghe~L., Boyd~S.}
+Semidefinite programming // SIAM Rev., 1996. Vol.~38. No.\,1. P.~49--95.
+
+\bibitem{Isachenko2015code}
+\Au{Исаченко~Р.\,В.}
+Реализация алгоритма классификации временных рядов~// Sourceforge.net, 2015.
+{\sf http://sourceforge.net/p/mlalgorithms/code/HEAD/\linebreak tree/Group274/Isachenko2015TimeSeries/code}.
+
+
+\bibitem{UCI_HarDataset}
+UCI repository. Human activity recognition using smartphones dataset.
+{\sf https://archive.ics.uci.edu/\linebreak ml/datasets/Human+Activity+Recognition+Using+\linebreak Smartphones}.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 18.03.16}}
+
+%\vspace*{8pt}
+
+\newpage
+
+\vspace*{-24pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+%\vspace*{8pt}
+
+
+
+\def\tit{METRIC LEARNING IN~MULTICLASS TIME SERIES CLASSIFICATION PROBLEM}
+
+\def\titkol{Metric learning in multiclass time series classification problem}
+
+\def\aut{R.\,V.~Isachenko$^1$ and V.\,V.~Strijov$^2$}
+
+\def\autkol{R.\,V.~Isachenko and V.\,V.~Strijov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+$^1$Moscow Institute of Physics and Technology, 
+ 9~Institutskiy Institutskiy Per., Dolgoprudny, Moscow Region\linebreak
+ $\hphantom{^1}$141700,  Russian Federation
+
+\noindent
+$^2$A.\,A.~Dorodnicyn Computing Centre, Federal Research Center 
+``Computer Science and Control'' of the Russian\linebreak
+  $\hphantom{^1}$Academy of Sciences, 
+40~Vavilov Str., Moscow 119333, Russian Federation
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2016\ \ \ volume~10\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2016\ \ \ volume~10\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+
+\Abste{This paper is devoted to the problem of multiclass time series classification.
+    It is proposed to align time series in relation to class centroids.
+    Building of centroids and alignment of time series is carried out by 
+    the dynamic time warping algorithm.
+    The accuracy of classification depends significantly on the metric used to compute distances between time series.
+   The distance metric learning approach is used to improve classification accuracy.
+    The metric learning procedure modifies distances between objects to make objects from the same cluster closer
+    and from the different clusters more distant.
+    The distance between time series is measured by the Mahalanobis metric.
+    The distance metric learning procedure finds the optimal transformation matrix for 
+    the Mahalanobis metric.
+    To calculate quality of classification,
+    a~computational experiment on synthetic data and
+    real data of human activity recognition was carried out.}
+
+\KWE{time series classification; time series alignment; distance metric learning; LMNN algorithm}
+
+\DOI{10.14357/19922264160205}
+
+%\vspace*{-12pt}
+
+\Ack
+\noindent
+The work was financially supported by the Russian Foundation
+for Basic Research (project 16-07-01158).
+
+
+%\vspace*{3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-is}
+\Aue{Popova, M.\,S., and V.\,V.~Strijov}.
+2015.
+Vybor optimal'noy modeli klassifikatsii fizicheskoy aktivnosti po izmereniyam
+  akselerometra [Selection of optimal physical activity
+  classification model using measurements of accelerometer].
+\textit{Informatika i ee primeneniya}~--- \textit{Inform. Appl}.
+9(1):79--89.
+
+\bibitem{2-is}
+\Aue{Ignatov, A.\,D., and V.\,V.~Strijov}.
+2015.
+Human activity recognition using quasiperiodic time series collected from 
+a~single tri-axial accelerometer.
+\textit{Multimed. Tools  Appl}. 14~p.
+  doi: 10.1007/s11042-015-26430.
+
+\bibitem{3-is}
+\Aue{G$\ddot{\mbox{u}}$ler, I., and E.\,D.~$\ddot{\mbox{U}}$beyli}.
+2007.
+Multiclass support vector machines for eeg-signals classification.
+\textit{IEEE Trans. Inf. Technol. Biomedicine}
+11(2):117--126.
+
+\bibitem{4-is}
+\Aue{$\ddot{\mbox{U}}$beyli, E.\,D.}
+2007.
+Ecg beats classification using multiclass support vector machines with error
+  correcting output codes.
+\textit{Digit. Signal Process.} 17(3):675--684.
+
+\bibitem{5-is}
+\Aue{Anand, R., K.~Mehrotra, C.~K. Mohan,  and S.~Ranka}.
+1995.
+Efficient classification for multiclass problems using modular neural networks.
+\textit{IEEE Trans. Neural Networ.} 6(1):117--124.
+
+\bibitem{6-is}
+\Aue{Kafai, M., and B.~Bhanu.}
+2012. Dynamic bayesian networks for vehicle classification in video.
+\textit{IEEE Trans. Ind. Inform.} 8(1):100--109.
+
+\bibitem{7-is}
+\Aue{Chaovalitwongse, W.\,A., Y.-J.~Fan,  and R.\,C.~Sachdeo.}
+2007. On the time series $k$-nearest neighbor classification of abnormal brain
+  activity.
+\textit{IEEE Trans. Syst. Man Cy. A}
+37(6):1005--1016.
+
+
+
+\bibitem{9-is} %8
+\Aue{Yang, L., and R.~Jin.}
+2006.
+\textit{Distance metric learning: A~comprehensive survey}.
+{Michigan State University}. Vol.~2. 51~p.
+
+\bibitem{8-is} %9
+\Aue{Bellet, A., A.~Habrard,  and M.~Sebban.}
+2013.
+A survey on metric learning for feature vectors and structured data.
+{arXiv preprint arXiv:1306.6709}.
+
+\bibitem{10-is}
+\Aue{Wang, F., and J.~Sun.}
+2015.
+Survey on distance metric learning and dimensionality reduction in data mining.
+\textit{Data Min. Knowl. Disc.} 29(2):534--564.
+
+\bibitem{11-is}
+\Aue{McFee, B., and G.\,R.~Lanckriet.}
+2010.
+Metric learning to rank.
+\textit{27th  Conference (International) on Machine Learning Proceedings}.
+775--782.
+
+\bibitem{12-is}
+\Aue{Guillaumin, M., J.~Verbeek,  and C.~Schmid.}
+2009.
+Is that you? Metric learning approaches for face identification.
+\textit{IEEE 12th Conference (International) on Computer Vision}.
+498--505.
+
+\bibitem{13-is}
+\Aue{Weinberger, K.\,Q., and L.\,K.~Saul.}
+2008.
+Fast solvers and efficient implementations for distance metric learning.
+\textit{25th  Conference (International) on Machine Learning Proceedings}.
+1160--1167.
+
+\bibitem{14-is}
+\Aue{Weinberger, K.\,Q., J.~Blitzer,  and L.\,K.~Saul}.
+2005.
+Distance metric learning for large margin nearest neighbor classification.
+\textit{Advances in neural information processing systems}.
+Cambridge, MA: MIT Press. 1473--1480.
+
+\bibitem{15-is}
+\Aue{Berndt, D.\,J., and J.~Clifford}.
+1994.
+Using dynamic time warping to find patterns in time series.
+\textit{KDD Workshop}. 10(16):359--370.
+
+\bibitem{16-is}
+\Aue{Petitjean, F., A.~Ketterlin,  and P.~\mbox{Gan{\!\ptb{\c{c}}}arski}}.
+2011.
+A~global averaging method for dynamic time warping, with applications to
+  clustering.
+\textit{Pattern Recogn.} 44(3):678--693.
+
+\bibitem{17-is}
+\Aue{Goncharov, A.\,B., M.\,S.~Popova, and V.\,V.~Strijov}.
+2015.
+Metricheskaya klassifikatsiya vremennykh ryadov s~vyravnivaniem otnositel'no
+  tsentroidov klassov [Metric time series classification using
+  dynamic warping relative to centroids of classes].
+\textit{Sistemy i~Sredstva Informatiki}~--- \textit{Systems and Means of Informatics}
+25(4):52--64.
+
+\bibitem{18-is}
+\Aue{Vandenberghe, L.,  and S.~Boyd}.
+1996.
+Semidefinite programming.
+\textit{SIAM Rev.} 38(1):49--95.
+
+\bibitem{19-is}
+\Aue{Isachenko,~R.\,V.} 2015.
+Project code. \textit{Sourceforge.net.} 
+Available at:
+{\sf https://sourceforge.net/p/mlalgorithms/\linebreak 
+code/HEAD/tree/Group274/Isachenko2015TimeSeries\linebreak /code/}
+(accessed March~18, 2016).
+
+\bibitem{20-is}
+UCI repository. Human activity recognition using smartphones dataset.
+Available at:
+{\sf https://archive.ics. uci.edu/ml/datasets/Human+Activity+Recognition+\linebreak Using+Smartphones}
+(accessed March~18, 2016).
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received March 18, 2016}}
+
+
+\Contr
+
+\noindent
+\textbf{Isachenko Roman V.} (b.\ 1994)~---
+ student, Moscow Institute of Physics and Technology, 
+ 9~Institutskiy Institutskiy Per., Dolgoprudny, Moscow Region 141700, 
+ Russian Federation;   \mbox{isa-ro@yandex.ru}
+
+
+
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Strijov Vadim V.} (b.\ 1967)~---
+Doctor of Science in physics and mathematics, leading scientist, 
+A.\,A.~Dorodnicyn Computing Centre, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 
+40~Vavilov Str., Moscow 119333, Russian Federation; \mbox{strijov@ccas.ru}
+
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

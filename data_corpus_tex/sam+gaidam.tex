@@ -1,0 +1,714 @@
+\def\stat{gaid+sam}
+
+\def\tit{ПРИМЕНЕНИЕ МОДЕЛЕЙ СЛУЧАЙНОГО БЛУЖДАНИЯ ПРИ~МОДЕЛИРОВАНИИ 
+ПЕРЕМЕЩЕНИЯ УСТРОЙСТВ В~БЕСПРОВОДНОЙ СЕТИ$^*$}
+
+\def\titkol{Применение моделей случайного блуждания при моделировании 
+перемещения устройств в~беспроводной сети}
+
+\def\aut{К.\,Е.~Самуйлов$^1$, Ю.\,В.~Гайдамака$^2$, С.\,Я.~Шоргин$^3$}
+
+\def\autkol{К.\,Е.~Самуйлов, Ю.\,В.~Гайдамака, С.\,Я.~Шоргин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Самуйлов К.\,Е.}
+\index{Гайдамака Ю.\,В.}
+\index{Шоргин С.\,Я.}
+\index{Samouylov K.\,E.}
+\index{Gaidamaka Yu.\,V.} 
+\index{Shorgin S.\,Ya.}
+
+
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Исследование выполнено при финансовой поддержке Российского научного фонда (проект 16-11-10227).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов; Федеральный исследовательский центр <<Информатика 
+и~управление>> Российской академии наук, 
+\mbox{samouylov\_ke@rudn.university}}
+\footnotetext[2]{Российский университет дружбы народов; Федеральный исследовательский центр <<Информатика 
+и~управление>> Российской академии наук, \mbox{gaydamaka\_yuv@rudn.university}}
+\footnotetext[3]{Институт проблем информатики Федерального исследовательского центра <<Информатика 
+и~управление>> Российской академии наук, \mbox{ssorgin@ipiran.ru}}
+
+%\vspace*{8pt}
+
+   
+  
+  \Abst{Выполнен обзор моделей случайного блуж\-да\-ния объектов, применяемых при 
+моделировании передвижения при\-емо\-пе\-ре\-да\-ющих устройств пользователей 
+беспроводной сети пятого поколения (5G). Рассмотрены модели мо\-биль\-ности, характерные для 
+имитационного моделирования поведения пользователей беспроводной 
+самоорганизующейся сети. Обсуждаются особенности различных моделей 
+индивидуального движения объектов, а~так\-же моделей движения групп объектов с~точки 
+зрения применения к~анализу интерференции в~беспроводных сетях. Цель статьи~--- 
+предложить ряд моделей мо\-биль\-ности для принятия обоснованного решения при выборе 
+модели случайного блуж\-да\-ния для анализа качества предо\-став\-ле\-ния услуг 
+в~беспроводных сетях. В~качестве иллюстрации применения разработанного авторами 
+комплекса аналитических и~имитационных моделей проведен анализ отношения 
+сигнал/\-ин\-тер\-фе\-рен\-ция, определяющего качество пред\-остав\-ле\-ния 
+услуг в~сетях пятого 
+поколения, для сценария случайного блуж\-да\-ния мобильных абонентов 
+в~тор\-го\-во-раз\-вле\-ка\-тель\-ном цент\-ре при использовании 
+модели случайного блуж\-да\-ния с~остановками Random Waypoint.}
+  
+  \KW{модель случайного блуждания; модель мобильности; отношение  
+сиг\-нал/ин\-тер\-фе\-рен\-ция; отношение сиг\-нал/шум}
+
+\DOI{10.14357/19922264180401}
+  
+\vspace*{5pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+  В беспроводных сетях 5G интерференция служит одним из существенных 
+источников помех, вли\-я\-ющим на показатели качества функционирования 
+сети, к~которым относятся пиковые ско\-рости передачи данных между 
+устройствами, задержка\linebreak начала передачи данных, отношение 
+сигнал/\-ин\-тер\-фе\-рен\-ция (signal to interference ratio, SIR), энер\-го\-сбе\-ре\-же\-ние, 
+эффективность использования частот\-но\-го спектра и~др.~[1]. При анализе 
+интерференции\linebreak следует учитывать особенности современных беспроводных 
+сетей, которые при использовании в~них технологии прямого взаимодействия 
+оконечных устройств (device-to-device, D2D) образуют самоорганизующиеся 
+сети (mobile ad hoc network, MANET) с~перемещающимися в~зоне покрытия 
+узлами.\linebreak
+ Относительно небольшие расстояния между подвижными узлами, 
+соответствующими при\-емо\-пе\-ре\-да\-ющим устройствам, делают необходимым 
+при анализе интерференции между соседними источниками сигнала в~таких 
+сетях учитывать траектории перемещения узлов, которые фактически 
+определяют динамику показателя SIR в~радиоканале между приемником 
+и~передатчиком. 
+
+В~работах~[2, 3] перемещение беспроводных устройств 
+моделировалось с~по\-мощью ки\-не\-ти\-ческого уравнения  
+Фок\-ке\-ра--Планка~[4], регулирование па\-ра\-мет\-ров (снос, диффузия) 
+которого позволяет исследовать различные типы движения большого чис\-ла 
+объектов, не строя индивидуальную траекторию перемещения каждого 
+объекта. 
+
+Однако такой подход не применим при анализе интерференции 
+в~задачах, где необходимо принимать во внимание особенности 
+предоставления услуг передачи данных в~сети, например учитывать 
+препятствия в~зоне перемещения устройств, наличие нескольких сред 
+распространения сигнала и~другие ограничения. Для решения таких задач 
+необходимо детальное моделирование траектории движения каждого 
+беспроводного устройства с~по\-мощью аналитических~[5--7] 
+и~имитационных~[8, 9] моделей. 
+
+
+
+
+В~статье проведен обзор моделей 
+мо\-биль\-ности объектов, применяемых при моделировании перемещения 
+устройств в~беспроводных самоорганизующихся сетях. В~разд.~2 
+об\-суж\-да\-ют\-ся особенности различных моделей индивидуального движения 
+объектов, а~также моделей движения\linebreak
+ групп объектов с~точки зрения 
+применения к~анализу интерференции в~беспроводных сетях. В~качест-\linebreak ве 
+иллюстрации в~разд.~3 на примере прикладной\linebreak задачи анализа движения 
+мобильных абонентов в~тор\-го\-во-раз\-вле\-ка\-тель\-ном центре с~по\-мощью 
+разработанного авторами комплекса аналитических и~имитационных 
+моделей на наборе исходных данных, близ\-ких к~реальным, проведен расчет 
+показателя SIR, определяющего качество пред\-остав\-ле\-ния услуг в~сетях 
+пятого поколения.
+
+\vspace*{-8pt}
+
+\section{Модели случайного блуждания}
+
+\vspace*{-2pt}
+
+  В настоящее время для имитационного моделирования передвижения 
+беспроводных устройств в~сетях MANET традиционно используются как 
+модели мо\-биль\-ности объектов, основанные на сборе и~анализе статистики 
+движения абонентов в~реальных беспроводных сетях (traces), так 
+и~синтетические (synthetic) модели~[8--10]. Первые построены на основе 
+обработки данных от большого чис\-ла узлов сети, со\-бран\-ных в~течение 
+длительного периода наблюдения, поэтому обеспечивают достоверное 
+моделирование, однако их применение возможно лишь для анализа уже 
+су\-ще\-ст\-ву\-ющих сетей. Поскольку сети~5G в~полной мере еще не 
+реализованы, востребованными оказались синтетические модели, с~помощью 
+которых мож\-но реалистично воспроизводить поведение абонентов 
+беспроводной сети, регулируя правила изменения ско\-рости и~на\-прав\-ле\-ния 
+движения мобильных узлов. Например, мобильные узлы не долж\-ны иметь 
+прямую траекторию движения и~постоянную ско\-рость в~течение всего 
+времени моделирования, потому что в~реальных сетях движение абонентов 
+имеет более слож\-ный характер. Как правило, для моделирования движения 
+абонентов беспроводной сети\linebreak
+ используются как модели мо\-биль\-ности, 
+опи\-сы\-ва\-ющие независимое друг от друга движение абонен\-тов беспроводной 
+сети, модели так на\-зы\-ва\-емой <<индивидуальной>> мо\-биль\-ности (entity 
+mobility models), так и~модели <<групповой>> мо\-биль\-ности (group mobility 
+models), в~которых, например, движение группы основано на траектории 
+логического цент\-ра~\cite{9-sg, 10-sg, 11-sg}.
+  
+  Примерами моделей индивидуальной мобильности, использующихся для 
+описания перемещения независимых объектов, являются модель RW 
+(Random Walk), для которой в~каж\-дой точке на\-прав\-ле\-ние и~ско\-рость 
+движения разыгрываются случайным образом (рис.~1,\,\textit{а}), и~ее 
+расширение~--- модель RWP (Random WayPoint), в~которой пред\-усмот\-ре\-но 
+время остановки в~каж\-дой точке перед продолжением движения 
+(рис.~1,\,\textit{б}). 
+
+Модели RW и~RWP чаще других используются для 
+моделирования движения мобильных устройств в~самоорганизующейся 
+беспроводной сети. Особенностью обеих моделей является отсутствие 
+<<памяти>>~--- текущие значения па\-ра\-мет\-ров модели (на\-прав\-ле\-ние, 
+ско\-рость, длительность остановки) не зависят от значений этих па\-ра\-мет\-ров 
+на прошлом шаге, что приводит к~генерации траекторий с~внезапными 
+остановками и~резкими поворотами. При небольших значениях ско\-рости 
+в~модели RW движение объектов становится броуновским; следовательно, 
+эту модель мож\-но рекомендовать для анализа интерференции в~статической 
+сети. 
+
+Интересным развитием модели RWP является ее вероятностная версия, 
+в~которой следующая позиция мобильного узла определяется в~соответствии 
+с~заданными вероятностями. Недостатком модели RWP является замеченная 
+осо\-бен\-ность~--- при достаточно длительном периоде работы имитационной 
+модели плот\-ность объектов, в~начале моделирования распределенных 
+равномерно, по краям об\-ласти моделирования становится заметно ниже, чем 
+в~цент\-ре. Поскольку рас\-сто\-яние до передатчика является клю\-че\-вым 
+фактором, оказывающим вли\-яние на мощ\-ность фик\-си\-ру\-емо\-го на приемнике 
+сигнала, безосновательное увеличение чис\-ла ближайших интерферирующих 
+передатчиков при оценке\linebreak
+ показателя SIR исказит вывод о~качестве 
+со\-еди\-не\-ния в~мо\-де\-ли\-ру\-емой сети. Однако при моделировании некоторых 
+сценариев поведения пользователей, например осмот\-ра музея в~соответствии\linebreak 
+с~пред\-ла\-га\-емой схемой знакомства с~экспозицией, модель случайного 
+блуж\-да\-ния RWP за счет своей гиб\-кости создает реалистичные траектории 
+движения объектов. Кроме того, описанный эффект скопления объектов 
+в~цент\-ре об\-ласти моделирования практически исчезает для случая дол\-гих 
+остановок даже при высоких значениях па\-ра\-мет\-ра ско\-рости~\cite{10-sg}.
+
+
+  Указанного для модели RWP недостатка лишены модель RD (Random 
+Direction), для которой на\-прав\-ле\-ние и~ско\-рость движения меняются при 
+достижении объектом границы об\-ласти моделирования (рис.~1,\,\textit{в}), 
+а~так\-же модель движения Гаус\-са--Мар\-ко\-ва (Gauss--Markov, GM), 
+которая позволяет получить плав\-ную траекторию движения объекта 
+(рис.~1,\,\textit{г}). В~\cite{10-sg} описан метод, который для модели GM 
+принудительно меняет на\-прав\-ле\-ние движения объекта при при\-бли\-же\-нии 
+к~границе об\-ласти моделирования, что позволяет избежать нежелатель-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\end{multicols}
+
+\begin{figure*} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=163.242mm 
+ \epsfbox{gai-1.eps}
+ }
+ \end{center}
+\vspace*{-11pt}
+\Caption{Примеры траекторий перемещения объекта при случайном блуж\-да\-нии: 
+(\textit{а})~модель RW; (\textit{б})~модель RWP; (\textit{в})~модель RD; 
+(\textit{г})~модель GM}
+\vspace*{-4pt}
+\end{figure*}
+
+\begin{multicols}{2} 
+
+\noindent
+ных
+эффектов <<прилипания>> объекта к~краю об\-ласти. 
+
+Характерная для всех 
+упомянутых выше моделей проб\-ле\-ма <<краевого эффекта>> при 
+приближении объекта к~границе об\-ласти отсутствует в~модели Boundless 
+Simulation Area (BSA), об\-ласть моделирования которой пред\-став\-ля\-ет собою 
+тор. В~этой модели текущие значения на\-прав\-ле\-ния и~ско\-рости движения 
+зависят от значений этих па\-ра\-мет\-ров на прошлом шаге, что создает 
+реалистичную траекторию движения объекта. Однако при моделировании 
+беспроводной сети с~по\-мощью модели BSA не избежать искажения 
+динамики показателя SIR, поскольку движущееся по по\-верх\-ности тора 
+беспроводное устройство регулярно становится соседом ка\-ко\-го-ли\-бо 
+неподвижного беспроводного устройства. 
+
+Еще одной моделью 
+индивидуальной мо\-биль\-ности является так на\-зы\-ва\-емое <<вероятностное 
+блуж\-да\-ние по сетке>> (Probabilistic Grid, PG)~--- модель в~дискретном 
+времени, со\-глас\-но которой на каждом временн$\acute{\mbox{о}}$м такте объект делает шаг 
+единичной длины, а~выбор одного из четырех на\-прав\-ле\-ний задается 
+вероятностной мат\-ри\-цей~\cite{10-sg}. Благодаря простоте реализации эта 
+модель так\-же широко применяется при моделировании движения, однако 
+задание вероятностной мат\-ри\-цы для конкретного сценария поведения 
+пользователей пред\-став\-ля\-ет определенную труд\-ность.
+  
+  К моделям групповой мо\-биль\-ности~\cite{10-sg, 11-sg} относятся модель 
+ECRM (Exponential Correlated Random Mobility), основанная на 
+экспоненциальной за\-ви\-си\-мости ско\-рости движения объектов; модель CM 
+(Column Mobility), в~которой моделируется движение объектов, вы\-стро\-ен\-ных 
+в~линию; модель перемещения кочевников NCM (Nomadic Community 
+Mobility); модель преследования (Pursue Mobility),\linebreak
+ в~которой группа следует 
+за лидером, пе\-ре\-дви\-гающимся по заданной траектории, а~также на\-и\-более 
+общая модель групповой мо\-биль\-ности\linebreak
+ с~опорной точ\-кой RPGM (Reference 
+Point Group Mobility), в~которой пред\-усмот\-ре\-но случайное движение группы 
+с~одновременным случайным перемещением каждого отдельного объекта 
+внут\-ри группы (рис.~2). Недостатком модели ECRM, которая позволяет 
+описать практически все виды групповой мо\-биль\-ности, является 
+существенная слож\-ность подбора па\-ра\-мет\-ров модели.
+
+\begin{figure*} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=158.36mm 
+ \epsfbox{gai-2.eps}
+ }
+ \end{center}
+\vspace*{-11pt}
+\Caption{Пример траекторий для модели групповой мобильности с~опорной точ\-кой 
+RPGM для трех объектов: (\textit{а})~перемещение опорной точ\-ки; 
+(\textit{б})~траектории перемещения объектов}
+\vspace*{-4pt}
+\end{figure*}
+
+  Перечисленные модели движения традиционно используются при 
+исследовании про\-из\-во\-ди\-тель\-ности различных сетевых протоколов, 
+при\-ме\-ня\-емых в~са\-мо\-ор\-га\-низу\-ющих\-ся беспроводных сетях, при этом 
+сравнение проводится по таким показателям, как переданные полезная 
+и~служебная на\-груз\-ка, джиттер, межконцевая за\-держ\-ка, за\-тра\-ты на 
+маршрутизацию~\cite{11-sg}. При выборе модели мо\-биль\-ности с~целью 
+исследования интерференции важно учитывать сценарий поведения 
+пользователей. Наиболее универсальными моделями индивидуальной 
+мо\-биль\-ности являются модель Random Waypoint и~модель  
+Гаус\-са--Мар\-ко\-ва, настройка па\-ра\-мет\-ров которых позволяет гиб\-ко 
+под\-стро\-ить\-ся под большинство сценариев. Для воспроизведения 
+перемещения группы пользователей беспроводной сети рекомендуется 
+использовать модель групповой мо\-биль\-ности с~опорной точ\-кой Reference 
+Point Group Mobility, которая при со\-от\-вет\-ст\-ву\-ющих значениях па\-ра\-мет\-ров 
+позволяет реализовать модели Column, Nomadic Community и~Pursue. 
+
+\section{Пример анализа интерференции при~случайном~блуждании} 
+  
+  Одной из основных характеристик качества канала в~беспроводных сетях 
+связи служит отношение уров\-ня сигнала к~уров\-ню интерференции и~шума 
+(ОСШ, \textit{англ}.\ Signal to Interference and Noise Ratio, SINR), которое 
+определяется отношением мощ\-ности принимаемого сигнала от 
+соответствующего передатчика к~суммарной мощ\-ности шума 
+и~при\-ни\-ма\-емо\-го сигнала от интерферирующих передатчиков~\cite{12-sg}. 
+При этом мощ\-ности фик\-си\-ру\-емо\-го на приемнике сигнала как от целевого, 
+так и~от каждого из интерферирующих передатчиков определяются 
+с~соответствии с~классической моделью распространения сигнала, а~именно: 
+прямо пропорционально базовой мощ\-ности сигнала передатчика и~обратно 
+пропорционально рас\-сто\-янию меж\-ду передатчиком и~приемником 
+в~некоторой по\-сто\-ян\-ной степени, зависящей от среды рас\-про\-стра\-не\-ния 
+сигнала. Как и~в~\cite{12-sg, 13-sg}, для оценки отношения SIR далее 
+используется формула 
+$$
+\mathrm{SIR}= \fr{r_0^{-\gamma_0}}{\sum\nolimits^N_{n=1} 
+d_n^{-\gamma_n}}\,,
+$$
+ где $r_0$~--- рас\-сто\-яние между приемником 
+и~передатчиком в~ис\-сле\-ду\-емой целевой паре; $d_n$~--- рассто\-яние между 
+приемником целевой пары и~передатчиком $n$-й ин\-тер\-фе\-ри\-ру\-ющей пары; 
+$\gamma$~--- коэффициент распространения сигнала, ха\-рак\-те\-ри\-зу\-ющий 
+среду передачи (от~2 в~условиях прямой ви\-ди\-мости до~6 в~худшем случае, 
+при котором возможна связь). Расчет проведен в~предположении о~рав\-ных 
+из\-лу\-ча\-емых мощностях и~коэффициентах усиления приемной и~пе\-ре\-да\-ющей 
+антенн для всех устройств. Для моделирования препятствий для 
+про\-хож\-де\-ния сигнала использовались различные значения коэффициентов 
+рас\-про\-стра\-не\-ния сигнала~$\gamma_n$, $n\hm= 0,1,\ldots, N$~\cite{13-sg}.
+  
+  На рис.~3 для одной из моделей индивидуальной мо\-биль\-ности, модели 
+случайного блуж\-да\-ния RWP, приведена кривая, по\-ка\-зы\-ва\-ющая изменение 
+показателя SIR в~течение~500~с. Для на\-гляд\-ности вы\-бран случай блуж\-да\-ния 
+по сетке четырех мобильных \mbox{устройств}~--- целевой пары  
+при\-ем\-ник-пе\-ре\-дат\-чик и~двух интерферирующих передатчиков, 
+работающих на близ\-ких час\-тотах.
+
+\setcounter{figure}{3}
+\begin{figure*}[b] %fig4
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=162.925mm 
+ \epsfbox{gai-4.eps}
+ }
+ \end{center}
+\vspace*{-11pt}
+ \Caption{Траектории и~взаимное расположение устройств: 
+(\textit{а})~минимальное значение SIR (402-я секунда); (\textit{б})~максимальное 
+значение SIR (449-я секунда)}
+ \end{figure*}
+  
+  
+     
+  Моделировалось целенаправленное движение, когда пользователи, 
+носители мобильных\linebreak\vspace*{-12pt}
+
+{ \begin{center}  %fig3
+ \vspace*{0.5pt}
+  \mbox{%
+ \epsfxsize=79mm 
+ \epsfbox{gai-3.eps}
+ }
+
+
+\vspace*{6pt}
+
+
+\noindent
+{{\figurename~3}\ \ \small{Динамика SIR}}
+\end{center}
+}
+
+\vspace*{6pt}
+
+\addtocounter{figure}{1}
+
+\noindent
+ устройств, перемещались по кратчайшему пути между 
+заранее выбранными точ\-ка\-ми своих маршрутов с~по\-сто\-ян\-ной 
+ско\-ростью~1~м/с независимо друг от друга в~квад\-ра\-те $500\times500$~м. 
+Такой сценарий характерен, например, для последовательного посещения 
+магазинов тор\-го\-во-раз\-вле\-ка\-тель\-но\-го цент\-ра по заранее 
+намеченному маршруту. Траектории устройств показаны на рис.~4, где 
+перемещение целевого приемника, на котором оценивалось отношение 
+сигнал/\-ин\-тер\-фе\-рен\-ция, показано сплош\-ной линией, перемещение 
+передатчиков~--- пунктирными линиями, при этом целевому передатчику 
+соответствует траектория с~самым длинным размером штриха. 
+  
+  На рис.~4 точки, отмеченные крестиками на соответствующих 
+траекториях, позволяют судить о~взаимном расположении устройств. Для 
+на\-гляд\-ности целевые передатчик и~приемник соединены показывающим 
+на\-прав\-ле\-ние передачи в~радиоканале вектором, модуль которого равен 
+рас\-сто\-янию в~целевой паре. Так, на рис.~4,\,\textit{а}, который соответствует 
+402-й секунде моделирования, один из интерферирующих передатчиков 
+расположен значительно ближе к~приемнику, чем целевой передатчик, а~на 
+рис.~4,\,\textit{б} отражена обратная ситуация, когда на 449-й секунде 
+расстояние в~целевой паре становится минимальным. Соответствующие 
+локальные экстремумы показателя SIR в~указанные моменты отражены на 
+рис.~3.
+  
+  
+  Предложенный метод расчета SIR, основанный на моделировании 
+траекторий движения устройств, поз\-во\-ля\-ет оценивать качество 
+предо\-став\-ле\-ния услуг в~сети при заданных для каждой услуги требованиях 
+к~минимальному допустимому значению этого показателя.
+
+\section{Заключение}
+
+  Проведенный в~работе обзор моделей случайного блуж\-да\-ния, традиционно 
+применяемых для моделирования перемещения мобильных узлов 
+в~беспроводных са\-мо\-ор\-га\-ни\-зу\-ющих\-ся сетях, поз\-во\-ля\-ет при выборе модели 
+для проведения эксперимента учесть особенности каж\-дой модели, 
+существенные с~точ\-ки зрения сценария поведения пользователей. 
+Универсальной модели мо\-биль\-ности, способной воспроизвести поведение 
+пользователя при любом сценарии, не существует, поэтому анализ 
+интерференции рекомендуется проводить, применяя несколько моделей 
+движения объектов. Также задачей дальнейших исследований может стать 
+разработка новой комбинированной модели мо\-биль\-ности для 
+воспроизведения перемещения пользователей беспроводной 
+самоорганизующейся сети, сочетающей подход модели Gauss--Markov на 
+границе об\-ласти моделирования и~принцип перемещения объектов модели 
+Random Waypoint внутри об\-ласти, таким образом сохраняя преимущества 
+и~компенсируя недостатки каж\-дой из этих моделей.
+
+\bigskip
+
+Авторы выражают благодарность магистрам кафедры прикладной 
+информатики и~тео\-рии вероятностей РУДН А.~Жданкову и~О.~Крупко за 
+подготовку иллюстраций к~статье по разработанному комплексу 
+аналитических и~имитационных моделей.
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-sg}
+\Au{Andrews J.\,G., Buzzi~S., Choi~W., Hanly~S.\,V., Lozano~A., Soong~A.\,C., 
+Zhang~J.\,C.} What will 5G be?~// IEEE J.~Sel. Area. Comm., 2014. 
+Vol.~32. No.\,6. P.~1065--1082. doi: 10.1109/JSAC.2014.2328098.
+\bibitem{2-sg}
+\Au{Orlov Yu.\,N., Fedorov~S.\,L., Samuylov~A.\,K., Gaidamaka~Yu.\,V., 
+Molchanov~D.\,A.} Simulation of devices mobility to estimate wireless channel quality 
+metrics in 5G networks~// AIP Conf. Proc., 2017. Vol.~1863.  
+P.~090005-1--090005-3. doi: 10.1063/1.4992270.
+\bibitem{3-sg}
+\Au{Гайдамака Ю.\,В., Орлов Ю.\,Н., Молчанов~Д.\,А., Самуйлов~А.\,К.} 
+Моделирование отношения сиг\-нал/ин\-тер\-фе\-рен\-ция в~мобильной сети со 
+случайным блужданием взаимодействующих устройств~// Информатика и~её 
+применения, 2017. Т.~11. Вып.~2. С.~50--58. doi: 10.14357/19922264170206.
+\bibitem{4-sg}
+\Au{Risken~H., Frank T.} The Fokker--Planck equation: Methods of solution and 
+applications.~--- Springer ser. in synergetics.~--- Berlin--Heidelberg: Springer-Verlag, 1996. 
+Vol.~18. 486~p. doi: 10.1007/978-3-642-61544-3.
+
+\bibitem{5-sg}
+\Au{Тоффоли Т., Марголус~Н.} Машины клеточных автоматов~/ Пер. с~англ.~--- М.: 
+Мир, 1991. 283~с. (\Au{Toffoli~T., Margolus~N.} Cellular automata machines.~--- 
+The MIT Press, 1987. 276~p.)
+\bibitem{6-sg}
+\Au{Grewal M.\,S., Andrews A.\,P.} Kalman filtering: Theory and practice
+using MATLAB.~--- 2nd ed.~--- John Wiley \& Sons, Inc., 2001. 410~p.
+\bibitem{7-sg}
+\Au{Семушин И.\,В., Цыганов~А.\,В., Цыганова~Ю.\,В., Голубков~А.\,В., 
+Винокуров~С.\,Д.} Моделирование и~оцени\-ва\-ние траектории движущегося объекта~// 
+Вестник\linebreak  ЮУрГУ. Сер. Матем. моделирование и~программирование, 2017. Т.~10. №\,3. 
+С.~108--119. doi: 10.14529/ mmp170309.
+\bibitem{8-sg}
+The VINT Project (Virtual InterNetwork Testbed). The Network Simulator~--- ns-2. {\sf 
+http://www.isi.edu/ nsnam/ns}.
+\bibitem{9-sg}
+Wolfram Demonstrations Project. Constrained Random Walk.
+ {\sf http://demonstrations.wolfram.com}.
+\bibitem{10-sg}
+\Au{Camp T., Boleng J., Davies~V.} A~survey of mobility models for ad hoc network 
+research~// Wirel. Commun. Mob. Com., 2002. No.\,2. P.~483--502. doi: 
+10.1002/wcm.72.
+\bibitem{11-sg}
+\Au{Talwar G., Narang~H., Pandey~K., Singhal~P.} Analysis of different mobility models 
+for ad hoc on-demand distance vector routing protocol and dynamic source routing 
+protocol.~--- Lecture notes in electrical engineering ser.~--- New York, NY, USA: Springer, 
+2013. Vol.~131. P.~579--588. doi: 10.1007/978-1-4614-6154-8\_57. 
+\bibitem{12-sg}
+\Au{Отт Г.} Методы подавления шумов и~помех в~электронных системах~/
+Пер. с~англ.~--- М.: 
+Мир, 1979. 318~с.
+(\Au{Ott~G.} {Noise reduction techniques 
+in electronic systems}.~--- 
+New York, NY, USA: Wiley, 1976. 312~p.)
+\bibitem{13-sg}
+\Au{Гайдамака Ю.\,В., Андреев~С.\,Д., Сопин~Э.\,С., Самуйлов~К.\,Е., Шоргин~С.\,Я.} 
+Анализ характеристик интерференции в~модели взаимодействия устройств с~учетом 
+среды распространения сигнала~// Информатика и~её применения, 2016. Т.~10. 
+Вып.~4. С.~2--10. doi: 10.14357/19922264160401.
+
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 11.09.18}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{MODELING MOVEMENT OF DEVICES IN~A~WIRELESS NETWORK BY~RANDOM WALK MODELS}
+
+\def\titkol{Modeling the movement of devices in a~wireless network by random 
+walk models}
+
+\def\aut{K.\,E.~Samouylov$^{1,2}$, Yu.\,V.~Gaidamaka$^{1,2}$, 
+and~S.\,Ya.~Shorgin$^3$}
+
+\def\autkol{K.\,E.~Samouylov, Yu.\,V.~Gaidamaka, 
+and~S.\,Ya.~Shorgin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+\noindent
+$^1$Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian\linebreak
+$\hphantom{^1}$Federation
+
+\noindent
+$^2$Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov\linebreak
+$\hphantom{^1}$Str., Moscow 119333, Russian Federation
+
+\noindent
+$^3$Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the Russian\linebreak
+$\hphantom{^1}$Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2018\ \ \ volume~12\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2018\ \ \ volume~12\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{6pt}
+
+
+\Abste{The authors overview mobility models which are applicable 
+for simulation of  movement of users' devices in a~fifth generation (5G)
+wireless network. Mobility patterns that are typical for simulating the 
+behavior of users of a~wireless ad hoc network are considered. The features 
+of the models are discussed, both for individual motion of objects and 
+for motion of groups of objects, from the point of view of appliance to the 
+analysis of interference in wireless networks. The purpose of the paper is 
+to propose a~number of mobility models for making an informed decision when 
+choosing a~model for evaluating the quality of service in 5G wireless networks. 
+The authors present\linebreak\vspace*{-12pt}}
+
+\Abstend{simulation results that illustrate the method of 
+estimation of the key performance quality parameter, i.\,e., 
+signal to interference ratio. For illustration, the developed complex of 
+analytical and simulation models is used for simulation of movement of shopping moll 
+customers with the help of the grid random walk mobility model.}
+
+\KWE{entity mobility model; group mobility model; ad hoc network simulation; 
+signal to interference and noise ratio; SINR}
+  
+
+  
+\DOI{10.14357/19922264180401}
+
+\vspace*{-16pt}
+
+\Ack
+\noindent
+The reported study was supported by the Russian Science Foundation, 
+research project  No.\,16-11-10227.
+
+
+
+%\vspace*{-2pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-sg-1}
+\Aue{Andrews, J.\,G., S.~Buzzi, W.~Choi, S.\,V.~Hanly, A.~Lozano, A.\,C.~Soong., and 
+J.\,C.~Zhang.} 2014. What will 5G be? \textit{IEEE J.~Sel. Area. Comm.} 
+ 32(6):1065--1082. doi: 10.1109/ JSAC.2014.2328098.
+\bibitem{2-sg-1}
+\Aue{Orlov, Yu.\,N., S.\,L.~Fedorov, A.\,K.~Sa\-muylov, Yu.\,V.~Gai\-da\-ma\-ka, and 
+D.\,A.~Molchanov.} 2016. Simulation of devices mobility to estimate wireless channel 
+quality metrics in 5G networks. \textit{AIP Conf. Proc.}  
+1863:090005-1--090005-3. 2017. doi: 
+10.1063/1.4992270.
+\bibitem{3-sg-1}
+\Aue{Gaidamaka, Yu.\,V., Yu.\,N.~Orlov, D.\,A.~Molchanov, and A.\,K.~Samuylov.} 
+2017. Modelirovanie otnosheniya signal/\linebreak interferentsiya v~mobil'noy seti so sluchaynym 
+bluzhdaniem vzaimodeystvuyushchikh ustroystv [Modeling the signal--interference ratio in 
+a~mobile network with moving devices]. \textit{Informatika i~ee Primeneniya~--- Inform. 
+Appl.} 11(2):50--58. doi: 10.14357/19922264170206.
+\bibitem{4-sg-1}
+\Aue{Risken, H., and T.~Frank.} 1996. 
+\textit{The Fokker--Planck equation: Methods of solution 
+and applications}. Springer ser. in synergetics.  Berlin--Heidelberg: 
+Springer-Verlag.  Vol.~8.
+ 486~p. doi: 10.1007/978-3-642-61544-3.
+\bibitem{5-sg-1}
+\Aue{Toffoli, T., and N.~Margolus.} 1987. \textit{Cellular automata machines}. 
+The MIT Press. 276~p.
+\bibitem{6-sg-1}
+\Aue{Grewal, M.\,S., and A.\,P.~Andrews.} 2001. \textit{Kalman filtering: 
+Theory and practice using MATLAB}. 2nd ed.  John Wiley \& Sons, Inc. 410~p.
+
+\bibitem{7-sg-1}
+\Aue{Semushin, I.\,V., A.\,V.~Tsyganov, Yu.\,V.~Tsyganova, A.\,V.~Golubkov, and 
+S.\,D.~Vinokurov.} 2017. Modelirovanie i~otsenivanie traektorii dvizhushchegosya ob''ekta 
+[Modelling and estimation of a~moving object trajectory]. 
+\textit{South Ural State University Bulletin. Ser. Mathematical Modelling, 
+Programming \& Computer Software} 10(3):108--119. doi: 10.14529/mmp170309.
+\bibitem{8-sg-1}
+The VINT Project (Virtual InterNetwork Testbed). The Network Simulator ns-2. Available 
+at: {\sf http://www.isi. edu/nsnam/ns/} (accessed September~10, 2018).
+\bibitem{9-sg-1}
+The Wolfram Demonstrations Project. Constrained Random Walk. Available at: {\sf 
+http://demonstrations.wolfram.\linebreak com} (accessed September~10, 2018).
+\bibitem{10-sg-1}
+\Aue{Camp,~T., J.~Boleng, and V.~Davies.} 2002. A~survey of mobility models for ad hoc 
+network research. \textit{Wirel. Commun. Com.} (2):483--502.
+\bibitem{11-sg-1}
+\Aue{Talwar, G., H.~Narang, K.~Pandey, and P.~Singhal.} 2013. Analysis of different 
+mobility models for ad hoc on-demand distance vector routing protocol and dynamic 
+source routing protocol. {Lecture notes in electrical engineering ser.} New York, NY: 
+Springer. 131:579--588. doi: 10.1007/978-1-4614-6154-8\_57. 
+\bibitem{12-sg-1}
+\Aue{Ott, G.} 1976. \textit{Noise reduction techniques 
+in electronic systems}. 
+New York, NY: Wiley. 312~p.
+\bibitem{13-sg-1}
+\Aue{Gaidamaka, Yu.\,V., S.\,D.~Andreev, E.\,S.~Sopin, K.\,E.~Sa\-mouylov, and 
+S.\,Ya.~Shorgin.} 2016. Analiz kharakteristik interferentsii v~modeli vzaimodeystviya 
+ustroystv s~uche\-tom sredy rasprostraneniya signala [Analysis of the characteristics of the 
+interference in the model of interaction between devices taking into account the signal 
+propagation environment]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.}  
+10(4):2--10. doi:10.14357/19922264160401.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received September 11, 2018}}
+
+%\pagebreak
+
+\vspace*{-18pt}
+
+\Contr
+
+\noindent
+\textbf{Samouylov Konstantin E.} (b.\ 1955)~--- Doctor of Science in technology, professor, Head of Department, Director 
+of Institute of Applied Mathematics and Telecommunications, Peoples' Friendship University of Russia (RUDN University), 
+6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; senior scientist, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation, 
+\mbox{samuylov\_ke@rudn.university}
+
+\vspace*{1pt}
+
+\noindent
+\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Doctor of Science in physics and 
+mathematics, professor, Peoples' Friendship University of Russia (RUDN 
+University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+senior scientist, Federal Research Center ``Computer Science and Control'' of the 
+Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian 
+Federation, \mbox{gaydamaka\_yuv@rudn.university}
+
+\vspace*{1pt}
+
+\noindent
+\textbf{Shorgin Sergey Ya.} (b.\ 1952)~--- Doctor of Science in physics and 
+mathematics, professor, principal scientist, Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{sshorgin@ipiran.ru}
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}       

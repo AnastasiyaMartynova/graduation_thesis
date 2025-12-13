@@ -1,0 +1,754 @@
+%\input{../preamblw}
+%
+%\begin{document}
+
+
+\renewcommand{\firstpage}{24}
+\renewcommand{\lastpage}{33}
+
+
+\udk{517.977.5}
+\msc{49J27; 93C25, 34A30}% Коды MSC см. http://www.ams.org/msc/
+
+\title{О сходимости численного решения задач оптимального управления для систем уравнений леонтьевского типа}
+{О сходимости численного решения задач оптимального управления для систем уравнений \dots}
+
+\author{Г.\,А.~Свиридюк, А.\,В.~Келлер}% Автор(ы) для заголовка, если авторов несколько укать \inst
+{С\,в\,и\,р\,и\,д\,ю\,к~Г.\,А.,\ К\,е\,л\,л\,е\,р~А.\,В.}% Автор(ы) для оглавления и колонтитула через \,
+
+\institute{Южно-Уральский государственный университет, \\  454080, Челябинск, пр. Ленина, 76.}
+
+\email{E-mails}{ridyu@mail.ru, alevtinak@inbox.ru} 
+
+\otherinf{
+\fullauthor{Георгий Анатольевич Свиридюк}  \regalia{д.ф.-м.н., проф.} \position{зав. кафедрой}
+\dept{каф. уравнений математической физики}
+\fullauthor{Алевтина Викторовна Келлер}  \regalia{к.ф.-м.н., доц.} \position{зав. кафедрой} 
+\dept{каф. общеобразовательных дисциплин}
+}
+
+\keywords{задача Шоуолтера"--~Сидорова, оптимальное управление, численное решение, сходимость}
+
+\workabstract{Доказывается сходимость численного решения задачи оптимального управления для вырожденной линейной системы обыкновенных дифференциальных
+уравнений с постоянными коэффициентами. Рассматривая различные приложения такого рода систем, их относят к системам леонтьевского типа, так как
+впервые такие системы были исследованы как динамические балансовые модели с~необратимым оператором при производной. Использование начальных условий
+Шоуолтера"--~Сидорова  позволяет расширить спектр практического применения модели. В работе приведены теорема о существовании и~единственности
+численного решения исследуемой задачи, его вид, а~также результаты численного эксперимента для динамической балансовой модели, предложенной В.~Леонтьевым.
+}
+
+\engtitle{On the numerical solution convergence of optimal control problems for Leontief type system}
+
+\engauthor{G.\,A.~Sviridyuk, A.\,V.~Keller}{S\,v\,i\,r\,i\,d\,y\,u\,k~G.\,A., K\,e\,l\,l\,e\,r~A.\,V.}
+
+
+\enginstitute{Souht Ural State University,\\ 76, pr. Lenina, Chelyabinsk,  454080, Russia. }
+
+\otherenginf{\fullauthor{Georgiy A. Sviridyuk} \regalia{Dr. Sci. (Phys. \& Math.)} \position{Head of Dept.}
+\dept{Dept. of Mathematical Physics Equations}
+\fullauthor{Alevtina V. Keller} \regalia{Ph. D. (Phys. \& Math.)} \position{Head of Dept.} \dept{Dept. of General Educational Subjects}}
+
+\engabstract{This article contains proving the convergence of numerical solving of optimal control problem for degenerate linear systems of ordinary differential equations with constant coefficients. Considering different appendixes of such systems, they belong to Leontief type system, as in the first time such systems were investigated as a dynamic Leontief input-output model with noninvertible operator on derivative. By using the initial condition of Showalter--Sidorov we gain an ability to extend the range of practical applicability for this model. The article includes existence and uniqueness theorem of numerical solution of investigated problem, his kind, and results of numerical experiment for dynamic input-output model, which was offered by W.~Leontief.
+}
+
+\engkeywords{Showalter--Sidorov problem, optimal control, numerical solution, convergence}
+
+\date{26/II/2011} % Дата поступления статьи в редакцию.
+\revisiondate{05/V/2011} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+\Section[n]{Введение} Пусть $L$ и $M$ "--- квадратные матрицы порядка $n$. Матрица $M$ $L$"=регулярна, если существует число
+$\alpha\in{\mathbb C}$ такое, что \mbox{$\det(\alpha L-M)\neq 0$}. Матрица $M$ называется $(L,p)$"=регулярной,
+где $p\in\{0\}\cup{\mathbb N}$, при $p$, равном нулю, если в точке $\infty$ $L$"=резольвента $(\mu L-M)^{-1}$ матрицы  $M$
+имеет устранимую особую точку, а в противном случае "--- при $p$, равном порядку полюса в точке $\infty$ матриц"=функции $(\mu L-M)^{-1}$.
+(Здесь и~далее терминологию, понятия и результаты см. в~\cite{SvirFed}).
+
+Рассмотрим линейную неоднородную систему обыкновенных дифференциальных уравнений
+\begin{equation}
+\label{my:eq01}
+L\dot x=Mx+f,
+\end{equation}
+где $f:\left[0;\tau\right]\rightarrow {\mathbb R}^{n}$ "--- вектор"=функция, подлежащая определению в дальнейшем.
+Если $\det L \neq 0$, то система (\ref{my:eq01}) тривиально редуцируется к одной из систем
+\begin{equation}
+\label{my:eq02}
+\dot y=ML^{-1}y+f, \qquad\qquad   \dot x=L^{-1}Mx+g.
+\end{equation}
+В случае $\det L=0$ в~\cite{SvirBr} предложено систему (\ref{my:eq01}) называть системой леонтьевского типа, имея в виду её прототип "---
+знаменитую балансовую модель В.~Леонтьева с учётом запасов~\cite{Leo}.
+
+Вектор"=функцию $x\in{\mathbb C}^{1} \left(\left[0,\tau\right], {\mathbb R}^{n}\right)$, обращающую (\ref{my:eq01}) в~тождество
+при некоторой вектор"=функции $f=f(t)$, назовём решением системы (\ref{my:eq01}). 
+Решение $x=x(t)$ системы (\ref{my:eq01}) назовем:
+\begin{itemize}
+\item[(i)] решением задачи Коши, если при некотором $x_{0}\in{\mathbb R}^{n}$
+\begin{equation}
+\label{my:eq03}
+x(0)=x_0;
+\end{equation}
+
+\item[(ii)] решением задачи Шоуолтера"--~Сидорова
+\begin{equation}
+\label{my:eq04}
+\left[ R^{L}_{\alpha}(M)\right]^{p+1} \left(x(0)-x_{0}\right)=0
+\end{equation}
+при некоторых $x_{0}\in{\mathbb R}^{n}$,
+$\alpha\in\rho^{L}(M)=\{\mu\in{\mathbb C}:\det\left(\mu L-M\right)\neq 0\}$.
+Здесь $R^{L}_{\mu}(M)= \left(\alpha L-M\right)^{-1}L$ "--- правая  $L$"=резольвента
+матрицы $M$. Заметим, что если $\det L\neq 0$, то задачи (\ref{my:eq03}) и (\ref{my:eq04}) эквивалентны; если же \mbox{$\det L=0$}, то из
+существования решения задачи (\ref{my:eq01}), (\ref{my:eq04}) следует существование решения задачи (\ref{my:eq01}), (\ref{my:eq04}); а обратное, вообще
+говоря, неверно.
+
+\end{itemize}
+
+В~\cite{SvirBr, SvirBur} предложен алгоритм численного решения задачи (\ref{my:eq01}), (\ref{my:eq03}), основанный на следующем результате.
+\smallskip
+
+\hypertarget{svir:th:1}{}
+
+\begin{theorem}[1]Пусть  матрица $M$ "---  $L$-регулярная$,$  $p\in\{0\}\cup{\mathbb N}$  и$,$
+кроме того$,$ $\det M\neq0.$ Тогда для любой    вектор"=функции $f\in {\mathbb С}^{p+1} \left(\left[0,\tau\right],{\mathbb R}^{n}\right)$ и любого вектора
+   $x_{0} \in {\mathbb R}^{n}$ такого$,$ что
+\begin{equation}
+\label{my:eq05}
+\lim_{k\rightarrow \infty} \left( {\mathbb I}_{n} - \left(k R^{L}_{k} \left(M\right) \right)^{p+1}\right) x_{0} =
+\lim_{k\rightarrow \infty} M^{-1} \left( \left( k L^{L}_{k}\left(M\right)\right)^{p+1} - {\mathbb I}_{n} \right) f(0),
+\end{equation}
+существует единственное решение $x=x(t)$ задачи {\rm (\ref{my:eq01}), (\ref{my:eq03}),} которое к тому же имеет вид
+\begin{multline}\label{my:eq06}
+x(t)= \lim_{k\rightarrow \infty} \sum\limits^{p}_{q=0} \left( M^{-1} \left( \left( k L^{L}_{k}\left(M\right)\right)^{p+1} - {\mathbb I}_{n} \right) L \right)^{q} \times  
+\\ 
+\hspace{5cm}
+\times M^{-1}  \left( {\mathbb I}_{n}- \left( k L^{L}_{k}\left(M\right)\right)^{p+1} \right) f^{q} (t) +
+\\
+ +\lim_{k\rightarrow \infty}  \Bigl( \Bigl(L-\frac{t}{k(p+1)} M\Bigr)^{-1} L\Bigr)^{k(p+1)} x_{0}  +
+ \hspace{4.5cm}
+\\
+ +   \int^{t}_{0}   \lim_{k\rightarrow \infty}  \Bigl[ \Bigl(L - \dfrac{t-s}{k(p+1)}M\Bigr)^{-1}  
+  L\Bigr]^{k(p+1)-1}   
+\times  
+\hspace{4.cm}
+  \\
+\times    
+    \Bigl(L - \dfrac{t-s}{k(p+1)}M\Bigr)^{-1}    
+ \left[k L^{L}_{k}\left(M\right)\right]^{p+1}   f(s)ds.    
+\end{multline}
+\end{theorem}
+
+\smallskip
+Здесь $ L^{L}_{\mu}(M)=L\left(\alpha L-M\right)^{-1}$ "--- левая  $L$"=резольвента матрицы $M$, а
+${\mathbb I}_{n} $ "--- единичная матрица порядка $n$.
+
+Прежде всего заметим, что теорема \hyperlink{svir:th:1}{1} является частным случаем более общих результатов, причём условие
+ $f\in {\mathbb С}^{p+1} \left(\left[0,\tau\right],{\mathbb R}^{n}\right)$ можно ослабить
+ (см. \mbox{[\citen{SvirFed},~гл.~\,2, \,4 и \,5])}.
+ Условие  $\det M\neq0$ не снижает общности, так как в~системе (\ref{my:eq01}) после замены $x(t)=e^{\lambda t} y(t)$
+ можно получить такую матрицу \mbox{$M' =M-\lambda L$}, что $\det M' \neq0$. 
+ Далее алгоритм приближённого  вычисления решения $x\sim x_{k}$  \cite{SvirBr, SvirBur} заключается в замене $x$ на $k$"=тый член последовательности, по которой берётся  предел в~(\ref{my:eq06}). 
+ Отметим, что скорость сходимости $x_{k} \rightarrow x$ не очень высока, порядка $k^{-1}$. Заметим ещё,
+ что данный алгоритм является обобщением предложенного ранее алгоритма решения систем вида (\ref{my:eq02})~[\citen{PavPov}--\citen{PavRadR}].
+
+ Наибольшую трудность в численных расчётах вызывает проверка условия (\ref{my:eq05}), поэтому в приложениях~\cite{Br, Bur} пришлось  ограничиться случаями $n=3$ (пример Леонтьева) и $n=5$ (модель экономики коммунального хозяйства г.~Еманжелинска
+ Челябинской области). 
+ Чтобы купировать эту трудность, предлагается вместо условия (\ref{my:eq03}) воспользоваться условием (\ref{my:eq04}).
+ Тем более, что очень просто (хотя и~в~более общей ситуации~\cite[гл.~\,2]{SvirFedP}) доказывается следующая теорема.
+\smallskip
+
+ \begin{theorem}[2]Пусть выполнены условия теоремы {\rm \hyperlink{svir:th:1}{1}.} 
+ Тогда для любых вектор"=функций  $f\in {\mathbb С}^{p+1} \left(\left[0,\tau\right],{\mathbb R}^{n}\right)$ и вектора  $x_{0} \in {\mathbb R}^{n}$  существует единственное решение задачи {\rm (\ref{my:eq01}), (\ref{my:eq04}),} которое к~тому же имеет вид \rm (\ref{my:eq06}).
+ \end{theorem}
+
+\smallskip
+ Алгоритм численного решения задачи (\ref{my:eq01}), (\ref{my:eq04}) предложен в~\cite{Kell}.
+
+ В~\cite{svef} впервые поставлена и изучена следующая задача оптимального управления для уравнения (\ref{my:eq01}) с условием (\ref{my:eq03}).
+ Пусть ${\mathfrak X}, {\cal Y}$ "--- гильбертовы пространства. Введём в~рассмотрение пространства
+\begin{gather*}
+H^{1} \left({\mathfrak X}\right) = \{ x \in L_{2} \left( \left(0,\tau\right),{\mathfrak X}\right):
+\dot x \in L_{2}\left(\left(0,\tau\right),  {\mathfrak X}\right)\},
+\\
+H^{p+1} \left({\cal Y}\right) = \{ y \in L_{2} \left( \left(0,\tau\right),{\cal Y}\right):
+y^{p+1}\in L_{2}\left(\left(0,\tau\right),{\cal Y}\right)\}, \quad p\in\{0\}\cup{\mathbb N}.
+\end{gather*}
+
+Пусть теперь операторы $L,$ $M \in {\cal L} \left( {\mathfrak X}, {\cal Y}\right)$ (т.\,е. линейны и~непрерывны),
+причём оператор $M$ $(L,p)$"=ограничен, $p\in\{0\}\cup{\mathbb N}$. 
+Вектор"=функцию
+$x\in H^{1} \left({\mathfrak X}\right)$ назовем сильным решением задачи (\ref{my:eq01}), (\ref{my:eq03}), если она удовлетворяет уравнению (\ref{my:eq01})
+(п.\,в. на $(0, \tau)$ ) и условию (\ref{my:eq03}) при некоторой вектор"=функции $f\in H^{p+1}\left({\cal Y}\right)$. (Поскольку вложение $H^{1} \left({\mathfrak X}\right)\hookrightarrow C \left(\left[0,\tau\right],{\cal Y}\right)$ непрерывно,
+то такое определение корректно). 
+Далее пусть ${\cal U}$ "--- гильбертово пространство и оператор $B\in{\cal L}\left( {\cal U} \right)$.
+Построим пространство управлений
+\begin{multline*}
+\mathring{H}{}^{p+1}\left({\cal U}\right)=\bigl\{u\in L_{2}\left(\left(0,\tau\right),{\cal U}\right):
+u^{(p+1)}\in L_{2}\left(\left(0,\tau\right),{\cal U}\right),
+\\
+u^{(q)}(0)=0,\; q=0, 1, \dots, p \bigr\},\quad p\in\{0\}\cup{\mathbb N}
+\end{multline*}
+и выделим в нём замкнутое и выпуклое множество $\mathring{H}{}^{p+1}_{\partial}({\cal U})$ "--- множество
+допустимых управлений. 
+Зададим ещё ${\mathfrak N}$ "--- гильбертово пространство наблюдений и~оператор
+$C\in{\cal L}\left({\mathfrak X}, {\mathfrak N}\right)$, который задаёт наблюдение $z(t)=Cx(t)$. 
+Заметим, что если
+$x\in H^{1}\left({\mathfrak X}\right)$, то $z\in H^{1}\left({\mathfrak N}\right)$. 
+Наконец, зададим самосопряжённые
+и положительно определенные операторы $N_{q}\in{\cal L}\left({\cal U}\right), \, q=0, 1, \dots, p+1 $ и~построим
+функционал качества
+\begin{equation*}
+J(u)=\sum\limits^{1}_{q=0} \int^{\tau}_{0} \left\|z^{(q)}(t) - z^{(q)}_{0}\right\|^{2}_{{\mathfrak N}} dt +
+\sum\limits^{p+1}_{q=0} \int^{\tau}_{0} \left\langle N_{q} u^{(q)}(t), u^{(q)}(t)\right\rangle_{{\cal U}} dt.
+\end{equation*}
+
+
+В~\cite{svef} (см. также~\cite[гл.~7]{SvirFed}) доказано существование единственной пары $(x,v)$ такой, что
+\begin{equation}
+\label{my:eq07}
+J(v)=\min\limits_{u\in\mathring{H}{}^{p+1}_{\partial}} J(u),
+ \qquad v\in\mathring{H}{}^{p+1}_{\partial},
+\end{equation}
+а $x$ "--- сильное решение задачи (\ref{my:eq03}) для уравнения
+\begin{equation}
+\label{my:eq08}
+L\dot x=Mx+y+Bu
+\end{equation}
+при заданных  $y\in H^{p+1} \left( {\cal Y} \right)$ и $x_{0} \in {\mathfrak M}$, где
+${\mathfrak M}$ "--- специально построенное (по операторам $L$ и $M$ и вектор"=функциям $y$ и $u$) множество
+ допустимых начальных значений. В~\cite{svefD} данные результаты распространены на случай $(L,p)$"=секториального оператора
+ $M$ (терминологию см. в~\cite[гл.~3]{SvirFed}).
+
+
+
+ В~\cite{Bur} предложен следующий метод численного решения задачи (\ref{my:eq03}), (\ref{my:eq07}) для уравнения (\ref{my:eq08}) в случае,
+ когда пространства  ${\mathfrak X}={\cal Y}={\mathbb N}^{n}$, а операторы $L$, $M$, $B$ и $C$ отождествлены с квадратными матрицами
+ порядка $n$, причём по экономическим соображениям $\det L=0$. В этом методе пространство управлений
+ $\mathring{H}{}^{p+1} ({\cal U})$ заменяется на конечномерное пространство
+ $\mathring{H}{}^{p+1}_{l}$ вектор"=многочленов вида
+ \begin{equation*}
+u^{l} (t) = {\rm col} \biggl( \sum\limits^{l}_{k=p+1} a^{k}_{1} t^{k}, \, \sum\limits^{l}_{k=p+1} a^{k}_{2} t^{k}, \dots,
+ \sum\limits^{l}_{k=p+1} a^{k}_{n} t^{k}, \biggr).
+ \end{equation*}
+
+ Подставив $u^{l}=u^{l}(t)$ вместо $u$ в (\ref{my:eq08}), найдём точное решение $x^{l}=x(t,u^{l})$ задачи (\ref{my:eq03}), (\ref{my:eq08}) согласно
+ теореме~\hyperlink{svir:th:1}{1}. Подставив найденное решение $x^{l}=x(t,u^{l})$ в функционал $J(v)$, найдём
+ \begin{equation*}
+J(v^{l})=\min\limits_{u^{l}\in\mathring{H}{}^{p+1}_{\partial}({\cal U})\cap\mathring{H}{}^{p+1}_{l}}J(u^{l}),
+\qquad v^{l}\in\mathring{H}{}^{p+1}_{\partial}({\cal U}) \cap \mathring{H}{}^{p+1}_{l}.
+\end{equation*}
+
+
+
+Очевидно, $(x^{l},v^{l})$ "--- решение задачи (\ref{my:eq03}) для уравнения (\ref{my:eq08}) при $v=v^{l}$. Нетрудно показать, что
+$(x^{l}, v^{l}) \rightarrow (x,v)$ при $l\rightarrow\infty$, где $(x,v)$ "--- точное решение задачи (\ref{my:eq03}), (\ref{my:eq07}), (\ref{my:eq08}).
+
+Целью работы является доказательство сходимости $(x^{l}_{k}, v^{l}_{k})\rightarrow (x,v)$ при
+$k,l \rightarrow\infty$, где $x^{l}_{k}=x^{l}_{k} (t, v^{l}_{k})$  "--- приближённое решение задачи (\ref{my:eq03}), (\ref{my:eq07}) для уравнения (\ref{my:eq08}). 
+Предложенный алгоритм численного решения реализован на примере Леонтьева~\cite[гл.~1]{Leo} (см. также~\cite{SvirBr, SvirBur}).
+Настоящая статья кроме вводной части содержит список литературы и два пункта; в первом приведена теорема о~сходимости, а~во
+втором рассмотрен пример Леонтьева.
+Список литературы отражает лишь вкусы и~пристрастия авторов и~не претендует на полноту.
+
+\smallskip
+
+\Section{Теорема о сходимости} Итак, пусть $L$ и $M$ "--- квадратные матрицы порядка $n$, причём матрица $M$   $(L,p)$"=регулярна,
+$p\in\{0\}\cup{\mathbb N}$ и $\det M\neq 0$. Пусть ${\cal U}^{n}$ "--- гильбертово пространство, являющееся прямой суммой
+${\cal U}^{n}=\underset{m=1}{\overset{n}{\oplus}}{\cal U}^{m}$ гильбертовых пространств.
+Введём в рассмотрение функциональные пространства
+\begin{equation*}
+  H^{p+1} \left({\mathfrak Y}\right) = \{ y \in L_{2} \left( \left(0,\tau\right),{\mathfrak Y}\right) :
+  y^{p+1} \in L_{2}\left(\left(0,\tau\right),  {\mathfrak Y}\right)\}, \quad p\in\{0\}\cup{\mathbb N},
+\end{equation*}
+где в дальнейшем либо ${\mathfrak Y}={\mathbb R}^{n}$, либо ${\mathfrak Y}={\cal U}^{n}$, поэтому
+$H^{p+1} \left({\mathfrak Y}\right)$ в любом случае будет гильбертовым пространством. 
+Пусть $N_{q}$ "--- симметричные положительно определенные матрицы, $q= 0, 1, \ldots , p+1$. 
+Скалярное произведение  $\langle \cdot,\cdot\rangle$ в~$H^{p+1} \left({\cal U}^{n} \right)$ зададим следующим образом:
+\begin{equation*}
+\langle u, v\rangle=\sum\limits^{p+1}_{q=0} \int\limits^{\tau}_{0} \left\langle N_{q} u^{(q)}(t), v^{(q)}(t)\right\rangle_{m} dt,
+\end{equation*}
+$\langle{}\cdot{}, {}\cdot {}\rangle_{m}$  "--- скалярное произведение в ${\cal U}^{m}$. 
+Построим функционал 
+\begin{equation*}
+J(u)= \left\|z^{(q)}(t) - z^{(q)}_{0}\right\|^{2} + \langle u, u\rangle,
+\end{equation*}
+где $z=Cx$ "--- наблюдение ($C$ "--- квадратная матрица порядка $n$, $v$ "--- управление из~$\mathring{H}{}^{p+1}_{\partial} ({\cal U}^{n})$ "--- замкнутого и выпуклого множества допустимых управлений,
+$\left\| \cdot \right\|$ "--- норма в $Н^{1} \left( {\mathbb R}^{n} \right)$. Пусть $B$ "--- квадратная матрица порядка $n$.
+Справедлива 
+
+\smallskip
+\hypertarget{svir:th:3}{}
+ \begin{theorem}[3]Пусть матрица $M$ "--- $(L,p)$"=регулярна$,$ $p\in\{0\}\cup{\mathbb N}$ и \mbox{$\det M\neq 0$}.
+ Тогда для любых $x_{0}\in{\mathbb R}^{n},$  $y \in Н^{p+1} \left( {\mathbb R}^{n} \right)$
+ существует единственная пара $(x,v),$ где $x$ "--- сильное решение задачи Шоуолтера"--~Сидорова {\rm(\ref{my:eq04})} для уравнения
+ {\rm(\ref{my:eq08}),} а $v\in{H^{p+1}_{\partial}}\left({\cal U}^{n} \right)$ "--- точка минимума функционала $J.$ 
+ Причём между  $x$ и $y$ имеет место следующее соотношение:
+ \begin{equation*}
+ x(t) = \left( A_{1} + A_{2} \right) \left( y+Bu \right) (t) + X^t x_{0},
+ \end{equation*}
+где $A_{1}$ и $A_{2}$ "--- операторы$,$ определяемые первым и~третьим слагаемыми соответственно в формуле {\rm (\ref{my:eq06}),}
+$X^{t}, $ $ t\in{\mathbb R_{+}}$ "--- разрешающая группа операторов$,$ порождаемая матрицами $L$ и $M$ $($второе слагаемое
+в формуле {\rm(\ref{my:eq06})\,),} $f(t)=y(t)+Bu(t),$  $t\in \left[ 0, \tau \right].$
+\end{theorem}
+
+\smallskip
+\begin{proof}
+Идея доказательства теоремы \hyperlink{svir:th:3}3 заключается в~следующем. 
+Подставим в функционал вектор"=функцию
+\begin{equation}
+\label{my:eq11}
+x(t) = \left( A_{1} + A_{2} \right) \left( y+Bu \right) (t) + X^t x_{0}.
+\end{equation}
+Пользуясь замкнутостью и выпуклостью множества ${H^{p+1}_{\partial}}\left({\cal U}^{n} \right)$, получим
+существование единственного  $v\in {H^{p+1}_{\partial}}\left({\cal U}^{n} \right)$ такого, что
+\begin{equation*}
+J(v)=\min\limits_{u\in\mathring{H}{}^{p+1}_{\partial}\left({\cal U}^{n} \right)} J(u).
+\end{equation*}
+Подставив теперь в $J$ вектор"=функцию
+\begin{equation}
+\label{my:eq10}
+x_{k} (t) = \left( A_{1k} + A_{2k} \right) \left( y+Bu \right) (t) + X^{t}_{k} x_{0},
+\end{equation}
+где $ A_{1k}$, $A_{2k}$ и 
+$X^{t}_{k}$ "--- соответствующие члены последовательности, предел которой ищется в~(\ref{my:eq06}),
+аналогично предыдущему получим существование единственного  $u_{k} \in {H^{p+1}_{\partial}}\left({\cal U}^{n} \right)$
+такого, что
+\begin{equation*}
+J(v_{k})=\min\limits_{u\in\mathring{H}{}^{p+1}_{\partial}\left({\cal U}^{n} \right)} J(u).
+\end{equation*}
+
+Очевидно, что $v_{k} \rightarrow v$ при $k\rightarrow\infty$. Итак, теорема доказана.
+\end{proof}
+
+\smallskip
+
+\hypertarget{svir:lemma:1}{}
+
+\begin{lemma}[1]Пусть матрица $M$ "--- $(L,p)$"=регулярна$,$ $p\in\{0\}\cup{\mathbb N}$ и \mbox{$\det M\neq 0.$}
+ Тогда $(x_{k}, v_{k}) \rightarrow (x,v) $ при $k\rightarrow\infty$ для любых $x_{0}\in{\mathbb R}^{n},$
+ $y \in Н^{p+1} \left( {\mathbb R}^{n} \right)$.
+\end{lemma}
+
+\smallskip
+Пусть  $\{{\cal U}^{n}_{l} \}^{\infty}_{l=1}$  "--- последовательность конечномерных подпространств
+пространства  ${\cal U}^{n}$ такая, что  ${\cal U}^{n}_{l} \supset {\cal U}^{n}_{k} $ при  $l\geq k$,
+${\cal U}^{n}_{l} \cap {H^{p+1}_{\partial}}\left({\cal U}^{n} \right) \neq \emptyset$ при всех $l\in{\mathbb N}$
+и $\underset{l=1}{\overset{\infty}{\cup}}{\cal U}^{n}_{l} $ плотно в $H^{p+1} \left({\cal U}^{n} \right)$. 
+(Как показано во введении, такая последовательность существует в интересующем нас случае). 
+Опять подставим (\ref{my:eq10}) в функционал $J$, и поскольку множество
+${H^{p+1}_{\partial}}\left({\cal U}^{n} \right) \cap {H^{p+1}}\left({\cal U}^{n}_{l} \right)$
+$ \left( \equiv {H^{p+1}_{\partial}}\left({\cal U}^{n}_{l} \right) \right)$  замкнуто и выпукло, то существует
+единственный  $v^{l}_{k} \in {H^{p+1}_{\partial}}\left({\cal U}^{n}_{l} \right) $ такой, что
+\begin{equation*}
+J(v^{l}_{k})=\min\limits_{u\in\mathring{H}{}^{p+1}_{\partial}\left({\cal U}^{n} \right)} J(u),
+\end{equation*}
+$J(v^{l}_{k}) \geq J(v^{j}_{k})$ при $j\geq l$. Значит при каждом $k \in {\mathbb N}$ $(x^{l}_{k}, v^{l}_{k})
+ \rightarrow (x_{k},v_{k})$ при~\mbox{$l \rightarrow\infty$.}
+
+Таким образом, имеют место следующие лемма и теорема.
+
+\smallskip
+
+\begin{lemma}[2]В условиях леммы {\rm \hyperlink{svir:lemma:1}{1}} $ (x^{l}_{k}, v^{l}_{k}) \rightarrow (x_{k},v_{k})$ при $l \rightarrow\infty$.
+\end{lemma}
+\smallskip
+\begin{theorem}[4]Пусть матрица $M$ "--- $(L,p)$"=регулярна$,$ $p\in\{0\}\cup{\mathbb N}$ и \mbox{$\det M\neq 0.$}
+ Тогда для любых $x_{0}\in{\mathbb R}^{n},$  $y \in Н^{p+1} \left( {\mathbb R}^{n} \right),$
+$ (x^{l}_{k}, v^{l}_{k}) \rightarrow (x,v)$ при $k,  l \rightarrow\infty.$
+\end{theorem}
+\smallskip
+\Section{Пример Леонтьева} Возьмём
+\begin{equation*}
+L=\left(\!\!
+\begin{array}{lll}
+    0,35 & 0,05 & 1,05 \\
+     0,01 & 0,5015 & 0,32 \\
+      0 & 0 & 0
+\end{array}\!\!\right), \; M=\left(\!\!\begin{array}{lll}
+    -0,75 & -0,2 & -0,55 \\
+     -0,28 & \phantom{-}0,8589687 & -0,5904998 \\
+      -0,2666667 & -0,4 & \phantom{-}0,8666667
+\end{array}\!\!\right).
+\end{equation*}
+Если переобозначить $L=B$ и $M=I-A$, то матрицы $B$ и $A$ <<почти>> совпадают с матрицами из классического примера~\cite{Leo}.
+<<Почти>> означает, что для реализации численного эксперимента в {\tt C++} элементы матриц записаны в виде десятичных,
+а~не обыкновенных дробей, с~точностью $10^{-6}$.
+
+В.~В.~Леонтьев рассматривал взаимосвязи между тремя отраслями экономики "--- сельским хозяйством, промышленностью и
+домашними хозяйствами. Элемент $a_{ij}$ матрицы $A$ означает количество продукции $i$-той отрасли,
+необходимой для производства единицы продукции $j$-той отрасли. Элемент матрицы $b_{ij}$ матрицы $B$
+представляет определенный технологический запас особого типа благ "--- машин, механических инструментов,
+промышленных зданий и сооружений, рабочих запасов первичных и промежуточных материалов, производимых отраслью,
+который используется в отрасли $j$ для производства единицы её продукции. Другими словами, каждый столбец матрицы
+$B$ описывает потребность некоторой отрасли в физическом капитале (в расчёте на единицу её валового выпуска)
+таким же образом, как соответствующий столбец матрицы $A$ описывает её затраты.
+Именно поэтому последняя строка матрицы $B$ содержит только нулевые элементы, так как труд невозможно запасти.
+
+Приведем результаты численного решения задачи оптимального управления (ЗОУ) для примера Леонтьева без
+комментариев, взяв при этом в качестве $f=(2t, 2t, 2t)$ и начального значения "--- $x_0=(18, 50, 32)$.
+
+Здесь используется алгоритм, описанный в \cite{Kell}. 
+Временной промежуток составляет один год и разбит по месяцам,
+однако за условную единицу может быть взят любой (соответствующий экономическому смыслу) период и разбит
+на произвольное число частей.
+В качестве плановых наблюдений примем \mbox{$x_{0}(t)=(18+t, 50+t, 32+t)$}.
+
+Численное решение задачи (\ref{my:eq01}), (\ref{my:eq04}), т.\,е. задачи Шоуолтера"--~Сидорова, имеет вид
+\begin{multline}
+\tilde{x}_{k}(f,t)= \sum\limits^{p}_{q=0} \left( M^{-1} \left( \left( k L^{L}_{k}\left(M\right)\right)^{p+1}  -  {\mathbb I}_{n} \right) L \right)^{q} \times  
+\\
+\hspace{5cm}
+\times
+ M^{-1} \left( {\mathbb I}_{n} -  \left( k L^{L}_{k}\left(M\right)\right)^{p+1} \right) f^{q} (t) + 
+\\
+ + \Bigl( \Bigl(L-\frac{t}{k(p+1)} M\Bigr)^{-1} L\Bigr)^{k(p+1)} x_{0}  + \hspace{4.4cm}
+\\
+ +   \int^{t}_{0}   \Bigl[ \Bigl(L - \frac{t-s}{k(p+1)}M\Bigr)^{-1}    L\Bigr]^{k(p+1)-1} \times  \hspace{4cm}
+  \\
+  \times
+      \Bigl(L - \dfrac{t-s}{k(p+1)}M\Bigr)^{-1}    
+ \left[k L^{L}_{k}\left(M\right)\right]^{p+1}   f(s)ds    
+\end{multline}
+при $k>K$, где $K$ "--- номер, начиная с которого можно считать приближённые проекторы, определяемый по формуле
+$K=\max\left\{k_1;k_2\right\}$, где $t \in [0, 1]$,
+$$
+k_1>\frac{1}{\left|a_{q}\right|} \sum\limits^{q}_{l=0} \left|a_{l}\right| +1, \quad
+k_2> \frac{1}{\left|a_{q}\right| p^p} \sum\limits^{q}_{l=0} \left| a_{l}\right|\left(p+1\right)^{n-l} +1, \quad 
+   \left|t\right|<1.
+$$
+При таких значениях $k$ мы не сможем оказаться даже вблизи точки $L$"=спектра оператора $M$.
+
+\begin{table}[b!]
+\centering \small
+%\setlength{\extrarowheight}{8pt}
+\setlength{\tabcolsep}{8.5pt}
+\caption{\bf \footnotesize Cравнение численных решений $\boldsymbol{\tilde{x}_{k}(t)}$ задачи Шоуолтера"--~Сидорова  (Ш--С)  и~задачи оптимального управления (ОУ)} \vspace{-3mm}
+\begin{tabular}{c|r@{{},{}}l|r@{{},{}}l|r@{{},{}}l||r@{{},{}}l|r@{{},{}}l|r@{{},{}}l}
+\hline
+\raisebox{-1.5ex}[0mm][0mm]{\footnotesize $t$} &
+\multicolumn{6}{c||}{\footnotesize Решение задачи Ш--С}&
+\multicolumn{4}{c}{\footnotesize Решение задачи ОУ}\\
+\cline{2-13}
+ & \multicolumn{2}{c|}{\footnotesize $\tilde{x}_{1}\left(f,t\right)$} 
+ & \multicolumn{2}{c|}{\footnotesize $\tilde{x}_{2}\left(f,t\right)$}
+ & \multicolumn{2}{c||}{\footnotesize  $\tilde{x}_{3}\left(f,t\right)$}
+ & \multicolumn{2}{c|}{\footnotesize $\tilde{x}_{1} \left(\tilde{v}_{k}^{l},t \right)$}
+ & \multicolumn{2}{c|}{\footnotesize $\tilde{x}_{2} \left(\tilde{v}_{k}^{l},t \right)$}
+ &\multicolumn{2}{c}{\footnotesize  $\tilde{x}_{3} \left(\tilde{v}_{k}^{l},t \right)$}\\
+\hline
+\rule{0mm}{14pt}%
+0    &18&0         &50&0        &32&0         &18&0        &50&0        &32&0\\
+1/12 &11&2168      &56&1634  &29&1806   &6&24456   &60&73123  &28&65891\\
+1/6  &6&11157      &61&0596  &29&6772   &7&504523  &62&01312  &29&57361\\
+1/4  &$-0$&7464    &67&1678  &30&1939   &9&578925  &62&76643  &30&56349\\
+1/3  &$-9$&9671    &74&8798  &30&7239   &12&47673  &62&97620  &31&61249\\
+5/12 &$-22$&3904   &84&7344  &31&2573   &16&17948  &62&64696  &32&69980\\
+1/2 &$-39$&1817    &97&4787  &31&7804   &20&60162  &61&82921  &33&79858\\
+7/12 &$-61$&9713   &114&157  &32&2737   &25&50935  &60&67328  &34&87395\\
+2/3 &$-93$&0603    &136&243  &32&7091   &30&37331  &59&52616  &35&87988\\
+3/4 &$-135$&726   &165&835  &33&0466   &34&11866  &59&09507  &36&75443\\
+5/6 &$-194$&685   &205&952 &33&2282   &34&71714  &60&71333  &37&41281\\
+11/12 &$-276$&788 &260&976  &33&1691   &28&53566  &66&76328  &37&73698\\
+1     &$-392$&105 &337&350  &32&7444   &28&30751  &71&34233  &37&56016\\
+\hline
+\end{tabular}
+\label{table1}
+\end{table}
+
+
+Результаты численного решения задачи Шоуолтера"--~Сидорова (без оптимизации)  для примера Леонтьева представлены в табл.~\ref{table1}. 
+Решения $x_{1}$, убывая, со второго месяца становятся отрицательными, а решения $x_{2}$, наоборот, значительно возрастают, что свидетельствует об экономическом разрушении первой отрасли и неустойчивости всей системы в~целом. 
+Неустойчивость экономических систем является известным свойством. 
+Изучению параметров, обеспечивающих устойчивость такого рода систем, посвящено большое количество исследований.
+
+Численным решением задачи (\ref{my:eq04}), (\ref{my:eq07}), (\ref{my:eq08}) является пара $\left(\tilde{v}_{k}^{l},\tilde{x}_{k}\left(f+B\tilde{v}_{k}^{l}\right) \right)$, где
+$\tilde{v}_{k}^{l}$ "--- точка минимума функционала
+\begin{multline*}
+J_{k}(u^{l}) = \sum\limits^{1}_{q=0}  \int^{\tau}_{0}   \left\|C  \bigl(x_{k}(f + Bu^{l}) \bigr)^{(q)}   (t)  -  Cx^{(q)}_{0} (t)\right\|^{2}_{{\mathfrak N}}   dt +  \\ +
+\sum\limits^{p+1}_{q=0}  \int^{\tau}_{0}   \left\langle  N_{q} (u^l)^{(q)} (t), (u^l)^{(q)} (t) \right\rangle_{{\cal U}}  dt,
+\end{multline*}
+а $\tilde{x}_{k}\left(f+B\tilde{v}_{k}^{l}\right)$ определяется по формуле
+\begin{multline}
+\tilde{x}_{k}\bigl( (f +\tilde{v}_{k}^{l}),t \bigr) =  \sum\limits^{p}_{q=0} \left( M^{-1} \left( Q_{k}- {\mathbb I}_{n} \right) L \right)^{q} M^{-1} \left( {\mathbb I}_{n}- Q_{k} \right) \bigl( f+B\tilde{v}_{k}^{l}\bigr)^{(q)}  (t)  +
+\\
+ + \Bigl( \Bigl(L-\frac{t}{k(p+1)} M\Bigr)^{-1} L\Bigr)^{k(p+1)} x_{0}  +  \hspace{4.4cm}
+\\
+ +   \int^{t}_{0}  \Bigl[ \Bigl(L - \frac{t-s}{k(p+1)}M\Bigr)^{-1}     L\Bigr]^{k(p+1)-1} \times  \hspace{4cm}
+  \\
+ \times   \Bigl(L - \frac{t-s}{k(p+1)}M\Bigr)^{-1}   Q_{k}\left(f+B\tilde{v}_{k}^{l}\right)  (s)ds,    
+\end{multline}
+здесь $Q_{k}=\left[ k L^{L}_{k}\left(M\right)\right]^{p+1}$.
+
+\begin{table}[b!]
+\centering\small
+\setlength{\tabcolsep}{22pt}
+\caption{\bf \footnotesize Решение $\boldsymbol{\tilde{v}_{k}^{l}}$ задачи оптимального управления \vspace{-3mm}}
+\begin{tabular}
+{c|r@{{},{}}l|r@{{},{}}l|r@{{},{}}l}
+\hline
+\footnotesize $t$ & \multicolumn{2}{c|}{\footnotesize  $v_{1}$} &\multicolumn{2}{c|}{\footnotesize  $v_{2}$}& \multicolumn{2}{c}{\footnotesize  $v_{3}$}\\
+\hline
+\rule{0mm}{14pt}%
+0     &1 &125122      &$-0$ &9843903    &0&9980469   \\
+1/12  &1 &396327043   &$-1$ &006002988  &0&859570538  \\
+1/6   &1 &633233973   &$-0$ &996670176  &0&655155876  \\
+1/4   &1 &809867789   &$-0$ &936120074  &0&391316439  \\
+1/3   &1 &892873677   &$-0$ &798977234  &0&078212843  \\
+5/12  &1 &840318078   &$-0$ &553292295  &$-0$&27001597  \\
+1/2   &1 &6016845     &$-0$ &160385159  &$-0$&635253881 \\
+7/12  &1 &120511677   &0&422476088   &$-0$&996152851 \\
+2/3   &0 &341590526   &1&234569329   &$-1$&330180504 \\
+3/4   &$-0$ &774894785  &2&296925607   &$-1$&617674803 \\
+5/6   &$-2$ &229427492  &3&587320459   &$-1$&848757072  \\
+11/12 &$-3$ &946097591  &5&001651649   &$-2$&03410117  \\
+1     &$-5$ &718628     &6&2978367     &$-2$&2207031  \\
+\hline
+\end{tabular}
+\label{table2}
+\end{table}
+
+
+Результаты численного решения оптимального управления $\tilde{x}_{k}\left(f+B\tilde{v}_{k}^{l},t\right)$ для примера Леонтьева представлены
+в~табл.~\ref{table1}.
+Сравнивая численные решения двух задач, приходим к выводу о~том, что решение задачи оптимального управления
+$\tilde{x}_{1}\left(f+B\tilde{v}_{k}^{l},t\right)$, в отличие от решения задачи Шоуолтера"--~Сидорова, не приводит к~экономическому разрушению отрасли 1 и  все решения $\tilde{x}_{k}\left(f+B\tilde{v}_{k}^{l},t\right)$ более близки к~плановым показателям. В~табл.~\ref{table1} для краткости вместо $\tilde{x}_{k}\left(f+B\tilde{v}_{k}^{l},t\right)$ записано $\tilde{x}_{k}\left(\tilde{v}_{k}^{l},t\right)$.
+
+
+
+В табл. \ref{table2} представлены результаты численного решения $\tilde{v}_{k}^{l}$. 
+Положительные значения управления свидетельствуют о~необходимости дотаций в~соответствующую отрасль, а~отрицательные "--- о~возможности изъятия излишек. Иначе говоря, при отрицательном значении управления
+некоторой отраслью последняя становится донором для остальных.
+При таком управлении наименьшее значение функционала качества составит  $J_{k}\left(\tilde{v}_{k}^{l}\right)=5636,09$.
+
+
+
+\begin{thebibliography}{99}
+\Bibitem{SvirFed}
+\book  Linear Sobolev type equations and degenerate semigroups of operators
+\by Sviridyuk~G.\,A., Fedorov~V.\,E.
+\serial Inverse and Ill-posed Problems Series
+\publaddr Utrecht~-- Boston~-- Koln~-- Tokyo
+\publ VSP
+\yr 2003
+\totalpages 216
+
+\RBibitem{SvirBr}
+\by Свиридюк~Г.\,А., Брычев~С.\,В.
+\paper Численное решение систем уравнений леонтьевского типа
+\jour Изв. вузов. Матем.
+\yr 2003
+\issue 8
+\pages 46--52
+\transl англ. пер.~
+\by Sviridyuk~G.\,A., Brychev~C.\,V.
+\paper Numerical solution of systems of equations of Leont'ev type
+\jour Russian Math. (Iz. VUZ)
+\yr 2003
+\vol 47
+\issue 8
+\pages 44--50
+
+
+\RBibitem{Leo}
+\by Леонтьев~В.\,В.
+\book Межотраслевая экономика
+\publaddr М.
+\publ Экономика
+\yr 1997
+\totalpages 315
+\transl англ. пер.:~
+\by Leontief~W.\,W.
+\book Input-Output Economics
+\publaddr New York
+\publ Oxford University Press
+\yr 1986
+\totalpages 436
+
+
+
+\RBibitem{SvirBur}
+\paper Алгоритм решения задачи Коши для вырожденных линейных систем обыкновенных дифференциальных уравнений с~постоянными коэффициентами
+\by Свиридюк~Г.\,А., Бурлачко~И.\,В.
+\jour Ж.~вычисл. матем. и~матем. физ.
+\yr 2003
+\vol 43
+\issue 11
+\pages 1677--1683
+\transl \mbox{англ.} пер.:~
+\jour Comput. Math. Math. Phys.
+\yr 2003
+\vol 43
+\issue 11
+\pages 1613--1619
+\by Burlachko~I.\,V., Sviridyuk~G.\,A.
+\paper An algorithm for solving the Cauchy problem for degenerate linear systems of ordinary differential equations
+       
+       
+\RBibitem{PavPov}
+\paper Об одном методе численного интегрирования систем обыкновенных дифференциальных уравнений
+\by Павлов~Б.\,В., Повзнер~А.\,Я.
+\jour Ж.~вычисл. матем. и~матем. физ.
+\yr 1973
+\vol 13
+\issue 4
+\pages 1056--1059
+\transl англ. пер.:~
+\by Pavlov~B.\,V., Povzner~A.\,Ja.
+\paper A~certain method for the numerical integration of systems of ordinary differential equations
+\jour U.S.S.R. Comput. Math. Math. Phys.
+\yr 1973
+\vol 13
+\issue 4
+\pages 292--297        
+        
+        
+        
+\RBibitem{PavRadI}
+\by Павлов~Б.\,В., Радионова~О.\,Е.
+\paper Метод локальной линеаризации при численном решении жёстких систем обыкновенных дифференциальных уравнений
+\jour Ж.~вычисл. матем. и~матем. физ.
+\yr 1987
+\vol 27
+\issue 5
+\pages 688--699
+\transl англ. пер.:~
+\by Pavlov~B.\,V., Rodionova~O.\,E.
+\paper Method of local linearization for the numerical solution of stiff systems of ordinary differential equations
+\jour U.S.S.R. Comput. Math. Math. Phys.
+\yr 1987
+\vol 27
+\issue 3
+\pages 30--38
+
+\RBibitem{PavRadR}
+\by Павлов~Б.\,В., Родионова~О.\,Е.
+\paper Численное решение систем линейных обыкновенных дифференциальных уравнений с постоянными коэффициентами
+\jour Ж.~вычисл. матем. и~матем. физ.
+\yr 1994
+\vol 34
+\issue 4
+\pages 622--627
+\transl англ. пер.:~
+\by Pavlov~V.\,B., Rodionova~O.\,E.
+\paper The numerical solution of systems of linear ordinary differential equations with constant coefficients
+\jour Comput. Math. Math. Phys.
+\yr 1994
+\vol 34
+\issue 4
+\pages 535--539
+
+
+\RBibitem{Br}
+\by Брычев~С.\,В.
+\thesis Исследование математической модели экономики коммунального хозяйства малых городов
+\thesisinfo Дис. \dots канд. физ.-мат. наук: 05.13.18: защищена 12.02.02: утв. 24.06.02
+\publaddr Челябинск
+\yr 2002
+\totalpages 124
+\misctransl 
+\by Brychev~S.\,V.
+\thesis Investigation of a mathematical model of the economics communal services of small towns
+\thesisinfo Candidate of physico-mathematical sciences thesis
+\publaddr Chelyabinsk
+\yr 2002
+\totalpages 124
+
+\RBibitem{Bur}
+\by Бурлачко~И.\,В.
+\thesis Исследование оптимального управления системами леонтьевского типа
+\thesisinfo Дис. \dots канд. физ.-мат. наук: 05.13.18: защищена 12.02.02: утв. 24.06.02
+\publaddr Челябинск
+\yr 2005
+\totalpages 123
+\misctransl
+\by Burlachko~I.\,V.
+\thesis Investigation of optimal control of  Leontief type systems
+\thesisinfo Candidate of physico-mathematical sciences thesis
+\publaddr Chelyabinsk
+\yr 2005
+\totalpages 123
+
+
+\RBibitem{SvirFedP}
+\book Линейные уравнения соболевского типа
+\by Свиридюк~Г.\,А., Федоров~В.\,Е.
+\publaddr Челябинск
+\publ Челяб. гос. ун-т
+\yr 2003
+\totalpages 179
+\misctransl 
+\by Sviridyuk~G.\,A., Fedorov~V.\,E.
+\book Linear equations of Sobolev type
+\publaddr Chelyabinsk
+\publ Chelyab. Gos. Un-t
+\yr 2003
+\totalpages 179
+
+
+\RBibitem{Kell}
+\by Келлер~А.\,В.
+\paper Алгоритм численного решения задачи Шоуолтера"--~Сидорова для систем леонтьевского типа
+\inbook Методы оптимизации и~их приложения
+\bookinfo Труды XIV Байкальской школы"=семинара
+\publaddr Иркутск~-- Северобайкальск
+\yr 2008
+\pages 343--350
+\misctransl
+\by Keller~A.\,V.
+\paper Algorithm of numerical solution Showalter--Sidorov problem for  Leontief type systems
+\inbook Optimization methods and their applications
+\publaddr Irkutsk~-- Severobaykalsk 
+\yr 2008
+\pages 343--350
+
+
+\RBibitem{svef}
+\by Свиридюк~Г.\,А., Ефремов~А.\,А.
+\paper Задача оптимального управления для одного класса линейных уравнений типа Соболева
+\jour Изв. вузов. Матем.
+\yr 1996
+\issue 12
+\pages 75--83
+\transl англ. пер.:~
+\by Sviridyuk~G.\,A., Efremov~A.\,A.
+\paper Optimal control problem for a class of linear equations of Sobolev type.
+\jour Russian Math. (Iz. VUZ)
+\yr 1996
+\vol 40
+\issue 12
+\pages 60--71
+
+\RBibitem{svefD}
+\paper Оптимальное управление линейными уравнениями типа Соболева с~относительно $p$-секториальными операторами
+\by Свиридюк~Г.\,А., Ефремов~А.\,А.
+\jour Диференц. уравн.
+\yr 1995
+\vol 31
+\issue 11
+\pages 1912--1919
+\transl англ. пер.:~
+\by Sviridyuk~G.\,A., Efremov~A.\,A. 
+\paper Optimal control of Sobolev-type linear equations with relatively $p$-spectorial operators
+\jour Differ. Equations 
+\vol 31
+\issue 11
+\pages 1882--1890 
+\yr 1995
+
+\end{thebibliography}
+
+
+\hskip6.5cm \thedate \par
+\hskip6.5cm\therevdate\par
+
+
+
+
+\makeengtitle
+
+\renewcommand{\baselinestretch}{0.9}
+\newpage
+
+
+%
+%\end{document}

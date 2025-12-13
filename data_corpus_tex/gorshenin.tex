@@ -1,0 +1,664 @@
+\def\stat{gorshenin}
+
+\def\tit{ПРОГНОЗИРОВАНИЕ МОМЕНТОВ КОНЕЧНЫХ НОРМАЛЬНЫХ СМЕСЕЙ С~ИСПОЛЬЗОВАНИЕМ 
+НЕЙРОННЫХ СЕТЕЙ ПРЯМОГО РАСПРОСТРАНЕНИЯ$^*$}
+
+\def\titkol{Прогнозирование моментов конечных нормальных смесей}
+% с~использованием  нейронных сетей прямого распространения}
+
+
+\def\aut{А.\,К.~Горшенин$^1$, В.\,Ю.~Кузьмин$^2$}
+
+\def\autkol{А.\,К.~Горшенин, В.\,Ю.~Кузьмин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Горшенин А.\,К.}
+\index{Кузьмин В.\,Ю.}
+\index{Gorshenin A.\,K.}
+\index{Kuzmin V.\,Yu.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при частичной 
+поддержке РФФИ (проект 16-07-00736) и~Стипендии Президента Российской Федерации 
+молодым ученым и~аспирантам (СП-538.2018.5).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Федерального исследовательского 
+центра <<Информатика и~управление>> Российской академии наук; факультет 
+вычислительной математики и~кибернетики Московского государственного
+университета им.\ М.\,В.~Ломоносова,  
+\mbox{agorshenin@frccsc.ru}}
+\footnotetext[2]{ООО <<Вай2Гео>>, \mbox{shadesilent@yandex.ru}}
+
+
+ \label{st\stat}
+
+                  \thispagestyle{headings}
+                  
+  \vspace*{-10pt}
+
+
+
+
+\Abst{Моделирование и~анализ нестационарных потоков данных в~реальных 
+системах различного рода может эффективно проводиться с~помощью конечных 
+нормальных сдвиг-масштабных смесей. Проведена апробация ранее развитой 
+авторами методологии прогнозирования с~помощью нейронных сетей на основе 
+замены значений исходных непрерывных рядов дискретными величинами на примере 
+изменяющихся во времени моментов смешанной вероятностной модели. 
+Продемонстрирована точность более~80\% для большинства рассмотренных случаев 
+при краткосрочном прогнозировании с~по\-мощью нейронной сети прямого 
+распространения, работа с~которой реализована средствами библиотеки глубокого 
+обучения {\sf Keras}, фреймворка {\sf TensorFlow} и~языка программирования 
+{\sf Python}.}
+
+
+\KW{конечные смеси нормальных распределений; моменты; 
+нейронные сети; прогнозирование; глубокое обучение; интеллектуальный анализ 
+данных}
+
+\DOI{10.14357\!/\!08696527180305} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+      \vspace*{-14pt} 
+
+
+\section{Введение}
+
+  \vspace*{-3pt}
+
+Моделирование и~анализ нестационарных потоков данных в~реальных сис\-те\-мах 
+различного рода может эффективно проводиться с~помощью аппарата смешанных 
+вероятностных моделей, прежде всего конечных нормальных сдвиг-мас\-штаб\-ных 
+смесей. Оценивание неизвестных параметров модели может быть основано на методе 
+скользящего разделения смесей (СРС-ме\-тод)~\cite{Korolev2011}, рас\-ши\-ря\-юще\-го 
+область применения такого популярного метода интеллектуального анализа данных, 
+как EM (expectation-maximization) алгоритм~\cite{Wu2008,Yang2012,Lee2012}. Основная идея СРС-ме\-то\-да 
+заключается в~специальном разбиении исходной выборки на подвыборки (окна) 
+и~дальнейшем анализе поведения данных на каждом окне. Это позволяет отслеживать 
+эволюцию во времени тонкой структуры изучаемых процессов, например 
+в~финансах~\cite{Gorshenin2008} или физике турбулентной плазмы~\cite{Gorshenin2012}. 
+
+Параметры конечной смеси могут изменяться с~течением времени как с~точки зрения 
+величин отдельных компонент, так и~общего числа слагаемых, поэтому 
+прогнозирование подобного класса распределений представляет собой нетривиальную 
+задачу. В~статьях~\cite{Gorshenin2017a,Gorshenin2018} были реализованы различные 
+подходы к~построению прогнозов на основе специального преобразования исходных 
+данных и~формирования паттернов. В~упомянутых работах рассматривались 
+гидрологические параметры (осадки), для которых характерны сезонность, влияние 
+географического расположения измерительных станций и~т.\,п. В~данной \mbox{статье} 
+предложена реализация концептуально близкого подхода, однако в~качестве тестовых 
+данных использованы наблюдения совершенно иной физической природы, полученные в~экспериментах с~турбулентной плазмой. Отличительной особенностью работы 
+является построение прогнозов не для исходных рядов, а~для эволюционирующих во 
+времени моментов вероятностной модели, полученной в~результате проведения 
+упомянутого выше интеллектуального анализа данных.
+
+\section{Построение данных для анализа с~помощью нейронный сетей}
+
+Пусть случайная величина~$Z_n$ имеет функцию распределения $F_Z(x,n)$, 
+представимую в~виде конечной сдвиг-масштабной смеси нормальных законов, а~\mbox{именно}:
+\begin{equation}
+\label{Mixture}
+F_Z(x,n)=\sum\limits_{i=1}^{k(n)}
+\fr{p_i(n)}{\sigma_i(n)\sqrt{2\pi}}\int\limits_{-\infty}^{x}
+\exp\left\{-\fr{(y-a_i(n))^2}
+{2\sigma_i^2(n)}\right\}\,dy\,.
+\end{equation}
+Здесь
+\begin{gather*}
+\forall x \in \mathbb{R}\,,\enskip a_i(n)\in\mathbb{R}\,, \enskip
+\sigma_i(n)>0\,,  \enskip i=1,\ldots,k(n)\,, \\%\notag\\
+\sum\limits_{i=1}^{k(n)}p_{i}(n)=1\,, \enskip p_{i}(n)\geqslant
+0\,, \enskip n=1,2,\ldots %\notag
+\end{gather*}
+
+Параметр $n$ здесь соответствует времени (номеру окна в~СРС-методе) 
+и~подчеркивает тот факт, что параметры распределения 
+эволюционируют во времени (при этом базовое семейство остается прежним). Также 
+может изменяться и~величина параметра~$k(n)$, 
+описывающего число компонент в~смеси вида~\eqref{Mixture}. Это обстоятельство 
+затрудняет построение прогнозов, так как 
+появление и~исчезновение компонент зачастую объясняется эволюцией набора 
+факторов, часть из которых может возникнуть 
+с~течением времени, поэтому представляется разумным строить прогнозы для 
+<<интегральных>> характеристик. В~качестве таких 
+величин можно использовать моменты различных порядков, а~также производные от 
+них коэффициенты асимметрии и~эксцесса. 
+Явные выражения для математического ожидания, дисперсии, упомянутых выше 
+коэффициентов для конечных смесей нормальных 
+распределений, зависящие от параметров компонент, приведены, например, 
+в~статье~\cite{Gorshenin2016a}. 
+
+На рис.~\ref{FigMoments} приведен пример результатов обработки тестовых данных, 
+полученных в~процессе экспериментов с~турбулентной плазмой, с~помощью 
+СРС-ме\-тода.
+
+\begin{figure} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128.386mm 
+ \epsfbox{gor-1.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Эволюция во времени моментов смеси конечных нормальных распределений 
+для данных, полученных в~рамках физического 
+эксперимента:
+(\textit{а})~математическое ожидание;
+(\textit{б})~дисперсия (\textit{1}~---  дисперсия смеси; \textit{2}~--- динамическая компонента;
+\textit{3}~--- диффузионная компонента);
+(\textit{в})~коэффициент асимметрии;
+(\textit{г})~коэффициент эксцесса
+\label{FigMoments}}
+\end{figure}
+
+На графиках продемонстрирована эволюция во времени (в~зависимости от положения 
+скользящего окна) математического ожидания, дисперсии и~коэффициентов 
+асимметрии и~эксцесса для~10\,000 шагов вычислительной процедуры, 
+соответствующих в~реальном времени~2~мс эксперимента. В~следующих разделах 
+полученные в~результате подобной интеллектуальной обработки временн$\acute{\mbox{ы}}$е 
+ряды будут использованы как объект для анализа и~прогнозирования с~по\-мощью 
+нейронных сетей прямого распространения.
+
+\section{Архитектура нейронной сети}
+\label{Architecture}
+
+В данном разделе рассмотрим архитектуру нейронной сети, которая будет 
+использована для решения задачи прогнозирования моментов 
+(рис.~\ref{FigArchitecture}). 
+
+\pagebreak
+
+\
+
+\vspace*{-12pt}
+
+\begin{floatingfigure}{55mm} %fig2
+\vspace*{-8pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=47mm 
+ \epsfbox{gor-2.eps}
+ }
+\end{center}
+\vspace*{-13pt}
+\Caption{Архитектура нейронной сети}\label{FigArchitecture}
+%\vspace*{-6pt}
+\end{floatingfigure}
+
+На рис.~\ref{FigArchitecture} представлена многослойная сеть прямого распространения, 
+состоящая из входного, скрытого и~выходного слоев. В~качестве функции активации 
+нейронов входного и~скрытого слоев использована функция \verb"rectifier", 
+функциональная зависимость для которой выражается формулой $f(x) \hm= \max(0, x)$. 
+Нейроны с~такой функцией активации называются \verb"ReLU" ({\em Rectified Linear 
+Unit}) и~весьма часто используются в~архитектурах глубоких нейросетей с~несколькими 
+скрытыми слоями, так как поз\-воляют значительно повысить скорость\linebreak 
+обучения~\cite{Glorot2011}, в~част\-ности по сравнению с~сигмоидной функцией 
+активации вида $f(x) \hm=(1\hm+e^{-x})^{-1}$. Для выходного слоя\linebreak используется традиционная 
+для задач классификации функция \verb"softmax", которая представляет $j$-й выход 
+в~виде $y_j\hm=e^{x_j} (\sum\nolimits_i e^{x_i})^{-1}$. 
+При этом выход нейронной сети со\-сто\-ит из 
+$M\hm=K^T$ нейронов, где $K$~--- количество интервалов разбиения данных; $T$~--- 
+длительность прогноза, измеренная в~шагах СРС-ме\-тода.
+
+Число нейронов в~скрытом слое выбиралось таким образом, чтобы получить 
+достаточно точную (в~смысле прогнозов) модель, но при этом избежать эффекта 
+переобучения (\verb"overfitting"). В~данной архитектуре число нейронов 
+определяется выражением $0{,}25N\hm+ 0{,}75M$, где~$N$ соответствует числу 
+входных нейронов.  Дополнительно для устранения возможности переобучения во 
+входном и~скрытом слое применяется $L^2$-регуляризация.
+
+Полученный массив значений от нейронной сети переводится в~унитарный код длины 
+$M$ (набор, со\-сто\-ящий из $M\hm-1$ нулей и~единственной единицы, расположенной 
+в~позиции с~индексом, сов\-па\-да\-ющим с~номером диапазона). Это позволяет отнести 
+полученный прогноз к~одному из заранее определенных классов, со\-от\-вет\-ст\-ву\-ющих 
+диапазонам значений анализируемого ряда. Для по\-лу\-че\-ния таких интервалов 
+используется методология на осно\-ве выборочных кван\-тилей:
+\begin{itemize}
+\item выбираются все уникальные значения из выборки;
+\item полученный ряд длины $L$ сортируется по возрастанию;
+\item в~диапазон с~номером $i$ попадают значения ряда с~номерами от $\lfloor 
+(i\hm-1)/(K\hm-1) L \hm+ 1\rfloor$ до $\lfloor i/(K\hm-1)  L\rfloor$, 
+где $\lfloor x \rfloor$ обозначает ближайшее целое число к~$x$ снизу.
+\end{itemize}
+
+Ошибкой считается несовпадение результата работы нейросети с~номером 
+диапазона.  
+
+\section{Программная реализация} 
+
+Для реализации и~обучения нейронных сетей при проведении данных исследований 
+использованы библиотека глубокого обучения \verb"Keras", фреймворк 
+\verb"TensorFlow" и~язык программирования \verb"Python". Создан набор программных 
+инструментов для прогнозирования временн$\acute{\mbox{ы}}$х рядов с~по\-мощью нейронных сетей 
+и~методов глубокого обучения на основе паттернов. В~частности:
+\begin{itemize}
+\item реализовано обучение нейронной сети прямого распространения с~функцией 
+активации \verb"ReLU";
+\item поддерживается пакетная обработка данных: набор заданий и~конфигурационных 
+переменных считывается из файла, после чего производится последовательная 
+обработка и~сохранение результатов;
+\item настройка оптимизатора, функции потерь и~целевых метрик проводится без 
+изменения программного кода за счет задания в~файле конфигурации 
+соответствующих параметров;
+\item для ускорения процесса обучения нейросетей на 
+реальных данных используются вычисления с~привлечением графических процессоров с~поддержкой технологии \verb"NVIDIA CUDA" ({\em Compute
+Unified Device Architecture});
+\item архитектура нейронной сети, эволюция ошибки и~точности обучения во времени 
+наблюдения сохраняются в~графическом (\verb"PNG") и~текстовом (\verb"CSV") 
+форматах.
+\end{itemize}
+
+\section{Построение прогнозов с~помощью паттернов}
+
+Обучение нейронной сети проводилось для прогнозирования поведения некоторых 
+моментов смеси распределений. Были построены предсказания для математического 
+ожидания, дисперсии, а~также коэффициентов асимметрии и~эксцесса. При анализе 
+каждый ряд разбивался на~5~интервалов согласно правилам, описанным в~конце 
+разд.~\ref{Architecture}, осуществлялось соответствующее преобразование данных 
+(см.\ также статью~\cite{Gorshenin2018}). На вход нейронной сети подавался входной 
+вектор из~100~<<новых>> наблюдений, на выходе ожидалось предсказание на~1 
+или~3 последующих шага. Наблюдения в~каждом анализируемом ряде случайным 
+образом  разделялись на тренировочную (т.\,е.\ используемую для построения 
+модели в~процессе обучения) и~тестовую выборки в~соотношении~70\% к~30\%. 
+В~качестве метода оптимизации использован \verb"Adam"~\cite{Kingma2014}, качество 
+обучения нейросети определялось на основе значения величины кросс-энт\-ро\-пии. 
+Максимальное число эпох обучения было задано равным~500, при этом в~
+большинстве случаев модель достигала относительно стабильной величины точности 
+обучения за меньший временной период.
+
+В рамках данного подхода предсказание нейросети считается правильным в~том 
+случае, если оно в~точности совпадает со значениями соответствующих 
+преобразованных наблюдений, в~противном случае~--- признается ошибочным. 
+Полученные результаты работы нейронной сети для различных комбинаций 
+длительностей прогноза продемонстрированы в~таблице. %~\ref{Tab}. 
+
+\begin{table}\small 
+\begin{center}
+
+
+
+\begin{tabular}{|l|c|c|c|}
+\multicolumn{4}{c}{Точность обучения и~прогнозирования нейронной сети (500~эпох 
+обучения)}\\
+\multicolumn{4}{c}{\ }\\[-6pt]
+\hline
+\multicolumn{1}{|c|}{\tabcolsep=0pt\begin{tabular}{c}Момент\\ смеси\end{tabular}} & 
+\tabcolsep=0pt\begin{tabular}{c}{Длительность}\\ {прогноза }\\ (число шагов)\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}{Точность}\\ {обучения}\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}{Точность}\\ (тестовые данные)\end{tabular}\\
+\hline
+&&&\\[-9pt]
+{Математическое ожидание} & 
+\tabcolsep=0pt\begin{tabular}{c}1\\ 3\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}96{,}8\%\\ 96,5\%\end{tabular}
+&\tabcolsep=0pt\begin{tabular}{c}97{,}8\%\\ 96,7\%\end{tabular}\\
+\hline
+&&&\\[-9pt]
+{Дисперсия} & \tabcolsep=0pt\begin{tabular}{c}1\\3\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}93{,}9\%\\ 87,6\%\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}93{,}3\%\\ 87,4\%\end{tabular}\\
+\hline
+&&&\\[-9pt]
+{Коэффициент асимметрии} &\tabcolsep=0pt\begin{tabular}{c}1\\3\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}91{,}5\%\\\hphantom{,9}84\%\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}91{,}4\%\\\hphantom{,9}83\%\end{tabular}\\
+\hline
+&&&\\[-9pt]
+{Коэффициент эксцесса} & 
+\tabcolsep=0pt\begin{tabular}{c}1\\3\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}\hphantom{,9}85\%\\ \hphantom{,9}73\%\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}\hphantom{,9}82\%\\ \hphantom{,9}70\%\end{tabular}\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-3pt}
+\end{table}
+
+\begin{figure}[b] %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=129.268mm %68.999mm 
+ \epsfbox{gor-3.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\begin{minipage}[t]{63mm}
+\Caption{Пример точности обучения для дисперсии смеси, прогноз на~1~шаг:
+\textit{1}~--- тестовая выборка; \textit{2}~--- тренировочная выборка}
+\label{FigVar}
+\end{minipage}
+%\end{figure}
+\hfill
+%\begin{figure} %fig4
+%\vspace*{1pt}
+% \begin{center}
+% \mbox{%
+% \epsfxsize=68.999mm 
+% \epsfbox{gor-4.eps}
+% }
+%\end{center}
+\vspace*{-9pt}
+\begin{minipage}[t]{63mm}
+\Caption{Пример точности обучения для коэффициента асимметрии смеси, прогноз на 
+$3$ шага:
+\textit{1}~--- тестовая выборка; \textit{2}~--- тренировочная выборка}\label{FigSkew}
+\end{minipage}
+\end{figure}
+
+На рис.~\ref{FigVar} продемонстрированы созданные средствами языка 
+программирования \verb"Python" графики эволюции точности обучения и~качества 
+прогнозирования нейросети на $1$ шаг полученной моделью для дисперсии смеси. Для 
+данного случая в~соответствующие интервалы при разбиении попали~1902, 2109, 
+2086, 2036 и~1765 наблюдений соответственно. При дальнейшем увеличении 
+числа эпох значительного роста точности тренировочной выборки не 
+наблюдается. Получены значения~93{,}9\% для точности обучения и~93{,}3\% для 
+тестовых данных (см.\ таблицу).
+
+
+
+На рис.~\ref{FigSkew} приведены графики эволюции точности обучения и~качества 
+прогнозирования нейросети на $3$ шага для коэффициента асимметрии смеси. Для 
+данного случая в~соответствующие интервалы при разбиении попали~1989, 1950, 
+2034, 2030 и~1895 наблюдений соответственно. К~500~эпохам обучения 
+точность выходит на <<плато>> и~дальнейшего роста не происходит. Получены 
+значения~84\% для точности обучения и~83\% для тестовых данных (см.\ 
+таблицу).
+
+
+
+Нейронная сеть хорошо предсказывает поведение первого, второго и~третьего 
+моментов на один шаг, наблюдается постепенное падение точности с~увеличением 
+номера момента. Точность предсказания на три шага резко падает от первого момента 
+ко второму, что может быть связано с~большей волатильностью данных в~рядах 
+моментов с~большим номером. Применение $L^2$-ре\-гу\-ля\-ри\-за\-ции помогло избежать 
+переобучения при анализе первых трех моментов, в~некоторой мере соответствующий 
+негативный эффект проявился при обработке коэффициента эксцесса. 
+
+\section{Заключение}
+
+В работе проведена апробация ранее развитой авторами методологии прогнозирования с~помощью нейронных сетей для некоторых моментных характеристик конечных 
+нормальных смесей на основе замены значений исходных непрерывных рядов 
+дискретными величинами. Для всех моментов использовалась единая архитектура 
+нейронной сети. Продемонстрированная точность превышает~80\% для большинства 
+изученных случаев при краткосрочном прогнозировании на~1 и~3~шага, при этом 
+для ее достижения требовалось не более~500 (в~ряде случаев~--- 300) 
+эпох обучения достаточно простой нейронной сети прямого распространения. 
+Дальнейшие исследования в~этой области могут быть ориентированы на общее 
+повышение точности расчетов, на построение более длительных прогнозов, а~также 
+увеличение числа интервалов разбиения для более корректной аппроксимации 
+и~предсказания непрерывных данных, в~том числе за счет возможных модификаций 
+используемой архитектуры.
+
+\bigskip
+{Авторы выражают признательность профессору Г.\,М.~Батанову за 
+предостав\-лен\-ные результаты физических экспериментов.}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+\bibitem{Korolev2011} \Au{Королев~В.\,Ю.} Вероятностно-ста\-ти\-сти\-че\-ские методы 
+декомпозиции волатильности хаотических процессов.~--- М.: Изд-во Моск. ун-та, 2011. 
+512~с.
+
+\bibitem{Wu2008} 
+\Au{Wu~X.\,D., Kumar~V., Quinlan~J.\,R., \textit{et al.}} Top~10~algorithms in 
+data mining~/\!\!/ Knowl. Inf. Syst., 2008. Vol.~14. Iss.~1. P.~1--37.
+
+\bibitem{Yang2012} 
+\Au{Yang~M.-Sh., Lai~Ch.-Yo, Lin~C.-Y.} A~robust EM clustering 
+algorithm for Gaussian mixture models~/\!\!/ Pattern Recogn., 2012. Vol.~45. Iss.~11. 
+P.~3950--3961.
+
+\bibitem{Lee2012} 
+\Au{Lee~G., Scott~C.} EM algorithms for multivariate Gaussian mixture 
+models with truncated and censored data~// Comput. Stat. Data An., 2012. 
+Vol.~56. Iss.~9. P.~2816--2829.
+
+\bibitem{Gorshenin2008} 
+\Au{Горшенин~А.\,К., Королев~В.\,Ю., 
+Турсунбаев~А.\,М.} Медианные модификации EM- и~SEM-ал\-го\-рит\-мов 
+для разделения смесей вероятностных распределений и~их применение 
+к~декомпозиции волатильности финансовых временных рядов~/\!\!/ 
+Информатика и~её применения, 2008. Т. 2. Вып. 4. C.~12--47. 
+
+\bibitem{Gorshenin2012}
+ \Au{Батанов~Г.\,М., Горшенин~А.\,К., 
+Королев~В.\,Ю., Малахов~Д.\,В., Скворцова~Н.\,Н.} Эволюция 
+вероятностных характеристик низкочастотной турбулентности плазмы 
+в~микроволновом поле~/\!\!/ Математическое моделирование, 2011.
+Т.~23. №\,5. C.~35--55.
+
+\bibitem{Gorshenin2017a} 
+\Au{Горшенин~А.\,К.} Анализ 
+вероятностно-статистических характеристик осадков на основе паттернов~/\!\!/ 
+Информатика и~её применения, 2017. Т.~11. Вып.~4. C.~38--46.
+
+\bibitem{Gorshenin2018} 
+\Au{Gorshenin~A.\,K., Kuzmin~V.\,Yu.} Neural
+network forecasting of precipitation volumes using patterns~/\!\!/ 
+Pattern Recogn. Image 
+Anal., 2018. Vol.~28. No.\,3. P.~450--461.
+
+\bibitem{Gorshenin2016a} 
+\Au{Горшенин~А.\,К.} Концепция онлайн-комплекса 
+для стохастического моделирования реальных процессов~/\!\!/ Информатика и~её 
+применения, 2016. Т.~10. Вып.~1. C.~72--81. 
+
+\bibitem{Glorot2011} 
+\Au{Glorot~X., Bordes~A., Bengio~Y.} Deep sparse rectifier neural 
+networks~/\!\!/ J.~Mach. Learn. Res., 2011. Vol.~15. P.~315--323.
+
+\bibitem{Kingma2014} 
+\Au{Kingma~D., Ba~J.} Adam: A~method for stochastic 
+optimization~/\!\!/ arXiv:1412.6980, 2014.
+        \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 13.08.18}}
+
+
+
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{FORECASTING MOMENTS OF~FINITE NORMAL MIXTURES USING~FEEDFORWARD NEURAL NETWORKS}
+
+\def\titkol{Forecasting moments of~finite normal mixtures using feedforward neural networks}
+
+
+\def\aut{A.\,K.~Gorshenin$^{1,2}$ and V.\,Yu.~Kuzmin$^3$}
+\def\autkol{A.\,K.~Gorshenin and V.\,Yu.~Kuzmin}
+
+
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+$^1$Institute of Informatics Problems, Federal Research Center ``Computer Science\linebreak
+$\hphantom{^1}$and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow\linebreak
+$\hphantom{^1}$119333, Russian  Federation
+
+\noindent
+$^2$Faculty of Computational Mathematics and Cybernetics, M.\,V.~Lomonosov\linebreak
+$\hphantom{^1}$Moscow 
+State University, GSP-1, Leninskie Gory, Moscow 119991, Russian\linebreak
+$\hphantom{^1}$Federation
+
+\noindent
+$^3$``Wi2Geo LLC'', 3-1~Mira 
+Ave., Moscow 129090, Russian Federation
+
+
+ \noindent
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2018 vol~28 no\,3}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2018   vol~28   no\,3
+\hfill \textbf{\thepage}}}
+
+
+
+\Abste{Modeling and analysis of nonstationary data flows in real systems 
+of various types can be effectively performed using finite local-scale 
+normal mixtures. Approbation of the prediction methodology developed by the 
+authors is carried out on the example of time-varied moments of the 
+mixed probability\linebreak\vspace*{-12pt}}
+
+\Abstend{model. Within this approach,
+ values of the initial continuous time-series are replaced with the discrete ones 
+ and then modified samples are analyzed with a~neural network. For short-term 
+ forecasting, the accuracy of more than $80\%$ is demonstrated. Feedforward 
+ neural network is implemented using the 
+{\sf Keras} deep learning library, the {\sf TensorFlow} 
+framework, and the {\sf Python} programming language.}
+
+
+\KWE{finite normal mixtures; moments; artificial neural network; forecasting; deep 
+learning; data mining}
+
+
+\DOI{10.14357\!/\!08696527180305} 
+
+%\vspace*{-24pt}
+
+\Ack
+\noindent
+The research is partially supported by the Russian Foundation for Basic Research 
+(project~16-07-00736) and the RF Presidential scholarship program 
+(project No.\,538.2018.5).
+ 
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-gor}
+\Au{Korolev,~V.\,Yu.} 2011. \textit{Veroyatnostno-statisticheskie metody dekompozitsii 
+volatil'nosti khaoticheskikh protsessov} [Probabilistic and statistical methods of decomposition 
+of volatility of chaotic processes]. Moscow: Moscow University Publs. 512~p.
+
+\bibitem{2-gor}
+\Au{Wu,~X.\,D., V.~Kumar, J.\,R.~Quinlan, \textit{et al.}} 
+2008. Top 10 algorithms in data mining. 
+\textit{Knowl. Inf. Syst.} 14(1):1--37.
+
+\bibitem{3-gor}
+\Au{Yang,~M.-Sh., Ch.-Yo~Lai, and C.-Y.~Lin.} 2012. A robust EM clustering algorithm for 
+Gaussian mixture models. \textit{Pattern Recogn.} 45(11):3950--3961.
+
+\bibitem{4-gor}
+\Au{Lee,~G., and C.~Scott.} 2012. EM algorithms for multivariate Gaussian mixture models 
+with truncated and censored data. \textit{Comput. Stat. Data An.} 
+56(9):2816--2829.
+
+\bibitem{5-gor}
+\Au{Gorshenin,~A.\,K., V.\,Yu.~Korolev, and
+A.\,M.~Tursunbaev.} 2008. Mediannye modifikatsii EM- i~SEM-algoritmov dlya razdeleniya 
+smesey veroyatnostnykh raspredeleniy i~ikh primenenie k dekompozitsii volatil'nosti 
+finansovykh vremennykh ryadov [Median modifications of the EM and SEM algorithms for 
+decomposing mixtures of probability distributions and their applications to the decomposition of 
+volatility of financial time series]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl}. 2(4):12--47.
+
+\bibitem{6-gor}
+\Au{Batanov,~G.\,M., A.\,K.~Gorshenin, V.\,Yu.~Korolev, D.\,V.~Malakhov, and 
+N.\,N.~Skvor\-tso\-va.} 2012. The evolution of probability characteristics of low-frequency 
+plasma turbulence. \textit{Math. Models Computer Simulations} 4(1):10--25.
+
+\bibitem{7-gor}
+\Au{Gorshenin,~A.\,K.} 2017. Analiz veroyatnostno-statisticheskikh 
+kha\-rak\-te\-ri\-stik osad\-kov na 
+osno\-ve pat\-ter\-nov [Pattern-based analysis of probabilistic and statistical characteristics of 
+precipitations]. \textit{Informatika i~ee Primeneniya~---
+Inform. Appl.} 11(4):38--46.
+
+\bibitem{8-gor}
+\Au{Gorshenin,~A.\,K., and V.\,Yu.~Kuzmin.} 2018. Neural
+network forecasting of precipitation volumes using patterns. 
+\textit{Pattern Recogn. Image Anal.} 28(3):450--461.
+
+\bibitem{9-gor}
+\Au{Gorshenin,~A.\,K.} 2016. Kontseptsiya onlayn-kompleksa dlya sto\-kha\-sti\-che\-sko\-go 
+mo\-de\-li\-ro\-va\-niya real'\-nykh pro\-tses\-sov [Concept of online service for stochastic modeling of real 
+processes]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 10(1):72--81.
+
+\bibitem{10-gor}
+\Au{Glorot,~X., A.~Bordes, and Y.~Bengio.} 2011. Deep sparse rectifier neural networks. 
+\textit{J.~Mach. Learn. Res.} 15:315--323.
+
+\bibitem{11-gor}
+\Au{Kingma,~D., and J.~Ba.} 2014. Adam: A~method for stochastic optimization. 
+\mbox{arXiv}:1412.6980.
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received August 13, 2018}}    
+  
+
+
+\Contr
+
+\noindent
+\textbf{Gorshenin Andrey K.} (b.\ 1986)~--- 
+Candidate of Science (PhD) in physics and
+mathematics, associate professor, leading scientist, Institute of Informatics Problems,
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of
+Sciences, 44-2~Vavilova Str., Moscow 119333, Russian Federation;  leading scientist, Faculty 
+of Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University, GSP-1, 
+Leninskie Gory, Moscow 119991, Russian Federation; \mbox{agorshenin@frccsc.ru}
+
+\vspace*{5pt}
+
+\noindent
+\textbf{Kuzmin Victor Yu.} (b.\ 1986)~--- Head of Development, 
+``Wi2Geo LLC'', 3-1~Mira 
+Ave., Moscow 129090, Russian Federation; \mbox{shadesilent@yandex.ru}
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

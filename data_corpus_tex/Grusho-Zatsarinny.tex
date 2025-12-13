@@ -1,0 +1,399 @@
+        \def\stat{gr-zat-tim}
+        
+        \def\tit{ОПИСАНИЕ ДИНАМИКИ ЦИФРОВОЙ ЭКОНОМИКИ С~ПОМОЩЬЮ ЭЛЕКТРОННОЙ БУХГАЛТЕРСКОЙ КНИГИ$^*$}
+        
+        \def\titkol{Описание динамики цифровой экономики с помощью электронной бухгалтерской книги}
+        
+        
+        \def\aut{А.\,А.~Грушо$^1$, А.\,А.~Зацаринный$^2$, Е.\,Е.~Тимонина$^3$}
+        
+        \def\autkol{А.\,А.~Грушо, А.\,А.~Зацаринный, Е.\,Е.~Тимонина}
+        
+        \titel{\tit}{\aut}{\autkol}{\titkol}
+        
+        \index{Грушо А.\,А.}
+      \index{Зацаринный А.\,А.}
+      \index{Тимонина Е.\,Е.}
+        \index{Grusho A.\,A.}
+         \index{Zatsarinny A.\,A.}
+         \index{Timonina E.\,E.}
+        
+        
+        {\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+        \footnotetext[1]
+{Работа частично поддержана РФФИ (проект 18-29-03124-мк).}} 
+         
+         
+        \renewcommand{\thefootnote}{\arabic{footnote}}
+        \footnotetext[1]{Институт проблем информатики Федерального 
+исследовательского центра <<Информатика и~управление>> Российской академии наук, \mbox{grusho@yandex.ru}}
+        \footnotetext[2]{Институт проблем информатики Федерального 
+исследовательского центра <<Информатика и~управление>> Российской академии наук, \mbox{AZatsarinny@ipiran.ru}}
+        \footnotetext[3]{Институт проблем информатики Федерального 
+исследовательского центра <<Информатика и~управление>> Российской академии наук, \mbox{eltimon@yandex.ru}}
+        
+        
+        
+         \label{st\stat}
+        
+                          \thispagestyle{headings}
+                          
+          \vspace*{-12pt}
+  
+  \Abst{Рассматривается построенная ранее модель электронной бухгалтерской книги 
+  (ЭБК) для описания цифровой экономики 
+  (ЦЭ)на региональном уровне. В~основу модели 
+  положен тангл (tangle), который представляет собой модернизированную версию блокчейна. 
+  Защищенность ЭБК
+   основана на использовании ситуационных центров 
+   (СЦ) с~расширением их функций. При этом предложено строить 
+   ЭБК на основе централизованного консенсуса. 
+Показано, как с~помощью танглов, связанных с~отдельными субъектами экономической деятельности, можно контролировать выполнение проектов, в том числе с использованием государственных инвестиций. Построенная формализация контроля позволяет автоматизировать решение этих задач для больших проектов.}
+   
+  \KW{информационная безопасность; тангл; алгебра танглов; защищенная инфраструктура цифровой экономики}
+  
+        \DOI{10.14357\!/\!08696527200109} 
+        
+        
+        \vskip 10pt plus 9pt minus 6pt
+        
+        
+              \thispagestyle{headings}
+              
+              \vspace*{-12pt} 
+
+  
+   
+
+\section{Введение}
+ 
+  В работах [1, 2] построена модель ЭБК для описания ЦЭ
+   на региональном уровне. В~основу модели положен тангл, который представляет собой модернизированную версию блокчейна~[3]. Кратко структура тангла описана в~[4]. 
+  
+  Тангл~--- это DAG (Directed Acyclic Graph), в котором вершины представляют транзакции, а дуги~--- одобрения некоторых предыдущих транзакций. При введении новой транзакции она добавляется в DAG как новая вершина. Из новой вершины выходят две дуги к двум предыдущим транзакциям, которые, как говорят, она одобряет. Одобрение транзакции означает, что ее история была проверена и признана правильной. 
+  
+  Первая транзакция в~тангле называется генезисом. Все транзакции в~тангле прямо или косвенно одобряют генезис.
+  
+  Как только транзакция одобрена большим числом новых транзакций, ее практически невозможно изменить. 
+  
+  В блокчейне можно быть уверенным, что транзакция подтверждена после ее утверждения несколькими блоками. Аналогично в тангле определяется кумулятивный вес, который соответствует сумме одобрений определенной транзакции~[4].
+  
+  В качестве инфраструктуры ЭБК предложено использовать СЦ
+   с~расширением их функций. Используя защищенную инфраструктуру СЦ, предложено строить ЭБК на основе централизованного консенсуса~[5,~6].
+   
+  Идея ЭБК состоит в~том, что каждый субъект экономической деятельности обладает танглом, хранящимся у него и~в~СЦ. В~этом тангле фиксируются все договорные обязательства и результаты их выполнения. Основная идея бухгалтерской книги~[7] состоит в двойной записи, которая отражена в главной бухгалтерской книге. В~ЭБК каждая транзакция должна найти отражение по крайней мере в двух танглах, которые принадлежат взаимодействующим участникам экономической деятельности. 
+  
+  Настоящая статья посвящена решению ряда задач контроля правильности работы распределенной ЭБК на базе танглов. Для реализации такого контроля построена простейшая алгебра операций над танглами. 
+  
+  \vspace*{-3pt}
+  
+  \section{Алгебра танглов}
+  
+  \vspace*{-3pt}
+   
+  Каждый тангл описывается DAG с двумя дугами, выходящими из каждой вершины. Однако последнее условие требуется только для присоединения новой вершины. Для операции над созданным танглом это требование будет пока считаться необязательным.
+  
+  Важными операциями контроля правильности хранения танглов являются операции \textit{укрупнения} и \textit{иерархической декомпозиции}.
+   
+  Пусть $G \hm= (V, E)$~--- это DAG на вершинах $V$ с~дугами~$E$. Введем операцию укрупнения вершин~$G$. Пусть $U\hm\subset V$. По графу~$G$ построим укрупненный граф~$G^\prime$ с множеством вершин $V^\prime\hm= (V\backslash U)\cup \{u\}$, где $u$~--- новая вершина. Все дуги, связанные с вершиной~$u$, определяются дугами, связывающими множество вершин~$ V\backslash U $ с~множеством вершин~$U$,
+  т.\,е.\ 
+  если~$x\hm\in U$ и~существует дуга~$ (x, y)$ из вершины~$x$ в~вершину~$y$, 
+  принадлежащую~$V\backslash U$, то в~графе~$G^\prime$ существует дуга~$(u, y)$. 
+  И наоборот: если~$x\hm\in V\backslash U$ и~$y\hm\in U$, то наличие дуги~$(x, y)$ 
+  в~графе~$G$ влечет за собой наличие дуги~$(x, u)$ в~графе~$G^\prime$. 
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Лемма 1.}\
+  \textit{Граф $G^\prime$ является DAG, если в~$G$ нет ориентированного пути из множества~$U$ в~множество~$U$ через множество~$ V\backslash U$}.
+  
+  \smallskip
+  
+  \noindent
+  Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+  Предположим противное: в~графе~$G^\prime$ существует ориентированный цикл. Если все вершины этого цикла принадлежат множеству $ V\backslash U$, то это противоречит условию, что граф~$G$ является DAG. Если в ориентированном цикле есть вершина~$u$, то существует ориентированный путь из~$u$ в~$u$. Это означает, что в графе~$G$ существует ориентированный путь из множества~$U$ в~множество~$U$ через 
+  множество~$ V\backslash U$, что противоречит предположению. Лемма доказана. 
+    
+  \smallskip
+  
+  \noindent
+  \textbf{Определение 1.}\ Разрез в графе $G$ делит все вершины множества $V$ на непересекающиеся множества $V_1$ и $V_2$, причем все дуги, соединяющие $V_1$ и $V_2$, направлены либо от $V_1$ к $V_2$, либо, наоборот, от~$V_2$ к~$V_1$.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Следствие леммы~1.} Если в графе $G$ определен разрез $V_1, V_2$, то укрупнение за счет любого из множеств $V_1$ или $V_2$ порождает граф~$G^\prime$, являвшийся DAG. 
+  
+  \smallskip
+  
+  \noindent
+  Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ В графе~$G$ нет пути, выходящего и входящего в укрупняющее множество и проходящего через второе множество разреза. 
+  
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Определение 2.}\ Операция \textit{детализации} графа~$G$,
+   являющегося DAG, определяется следующим образом. Пусть~$u$~--- вершина в~графе~$G$, граф $F\hm = (Y, M)$ является DAG и множества вершин графов~$G$ и $F$ не пересекаются. Тогда~$u$ заменяется на граф~$F$ так, что в полученном графе~$G^\prime$, если в графе $G$ есть дуга~$(x, u)$, существует вершина~$y\hm \in Y$, такая что в~$G^\prime$ 
+   есть дуга~$(x, y)$. Если в~графе~$G$ есть дуга~$(u, x)$, то существует 
+   вершина~$y\hm\in Y$, такая что в~графе~$G^\prime$ есть дуга~$(y, x)$. 
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Лемма 2.}\ \textit{Если графы~$G$ и~$F$ являются DAG, то полученный в результате детализации граф~$G^\prime$ является DAG.}
+  
+  \smallskip
+  
+  \noindent 
+  Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ Предположим противное, т.\,е.\ что
+  в~графе~$G^\prime$ есть ориентированный цикл. Этот ориентированный цикл 
+  не может быть внутри графа~$G$ или графа~$F$, так как эти графы являются 
+  DAG. Тогда цикл содержит хотя бы одну вершину в~графе~$G$ или хотя бы 
+  одну вершину в~графе~$F$. Это означает, что в~графе~$G$ есть ориентированный 
+  путь длины~$k$, $k\hm\geq 1$, начинающийся и~заканчивающий в~вершине~$u$, 
+  которая в~графе~$G^\prime$ заменена на граф~$F$. Следовательно, в~графе~$G$ 
+  есть ориентированный цикл, что противоречит условию DAG. Лемма~2 доказана.
+  \smallskip
+  
+  Рассмотрим операцию \textit{выделения частичного тангла} из тангла $T\hm = (V, E)$. Если операция укрупнения с множеством $U\hm\subset V$ возможна, то можно выделить DAG $F \hm= (U, E^\prime)$, где $E^\prime$~--- это те дуги графа~$G$, которые соединяют вершины из множества~$U$ в графе~$G$. Граф~$F$ является DAG, так как если в нем есть ориентированный цикл, то этот цикл есть в графе~$G$. Граф~$F$ может не являться танглом, так как в нем у каждой его вершины возможно отсутствие двух доверенных вершин. Кроме того, в этом графе не выделен генезис и граф~$F$ может не быть связным. 
+  \smallskip
+  
+  
+  \noindent
+  \textbf{Определение~3.}\ \textit{Обобщенным танглом} называется произвольный граф, яв\-ля\-ющий\-ся DAG. 
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Определение 4.}\ \textit{Частичным танглом} тангла~$T$ называется обобщенный тангл, выделяемый в исходном тангле~$T$ при операции укрупнения.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Определение 5.}\ \textit{Объединением} обобщенных танглов $T_1\hm= (U_1, E_1)$ и $T_2\hm= (U_2, E_2)$ называется обобщенный тангл, полученный объединением графов~$T_1$ и~$T_2$ при условии, что $U_1\cap U_2\hm= \emptyset$. 
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Определение 6.}\ \textit{Простым проектом} $H(T_1, T_2)$ называется объединение обобщенных танглов~$T_1$ и~$T_2$, где транзакции, связанные в исходных танглах по требованиям ЭБК, соединены неориентированным ребром.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Определение 7.}\ \textit{Проектом} на обобщенных танглах $T_1,\ldots , T_k$ называется граф~$H(T_1,\ldots, T_k)$, 
+  в~котором каждая пара $T_i, T_j$, $i\not= j$, образует простой проект. 
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Определение 8.}\ Проект называется \textit{полным}, если в графе $H(T_1,\ldots, T_k)$ нет изолированных вершин. 
+  
+  \smallskip
+  
+  Полный проект описывает все взаимосвязи, связанные с его реализацией. 
+  
+  \section{Интерпретация алгебры танглов}
+  
+  Выполнимость любого проекта в обычном понимании этого слова зависит от согласованности работы различных субъектов экономической деятельности. Согласованность определяется двумя параметрами:
+  \begin{enumerate}[(1)]
+\item соблюдением времени выполнения своих функций группой субъектов экономической деятельности при реализации проекта;
+\item выполнением обязательств, связанных с~реализацией возложенных на взаимодействующие субъекты
+ экономической деятельности задач. 
+  \end{enumerate}
+  
+  Модель согласования времени описывается известными методами сетевых графиков~[8]. Выполнимость обязательств определяется подписанием документов о принятии этих обязательств и~правильности их выполнения, т.\,е.\ принятых и~оплаченных договоров. 
+  
+  Когда функционал субъектов экономической деятельности достаточно велик и~субъектов, выполняющих проект, много, качество выполнения обязательств можно контролировать с помощью модели проекта, определенной выше. В~этой модели одни транзакции в танглах фиксируют принятие обязательств, а другие транзакции фиксируют оплату и акты о выполнении этих обязательств. Тогда ошибки в построении графов проектов отражают причины невыполнения проектов.
+   
+  Ясно, что этот контроль можно делать вручную, анализируя документы по проектам. Однако предложенная модель позволяет автоматизировать контроль выполнения большого числа проектов и в реальном времени отражать места сбоев и нарушений обязательств. 
+  
+  Операция укрупнения позволяет выделять группы деятельности субъектов 
+  ЦЭ, объединенные, например, одним источником финансирования, и~отображать инвестиционную деятельность в регионе или в отдельных областях. Если число проектов велико, то операция укрупнения позволит
+   отслеживать выполнение всего множества проектов и~сбои в~их выполнении.
+  
+  \section{Заключение}
+   
+  Работа посвящена развитию идеи распределенной ЭБК, построенной на базе танглов с~централизованным консенсусом и~использующей инфраструктуру таких доверенных государственных организаций, как СЦ. 
+  
+  Одними из важных задач, стоящих перед государственными органами влас\-ти, являются организация и~контроль за инвестициями. В~работе показано, как с~помощью танглов, связанных с отдельными субъектами экономической дея\-тель\-ности, можно контролировать выполнение проектов, в~том 
+  числе с~использованием государственных инвестиций. Построенная формализация 
+  контроля позволяет автоматизировать решение этих задач для больших проектов. 
+  
+  В дальнейшем предполагается провести исследования, формализовать и создать алгоритмы автоматизации других задач контроля деятельности субъектов 
+  ЦЭ на уровне регионов.
+  
+        {\small\frenchspacing
+        {%\baselineskip=10.8pt
+        \addcontentsline{toc}{section}{Литература}
+        \begin{thebibliography}{9}
+\bibitem{1-gz}
+\Au{Грушо А.\,А., Зацаринный А.\,А., Тимонина Е.\,Е.}  Электронная бухгалтерская книга на базе ситуационных центров для цифровой экономики~/\!\!/ Системы и средства информатики, 2019. Т.~29. №\,2. С.~4--11.
+\bibitem{2-gz}
+\Au{Грушо А.\,А., Зацаринный А.\,А., Тимонина 
+Е.\,Е.} Угрозы электронной бухгалтерской книге, построенной на базе Tangles~/\!\!/ Методы и технические средства обеспечения безопасности информации, 2019. №\,28. С.~70--71.
+\bibitem{3-gz}
+\Au{Popov S.} The Tangle. 2018. {\sf https://assets.ctfassets.net/r1dr6vzfxhev/ 2t4uxvsIqk0EUau6g2sw0g/45eae33637ca92f85dd9f4a3a218e1ec/iota1\_4\_3.pdf}.
+\bibitem{4-gz}
+Meet the Tangle: A quick introduction to the data structure behind IOTA's distributed ledger and protocol. {\sf https://www.iota.org/research/meet-the-tangle}.
+\bibitem{5-gz}
+\Au{Грушо А.\,А., Зацаринный А.\,А., Тимонина Е.\,Е.} Блокчейны цифровой экономики на базе системы ситуационных центров и централизованного консенсуса~/\!\!/ Радиолокация, навигация, связь: Сб. трудов XXV Междунар. науч.-техн. конф.~--- Воронеж: ВГУ, 2019. Т.~6. С.~183--191.
+\bibitem{6-gz}
+\Au{Grusho A., Zatsarinny A., Timonina E.} A~system approach to information security in distributed ledgers on the situational centers platform~/\!\!/ Int.~J.
+Open Information Technologies, 2019. Vol.~7. Iss.~12. P.~46--50.
+\bibitem{7-gz}
+\Au{Брыкова Н.\,В.} Теория бухгалтерского учета: Баланс и система счетов.~---  2-е изд.~--- М.: Академия, 2011. 80~с.
+\bibitem{8-gz}
+\Au{Танаев В.\,С., Шкурба В.\,В.} Введение в теорию расписаний.~--- М.: Наука, 1975. 256~с. 
+
+        \end{thebibliography}
+        } }
+        
+        
+        \vspace*{-3pt}
+        
+        \hfill{\small\textit{Поступила в~редакцию 15.02.20}}
+        
+        
+        
+        
+  %      \vspace*{8pt}
+        
+   %     \hrule
+        
+    %    \vspace*{2pt}
+        
+  \newpage
+        
+     \vspace*{-28pt}
+        
+     %   \hrule
+        
+      %  \vspace*{8pt}
+        
+        \def\tit{DESCRIPTION OF DIGITAL ECONOMY DYNAMICS USING~AN~ELECTRONIC LEDGER}
+        
+        \def\titkol{Description of digital economy dynamics using an electronic ledger}
+        
+        
+        
+        \def\aut{A.\,A.~Grusho, A.\,A.~Zatsarinny, and E.\,E.~Timonina}
+        
+        \def\autkol{A.\,A.~Grusho, A.\,A.~Zatsarinny, and E.\,E.~Timonina}
+        
+        
+        
+        \titel{\tit}{\aut}{\autkol}{\titkol}
+        
+        \vspace*{-11pt}
+        
+        
+\noindent
+         Institute of Informatics Problems, Federal Research Center ``Computer Science and Control''
+          of the Russian 
+         Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation 
+
+        
+        \def\leftfootline{\small{\textbf{\thepage}
+        \hfill Sistemy i Sredstva Informatiki~---
+        Systems and Means of Informatics 2020 vol~30 no\,1}
+        }%
+         \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+         Systems and Means of Informatics   2020   vol~30   no\,1
+        \hfill \textbf{\thepage}}}
+        
+        \vspace*{3pt}
+
+
+\Abste{The paper examines an earlier e-book model to describe the digital economy at the regional level. The model is based on tangle, which is an upgraded version of blockchain. The security of an
+ e-Ledger is based on the usage of situation centers and the expansion of their functions. At the same time, it is proposed to build an e-Ledger on the basis of a centralized consensus. The paper shows how tangles associated with individual economic actors can monitor the implementation of projects, including through public investment. The built formalization of control allows automating the solution of these tasks for large projects.}
+
+\KWE{information security; tangle; algebra of tangles; secure digital economy infrastructure}
+
+
+
+        
+        \DOI{10.14357\!/\!08696527200109} 
+        
+        %\vspace*{-24pt}
+        
+        \Ack
+        \noindent
+The paper was partially supported by the Russian Foundation for Basic Research (project 
+18-29-03124-mk).
+        
+        %\vspace*{-12pt}
+        
+        \renewcommand{\bibname}{\protect\rmfamily References}
+        %\renewcommand{\bibname}{\large\protect\rm References}
+        
+        {\small\frenchspacing
+        {%\baselineskip=10.8pt
+        \addcontentsline{toc}{section}{References}
+        \begin{thebibliography}{9}
+
+\bibitem{1-gz-1}
+\Aue{Grusho, A.\,A., A.\,A. Zatsarinny, and E.\,E. Timonina.} 2019. Elektronnaya bukhgalterskaya kniga na 
+baze situatsionnykh tsentrov dlya tsifrovoy ekonomiki [The electronic ledger 
+on the basis of situational centers for digital
+economy]. \textit{Sistemy 
+i~Sredstva Informatiki~--- Systems and Means of Informatics} 29(2):4--11. 
+\bibitem{2-gz-1}
+\Aue{Grusho, A.\,A., A.\,A. Zatsarinny, and E.\,E. Timonina.} 2019. Ugrozy elektronnoy bukhgalterskoy knige, postroennoy na baze Tangles [Tangles-based electronic ledger threats]. \textit{Metody i~tekhnicheskie sredstva obespecheniya bezopasnosti informatsii} [Information Security Means and Techniques] 28:70--71.
+\bibitem{3-gz-1}
+\Aue{Popov, S.} 2018. The Tangle. Available at: {\sf https://assets.ctfassets.net/r1dr6vzfxhev/ 2t4uxvsIqk0EUau6g2sw0g/45eae33637ca92f85dd9f4a3a218e1ec/iota1\_4\_3.pdf} 
+(accessed February~10, 2020).
+\bibitem{4-gz-1}
+Meet the Tangle. A quick introduction to the data structure behind IOTA's distributed ledger and protocol. Available at: {\sf https://www.iota.org/research/meet-the-tangle} (accessed February~10, 2020).
+\bibitem{5-gz-1}
+\Aue{Grusho, A.\,A., A.\,A. Zatsarinny, and E.\,E. Timonina.} 2019. Blokcheyny tsifrovoy ekonomiki na baze sistemy situatsionnykh tsentrov i~tsentralizovannogo konsensusa [Blockchains of digital economy on the basis of the system of the situational centers and the centralized consensus]. \textit{Radiolokatsiya, navigatsiya, svyaz': Sb. trudov XXV Mezhdunar. nauch.-tekh. konf.} [Radarlocation, Navigation, Communication: 25th 
+Scientific and Technical Conference (International) Proceedings]. Voronezh:
+VSU. 6:183--191.
+\bibitem{6-gz-1}
+\Aue{Grusho, A.\,A, A.\,A. Zatsarinny, and E.\,E. Timonina.} 2019. A~system approach to information security in distributed ledgers on the situational centers platform. \textit{Int. J.~Open Information Technologies} 7(12):46--50.
+\bibitem{7-gz-1}
+\Aue{Brykova, N.\,V.} 2011. \textit{Teoriya bukhgalterskogo ucheta: Balans i sistema schetov} [Accounting theory: Balance sheet 
+and system of accounts]. 2nd ed. Moscow: Akademiya. 80~p.
+\bibitem{8-gz-1}
+\Aue{Tanaev, V.\,S., and V.\,V. Shkurba.} 1975. \textit{Vvedenie v~teoriyu raspisaniy} [Introduction to the theory of schedules]. Moscow: Nauka. 256~p.
+          \end{thebibliography}
+        } }
+        
+        
+        %\vspace*{-3pt}
+        
+        \hfill{\small\textit{Received February 15, 2020}} 
+        
+        %\vspace*{-16pt}  
+
+
+
+\Contr
+
+\noindent
+\textbf{Grusho Alexander A.} (b.\ 1946)~--- Doctor of Science in physics and mathematics, professor, principal scientist, Institute of Informatics Problems, Federal Research Center ``Computer Sciences and Control''
+ of the Russian Academy of Sciences, 44-2~Vavilov Str., 
+Moscow 119133, Russian Federation; \mbox{grusho@yandex.ru}
+
+\vspace*{3pt}   
+
+
+
+\noindent
+\textbf{Zatsarinny Alexander A.} (b.\ 1951)~--- Doctor of Science in technology, professor, Deputy Director, Federal Research Center ``Computer Science and Control''
+ of the Russian Academy of Sciences (FRC CSC RAS); principal scientist, 
+Institute of Informatics Problems, FRC CSC RAS; 44-2~Vavilov Str., 
+Moscow 119333, Russian Federation; \mbox{AZatsarinny@ipiran.ru}
+
+
+\vspace*{3pt}   
+
+\noindent
+\textbf{Timonina Elena E.} (b.\ 1952)--- Doctor of Science in technology, professor, leading scientist, Institute of Informatics Problems, Federal Research Center ``Computer Sciences and Control''
+ of the Russian Academy of Sciences, 44-2~Vavilov Str., 
+Moscow 119133, Russian Federation; \mbox{eltimon@yandex.ru}
+
+        \label{end\stat}
+        
+        \renewcommand{\bibname}{\protect\rm Литература}  

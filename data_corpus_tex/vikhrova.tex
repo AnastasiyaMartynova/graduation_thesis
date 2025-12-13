@@ -1,0 +1,784 @@
+\def\stat{vikhrova}
+
+\def\tit{К АНАЛИЗУ ПОКАЗАТЕЛЕЙ КАЧЕСТВА ОБСЛУЖИВАНИЯ 
+В~СОВРЕМЕННЫХ БЕСПРОВОДНЫХ СЕТЯХ}
+
+\def\titkol{К анализу показателей качества обслуживания 
+в~современных беспроводных сетях}
+
+\def\aut{О.\,Г. Вихрова$^1$, К.\,Е.~Самуйлов$^2$, Э.\,С.~Сопин$^3$, С.\,Я.~Шоргин$^4$}
+
+\def\autkol{О.\,Г. Вихрова, К.\,Е.~Самуйлов, Э.\,С.~Сопин, С.\,Я.~Шоргин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа выполнена при частичной финансовой поддержке РФФИ (проект 13-01-00215).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов, o.vikhrova@gmail.com}
+\footnotetext[2]{Российский университет дружбы народов, ksam@sci.pfu.edu.ru}
+\footnotetext[3]{Российский университет дружбы народов, esopin@sci.pfu.edu.ru}
+\footnotetext[4]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии 
+наук, sshorgin@ipiran.ru}
+    
+  \Abst{Аналитики предсказывают, что в~период с~2014 по~2019~гг.\ темпы роста мирового 
+мобильного трафика втрое превысят темпы роста мирового фиксированного трафика. Число 
+мобильных пользователей увеличится с~4,1~млрд до~4,9~млрд, число мобильных 
+устройств и~подключений может достигнуть~10~млрд. К~2019~г.\ скорость передачи 
+в~мировых мобильных сетях может увеличиться с~1,7 до~4,0~Мбит/с. 
+Особое внимание стоит обратить на долю мобильного видео, которая составит~72\%~мирового 
+мобильного трафика. Тенденции роста числа мобильных подключений и~объема 
+мобильного трафика на сегодняшний день ставят перед операторами мобильных услуг 
+задачу эффективного и~адаптивного использования доступных радиоресурсов. В~связи 
+с~этим в~работе исследуется упрощенная математическая модель, которая позволяет 
+аналитически оценить вероятность блокировки системы и~среднее значение занятого ресурса 
+в~соответствии с политикой распределения ресурсов технологии LTE-Advanced.}
+  
+  \KWE{LTE-Advanced; политика распределения ресурсов; СМО с ограниченными 
+ресурсами}
+
+\DOI{10.14357/19922264150405}
+
+\vskip 14pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+    
+  Популярность мультимедийных услуг обуслов\-ле\-на стремительным ростом 
+числа разнообразных мобильных устройств, подключенных к~сети. 
+Пользователи все чаще предпочитают просматривать медиаконтент на 
+смартфонах, планшетах и~отдают предпочтение беспроводному типу связи. 
+Провайдеры телекоммуникационных услуг вынуждены искать способы 
+эффективного и~адаптивного распределения и~использования ограниченных 
+радиоресурсов. Технология высокоскоростной беспроводной передачи данных 
+LTE-Advanced позволяет выделять каждой новой сессии диапазоны частот, 
+основываясь на принципах мультидиапазонности, принимая во внимание тип 
+запрашиваемой пользователем услуги и~учитывая географическую зону 
+обслуживания. 
+  
+  Каждое мобильное устройство сети LTE может передавать данные базовой 
+станции с определенной скоростью. Мгновенная скорость в~этом случае 
+определяется политикой распределения ресурсов и~ограничена максимальным 
+значением, которое определяется по формуле $c_i^{\max} \hm= 
+w\mathrm{log}_2(1\hm+\gamma_ip_{\max})$ для некоторой $i$-й сес\-сии, где 
+$w$~--- доступная ширина полосы частот; $p_{\max}$~--- мощность передачи 
+сигнала усилителем; $\gamma_i$~--- отношение сигнала к~шуму для данной 
+сессии, которое зависит от расстояния между устройством и~станцией. Сессия 
+может быть принята только в~том случае, если ресурсов системы достаточно, т.\,е.\ 
+должно выполняться неравенство $\sum\nolimits_i c_i/c_i^{\max}\hm\leq 1$, 
+где $c_i$~--- запрашиваемая $i$-й сессией скорость передачи данных. Для 
+анализа вероятности блокировки вызова и~доли используемых радиоресурсов 
+системы в~данной работе построена математическая модель в~терминах систем 
+массового обслуживания (СМО) с ограниченными ресурсами~\cite{5-v}.
+
+\vspace*{-6pt}
+
+\section{Система массового обслуживания с~дискретным~ресурсом}
+
+\vspace*{-2pt}
+    
+  В работе~\cite{2-v} рассматривается многолинейная сис\-те\-ма без очереди, 
+  в~которой поступившая заявка занимает некоторые ресурсы на все время ее 
+обслуживания. По завершении обслуживания весь занятый данной заявкой 
+объем ресурсов осво\-бож\-да\-ет\-ся (рис.~1). Если в~системе недостаточно 
+свободных ресурсов, необходимых для обслуживания поступившей заявки, то 
+такая заявка теряется. Предполагается, что случайные векторы, описывающие 
+требования заявок к~ресурсам, не зависят от процессов поступления и~
+обслуживания заявок, независимы в~совокупности и~одинаково распределены. 
+При анализе данной системы необходимо для каждой заявки запоминать 
+вектор занятых ею ресурсов. 
+  \begin{figure*} %fig1
+           \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=155.162mm
+ \epsfbox{vih-1.eps}
+ }
+ \end{center}
+ \vspace*{-11pt}
+  \Caption{Функционирование исходной СМО: (\textit{а})~в системе одна заявка: занят 
+один прибор и~занято~$r_1$~единиц ресурса;
+  (\textit{б})~в~системе две заявки: заняты два прибора; 1-я заявка 
+  занимает~$r_1$~единиц ресурса и~2-я заявка занимает $r_2$ единиц ресурса;
+  (\textit{в})~обслужилась вторая заявка: занят один прибор и~1-я заявка 
+занимает~$r_1$~единиц ресурса}
+  \end{figure*}
+  
+  Для упрощения анализа модели предлагается отслеживать только суммарный 
+объем ресурсов, занятый всеми заявками. В~связи с тем, что в~упрощенной 
+системе не отслеживаются объемы ресурсов, занятых каждой заявкой, объемы 
+ресурсов, освобождаемых по завершении обслуживания, могут отличаться от 
+тех, что были выделены заявкам при поступлении. При заданных суммарных 
+объемах занятых ресурсов и~числе заявок в~системе в~момент окончания 
+обслуживания объемы освобождаемых ресурсов не зависят от поведения 
+системы до этого момента и~имеют функцию распределения, вы\-чис\-ля\-емую по 
+формуле Байеса. 
+  
+  Средние значения объема занятого ресурса в~исходной и~упрощенной 
+системе оказались очень близки при пуассоновском входящем потоке 
+и~экспоненциальном обслуживании~\cite{2-v}. Позднее в~\cite{4-v} было 
+показано, что близкие значения имеют не только средние, но и~стационарные 
+распределения объема занимаемых ресурсов. И~наконец, в~статье~\cite{3-v} 
+было строго доказано, что распределение стационарных вероятностей 
+исходной и~упрощенной модели совпадают. 
+  
+  Рассматривается упрощенная СМО заявок с~$N$ 
+приборами и~ограниченным дискретным ресурсом объемом~$R$. В~систему 
+поступает пуассоновский поток заявок с параметром~$\lambda$. Длительности 
+обслуживания заявок независимы между собой, также не зависят от 
+поступающего потока, экспоненциально распределены с параметром~$\mu$. 
+В~системе в~некоторый момент времени~$t$ находится~$\xi(t)$~заявок, при 
+этом занято~$\delta(t)$ ресурса, $\delta(t)\hm<R$. Поступающей в~систему для 
+обслуживания $i$-й заявке необходимо выделить целое число единиц ресурса 
+$r_i\hm\geq 0$ (рис.~2). Случайные величины~$r_i$ независимы 
+в~совокупности и~одинаково распределены с функцией распределения $F(x)$, 
+средним значением~$m$ и~дисперсией~$\sigma^2$. Значение выделяемого 
+объема ресурса не зависит от процессов поступления и~обслуживания заявок. 
+  
+  Поступившая $i$-я заявка теряется, если на момент ее поступления объем 
+доступного ресурса меньше объема ресурса, необходимого для ее 
+обслуживания: $R\hm- \delta(t)\hm< r_i$, а~также в~случае, если все приборы 
+заняты: $\xi(t)\hm=N$. Объем занятого ресурса системы~$\delta(t)$ 
+увеличивается на величину ресурса $r_i\hm\geq 0$, выделенного $i$-й заявке 
+в~момент начала ее обслуживания.
+  
+  Объем занятых ресурсов $\delta(\tau_i)$ уменьшается на случайную 
+величину~$v_i$ в~момент~$\tau_i$ завершения обслуживания $i$-й заявки. 
+Случайная величина~$v_i$ при некотором заданном числе заявок в~системе 
+$\xi(\tau_i)\hm= k$ и~объеме занятого ресурса $\delta(\tau_i)\hm=y$ не зависит 
+от поведения системы в~прошлом и~согласно формуле Байеса имеет функцию 
+распределения $f_k(x\vert y) \hm= P(v_i\leq x\vert \xi(\tau_i)\hm= k; 
+\delta(\tau_i)\hm=y)$, $0\hm\leq x\hm\leq y$. 
+  
+  Случайные величины~$r_i$ требуемого заявке ресурса принимают значения 
+$j\hm= \overline{0,R}$. Пусть $p_j\hm= P(r_i=j)$, $j\hm= \overline{0,R}$,~--- 
+распределение случайных величин~$r_i$.
+  
+  
+  \begin{figure*} %fig2
+             \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=163.663mm
+ \epsfbox{vih-2.eps}
+ }
+ \end{center}
+ \vspace*{-11pt}
+  \Caption{Функционирование упрощенной СМО:
+  (\textit{а})~в системе одна заявка: занят один прибор и~занято~$r_1$~единиц ресурса;
+  (\textit{б})~в системе три заявки: заняты три прибора и~занято $r_1\hm+r_2\hm+r_3$ 
+единиц ресурса; (\textit{в})~две заявки обслужились: занят один прибор и~занято 
+$r_1\hm+r_2\hm+r_3\hm-v_1\hm-v_2$ единиц ресурса}
+  \end{figure*}
+  
+  Введем обозначение~$p_j^{(k)}$, $j\hm= \overline{0,R}$, для $k$-крат\-ной 
+свертки этого распределения, которое позволяет определить, какие значения 
+принимает случайная величина  $y\hm= \sum\nolimits_{i=0}^k r_i$.
+
+ Тогда 
+функция распределения объема всего занятого ресурса системы~$k$~заявками 
+$F_k(x\vert j)$ является\linebreak\vspace*{-12pt}
+\begin{center}  %fig3
+\vspace*{-1pt}
+\mbox{%
+ \epsfxsize=78.119mm
+ \epsfbox{vih-3.eps}
+ }
+ 
+
+\vspace*{3pt}
+
+
+{{\figurename~3}\ \ \small{Пространство состояний СП $X(t)$}}
+\end{center}
+ 
+ \vspace*{12pt}
+ \begin{center}  %fig4
+\vspace*{-1pt}
+\mbox{%
+ \epsfxsize=77.584mm
+ \epsfbox{vih-4.eps}
+ }
+ 
+\end{center}
+
+%\vspace*{9pt}
+
+\noindent
+{{\figurename~4}\ \ \small{Диаграмма переходов между состояниями системы}}
+ 
+ \vspace*{12pt}
+
+
+\noindent
+ ку\-соч\-но-по\-сто\-ян\-ной на всей области ее 
+определения, в~точке $x\hm=i$, $i\hm= \overline{1,R}$, имеет скачок на 
+величину
+  $$
+  p_{ij}^k = \fr{p_i p_{j-i}^{(k-1)}}{p_j^{(k)}}\,,\enskip 0<i\leq j\,,\ 
+i=\overline{0,R}\,.
+  $$
+  
+  Свертки вероятностей $p_j^{(k)}$, $k\hm\geq 2$, в~общем случае могут быть 
+вычислены на основе известного распределения~$p_i$, $0\hm\leq i\hm\leq R$, 
+по рекуррентной формуле
+
+\noindent
+  \begin{equation}
+  p_j^{(k)} = \sum\limits_{i=0}^j p_i p_{j-i}^{(k-1)}\,.
+  \label{e1-v}
+  \end{equation}
+  
+  Случайный процесс (СП) $X(t)\hm= (\xi(t),\delta(t))$ на множестве состояний 
+$X_k\hm= \{ (k,i)\vert 0\hm\leq i\hm\leq R, p_i^{(k)}\hm>0\}$ является цепью 
+Маркова, заданной на пространстве состояний $X\hm= \mathop{\cup}\limits_{k=0}^N 
+X_k$, где $X_k\hm= \{ (k,i(\vert 0\hm\leq i \hm\leq R, p_i^{(k)}\hm>0\}$, и~
+изображенной на рис.~3.
+  
+  На рис.~4 представлена диаграмма переходов между состояниями системы 
+при условии, что $1\hm\leq i\hm< N$, $0\hm\leq s\hm\leq j\hm\leq q\hm\leq R$.
+  
+ 
+  
+  Матрица интенсивностей переходов 
+  $$
+  A= [a((i,j),(k,r))]
+  $$
+   является блочной 
+трехдиагональной матрицей c~диагональными блоками $\Psi_0, \Psi_1, \ldots , 
+\Psi_N$, наддиагональными блоками $\Lambda_1,\ldots, \Lambda_N$ 
+и~поддиагональными блоками ${M}_0, \ldots , {M}_{N-1}$, где
+
+\noindent
+  \begin{align}
+  \Psi_0 &= -\lambda P_R\,;\label{e2-v}\\
+  \Lambda_1 &= (\lambda_{0,j})_{(j\vert(1,j)\in X_1)} = \lambda p_j\,; 
+\label{e3-v}\\
+  {M}_0 &= (\mu_{i,0})_{(i\vert (1,i)\in X_1)} = \mu\,;\label{e4-v}\\
+  \Psi_n &= (\psi_{i,j})_{(i,j\vert(n,i),(n,j)\in X_k}
+  \begin{cases} -(\lambda P_{R-i} +n\mu), &\\
+  &\hspace*{-9mm}i=j;\\
+  0\,, &\hspace*{-9mm}i\not=j
+  \end{cases}\!\!
+  \label{e5-v}
+  \end{align}
+при $n=\overline{1,N-1}$;
+\pagebreak
+
+\noindent
+\begin{align}
+\Psi_N&= (\psi_{i,j})_{(i,j\vert(N,i),(N,j)\in X_N)}\begin{cases}
+-N\mu\,, &\ i=j;\\
+0\,, &\ i\not=j;
+\end{cases}
+\label{e6-v}\\
+\Lambda_n &= {}\notag\\
+&\hspace*{-9mm}{}=(\lambda_{i,j})_{(i,j\vert(n,i)\in X_{k-1},(n,j)\in X_k)} 
+\begin{cases}
+\lambda p_{j-i}\,, &\\
+&\hspace*{-5mm} i\leq j\leq R;\\
+0 &
+\end{cases}
+\end{align}
+при $n=\overline{2,N}$;
+\begin{multline}
+{M}_n ={}\\
+\hspace*{-1mm}{}= (\mu_{i,j})_{(i,j\vert(n,i)\in X_{k+1},(n,j)\in X_k)}\!
+\begin{cases}\!
+\!(n+1)\mu\fr{p_j^{(n)} p_{i-j}}{p_i^{(n+1)}}, &\\
+&\hspace*{-20mm} j\leq i\leq R;\\
+\!0 &
+\end{cases}\!\!\!\!\!\!\!\!\!
+\label{e8-v}
+\end{multline}
+при $n=\overline{1,N-1}$.
+
+  Решив систему уравнений равновесия (СУР) 
+  с~матрицей~$A$, можно найти стационарное распределение 
+процесса $X(t)\hm= (\xi(t),\delta(t))$, где 
+  \begin{align*}
+  q_{0,0}& = \lim\limits_{t\to\infty} P\{\xi(t)=0,\delta(t)=0\}\,;\\
+  q_{k,i} &=\lim\limits_{t\to\infty} P\{\xi(t)=k,\delta(t)=i\}\,,\\
+  &\hspace*{15mm} 1\leq k\leq N\,,\ 0\leq 
+i\leq R\,.
+  \end{align*}
+  
+  На основании формул~(\ref{e2-v})--(\ref{e8-v}) СУР можно записать в~следующем виде:
+  \begin{gather*}
+  \lambda P_R q_{0,0} -\mu \sum\limits_{j=0}^R q_{1,j}=0\,;\\
+  \hspace*{-20mm}(\lambda P_{R-j}+i\mu)q_{i,j}-\lambda \sum\limits_{s=0}^j p_{j-s} q_{i-1,s} -{}\\
+ \hspace*{10mm} {}- 
+(i+1) \mu \sum\limits_{s=j}^R \fr{p_j^{(i)} p_{s-j}}{p_s^{(i+1)}}\,q_{i+1,s}=0\,,\\
+  \hspace*{20mm}0\leq j\leq R\,,\enskip 1\leq i\leq N-1\,;\\
+  N\mu q_{N,j} -\lambda \sum\limits_{s=0}^j p_{j-s} q_{N-1,s}=0\,,\ 0\leq j\leq 
+R\,.
+  \end{gather*}
+  
+  Введем подвекторы стационарных вероятностей $q_0\hm= q_{0,0}$, 
+$q_i\hm= (q_{i,j})_{j=\overline{0,R}}$, $i\hm= 1,\ldots ,N$. Сис\-те\-ма урав\-не\-ний
+равновесия в~мат\-рич\-ном 
+виде с учетом блоч\-но-трех\-диа\-го\-наль\-но\-го вида матрицы 
+интенсивностей переходов~$A$ выглядит следующим образом:
+  \begin{align*}
+  q_0\Psi_0-q_1^{\mathrm{T}} {M}_0&=0\,;\\
+  q_i^{\mathrm{T}} \Psi_i -q_{i+1}^{\mathrm{T}} {M}_i -q_{i-1}^{\mathrm{T}} \Lambda_i &=0\,,\ i=1,\ldots, 
+N-1\,;\\
+  q_N^{\mathrm{T}} \Psi_N-q_{N-1}^{\mathrm{T}} \Lambda_N&=0\,.
+  \end{align*}
+  
+  Матрица~$A$ является неразложимой консервативной трехдиагональной 
+матрицей по по\-стро\-ению, поэтому для решения СУР применим метод  
+UL-раз\-ло\-же\-ния~\cite{1-v}
+  $$
+  b= \sum\limits_{k=0}^N b_k \sum\limits_{i=k}^N q_{k,i}\,,
+  $$
+  где $b_k$~--- условное среднее число занятого ресурса при~$k$~заявках 
+в~системе:
+  $$
+  b_k= \fr{\sum\nolimits_{i=0}^N i p_i^{(k)}}{\sum\nolimits_{i=0}^N 
+p_i^{(k)}}\,.
+  $$
+  
+  Вероятность потери заявки из-за нехватки ресурса или свободных приборов 
+для обслуживания определяется согласно формуле:
+  \begin{equation}
+  B=1-\sum\limits_{k=0}^N \sum\limits_{i=k}^N q_{k,i} \sum\limits_{j=1}^{N-i} 
+p_j\,.
+  \label{e9-v}
+  \end{equation}
+  
+  Среднее число заявок в~системе $\overline{N}$ можно определить по 
+формуле:
+  \begin{equation}
+  \overline{N} = \sum\limits_{i=0}^N iq_i\,,
+  \label{e10-v}
+  \end{equation}
+где $q_i= \sum\nolimits_{j=0}^R q_{i,j}$.
+
+  В работе~\cite{3-v} было найдено аналитическое решение  
+СУР~(\ref{e2-v})--(\ref{e8-v}) в~общем виде. Для частного случая, когда объем 
+выделяемых заявке ресурсов имеет дискретное распределение, авторами были 
+получены более простые формулы для определения стационарных 
+вероятностей:
+  \begin{align*}
+  q_{k,\bullet} &=\lim\limits_{t\to\infty} P\{ \xi(t)=k\} = p_0
+\fr{\rho^k}{k!}\sum\limits_{i=0}^R p_i^{(k)}\,,\ 0<k<N\,;\\
+  q_{k,j} &=\lim\limits_{t\to\infty} P\{\xi(t)=k;\delta(t)=j\} = p_0 \fr{\rho^k}{k!}\, 
+p_j^{(k)}\,,\\
+& \hspace*{38mm}0\leq j\leq R\,,\ 0<k\leq N\,,
+  \end{align*}
+где 
+$$
+p_0 = \left( 1+\sum\limits_{k=1}^N \fr{\rho^k}{k!} \sum\limits_{i=0}^R 
+p_i^{(k)}\right)^{-1}\,.
+$$
+
+  Тогда средний объем занятых ресурсов~$b$ можно найти по формуле:
+  \begin{equation}
+  b=\sum\limits_{k=0}^N b_k q_{k,\bullet} = p_0\sum\limits_{k=0}^N 
+\fr{\rho^k}{k!} \sum\limits_{i=0}^R i p_i^{(k)}\,.
+  \label{e11-v}
+  \end{equation}
+  
+  Вероятность потери заявки определяется согласно формуле: 
+  \begin{multline}
+  B=1-\sum\limits_{k=0}^{N-1} \sum\limits_{i=0}^R q_{k,i} 
+\sum\limits_{j=0}^{R-i} p_j={}\\
+{}=1-p_0 \sum\limits_{k=0}^{N-1} \fr{\rho^k}{k!} 
+\sum\limits_{i=0}^R p_i^{(k+1)}\,.
+  \label{e12-v}
+  \end{multline}
+
+\section{Численный анализ}
+    
+  Рассмотрим различные частные случаи, когда объем ресурса, выделяемого 
+заявке, имеет биномиальное, смещенное биномиальное и~геометрическое 
+распределение, а~общий объем ресурса сис\-те\-мы~$R$ совпадает с количеством 
+приборов~$N$.
+   
+  Для вычисления вероят\-ност\-но-вре\-мен\-н$\acute{\mbox{ы}}$х характеристик  
+модели~(\ref{e9-v})--(\ref{e12-v}) необходимо вы\-чис\-лить свертку 
+распределения вероятностей $p_j^{(k)}$ по формуле~(1) для выбранного 
+дискретного распределения объема занимаемых заявкой ресурсов.
+  
+  Рассмотрим частный случай, когда объем ресурса, выделяемого одной заявке 
+$r_j\hm\geq 0$, имеет биномиальное распределение 
+$$
+p_i= \begin{pmatrix}
+r\\ 
+i\end{pmatrix} p^i(1-p)^{r-i}\,,\enskip 
+0\leq i\leq r\,,
+$$
+ где $p\hm= m/r$;
+$$
+p_j^{(k)} = \begin{pmatrix} 
+kr\\ j\end{pmatrix} p^j (1- p)^{kr-j}\,.
+$$ 
+
+Тогда 
+распределение объема ресурса, который освободится после завершения 
+обслуживания $i$-й заявки 
+\begin{multline*}
+p_{ij}^k\hm= \fr{p_i p_{j-i}^{(k-1)}}{p_j^{(k)}} = 
+\begin{pmatrix}r\\i\end{pmatrix}\begin{pmatrix} kr-r\\ j-i\end{pmatrix}\Bigg/ 
+\begin{pmatrix} kr\\ j\end{pmatrix}\,,\\ 0\leq i\leq r\,,\ \ i\leq j\,,\ \ 0\leq 
+j\leq kr\,,
+\end{multline*}
+ зависит только от максимального числа~$r$ ресурса, доступного 
+одной заявке.
+  
+  В важном для приложений частном случае, когда объем выделяемого заявке 
+ресурса больше нуля, $r_j\hm>0$ имеет смещенное биномиальное 
+распределение 
+$$
+p_i\hm= \begin{pmatrix} r-1\\ i-1\end{pmatrix} p^{i-1}(1-p)^{r-i}\,,\enskip 
+1\leq i\leq r\,,
+$$
+где $p\hm=(m\hm-1)/(r\hm-1)$, $m\hm= np\hm+ (1\hm-p)$ 
+и $\sigma^2\hm= rp(1\hm-p)$;
+$$
+p_j^{(k)}\hm= \begin{pmatrix} k(r-1)\\ j-
+k\end{pmatrix} p^{j-k} (1\hm-p)^{kr-j}\,.
+$$
+
+ Соответственно, распределение 
+  \begin{multline*}
+  \hspace*{-0.26108pt}p_{ij}^k \hm= {\begin{pmatrix} r-1\\ i-1\end{pmatrix} \begin{pmatrix} k(r-1)-
+(r-1)\\ (j-k) -(i-1)\end{pmatrix}}\Bigg/ {\begin{pmatrix} k(r-1)\\ j-k\end{pmatrix}},
+\\ 
+1< i\leq r,\ i\leq j,\ k\leq j \leq k(r-1),\ 1<k\leq j.
+\end{multline*}
+  
+  Для сравнения полученных для первых двух частных случаев результатов 
+рассмотрим пример, когда число единиц ресурса, выделяемого поступившей 
+заявке, распределено согласно геометрическому закону: 
+$$
+p_i= p^i(1-p)\,, \enskip
+1\leq i\leq r\,,
+$$
+где 
+\begin{gather*}
+m= \fr{1-p}{p}\,;\quad \sigma^2= \fr{1-p}{p^2}\,; \\
+p_j^{(k)} = \begin{pmatrix} k+j-1\\ k\end{pmatrix} p^j (1-p)^k\,, 
+\end{gather*}
+распределение 
+\begin{multline*}
+p_{ij}^k = \begin{pmatrix} k+j-i-2\\ k-1\end{pmatrix} \Bigg/ 
+\begin{pmatrix} k+j-1\\ k\end{pmatrix}\,,\\
+i\leq j\,,\enskip k\leq j\,,\enskip 1< k\leq j\,.
+\end{multline*}
+  
+  В качестве исходных данных для численного анализа были выбраны 
+значения $N\hm=R\hm=100$, $\mu\hm= 1$, $\lambda\hm= \{12, 13,\ldots, 20\}$. 
+На риc.~5 пред\-став\-ле\-ны графики зависимости вероятностных характеристик 
+от нагрузки~$\rho$ для выбранных дискретных распределений объема ресурса. 
+Параметры распределений были подобраны таким образом, что 
+математическое ожидание $m\hm=5{,}4$ и~объем доступного одной заявке 
+ресурса $r\hm=18$ для всех трех распределений, а~дисперсии были 
+различными. 
+ 
+  
+  
+  
+  На рис.~5,\,\textit{а} заметим, что для случаев, когда выделяемые заявкам ресурсы 
+имеют геометрическое распределение, среднее число заявок в~системе при 
+$\rho\hm>1$ растет быстрее, чем в~случаях с биномиальными распределениями. 
+График зависимости среднего числа занятого ресурса для геометрического 
+распределения, наоборот, приближается к~кривой для биномиального 
+распределения. Так как геометрическое распределение имеет б$\acute{\mbox{о}}$льшую 
+дисперсию, чем биномиальное и~смещенное биномиальное распределения, то 
+была исследована зависимость тех же вероятностных характеристик при 
+различной нагрузке от дисперсии.
+  
+  На рис.~6 представлены графики зависи\-мости среднего числа заявок, 
+среднего числа занятых ресурсов системы и~вероятности блокировки СМО от 
+дисперсии~$\sigma^2$. С~ростом дисперсии гео\-мет\-ри\-че\-ско-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\setcounter{figure}{4}
+
+\end{multicols}
+
+ \begin{figure} %5-6
+ \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=162mm
+ \epsfbox{vih-5-6.eps}
+ }
+ \end{center}
+ \vspace*{-16pt}
+\begin{minipage}[t]{80mm}
+\Caption{Зависимость среднего числа заявок в~системе~(\textit{а}),
+  среднего числа занятого ресурса~(\textit{б}) и~вероятности блокировки
+  СМО~(\textit{в}) от нагрузки для геометрического~(\textit{1}); 
+  биноминального~(\textit{2}) и~смещенного биноминального~(\textit{3}) распределений}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{80mm}
+\Caption{Зависимость среднего числа заявок в~системе~(\textit{а}), 
+среднего числа занятого ресурса~(\textit{б})
+  и~вероятности блокировки СМО~(\textit{в}) от дисперсии: \textit{1}~--- 
+  $\rho\hm= 0{,}9$; \textit{2}~--- 0,8; 
+\textit{3}~--- $\rho\hm=0{,}7$}
+\end{minipage}
+\vspace*{-4pt}
+\end{figure}
+ 
+
+ 
+ \begin{multicols}{2}
+
+\noindent
+го распределения 
+среднее число занятых приборов увеличивается, а~среднее число занятого 
+ресурса уменьшается. 
+
+Заявки, которые требуют больше ресурсов для 
+обслуживания, будут блокироваться, 
+и~в~систему будет поступать больше 
+заявок, требующих меньшего объема ресурса.
+
+\columnbreak
+
+%\columnbreak
+  
+
+  
+\section{Заключение}
+
+
+    
+  В работе исследуется упрощенная математи\-ческая модель установления 
+сессий между мо\-биль\-ными устройствами конечных пользователей 
+мультимедий\-ных услуг и~базовой станцией с распределением ограниченных 
+ресурсов беспроводной высокоскоростной сети LTE. 
+%
+Для расчетов предложены 
+численный и~аналитический способы расчета вероятностных характеристик 
+системы. 
+
+Также был проведен сравнительный анализ зависимости 
+вероятностных характеристик системы от параметров и~типов распределений. 
+
+Было замечено, что при увеличении дисперсии геометрического распределения 
+объема выделя\-емо\-го поступившей заявке ресурса среднее чис\-ло заявок 
+в~системе и~среднее число занятого ресур\-са уменьшаются. В~условиях 
+нагрузки, близкой к~единице, $\rho\hm= \{0{,}7; 0{,}8; 0{,}9\}$, на 
+об\-слу\-жи\-ва\-ние будут приниматься заявки, которые для обслу\-жи\-ва\-ния требуют 
+наименьшего объема ресурсов. Более требовательные заявки будут 
+бло\-ки\-ро\-ваться. 
+{\looseness=1
+
+}
+  
+  Дальнейшие исследования будут включать разработку эффективных 
+вычислительных алгоритмов для расчета ве\-ро\-ят\-ност\-но-вре\-мен\-н$\acute{\mbox{ы}}$х 
+характеристик модели.
+  
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9}
+ 
+ \bibitem{5-v}
+\Au{Pyattaev A., Johnsson K., Surak~A., Florea~R., Andreev~S., Koucheryavy~Y.} 
+Network-assisted D2D communications: Implementing a technology prototype for 
+cellular traffic offloading~// 2014 IEEE Wireless Communications and Networking 
+Conference (WCNC).~--- Istambul: IEEE, 2014. P.~3266--3271.
+ \bibitem{2-v} %1
+\Au{Наумов В.\,А., Самуйлов К.\,Е.} О~моделировании систем массового 
+обслуживания с множественными ресурсами~// Вестник РУДН. Сер. 
+Математика. Информатика. Физика, 2014. №\,3. С.~58--62.
+\bibitem{4-v} %2
+\Au{Naumov V., Samouylov K., Sopin~E., Andreev~S.} Two approaches to analysis of 
+queuing systems with limited resources~// 6th Congress (International) on Ultra 
+Modern Telecommunications and Control Systems (ICUMT-2014) Proceedings.~--- 
+СПб: IEEE, 2014. P.~485--488.
+\bibitem{3-v} %3
+\Au{Наумов В.\,А., Самуйлов К.\,Е., Самуйлов~А.\,К.} О~суммарном объеме 
+ресурсов, занимаемых заявками~// Автоматика и~телемеханика, 2015 (в печати).
+
+\bibitem{1-v} %4
+\Au{Наумов В.\,А.} Численные методы анализа марковских систем.~--- М.: РУДН, 1985. 
+36~с.
+
+
+
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-12pt}
+
+\hfill{\small\textit{Поступила в~редакцию 5.10.15}}
+
+\vspace*{4pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{-4pt}
+
+\def\tit{ON PERFORMANCE ANALYSIS OF~MODERN WIRELESS NETWORKS\\[-5pt]}
+
+\def\titkol{On performance analysis of modern wireless networks}
+
+\def\aut{O.\,G. Vikhrova$^1$, K.\,E. Samouylov$^1$, E.\,S.~Sopin$^1$, 
+and~S.\,Ya.~Shorgin$^2$\\[-11pt]}
+
+\def\autkol{O.\,G. Vikhrova, K.\,E. Samouylov, E.\,S.~Sopin, 
+and~S.\,Ya.~Shorgin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Peoples' Friendship University of Russia, 6~Miklukho-Maklaya Str., Moscow 
+117198, Russian Federation
+
+\noindent
+$^2$Federal Research Center ``Computer Science and Control''' of the Russian 
+Academy of Sciences, 44-2~Vavilov\linebreak
+$\hphantom{^1}$Str., Moscow 119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+\Abste{Analytics predict that worldwide mobile traffic growth rate will exceed fixed traffic 
+approximately three times from~2014 to~2019. Number of mobile users will increase up 
+to~4.9~billions and mobile devices number will exceed 10~billions. The average mobile network 
+connection speed (1.7~Mbps in~2014) will reach nearly~4.0~Mbps by~2019. 
+Special attention should be paid to mobile video traffic that will reach three-fourths of the whole 
+mobile traffic by~2019. These tendencies bring new challenges for mobile communication 
+providers to increase efficiency and additivity of radio resource allocation. In this connection, the 
+paper analyzes a simplified model that allows one to obtain analytical estimates of the blocking 
+probability and the average value of occupied resources according to the resource allocation policy 
+of the LTE-Advanced technology.}
+
+\KWE{LTE-Advance; resource allocation policy; limited resource queue}
+
+\DOI{10.14357/19922264150405}
+
+%\Ack
+%\noindent
+
+
+
+
+\vspace*{-9pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9}
+ 
+ \bibitem{5-v-1}
+\Aue{Pyattaev, A., K. Johnsson, A.~Surak, R.~Florea, S.~Andreev, and 
+Y.~Koucheryavy}.  2014. Network-assisted D2D communications: Implementing 
+a~technology prototype for cellular traffic offloading. \textit{Wireless 
+Communications and Networking Conference (WCNC)}.  Istanbul: IEEE. 3266--3271.
+
+\bibitem{2-v-1} %1
+\Aue{Naumov, V.\,A., and K.\,E.~Samouylov}. 2014. O~mo\-de\-li\-rovanii sistem 
+massovogo obsluzhivaniya s~mnozhestvennymi resursami [Modelling queuing 
+systems with different types of resources]. \textit{Vestnik RUDN. Ser. Matematika. 
+Informatika. Fizika} [PFUR Bulletin, Mathematics, Informatics, Physics]. Moscow.  
+3:58--62.
+\bibitem{4-v-1} %2
+\Aue{Naumov, V., K. Samouylov, E.~Sopin, and S.~Andreev}. 2014. Two approaches 
+to analysis of queuing systems with limited resources. \textit{6th
+Congress (International) on Ultra Modern 
+Telecommunications and Control Systems and Workshops (ICUMT) Proceedings}.  
+St.\ Petersburg: IEEE. 485--488.
+\bibitem{3-v-1} %3
+\Aue{Naumov, V.\,A., K.\,E.~Samouylov, and A.\,K.~Samuylov}. 2015 (in press). 
+O~summarnom ob''eme resursov, zanimaemykh zayavkami [Resources aggregation 
+in queuing system]. \textit{Automation and Remote Control}.
+\bibitem{1-v-1} %4
+\Aue{Naumov, V.\,A.} 1985. \textit{Chislennye metody analiza markovskikh 
+sistem} [Numerical analysis of Markov systems]. Moscow: PFUR Publs. 36~p.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-12pt}
+
+\hfill{\small\textit{Received October~5, 2015}}
+
+\Contr
+
+\noindent
+\textbf{Vikhrova Olga G.} (b.\ 1990)~--- PhD student, Peoples' Friendship 
+University of Russia, 6 Miklukho-Maklaya Str., Moscow 117198, Russian 
+Federation; o.vikhrova@gmail.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Samouylov Konstantin E.} (b.\ 1955)~---
+Doctor of Science in technology, professor, Head of Department, Peoples' 
+Friendship University of Russia, 6 Miklukho-Maklaya Str., Moscow 117198, 
+Russian Federation; ksam@sci.pfu.edu.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Sopin Eduard S.} (b.\ 1986)~---
+Candidate of Science (PhD) in physics and mathematics, associate professor, 
+Peoples' Friendship University of Russia, 6 Miklukho-Maklaya Str., Moscow 
+117198, Russian Federation; esopin@sci.pfu.edu.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Shorgin Sergey Ya.} (b.\ 1952)~---
+Doctor of Science in physics and mathematics, professor, Deputy Director, Federal 
+Research Center ``Computer Science and Control''' of the Russian Academy of 
+Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation; 
+sshorgin@ipiran.ru
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

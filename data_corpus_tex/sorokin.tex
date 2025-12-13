@@ -1,0 +1,676 @@
+  \def\stat{sorokin}
+
+\def\tit{МЕТОД СЕГМЕНТАЦИИ ИЗОБРАЖЕНИЙ\\ НА~ОСНОВЕ 
+КВАДРОДЕРЕВА}
+
+\def\titkol{Метод сегментации изображений на основе квадродерева}
+
+
+\def\aut{Ю.\,А.~Маньяков$^1$, А.\,И.~Сорокин$^2$}
+
+\def\autkol{Ю.\,А.~Маньяков, А.\,И.~Сорокин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Маньяков Ю.\,А.}
+\index{Сорокин А.\,И.}
+\index{Maniakov Yu.\,A.}
+\index{Sorokin A.\,I.}
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Статья подготовлена при частичной поддержке РФФИ (проекты 18-29-03124-мк и~18-29-03081-мк).}} 
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Орловский филиал Федерального исследовательского центра <<Информатика и управ\-ле\-ние>> Российской академии наук, \mbox{maniakov\_yuri@mail.ru}}
+\footnotetext[2]{Орловский филиал Федерального исследовательского центра <<Информатика и управ\-ле\-ние>> Российской академии наук, \mbox{webdi@mail.ru}}
+
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}  
+  
+  \Abst{Ппредставлен метод сегментации цветного изображения на основе квадродерева, 
+состоящий из нескольких шагов. Первый из них~--- обнаружение границ, основанное на 
+трехканальном цвете и двух масках. Далее применяется алгоритм утончения контура. Алгоритм 
+сегментации делится на две части. В~первой части изображение разделяется на максимальное 
+число сегментов. Во второй части сегменты объединяются на основе FSM-таб\-ли\-цы. 
+В~статье представлены результаты сегментации цветных изображений, полученные на основе 
+описанного алгоритма.}
+  
+  \KW{цветное изображение; сегментация; квадродерево; ребро; граница; истончение; 
+уменьшение цвета; разделение; слияние; пиксель}
+  
+\DOI{10.14357/08696527200410}
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}
+  
+\section{Введение}
+
+  Сегментация~---  одна из фундаментальных операций, используемых в 
+обработке изображений и,~в~частности, в области компьютерного зрения~[1] 
+для извлечения необходимой информации из сцены. Несмотря на то что этому 
+вопросу посвящено немало исследований, задача остается актуальной~[2]. 
+В~общем, можно сказать, что сегментация заключается в разбиении 
+изображения на различные непересекающиеся области. Такие области, как 
+правило, однородны по некоторому признаку, вычисленному на основе 
+изображения.
+  
+  В основе алгоритмов сегментации лежат различные подходы~[3], из которых 
+можно выделить четыре основных.
+  \begin{enumerate}[1.]
+  \item Обнаружение контуров. Этот подход широко используется для 
+сегментации че\-рно-бе\-лых изображений~[4]. В~таких изображениях поиск 
+краев осуществляется методом градиентной аппроксимации на основе 
+вычисления первой производной (операторы Канни, Собеля и др.~[5]). С~точки 
+зрения визуальной оценки они выглядят хорошо, но не соответствуют 
+требованиям непрерывности и минимальной толщины контурных линий. 
+  
+  Градиентный поиск цветных изображений осуществляется, в основном, двумя 
+способами~[6]: для всех вариаций цветовых каналов используется одна мера; 
+градиент канала вычисляется отдельно и объединяет эти вычисления по 
+определенным критериям.
+  \item Выращивание регионов. Этот процесс начинается с отбора исходного 
+<<семени>>. Точки вокруг семени группируют по некоторому критерию 
+однородности. Для сегментации цветных изображений используется большое 
+число методов, основанных на обработке полутоновых изображений~[7]. 
+Необходимо учитывать, что при использовании данного подхода имеет место 
+зависимость полученных результатов от порядка обработки точек изображения. 
+Также в этом случае необходимо проанализировать каждый пиксель и~соотнести 
+его с определенной однородной областью.
+  \item Методы разделения и слияния. Эта группа использует изображение в 
+качестве начальной области для разделения~\cite{3-sor}. После создания 
+однородных областей деление заканчивается. Кроме того, соседние регионы 
+связаны на основе квадратичного дерева. Связанные области должны быть 
+гладкими и непрерывными. Для этого используют марковское случайное поле, 
+стабилизированные уравнения обратной диффузии и др.
+  \item Кластеризация. В процессе кластеризации пиксели изображения делятся 
+на группы, которые не пересекаются. Характеристики объектов, входящих 
+в~группу, должны быть близкими. В~противном случае объекты, принадлежащие 
+к разным группам, должны существенно отличаться. Соответственно, 
+расположение пикселей в каждом кластере будет определяться цветовыми 
+вариациями изображения. В~этом случае задача кластеризации определяется как 
+поиск определенного числа паттернов, однозначно определяющих число 
+областей~[7].
+  \end{enumerate}
+  
+  В данной работе предложен метод сегментации изображений на основе 
+разделения и слияния. Этот метод состоит из поиска ребер; истончения 
+вычисленных границ; уменьшения цвета; разбиения изображения квадрата на 
+основе цвета и учета информации о границах; объединения однородных 
+областей на основе графа. Данный алгоритм применяется для извлечения 
+информации о сегментах и анализа их для поиска опорных точек в задачах 
+стереозрения.
+     
+\section{Сегментация}
+
+  В формальном виде сегментация изображения может быть представлена 
+следующим образом~\cite{3-sor}. Пусть изображение~$I$ размером $W\times H$ 
+является некоторой дискретной двумерной функцией $f(x,y)$, где~$I$~--- это двумерная мат\-ри\-ца, 
+в~которой определена точка на изображении, а соответствующие 
+точечные элементы матрицы задают ее цветовую характеристику.
+  
+  Пусть $P$~--- предикат однородности. Тогда сегментация разбивает~$I$ на 
+множество~$N$~областей~$S_n$, $n\hm = 1,\ldots, N$, таких что
+  \begin{enumerate}[(1)]
+  \item $\bigcup\nolimits_{n=1}^N S_n=I$, $S_n\cap S_m=0$, $n\not=m$;
+  \item $P(S_n)=1$ $\forall n$;
+  \item $P(S_n\cup S_m)=0$, $\forall S_n, S_m$--- смежных.
+  \end{enumerate}
+  
+  Первое и второе условия говорят о том, что каждый пиксель изображения 
+принадлежит только одной области~\cite{8-sor}. В~третьем указывается, что 
+области однородны.
+   
+  Процесс сегментации изображения состоит из нескольких этапов (рис.~1).
+  
+  \begin{figure} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=116.949mm 
+\epsfbox{man-1.eps}
+ }
+ \end{center}
+\vspace*{-11pt}
+  \Caption{Этапы сегментации}
+  \end{figure}
+  
+  Первоначально осуществляется выделение контуров на основе цветовых 
+значений. После этого выполняется утончение контура. Далее уменьшается 
+число цветов на изображении и на основе информации о цвете и о контурах 
+выполняется расщепление, а затем слияние.
+  
+  \textbf{Структура данных.} Как упоминалось ранее, сегментация основана на 
+квадродереве~\cite{9-sor}. Изображение хранится в дереве таким образом, что 
+каждый узел имеет четыре потомка~--- NW, NE, SW и SE.
+  
+  Таким образом, дескриптор прямоугольной области изображения и узла 
+дерева ($\mathrm{Node}$) описывается следующим образом:
+  $$
+  \mathrm{Node}= \left\{ \mathrm{Level}, \left\{ \begin{matrix}
+  \mathrm{RegonID}\\ \mathrm{PartitionID}\\ \mathrm{ChNum} \end{matrix}\right\},
+  \mathrm{avgColor, nPoint, nBorder, Rect, Env}\right\}.
+  $$
+Здесь $\mathrm{Level}$~---  высота текущего узла квадродерева; $\mathrm{RegonID}$~--- уникальный 
+идентификатор текущего узла, который вычисляется следующим 
+образом~\cite{10-sor}:
+\begin{equation}
+\mathrm{RegonID= PartitionId \cdot 10 +ChNum}\,;
+\label{e2-sor}
+\end{equation}
+$\mathrm{PartitionID}$~--- идентификатор родителя; $\mathrm{ChNum}$~--- номер узла в~текущем 
+разделе: NW~--- 1, NE~--- 2, SW~--- 3, SE~--- 4; 
+$\mathrm{avgColor}$~--- среднее значение 
+цвета;
+  $\mathrm{nPoint}$~--- число точек в текущем узле;
+  $\mathrm{nBorder}$~--- число точек, принадлежащих контуру в текущем узле;
+  $\mathrm{Rect}$~--- границы узла: {Left}, {Right}, {Top}, {Bottom}; 
+$\mathrm{Env}$~--- идентификаторы соседних узлов: $\mathrm{NorthID}$, $\mathrm{EastID}$, $\mathrm{SouthID}$, 
+$\mathrm{WestID}$.
+  
+  \textbf{Обнаружение контуров}. Для обнаружения контуров используется 
+подход, описанный  
+в~работе~\cite{11-sor}~--- поиск изменения цвета с помощью масок (рис.~2). Для 
+снижения вычислительной нагрузки используются две маски: горизонтальная 
+(0$^\circ$) и вертикальная (90$^\circ$) (рис.~2,\,\textit{б}).
+  
+\begin{figure} %fig2
+\begin{center}
+ \mbox{%
+ \epsfxsize=86.699mm 
+\epsfbox{man-2.eps}
+ }
+ \end{center}
+\vspace*{-11pt}
+\Caption{Применение масок: (\textit{а})~расположение пикселей: (\textit{б})~маски 0$^\circ$ 
+и~90$^\circ$}
+\end{figure}
+
+  Пороговое значение вычисляется следующим образом:
+  $$
+  T=\left( \mathrm{dp}\,(i,j)\vert \mathrm{Avg}\right)\,;
+  $$
+  
+  
+  \noindent
+  \begin{multline*}
+  \left( \mathrm{dp}(i,j)\vert 0^\circ\right)= {}\\
+  {}=\sum\limits_{i=0}^{\max I} 
+\sum\limits_{j=0}^{\max J}\left[ \left\vert \left( 
+ K_{\max} R(i,j-1) +G(i,j-1) +B(i,j-1)\right) %*\cdot 
+ a(i,j-1)+{}\right.\right.\\
+ \left.\left.{}+\left( K_{\max} R(i,j+1) +G(i,j-1)
+   +B(i,j+1)\right) %* 
+   a(i,j+1)\right\vert \right]\,;
+  \end{multline*}
+  
+  \vspace*{-12pt}
+  
+  \noindent
+  \begin{multline*}
+    \left( \mathrm{dp}\,(i,j)\vert 90^\circ \right) ={}\\
+    {}=\sum\limits_{i=0}^{\max I} 
+\sum\limits_{j=0}^{\max J}\left[ \left\vert
+  \left( K_{\max} R(i-1,j) +G(i-1,j) +B(i-1,j) \right) %*\cdot 
+  b(i-1,j)+{}\right.\right.\\
+\left.\left.  {}+\left( K_{\max} R(i+1,j)+ 
+G(i+1,j)+B(i+1,j)\right) %* 
+b(i+1,j)\right\vert \right]\,.
+  \end{multline*}
+  
+  \textbf{Утончение контура}. Для прореживания границ применяется алгоритм, 
+описанный в~\cite{12-sor}, в~котором применяются два шага итерации~--- один 
+для горизонтальных и вертикальных линий, второй для наклонных. После этого 
+необходимо провести отбор. Наиболее подходящие границы выбираются на 
+основе компонентов связности. Учитываются непрерывность и длина границ. 
+Результатом этой операции становится создание бинарной матрицы $\mathrm{brdMtx}$ 
+размерности $W\times H$.
+   
+  \textbf{Прореживание цвета}. Для уменьшения цвета изображения 
+используется подход, описанный  
+в~\cite{13-sor}. Такой выбор обусловлен простотой реализации и~качеством 
+получаемых результатов.
+  
+  \textbf{Расщепление}. Процесс расщепления осуществляется путем деления 
+родительского узла на четыре дочерних. Для каждого квадранта проверяется, 
+насколько однородна часть изображения, лежащая в его границах. В~общем 
+случае, если предикат, примененный к четырем дочерним узлам, истинен, то 
+расщепления не происходит:
+
+\noindent
+  $$
+  \mathrm{Node}_n= \begin{cases}
+  \bigcup\limits_{j=1}^4 \mathrm{Node}_{nj}, & \mbox{если } P(\mathrm{Node}_n)=\mathrm{false};\\
+   \mathrm{Node}_n & \mbox{иначе}.
+  \end{cases}
+  $$
+  
+  Для каждого дочернего узла вычисляется среднее значение его цвета 
+$\mathrm{avgColor}$ и число граничных пикселей $\mathrm{numBrd}$. Если манхэттенское 
+расстояние между $\mathrm{avgColor}$ и цветом узла $\mathrm{pColor}$ меньше~$T_{\mathrm{clr}}$ или 
+$\mathrm{numBrd} \hm\geq T_{\mathrm{brd}}$, то текущий узел делится на четыре.
+  
+  Процесс расщепления можно представить следующим образом:
+\vspace*{4pt}
+
+\noindent
+  $$
+  P\left( \mathrm{Node}_n\right) =
+  \begin{cases}
+  \mbox{false}, & \mbox{если } \displaystyle \sum\limits_{x=0}^H \sum\limits_{y=0}^W 
+\left\vert \mathrm{avgColor}_{\mathrm{Node}_n}\left(f(x,y)\right) -{}\right.\\
+&\hspace*{70pt}\left.{}-\mathrm{pColor}_{x,y\in \mathrm{Node}_n} 
+\left(f(x,y)\right)\right\vert \leq T_{\mathrm{clr}}\,;\\[3pt]
+  \mbox{false}, & \mbox{если } \mathrm{numBrd}_{\mathrm{Node}_n}\geq T_{\mathrm{brd}}\,;\\
+  \mbox{true} & \mbox{иначе}.
+  \end{cases}
+  $$
+\vspace*{-2pt}
+      
+  Алгоритм разделения узлов выглядит следующим образом. На вход подается 
+изображение с уменьшенным числом цветов $\mathrm{Iq}$ и $\mathrm{brdMtx}$. В~цикле 
+выполняются следующие действия:
+  \begin{itemize}
+\item вычисление координат потомка;
+\item поиск среднего цвета для $\mathrm{Node}_n$ каждого канала:
+\item  вычисление дистанции между $\mathrm{avgColor}_{\mathrm{Node}_n}$ и $\mathrm{pColor}_{x,y\in 
+\mathrm{Node}_n}$;
+\item если $\mathrm{dst}_c\leq T_{\mathrm{clr}}$ или $\mathrm{brd}_n\geq T_{\mathrm{brd}}$, то выполнение следующего 
+действия, иначе конец;
+\item добавление информации о текущем узле, вычисление $\mathrm{RegionID}$ по 
+формуле~(\ref{e2-sor}).
+\end{itemize}
+
+  На выходе получаем $\bigcup\nolimits_{n=1}^N S_n\hm=I$.
+  
+  Результатом выполнения этого алгоритма будет максимальное разбиение 
+изображений.
+  
+  \textbf{Слияние}. Этап объединения начинается с определения соседей для 
+каждого узла. Эта операция основана на модификации подхода, предложенного 
+в работе~\cite{14-sor}, т.\,е.\ используется конечный автомат (КА), 
+представленный в таблице.
+
+  В отличие от~\cite{14-sor} используются четыре состояния. Это делается для 
+снижения вычислительной нагрузки.
+  
+  Два значения (число и тире) в ячейке указывают на то, что поиск соседей 
+в~этом направлении должен продолжаться для следующего прохода (R, L, D и~U). 
+Одно значение в ячейке означает, что текущий квадрант последний и~поиск 
+в~этом направлении необходимо остановить.
+  
+%\begin{floatingfigure}{57mm}  
+  \begin{table}
+\small 
+%\vspace*{-3pt}
+
+  \begin{center}
+  \begin{tabular}{|c|c|c|c|c|}
+  \multicolumn{5}{c}{\tabcolsep=-3pt\begin{tabular}{l}
+ Конечный автомат для соседей
+ квад-\\ рантов по четырем направлениям\end{tabular}}\\
+ \multicolumn{5}{c}{\ }\\[-6pt]
+ \hline
+\tabcolsep=-1pt\begin{tabular}{c}Направ-\end{tabular}&\multicolumn{4}{c|}{Квадрант}\\ 
+\cline{2-5}
+\multicolumn{1}{|c|}{ление} & 1& 2& 3& 4\\ 
+\hline
+&\multicolumn{1}{p{16pt}|}{\hspace*{16pt}}&
+\multicolumn{1}{p{16pt}|}{\hspace*{16pt}}&
+\multicolumn{1}{p{16pt}|}{\hspace*{16pt}}&
+\multicolumn{1}{p{16pt}|}{\hspace*{16pt}}\\[-10pt]
+R & 2\hphantom{$-$}& 1$-$& 4\hphantom{$-$}& 3$-$\\ 
+L & 2$-$& 1\hphantom{$-$}& 4$-$& 3\hphantom{$-$}\\
+D & 3\hphantom{$-$}& 4\hphantom{$-$}& 1$-$& 2$-$\\
+U & 3$-$& 4$-$& 1\hphantom{$-$}& 2\hphantom{$-$}\\ 
+\hline
+\end{tabular}
+\end{center}
+%\vspace*{-6pt}
+\end{table}
+%\end{floatingfigure}
+
+Ниже приведена последовательность шагов алгоритма поиска соседей для узла:
+  \begin{itemize}
+\item если {Left}, {Right}, {Top}, {Bottom} равны~0 или 
+размеру изображения ($W$, $H$), то в соответствующем направлении соседей 
+нет;
+\item вычислить соседа для $\mathrm{Node}_n$: в цикле для всех существующих 
+направлений (не равных~0) вычислить все значения соседних квадрантов на 
+основе $\mathrm{ChNum}$ в соответствии с таблицей;
+\item занести значение в~$\mathrm{Env}$.
+\end{itemize}
+
+  Конечный автомат возвращает число, обозначающее соседний квадрант в~со\-от\-вет\-ствующем 
+направлении. Уровень соседа вычисляется до размера не менее размера 
+текущего узла~\cite{14-sor}. Но квадрант может граничить с соседом любого 
+размера. В~этом случае необходимо уточнение размера соседей. Поскольку 
+$\mathrm{Env}$ содержит идентификатор соседей, необходимо провести направленный 
+спуск по дереву и определить существование узла с соответствующим 
+идентификатором. Ниже представлен алгоритм поиска существующих соседей.
+  
+  На вход подается дерево квадрантов $\mathrm{QTree}$ с вычисленным $\mathrm{Env}$. Далее 
+выполняются следующие действия:
+  \begin{itemize}
+\item просмотр значений из $\mathrm{Env}$ и занесение их в стек $\mathrm{strID}$;
+\item в цикле осуществить просмотр значений для верхнего значения $\mathrm{strID}$: 
+занести его в текущий путь $\mathrm{curWay}$, если его длина равна~0 или узел с 
+текущим номером не существует, то закончить дальнейшее рассмотрение 
+текущего пути и вернуть существующий путь и указатель на последний 
+существующий узел этого пути, иначе занести значение в пройденный путь 
+$\mathrm{rtnWay}$, повторить для следующего значения;
+\item создать связь из текущего узла в узел с индексом в~$\mathrm{rtnWay}$;
+\item сохранить пройденный путь $\mathrm{rtnWay}$ и указатель на узел.
+  \end{itemize}
+  
+  На выходе алгоритма~--- $\mathrm{QTree}$ с вычисленным существующим $\mathrm{Env}$ 
+  и~ссылками на соседей. Результатом работы этого алгоритма будет граф, в 
+котором имеются переходы от узла к каждому существующему соседу, не 
+меньше текущего узла.
+  
+  Для того чтобы осуществить слияние, необходимо перейти к линейным 
+формам квадродерева $\mathrm{QTree}$~--- $\mathrm{LnQTree}$~--- и провести сортировку по 
+числу точек в квадранте в порядке возрастания. Это делается для ускорения 
+слияния. 
+  
+  Алгоритм слияния на вход получает дерево в отсортированном линейном 
+виде $\mathrm{LnQTree}$ и~предполагает следующую последовательность шагов:
+  \begin{itemize}
+\item осуществить просмотр массива $\mathrm{LnQTree}$, пока в~нем имеются 
+элементы;
+\item извлечь крайний элемент массива $\mathrm{LnQTree}$ и~посмотреть массив 
+слияния $\mathrm{Segment}$ (содержащий индекс сегмента, которому принадлежит 
+квадрант,
+число точек и~цвет): если он пуст, то создать первый сегмент, иначе 
+создать новый сегмент;
+
+\item пометить узел как посещенный;
+\item в цикле осуществить просмотр узлов, смежных с узлами текущего 
+сегмента, и~поместить их в~$\mathrm{vNgbrSgmNode}$;
+\item вычислить близость цвета сегмента и~узла соседа и,~если она меньше 
+порога, добавить этот узел в~сегмент и~отметить узел как посещенный;
+\item осуществить просмотр $\mathrm{vNgbrSgmNode}$ и~извлечь узлы, которые были 
+посещены;
+\item аналогично пройтись по массиву $\mathrm{LnQTree}$ и~удалить посещенные узлы.
+  \end{itemize}
+  
+  На выходе алгоритма~--- массив сегментов, в~котором каждый сегмент 
+состоит из узлов, близких по цветовым характеристикам.
+  
+  Таким образом, каждый узел можно классифицировать и~сопоставить 
+  с~определенным сегментом. Принадлежность к~соответствующему сегменту 
+определяется исходя из значения, указанного в~$\mathrm{segmentnumber}$, 
+используемого в~качестве индекса массива сегментов.
+\vspace*{-3pt}
+
+\section{Результаты}
+
+  Результат работы описанного алгоритма приведен на рис.~3. 
+\vspace*{-3pt}
+
+\section{Выводы}
+
+  Как видно из представленных результатов, алгоритм сегментации хорошо 
+справляется с изображениями, содержащими значительное число мелких 
+деталей, потеря которых создает трудности при анализе. При этом фрагменты 
+изображения, представляющие собой однородную область, объединяются в 
+более крупные сегменты.
+  
+  Параметры, используемые алгоритмом при сегментации, были установлены 
+эмпирически. Возможно, было бы целесообразно выбрать их автоматически 
+в~зависимости от типа входного изображения. По мере дальнейшей работы 
+возможно улучшение выбора границ и, вероятно, использование 
+дополнительных индикаторов, например основанных на текстурах, для 
+улучшения результатов сегментации, в частности для сложных изображений. 
+
+\pagebreak
+
+\begin{figure} %fig3
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{man-3.eps}
+ }
+ \end{center}
+\vspace*{-11pt}
+\Caption{Результаты работы алгоритма: (\textit{a})~исходное изображение; (\textit{б})~утончение 
+контуров; (\textit{в})~уменьшение цветов на изображении; (\textit{г})~разделение; 
+(\textit{д})~слияние}
+%\vspace*{-2pt}
+\end{figure}
+     
+
+%\vspace*{-3pt}
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+  
+\bibitem{1-sor}
+\Au{Stojmenovic M., Montero A.\,S., Nayak~A.} Colour and texture based pyramidal image 
+segmentation~/\!\!/  Conference (International) on Audio, Language and Image Processing 
+Proceedings.~--- IEEE, 2010. P.~778--786.
+\bibitem{2-sor}
+\Au{Correa-Tome F.\,E., Sanchez-Yanez R.\,E.} Integral split-and-merge methodology for real-time 
+image segmentation~/\!\!/ J.~Electron. Imaging, 2015. Vol.~24. Iss.~1. P.~1--11.
+\bibitem{3-sor}
+\Au{Волков В.\,Н., Сорокин А.\,И.} Классификация методов сегментации цветных 
+изоб\-ра\-же\-ний~/\!\!/ Информационные системы и технологии, 2018. №\,4(108). С.~32--44.
+\bibitem{4-sor}
+\Au{Fu K.\,S., Mui J.\,K.} A~survey on image segmentation, pattern recognition~/\!\!/ Pattern 
+Recogn., 1981. Vol.~13. Iss.~1.  
+P.~3--16.
+\bibitem{5-sor}
+\Au{Ferhat F.\,A., Kerdjidj O., Messaoudi~K., Abdelwahhab~B.} Implementation of Sobel, Prewitt, 
+Roberts edge detection on FPGA~/\!\!/ World Congress in Computer Science, Computer Engineering, 
+and Applied Computing Proceedings, 2013. P.~1--4.
+\bibitem{6-sor}
+\Au{Lucchese L., Mitray S.\,K.} Color image segmentation: A~state-of-the-art survey~/\!\!/ 
+P.~Indian National Science Academy, 2001. Vol.~67. Iss.~2. P.~207--221.
+\bibitem{7-sor}
+\Au{Verges-Llahi J.} Color constancy and image segmentation techniques for applications to mobile 
+robotics.~--- Barcelona, Spain: Polytechnic University of Catalonia, 2005.  PhD Thesis. 23~p.
+\bibitem{8-sor}
+\Au{Lorenzo-Navarro J., Hern$\acute{\mbox{a}}$ndez-Tejera M.} Image segmentation using a 
+modified split and merge technique~/\!\!/ Cybernet. Syst., 2007. Vol.~25. Iss.~1. P.~137--162.
+\bibitem{9-sor}
+\Au{Aizawa K., Motomura K., Kimura~S., Kadowaki~R., Fan~J.} Constant time neighbor finding in 
+quadtrees: An experimental result~/\!\!/ 3rd  Symposium (International) on Communications, Control and 
+Signal Processing Proceedings.~--- IEEE, 2008. P.~505--510.
+
+\bibitem{10-sor}
+\Au{Kelkar D., Gupta S.} Improved quadtree method for split merge image segmentation~/\!\!/ 1st 
+Conference (International) on Emerging Trends in Engineering and Technology Proceedings.~---
+IEEE, 2008. P.~44--47.
+\bibitem{11-sor}
+\Au{Сорокин А.\,И., Волков В.\,Н. Шульдешова~О.\,В.} Синтетический алгоритм обнаружения 
+контуров объектов на основе  
+RGB-ко\-ор\-ди\-нат~/\!\!/ Информационные системы и технологии, 2019. №\,2(112). С.~27--
+34.
+\bibitem{12-sor}
+\Au{Kwon J.\,S., Woong J., Kang E.\,K.} An enhanced thinning algorithm using parallel processing~/\!\!/ 
+Conference (International) on Image Processing Proceedings.~--- IEEE, 2001. Vol.~3. P.~752--755.
+\bibitem{13-sor}
+\Au{Lagani$\grave{\mbox{e}}$re R.} OpenCV~2 computer vision application programming 
+cookbook.~--- Packt Publishing, 2011. 306~p.
+\bibitem{14-sor}
+\Au{Yoder R., Bloniarz P.} A~practical algorithm for computing neighbors in quadtrees, octrees, and 
+hyperoctrees~/\!\!/  Conference (International) on Modeling, Simulation \&~Visualization Methods
+Proceedings.~--- 
+CSREA Press, 2006. P.~249--255.
+\end{thebibliography}
+} }
+
+
+%\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 14.09.20}}
+
+
+
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{8pt}
+
+\def\tit{QUADTREE BASED COLOR IMAGE SEGMENTATION METHOD}
+
+\def\titkol{Quadtree based color image segmentation method}
+
+\def\aut{Yu.\,A.~Maniakov and A.\,I.~Sorokin}
+
+\def\autkol{Yu.\,A.~Maniakov and A.\,I.~Sorokin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-5pt}
+
+
+\noindent
+Orel Branch of the Federal Research Center ``Computer Science and Control''
+of the Russian Academy of Sciences, 
+137~Moskovskoe Shosse, Orel 302025, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2020 vol~30 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2020 vol~30 no\,4
+\hfill \textbf{\thepage}}}
+  
+  
+\vspace*{6pt}
+
+
+\Abste{ The paper presents a color image segmentation method and an algorithm based on quadtree. The 
+proposed method consists of several steps. First of them is border detection based on three-channel color and 
+two masks. Then, the authors apply the thinning algorithm to decrease the area of the found boundary. The 
+segmentation algorithm is divided into two parts. In the first part, the image is divided into segments as much as 
+possible. In the second part, the segments union algorithm uses the finding neighbor's ID
+based on the FSM table and applies a~link to ID to create a graph. The results of color images segmentation obtained on the basis of the 
+described algorithm are presented.}
+
+%%\pagebreak
+
+\KWE{color image; segmentation; quadtree; edge; border; thinning; color reduction; split; merge; pixel}
+
+\DOI{10.14357/08696527200410}
+
+
+%\vspace*{-24pt}
+
+%\Ack
+%\noindent
+ 
+
+\vspace*{-12pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+\bibitem{1-sor-1}
+\Aue{Stojmenovic, M., A. S. Montero, and A.~Nayak.} 2010. Colour and texture based pyramidal image 
+segmentation. \textit{Conference (International) on Audio, Language and Image Processing Proceedings}. 
+IEEE. 778--786.
+\bibitem{2-sor-1}
+\Aue{Correa-Tome, F.\,E., and R.\,E. Sanchez-Yanez.} 2015. Integral split-and-merge methodology for 
+real-time image segmentation. \textit{J.~Electron. Imaging} 24(1):1--11.
+\bibitem{3-sor-1}
+\Aue{Volkov, V.\,N., and A.\,I.~Sorokin.} 2018. Klassifikatsiya metodov segmentatsii tsvetnykh izobrazheniy 
+[Classification of methods of segmentation color image]. \textit{Informatsionnye sistemy i~tekhnologii} 
+[Information Systems and Technologies] 4(108):32--44.
+\bibitem{4-sor-1}
+\Aue{Fu, K.\,S., and J.\,K. Mui.} 1981. A~survey on image segmentation, pattern recognition. \textit{Pattern 
+Recogn.} 13(1):3--16.
+\bibitem{5-sor-1}
+\Aue{Ferhat, F.\,A., O. Kerdjidj, K. Messaoudi, and B.~Abdelwahhab.} 2013. Implementation of Sobel, Prewitt, 
+Roberts edge detection on FPGA. \textit{World Congress in Computer Science, Computer Engineering, and 
+Applied Computing Proceedings}. 1--4.
+\bibitem{6-sor-1}
+\Aue{Lucchese, L., and S.\,K. Mitray.} 2001. Color image segmentation: A~state-of-the-art survey. 
+\textit{P.~Indian National Science Academy} 67(2):207--221.
+\bibitem{7-sor-1}
+\Aue{Verges-Llahi, J.} 2005. Color constancy and image segmentation techniques for applications to mobile 
+robotics. Barcelona, Spain: Polytechnic University of Catalonia. PhD Thesis.  23~p.
+\bibitem{8-sor-1}
+\Aue{Lorenzo-Navarro, J., and M. Hern$\acute{\mbox{a}}$ndez-Tejera.} 2007. Image segmentation using 
+a~modified split and merge technique. \textit{Cybernet. Syst.} 25(1):137--162.
+\bibitem{9-sor-1}
+\Aue{Aizawa, K., K. Motomura, S. Kimura, R.~Kadowaki, and J.~Fan.} 2008. Constant time neighbor finding in 
+quadtrees: An experimental result. \textit{3rd Symposium (International) on Communications, Control and 
+Signal Processing Proceedings}. IEEE. 505--510.
+\bibitem{10-sor-1}
+\Aue{Kelkar, D., and S. Gupta.} 2008. Improved quadtree method for split merge image segmentation. 
+\textit{1st Conference (International) on Emerging Trends in Engineering and Technology Proceedings}. 
+IEEE. 44--47.
+\bibitem{11-sor-1}
+\Aue{Sorokin, A.\,I., V.\,N. Volkov, and O.\,V.~Shuldeshova.} 2019. Sinteticheskiy algoritm obnaruzheniya 
+konturov ob''ektov na osnove RGB-koordinat [Synthetic algorithm for detection of object contours on the raster 
+images based on RGB coordinates]. \textit{In\-for\-ma\-tsi\-on\-nye sistemy i~tekhnologii} [Information Systems and 
+Technologies] 2(112):27--34.
+\bibitem{12-sor-1}
+\Aue{Kwon, J.\,S., J. Woong, and E.\,K.~Kang.} 2001. An enhanced thinning algorithm using parallel 
+processing. \textit{Conference (International) on Image Processing Proceedings}. IEEE. 752--755.
+\bibitem{13-sor-1}
+\Aue{Lagani$\grave{\mbox{e}}$re, R.} 2011. \textit{OpenCV 2 computer vision application programming cookbook}. Packt 
+Publishing. 306~p.
+\bibitem{14-sor-1}
+\Aue{Yoder, R., and P. Bloniarz.} 2006. A~practical algorithm for computing neighbors in quadtrees, octrees, 
+and hyperoctrees. \textit{Conference (International) on Modeling, Simulation \& Visualization Methods 
+Proceedings.} CSREA Press. 249--255.
+\end{thebibliography}
+} }
+
+%\vspace*{-3pt}
+
+\hfill{\small\textit{Received September 14, 2020}} 
+
+%\vspace*{-8pt}
+
+\Contr
+
+\noindent
+\textbf{Maniakov Yuri A.} (b.\ 1984)~--- senior scientist, Orel Branch of the Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 137~Moskovskoe Shosse, Orel 302025, 
+Russian Federation; \mbox{maniakov\_yuri@mail.ru}
+
+\vspace*{5pt}
+
+
+
+\noindent
+\textbf{Sorokin Andrey I.} (b.\ 1987)~--- junior scientist, Orel Branch of the Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 137 Moskovskoe Shosse, Orel 302025, 
+Russian Federation; \mbox{webdi@mail.ru}
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

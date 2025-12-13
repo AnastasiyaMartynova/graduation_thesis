@@ -1,0 +1,695 @@
+%
+%
+% \input{../preamblw}
+%%
+% \begin{document}
+%%
+%
+\renewcommand{\firstpage}{98}
+\renewcommand{\lastpage}{109}
+% \Partition{Математическое моделирование}{Applied mechanics} % Раздел Вестника, в который подаётся статья
+%% Номер УДК
+\udk{517.958:536.2}%Обработка текста. Подготовка текстов : Языки программирования. Компьютерные языки
+\msc{80A22; 76R10, 65M80}% Коды MSC см. http://www.ams.org/msc/
+%
+\title{Математическое моделирование массопереноса в~процессе испарения многокомпонентных жидкостей}
+{Математическое моделирование массопереноса в процессе испарения \dots}% Заголовок, который идёт в верхний колонтитул
+%
+\author{А.~Ю.~Шупляк, С.~П.~Шкаруппа, А.~М.~Штеренберг}{А.~Ю.~Ш\,у\,п\,л\,я\,к,\ С.~П.~Ш\,к\,а\,р\,у\,п\,п\,а,\ А.~М.~Ш\,т\,е\,р\,е\,н\,б\,е\,р\,г}% 
+%
+\institute{\samgtu.}
+%
+\email{E-mails}{yuashuplyak@mail.ru, ecology@samgtu.ru, ashter53@mail.ru} %E-mail's авторов
+%
+\otherinf{\fullauthor{Анатолий Юрьевич Шупляк} \position{инженер} \dept{каф. химической технологии и промышленной экологии}
+\fullauthor{Светлана Петровна Шкаруппа}\regalia{к.х.н., доц.} \position{доцент} \dept{каф. химической технологии и промышленной экологии}
+\fullauthor{Александр Моисеевич Штеренберг}\regalia{д.ф.-м.н., проф.} \position{заведующий кафедрой} \dept{каф. общей физики и физики нефтегазового производства}
+}
+
+\keywords{многокомпонентная жидкость, концентрация, диффузия, испарение, математическая модель, метод функций Грина, задача Стефана}
+%
+\workabstract{Разработана математическая модель процесса испарения многокомпонентных жидкостей для открытых систем с учётом массопереноса веществ в жидкой фазе. Особенностью данной модели является математическое описание процесса одномерного испарения многокомпонентных жидких смесей, содержащих плохо испаряющийся растворитель и $n$ растворённых веществ. Точное аналитическое решение краевой задачи с использованием метода функций Грина получено путём приведения системы дифференциальных уравнений с движущейся границей для $n$ растворённых веществ к $n$ дифференциальным уравнениям с неподвижными границами.}
+
+\engtitle{Mathematical modelling of mass-transfer under the evaporation of multicomponent liquids}
+%
+\engauthor{A.~Yu.~Shuplyak, S.~P.~Shkaruppa, A.~M.~Shterenberg}{A.~Yu.~S\,h\,u\,p\,l\,y\,a\,k,
+S.~P.~S\,h\,k\,a\,r\,u\,p\,p\,a, A.~M.~S\,h\,t\,e\,r\,e\,n\,b\,e\,r\,g}
+%
+%
+\enginstitute{\engsamgtu.}
+%
+\otherenginf{
+\fullauthor{Anatoliy Yu. Shuplyak} \position{Engineer} \dept{Dept. of Chemical Engineering  \& Industrial Ecology}
+\fullauthor{Svetlana~P.~Shkaruppa}\regalia{Ph.\,D. Chem.} \position{Associate Professor} \dept{Dept. of Chemical Engineering  \& Industrial Ecology}
+\fullauthor{Alexander M. Sterenberg} \regalia{Dr. Phys. \& Math. Sci.} \position{Professor, Head of Dept.} \dept{Dept. of General Physics and Physics of Oil and Gas Production}
+}
+%
+\engabstract{The mathematical model of evaporation of multicomponent liquids is developed for open systems with consideration of mass-transfer substances in a liquid phase. Feature of the given model is the mathematical description of one-dimensional evaporation of the multicomponent liquid mixes containing poorly volatile solvent and $n$ of diluted substances. Exact analytical solution of the boundary value problem based on Green's functions method is received by reduction of the differential equations system with moving boundary of the $n$ diluted substances to the $n$ differential equations with fixed boundary. }
+%
+\engkeywords{multicomponent liquid, concentration, diffusion, evaporation, mathematical model, Green's functions method, Stefan problem}
+
+\date{20/III/2013} % Дата поступления статьи в редакцию.
+\revisiondate{27/VI/2013} % В окончательном виде
+
+
+\maketitle
+
+
+Процесс испарения многокомпонентных жидкостей зависит от многих факторов: состава жидкой фазы, изменения ее объёма, наличия градиентов температур и концентраций, взаимного влияния процессов теплообмена и массообмена и т.д. Многообразие факторов, влияющих на процесс, обуславливает многообразие подходов к данной  проблеме [\citen{supl:bib:1}--\citen{supl:bib:7}].
+
+Однако среди значительного количества работ практически отсутствуют исследования процесса испарения многокомпонентных смесей для открытых систем с учётом массопереноса веществ в жидкой фазе, особенно если жидкость содержит неиспаряющиеся (или плохо испаряющиеся) компоненты с высокой концентрацией. Впервые эта проблема исследована в работе [\citen{supl:bib:1}], где рассматривается испарение бинарной смеси, один из компонентов которой не испаряется. 
+Решение для смеси, содержащей $N$ компонентов, с учётом теплообменных процессов приведено в  [\citen{supl:bib:2}], но без учёта наличия в растворе неиспаряющихся веществ. 
+В работе [\citen{supl:bib:3}] дано полное математическое описание испарения в присутствии неиспаряющегося компонента с учётом движущейся во времени границы. Следует отметить, что в указанных работах [\citen{supl:bib:1}--\citen{supl:bib:3}] испарение рассматривается с учётом диффузионного массопереноса в газовой и жидкой фазах при отсутствии конвективных процессов в газовой фазе. При движении воздушных масс над поверхностью зеркала испарения применимость данных работ будет весьма ограничена, в то же время существующие на сегодня модели, отражающие данную специфику, не учитывают массопереноса в жидкой фазе [\citen{supl:bib:5}--\citen{supl:bib:7}].
+
+В связи с этим в задачу настоящей работы входило изучение закономерностей процесса испарения многокомпонентных жидкостей в открытых системах при постоянной температуре и скорости движения газовой фазы. 
+Особенность данного исследования заключается в разработке математической модели процесса одномерного испарения многокомпонентных жидких смесей с высокой концентрацией одного из компонентов (далее по тексту "--- растворитель) и с низкой концентрацией всех остальных $N$ компонентов (далее по тексту "--- растворённые вещества) при постоянном движении воздушного потока над границей раздела фаз. 
+Будем рассматривать два случая: когда растворитель испаряется и не испаряется.
+
+При разработке математической модели будем исходить из следующих допущений: 
+\begin{itemize}
+\item
+в начальный момент времени концентрации веществ распределены равномерно; 
+\item
+испарение веществ с поверхности жидкости подчиняется закону Герца"--~Кнудсена; 
+\item
+парциальное давление насыщенного пара каждого компонента над раствором подчиняется закону Рауля; 
+\item
+массоперенос растворённых веществ в жидкой фазе осуществляется за счет диффузионных процессов, подчиняющихся законам Фика при постоянном коэффициенте диффузии; 
+\item
+массоперенос растворителя в жидкости отсутствует; 
+\item
+интенсивность испарения растворителя в начальный момент времени меньше интенсивностей испарения каждого компонента из $N$ растворенных веществ. 
+
+\end{itemize}
+При этом будем учитывать уменьшение объёма жидкости за счёт испарения путём определения скорости движения границы, разделяющей жидкость и газ.
+
+Математическое описание испарения многокомпонентной жидкости при постоянной температуре растворённых веществ и отсутствии испарения растворителя имеет следующий вид: 
+
+\begin{gather}
+\frac{\partial}{\partial t} C_{i}(x,t) = D_i \frac{\partial^2}{\partial x^2} C_{i}(x,t) \text{ при } h(t)<x<\infty;     
+\label{supl:1}
+\\
+C_{i}(x,t) = \overline{C}_{i}={\rm const} \text{ при }  t = 0;
+\label{supl:2}
+\\
+C_{i}(x,t)\frac{d}{dt}h(t) + D_i \frac{\partial}{\partial x} C_{i}(x,t) = J_{i}(t) \text{ при } x = h(t);        
+\label{supl:3}
+\\
+C_{i}(x,t) = \overline{C}_{i}={\rm const} \text{ при }  x = \infty;
+\label{supl:4}
+\\
+\frac{d}{dt}h(t) = \sum \limits_{j=1}^{N} \Bigl [\frac{1}{\rho_{j}}J_{j}(t) \Bigr];        
+\label{supl:5}
+\\
+h(t) = 0 \text{ при } t = 0;        
+\label{supl:6}
+\\
+J_{j}(t)=\alpha Y_{j}(t)p_{j} \sqrt{\mu_{j} /T};       
+\label{supl:7}
+\\
+Y_{j}(t)=\biggl (\mu_{j} \sum \limits_{k=0}^{N} \bigl [C_{k}(x,t)/\mu_{k} \bigr] \biggr)^{-1} C_{i}(x,t) \text{ при } x = h(t),       
+\label{supl:8}
+\end{gather}
+
+
+\begin{wrapfigure}{O}{5cm}
+\centering
+\includegraphics[scale=.25]{figure1}
+\caption{Схема движения границы: \scriptsize
+1 -- слой~испаряющейся жидкости; 2 -- слой жидкости, который испарится за время~$t$}
+\label{fig:01}
+\end{wrapfigure}
+
+\noindent
+где $t$ "--- время, с; 
+$x$ "--- координата в жидкой фазе, перпендикулярная границе раздела фаз (начало координат соответствует нахождению границы раздела фаз в начальный момент времени, см. рис.~\ref{fig:01}), м; 
+$i$ "--- порядковый номер компонента ($i=0$ соответствует растворителю), $i=1, 2, \dots, N$; 
+$\overline{C}_{i}$, $C_{i}$ "--- начальная концентрация и концентрация в произвольный момент времени (г/м$^3$) $i$-того компонента; 
+$D_{i}$, $J_{i}$, $\mu_{i}$, $p_{i}$, $\rho_{i}$ "--- коэффициент диффузии (м$^2$/c), интенсивность испарения (г/(см$^2$)), молярная масса (г/моль), давление насыщенных паров (Па) и плотность (г/м$^3$) $i$-того компонента соответственно; 
+$Y_{i}$ "--- мольная доля компонента в растворе на границе раздела фаз; 
+$h(t)$ "--- функция зависимости координаты границы раздела фаз от времени, м; 
+$N$ "--- число растворённых веществ в растворителе; 
+$\alpha$ "--- эмпирический коэффициент, зависящий от движения воздушных масс над поверхностью жидкости.
+
+В задаче \eqref{supl:1}--\eqref{supl:8} соотношение \eqref{supl:2} представляет начальное условие, которым задаётся равномерное распределение концентрации всех компонентов в растворе в момент времени $t = 0$. Соотношение \eqref{supl:3} представляет граничное условие, согласно которому на границе раздела фаз сумма диффузионного потока, определяемого первым законом Фика [\citen{supl:bib:8}], и потока, возникающего за счёт движения границы, $i$-того испаряющегося растворённого вещества равна его интенсивности испарения. 
+Соотношение \eqref{supl:4} характеризует равенство концентрации $i$-того компонента начальному значению при $x \to \infty $. Величина $dh(t)/dt$ "--- скорость конвективного потока (стефановский поток [\citen{supl:bib:8}]), возникающего от поступления веществ к поверхности раздела фаз за счёт изменения объёма жидкости. 
+Выражение \eqref{supl:6} задаёт координату границы раздела фаз <<газ--жидкость>> в начальный момент времени.
+Выражение \eqref{supl:7} представляет собой совмещение законов Герца"--~Кнудсена и закона Рауля, где $Y_{i}p_{i}$ "--- парциальное давление насыщенного пара испаряющегося компонента над раствором.
+
+Краевая задача \eqref{supl:1}--\eqref{supl:8} представляет систему $N$ дифференциальных уравнений с нелинейным граничным условием третьего рода (совокупность выражений \eqref{supl:3}, \eqref{supl:7} и \eqref{supl:8}) и соотношениями \eqref{supl:5}--\eqref{supl:6}, описывающими движение верхней границы. 
+
+
+Для упрощения процесса получения аналитического решения задачи \eqref{supl:1}--\eqref{supl:8} перейдём к подвижной системе координат и приведём граничное условие \eqref{supl:3}, \eqref{supl:7}, \eqref{supl:8} к линейному виду. Для перехода к подвижной системе координат с фиксированной верхней границей введём новую независимую переменную $z=x-h(t)$ [9]. Считая, что концентрации растворённых веществ малы по сравнению с концентрацией растворителя, соотношение \eqref{supl:7} в новой системе координат приведём к виду
+\begin{equation}%9
+J_{i}(t)=k_{i}C_{i}(z,t) \text{ при } z=0,      
+\label{supl:9}
+\end{equation}
+где $k_{i}$ "--- константа скорости (м/с) испарения компонента, определяемая по формуле
+\begin{equation}%10
+k_{i}=\alpha \mu_{0}p_{i}/\big(\overline{C}_{0}\sqrt{\mu_{i}T} \big);       
+\label{supl:10}
+\end{equation}
+$\mu_{0}$, $\overline{C}_{0}$ "--- молярная масса (г/моль) и начальная концентрация (г/м$^3$) растворителя.
+
+Введём величину $b$ как среднее значение стефановского потока за некоторый промежуток времени $t_{\max}$:
+\begin{equation}%11
+b=\frac{1}{t_{\max}}\int _{0}^{t_{\max}}\frac{d}{dt}h(t)dt=\frac{1}{t_{\max}} \sum _{i=1}^{N}
+\biggl(\frac{1}{\rho_{i}}\int _{0}^{t_{max}} J_{i}(t)dt \biggr).   
+\label{supl:11}
+\end{equation}
+
+С учётом введения подвижной системы координат и выражений \eqref{supl:9} и \eqref{supl:11}, систему уравнений \eqref{supl:1}--\eqref{supl:8} можно представить в виде
+\begin{gather}%12
+\frac{\partial}{\partial t} C_{i}(z,t) = D_i \frac{\partial^2}{\partial z^2} C_{i}(z,t)+b\frac{\partial}{\partial z} C_{i}(z,t) \text{ при } 0<z<\infty,   
+\label{supl:12}
+\\%13
+C_{i}(z,t) = \overline{C}_{i}={\rm const} \text{ при }  t = 0, 
+\label{supl:13}
+\\
+%14
+ D_i \frac{\partial}{\partial z} C_{i}(z,t) =(k_i-b)C_{i}(z,t) \text{ при } z = 0, 
+\label{supl:15}
+\\
+%15
+C_{i}(z,t) = \overline{C}_{i}={\rm const} \text{ при }  z = \infty, 
+\label{supl:15}
+\end{gather}
+где $i=1, 2, \dots, N$, т.е. в виде $N$ независимых дифференциальных уравнений \eqref{supl:12} с граничными условиями \eqref{supl:13}--\eqref{supl:15} для каждого растворённого вещества.
+
+Решение дифференциального уравнения \eqref{supl:12} при заданных граничных условиях в интегральной форме приведено в \cite{supl:bib:10}:
+\begin{equation}%16
+C_{i}(z,t) = \overline{C}_{i} \int_{0}^{\infty}  G_i(z,\psi,t)d\psi,
+\label{supl:16}
+\end{equation}
+где $G_i(z,\psi,t)$ "--- функция Грина, определяемая выражением
+\begin{multline}%17
+G_{i}(z,\psi,t) = \frac{1}{2\sqrt{\pi D_i t}} \exp \Bigl ( \frac{b(\psi-z)}{2D_i}- \frac{b^2t}{4D_i}\Bigr) 
+\biggl [ \exp \Bigl(-\frac{(z-\psi)^2}{4D_it } \Bigr) + \\
++\exp \Bigl(-\frac{(z+\psi)^2}{4D_it } \Bigr) - 
+\frac{2k_i-b}{D_i} \int _{0}^{\infty} \exp \Bigl(-\frac{(z+\psi+\eta)^2}{4D_it} - 
+\frac{2k_i-b}{2D_i}\eta \Bigr)d\eta  \biggr].
+\label{supl:17}
+\end{multline}
+
+После преобразований решение дифференциального уравнения \eqref{supl:12} примет вид
+\begin{multline}%18
+C_{i}(z,t) = \frac{\overline{C}_i}{2} \Bigl[ \text{erfc} \Bigl(-\frac{z+bt}{2\sqrt{D_it}}\Bigr)
+- \frac{k_i-b}{k_i} \exp \Bigl (- \frac{bz}{D_i} \Bigr )  \mathop{\rm erfc} \Bigl( \frac{z-bt}{2\sqrt{D_it}}\Bigr)+ \\
++ \frac{2k_i-b}{k_i} \exp \Bigl( \frac{(k_i-b)(k_it+z)}{D_i} \Bigr)  \mathop{\rm erfc} \Bigl( \frac{z+(2k_i-b)t}{2\sqrt{D_it}} \Bigr)\Bigr], \quad 0\leq t \leq t_{\max}.
+\label{supl:18}
+\end{multline}
+
+
+Подстановкой выражения \eqref{supl:18} при $z = 0$ в выражение \eqref{supl:9} находим функцию интенсивности испарения от времени при условии, что стефановский поток постоянен ($b = \rm const$):
+\begin{multline}%19
+J_i(t)=\overline{C}_i \Bigl[ \frac{b}{2} \mathop{\rm erfc} \Bigl(-\frac{b}{2}\sqrt{\frac{t}{D_i}} \Bigr)+
+\\+
+\frac{2k_i-b}{2} \text{e}^{ (k_i-b)k_it/D_i} 
+\mathop{\rm erfc} \Bigl( \Bigl[ k_i-\frac{b}{2} \Bigl] \sqrt{\frac{t}{D_i}} \Bigl) \Bigr], \quad 0\leq t \leq t_{\max}.
+\label{supl:19}
+\end{multline}
+
+Следуя \cite{supl:bib:8}, преобразуем второе слагаемое выражения \eqref{supl:19} для вычисления при больших значениях времени: применим разложение функции $\mathop{\rm erfc}(x)$ в асимптотический ряд. 
+После упрощений получим выражение
+\begin{equation}%20
+J_i(t)=\overline{C}_i \Bigg[ \frac{b}{2} \mathop{\rm erfc} \Bigl(-\frac{b}{2}\sqrt{\frac{t}{D_i}} \Bigr)+
+ \sqrt{\frac{D_i}{\pi t}} \text{e}^{ - \frac{b^2t}{4D_i}} 
+\sum \limits_{n=0}^{\infty} \bigg[\frac{2^nD_i^n}{(2k_i-b)^{2n}t^n} \prod \limits_{j=0}^{n} (1-2j) \bigg ] \Bigg].
+\label{supl:20}
+\end{equation}
+
+При больших значениях времени $t$ имеем \cite{supl:bib:8}
+\begin{gather}%21
+\sum \limits_{n=0}^{\infty} \bigg[\frac{2^nD_i^n}{(2k_i-b)^{2n}t^n} \prod \limits_{j=0}^{n} (1-2j) \bigg ] \approx 1, 
+\label{supl:21}
+\\
+%22
+\text{erfc} (-0,5b\sqrt{t/D_i}) \approx 2,
+\quad
+%23
+\exp(-0,25b^2t/D_i) \approx 1.
+\label{supl:23}
+\end{gather}
+
+С учётом выражений \eqref{supl:21}, \eqref{supl:23}  получаем приближённую формулу для расчёта интенсивности испарения при больших значениях времени $t$:
+\begin{equation}%24
+J_i(t) \approx b \overline{C}_i + \overline{C}_i \sqrt{D_i/(\pi t)}.
+\label{supl:24}
+\end{equation}
+
+Схематический график зависимости логарифма функции испарения \eqref{supl:19} от времени представлен на рис.~\ref{fig:02}.
+
+\begin{figure}[b!]
+\centering
+\includegraphics[scale=.35]{figure2}
+\caption{Схематический график зависимости логарифма интенсивности испарения от времени
+для слоя бесконечной глубины}
+\label{fig:02}
+\end{figure}
+
+Анализ результатов, представленных на рис.~\ref{fig:02}, позволяет заключить, что в начальный момент времени ($t = 0$) интенсивность испарения растворённых веществ определяется только константой испарения ($k_i$) (по аналогии с химическими процессами эту область можно назвать кинетической); при больших значениях времени ($t \to \infty$) процесс испарения растворённых веществ можно рассматривать как стационарный:
+\begin{gather}%25
+J_i(t) = k_i \overline{C}_i \text{ при } t = 0,
+\label{supl:26}
+\\
+%26
+\lim \limits_{t \to \infty} \big(J_i(t)\big) =b \overline{C}_i = J_i^*,
+\label{supl:26}
+\end{gather} 
+где $k_i$ "--- константа испарения, определяемая по формуле \eqref{supl:10};  
+$J_i^*$ "--- установившаяся с течением времени интенсивность испарения $i$-того компонента.
+
+Равновесные концентрации растворённых веществ на границе раздела фаз (г/м$^3$) при установившемся стационарном режиме определяются подстановкой в формулу \eqref{supl:9}  выражения \eqref{supl:26}:
+\begin{equation}%27
+C_i^*=J_i^*/k_i=b \overline{C}_i/k_i.
+\label{supl:27}
+\end{equation}
+
+Выражения \eqref{supl:19}--\eqref{supl:26} выведены при условии постоянства стефановского потока (формула \eqref{supl:11}), но при больших значениях времени осреднения средняя скорость стефановского потока может стремиться к нулю. Рассмотрим принципиальную возможность установления стационарного состояния, для которого характерно при больших значениях времени равенство значений функции её среднему значению за этот же промежуток времени.
+
+При подстановке в формулу \eqref{supl:11} зависимости \eqref{supl:24} получаем следующее соотношение:
+
+\begin{equation}%28
+b= \lim \limits_{t_{\max} \to \infty} 
+\biggl[
+    \frac{1}{t_{\max}}\sum \limits_{i=1}^{N} 
+       \bigg (\frac{1}{\rho_i} \int _{0}^{t_{\max}} \bigg [
+            b \overline{C}_i + \overline{C}_i \sqrt{\frac{D_i}{\pi t}} \bigg ]dt
+       \bigg ) 
+\biggr] = \sum \limits_{i=1}^{N} \bigg[\frac{b \overline{C}_i}{\rho_i} \bigg ].
+\label{supl:28}
+\end{equation}
+
+Из выражения \eqref{supl:28} получаем условие перехода процесса в стационарное состояние:
+\begin{equation}%29
+\sum \limits_{i=1}^{N} \overline{y}_i =1.
+\label{supl:29}
+\end{equation}
+Здесь $ \overline{y}_i=\overline{C}_i/\rho_i$  "--- объёмная доля $i$-того растворённого вещества на границе раздела фаз в начальный момент времени ($t = 0$).
+
+Сумма объёмных долей испаряющихся веществ при наличии неиспаряющегося испарителя не может быть равна единице, следовательно, предположение о возможности установления стационарного состояния без участия в испарении растворителя было ложным. В этом случае при больших значениях времени осреднения величина $b \to 0$, следовательно, для бесконечного слоя при отсутствии испарения растворителя интенсивность испарения каждого растворённого вещества будет асимптотически стремиться к выражению, характеризующему диффузионную область протекания процесса:
+\begin{equation}%30
+J_i(t) \approx \overline{C}_i \sqrt{D_i/(\pi t)}.
+\label{supl:30}
+\end{equation}
+
+
+При участии в испарении плохо испаряющегося растворителя его концентрация на границе раздела фаз будет увеличиваться, следовательно, задачу \eqref{supl:1}--\eqref{supl:8} необходимо дополнить выражением для определения объёмной концентрации растворителя через концентрации растворённых веществ:
+
+\begin{equation}%31
+\label{supl:31}
+y_0(x,t)=C_0(x,t)/\rho_0=1-\sum \limits_{i=1}^{N}y_i(x,t),
+\end{equation}
+где $y_i(x,t)$ "--- объёмные доли растворённых веществ (при $i =1, 2, \dots, N$) и растворителя (при $i = 0$) соответственно в момент времени, отличный от начального при координате $x$.
+
+С учётом испарения растворителя выражения \eqref{supl:5} и \eqref{supl:11} примут вид
+\begin{gather}%32
+\frac{d}{dt}h(t) = \sum \limits_{i=0}^{N} \Bigl [\frac{1}{\rho_{i}}J_{i}(t) \Bigr],       
+\label{supl:32}
+\\%33
+b=\frac{1}{t_{\max}} \sum \limits_{i=0}^{N}\biggl[\frac{1}{\rho_{i}}\int _{0}^{t_{\max}} J_{i}(t)dt \biggr],   
+\label{supl:33}
+\end{gather}
+где $J_0(t)$ "--- интенсивность испарения растворителя (г/(с м$^2$)); $\rho_0$ "--- плотность растворителя (г/м$^3$); отношение $J_0(t)/\rho_0$ "--- вклад в скорость стефановского потока процесса испарения растворителя (м/с).
+
+Рассуждая аналогично предыдущему случаю, с учётом выражений \eqref{supl:32} и \eqref{supl:33} получаем модифицированное выражение \eqref{supl:28} в виде формулы
+\begin{equation}%34
+b=b \sum \limits_{i=1}^{N} \bigl [ \overline{C}_i/\rho_i \bigr] + k_0 C_0^*/\rho_0, 
+\label{supl:34}
+\end{equation}
+где $C_0^*$  "--- равновесная концентрация растворителя на границе раздела фаз (г/м$^3$); 
+член  $k_0 C_0^*/\rho_0$ характеризует  испарение растворителя в~кинетической области. 
+
+Определяя отношение  $C_0^*/\rho_0$ из выражения \eqref{supl:31} и подставляя его в выражение \eqref{supl:34}, находим
+\begin{equation} %35
+\label{supl:35}
+b=b \sum \limits_{i=1}^{N} \overline{y}_i  + k_0 \biggl [1- \sum \limits_{i=1}^{N} y_i \biggr].
+\end{equation}
+
+Для нахождения объёмных долей растворённых веществ разделим концентрацию из выражения \eqref{supl:27} для каждого компонента на его плотность:
+\begin{equation}%36
+\label{supl:36}
+y_i = b \overline{y}_i / k_i.
+\end{equation}
+
+Подставляя \eqref{supl:36}  в \eqref{supl:35}, после преобразований получаем уравнение относительно величины стефановского потока:
+
+\begin{equation}%37
+\label{supl:37}
+b \biggl [ 1- \sum \limits_{i=1}^{N}\overline{y}_i+k_0 \sum \limits_{i=1}^{N} \Bigl( \overline{y}_i/k_i \Bigr) \biggr]= k_0 .
+\end{equation}
+
+Из выражения \eqref{supl:37} получаем значение стефановского потока:
+\begin{equation}%38
+\label{supl:38}
+b = \biggl [\sum \limits_{i=0}^{N} \Bigl(\frac{\overline{y}_i}{k_i} \Bigr)  \biggr]^{-1}.
+\end{equation}
+
+При $$\frac{\overline{y}_0}{k_0}\gg \sum \limits_{i=0}^{N} \Bigl(\frac{\overline{y}_i}{k_i} \Bigr)$$  скорость стефановского потока определяется константой испарения растворителя:
+%\begin{equation}%39
+%\label{supl:39}
+$
+b \approx k_0.
+$
+%\end{equation}
+
+Для слоя конечной глубины $H$ имеем задачу, аналогичную рассмотренной задаче \eqref{supl:1}--\eqref{supl:8}, где вместо граничного условия \eqref{supl:4} необходимо использовать соотношение
+\begin{equation}%40
+\label{supl:40}
+\frac{\partial}{\partial x} C(x,t) = 0 \text{ при } x = H.
+\end{equation}
+
+Проведя аналогичные операции, получим задачу $N$ независимых дифференциальных уравнений \eqref{supl:12} с граничными условиями \eqref{supl:13}--\eqref{supl:15} для каждого растворённого вещества, где вместо граничного условия \eqref{supl:15} принимается соотношение
+\begin{equation}%41
+\label{supl:41}
+\frac{\partial}{\partial z} C(z,t) = 0 \text{ при } z = H - h(t).
+\end{equation}
+
+Из граничного условия \eqref{supl:41} следует, что для ограниченной области жидкой фазы при подвижной системе координат необходимо учитывать движение нижней границы. Между тем для начальной стадии процесса испарения слой можно считать бесконечным. С течением времени концентрации растворённых веществ на поверхности раздела фаз снижаются: уменьшается скорость стефановского потока. При достижении изменения концентрации $i$-того компонента влияние движения границы может оказаться незначительным. Введём параметр эффективной толщины слоя
+\begin{equation}%42
+\label{supl:42}
+H_\text{\slshape eff}=H-\sum \limits_{i=0}^{N} \biggl [\frac{1}{\rho_i} \int _{0}^{t_{\max}}J_i(t)dt
+\biggr].
+\end{equation}
+С учётом выражения \eqref{supl:42} граничное условие \eqref{supl:41} приводится к соотношению
+\begin{equation}%43
+\label{supl:43}
+\frac{\partial}{\partial z} C(z,t) = 0 \text{ при } z = H_\text{\slshape eff}.
+\end{equation}
+
+Таким образом, с помощью упрощающего предположения \eqref{supl:42} приводим $N$ дифференциальных уравнений \eqref{supl:12} с подвижной нижней границей к классическому виду.
+
+Решение дифференциального уравнения \eqref{supl:12} при заданных граничных условиях в интегральной форме приведено в \cite{supl:bib:10}:
+
+\begin{equation}%44
+\label{supl:44}
+C_{i}(z,t) = \overline{C}_{i} \int _{0}^{H_\text{\slshape eff}}  G_i(z,\psi,t)d\psi,
+\end{equation}
+где $G_i(z,\psi,t)$ "--- функция Грина, определяемая так:
+\begin{gather}%45
+\label{supl:45}
+G_i(z,\psi,t)=\exp \Bigl(\frac{b(\psi-z)}{2D_i}-\frac{b^2t}{4D_i}\Bigr)
+\sum \limits_{n=0}^{\infty} \frac1{B_n}{f_n(z)f_n(\psi)\exp(-D_i\theta_n^2t)};
+\\
+%46
+f_n(z)=\cos(\theta z) + (2k_i-b)\sin(\theta z)/(2D_i\theta_n);
+\label{supl:46}
+\\
+%47
+\label{supl:47}
+B_n=- \frac{b}{4D_i\theta_n^2} \frac{4D_i^2\theta_n^2+(2k_i-b)^2}{4D_i^2\theta_n^2+b^2}+
+\frac{2k_i-b}{4D_i\theta_n^2}+\frac{H_\text{\slshape eff}}{2}+\frac{H_\text{\slshape eff}(2k_i-b)^2}{8D_i^2\theta_n^2};
+\end{gather}
+$\theta_n$ "--- множество положительных корней трансцендентного уравнения
+\begin{equation}%48
+\label{supl:48}
+\frac {\tg(H_\text{\slshape eff}\theta_n)}{\theta_n}=\frac{4D_i(k_i-b)}{4D_i^2\theta_n^2+b(2k_i-b)}.
+\end{equation}
+
+После преобразований решение дифференциального уравнения \eqref{supl:12} примет вид
+%\begin{eqnarray}%49
+%\label{supl:49}
+%C_i(z,t)=16D_i^2(k_i-b)\overline{C}_i \exp \big(-bz/(2D_i)-b^2t/(4D_i) \big) \times \nonumber\\
+%\times \sum \limits_{n=0}^{\infty}
+%\frac
+%{\theta_n[2D_i\theta_n \cos (\theta_n z)+(2k_i-b) \sin (\theta_n z)] \exp(-D_i\theta_n^2 t)}
+%{[4D_i^2\theta_n^2+[2k_i-b]^2][4D_i^2\theta_n^2+b^2]H_\text{\slshape eff}+4D_i[k_i-b][4D_i^2\theta_n^2-b[2k_i-b]]}.
+%\end{eqnarray}
+%
+%Выражение (49) можно представить более компактно в виде выражения:
+\begin{equation}%50
+\label{supl:50}
+C_i(z,t)=2 \overline{C}_i \text{e}^{-\frac{z\lambda_b}{H_\text{\slshape eff}}}
+\sum \limits_{n=0}^{\infty}
+\frac{\xi_n
+\bigg [\xi_n \cos  \Big[ \frac{z \xi_n} {H_\text{\slshape eff}} \Big]
++\lambda_\Sigma \sin\Big[ \frac{z \xi_n} {H_\text{\slshape eff}} \Big] \bigg] 
+\text{e}^{-D_it (\xi_n^2+\lambda_b^2)/H_\text{\slshape eff}^2}}
+{\xi_n^2-\lambda_b\lambda_\Sigma+(\xi_n^2+\lambda_\Sigma^2)(\xi_n^2+\lambda_b^2)/(\lambda_\Sigma-\lambda_b)},
+\end{equation}
+где $\lambda_\Sigma, \lambda_b, \lambda_k$ "--- критериальные числа, определяемые выражениями
+\begin{gather}%51
+\label{supl:51}
+\lambda_\Sigma=\lambda_k-\lambda_b;
+\quad 
+%\\%52
+%\label{supl:52}
+\lambda_b={\sf Pe}/2;%(b H_\text{\slshape eff}/D_i)/2;
+\\%53
+\label{supl:53}
+\lambda_k=k_i H_\text{\slshape eff}/D_i;
+\end{gather}
+${\sf Pe}=b H_\text{\slshape eff}/D_i$ "--- диффузионный критерий Пекле; $\xi_n$ "--- множество положительных корней трансцендентного уравнения 
+\begin{equation}%54
+\label{supl:54}
+ \tg(\xi_n)=\xi_n(\lambda_\Sigma-\lambda_b)/(\xi_n^2+\lambda_b\lambda_\Sigma)
+\end{equation}
+на отрезках $[n\pi; n\pi+\pi/2]$, $n=0, 1, 2, \dots$.
+
+Подставляя значение концентрации вещества в жидкости на границе раздела фаз, определяемой из выражения \eqref{supl:50} при $z = 0$, в выражение \eqref{supl:9}, после преобразований получаем выражение для расчёта интенсивности испарения:
+\begin{equation}%55
+\label{supl:55}
+J(t)=2 \frac{D_i\overline{C}_i}{H_\text{\slshape eff}} 
+\sum \limits_{n=0}^{\infty}
+\frac{\lambda_k\xi_n^2
+\exp \big(-D_it [\xi_n^2+\lambda_b^2]/H_\text{\slshape eff}^2 \big)}
+{\xi_n^2-\lambda_b\lambda_\Sigma+(\xi_n^2+\lambda_\Sigma^2)(\xi_n^2+\lambda_b^2)/(\lambda_\Sigma-\lambda_b)}.
+\end{equation}
+
+С течением времени ряд \eqref{supl:55} сходится к первому члену ($n = 0$) и функция интенсивности испарения приводится к экспоненте (см. рис.~\ref{fig:03}):
+\begin{equation}%56
+\label{supl:56}
+J_i(t)=A_1\exp(-A_2t),
+\end{equation}
+где 
+\begin{gather}%57
+\label{supl:57}
+A_1 = \frac{1}{H_\text{\slshape eff}}
+\frac{2\overline{C}D_i\lambda_k\xi_0^2(\lambda_\Sigma-\lambda_b)}
+{(\lambda_\Sigma-\lambda_b)(\xi_0^2-\lambda_b\lambda_\Sigma)+
+(\xi_0^2+\lambda_\Sigma^2)(\xi_0^2+\lambda_b^2)},
+\\%58
+A_2=D_i(\xi_0^2+\lambda_b^2)/H_\text{\slshape eff}^2.
+\label{supl:58}
+\end{gather}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=.3]{figure3}
+\caption{Зависимость логарифма интенсивности испарения от времени для слоя глубины $H$}
+\label{fig:03}
+\end{figure}
+
+Для того чтобы математическая модель, выраженная формулами \eqref{supl:54} и \eqref{supl:55}, имела смысл, необходимо, чтобы у трансцендентного уравнения \eqref{supl:54} на отрезке $[0, \pi/2]$ был корень.
+Запишем условие нахождения корня на данном отрезке:
+\begin{equation}%59
+(\lambda_\Sigma-\lambda_b)/\lambda_b\lambda_\Sigma>1.
+\label{supl:59}
+\end{equation}
+%где $(\lambda_\Sigma-\lambda_b)/\lambda_b\lambda_\Sigma$ и $1$ -- значения производных функций 
+%$\xi_0(\lambda_\Sigma-\lambda_b)/(\xi_0^2+\lambda_b\lambda_\Sigma)$ и $\tan (\xi_0)$ по переменной $\xi_0$ в точке $0$.
+Подставляем в это условие вместо $\lambda_\Sigma$ выражение \eqref{supl:53} и решаем неравенство относительно $\lambda_b$ с учётом, что $\lambda_k$ и $\lambda_b$ больше нуля и $\lambda_b<\lambda_k$:
+\begin{equation}%60
+\label{supl:60}
+\lambda_b<1+0,5\lambda_k-0,5\sqrt{\lambda_k^2+4}.
+\end{equation}
+Последнее выражение можно переписать в виде
+\begin{equation}%61
+{\sf Pe}<2+\lambda_k-\sqrt{\lambda_k^2+4}.
+\label{supl:61}
+\end{equation}
+В предельном случае %при больших значениях $\lambda_k$ имеем 
+$\lim \limits_{\lambda_k \to \infty} [\lambda_k-\sqrt{\lambda_k^2+4}]=0$ и
+%\begin{equation}%62
+$
+{\sf Pe}<2.
+$%\label{supl:62}
+%\end{equation}
+
+При невыполнении условия \eqref{supl:61} процесс не выходит на экспоненту, изменение интенсивности испарения вещества во времени будет описываться выражением \eqref{supl:19}, как для слоя жидкости бесконечной глубины.
+Если растворитель не испаряется или значение числа Пекле настолько мало, что им можно пренебречь ($\lambda_b \to 0$), то выражение для расчёта интенсивности испарения примет вид
+\begin{equation}
+J_i(t)=2\lambda_k^2 \frac{D_i \overline{C}_i}{H_\text{\slshape eff}} \sum \limits_{n=0}^\infty
+\frac{\exp (D_i\zeta_n^2t/H_\text{\slshape eff}^2)}{\lambda_k^2+\lambda_k+\zeta_n^2},
+\label{supl:63}
+\end{equation}
+где $\zeta$ определяется из решения трансцендентного уравнения
+\begin{equation}
+\tg (\zeta) = \lambda_k/\zeta.
+\label{supl:64}
+\end{equation}
+
+Из  формул \eqref{supl:19}, \eqref{supl:26}, \eqref{supl:30}, \eqref{supl:54}, \eqref{supl:55}, \eqref{supl:61}, \eqref{supl:63} и \eqref{supl:64} для расчёта испарения  следует, что если растворитель не испаряется, то конвективный (стефановский) поток, возникающий за счёт поступления веществ к границе раздела фаз, с течением времени прекращается, и испарение будет стремиться к диффузионному режиму (выражения \eqref{supl:63} и \eqref{supl:64}, при этом в начальные моменты времени, пока концевой эффект слоя не проявляется, для расчёта можно использовать выражение \eqref{supl:30}).
+При испарении растворителя для веществ, диффузионный критерий которых соответствует условию \eqref{supl:61}, может установиться квазистационарное состояние, выраженное формулой \eqref{supl:26}. Длительность стационарного состояния обуславливается соблюдением условия \eqref{supl:61}. Когда условие \eqref{supl:61} нарушится, для некоторого растворённого вещества его испарение будет описываться формулами \eqref{supl:54} и \eqref{supl:55}, а процесс будет стремиться к стационарному испарению без участия этого компонента.
+
+\smallskip
+
+\textbf{Выводы.}
+Таким образом, на основании существующих модельных представлений получена математическая модель, описывающая испарение многокомпонентной жидкости, содержащей в избытке один из компонентов (растворитель), интенсивность испарения которого меньше интенсивности испарения остальных компонентов (растворённых веществ). 
+
+Исходя из модели при рассмотрении процесса испарения многокомпонентных жидкостей можно выделить три группы веществ: растворитель, растворённые вещества, для которых выполняется условие \eqref{supl:61}, и растворённые вещества, для которых условие \eqref{supl:61} не выполняется.
+
+Данная модель характерна для смесей, содержащих значительное количество плохо испаряющихся компонентов примерно одинаковой плотности или разной плотности, но высокой вязкости. С течением времени концентрация быстро испаряющихся компонентов на границе раздела фаз падает, а плохо испаряющиеся компоненты накапливаются. Таким образом, даже если в начальный момент времени концентрации легко испаряющихся компонентов высоки, с помощью разработанной математической модели можно рассчитать конечную стадию испарения многокомпонентных открытых систем.
+
+Введённая величина $b$ может рассматриваться как конвективный поток, возникающий при воздействии на жидкость сторонних сил, а стефановский поток "--- как вклад в эту величину. В этом случае при отсутствии испарения растворителя система также может достигнуть квазистационарного состояния, но при этом следует учитывать массоперенос растворителя. 
+
+Полученная математическая модель процесса испарения многокомпонентных жидкостей позволяет прогнозировать состояние открытых систем в различные интервалы времени при изменении концентраций веществ в широких диапазонах.
+
+
+\begin{thebibliography}{9}
+
+\Bibitem{supl:bib:1}
+\paper The evaporation of two-component liquid mixtures 
+\by J.~F.~Richardson 
+\jour Chemical Engineering Science 
+\yr 1959
+\vol 10
+\issue 4
+\pages  234--242
+
+\RBibitem{supl:bib:2}
+\thesis Математическое моделирование процессов испарения в многокомпонентных средах 
+\thesisinfo Дис. \dots\ канд. физ.-мат. наук 
+\by А.~В.~Кульчицкий
+\publaddr М.
+\yr 1999
+\totalpages 168 
+\misctransl
+\thesis Mathematical simulation of evaporation processes in multicomponent media
+\thesisinfo Ph.D. Thesis (Phys. \& Math.)
+\by A.~V.~Kul'chitskiy
+\publaddr Moscow
+\yr 1999
+\totalpages 168 
+
+\Bibitem{supl:bib:3}
+\paper The Stefan problem of evaporation of a volatile component from a binary liquid mixture
+\by  R.~Chebbi, M.~S.~Selim 
+\jour Heat and Mass Transfer 
+\yr 2006
+\vol 42
+\issue 3
+\pages 238--247
+
+
+\RBibitem{supl:bib:5}
+\paper Прогнозирование зон токсической опасности и пожароопасности при авариях на объектах хранения нефтепродуктов 
+\by А.~Д.~Галлеев, С.~И.~Поникаров 
+\jour Безопасность жизнедеятельности
+\yr 2009
+\issue 5
+\pages 29--34
+%http://elibrary.ru/item.asp?id=12137337
+\misctransl
+\paper Prediction of toxic and flammable hazard zones at accidents on oil product storage facilities
+\by A.~D.~Galleyev, S.~I.~Ponikarov 
+\jour Bezopasnost' Zhiznedeyatel'nosti 
+\yr 2009 
+\issue 5 
+\pages 29--34
+
+
+\RBibitem{supl:bib:6}
+\paper Моделирование процесса испарения жидкости с поверхности аварийного пролива
+\by М.~А.~Долгова, А.~Д.~Галлеев, С.~И.~Поникаров 
+\jour Безопасность жизнедеятельности
+\yr 2009
+\issue 6
+\pages 45--48
+\misctransl
+\paper Modeling of process the evaporation liquids from the surface accident spills
+\by A.~D.~Galleyev, S.~I.~Ponikarov 
+\jour Bezopasnost' Zhiznedeyatel'nosti 
+\yr 2009
+\by M.~A.~Dolgova, A.~D.~Galleyev, S.~I.~Ponikarov
+\issue 6
+\pages 45--48
+
+
+\RBibitem{supl:bib:7}
+\paper Оценка влияния профиля местности на формирование зон взрывоопасных концентраций при испарении нефти с поверхности аварийного пролива 
+\by А.~Д.~Галеев, С.~И.~Поникаров 
+\jour  Электронный научный журнал ``Нефтегазовое дело'' 
+\yr 2010
+\issue 2
+\papernumber 39
+\totalpages 17
+%http://elibrary.ru/item.asp?id=16366559
+\misctransl
+\jour Electronic scientific journal ``Oil and Gas Business''
+\paper Estimation of influence of terrain profile on generation of explosive cloud during evaporation from oil surface spill
+\by A.~D.~Galeev, S.~I.~Ponikarov 
+\yr 2010
+\papernumber 39
+\issue 2
+\totalpages 17
+
+\Bibitem{supl:bib:8}
+\book Diffusion and heat transfer in chemical kinetics
+\yr 1969
+\by D.~A.~Frank-Kamenetskii 
+\publ Plenum Press
+\publaddr New York
+\totalpages  574
+\rtransl русск. пер.:~
+\book Диффузия и теплопередача в химической кинетике 
+\by Д.~А.~Франк-Каменский
+\publaddr М.
+\publ Наука
+\yr 1987
+\totalpages 502 
+
+
+\RBibitem{supl:bib:9}
+\book Аналитические методы в теории теплопроводности твердых тел 
+\by  Э.~М.~Карташов
+\publaddr М. 
+\publ Высш. шк.
+\yr 2001
+\totalpages 550
+\misctransl
+\by \'E.~M.~Kartashov
+\book Analytical methods in the theory of thermal conductivity of solids
+\publaddr Moscow
+\publ Vyssh. Shk.
+\yr 2001
+\totalpages 550
+
+
+\RBibitem{supl:bib:10}
+\book Справочник по линейным уравнениям математической физики 
+\by А.~Д.~Полянин
+\publaddr М.
+\publ  Физматлит
+\yr 2001
+\totalpages 576
+\transl англ. пер.:~
+\by  A.~D.~Polyanin
+\book Handbook of Linear Partial Differential Equations for Engineers and Scientists
+\publ Chapman \& Hall/CRC Press
+\publaddr Boca Raton
+\yr 2002
+\totalpages xviii+781
+
+
+\end{thebibliography}
+
+
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+\vspace{-10mm}
+%
+%\chead[\fancyplain{}{\scriptsize \sl S\,h\,u\,p\,l\,y\,a\,k~A.\,Y\,u.,
+%S\,h\,k\,a\,r\,u\,p\,p\,a~S.\,P., S\,h\,t\,e\,r\,e\,n\,b\,e\,r\,g~A.\,M.}]{\fancyplain{}{\scriptsize \sl  Solution of Plane Nonlinear Stochastic Problem with \dots}}
+
+\makeengtitle
+
+
+
+\newpage
+%
+% \tableofengcontents
+%
+%\end{document}

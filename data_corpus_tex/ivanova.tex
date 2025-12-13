@@ -1,0 +1,751 @@
+\def\stat{ivanova}
+
+\def\tit{МОДЕЛИ СОВМЕСТНОГО ОБСЛУЖИВАНИЯ ТРАФИКА eMBB И~URLLC НА ОСНОВЕ 
+ПРИОРИТЕТОВ В~ПРОМЫШЛЕННЫХ РАЗВЕРТЫВАНИЯХ 5G NR$^*$}
+
+\def\titkol{Модели совместного обслуживания трафика eMBB и~URLLC на основе 
+приоритетов в %промышленных 
+развертываниях 5G NR}
+
+\def\aut{Д.\,В.~Иванова$^1$, Е.\,В.~Маркова$^2$, С.\,Я.~Шоргин$^3$, Ю.\,В.~Гайдамака$^4$}
+
+\def\autkol{Д.\,В.~Иванова, Е.\,В.~Маркова, С.\,Я.~Шоргин, Ю.\,В.~Гайдамака}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Д.\,В.~Иванова$^1$, Е.\,В.~Маркова$^2$, С.\,Я.~Шоргин$^3$, Ю.\,В.~Гайдамака$^4$}
+\index{Borisov A.\,V.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Исследование выполнено за счет гранта 
+Российского научного фонда №\,22-79-10053.}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов имени
+Патриса Лумумбы, \mbox{ivanova-dv@rudn.ru}}
+\footnotetext[2]{Российский университет дружбы народов имени
+Патриса Лумумбы, \mbox{markova-ev@rudn.ru}}
+\footnotetext[3]{Федеральный исследовательский центр 
+<<Информатика и~управление>> Российской академии наук, \mbox{sshorgin@ipiran.ru}}
+\footnotetext[4]{Российский университет дружбы народов имени 
+Патриса Лумумбы; Федеральный исследовательский центр <<Информатика и~управление>> 
+Российской академии наук, \mbox{gaydamaka-yuv@rudn.ru}}
+
+%\vspace*{-10pt}
+
+
+
+\Abst{Технология радиодоступа 5G NR способна осуществлять 
+одновременную поддержку как сверхнадежной доставки с~малой задержкой (Ultra-Reliable Low Latency 
+Communication, URLLC), 
+так и~расширенного мобильного широкополосного доступа (enhanced Mobile Broadband, eMBB). Из-за критических 
+требований к~задержке и~надежности, предъявляемых при предоставлении услуг двух 
+классов обслуживания, возникает необходимость введения приоритетов. В~статье 
+рассмотрена промышленная среда, в~которой производственное оборудование при 
+управлении движением и~синхронизации работы генерирует URLLC-тра\-фик, а при 
+удаленном мониторинге~--- eMBB-тра\-фик. Предложена модель с~приоритетным 
+обслуживанием на базовой станции (БС) с~прямой связью между устройствами (device-to-device, D2D) 
+и~без нее. Полученные численные результаты показывают, что введение приоритетов 
+позволяет эффективно изолировать трафик URLLC и~eMBB. При этом стратегия 
+с~поддержкой D2D, в~которой БС явно резервирует ресурсы для прямой связи, 
+значительно превосходит по показателям качества обслуживания стратегии, 
+в~которых явное резервирование не используется, а также стратегию, в~которой весь 
+трафик проходит через БС.}
+%\end{abstract}
+
+\KW{5G; NR (New Radio); D2D; URLLC; eMBB; управ\-ле\-ние 
+ресурсами; приоритетное обслуживание}
+
+\DOI{10.14357/19922264230409}{JXCGXQ}
+  
+%\vspace*{-4pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+    
+\section{Введение}
+%\label{sect:00}
+
+Мобильные системы пятого поколения (5G), характеризующиеся высокими 
+требованиями к~качеству обслуживания, разработаны с~учетом стремительного роста 
+числа новых приложений. Помимо классических сценариев использования технология 
+5G NR (New Radio) обещает поддержку в~сфере промышленной автоматизации таких 
+приложений, как совместное управление мобильными роботами, синхронизация, 
+позиционирование, сервисы дополненной реальности, а также обслуживание на основе 
+технологий телеприсутствия~\cite{ghosh2019industrial}.
+
+Системы, управляющие движущимися элементами производственного оборудования, 
+требуют сверхнадежной доставки с~низкими задержками (URLLC). В~то же время для видеонаблюдения требуется расширенный 
+мобильный широкополосный доступ (eMBB). Таким 
+образом, БС NR должны поддерживать предоставление услуг двух 
+классов обслуживания eMBB и~URLLC одновременно. Механизмы их отдельной поддержки 
+на БС NR в~миллиметровом диапазоне (mmWave) широко исследованы 
+(см., например,~[2--4] для eMBB и~\cite{rao2018packet, mahmood2019resource} для 
+URLLC). Однако в~об\-ласти совместной поддержки исследования практически не 
+проводились.
+
+\begin{figure*} %fig1
+ \vspace*{1pt}
+\begin{center}
+   \mbox{%
+\epsfxsize=160.748mm 
+\epsfbox{iva-1.eps}
+}
+\end{center}
+\vspace*{-3pt}
+\Caption{Рассматриваемый сценарий развертывания:
+\textit{1}~--- передача от камеры до БС; 
+\textit{2}~--- D2D-пе\-ре\-да\-ча с~координацией через БС; 
+\textit{3}~--- прямая D2D-пе\-ре\-да\-ча; \textit{4}~--- заблокированная D2D-пе\-ре\-да\-ча;
+\textit{5}~--- зона покрытия рас\-смат\-ри\-ва\-емой~БС}
+\label{fig:deployment}
+\vspace*{9pt}
+\end{figure*}
+
+В статье исследованы три схемы (стратегии) одновременного предоставления услуг 
+eMBB и~URLLC с~реализацией явного приоритета~\cite{kochetkova2021queuing}: 
+(1)~базовая стратегия~--- передача трафика через БС NR; (2)~стратегия 
+D2D-aware~--- использование D2D для передачи с~полной 
+координацией через БС (дополнительная интерференция не создается); (3)~стратегия 
+D2D-unaware~--- использование D2D без координации через БС (уменьшает задержку, 
+но создает дополнительную интерференцию). Для построения и~анализа модели 
+использованы методы стохастической геометрии и~теории массового обслуживания~\cite{gorbunova2018resource}.
+
+\vspace*{-6pt}
+
+\section{Системная модель}
+%\label{sys}
+
+\vspace*{-3pt}
+
+Рассмотрим модель развертывания 5G NR в~промышленной среде, например на 
+автоматизированном заводе с~несколькими производственными линиями (рис.~1). 
+Автоматизация производства предполагает регулярный мониторинг процесса с~по\-мощью 
+расположенных на станках датчиков с~контролем посредством камер видеонаблюдения. 
+Предположим, что БС NR монтируются на потолке на высоте~$h_A$, образуя 
+пуассоновский точечный процесс с~плотностью~$\chi$~БС/$\text{м}^2$. Пользовательское оборудование, состоящее из датчиков и~камер, 
+расположено на высоте~$h_U$ в~узлах регулярной сетки с~шагом $l$~м. Ширина 
+полосы пропускания каждой БС составляет $W$~Гц, что соответствует емкости соты 
+сети связи~$C$ условных единиц ре\-сурса.
+{\looseness=1
+
+}
+
+
+
+Датчики, связанные с~автоматизированным оборудованием, генерируют потоковый 
+трафик, соответствующий  URLLC-услуге и~ха\-рак\-те\-ри\-зу\-ющий\-ся гарантированной 
+скоростью передачи данных $c_1 \hm\geq 1$. Эластичный трафик, соответствующий eMBB, 
+характеризуется минимальной скоростью $c_2^{\min} \hm\geq 1$ и~генерируется 
+видеокамерами, использующимися для удаленного мониторинга. Известна средняя 
+интенсивность генерации запросов на передачу данных от датчиков и~камер~$\lambda_i$, а также средняя длительность сессий по передаче данных~$\mu_i^{-1}$, 
+$i \hm= 1,2$.
+Объем ресурса для обслуживания запроса URLLC через БС $b_{1,B}$ и~в режиме D2D~$b_{1,D}$, а~также объем ресурса для обслуживания запроса \mbox{eMBB}~$b_2^{\min}$ 
+зависит от плотности БС и~рассчитывается по формулам:
+\begin{equation*}
+b_2^{\min}=\fr{c_2^{\min}}{E[S_{e,B}]}\,;\enskip b_{1,B} =\fr{c_1}{E[S_{e,B}]}\,;\enskip
+  b_{1,D}=\fr{c_1}{E[S_{e,D}]}\,,
+ % \label{eqn:requirements}
+\end{equation*}
+
+\noindent
+где $E[S_{e,B}]$~--- средняя спектральная эффективность при передаче трафика 
+через БС, а~$E[S_{e,D}]$~--- при D2D-передаче.
+
+Рассчитаем среднюю спектральную эффективность для разных схем обслуживания. 
+Плотности вероятности расстояний $D$ между двумя случайно выбранными 
+пользовательскими устройствами и~$B$ от случайно выбранного устройства до БС 
+определяются как~\cite{moltchanov2012distance}
+\begin{align*}
+f_{B}(x)&=\fr{2x}{r_N}\,;\\[3pt]
+f_{D}(x)&=\fr{2x}{r_N^2}\left[\fr{2}{\pi}\cos^{-1}\left(\fr{x}{2r_N}\right)-\fr{x}{r_N\pi}\sqrt{1-\fr{x^2}{4r_N^2}}\,\right].
+%\label{strat:00}
+\end{align*}
+
+Далее воспользуемся моделью распространения и~блокировки сигнала, рассмотренной 
+в~\cite{ivanova2022performance}.
+Эффективный радиус покрытия $r_N$ определяется как $\min(r_{N,S},r_{N,V})$, где 
+$r_{N,S}$~--- максимально возможное расстояние между пользовательским 
+оборудованием и~БС NR; $r_{N,V}$~--- половина расстояния меж\-ду БС~NR.
+
+Отношение сигнала к~шуму (SNR) на приемнике, расположенном на расстоянии~$x$ от~БС
+\begin{equation*}
+%\label{eqn:genericProp}
+S(x)=\fr{P_{U}G_{A}G_{U}}{N_0W+M_I}\,x^{-\zeta},
+\end{equation*}
+где $P_{U}$~--- излучаемая мощность; $G_{A}$ и~$G_{U}$~--- коэффициент усиления 
+антенны на базовой станции и~на пользовательском оборудовании соответственно; 
+$N_0$~--- спектральная плотность мощности шума; $M_I$~--- средняя мощность помех; 
+$\zeta$~--- коэффициент распространения. Тогда
+
+\noindent
+\begin{align*}
+%\label{eqn:se_bs}
+E[S_{e,B}]&=\int\limits_{0}^{r_N}f_{B}(x)\log_{2}[1+S(x)]\,dx\,;\\
+E[S_{e,D}]&=\int\limits_{0}^{2r_N}f_{D}(x)\log_{2}[1+S(x)]\,dx\,.
+\end{align*}
+
+Для расчета вероятности блокировки D2D-пе\-ре\-да\-чи сначала найдем $p_{B,1}(x)$~--- 
+вероятность того, что путь прямой видимости длиной $x$ между двумя устройствами 
+перекрывается одним станком. Воспользуемся методами интегральной геометрии 
+и~получим вероятность перекрытия~\cite{santalo2004integral}:
+\begin{multline*}
+%\label{strat:02}
+p_{B,1}(x)={}\\
+{}=\fr{2w(\pi{}w+4x) (1-\kappa)}{\pi(2\pi{}r_N^2-4r_N^2\sin^{-1}(x/(2r_N))-
+x\sqrt{4r_N^2-x^2})},
+\end{multline*}
+где $\kappa$~--- прозрачность пользовательского оборудования; $w$~--- ширина 
+пользовательского оборудования.
+Согласно рассматриваемой модели, максимальное чис\-ло станков~$N_R$, находящихся 
+в~зоне покрытия БС NR, можно найти с~по\-мощью аппроксимации задачи о~круге Гаусса.
+
+Общее число станков имеет биномиальное распределение с~параметрами $N_R$ и~$\nu$ 
+(вероятность нахождения станка в~точке сетки). Таким образом, вероятность того, 
+что путь прямой видимости заблокирован, имеет вид:
+\begin{multline*}
+p_{B}(x)={}\\
+\!{}=\sum\limits_{j=1}^{N_R}\!\begin{pmatrix}
+N_R\\ j\end{pmatrix} 
+\nu^{j}(1-\nu)^{N_R-j}
+\left[1-(1-p_{B,1}(x))\right]^j\!. \!
+%\label{strat:03}
+\end{multline*}
+%
+Тогда искомая вероятность блокировки будет рассчитываться как
+\begin{equation*}
+%\label{strat:04}
+p_{B}=\int\limits_{0}^{2r_N}f_{D}(x)p_{B}(x)\,dx.
+\end{equation*}
+
+\section{Математическая модель}
+
+Функционирование рассматриваемой сис\-те\-мы описывает двумерный марковский 
+случайный процесс $(N_1(t), N_2(t))$,\ $t \hm\geq 0$, где $N_i(t)$, $i \hm= 1,2$,~---
+случайное чис\-ло об\-слу\-жи\-ва\-емых сис\-те\-мой запросов типа $i$ в~момент $t$. Обозначим 
+максимальное чис\-ло запросов на предоставление услуг URLLC (за\-про\-сы 1-го типа) 
+и~eMBB (запросы 2-го типа), которое может находиться в~сис\-те\-ме, $N_1 \hm= \lfloor 
+C/b_1 \rfloor$ и~$N_2\hm = \lfloor C/b_2^{\min} \rfloor$ соответственно, тогда $n_i \hm= 0,\ldots,N_i$~--- чис\-ло 
+об\-слу\-жи\-ва\-емых сис\-те\-мой за\-про\-сов типа~$i$, $i\hm = 1,2$.
+Состояние сис\-те\-мы описывает двумерный век\-тор $\mathbf{n}\hm=(n_1,n_2)$ над 
+пространством со\-сто\-яний
+
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+\mathbf{X} = {}\\[2pt]
+\!{}=\left\{ (n_1,n_2): n_1 \geq 0,\ \  n_2 \geq 0,\ \ n_1 b_1 + n_2 b_2^{\min} \leq 
+C \right\}.\hspace*{-5.19798pt}
+%\label{eq:stateSpace}
+\end{multline*}
+Обозначим через 
+
+\noindent
+$$
+k(n_1) = \left\lfloor \fr{C-n_1 b_1}{b_2^{\min}}\right \rfloor
+$$ 
+максимальное чис\-ло 
+запросов на предостав\-ле\-ние услуги \mbox{eMBB}, которое может быть принято в~сис\-те\-му, 
+когда в~ней уже обслуживаются~$n_1$~запросов на предостав\-ле\-ние услуги URLLC. При 
+этом чис\-ло единиц ресурса, выделяемое для обслуживания каждого запроса на 
+предостав\-ле\-ние услуги eMBB, может меняться в~за\-ви\-си\-мости от со\-сто\-яния сис\-темы: 
+
+\noindent
+$$
+b_2\left(n_1,n_2\right) = \left\lfloor \fr{C-n_1 b_1}{n_2} \right\rfloor \geq b_2^{\min}.
+$$
+
+Сформулируем правила приема и~обслуживания запросов:
+\begin{itemize}
+    \item если число обслуживаемых сис\-те\-мой запросов типа $i$ меньше максимально 
+возможного чис\-ла запросов данного типа~$N_i$ и~чис\-ло свободных единиц ресурса, 
+доступных для данных запросов, не меньше~$b_1$ и~$b_2^{\min}$ для 1-го и~2-го 
+типа соответственно, то поступающий в~сис\-те\-му запрос будет принят на 
+обслуживание;
+    \item если число обслуживаемых сис\-те\-мой запросов на предостав\-ле\-ние услуги 
+URLLC меньше максимально возможного чис\-ла запросов данного типа~$N_1$, чис\-ло 
+свободных единиц ресурса, доступных для запросов данного типа, меньше~$b_1$, 
+а~чис\-ло обслуживаемых запросов на предостав\-ле\-ние услуги eMBB не меньше $1$, то 
+по\-сту\-па\-ющий запрос на предостав\-ле\-ние услуги URLLC будет принят на обслуживание 
+за счет прерывания обслуживания $q(n_1,n_2) \hm= \lceil (b_1\hm - C \hm+ (n_1 b_1\hm + n_2 
+b_2^{\min}))/b_2^{\min} \rceil$ запросов eMBB;
+    \item в~противном случае поступающие в~сис\-те\-му запросы будут заблокированы.
+\end{itemize}
+
+На основе сформулированных правил со\-ста\-вим диаграмму интенсивностей переходов 
+(рис.~\ref{fig:generalView}).
+
+\begin{figure*} %fig2
+\vspace*{1pt}
+\begin{center}
+   \mbox{%
+\epsfxsize=88.713mm 
+\epsfbox{iva-2.eps}
+}
+\end{center}
+\vspace*{-10pt}
+  \Caption{Диаграмма интенсивностей переходов для центрального состояния}
+  \label{fig:generalView}
+  \vspace*{-5pt}
+\end{figure*}
+
+Стационарное распределение вероятностей со\-сто\-яний сис\-те\-мы $p(\mathbf{n}), 
+\mathbf{n}\hm \in \mathbf{X}$, может быть получено путем чис\-лен\-но\-го решения сис\-те\-мы 
+уравнений равновесия 
+$$
+\mathbf{p}^{\mathrm{T}} \mathbf{A} = \mathbf{0}^{\mathrm{T}};\quad 
+\mathbf{p}^{\mathrm{T}} \mathbf{1} = 1\,,
+$$
+ где $\mathbf{A}$~--- инфинитезимальная 
+мат\-ри\-ца, элементы которой определяются сле\-ду\-ющим образом:
+
+\pagebreak
+
+\noindent
+\begin{multline*}
+a\left(\mathbf{n},\mathbf{n}'\right) ={}\\
+{}=
+  \begin{cases}
+    \lambda_1, &\mathbf{n}' = \mathbf{n}+\mathbf{e}_1,\\
+    &   n_1 < N_1, b_1 (n_1+1) + b_2^{\min} n_2 \leq C,\\
+               &\mbox{или\ } n'_1 = n_1 +1, n'_2 = n_2 - q(n_1,n_2),\\
+               &n_1 < N_1,\enskip n_2 > 0,\\
+               & b_1(n_1+1) + b_2^{\min} n_2 > C\,;\\
+    \lambda_2, &\mathbf{n}' = \mathbf{n}+\mathbf{e}_2,\\
+    &  n_2 < N_2, b_1 n_1 + b_2^{\min} (n_2+1) \leq C\,;\\
+    n_1 \mu_1, & \mathbf{n}' = \mathbf{n}-\mathbf{e}_1,\ n_1 > 0\,;\\
+    n_2 \mu_2, & \mathbf{n}' = \mathbf{n}-\mathbf{e}_2,\ n_2 > 0\,;\\
+     \phi,      &\mathbf{n}' = \mathbf{n}\,;\\
+    0         &\mbox{в\ ином\ случае;}
+  \end{cases}
+\!  
+%\label{eqn:generator}
+\end{multline*}
+
+\vspace*{-13pt}
+
+\noindent
+\begin{multline*}
+\phi = -\left[\lambda_1  I\{n_1 <N_1, b_1 (n_1 +1) + b_2^{\min} n_2 \leq C\} + {}\right.\\
+{}+\lambda_1  I\{n_1 < N_1, n_2 > 0, b_1 (n_1 +1) + b_2^{\min} n_2 > C\} + {}\\
+{}+\lambda_2  I\{n_2 < N_2, b_1 n_1 + b_2^{\min} (n_2 +1) \leq C\} + n_1 
+\mu_1 +{}\\
+\left.{}+ n_2 \mu_2\right],
+\end{multline*}
+где
+$I\{x\}$~--- индикаторная функция.
+
+Рассчитав распределение вероятностей~$p(\mathbf{n})$, можно вычислить основные 
+показатели эффективности модели: ве\-ро\-ят\-ность потери URLLC-за\-просов
+
+\vspace*{-2pt}
+
+\noindent 
+$$
+B_1 = \sum\limits_{n_1=0}^{k(N_1)}{p(N_1, n_1)}\,;
+$$
+
+\vspace*{-2pt}
+
+\noindent
+ ве\-ро\-ят\-ность потери eMBB-за\-про\-сов 
+ $$
+ B_2 = 
+\sum\limits_{n_1=0}^{N_1}{p(n_1, k(n_1))}\,;
+$$
+ ве\-ро\-ят\-ность прерывания обслуживания eMBB-за\-про\-са
+\begin{multline*}
+%\label{eq:preemptioneMBB}
+\Pi = \sum\limits_{n_1=0}^{N_1 -1} \sum\limits_{\substack{ n_2 = k(n_1+1)+1 \\
+    k(n_1) \ne k(n_1+1)}}^{k(n_1)}\!
+\lambda_1 p(n_1,n_2)\Big/ 
+\left(\lambda_1+{}\right.\\
+\left.{}+\lambda_2 
+I\{n_2<k(n_1)\}+n_1 \mu_1+n_2 \mu_2\right) \,.
+\end{multline*}
+
+
+\begin{figure*} %fig3
+\vspace*{1pt}
+\begin{center}
+   \mbox{%
+\epsfxsize=162.604mm 
+\epsfbox{iva-3.eps}
+}
+\end{center}
+\vspace*{-9pt}
+\Caption{Вероятность потери запроса в~зависимости от плотности $\nu$~(\textit{a}) и~скорости $c_{2}^{\min}$~(\textit{б}):
+\textit{1}~--- базовая стратегия; \textit{2}~--- стратегия D2D-aware;
+\textit{3}~--- стратегия D2D-unaware; пустые значки~--- \mbox{URLLC}; залитые значки~--- \mbox{eMBB}}
+\end{figure*}
+
+\vspace*{-9pt}
+
+\section{Численные результаты}
+
+Для проведения численного эксперимента исследуем ве\-ро\-ят\-ность потери запроса на 
+передачу данных, представленную как функцию от плот\-ности пользовательского 
+оборудования (ве\-ро\-ят\-ности наличия стан\-ка в~точ\-ке сетки) $\nu$ и~от минимальной 
+ско\-рости передачи данных~$c_{2}^{\min}$ на рис.~3.
+
+На рис.~3,\,\textit{а}, где $c_1\hm = 2$~Мбит/с, $c_{2}^{\min} \hm= 1$~Мбит/с, $G_A\hm = 16\times 4$, 
+$G_U \hm= 4\times4$, $\xi\hm = 5\cdot 10^{-4}$, 
+$\mu_1 \hm= 10^3$ и~$\mu_2 \hm= 1/120$, мож\-но увидеть, что увеличение~$\nu$ приводит 
+к~росту вероятности потери. Очевидно, что базовая стратегия, в~которой все запросы 
+проходят через БС, характеризуется по\-сто\-ян\-ной ве\-ро\-ят\-ностью потери запросов на 
+предостав\-ле\-ние услуг eMBB и~URLLC. В~свою очередь, стратегия D2D-aware 
+характеризуется меньшей ве\-ро\-ят\-ностью потери запросов на передачу трафика URLLC, 
+которая не превышает~$10^{-5}$. Рас\-смат\-ри\-вая стратегию D2D-unaware, отметим, что 
+преимущества от использования прямой передачи данных незначи-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+тельны, поскольку 
+не\-конт\-ро\-ли\-ру\-емая интерференция отрицательно влияет на передачу в~дополнение 
+к~ве\-ро\-ят\-ности потери запросов из-за нехватки ресурсов, что в~условиях высокой 
+на\-груз\-ки может оказаться критичным.
+
+
+
+Результаты показывают, что передача eMBB-тра\-фи\-ка оказывает влияние на 
+обслуживание URLLC-тра\-фи\-ка. На рис.~3,\,\textit{б}, где $\nu \hm= 0{,}5$, 
+проиллюстрирована за\-ви\-си\-мость ве\-ро\-ят\-ности потери запросов на передачу данных от 
+минимальной тре\-бу\-емой ско\-рости передачи \mbox{eMBB}-тра\-фи\-ка. Таким образом, 
+обслуживание на основе приоритетов эффективно в~том случае, когда требования 
+к~запросам на предостав\-ле\-ние услуги \mbox{eMBB} растут, так как вероятность потери 
+запроса на предостав\-ле\-ние услуги \mbox{URLLC} при этом сохраняется практически 
+неизменной. Предлагаемый метод на основе приоритетов гарантирует, что 
+обслуживание запросов на предостав\-ле\-ние услуги \mbox{URLLC} будет защищено от 
+потенциально из\-ме\-ня\-юще\-йся нагрузки, создаваемой запросами на предостав\-ле\-ние 
+услуги \mbox{eMBB}. В~данном случае также наблюдается 
+превосходство стратегии D2D-aware над другими стратегиями для любых 
+рас\-смат\-ри\-ва\-емых значений~$c_{2}^{\min}$.
+
+\vspace*{-6pt}
+
+\section{Заключение}
+%\label{conclus}
+
+\vspace*{-3pt}
+
+В статье предложена модель одновременной поддержки услуг двух классов 
+обслуживания~--- \mbox{eMBB} и~\mbox{URLLC}, основанная на реализации явного приоритета. Для 
+трех рассмотренных схем передачи трафика на примере развертывания сис\-те\-мы на 
+автоматизированном предприятии проведена оценка ключевых вероятностных 
+характеристик, в~част\-ности вероятности потери запросов на передачу данных, на 
+основе которой сделан вывод о~наиболее эффективной стратегии совместного 
+обслуживания.
+
+{\small\frenchspacing
+ {\baselineskip=10.6pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{ghosh2019industrial} %1
+\Au{Ghosh A., Ratasuk~R., Rao~A.\,M.} Industrial IoT networks powered by 5G 
+New Radio~// Microwave~J., 2019. Vol.~62. No.\,12. P.~24--40.
+
+\bibitem{moltchanov2018improving} %2
+\Au{Moltchanov D., Samuylov~A., Petrov~V., Gapeyenko~M., Himayat~N., Andreev~S., Koucheryavy~Y.} Improving session continuity with bandwidth reservation in 
+mm{W}ave communications~// IEEE Wirel. Commun. Le., 2018. Vol.~8. 
+No.\,1. P.~105--108. doi: 10.1109/LWC.2018.2859988.
+
+\bibitem{begishev2019quantifying} %3
+\Au{Begishev V., Moltchanov~D., Sopin~E., Samuylov~A., Andreev~S., 
+Koucheryavy~Y., Samouylov~K.} Quantifying the impact of guard capacity on 
+session continuity in 3GPP New Radio systems~// IEEE T. Veh. 
+Technol., 2019. Vol.~68. No.\,12. P.~12345--12359. doi: 10.1109/TVT.2019.2948702.
+
+\bibitem{samuylov2020characterizing} %4
+\Au{Samuylov A., Moltchanov~D., Kovalchukov~R., Pirmagomedov~R., Gaidamaka~Y., Andreev~S., Koucheryavy~Y., Samouylov~K.}
+Characterizing resource allocation trade-offs in 5G NR serving multicast and 
+unicast traffic~// IEEE T. Wirel. Commun., 2020. Vol.~19. 
+No.\,5. P.~3421--3434. doi: 10.1109/TWC.2020.2973375.
+
+
+
+
+
+\bibitem{rao2018packet} %5
+\Au{Rao J., Vrzic S.}
+Packet duplication for URLLC in 5G: Architectural enhancements and performance 
+analysis~// IEEE Network, 2018. Vol.~32. No.\,2. P.~32--40. doi: 10.1109/MNET.2018.1700227.
+
+\bibitem{mahmood2019resource} %6
+\Au{Mahmood N.\,H., Karimi~A., Berardinelli~G., Pedersen~K.\,I., Laselva~D.} 
+On the resource utilization of multi-connectivity transmission for URLLC 
+services in 5G New Radio~// IEEE Wireless Communications and Networking 
+Conference Workshop.~--- Piscataway, NJ, USA: IEEE, 2019. Art.~8902865. 
+6~p. doi: 10.1109/\mbox{WCNCW}.\linebreak 2019.8902865.
+
+\bibitem{kochetkova2021queuing} %7
+\Au{Кочеткова И.\,А., Власкина~А.\,С., Ву~Н.\,Н., Шоргин~В.\,С.} Система 
+массового обслуживания с~управляемым по сигналам перераспределением приборов для 
+анализа нарезки ресурсов сети 5G~// Информатика и~её применения, 2021. Т.~15. Вып.~3. 
+С.~91--97. doi: 
+10.14357/ 19922264210312. EDN: JJENVV.
+
+\bibitem{gorbunova2018resource} %8
+\Au{Горбунова А.\,В., Наумов~В.\,А., Гайдамака~Ю.\,В., Самуйлов~К.\,Е.} 
+Ресурсные системы массового обслуживания как модели беспроводных сис\-тем связи~// 
+Информатика и~её применения, 2018. Т.~12. Вып.~3. С.~48--55. doi: 
+10.14357/19922264180307. EDN: YAMDIL.
+
+\bibitem{ivanova2022performance} %9
+\Au{Ivanova D., Markova~E., Moltchanov~D., Pirmagomedov~R., Koucheryavy~Y., 
+Samouylov~K.} Performance of priority-based traffic coexistence strategies in 5G 
+mmWave industrial deployments~// IEEE Access, 2022.  Vol.~10. P.~9241--9256. doi: 10.1109/ACCESS.2022.3143583.
+
+\bibitem{moltchanov2012distance} %10
+\Au{Moltchanov D.} Distance distributions in random networks~// Ad Hoc 
+Netw., 2012. Vol.~10. No.\,6. P.~1146--1166. doi: 10.1016/j.adhoc.2012.02.005.
+
+\bibitem{santalo2004integral} %11
+\Au{Santalo L.\,A.} Integral geometry and geometric probability.~--- 
+Cambridge: Cambridge University Press, 2004. 428~p.
+doi: 10.1017/CBO9780511617331.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 25.09.23}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+
+
+\def\tit{PRIORITY-BASED eMBB AND~URLLC TRAFFIC COEXISTENCE MODELS 
+IN~5G~NR INDUSTRIAL DEPLOYMENTS}
+
+
+\def\titkol{Priority-based eMBB and~URLLC traffic coexistence models 
+in~5G~NR industrial deployments}
+
+
+\def\aut{D.\,V.~Ivanova$^{1}$, E.\,V.~Markova$^{1}$, S.\,Ya.~Shorgin$^{2}$, and~Yu.\,V.~Gaidamaka$^{1,2}$}
+
+\def\autkol{D.\,V.~Ivanova, E.\,V.~Markova, S.\,Ya.~Shorgin, and~Yu.\,V.~Gaidamaka}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian 
+Federation
+
+\noindent
+$^2$Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov\linebreak
+$\hphantom{^1}$Str., Moscow 119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{4pt}
+
+
+
+
+\Abste{The technology 5G New Radio simultaneously supports both Ultra-Reliable Low-Latency Service (URLLC) and enhanced Mobile Broadband Service 
+(eMBB). Owing to extreme latency and reliability requirements of both types of services, a~prioritization needs to be provided.
+The present authors consider an industrial environment where production equipment utilizes URLLC service 
+ for controlling motion and synchronous operation while eMBB service is used for remote monitoring. 
+ The authors proposed the model with priority service at base station (BS) with and without direct device-to-device (D2D)
+  communications. The obtained numerical results indicate that priorities allow one to isolate URLLC and eMBB traffic efficiently. 
+  The D2D-aware strategy where the BS explicitly reserves resources for direct communications significantly outperforms strategies 
+  where explicit reservation is not utilized as well as the strategy where all the traffic goes through the BS.}
+
+\KWE{5G; NR (New Radio); D2D; URLLC; eMBB; resource 
+allocation; priority service}
+
+
+
+
+\DOI{10.14357/19922264230409}{JXCGXQ}
+
+\vspace*{-12pt}
+
+\Ack
+
+\vspace*{-4pt}
+
+\noindent
+The reported study was funded by the Russian  Science Foundation, project No.\,22-79-10053.
+
+\vspace*{6pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99} 
+%1
+\bibitem{ghosh2019industrial-1}
+\Aue{Ghosh, A., R.~Ratasuk, and A.\,M.~Rao.} 2019. Industrial IoT networks powered by 
+5G New Radio. \textit{Microwave J.} 62(12):24--40.
+
+%2
+\bibitem{moltchanov2018improving-1} 
+\Aue{Moltchanov, D., A.~Samuylov, V.~Pet\-rov, M. Gapeyenko, N.~Himayat, S.~And\-re\-ev, 
+and Ye.~Kouc\-he\-rya\-vy.} 2019. Improving session continuity with bandwidth 
+reservation in mmWave communications. \textit{IEEE Wirel. Commun. Le.} 8(1):105--108. doi: 10.1109/LWC.2018.2859988.
+
+%3
+\bibitem{begishev2019quantifying-1}
+\Aue{Begishev, V., D.~Moltchanov, E.~So\-pin, A.~Samuy\-lov, S.~And\-re\-ev, Y.~Kou\-che\-rya\-vy, 
+and K.~Samouylov.} 2019. Quantifying the impact of guard capacity on session 
+continuity in 3GPP New Radio systems. \textit{IEEE T. Veh. Technol.} 
+68(12):12345-12359. doi: 10.1109/TVT.2019.2948702.
+
+%4
+\bibitem{samuylov2020characterizing-1}
+\Aue{Samuylov, A., D.~Moltchanov, R.~Ko\-val\-chu\-kov, R.~Pir\-ma\-go\-me\-dov, Y.~Gai\-da\-ma\-ka, S.~And\-re\-ev, Y.~Kou\-che\-rya\-vy, and K.~Sa\-mouy\-lov.} 
+2020. Characterizing resource 
+allocation trade-offs in 5G NR serving multicast and unicast traffic. 
+\textit{IEEE T. Wirel. Commun.} 19(5):3421--3434. doi: 10.1109/ TWC.2020.2973375.
+
+
+%5
+\bibitem{rao2018packet-1}
+\Aue{Rao, J., and S.~Vrzic.} 2018. 
+Packet duplication for URLLC in 5G: Architectural enhancements and performance 
+analysis. \textit{IEEE Network} 32(2):32--40. doi: 10.1109/ MNET.2018.1700227.
+%6
+\bibitem{mahmood2019resource-1}
+\Aue{Mahmood, N.\,H., A.~Karimi, G.~Berardinelli, K.\,I.~Pe\-der\-sen, and D.~La\-sel\-va.} 
+2019.
+On the resource utilization of multi-connectivity transmission for URLLC 
+services in 5G New Radio.
+\textit{IEEE Wireless Communications and Networking 
+Conference Workshop.} Piscataway, NJ: IEEE. 6~p. doi: 
+10.1109/\mbox{WCNCW}.2019.8902865.
+%7
+\bibitem{kochetkova2021queuing-1}
+\Aue{Kochetkova, I.\,A., A.\,S.~Vlaskina, N.\,N.~Vu, and V.\,S.~Shor\-gin.} 2021. Sistema 
+mas\-so\-vo\-go ob\-slu\-zhi\-va\-niya s~uprav\-lya\-emym po sig\-na\-lam pe\-re\-ras\-pre\-de\-le\-ni\-em 
+pri\-bo\-rov dlya ana\-li\-za na\-rez\-ki re\-sur\-sov se\-ti 5G [Queuing system with signals for 
+dynamic resource allocation for analyzing network slicing in 5G networks]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 15(3):91--97. doi: 
+10.14357/ 19922264210312. EDN: JJENVV.
+%8
+\bibitem{gorbunova2018resource-1}
+\Aue{Gorbunova, A.\,V., V.\,A.~Naumov, Y.\,V.~Gai\-da\-ma\-ka, and K.\,E.~Sa\-mouy\-lov.} 2018. 
+Re\-surs\-nye sis\-te\-my mas\-so\-vo\-go ob\-slu\-zhi\-va\-niya kak mo\-de\-li bes\-pro\-vod\-nykh sis\-tem 
+svya\-zi [Resource queuing systems as models of wireless communication systems]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 12(3):48--55. doi: 
+10.14357/19922264180307. EDN: YAMDIL.
+%9
+\bibitem{Ivanova2022-1} 
+\Aue{Ivanova,~D., E.~Markova, D.~Moltchanov, R.~Pir\-ma\-go\-me\-dov, 
+Y.~Kou\-che\-rya\-vy, and K.~Sa\-mouy\-lov.}
+2022. Performance of priority-based traffic coexistence strategies in 5G mmWave 
+industrial deployments.
+\textit{IEEE Access} 10:9241--9256.
+doi: 10.1109/ACCESS.2022.3143583.
+%10
+\bibitem{moltchanov2012distance-1}
+\Aue{Moltchanov, D.} 2012. Distance distributions in random networks. \textit{AD Hoc 
+Netw.} 10(6):1146--1166. doi: 10.1016/ j.adhoc.2012.02.005.
+%11
+\bibitem{santalo2004integral-1}
+\Aue{Santalo, L.\,A.} 2004. \textit{Integral geometry and geometric probability}. 
+Cambridge: Cambridge University Press. 428~p. 
+doi: 10.1017/CBO9780511617331.
+
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received September 25, 2023}} 
+
+%\vspace*{-18pt}
+
+\Contr
+
+\vspace*{-4pt}
+
+\noindent
+\textbf{Ivanova Daria V.} (b.\ 1996)~--- PhD student, Department of Probability 
+Theory and Cyber Security, RUDN University, 6~Miklukho-Maklaya Str., Moscow 
+117198, Russian Federation; \mbox{ivanova-dv@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Markova Ekaterina V.} (b.\ 1987)~--- Candidate of Science (PhD) in physics 
+and mathematics, associate professor, Department of Probability Theory and Cyber 
+Security, RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian 
+Federation; \mbox{markova-ev@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Shorgin Sergey Ya.} (b.\ 1952)~--- Doctor of Science in physics and 
+mathematics, professor, principal scientist, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy 
+of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{sshorgin@ipiran.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Doctor of Science in physics and 
+mathematics, professor, Department of Probability Theory and Cyber Security, 
+RUDN University, 6~Miklukho-Maklaya Str., Moscow, 117198, Russian Federation; 
+senior scientist, Federal Research Center ``Computer Science and Control'' of the Russian Academy 
+of Sciences, 44-2~Vavilov St, Moscow, 119333, Russian Federation; 
+\mbox{gaydamaka-yuv@rudn.ru}
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

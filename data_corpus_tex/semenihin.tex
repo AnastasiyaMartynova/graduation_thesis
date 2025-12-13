@@ -1,0 +1,736 @@
+\renewcommand{\figurename}{\protect\bf Figure}
+
+\def\stat{semenikhin}
+
+\def\tit{NEURAL NETWORK ARCHITECTURE FOR~ARTIFACTS~DETECTION~IN~ZTF~SURVEY}
+
+
+\def\titkol{Neural network architecture for artifacts detection in~ZTF survey}
+
+\def\aut{T.\,A.~Semenikhin$^1$}
+
+\def\autkol{T.\,A.~Semenikhin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Sternberg Astronomical Institute, M.\,V.~Lomonosov Moscow State University, 
+13~Universitetsky Prosp., Moscow 119234, Russian Federation}
+
+
+\index{Семенихин Т.\,А.}
+\index{Semenikhin T.\,A.} 
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2024 vol~34 no\,1}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2024   vol~34   no\,1
+\hfill \textbf{\thepage}}}
+
+      \label{st\stat}
+
+\vspace*{-8pt}
+
+\Abste{Today, astronomers are faced with a challenge of handling vast volume of 
+data as modern astronomical surveys are capable of generating terabytes of data 
+in a single night. One of such survey is the Zwicky Transient Facility (ZTF), an 
+automated sky survey that provides approximately a million alerts per 
+observational night. However, a~significant part of the detected objects turn 
+out to be artifacts, i.\,e., phenomena of a nonastrophysical origin. Therefore, 
+specialists must invest time in manually classifying these objects as there is 
+currently no efficient method that can perform this task without human 
+intervention. The goal of the work is the development of an algorithm to 
+predict whether a light curve from the ZTF data releases (DRs) 
+has a~bogus nature or not, based on the sequence of frames. A~labeled dataset 
+provided by experts from SNAD team was utilized, comprising 2230 frames 
+series. Due to  substantial size of the frame sequences, the application of a 
+variational autoencoder (VAE) was deemed necessary for mapping the images into 
+lower-dimensional vectors. For the task of binary classification based on sequences of 
+compressed frame vectors, a~recurrent neural network (RNN) was employed. Several 
+neural network models were considered and the quality metrics were assessed 
+using k-fold cross-validation. The final performance metrics, including $ 
+\rm{ROC-AUC}=0.86 \pm 0.01$ and $\rm{Accuracy}=0.80 \pm 0.02$, suggest that the 
+model has practical utility. The code implementing the algorithm is available on 
+{\tt GitHub}.}
+
+
+\KWE{neural network; data analysis; real-bogus classification}
+
+\DOI{10.14357/08696527240106}{LRMTGD}
+
+      \thispagestyle{myheadings}
+
+\vskip 12pt plus 9pt minus 6pt
+
+\vspace*{-14pt}
+
+
+\section{Introduction}
+
+\noindent
+Zwicky Transient Facility~\cite{2019PASP..131f8003B, 2019PASP..131a8002B} is an automated sky survey. The telescope generates 
+a~large amount of data every night. The survey data consist of images capturing 
+specific parts of the sky which are later used to create DRs.
+
+The purpose of creating DRs is to investigate any variable sources in 
+the sky. The survey frames are processed using the widely-used algorithm 
+SExtractor~\cite{1996A&AS..117..393B} which detects sources, determines 
+their coordinates, and performs photometry on them. Subsequently, all variable 
+sources are assigned a~unique object identifier (OID) which is added to the so-called 
+ZTF DRs. It is assumed that there should be no nonperiodic variable 
+objects (such as supernovae, red dwarf flares, etc.)\ in the DRs. However, due to 
+the fact that the applied algorithms are not perfect, unusual objects are 
+encountered in these 
+data~\cite{2021MNRAS.502.5147M,2023A&A...672A.111P,Chan_2022}. This motivates 
+researchers, even those whose scientific interests are not related to variable 
+stars, to work with DRs.
+
+    \begin{figure} %fig1
+      \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=109.997mm 
+\epsfbox{sem-1.eps}
+ }
+\end{center}
+\vspace*{-6pt}
+        \Caption{Examples of artifacts found within 
+ZTF data. Images size is $28\times28$~pixels. Frame intensity inverted for better 
+readability}
+\label{artfs}
+                  \end{figure}
+                  
+ Unfortunately, among the ZTF data, so-called artifacts are often encountered 
+(Fig.~\ref{artfs}). An artifact is commonly referred to as any phenomenon of 
+nonastrophysical nature. These can be effects related to instrument malfunction 
+(defocusing, saturated columns in the CCD array, etc.) or effects associated 
+with external conditions (atmospheric turbulence, clouds, bright satellites, 
+etc.). Under certain circumstances, these phenomena can be classified as 
+astrophysical objects by machine learning methods which significantly 
+complicates working with ZTF data.
+
+Classifying astrophysical objects is one of the primary and most challenging 
+tasks when working with DR data because they lack class labels. As a result, 
+instead of directly using a sequence of object images, photometric observations 
+are often employed. Since the observational properties of many astrophysical 
+classes have been sufficiently studied, a set of features can be derived from 
+the light curve (temporal sequence of photometric observations) that allows for 
+their differentiation. Subsequently, classification methods from classical 
+machine learning can be applied to the constructed feature sets to solve the 
+classification task. However, this approach can lead to situations where 
+astrophysical phenomena and artifacts closely resemble each other in their 
+photometric representation. For example, a passing bright satellite may 
+temporarily illuminate a specific region of the detector which can be mistaken 
+for a brief flare of a red dwarf appearing as a short-lived peak in the light 
+curve. Therefore, when tackling such problems, specialists need to spend time 
+validating the obtained results. Artifacts can account for $68\%$ of the total 
+number of objects labeled as astrophysical objects by machine learning 
+methods~\cite{2021MNRAS.502.5147M}.
+
+This work is dedicated to implementing an algorithm that would avoid the 
+involvement of specialists in classifying artifact/nonartifact objects from DR.
+%Currently, there is no efficient approach that solves this problem.
+Currently, no attempts have been found in the literature to solve this 
+problem.
+
+\section{Data}
+
+\noindent
+The labeled object dataset has been provided by SNAD team 
+({\sf https://snad.space/}) and does not publicly available. Each object has 
+a~unique index, OID, and a~set of labels indicating whether it is an artifact or 
+not, along with additional details about the nature of the object (e.\,g., AGN~---
+active galactic nucleus, variable, etc. Similarly, for artifacts: ghost, 
+defocusing, etc.). For each object, there is a~series of telescope images 
+captured at different times. To obtain a~list of links to all available images 
+for a~given OID, an API service 
+({\sf http://finder.fits.ztf.snad.space/\linebreak  api/docs\#operation/Get\_URLs\_for\_all\_exposures\_by\_object\_ID\_api\_v1\_urls\_by\_oid\_\linebreak get}) is used.
+
+
+
+A telescope frame is an image of size $3072\times3080$ depicting a portion of the sky. 
+However, for this task, only a~small area within this frame associated with 
+a~specific object is of interest. Using OID in the ZTF DR, coordinates are 
+determined for the corresponding object (source). In turn, each telescope frame 
+is tied to a~coordinate grid. Thus, knowing the OID of the source allows 
+determining its center on the telescope frame. To download a specific frame via 
+a~link, IRSA service 
+({\sf https://irsa.ipac.caltech.edu/docs/program\_interface/ztf\_api.html}) is 
+used where, upon request, one can specify the coordinates of the source's center 
+and the dimensions of the rectangular area. According to these specifications, 
+the desired region will be cropped from the original image. This avoids 
+downloading the entire large-sized image allowing the entire dataset to be 
+downloaded in approximately one day.
+
+
+The size of the cropped area was chosen to be $28\times28$~pixels since the 
+angular size of the sources of interest does not exceed $\sim$10 arcsec (1 pixel 
+in ZTF frames corresponds to~1.012~arcsec). Thus, the region is generously 
+sized and the input image size matches that of the popular MNIST~\cite{6296535} 
+dataset. If object was close to the image border, the corresponding missing 
+areas were filled with zeros (this is necessary for the correct operation of the 
+{\tt PyTorch} library). The frames have their background intensity values; so, 
+each image needs to be normalized. Normalization corresponding to 
+equation
+\begin{equation*}
+ \label{norm}
+    x_{\mathrm{norm}} = \fr{x - \min(x)}{\max(x) - \min(x)}
+\end{equation*}
+
+\pagebreak
+
+\
+
+\vspace*{-12pt}
+
+            \begin{floatingfigure}{74mm} %fig2
+              \vspace*{-2pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=62.893mm 
+\epsfbox{sem-2.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+                \Caption{Distribution of images number per object}
+                \vspace*{6pt}
+                \label{hist}
+            \end{floatingfigure}
+            
+            \noindent
+where $x$ is the frame; $\mu$ is the mean intensity value of the frame; 
+and $\sigma$ is the standard deviation of the frame intensity  was applied. Figure~\ref{artfs} shows examples of preprocessed frames.
+
+The dataset contains 2230 objects including 1150~artifacts and 1080 
+astrophysical objects, totaling 1,015,177~images.
+
+
+One of the main challenges of the task is that objects have a large number of 
+observations (Fig.~\ref{hist}) and it is unknown at which specific time 
+points anomalies were observed. Therefore, an algorithm capable of working with 
+sequences of images rather than individual anomalous images is necessary.
+
+
+\section{Methods}
+
+\noindent
+The implemented approach involves two stages. First, VAE is trained on all images in the dataset to obtain informative compressed 
+representations of frames. Then, an RNN is trained on 
+sequences of these compressed representations to solve the classification task. 
+Combining these two stages into a~single RNN with 
+convolutional layers at the beginning is not feasible due to computational 
+resource limitations. All neural networks are implemented using the {\tt Python} 
+library {\tt PyTorch}.
+
+\subsection{Variational autoencoder}
+
+\noindent
+The implemented encoder consists of 5 convolutional layers (with image channel 
+dimensions: 32, 64, 128, 256, and 512, respectively) with the LeakyReLU activation 
+function and batch normalization after each layer. Each output convolutional 
+layer returns half the size of the input image; so, the encoder output is a~vector whose size is a model parameter. The architecture of the decoder is 
+symmetrical to that described above, except that transposed convolutional layers 
+are used instead of convolutional layers.
+
+
+The VAE was trained on all images from dataset. When selecting the parameters 
+for the VAE, different levels of image compression were considered. In machine 
+learning literature, the vector obtained at the output of the encoder is 
+commonly referred to as the latent state. In Fig.~\ref{vae_loss}, curves~\textit{1} and~\textit{2}
+ represent the loss curves for latent state sizes of~36 and~78, 
+respectively. It can be observed that increasing the latent state size requires 
+more training epochs. In this work, a~latent state size\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\
+
+\vspace*{-12pt}
+
+
+            \begin{floatingfigure}{78mm} %fig3
+              \vspace*{-4pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=66.873mm 
+\epsfbox{sem-3.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+                 \Caption{Loss functions during training a~VAE: \textit{1}~--- $\mathrm{latent~size}=36$;
+                 \textit{2}~--- $\mathrm{latent~size}\protect\linebreak =78$; and \textit{3}~--- random rotate}
+                 \vspace*{9pt}
+                  \label{vae_loss}
+            \end{floatingfigure}
+            
+
+\noindent 
+ of~36 proved to be 
+optimal. Image augmentation through random rotation was also
+explored (curve~\textit{3} 
+in Fig.~\ref{vae_loss}); however, it was found that this significantly increased 
+the number of required training epochs without a visible improvement in the 
+model. Therefore, the final model does not include any augmentations. For model 
+training, the Adam optimizer~\cite{kingma2017adam} was used with 
+a~$\mathrm{learning~rate} = 5 \cdot 10^{-5}$ for~100~epochs. The core idea of the Adam 
+optimizer is to combine adaptive moment estimation with adaptive learning rates 
+for efficient model optimization in machine learning. The loss function for the 
+VAE takes the following form:
+    \begin{multline*}
+            L = \mathrm{LogCosh}\left(x, \hat{x}\right) + \omega_{\mathrm{kld}}  \mathrm{KL}\,(N(\mu, \sigma) || 
+N(0, 1)) \\
+         {}=   \ln{\cosh\left(x - \hat{x}\right)} + \omega_{\mathrm{kld}} \left( \ln 
+\fr{1}{\sigma} + \fr{\sigma^2 + \mu^2}{2} - \fr{1}{2} \right).
+        \end{multline*}
+Here, $x$ and $\hat{x}$ represent the original image and its reconstruction by the 
+decoder, respectively; $\mu$ and~$\sigma$ are vectors of means and variances 
+obtained from the encoder's output; and $\omega_{\mathrm{kld}} = 8\cdot 10^{-5}$ serves as 
+the weight coefficient for the Kullback--Leibler divergence.
+
+By using the compressed representations of the images, it is expected that the 
+compressed representations of anomalous frames are outliers from the overall 
+distribution of normal images. After the VAE was trained, the obtained 
+compressed representations of frames were saved. The next stage of the work 
+involved training an RNN for binary classification.
+
+\subsection{Recurrent neural network}
+
+\noindent
+The fundamental idea behind RNNs is the utilization of hidden states that 
+capture information from previous time steps allowing them to maintain a form 
+of memory and learn dependencies within sequential data. By using recurrent 
+connections, RNNs can model sequences of arbitrary length making them powerful 
+tools for tasks involving sequential information. However, traditional RNNs have 
+issues with vanishing and exploding gradients leading to difficulties in 
+learning long-range dependencies. To address this, various RNN architectures 
+like LSTM (Long Short-Term Memory)~\cite{10.1162/neco.1997.9.8.1735} and GRU 
+(Gated Recurrent Unit)~\cite{cho2014learning} have been developed which 
+introduce gating mechanisms to better control the flow of information and 
+mitigate gradient-related problems.
+
+The model takes inputs of size (batch~size, sequence~length, and latent\_dim) where 
+latent\_dim represents the dimensionality of the compressed representation. 
+Embeddings for object frames along with their corresponding class labels are 
+fed into an RNN. The model parameters are optimized using the Adam optimizer with 
+a~$\mathrm{learning~rate}=10^{-4}$ for~500~epochs.
+
+
+
+\begin{table}[b]\small
+\begin{center}
+\begin{tabular}{lccc}
+\multicolumn{4}{p{100mm}}{Model results. The metric values are averaged over 5 test folds as 
+well as the standard deviation}\\
+\multicolumn{4}{p{100mm}}{\ }\\[-6pt]
+\hline
+\multicolumn{1}{c}{Model name} & ROC-AUC & Accuracy & \multicolumn{1}{c}{F1-score} \\
+\hline
+&&\\[-10pt]
+GRU & $0.84 \pm 0.01$ & $0.78 \pm 0.02$ & $0.79 \pm 0.01$\\
+Bidirectional GRU\;+\;$L_2$ & $0.86 \pm 0.01$ & $0.80 \pm 0.02$ & $0.80 \pm 0.01$\\
+GRU\;$+$\;Tversky loss & $0.84 \pm 0.02$ &  $0.79 \pm 0.02$ & $0.79 \pm 0.02$\\
+LSTM & $0.76 \pm 0.04$ & $0.76 \pm 0.03$ & $0.77 \pm 0.02$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+
+
+The baseline model considered was a GRU layer with a hidden state size of~128 
+and the loss function used during training the RNN was 
+cross-entropy. In addition to the baseline model, the following variations were 
+explored: a~bidirectional GRU cell with $L_2$ weight regularization 
+($\mathrm{weight~decay}=10^{-5}$); a~GRU layer with a~modified loss function (the Tversky 
+Index~\cite{salehi2017tversky}) term was added to the loss function); and an LSTM 
+layer with the same parameters as the baseline model.
+
+During the RNN training, we employed k-fold cross-validation ($k=5$). The 
+dataset was randomly divided into 5~folds and then 5 models were trained, each 
+having a~specific fold as the test set and the union of the remaining~4~folds as 
+the training set. Thus, the data split into training\!/\!test sets was unique for 
+each model. The final quality metrics for each considered model were calculated 
+as the average values across 5 models from the k-fold cross-validation split.
+
+Applying the obtained model to the entire ZTF DR dataset is 
+impractical as downloading all images for all objects in the ZTF DR would take 
+months or even years. In practice, it is expected that the classifier's decision 
+function will serve as an additional source of information for the active 
+(employing partial teacher involvement through feedback loops) anomaly detection 
+algorithm and the classifier will be applied only to a small subset of objects~--- candidates for anomalies~\cite{2021A&A...650A.195I}. In this case, 
+determining the specific threshold of the decision function is the prerogative 
+of the active anomaly detection algorithm based on expert feedback. Moreover, 
+technically, such a threshold may vary for different feature space regions. 
+Therefore, ROC-AUC was chosen as the main metric for evaluating model 
+performance.
+
+
+
+Bidirectional GRU is different from the regular GRU in that it processes input 
+sequences in both forward and backward directions which enables it to capture 
+contextual information from past and future time steps. However, when using\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\
+
+\vspace*{-12pt}
+
+            \begin{floatingfigure}{70mm} %fig4
+              \vspace*{-5pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=62.717mm 
+\epsfbox{sem-4.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+                \Caption{The ROC curves examples of trained models for 
+one of the cross-validation splits: \textit{1}~--- GRU; \textit{2}~--- LSTM; \textit{3}~--- bidirectional GRU\;+\;$L_2$; and \textit{4}~--- GRU\;+\;Tversky loss
+}
+%\vspace*{6pt}
+\label{roc}
+            \end{floatingfigure}
+            
+            \noindent
+             such 
+an approach in this task, the model experienced overfitting; so, $L_2$ weight 
+regularization was added to it. The table %~\ref{table} 
+as well as 
+Fig.~\ref{roc} show the main results
+             for the considered models. The table 
+indicates that LSTM performs worse than the other models. The three remaining 
+models exhibit approximately the same level of quality based on the performance 
+metrics. However, the bidirectional GRU\;+\;$L_2$ appears slightly more stable 
+across different data splits. Therefore, this model was selected for further 
+work.
+
+
+
+\section{Concluding Remarks}
+
+\noindent
+Throughout the course of this study, sequences of ZTF object frames from 
+a~labeled dataset were downloaded and preprocessed. Using the {\tt PyTorch} 
+library, a~VAE was implemented and trained enabling the 
+compression of images into informative lower-dimensional vectors. Several models 
+of RNNs were considered for the task of binary 
+classification based on sequences of compressed image vectors. The quality 
+metrics of the models were evaluated using k-fold cross-validation, with the 
+best-performing model achieving an $ \mathrm{ROC}\mbox{-}\mathrm{AUC}=0.86 \pm 0.01$ and 
+$\mathrm{Accuracy}=0.80 \pm 0.02$. All the code used in the study is available on 
+{\tt GitHub} ({\sf https://github.com/semtim/RB\_ZTF}).
+
+Thus, an algorithm has been developed that aims to classify objects from ZTF DR 
+in a manner similar to that of a specialist who annotated the training dataset. 
+This algorithm stands out from others by utilizing sequences of observation 
+frames rather than photometric time series. While computationally more 
+challenging, images contain more information about the object's radiation than 
+its corresponding photometry.
+
+
+The next stage of the work will involve: searching for the optimal architecture 
+for both the autoencoder and the recurrent network; selecting the most effective 
+loss function for the classifier in terms of our task; analyzing the dependence 
+of the first and second type errors on the chosen threshold value; and conducting 
+computational experiments using different optimizers. This algorithm can be 
+employed within the scope of the SNAD project as 
+the obtained quality metrics indicate its practical value. Since the training 
+dataset used in this work was annotated by specialists from the SNAD project, it 
+is expected that the implementation of this algorithm into the general pipeline 
+will reduce the number of artifacts among anomalies. This will enable 
+specialists to detect more new astrophysical objects.
+
+
+
+
+
+\Ack
+
+\vspace*{-3pt}
+
+\noindent
+The paper is published on the proposal of the Program Committee of the 25th 
+International Conference on Data Analytics and Management in Data Intensive 
+Domains (DAMDID/RCDL 2023). The author thanks the SNAD team for the provided 
+comments and support. The author acknowledges the support of M.\,V.~Lomonosov 
+Moscow State University Program of Development. The work was supported by Nonprofit 
+Foundation for the Development of Science and Education ``Intellect.''
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\begin{thebibliography}{99}
+
+
+%1
+\bibitem{2019PASP..131a8002B}
+\Aue{Bellm, E.\,C., S.\,R.~Kulkarni, M.\,J.~Graham, \textit{et al.}} 2019. The Zwicky 
+Transient Facility: System overview, performance, and first results. 
+\textit{Publ. Astron. Soc. Pac.} 131(995):018002. 19 p. doi: 10.1088\!/\!1538-3873\!/\!aaecbe.
+
+%2
+\bibitem{2019PASP..131f8003B}
+\Aue{Bellm, E.\,C., S.\,R.~Kulkarni, T.~Barlow, \textit{et al.}} 2019.
+The Zwicky Transient Facility: Surveys and scheduler. \textit{Publ. Astron. Soc. Pac.} 131(1000):068003. 13~p. 
+doi: 10.1088\!/\!1538-3873/ab0c2a.
+
+%3
+\bibitem{1996A&AS..117..393B}
+\Aue{Bertin, E., and S.~Arnouts}. 1996. SExtractor: Software for source extraction. 
+\textit{Astron. Astrophys. Sup.} 117(2):393--404. doi: 10.1051\!/\!aas:1996164.
+
+%4
+\bibitem{2021MNRAS.502.5147M}
+\Aue{Malanchev, K.\,L., M.\,V.~Pruzhinskaya, V.\,S.~Korolev, \textit{et al.}} 2021. 
+{Anomaly detection in the Zwicky transient facility DR3}. \textit{Mon. Not. R. 
+Astron. Soc.} 502(4):5147--5175. doi: 10.1093\!/\!mnras\!/\!stab316.
+
+%5
+\bibitem{Chan_2022}
+\Aue{Ho-Sang, C., V.\,A.~Villar, S.~Cheung, \textit{et al.}} 2022. Searching for 
+anomalies in the ZTF catalog of periodic variable stars. \textit{Astrophys.~J.} 
+932(2):118. 21~p. doi: 10.3847\!/\!1538-4357\!/\!ac69d4.
+
+%6
+\bibitem{2023A&A...672A.111P}
+\Aue{Pruzhinskaya, M.\,V., E.\,E.\,O.~Ishida, A.\,K.~Novinskaya, \textit{et al.}}  2023. 
+Supernova search with active learning in ZTF DR3. \textit{Astron. Astrophys.} 
+672:A111. 22~p. doi: 10.1051\!/\!0004-6361\!/\!202245172.
+
+
+
+%7
+\bibitem{6296535}
+Deng, L. 2012. The MNIST database of handwritten digit images for machine 
+learning research. \textit{IEEE Signal Proc. Mag.} 29(6):141--142. doi: 
+10.1109\!/\!MSP.2012.2211477.
+
+%8
+\bibitem{kingma2017adam}
+\Aue{Kingma, D.\,P., and J.~Ba.} 2017. Adam: A~method for stochastic optimization. 
+\textit{arXiv.org}. 15 p. Available at: {\sf https://arxiv.org/abs/1412.6980} 
+(accessed March~11, 2024).
+
+%9
+\bibitem{10.1162/neco.1997.9.8.1735}
+\Aue{Hochreiter, S., and J.~Schmidhuber.} 1997. Long short-term memory. \textit{Neural 
+Comput.} 9(8):1735--1780. doi: 10.1162\!/\!neco.1997.9.8.1735.
+
+%10
+\bibitem{cho2014learning}
+\Aue{Cho, K., B.~Merri\"{e}nboer, C.~Gulcehre, \textit{et al.}} 2014. Learning phrase 
+representations using RNN encoder-decoder for statistical machine translation. 
+\textit{arXiv.org}. 15~p. Available at: {\sf https://arxiv.org/abs/1406.1078} 
+(accessed March~11, 2024).
+
+%11
+\bibitem{salehi2017tversky}
+\Aue{Salehi, S., D.~Erdogmus, and A.~Gholipour.} 2017. Tversky loss function for image 
+segmentation using 3D fully convolutional deep networks. \textit{arXiv.org}. 9~p. Available at: 
+{\sf https://arxiv.org/abs/1706.05721} (accessed March~11, 2024).
+
+%12
+\bibitem{2021A&A...650A.195I}
+\Aue{Ishida, E.\,E.\,O.,  M.\,V.~Kornilov, K.\,L.~Malanchev, \textit{et al.}} 2021. Active 
+anomaly detection for time-domain discoveries. \textit{Astron. Astrophys.} 
+650:A195. 9~p. doi: 10.1051\!/\!0004-6361\!/\!202037709.
+
+\end{thebibliography} } }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received December 6, 2023}}
+
+\vspace*{-6pt}
+
+
+\Contrl
+
+\noindent
+\textbf{Semenikhin Timofey A.} (b.\ 1999)~--- engineer, Sternberg Astronomical 
+Institute, M.\,V.~Lomonosov Moscow State University, 13~Universitetsky Prosp., 
+Moscow 119234, Russian Federation; \mbox{ofmafowo@gmail.com}
+
+
+
+
+
+
+\vspace*{12pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{6pt}
+
+%\newpage
+
+
+
+\def\tit{ПОИСК АРТЕФАКТОВ НА ИЗОБРАЖЕНИЯХ ОБЗОРА ZTF ПРИ~ПОМОЩИ НЕЙРОННЫХ 
+СЕТЕЙ$^*$}
+
+\def\aut{Т.\,А.~Семенихин}
+
+
+\def\titkol{Поиск артефактов на изображениях обзора ZTF при помощи нейронных 
+сетей}
+
+\def\autkol{Т.\,А.~Семенихин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+Государственный астрономический институт имени П.\,К.~Штернберга
+Московского государственного университета имени М.\,В. Ломоносова 
+% \mbox{ofmafowo@gmail.com}
+
+\vspace*{6pt}
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill СИСТЕМЫ И СРЕДСТВА ИНФОРМАТИКИ\ \ \ том~34\ \ \ номер~1\ \ \ 2024}
+}%
+ \def\rightfootline{\small{СИСТЕМЫ И СРЕДСТВА ИНФОРМАТИКИ\ \ \ том~34\ \ \ номер~1\ \ \ 2024
+\hfill \textbf{\thepage}}}
+
+
+
+
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Статья публикуется по представлению программного комитета XXV Международной 
+конференции <<Аналитика и управление данными в~областях с~интенсивным 
+использованием данных>> (DAMDID\!/\!RCDL 2023). Автор выражает благодарность команде 
+SNAD за комментарии и~поддержку. Работа выполнена с~использованием оборудования, 
+приобретенного за счет средств Программы развития Московского университета. 
+Исследование выполнено при финансовой поддержке Некоммерческого фонда развития 
+науки и~образования <<Интеллект>>.}}
+
+
+
+\Abst{Сегодня астрономам приходится работать с большими объемами данных, 
+поскольку современные инструменты способны генерировать терабайты информации за 
+одну ночь. Одним из таких инструментов стал автоматизированный обзор неба Zwicky 
+Transient Facility (ZTF), который за одну ночь детектирует порядка миллиона новых 
+вспышек. Однако значительная доля найденных объектов оказывается артефактами, т.\,е.\
+ явлениями, имеющими неастрофизическую природу. Поэтому специалистам 
+приходится тратить время на классификацию объектов вручную, так как на текущий 
+момент не существует эффективного метода, который делал бы это без учас\-тия 
+человека. Целью данной работы ставилась реализация эффективного алгоритма, который 
+по последовательности кадров объекта из обзора ZTF 
+предсказывал бы, относится он к~артефактам или нет. Для реализации алгоритма 
+использована выборка, размеченная специалистами коллаборации SNAD 
+и~содержащая~2230~серий кадров объектов. Так как последовательности кадров 
+достаточно велики, использован вариационный автоэнкодер, который позволяет 
+отобразить изображение в~вектор меньшей длины. Для решения задачи бинарной 
+классификации по последовательности сжатых в~векторы кадров применялась 
+рекуррентная нейронная сеть. Были рассмотрены несколько моделей нейронных сетей, 
+для оценки метрик качества использовалась k-fold кросс-валидация. Итоговые 
+метрики качества составляют $ \mathrm{ROC}\mbox{-}\mathrm{AUC}\hm= 0{,}86 \pm 0{,}01$ и~точ\-ность~$0{,}80 
+\pm 0{,}02$ и~позволяют говорить, что модель имеет практическую ценность. Код с 
+реализацией алгоритма доступен на %{\sf https://github.com/semtim/RB\_ZTF}
+{\tt 
+GitHub}.}
+
+\KW{нейронные сети; анализ данных; классификация ре\-аль\-ных/лож\-ных объектов}
+
+
+\DOI{10.14357/08696527240106}{LRMTGD}
+
+%\vspace*{6pt}
+
+
+\renewcommand{\bibname}{\protect\rmfamily Литература}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\begin{thebibliography}{99}
+
+
+
+\bibitem{2019PASP..131a8002B-1} %1
+\Au{Bellm~E.\,C., Kulkarni~S.\,R., Graham~M.\,J., \textit{et al.}}
+The Zwicky Transient Facility: System overview, performance, and first results~/\!\!/ Publ. Astron. Soc. Pac., 
+2019. Vol.~131. Iss.~995. Art.~018002. 19~p. doi: 10.1088\!/\!1538-3873/aaecbe.
+
+\bibitem{2019PASP..131f8003B-1} %2
+\Au{Bellm~E.\,C., Kulkarni~S.\,R., Barlow~T., \textit{et al}}.
+{The Zwicky Transient Facility: Surveys and scheduler}~/\!\!/ Publ. Astron. Soc. Pac., 2019. Vol.~131. 
+Iss.~1000. Art.~068003. 13~p. doi: 10.1088\!/\!1538-3873/ab0c2a.
+
+
+\bibitem{1996A&AS..117..393B-1} %3
+\Au{Bertin~E., Arnouts~S.} SExtractor: Software for source extraction~/\!\!/ Astron. Astrophys. Sup., 
+1996. Vol.~117. No.~2. P.~393--404. doi: {10.1051\!/\!aas:1996164}.
+
+\bibitem{2021MNRAS.502.5147M-1} %4
+\Au{Malanchev K.\,L., Pruzhinskaya~M.\,V., Korolev~V.\,S., \textit{et. al.}} Anomaly 
+detection in the Zwicky Transient Facility DR3~/\!\!/ Mon. Not. R. 
+Astron. Soc., 2021. Vol.~502. 
+No.\,4. P.~5147--5175. doi: 10.1093\!/\!mnras/stab316.
+
+
+
+\bibitem{Chan_2022-1} %5
+\Au{Ho-Sang C., Villar~V.\,A., Cheung~S., \textit{et al.}} Searching for anomalies in 
+the ZTF catalog of periodic variable stars~/\!\!/ Astrophys.~J., 2022. Vol.~932. No.\,2. 
+Art.~118. 21~p. doi: 10.3847\!/\!1538-4357\!/\!ac69d4.
+
+\bibitem{2023A&A...672A.111P-1} %6
+\Au{Pruzhinskaya M.\,V., Ishida~E.\,E.\,O.,  Novinskaya~A.\,K., \textit{et al.}} 
+{Supernova search with active learning in ZTF DR3} // Astron. Astrophys., 2023. 
+Vol.~672. Art.~A111. 22~p. doi: 10.1051\!/\!0004-6361\!/\!202245172.
+
+
+\bibitem{6296535-1}
+\Au{Deng Li.} The MNIST database of handwritten digit images for machine 
+learning research~/\!\!/ IEEE Signal Proc. Mag., 2012. Vol.~29. No.\,6. P.~141--142. doi: 10.1109\!/\!MSP.2012.2211477.
+
+\bibitem{kingma2017adam-1}
+ \Au{Kingma D.\,P., Ba~J.} Adam: A~method for stochastic optimization.~--- 
+Cornell University, 2017. arXiv:1412.6980 [cs.LG]. 15~p.
+
+\bibitem{10.1162/neco.1997.9.8.1735-1}
+\Au{Sepp H., Jurgen~S.} Long short-term memory~/\!\!/ Neural Comput., 1997. 
+Vol.~9. No.\,8. P.~1735--1780. doi: 10.1162\!/\!neco.1997.9.8.1735.
+
+\bibitem{cho2014learning-1}
+\Au{Cho~K., Merri\"{e}nboer~B., Gulcehre~C., \textit{et al.}} Learning phrase representations using RNN encoder-decoder for 
+statistical machine translation.~--- Cornell University, 2014. arXiv:1406.1078 
+[cs.CL]. 15~p.
+
+\bibitem{salehi2017tversky-1}
+ \Au{Salehi S., Erdogmus~D., Gholipour~A.} Tversky loss function for image 
+segmentation using 3D fully convolutional deep networks.~--- Cornell 
+University,  2017. arXiv:1706.05721 [cs.CV]. 9~p.
+
+\bibitem{2021A&A...650A.195I-1}
+\Au{Ishida~E.\,E.\,O., Kornilov~M.\,V.,  Malanchev~K.\,L., \textit{et al.}} Active 
+anomaly detection for time-domain discoveries~/\!\!/ Astron. Astrophys., 2021. 
+Vol.~650. Art.~A195. 9~p. doi: 10.1051\!/\!0004-6361\!/\!202037709.
+
+
+\label{end\stat}
+
+\end{thebibliography}
+} }
+
+
+\hfill{\small\textit{Поступила в редакцию 06.12.2023}}
+%\renewcommand{\bibname}{\protect\rm Литература}
+\renewcommand{\figurename}{\protect\bf Рис.}

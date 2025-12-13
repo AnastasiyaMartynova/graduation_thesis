@@ -1,0 +1,643 @@
+%\newcommand{\R}{\mathbb R}
+
+\def\stat{gorshenin-a}
+
+\def\tit{СИСТЕМА УПРАВЛЕНИЯ ОБУЧЕНИЕМ ELIS. АРХИТЕКТУРНЫЕ РЕШЕНИЯ}
+
+\def\titkol{Система управления обучением ELIS. Архитектурные решения}
+
+
+\def\aut{А.\,К.~Горшенин$^1$, Е.\,С.~Данилович$^2$, Д.\,Р.~Хромов$^3$}
+
+\def\autkol{А.\,К.~Горшенин, Е.\,С.~Данилович, Д.\,Р.~Хромов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Горшенин А.\,К.}
+\index{Данилович Е.\,С.}
+\index{Хромов Д.\,Р.}
+\index{Gorshenin A.\,K.}
+\index{Danilovich E.\,S.}
+\index{Khromov D.\,R.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Работа поддержана РФФИ (проект 14-01-00075).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проб\-лем информатики Федерального исследовательского центра 
+<<Информатика и~управ\-ле\-ние>> 
+Российской академии наук; Московский технологический университет (МИРЭА),
+\mbox{agorshenin@frccsc.ru}}
+\footnotetext[2]{Московский технологический университет (МИРЭА), 
+\mbox{cio@andromeda-inc.com}}
+\footnotetext[3]{Московский технологический университет (МИРЭА), 
+\mbox{ceo@andromeda-inc.com}}
+
+\label{st\stat}
+
+                  \thispagestyle{headings}
+ 
+  %\vspace*{-8pt}
+
+
+\Abst{Развитие информационных технологий оказывает значительное влияние на 
+различные сферы человеческой деятельности, в~том числе приводит к~формированию новых 
+образовательных требований и~стандартов. Электронные формы обучения вызывают повышенный 
+интерес у~учащихся и~предоставляют новые возможности преподавателям. Для автоматизации 
+различных аспектов современного образовательного процесса используются так называемые 
+системы управления обучением. В~статье описываются основные архитектурные решения, 
+разработанные для сис\-те\-мы управ\-ле\-ния обучением {\tt ELIS}
+ ({\tt Electronic Learning Intelligent System}), которая может служить 
+единой образовательной площадкой как для высших учебных заведений, так и~для различных 
+частных и~государственных компаний.}
+
+\KW{система управления обучением; электронное обучение; SaaS; облачные вычисления}
+
+\DOI{10.14357\!/\!08696527170206} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+      %\vspace*{-10pt}
+
+\section{Введение}
+
+Развитие информационных технологий оказывает значительное влияние на различные сферы 
+человеческой деятельности~\cite{Gorshenin2016a}, в~том числе приводит к~формированию 
+новых образовательных требований и~стандартов. В~качестве примеров можно упомянуть 
+систему школьных электронных дневников, автоматизированные средства оценивания знаний 
+и~учета успеваемости в~университетах, решения для обучения персонала в~коммерческих 
+компаниях и~др. Стоит отметить, что электронные формы обучения вызывают повышенный 
+интерес у~студентов, так как позволяют использовать привычные для них технологии или 
+получить некоторый новый опыт. Преподаватели получают возможности интерактивной 
+демонстрации различных аспектов курса и~автоматизации контроля образовательного 
+процесса, в~частности при проведении промежуточных и~итоговых видов аттестации.
+
+При разработке электронных решений возникают задачи эффективной реализации 
+взаимодействия между образовательными системами и~пользователями, обеспечения 
+быстрого сбора дополнительной информации для дальнейшего извлечения знаний и~получения 
+аналитических материалов. Для автоматизации современного образовательного процесса 
+принято разрабатывать и~внедрять различные системы управления обучением 
+(\verb"LMS", \verb"Learning Management System"), которые позволяют осуществлять 
+общее администрирование, формирование отчетности по  образовательным курсам и~учебным 
+программам, координацию взаимодействия преподавателей и~обучающихся, мониторинг 
+показателей их деятельности и~т.\,п. При этом в~ряде работ отмечено 
+(см., например,~\cite{Lonn2009}), что наибольшую заинтересованность пользователей 
+таких сис\-тем вызывают прежде всего возможности эффективной коммуникации, а~не только 
+реализованные интерактивные решения в~образовательном процессе. Поэтому 
+зачастую~\cite{Paulsen2003} организации предпочитают разработку собственных сис\-тем 
+электронного обучения для наиболее точного учета всех специфических требований, 
+в~част\-ности для реализации адаптивных решений~\cite{Shute2003}.
+
+В данной работе описываются основные архитектурные решения для сис\-те\-мы управ\-ле\-ния
+ обучением \verb"ELIS", которая 
+ может служить единой образовательной площадкой как для высших учебных заведений, 
+ так и~для различных частных и~государственных компаний.
+
+\section{Основные требования к~системе ELIS}
+
+В статье~\cite{Gorshenin2016b} была предложена реализация автоматизированного 
+средства аттестации с~учетом основных требований  работы~\cite{Gorshenin2014} 
+для электронной поддержки образовательного процесса в~рамках курса <<Программирование>> 
+в~Московском технологическом университете 
+(МИРЭА)~[7--10]. Данное 
+решение разрабатывалось в~рамках парадигмы <<кли\-ент--сер\-вер>>, которая 
+предоставляет следующие преимущества: отсутствие необходимости дублирования кода 
+на стороне клиента, умеренные требования к~пользовательскому оборудованию и~программному 
+обеспечению, повышение уровня безопасности за счет организации политик доступа на 
+сервере. Однако хорошо известны и~недостатки данной архитектуры: зависимость 
+работоспособности и~производительности системы от состояния сервера, 
+сложности с~администрированием, необходимость в~финансовых затратах на серверное 
+оборудование, увеличение трафика при усложнении функционала клиентских приложений.
+
+Современные системы управления обучением должны предоставлять возможности 
+масштабирования, обеспечивать отказоустойчивость и~т.\,д. Поэтому решения для 
+системы \verb"ELIS" построены на облачной платформе с~моделью обслуживания 
+\verb"SaaS" (\verb"Software-as-a-Service"~--- программное обеспечение как услуга), 
+в~рамках которой обучающиеся и~преподаватели получают возможность 
+доступа к~реализованным в~системе решениям  с~по\-мощью тонкого клиента. 
+Использование облачных решений может также существенно снизить инфраструктурные 
+расходы, а также позволяет гибко реагировать на увеличение потребностей в~вычислительных 
+мощностях (например, при масштабировании~--- в~случае увеличения числа пользователей). 
+Необходимо отметить, что использование данной парадигмы весьма востребовано 
+в~образовательной сфере (см., например, статью~\cite{Sultan2010}).
+
+
+Коротко рассмотрим основные требования к~системе управления обучением, 
+которые были учтены при разработке \verb"ELIS":
+\begin{itemize}
+\item система должна быть ориентирована на облачные технологии для 
+обеспечения одновременного доступа большого числа пользователей;
+\item необходима поддержка кроссплатформенности системы и~реализация 
+возможности доступа через специальные мобильные приложения;
+\item сервис должен обладать достаточной степенью универсальности 
+для предоставления образовательных услуг как в~высших учебных заведениях, 
+так и~в~государственных и~частных компаниях;
+\item все данные, включая учебные материалы, проверочные задания, 
+правильные ответы и~т.\,д., хранятся на сервере; доступ предоставляется 
+исключительно в~защищенном режиме;
+\item каждый пользователь имеет уникальную учетную запись %для доступа 
+(личный кабинет) 
+с~реализацией различных уровней прав доступа в~зависимости 
+от роли в~системе;
+\item администратор может добавлять представителей учебных заведений или компаний, 
+подавших заявку на подключение их организации к~системе, а~также осуществляет 
+общие функции поддержки корректности работы;
+\item представитель может изменить информацию о компании (например, название, 
+список предметов, расписание и~т.\,д.), добавляет преподавателей и~закрепляет 
+за ними предметы и~учебные группы, делегирует права доступа к~статистике всего 
+учебного заведения, структурного подразделения, предмета и~т.\,д.;
+\item преподавателям доступно создание и~редактирование учебных и~тестовых 
+материалов, отслеживание выполнения домашнего задания. Тесты можно создавать 
+на основе разделов курса, в~частности без привязки к~ка\-ко\-й-ли\-бо конкретной теме.
+ Должна быть предусмотрена опция <<случайного>> формирования вопросов из заданных 
+ разделов и~порядка вывода возможных вариантов ответов для них;
+\item обучающиеся должны иметь возможность просматривать учебные материалы по 
+любому доступному предмету, выполнять домашние задания, проходить тесты и~сдавать 
+контрольные работы, иметь обратную связь с~преподавателями и~другими учениками 
+внутри системы с~помощью решений, реализованных в~их личном кабинете.
+\end{itemize}
+
+В следующих разделах рассмотрим основные архитектурные решения и~использованные 
+средства разработки для реализации описанной в~данном разделе концепции.
+
+\section{Архитектурные компоненты системы ELIS}
+
+\vspace*{-3pt}
+
+Система  управления обучением \verb"ELIS" состоит из двух основных
+ архитектурных частей~--- \verb"FrontEnd" и~\verb"BackEnd" 
+ (см.\ рисунок), функционирование которых рас\-смот\-ре\-но в~данном 
+ разделе.
+
+\begin{figure}[b] %fig1
+\vspace*{-3pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=125.403mm
+ \epsfbox{goa-1.eps}
+ }
+
+ \vspace*{3pt}
+
+{\small Архитектура FrontEnd- и~BackEnd-ком\-по\-нен\-тов 
+сис\-те\-мы {\tt ELIS}}
+
+\end{center}
+
+\vspace*{-3pt}
+
+\label{FigFrontBackEnd}
+\end{figure}
+
+Все данные и~основная часть логики биз\-нес-про\-цес\-сов 
+размещается на серверах системы, при этом мобильные приложения и~сайт выполняют роль 
+тонких клиентов. Взаимодействие между компонентами системы осуществляется 
+посредством единого программного интерфейса (\verb"API", \verb"Application" 
+\verb"Programming Interface"). Это позволяет создавать тонкие клиенты для различных 
+платформ без модификации  \verb"BackEnd"-ком\-по\-нен\-ты.
+Обращение к~\verb"API" для осуществления взаимодействия происходит посредством 
+\verb"GET/POST" \verb"HTTP"-ме\-то\-дов, ответ реализуется в~виде
+ объектов \verb"JSON" (\verb"JavaScript" \verb"Object Notation"). 
+ Использование подобного формата позволяет передавать структуры произвольной 
+ сложности, при этом пакеты данных имеют гораздо меньший размер по сравнению 
+ с~\verb"XML" (\verb"eXtensible Markup Language"), что положительно сказывается 
+ на скорости передачи информации по сети. Обмен данными происходит через 
+ шифрованный \verb"SSL"-ка\-нал для уменьшения возможности перехвата или 
+ подмены данных в~процессе передачи. При обработке каждого запроса предварительно 
+ происходит проверка прав доступа пользователя к~запрошенному объекту.
+
+В начале работы  необходимо пройти авторизацию и~получить идентификатор 
+сессии, который будет использоваться во всех дальнейших запросах к~ \verb"API". 
+Авторизация осуществляется посредством отправки пары значений ло\-гин/па\-роль, 
+которая передается на сервер, где производится хеширование пароля, его проверка и~поиск 
+пользователя. В~случае, если пользователь был найден, происходит генерация 
+сессионного токена, который передается клиентскому приложению. Данный токен 
+используется во всех последующих запросах для авторизации пользователя. 
+Предусмотрена возможность ассоциации сессионного токена с~\verb"IP"-ад\-ре\-сом 
+пользователя для предотвращения его использования в~случае перехвата третьими лицами. 
+В~случае обнаружения пользователя и~корректности введенного пароля производится 
+авторизация и~осуществляется загрузка списков контроля доступа \verb"ACL" 
+(\verb"Access Control List") для конкретного пользователя. Права каж\-до\-го пользователя 
+основаны на его персональной роли, а~также возможностях, доступных для группы, 
+в~которой он состоит. Отметим, что проверка наличия разрешения 
+у~авторизированного пользователя на выполнение действия или доступа к~запрошенным 
+данным проводится при каждом обращении к~\verb"API". В~случае, если разрешение имеется, 
+соответствующий запрос выполняется успешно. Все обращения к~\verb"API" 
+осуществляются посредством балансировщика нагрузки, который направляет 
+запросы к~наименее загруженному узлу, что позволяет эффективно решать 
+задачу масштабирования  системы для изменяющегося числа пользователей.
+
+В системе \verb"ELIS" предусмотрена возможность автоматического тестирования 
+введенных пользователями программ. При загрузке кода программы он попадает в~очередь 
+на проверку. При достижении очереди происходит компиляция 
+программы и~запуск в~виртуальной среде выполнения. Для каждого набора входных
+ данных, заданных преподавателем, происходит запуск программы и~проверка результата. 
+ Общая оценка за программу выставляется на основании количества успешно пройденных 
+ тестов. Тестирование программ производится в~отдельной виртуальной 
+ машине \verb"KVM" (\verb"Kernel-based Virtual Machine"), что исключает 
+ возможность проникновения на основные серверы системы. Помимо этого, 
+ внут\-ри виртуальной машины производится запуск в~виртуальном контейнере \verb" LXC" 
+ (\verb"Linux Containers").
+
+В качестве технологической основы при реализации были также использо\-ваны:
+\begin{itemize}
+\item \verb"MySQL"~--- для работы с~базами данных;
+\item \verb"xPDO"~--- как интерфейс программного взаимодействия с~базой данных 
+(на основе технологии \verb"Object-Relational Mapping", \verb"ORM");
+\item \verb"nginx"~--- как веб-сервер;
+\item \verb"Kleine"~--- как библиотека роутинга на \verb"PHP" (используется для 
+серверной части).
+\end{itemize}
+
+Детали реализации \verb"FrontEnd"-компоненты системы, включая разработку 
+приложений для мобильных платформ (см.\ рисунок), будут 
+рассмотрены в~дальнейших работах. Отметим, что в~данном случае речь идет о~реализации 
+тонких клиентов, в~то время как основной функционал системы реализован в~серверной 
+части.
+
+\vspace*{-3pt}
+
+\section{Пользовательские роли в~системе ELIS}
+
+\vspace*{-3pt}
+
+Внутри системы \verb"ELIS" предусмотрено разделение пользователей на следующие 
+группы с~различными политиками доступа (см.\ рисунок):
+\begin{itemize}
+\item \verb"Супервизор";
+\item \verb"Администратор";
+\item \verb"Преподаватель";
+\item \verb"Студент";
+\item \verb"Гость".
+\end{itemize}
+
+Далее рассмотрим каждую из групп подробнее.
+
+\vspace*{-3pt}
+
+\subsection{Супервизор}
+
+\vspace*{-3pt}
+
+Пользователи из этой группы имеют неограниченные права в~системе. 
+Их основные функции:
+\begin{itemize}
+\item поддержание работы сервиса;
+\item регистрация новых учебных заведений;
+\item управление администраторами.
+\end{itemize}
+
+\vspace*{-3pt}
+
+\subsection{Администратор}
+
+\vspace*{-3pt}
+
+Пользователи этой группы являются представителями организаций и~осуществляют
+ техническое управление образовательными процессами в~своих компаниях на 
+ базе площадки \verb"ELIS". Администраторы назначаются при регистрации 
+ учебных заведений, их список может быть изменен супервизором. Основные функции:
+\begin{itemize}
+\item регистрация преподавателей;
+\item регистрация студентов (включая выдачу разрешений на самостоятельную регистрацию);
+\item добавление предметов и~курсов (включая делегирование соответствующих 
+функций преподавателям);
+\item изменение настроек и~сведений об учебном заведении в~системе.
+\end{itemize}
+
+\vspace*{-3pt}
+
+\subsection{Преподаватель}
+
+\vspace*{-3pt}
+
+Пользователи этой группы назначаются администратором учебного учреждения. 
+Основные функции:
+\begin{itemize}
+\item создание тестов на основе собственных или публичных баз 
+вопросов других преподавателей;\\[-15pt]
+\item формирование баз вопросов и~их публикация в~общесистемном каталоге;\\[-15pt]
+\item контроль результатов тестов обучающихся из своих групп с~добавлением 
+комментариев по пройденным тестам;\\[-15pt]
+\item размещение учебных материалов по преподаваемым курсам;\\[-15pt]
+\item взаимодействие с~обучающимися посредством инструментов системы.
+\end{itemize}
+
+\vspace*{-3pt}
+
+\subsection{Студент}
+
+\vspace*{-3pt}
+
+Наиболее многочисленная группа пользователей, права делегируются администратором 
+соответствующего учреждения. Основные доступные функции:
+\begin{itemize}
+\item прохождение тестов;\\[-15pt]
+\item контроль собственной успеваемости по изучаемым дисциплинам;\\[-15pt]
+\item взаимодействие с~преподавателями и~другими обучающимися посредством 
+инструментов системы.
+\end{itemize}
+
+\vspace*{-3pt}
+
+\subsection{Гость}
+
+\vspace*{-3pt}
+
+Базовая группа для всех неавторизированных пользователей для реализации 
+возможности просмотра публичных материалов и~первичного знакомства с~основными 
+функциональными элементами в~тестовом режиме.
+
+\vspace*{-3pt}
+
+
+\section{Заключение}
+
+\vspace*{-3pt}
+
+В работе представлено описание основных архитектурных решений 
+разрабатываемой авторами системы управления обучением \verb"ELIS" 
+на базе облачной архитектуры. Описаны пять основных типов пользовательских 
+профилей (\verb"Супервизор", \verb"Администратор", \verb"Преподаватель", 
+\verb"Студент", \verb"Гость"), отражающих принципиальное различие ролей, 
+соответствующих им  в~системе. Разработанные архитектурные решения будут 
+использованы в~дальнейшем для реализации основных функциональных возможностей, 
+прежде всего для проведения различных видов аттестации и~поддержки способов 
+взаимодействия между преподавателями и~обучающимися. Безусловно, 
+при развертывании реального решения потребуется уделять повышенное 
+внимание вопросам безопасности (в частности, ряд основных угроз для облачной 
+среды рассмотрен в~работе~\cite{Subashini2011}), которые будут изучены в~дальнейших 
+исследованиях.
+
+\vspace*{-3pt}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+\vspace*{-3pt}
+
+\bibitem{Gorshenin2016a} 
+\Au{Зацаринный~А.\,А., Горшенин~А.\,К.} 
+О~социальных аспектах развития современных информационных систем~/\!\!/ 
+Консолидация общества: аналитика обеспечения развития России и~ее национальной 
+безопасности: Сб. мат-лов III Всеросс. конф.~--- 
+М.: Когито-Центр, 2016. С.~65--68.
+
+\bibitem{Lonn2009} 
+\Au{Lonn~S., Teasley~S.\,D.} 
+Saving time or innovating practice: Investigating perceptions and uses of 
+Learning Management Systems~/\!\!/ Computers Education, 2009. Vol.~53. Iss.~3. P.~686--694.
+
+\bibitem{Paulsen2003} \Au{Paulsen~M.\,F.} Experiences with Learning Management 
+Systems in 113 European institutions~/\!\!/ Educational Technology Society, 2003. 
+Vol.~6. Iss.~4. P.~134--148.
+
+\bibitem{Shute2003} \Au{Shute~V., Towle~B.} Adaptive E-learning~/\!\!/ 
+Educational Psychologist, 2003. Vol.~38. Iss.~2. P.~105--114.
+
+\bibitem{Gorshenin2016b}
+\Au{Горшенин~А.\,К., Кучин~А.\,С.}
+Об одной реализации автоматизированного средства аттестации~/\!\!/ 
+Системы и~средства информатики,
+2016. Т.~26. №\,1. С.~192--205.
+
+\bibitem{Gorshenin2014} 
+\Au{Горшенин~А.\,К.} 
+О~принципах разработки электронных средств аттестации учащихся по курсам направления 
+<<Программирование>>~/\!\!/ Информатизация инженерного образования: Труды Междунар.
+научно-методической конф. ИНФОРИНО-2014.~--- М.:~МЭИ, 2014. С.~529--530.
+
+\bibitem{Gorshenin2015BookC} 
+\Au{Горшенин~А.\,К.} Основы языка программирования~C: 
+Курс лекций в~форме компьютерных
+презентаций.~--- М.: ФИЦ ИУ РАН, 2015. 100~с.
+
+\bibitem{Gorshenin2015BookAlg} 
+\Au{Горшенин~А.\,К.} Основы алгоритмов и~структур 
+данных: Курс лекций в~форме компьютерных презентаций.~--- М.: ФИЦ ИУ РАН, 2015. 88~с.
+
+\bibitem{Gorshenin2016BookC} 
+\Au{Горшенин~А.\,К.} 
+Принципы разработки программного обеспечения и~основы языка~C.~--- 
+М.: ФИЦ ИУ РАН, 2016. 100~с.
+
+\bibitem{Gorshenin2016BookAlg} 
+\Au{Горшенин~А.\,К.} 
+Методы реализации абстрактных типов данных.~--- М.: ФИЦ ИУ РАН, 2016. 100~с.
+
+\bibitem{Sultan2010} 
+\Au{Sultan~N.} Cloud computing for education: A~new dawn?~/\!\!/ 
+Int. J.~Inform. Manage., 2010. Vol.~30. Iss.~2. P.~109--116.
+
+\bibitem{Subashini2011}  
+\Au{Subashini~S., Kavitha~V.} 
+A~survey on security issues in service delivery models of cloud computing~/\!\!/ 
+J.~Netw. Comput. Appl., 2011. Vol.~34. Iss.~1. P.~1--11.
+
+       \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.03.17}}
+
+
+
+
+%\vspace*{9pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{LEARNING MANAGEMENT SYSTEM ELIS.\\ ARCHITECTURE SOLUTIONS}
+
+\def\titkol{Learning management system ELIS. Architecture solutions}
+
+
+\def\aut{A.\,K.~Gorshenin$^{1,2}$, E.\,S.~Danilovich$^2$, and~D.\,R.~Khromov$^2$}
+\def\autkol{A.\,K.~Gorshenin, E.\,S.~Danilovich, and~D.\,R.~Khromov}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Institute of Informatics Problems, 
+Federal Research Center ``Computer Science\linebreak
+$\hphantom{^1}$and Control'' of the Russian Academy 
+of Sciences, 44-2~Vavilov Str., Moscow\linebreak
+$\hphantom{^1}$119333, Russian Federation
+
+\noindent
+$^2$Federal State Budget Educational Institution of Higher Education 
+``Moscow Tech-\linebreak
+$\hphantom{^1}$nological University,'' 78~Vernadskogo Ave., Moscow 119454, 
+Russian Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2017 vol~27 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2017   vol~27   no\,2
+\hfill \textbf{\thepage}}}
+
+
+
+\Abste{The progress in information technology has a significant impact on 
+various areas of human activity, including the formation of new educational 
+requirements and standards. Electronic forms of learning provoke increased interest 
+among students and provide new opportunities for teachers. To automate various 
+aspects of the modern educational process, so-called learning management systems 
+are used. The article describes the main architecture solutions developed for 
+the learning management system {\tt ELIS}
+({\tt Electronic Learning Intelligent System}), which can serve as a~common 
+educational platform for both higher education institutions and various private 
+and state companies.}
+
+
+\KWE{learning management system; e-Learning; SaaS; cloud computing}
+
+\DOI{10.14357\!/\!08696527170206} 
+
+%\vspace*{-24pt}
+
+%\Ack
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-g1}
+\Aue{Zatsarinny,~A.\,A., and A.\,K. Gorshenin.} 2016. 
+O~sotsial'nykh aspektakh razvitiya sovremennykh informatsionnykh sistem 
+[On social aspects of development of modern information systems].
+ \textit{Konsolidatsiya obshchestva: Analitika obespecheniya razvitiya Rossii 
+ i~ee natsional'noy bezopasnosti. Sbornik mat-lov III~Vseross. konf.} 
+ [3rd All-Russian Conference ``Consolidation of Society: Analytics for Ensuring 
+ the Development of Russia and Its National Security'' Proceedings]. Moscow. 65--68.
+
+\bibitem{2-g1}
+\Aue{Lonn,~S., and S.\,D.~Teasley.} 2009. Saving time or innovating practice: 
+Investigating perceptions and uses of Learning Management Systems. 
+\textit{Computers Education} 53(3):686--694.
+
+\bibitem{3-g1}
+\Aue{Paulsen,~M.\,F.} 2003. Experiences with Learning Management Systems 
+in 113 European institutions. \textit{Educational Technology Society} 6(4):134--148.
+
+\bibitem{4-g1}
+\Aue{Shute,~V., and B.~Towle.} 2003. Adaptive E-learning. 
+\textit{Educational Psychologist} 38(2):105--114.
+
+\bibitem{5-g1}
+\Aue{Gorshenin,~A.\,K., and A.\,S.~Kuchin}. 2016. Ob odnoy realizatsii 
+avtomatizirovannogo sredstva attestatsii [On a~realization of an automated 
+testing service]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of 
+Informatics} 26(1):192--205.
+
+\bibitem{6-g1}
+\Aue{Gorshenin,~A.\,K.} 2014. O~printsipakh razrabotki elektronnykh sredstv 
+attestatsii uchashchikhsya po kursam napravleniya ``Programmirovanie'' 
+[On principles of development of the electronic certifications for students 
+in programming courses]. \textit{Conference (International)
+INFORINO-2014 Proceedings}.  Moscow. 529--530.
+
+\bibitem{7-g1}
+\Aue{Gorshenin,~A.\,K.} 2015. \textit{Osnovy yazyka programmirovaniya~C: 
+Kurs lektsiy v~forme komp'yuternykh prezentatsiy} 
+[Basic aspects of C~Programming language:  Lectures in a~form of presentation slides]. 
+Moscow: FRC CSC RAS. 100~p.
+
+\bibitem{8-g1}
+\Aue{Gorshenin,~A.\,K.} 2015. \textit{Osnovy algoritmov i~struktur dannykh: 
+Kurs lektsiy v~forme komp'yuternykh prezentatsiy} 
+[Basic aspects of algorithms and data structures: Lectures in a~form of presentation 
+slides]. Moscow: FRC CSC RAS. 88~p.
+
+\bibitem{9-g1}
+\Aue{Gorshenin,~A.\,K.} 2016. \textit{Printsipy razrabotki programmnogo obespecheniya 
+i~osnovy yazyka~C} [Foundations of software development and 
+C~programming language]. Moscow: FRC CSC RAS. 100~p.
+
+\bibitem{10-g1}
+\Aue{Gorshenin,~A.\,K.} 2016. \textit{Metody realizatsii abstraktnykh 
+tipov dannykh} [Methods of implementing abstract 
+data types]. Moscow: FRC CSC RAS. 100~p.
+
+\bibitem{11-g1}
+\Aue{Sultan,~N.} 2010. Cloud computing for education: A new dawn? 
+\textit{Int. J.~Inform. Manage.} 30(2):109--116.
+
+\bibitem{12-g1}
+\Aue{Subashini,~S., and V.~Kavitha.} 2011. 
+A~survey on security issues in service delivery models of cloud computing. 
+\textit{J.~Netw. Comput. Appl.} 34(1):1--11.
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received March 15, 2017}}
+
+
+\Contr
+
+\noindent
+\textbf{Gorshenin Andrey K.} (b.\ 1986)~--- 
+Candidate of Science (PhD) in physics and mathematics, associate professor, 
+leading scientist, Institute of Informatics Problems, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
+Moscow 119333, Russian Federation; associate professor, 
+Federal State Budget Educational Institution of Higher Education 
+``Moscow Technological University,'' 78~Vernadskogo Ave., Moscow 119454, 
+Russian Federation; \mbox{agorshenin@frccsc.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Danilovich Evgeniy S.} (b.\ 1996)~--- student, Federal State Budget 
+Educational Institution of Higher Education ``Moscow Technological University,'' 
+78~Vernadskogo Ave., Moscow 119454, Russian Federation; \mbox{cio@andromeda-inc.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Khromov Dmitry R.} (b.\ 1998)~--- student, Federal State Budget Educational 
+Institution of Higher Education ``Moscow Technological University,'' 78~Vernadskogo 
+Ave., Moscow 119454, Russian Federation; \mbox{ceo@andromeda-inc.com}
+
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

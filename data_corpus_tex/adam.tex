@@ -1,0 +1,740 @@
+\def\stat{adam+volkov}
+
+\def\tit{АЛГОРИТМЫ КЛАСТЕРИЗАЦИИ ДЛЯ~ТЕХНОЛОГИИ ПОДДЕРЖКИ  
+КОНКРЕТНО-ИСТОРИЧЕСКИХ ИССЛЕДОВАНИЙ}
+
+\def\titkol{Алгоритмы кластеризации для~технологии ПКИИ} %поддержки  конкретно-исторических исследований}
+
+\def\aut{И.\,М.~Адамович$^1$, О.\,И.~Волков$^2$}
+
+\def\autkol{И.\,М.~Адамович, О.\,И.~Волков}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Адамович И.\,М.}
+\index{Волков О.\,И.}
+\index{Adamovich I.\,M.}
+\index{Volkov O.\,I.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Исследование выполнено с~использованием ЦКП <<Информатика>> ФИЦ ИУ РАН.}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, \mbox{Adam@amsd.com}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, \mbox{Volkov@amsd.com}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt} 
+ 
+  
+  
+  
+  \Abst{Статья продолжает серию работ, посвященных технологии поддержки кон\-крет\-но-ис\-то\-ри\-че\-ских 
+  исследований (ПКИИ). Технология построена на принципах сотворчества 
+  и~краудсорсинга и~ориентирована на широкий круг не относящихся к~профессиональным 
+историкам и~биографам пользователей. Статья посвящена дальнейшему развитию 
+технологии за счет интеграции в~нее механизма автоматизированного поиска аномалий 
+в~кон\-крет\-но-ис\-то\-ри\-че\-ских данных на базе кластерного анализа. Проведен анализ 
+специфики кон\-крет\-но-ис\-то\-ри\-че\-ских данных и~способов их представления 
+в~объектной модели технологии. Подробно рассмотрены методы оцифровки смешанных 
+данных и~используемых для них мер близости, оценены достоинства и~недостатки 
+алгоритмов кластеризации, применяемых для поиска аномалий. На основании проведенного 
+анализа выработан подход к~поиску аномалий в~данных в~технологии и~намечены 
+направления проверки эффективности выбранных алгоритмов и~мер бли\-зости на реальных 
+кон\-крет\-но-ис\-то\-ри\-че\-ских данных.}
+  
+  \KW{конкретно-историческое исследование; распределенная технология; аномалия;  
+ис\-то\-ри\-ко-био\-гра\-фи\-че\-ский факт; кластеризация}
+  
+  
+\DOI{10.14357\!/\!08696527220411}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-24pt}
+ 
+\section{Введение}
+
+\vspace*{-3pt}
+
+
+  Поддержка конкретно-исторических исследований стала одной из 
+актуальных задач современности в~связи с~вовлечением в~исследовательский 
+процесс не только членов профессионального исторического сообщества, но 
+и~самых широких слоев непрофессионалов в~связи со все возрастающим 
+интересом к~частной, семейной истории~[1].
+  
+  В~[2, 3] описана разработанная в~ФИЦ ИУ РАН распределенная технология 
+ ПКИИ,  основанная на принципах краудсорсинга (мобилизации ресурсов широкого 
+круга добровольцев посредством информационных технологий). Данные 
+технологии организованы в~форме семантической сети. Узлы сети 
+представляют собой именованные универсальные классы объектов. Факты 
+задаются значени-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+ями экземпляров классов и~связями между ними. Связи 
+наследуются из сети классов~[4].
+  
+  Специфика конкретно-исторического исследования состоит в~том, что факты, 
+которыми оперирует исследователь (историко-биографические факты), 
+обладают свойством фрагментарности и~противоречивости. Процедура 
+выявления аномалий в~обнаруженных фактах и~выявления противоречий между 
+ними является значимой составляющей этапа сопоставления фактов 
+в~кон\-крет\-но-ис\-то\-ри\-че\-ском исследовании~[5]. При этом выявление аномалии или 
+противоречия не становится поводом отбросить якобы ошибочные данные, как 
+предполагает традиционный подход, а дает повод исследователю 
+сконцентрироваться на поиске свидетельств наличия оснований для 
+исключений, т.\,е.\ выявление аномалии вместо сужения объема информации 
+дает новый импульс исследованию, что иллюстрирует специфичность 
+конкретно-исторического исследования. 
+  
+  В [6] для технологии ПКИИ был предложен и~описан механизм, частично 
+автоматизирующий поиск противоречий между кон\-крет\-но-ис\-то\-ри\-че\-ски\-ми 
+фактами, а~также между фактами и~регламентирующими их нормалями 
+(правилами, законами, традициями и~т.\,п.). Но в~\cite{7-ad} была показана 
+недостаточность этого механизма для обработки данных, порожденных при 
+автоматической обработке нарративных источников с~помощью системы  
+Т-пар\-сер, предназначенной для извлечения фактов из текстов ис\-то\-ри\-ко-био\-гра\-фи\-че\-ской 
+направленности~\cite{8-ad}. Обоснован подход, при котором 
+противоречие в~данных является частным случаем аномалии, понимаемой как 
+противоречие между ис\-то\-ри\-ко-био\-гра\-фи\-че\-ским фактом и~нормалями, 
+здравым смыслом, реалиями, обычным ходом вещей и~т.\,п. Обоснована 
+необходимость в~дополнительной автоматизации процедуры поиска аномалий  
+в~кон\-крет\-но-ис\-то\-ри\-че\-ских данных. Приведена классификация 
+аномалий в~кон\-крет\-но-ис\-то\-ри\-че\-ских данных и~причин их появления. 
+Был проведен анализ подходов к~поиску аномалий в~данных и~показана 
+возможность их использования в~технологии с~учетом специфики ис\-то\-ри\-ко-био\-гра\-фи\-че\-ских фактов. Был сделан вывод, что наиболее перспективным 
+является подход, основанный на кластерном анализе.  Цель данной статьи~--- дальнейшая проработка 
+этого подхода и~его адаптация к~технологии ПКИИ.
+{\looseness=1
+
+}
+
+\vspace*{-6pt}
+
+\section{Специфика конкретно-исторических данных}
+
+\vspace*{-4pt}
+  
+  Специфика биографического исследования состоит в~том, что в~центре 
+внимания исследователя находится конкретная личность и~все без исключения 
+стороны (социальные, экономические, политические, этнические, 
+художественные и~т.\,п.) ее реальной жизни~\cite{9-ad}.
+  
+  Исторические события и~процессы обладают как качественными 
+(категориальными, номинальными), так и~количественными признаками. 
+Признаки исторических явлений многообразны и~неоднородны. В связи с~этим 
+используются разные единицы измерения. Неоднородность признаков 
+измеряемых явлений предполагает использование разных методов измерения. 
+В~клиометрии используются четыре шкалы (метода) измерения~\cite{10-ad}.
+
+\noindent
+  \begin{enumerate}
+  \item  Шкала наименований (номинальная). Суть измерения по шкале 
+наименований состоит в~том, что объекты характеризуются тождеством внутри 
+класса и~различием между классами.\\[-14pt]
+  \item Шкала порядка. Число при измерении по шкале порядка обозначает 
+место объекта в~упорядоченном ряду. Это место можно считать рангом объекта.\\[-14pt] 
+  \item Шкала интервалов. Обладая всеми свойствами порядковой шкалы, 
+шкала интервалов отличается от нее тем, что точно определяет величину 
+интервала в~принятых единицах измерения.\\[-14pt]
+  \item Пропорциональная шкала, или шкала отношений, представляет собой 
+мет\-ри\-че\-скую шкалу, по которой ведутся счет и~измерение количественных 
+признаков. Для этой шкалы характерны метрические единицы измерения 
+и~начальная нулевая точка отсчета, поэтому пропорциональная шкала 
+позволяет установить, во сколько раз те или иные свойства одного объекта 
+больше, чем у~другого, т.\,е.\ выявить их точное количественное соотношение 
+(отсюда и~название~--- шкала отношений). 
+  \end{enumerate}
+  
+  В технологии ПКИИ в~полной мере учитывается специфика конкретно-ис\-то\-ри\-че\-ско\-го 
+  исследования и~неоднородность признаков исследуемых 
+событий и~явлений, поэтому факты в~ней задаются значениями экземпляров 
+классов и~связями между ними. Каждый экземпляр имеет значение (которое 
+может быть пустым). Непустое значение имеет либо текстовый комментарий, 
+либо специальную ссылку, связывающую его с~документом-источником. 
+Значение состоит из двух полей: текстового и~числового~\cite{2-ad}. Такой 
+подход позволяет использовать в~технологии смешанные (категориальные 
+и~количественные) данные, измеренные по всем типам шкал.
+
+\vspace*{-4pt}
+
+\section{Оцифровка смешанных данных}
+
+\vspace*{-4pt}
+  
+  Основа кластеризации~--- отношение близости (мера сходства), которое не 
+обязательно является метрикой~\cite{11-ad}. Для количественных данных, как 
+правило, в~качестве такого отношения выступает евклидово расстояние, но для 
+категориальных непосредственное вычисление такого расстояния невозможно и~требуется процедура, называемая оцифровкой. 
+  
+  Самый простой способ оцифровки, называемый Label Encoding, пред\-став\-ля\-ет 
+собой обычную нумерация значений (0, 1, 2,\ $\ldots$). Другой популярный 
+способ~--- Dummy-кодирование, или One-Hot кодирование. Он заключается 
+в~создании дополнительных признаков (столбцов) по числу уникальных 
+категорий. Новые признаки принимают значения~0 или~1 в~зависимости от 
+принадлежности к~категории~\cite{12-ad}. 
+  
+  Оцифровка позволяет формально вычислить евклидово расстояние между 
+объектами, однако эти преобразования могут привести к~тому, что алгоритмы 
+кластеризации неправильно поймут эти признаки и~создадут бессмысленные 
+кластеры~\cite{13-ad}. Для смешанных данных существуют иные меры 
+близости, не основанные на евклидовом расстоянии.
+
+\vspace*{-4pt}
+
+\section{Меры близости для~смешанных данных}
+
+\vspace*{-4pt}
+
+  Для смешанных данных были разработаны и~используются следующие меры 
+близости.
+  \begin{itemize} %[1.]
+  \item[\textbf{1.}] \textbf{Расстояние Гауэра.} Предположим, что данные представлены 
+матрицей $X\hm= [x_{ic}]$, где $i\hm = 1, 2, \ldots, n$ ($n$~--- общее число 
+объектов) и~$c\hm = 1, 2, \ldots, m$ ($m$~--- общее число переменных). Тогда 
+расстояние Гауэра между объектами~$x_i$ и~$x_j$, которые характеризуются 
+значениями переменных смешанного типа, выражается с~помощью формулы
+  \begin{equation}
+  d_G(x_i,x_j) =\fr{\sum\nolimits^m_{c=1} w_{ijc} 
+d_{ijc}}{\sum\nolimits^m_{c=1} w_{ijc}}\,,
+  \label{e1-ad}
+  \end{equation}
+где $d_{ijc}$~--- мера различия между $i$-м и~$j$-м объектами по $c$-й 
+переменной ($c \hm= 1, \ldots , m$), а $w_{ijc}$ принимает нулевое значение, если 
+отсутствует либо $i$-й, либо $j$-й объект по $c$-й переменной; в~противном 
+случае он принимает значение~1.
+  
+  Если $c$-я переменная является номинальной (или альтернативной), 
+различие между ее двумя категориями рассматривается как ноль для 
+совпадений категорий и~как единица в~противном случае.
+  
+  Если $c$-я переменная числовая, то различие выражается формулой
+  \begin{equation}
+  d_{ijc}=\fr{\vert x_{ic}- x_{jc}\vert}{\max(x_c)-\min(x_c)}\,.
+  \label{e2-ad}
+  \end{equation}
+  
+  Если $c$-я переменная является порядковой, все категории формируются в~соответствии с~формулой
+  \begin{equation*}
+  x_{ic}= \fr{r_{ic}-1}{R_c-1}\,,
+ % \label{e3-ad}
+  \end{equation*}
+где $r_{ic}$~--- номер ранга $i$-й порядковой категории ($r \hm= 1, \ldots, R_c$), 
+а~$R_c$~--- максимальный номер ранга $c$-й переменной. После этого 
+преобразования итоговые значения могут быть использованы в~уравнении~(\ref{e2-ad}) для числовых переменных~\cite{14-ad}.
+  \item[\textbf{2.}] \textbf{Обобщение евклидового расстояния для алгоритма k-Prototypes.} 
+В~тех же обозначениях дополнительно без ограничения общности полагаем, 
+что первые~$p$~переменных являются чис\-ло\-вы\-ми, а~остальные $m\hm-p$~--- 
+категориальными. Тогда расстояние, предложенное в~\cite{15-ad}, между 
+объектами~$x_i$ и~$x_j$ выражается с~по\-мощью формулы
+  \begin{equation}
+  d_H(x_i,x_j) =\sum\limits^p_{c=1} (x_{ic}-x_{jc})^2+\gamma 
+\sum\limits^m_{c=p+1} \delta \left( x_{ic}, x_{jc}\right)\,,
+  \label{e4-ad}
+  \end{equation}
+  где 
+  $$
+  \delta\left( x_{ic}, x_{jc}\right) =\begin{cases}
+  0, & x_{ic}=x_{jc}\,;\\
+  1, & x_{ic} \not=x_{jc}\,,
+  \end{cases}
+  $$
+а $\gamma$ является параметром, отражающим важность категориальных 
+переменных. Если $\gamma\hm=0$, то расстояние сводится к~классическому 
+евклидовому расстоянию.
+
+  \item[\textbf{3.}] \textbf{Мера согласования разнотипных шкал.} Снова предположим, что 
+данные представлены матрицей $X\hm= [x_{ic}]$, где $i \hm= 1, 2, \ldots , n$ 
+($n$~--- общее число объектов) и~$c\hm = 1, 2, \ldots, m$ ($m$~--- общее число 
+переменных). Тогда мера согласования разнотипных шкал~\cite{16-ad} между 
+объектами~$x_i$ и~$x_j$, которые характеризуются значениями переменных 
+смешанного типа, выражается с~помощью формулы
+  \begin{equation}
+  d_S(x_i,x_j)=\sqrt{\sum\limits^m_{c=1} (d_{ijc})^2}\,,
+  \label{e5-ad}
+  \end{equation}
+где $d_{ijc}$~--- мера различия между $i$-м и~$j$-м объектами по $c$-й 
+переменной ($c\hm = 1, \ldots , m$). Формула вычисления $d_{ijc}$ зависит от 
+типа переменной~$c$:
+\begin{itemize}
+  \item[(а)] для числовой переменной $d_{ijc}$ вычисляется в~соответствии с~формулой~(\ref{e2-ad}), как и~для расстояния Гауэра;
+  \item[(б)] для порядковой переменной
+  $$
+  d_{ijc}=\fr{1}{n-1}\sum\limits^n_{k=1} d(i,j)_k^c\,,
+  $$
+где $d(i,j)_k^c$ есть мера различия в~отношениях $i$-го и~$j$-го объектов 
+к~некоторому $k$-му объекту по переменной~$c$, определяемая 
+в~соответствии с~табл.~1;
+
+\begin{table}\small %tabl1
+\begin{center}
+\Caption{Мера различия в~отношениях для порядковой переменной}
+\vspace*{2ex}
+
+\tabcolsep=8.1pt
+\begin{tabular}{|c|c|c|}
+\hline
+&&\\[-9pt]
+Отношение объектов $i$ и~$k$&Отношение объектов $j$ и~$k$&$d(i,j)_k^c$\\[2pt]
+\hline
+&&\\[-9pt]
+$x_{ic} > x_{kc}$&$x_{jc} > x_{kc}$&0\hphantom{,9}\\
+$x_{ic} < x_{kc}$&$x_{jc} < x_{kc}$&0\hphantom{,9}\\
+$x_{ic} = x_{kc}$&$x_{jc} = x_{kc}$&0\hphantom{,9}\\
+$x_{ic} > x_{kc}$&$x_{jc} < x_{kc}$&1\hphantom{,9}\\
+$x_{ic} < x_{kc}$&$x_{jc} > x_{kc}$&1\hphantom{,9}\\
+$x_{ic} = x_{kc}$&$x_{jc} \not= x_{kc}$&0,5\\
+$x_{ic} \not= x_{kc}$&$x_{jc} = x_{kc}$&0,5\\[2pt]
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-12pt}
+\end{table}
+  \item[(в)] для номинальной переменной 
+  $$
+  d_{ijc}=\fr{1}{n}\sum\limits^n_{k=1} d(i,j)_k^c\,,
+  $$
+где $d(i,j)^c_k$ также есть мера различия в~отношениях $i$-го и~$j$-го объектов 
+к~некоторому $k$-му объекту по переменной~$c$, определяемая 
+в~соответствии с~табл.~2.
+\end{itemize}
+\end{itemize}
+
+
+\begin{table}\small %tabl2
+\begin{center}
+\Caption{Мера различия в~отношениях для номинальной переменной}
+\vspace*{2ex}
+
+\tabcolsep=8.8pt
+\begin{tabular}{|c|c|c|}
+\hline
+&&\\[-9pt]
+Отношение объектов $i$ и~$k$&Отношение объектов $j$ и~$k$&$d(i,j)_k^c$\\[2pt]
+\hline
+&&\\[-9pt]
+$x_{ic} = x_{kc}$&$x_{jc} = x_{kc}$&0\\
+$x_{ic}\not= x_{kc}$&$x_{jc}\not= x_{kc}$&0\\
+$x_{ic} = x_{kc}$&$x_{jc}\not= x_{kc}$&1\\
+$x_{ic}\not= x_{kc}$&$x_{jc} = x_{kc}$&1\\[2pt]
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-9pt}
+\end{table}
+
+\vspace*{-4pt}
+
+\section{Алгоритмы кластеризации}
+
+\vspace*{-3pt}
+
+  Разработано много алгоритмов кластеризации, которые могут быть 
+использованы для поиска аномалий~\cite{17-ad}, в~том числе Self-organizing 
+map (SOM), Fuzzy C-Means (FCM), Unsupervised Niche Clustering (UNC). Но 
+наиболее популярными~\cite{18-ad} остаются методы K-сред\-них (k-Means) 
+и~агломеративной иерархической кластеризации, а также относительно 
+недавно (1996~г.)\ созданный алгоритм DBSCAN (Density-based spatial 
+clustering of applications with noise).
+  
+  Модификацией алгоритма k-Means, позволяющей проводить кластеризацию 
+смешанных данных, стал алгоритм k-Prototypes~\cite{15-ad}. Он использует 
+расстояние, вычисляемое в~соответствии с~формулой~(\ref{e4-ad}). Алгоритм 
+пользуется большой популярностью в~связи с~простотой принципа, большой 
+скоростью и~хорошей масштабируемостью. Но при этом k-Prototypes обладает 
+рядом существенных недостатков: он неспособен выделить кластеры 
+несферической формы и~число кластеров должно быть задано как параметр 
+изначально.
+  
+  Алгоритм агломеративной иерархической кластеризации с~использованием 
+меры близости, позволяющей обрабатывать смешанные данные (обычно это 
+задаваемое в~соответствии с~формулой~(1) расстояние Гауэра), позволяет 
+эффективно определять аномалии. Основное преимущество иерархических 
+методов кластеризации заключается в~отсутствии необходимости начального 
+предопределения числа кластеров. Выявление аномалий осуществляется путем 
+анализа результатов иерархической кластеризации и~выявления ветвей 
+дендрограммы, рас\-по\-ла\-га\-ющих\-ся на начальных уровнях по\-стро\-ения дерева 
+и~не име\-ющих ветвлений~\cite{19-ad}. Следует учитывать, что метод является 
+весьма <<дорогим>> в~вы\-чис\-ли\-тель\-ном отношении.
+  
+  Плотностный алгоритм кластеризации DBSCAN изначально ориентирован на 
+данные, содержащие выбросы. Для обработки смешанных данных алгоритм 
+может использовать соответствующие меры бли\-зости. Обычно это также 
+расстояние Гауэра, задаваемое в~соответствии с~формулой~(\ref{e1-ad}). На 
+вход необходимо подать два параметра: размер окрестности~$\varepsilon$ 
+и~минимальное число точек в~кластере minPts. В~отличие от множества других 
+алгоритмов, он не требует указания числа кластеров и~может находить 
+произвольное их количество. Также этот алгоритм может находить кластеры 
+различных форм~\cite{18-ad}. К~недостаткам алгоритма следует отнести 
+необходимость подбора значений параметров и~проб\-ле\-мы с~определением 
+кластеров с~большой разницей в~плот\-ности. Последний недостаток становится 
+серьезным препятствием для применения этого алгоритма к~данным, 
+содержащим области с~разной плот\-ностью. Но эта проб\-ле\-ма может быть 
+разрешена за счет использования модификации алгоритма DBSCAN~--- 
+алгоритма OPTICS (Ordering points to identify the clustering structure), 
+специально разработанного для таких данных.
+  
+  Анализ показал, что мера согласования разнотипных шкал, задаваемая 
+в~соответствии с~формулой~(\ref{e5-ad}), в~качестве меры близости для 
+рассмотренных алгоритмов используется крайне редко. Но данная мера 
+потенциально полезна, поскольку ее использование совместно с~пороговым 
+алгоритмом кластеризации, несмотря на недостатки алгоритма, показало 
+хорошие результаты~[20].
+
+\vspace*{-4pt}
+
+\section{Подход для технологии поддержки конкретно-исторических~исследований}
+
+\vspace*{-3pt}
+  
+  Как показано выше, специфика кон\-крет\-но-ис\-то\-ри\-че\-ско\-го 
+исследования состоит в~том, что факты, которыми оперирует исследователь  
+(ис\-то\-ри\-ко-био\-гра\-фи\-че\-ские факты), обладают свойством 
+фрагментарности и~противоречивости. Получение этих фактов~--- необходимая и~наиболее трудоемкая стадия 
+\mbox{биографического} исследования, 
+состоящая в~работе в~архивах и~просмотре огромного числа документов. Соответственно, 
+данные технологии ПКИИ обладают следующими свойствами:
+  \begin{itemize}
+  \item данные являются смешанными, и~их параметры могут быть измерены по 
+разным шкалам;
+  \item объем данных не чрезмерно велик, даже с~учетом распределенности 
+  и~пополнения базы данных технологии большим числом пользователей;
+  \item плотность данных является переменной величиной;
+  \item в~любой разумной метрике области однородных данных могут иметь 
+сложную форму.
+  \end{itemize}
+  
+  Из этого следует, что применение алгоритма k-Prototypes для поиска 
+аномалий в~данных в~технологии ПКИИ нецелесообразно. Перспективны для 
+этих целей алгоритмы агломеративной иерархической кластеризации 
+и~OPTICS. Опыт эксплуатации технологии на реальных  
+кон\-крет\-но-ис\-то\-ри\-че\-ских данных может показать преимущества 
+и~недостатки указанных алгоритмов, а~также выбрать для них оптимальные 
+параметры.
+  
+  В качестве меры сходства для этих алгоритмов должно использоваться 
+расстояние Гауэра. Использование для этой цели меры согласования 
+разнотипных шкал потенциально перспективно. Целесообразность включения 
+этой меры в~технологию также может быть оценена по результатам 
+экспериментов на реальных кон\-крет\-но-ис\-то\-ри\-че\-ских данных.
+  
+\section{Выводы}
+  
+  Интеграция в~технологию ПКИИ механизма поиска аномалий в~кон\-крет\-но-ис\-то\-ри\-че\-ских данных может существенно упростить и~повысить 
+эффективность такой плохо формализуемой и~очень трудоемкой фазы 
+конкретно-исторического исследования, как взаимоувязывание найденной 
+информации и~поиск в~ней противоречий. Осуществлена дальнейшая 
+проработка этого механизма, выбраны конкретные алгоритмы, намечены пути 
+проверки их эффективности в~условиях технологии и~настройки на кон\-крет\-но-ис\-то\-ри\-че\-ские данные.
+  
+  Актуальность дальнейшего развития в~рассмотренном направлении 
+технологии ПКИИ,  ориентированной на широкий круг не относящихся к~профессиональным 
+историкам и~биографам пользователей, вытекает из все воз\-рас\-та\-юще\-го 
+общественного интереса к~част\-ной, семейной истории.
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+  \bibitem{1-ad}
+  \Au{Грибач С.\,В.} Исследование семейных кризисов посредством психолингвистического 
+эксперимента~/\!\!/ Сборники конференций НИЦ Социосфера, 2010. №\,6. С.~45--54.
+  \bibitem{2-ad}
+  \Au{Адамович И.\,М., Волков О.\,И.} Технология распределенного автоматизированного 
+анализа исторических текстов~/\!\!/ Системы и~средства информатики, 2016. Т.~26. №\,3. 
+С.~148--161. doi: 10.14357\!/\!08696527160311.
+  \bibitem{3-ad}
+  \Au{Адамович И.\,М., Волков~О.\,И.} Единая технология поддержки  
+кон\-крет\-но-ис\-то\-ри\-че\-ских исследований~/\!\!/ Системы и~средства информатики, 
+2019. Т.~29. №\,1. С.~194--205. doi: 10.14357\!/\!08696527190116.
+  \bibitem{4-ad}
+  \Au{Адамович И.\,М., Волков О.\,И.} Принципы организации данных для технологии 
+поддержки кон\-крет\-но-ис\-то\-ри\-че\-ских исследований~/\!\!/ Системы и~средства 
+информатики, 2019. Т.~29. №\,2. С.~161--171. doi: 10.14357\!/\!08696527190214.
+  \bibitem{5-ad}
+  \Au{Адамович И.\,М., Волков О.\,И.} Иерархическая форма представления 
+биографического факта /\!\!/ Системы и~средства информатики, 2016. Т.~26. №\,2. С.~108--122. doi: 10.14357\!/\!08696527160207.
+  \bibitem{6-ad}
+  \Au{Адамович И.\,М., Волков О.\,И.} Автоматизированный поиск противоречий  
+в~кон\-крет\-но-ис\-то\-ри\-че\-ской информации /\!\!/ Системы и~средства информатики, 
+2020. Т.~30. №\,3. С.~145--153. doi: 10.14357\!/\!08696527200313.
+  \bibitem{7-ad}
+  \Au{Адамович И.\,М., Волков О.\,И.} Подход к~поиску аномалий в~конкретно-ис\-то\-ри\-че\-ских данных~/\!\!/ 
+  Системы и~средства информатики, 2022. Т.~32. №\,3. С.~136--146. doi: 
+10.14357\!/\!08696527220313.
+  
+  \bibitem{8-ad}
+  \Au{Адамович И.\,М., Волков О.\,И.} Система извлечения биографических фактов из 
+текстов исторической направленности~/\!\!/ Системы и~средства информатики, 2015. Т.~25. 
+№\,3. С.~235--250. doi: 10.14357\!/\!08696527150315.
+  \bibitem{9-ad}
+  \Au{Иконникова С.\,Н.} Биографика как часть исторической культурологии~/\!\!/ Вестник 
+СПбГУКИ, 2012. №\,2(11). С.~6--10.
+  \bibitem{10-ad}
+  \Au{Ковальченко И.\,Д.} Методы исторического исследования.~--- М.: Наука, 2003. 486~с.
+  \bibitem{11-ad}
+  \Au{Бантикова О.\,И., Седова~Е.\,Н., Чудинова~О.\,С.} Методы кластерного анализа. 
+Классификация без обучения (непараметрический случай).~--- Оренбург: ГОУ ОГУ, 2011. 
+91~с.
+  \bibitem{12-ad}
+  \Au{Синьков Д.\,В., Ваничкин А.\,Д.} Кодирование категориальных данных для 
+использования в~машинном обучении /\!\!/ Молодой ученый, 2020. №\,21(311). С.~70--72.
+  \bibitem{13-ad}
+  \Au{Lasaosa J.\,M.} Hands-on tutorials. Clustering on numerical and categorical features. 
+Using Gower distance in Python~/\!\!/ Towards Data Science, 2021. {\sf 
+https://\linebreak towardsdatascience.com/clustering-on-numerical-and-categorical-features- 6e0ebcf1cbad}.
+  \bibitem{14-ad}
+  \Au{\v{S}ulc Z., Proch\'{a}zka J., Mat\v{e}jka~M.} Modifications of the Gower similarity 
+coefficient~/\!\!/ 19th Conference of Applications of Mathematics and Statistics in Economics 
+Proceedings.~--- Bansk\'{a} Bystrica, Slovakia: Matej Bel University, 2016.  
+P.~369--377.
+  \bibitem{15-ad}
+  \Au{Huang Z}. Extensions to the k-means algorithm for clustering large data sets with 
+categorical variables~/\!\!/ Data Min. Knowl. Disc., 1998. No.\,2. P.~283--304.
+  \bibitem{16-ad}
+  \Au{Загоруйко Н.\,Г.} Прикладные методы анализа данных и~знаний.~--- Новосибирск:  
+Изд-во Ин-та математики, 1999. 270~с.
+  \bibitem{17-ad}
+  \Au{Кожевникова И.\,С., Ананьин Е.\,В., Лысенко~А.\,В.} Неконтролируемые методы 
+машинного обучения при обнаружении сетевых аномалий~/\!\!/ Молодой ученый, 2016. 
+№\,30(134). С.~30--33.
+  \bibitem{18-ad}
+  \Au{Ковалёв С.\,П.} Использование алгоритма кластеризации DBSCAN для фильтрации 
+выбросов в~данных~/\!\!/ Компьютерные системы и~сети: 55-я Юбилейная научная 
+конференция аспирантов, магистрантов и~студентов.~--- Минск: БГУИР, 2019. С.~198--200.
+  \bibitem{19-ad}
+  \Au{Кисляков А.\,Н., Поляков С.\,В.} Иерархические методы кластеризации в~задаче 
+поиска аномальных наблюдений на основе групп с~нарушенной симметрией~/\!\!/ 
+Управленческое консультирование, 2020. №\,5. С.~116--127.
+  \bibitem{20-ad}
+  \Au{Альсова О.\,К., Ускова К.\,С.} Программная система кластерного анализа данных 
+смешанного типа~/\!\!/ Автоматика и~программная инженерия, 2013. №\,1(3).\linebreak С.~75--81.
+
+ \end{thebibliography}
+} }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 25.07.22}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{8pt}
+
+\def\tit{CLUSTERING ALGORITHMS FOR~TECHNOLOGY OF~CONCRETE~HISTORICAL 
+INVESTIGATION SUPPORT}
+
+
+
+\def\titkol{Clustering algorithms for technology of concrete historical 
+investigation support}
+
+\def\aut{I.\,M.~Adamovich and O.\,I.~Volkov}
+
+\def\autkol{I.\,M.~Adamovich and O.\,I.~Volkov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+Federal Research Center ``Computer Science and Control'' of the Russian Academy 
+of Sciences,  
+44-2~Vavilov Str., Moscow 119133, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2022 vol~32 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2022 vol~32 no\,4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+  
+
+  
+  \Abste{The article continues the series of works devoted to the technology of 
+concrete historical research support. The technology is based on the principles of 
+co-creation and crowdsourcing and is designed for a wide range of users which are not 
+professional historians and biographers. The article is devoted to the further 
+development of the technology by integrating into it a mechanism for automated 
+search for anomalies in concrete historical information based on cluster analysis. The 
+analysis of the specifics of concrete historical data and the ways of their 
+representation in the object model of technology is carried out. The methods of mixed 
+data digitizing and the proximity measures used for them are considered in detail and the 
+advantages and disadvantages of clustering algorithms used to search for anomalies 
+are evaluated. Based on the analysis, an approach was developed to search for 
+anomalies in the data of technology and directions were outlined for testing the 
+effectiveness of the selected algorithms and proximity measures on real concrete 
+historical data.}
+  
+  \KWE{concrete historical investigation; distributed technology; anomaly; 
+historical-biographical fact; clustering}
+  
+\DOI{10.14357\!/\!08696527220411}  
+
+%\vspace*{-10pt}
+
+
+%\Ack
+%\noindent
+
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+  \bibitem{1-ad-1}
+  \Aue{Gribach, S.\,V.} 2010. Issledovanie semeynykh krizisov posredstvom 
+psi\-kho\-ling\-vi\-sti\-che\-sko\-go eksperimenta [The study of family crises through a~psycholinguistic 
+experiment]. \textit{Sborniki konferentsiy NITs Sotsiosfera} [Conference Proceedings NIC 
+Sociosfera] 6:45--54.
+  \bibitem{2-ad-1}
+  \Aue{Adamovich, I.\,M., and O.\,I.~Volkov.} 2016. Tekhnologiya raspredelennogo 
+avtomatizirovannogo analiza istoricheskikh tekstov [The distributed automated technology of 
+historical texts analysis]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of 
+Informatics} 26(3):148--161. doi: 10.14357\!/\!08696527160311.
+  \bibitem{3-ad-1}
+  \Aue{Adamovich, I.\,M., and O.\,I.~Volkov.} 2019. Edinaya tekhnologiya podderzhki 
+konkretno-istoricheskikh issledovaniy [Unified technology of concrete historical research support]. 
+\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 29(1):194--205. doi: 
+10.14357\!/\!08696527190116.
+  \bibitem{4-ad-1}
+  \Aue{Adamovich, I.\,M., and O.\,I.~Volkov.} 2019. Printsipy organizatsii dannykh dlya 
+tekhnologii podderzhki konkretno-istoricheskikh issledovaniy [The principles of data organization 
+for the technology of concrete historical research support]. 
+  \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 29(2):161--171. 
+doi: 10.14357\!/\!08696527190214.
+  \bibitem{5-ad-1}
+  \Aue{Adamovich, I.\,M., and O.\,I.~Volkov.} 2016. Ierarkhicheskaya forma predstavleniya 
+biograficheskogo fakta [Hierarchial format of a biographical fact]. \textit{Sistemy i~Sredstva 
+Informatiki~--- Systems and Means of Informatics} 26(2):108--122. doi:  
+10.14357\!/ 08696527160207.
+  \bibitem{6-ad-1}
+  \Aue{Adamovich, I.\,M., and O.\,I.~Volkov.} 2020. Avtomatizirovannyy poisk protivorechiy 
+  v~konkretno-istoricheskoy informatsii [Automated search for contradictions in concrete- historical 
+information]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 
+30(3):145--153. doi: 10.14357\!/\!08696527200313.
+  \bibitem{7-ad-1}
+  \Aue{Adamovich, I.\,M., and O.\,I.~Volkov.} 2022. Podkhod k~poisku anomaliy  
+v~konkretno-istoricheskikh dannykh [An approach to searching for anomalies in concrete-historical 
+data]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 32(3):136--146. 
+doi: 10.14357\!/\!08696527220313.
+  \bibitem{8-ad-1}
+  \Aue{Adamovich, I.\,M., and O.\,I.~Volkov.} 2015. Sistema izvlecheniya biograficheskikh 
+faktov iz tekstov istoricheskoy napravlennosti [The system of facts extraction from historical texts]. 
+\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 25(3):235--250. doi: 
+10.14357\!/\!08696527150315.
+  
+  \bibitem{9-ad-1}
+  \Aue{Ikonnikova, S.\,N.} 2012. Biografika kak chast' istoricheskoy kul'turologii [Biografical 
+studies as part of the historical cultural studies]. \textit{Vestnik SPbGUKI} [Herald of 
+the St.\ Petersburg State University of Culture and Art] 2(11):6--10.
+  \bibitem{10-ad-1}
+  \Aue{Koval'chenko, I.\,D.} 2003 \textit{Metody istoricheskogo issledovaniya} [Methods of 
+historical research]. Moscow: Nauka. 486~p.
+  \bibitem{11-ad-1}
+  \Aue{Bantikova, O.\,I., E.\,N.~Sedova, and O.\,S.~Chudinova.} 2011. \textit{Metody 
+klasternogo analiza. Klassifikatsiya bez obucheniya (neparametricheskiy sluchay)} [Methods of 
+cluster analysis. Classification without training (nonparametric case)]. Orenburg: GOU OGU. 91~p.
+  \bibitem{12-ad-1}
+  \Aue{Sin'kov, D.\,V., and A.\,D.~Vanichkin.} 2020. Kodirovanie kategorial'nykh dannykh dlya 
+ispol'zovaniya v mashinnom obuchenii [Categorical data coding for use in machine learning]. 
+\textit{Molodoy uchenyy} [Young Scientist] 21(311):70--72.
+  \bibitem{13-ad-1}
+  \Aue{Lasaosa, J.\,M.} 2021. Hands-on tutorials. Clustering on numerical and categorical 
+features. Using Gower distance in Python. \textit{Towards Data Science}. Available at:\linebreak  {\sf 
+https://towardsdatascience.com/clustering-on-numerical-and-categorical-features- 6e0ebcf1cbad} 
+(accessed August~31, 2022).
+  \bibitem{14-ad-1}
+  \Aue{\v{S}ulc, Z., J.~Proch\'{a}zka, and M.~Mat\v{e}jka.} 2016. Modifications of the Gower similarity 
+coefficient. \textit{19th Conference of Applications of Mathematics and Statistics in Economics 
+Proceedings}. Bansk\'{a} Bystrica, Slovakia: MatejBel University. 369--377.
+  \bibitem{15-ad-1}
+  \Aue{Huang, Z.} 1998. Extensions to the k-means algorithm for clustering large data sets with 
+categorical variables. \textit{Data Min. Knowl. Disc.} 2:283--304.
+  \bibitem{16-ad-1}
+  \Aue{Zagoruiko, N.\,G.} 1999. \textit{Prikladnye metody analiza dannykh i~znaniy} [Applied 
+methods of data and knowledge analysis]. Novosibirsk: Institute of Mathematics Publs. 270~p.
+  \bibitem{17-ad-1}
+  \Aue{Kozhevnikova, I.\,S., E.\,V.~Anan'in, and A.\,V.~Lysenko.} 2016. Nekontroliruyemye 
+metody mashinnogo obucheniya pri obnaruzhenii setevykh anomaliy [Unsupervised machine 
+learning methods for detecting network anomalies]. \textit{Molodoy uchenyy} [Young Scientist] 
+30(134):30--33.
+  \bibitem{18-ad-1}
+  \Aue{Kovalev, S.\,P.} 2019. Ispol'zovanie algoritma klasterizatsii 
+  DBSCAN dlya fil'tratsii 
+vybrosov v~dannykh [Using the DBSCAN clustering algorithm for filtering outliers in data]. 
+\textit{Komp'yuternye sistemy i~seti: 55-ya Yubileynaya nauchnaya konferentsiya aspirantov, magistrantov i~studentov} 
+[55th Anniversary Scientific Conference of Graduate Students, 
+Undergraduates and Students ``Computer Systems and Networks'' Proceedings]. Minsk: BSUIR. 198--200.
+  \bibitem{19-ad-1}
+  \Aue{Kislyakov, A.\,N., and S.\,V.~Polyakov.} 2020. Ierarkhicheskie metody klasterizatsii 
+v~zadache poiska anomal'nykh nablyudeniy na osnove grupp 
+s~narushennoy simmetriey 
+[Hierarchical clustering methods in a task to find abnormal observations based on groups with 
+broken symmetry]. \textit{Upravlencheskoe konsul'tirovanie} [Administrative Consulting]  
+5:116--127.
+  \bibitem{20-ad-1}
+  \Aue{Alsova, O.\,K., and K.\,S.~Uskova.} 2013. Programmnaya sistema klasternogo analiza 
+dannykh smeshannogo tipa [Software system cluster analysis of mixed data types]. 
+\textit{Avtomatika i~programmnaya inzheneriya} [Automatics \& Software Enginery]  
+1(3):\linebreak 75--81.
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received July 25, 2022}} 
+
+%\vspace*{-8pt} 
+  
+  \Contr
+  
+  \noindent
+  \textbf{Adamovich Igor M.} (b.\ 1934)~--- Candidate of Science (PhD) in technology, leading 
+scientist, Institute of Informatics Problems, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119133, Russian 
+Federation; \mbox{adam@amsd.com}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Volkov Oleg I.} (b.\ 1964)~--- leading programmer, Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119133, Russian Federation; \mbox{volkov@amsd.com}
+  
+  
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 
+  

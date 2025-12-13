@@ -1,0 +1,1163 @@
+\def\stat{zorin}
+
+\def\tit{К ОПРЕДЕЛЕНИЮ ПЕРИОДА ЗАНЯТОСТИ ПРИ~НЕЛОКАЛЬНОМ~ОПИСАНИИ ПОТОКОВ}
+
+\def\titkol{К определению периода занятости при нелокальном описании потоков}
+
+\def\aut{А.\,В.~Зорин$^1$}
+
+\def\autkol{А.\,В.~Зорин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Зорин А.\,В.}
+\index{Zorine A.\,V.}
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа 
+%выполнена при поддержке Программы развития МГУ, проект №\,23-Ш03-03. При анализе 
+%данных использовалась инфраструктура Центра коллективного пользования 
+%<<Высокопроизводительные вычисления и~большие данные>> 
+%(ЦКП <<Информатика>>) ФИЦ ИУ РАН (г.~Москва)}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Национальный исследовательский Нижегородский государственный 
+университет им.~Н.~И.~Лобачевского,\\  \mbox{andrei.zorine@itmm.unn.ru}}
+
+\vspace*{-12pt}
+
+
+
+
+\Abst{При вероятностном моделировании и~анализе сложных управляющих систем
+  массового обслуживания нескольких конфликтных входных потоков в~ряде работ
+  успешно применялся подход, одна из черт которого~--- нелокальное
+  описание различных составных блоков сис\-те\-мы. При таком описании часто теряется
+  информация об истинных моментах прихода и~ухода требований в~сис\-те\-ме. Это
+  приводит к~сложностям при определении периода занятости~--- одного из
+  классических показателей качества функционирования.  В~работе предлагается
+  определение периода занятости управляющей системы массового обслуживания на
+  основе выделения тех моментов наблюдения над системой, в~которые очереди
+  достигают нулевого значения. На примере циклического алгоритма обслуживания с~фиксированным ритмом переключения и~с~использованием мартингальной техники
+  находятся эффективные вычислительные формулы для математического ожидания
+  периода занятости отдельной очереди.}
+
+\KW{управляющая система массового обслуживания; нелокальное описание блоков;
+  неординарные потоки Пуассона; циклический алгоритм обслуживания; период
+  занятости; многомерная счетная цепь Маркова; мартингал; обобщенная теорема
+  Руше; интерполяционный полином Лагранжа}
+  
+  \DOI{10.14357/19922264240306}{YKSIBJ}
+  
+%\vspace*{-6pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+
+\section{Введение}
+
+В настоящее время в~теории массового обслуживания рассматривается большое число
+показателей качества обслуживания, таких как распределение времени ожидания
+требования, распределения размеров очередей, распределение интервала занятости,
+вероятность потери требования в~системе с~потерями и~т.\,д.~\cite{Ivchenko:Kashtanov:Kovalenko}. В~то время как одни характеристики
+можно без труда относить и~к моделям с~непрерывным временем, и~к моделям с~дискретным временем, корректное определение других характеристик может встречать
+известные затруднения. 
+
+Поясним сказанное на примере периода занятости. Период
+за\-ня\-тости для некоторого прибора (если в~системе несколько обслуживающих
+приборов) определяется как промежуток времени, в~начале которого прибор выходит
+из режима ожидания и~начинает обслуживание требования, а окончание этого
+промежутка совпадает с~первым из тех моментов окончания обслуживания, когда
+ожидающих обслуживания на этом приборе требований больше нет и~прибор вынужден
+перейти в~режим ожидания. Для систем в~дискретном времени~[2--4] вся временн$\acute{\mbox{а}}$я
+ось разбивается на временн$\acute{\mbox{ы}}$е слоты фиксированного размера $h\hm>0$ и~истинный
+момент поступления требования не наблюдается. Считается, что требование
+поступает в~конце слота, а~его обслуживание может начаться только в~сле\-ду\-ющем
+временн$\acute{\mbox{о}}$м слоте. Таким образом, период за\-ня\-тости в~модели с~дискретным временем
+будет целым кратным величины~$h$ и~будет содержать <<ошибку округления>> порядка~$h$.  
+
+В~монографиях~\cite{Alfa, Bruneel:Kim} период занятости исследован для
+прос\-тей\-шей однолинейной сис\-те\-мы и~сис\-те\-мы с~конечным чис\-лом параллельных
+приборов с~гео\-мет\-ри\-че\-ским входящим потоком; в~монографии~\cite{Pechinkin:Razumchik} 
+период за\-ня\-тости изуча\-ет\-ся для однолинейной системы с~произвольным (це\-ло\-чис\-лен\-ным) временем обслуживания. Достаточное пред\-став\-ле\-ние об
+истории и~современном со\-сто\-янии этого круга вопросов мож\-но со\-ста\-вить также по
+работам~[5--8].
+
+
+Для построения адекватных математических моделей сложных управляющих систем
+обслуживания приходится применять так называемое нелокальное задание разных
+составных блоков \mbox{системы}, таких как входные потоки, потоки насыщения и~некоторые
+другие. Напомним, что потоки насыщения определяются~\cite{Fedotkin:1975} как
+виртуальные выходные потоки системы при наличии достаточно %\linebreak 
+большого запаса
+требований в~очередях и~максимальном использовании возможностей обслуживающего
+устройства; таким образом, они пред\-став\-ля\-ют альтернативу указания закона
+\mbox{обслуживания} каждого отдельного требования. Понятие нелокального описания потока
+было введено в~работах~\cite{Fedotkin:1978,Fedotkin:1981}. Приведем здесь
+со\-от\-вет\-ст\-ву\-ющее \mbox{определение}: пусть $\{\tau^{\textrm{н}}_i;i=0,1,\ldots\}$~---
+последовательность моментов наблюдения на оси~$Ot$, $(M, \mathcal M)$~---
+измеримое пространство \textit{меток}, $\eta^{\textrm{н}}_i \hm\in \{0,1,\ldots\}$ и~$\nu_i\hm\in M$ суть число требований и~метка требований потока~$\Pi$, поступивших
+на промежутке $(\tau^{\textrm{н}}_i, \tau^{\textrm{н}}_{i+1}]$. \textit{Неполное
+  (нелокальное) описание} потока~$\Pi$ неоднородных требований есть векторная
+случайная последовательность
+%\begin{equation}
+ % \label{AZ:eq:flowdescr-incomplete}
+  $\left\{(\tau^{\textrm{н}}_i, \eta^{\textrm{н}}_i, \nu_i); i=0, 1, \ldots\right\}.$
+%\end{equation}
+Существенное отличие использования нелокального описания от упомянутых ранее
+моделей в~дискретном времени заключается в~том, что длительности
+$(\tau^{\mathrm{н}}_i\hm- \tau^{\mathrm{н}}_{i-1})$ промежутков наблюдения могут
+быть случайными и~достаточно большими, а~их законы распределения могут
+существенно меняться в~зависимости от состояния системы
+обслуживания. В~частности, оказывается возможным применить понятие нелокального
+описания для задания свойств процесса обслуживания требований с~помощью потока
+насыщения вместо традиционного указания закона распределения длительности
+обслуживания каждого отдельного требования.
+
+Использование нелокального описания для входных потоков и~для потоков насыщения
+лишает исследователя информации о точных моментах начала и~окончания периода
+занятости в~классическом смысле. Поэтому в~данной работе предлагается связать
+периоды занятости с~некоторыми из моментов $\tau^{\textrm{н}}_i$, $i\hm=0, 1,
+\ldots$, когда одна или несколько очередей опустошаются. На этом пути удается
+вычислить среднее время периода занятости, например для системы обслуживания
+нескольких конфликтных потоков по алгоритму с~циклическим ритмом переключения и~фиксированными длительностями фаз.
+Этот алгоритм часто применяется, например, в~задачах управления транспортными потоками на регулируемых перекрестках.
+
+\vspace*{-6pt}
+
+\section{Общая постановка задачи}
+
+\vspace*{-3pt}
+
+Рассмотрим следующую систему массового обслуживания.  Имеются $m\hm<\infty$ входных
+потоков~$\Pi_j$, $j\hm=\overline{1, m}$. Предположим, что поток~$\Pi_j$~--- ста\-ционарный, неординарный, без последействия.\linebreak  Требования потока
+$\Pi_j$ помещаются в~накопитель неограниченного объема.  Обслуживающее~устройство имеет $2m$~состояний: 
+$\Gamma^{(1)}, \Gamma^{(2)}, \ldots,
+\Gamma^{(2m)}$. В~состоянии $\Gamma^{(2j-1)}$ обслуживаются только требования
+потоков~$\Pi_j$, $j\hm=\overline{1, m}$. В~состояниях вида $\Gamma^{(2j)}$
+требования не обслуживаются. Состояния меняются по циклическому алгоритму:
+$\cdots\to\Gamma^{(1)}\hm\to \Gamma^{(2)} \to \cdots \to \Gamma^{(2m)}\hm\to
+\Gamma^{(1)} \to \cdots$. Длительность состояния~$\Gamma^{(r)}$ неслучайна и~равна $T_r\hm>0$.  Закон обслуживания потока задается свойствами потока насыщения:
+максимально возможное число $\ell_j\hm\in\{0, 1, \ldots\}$ обслуженных требований
+из очереди~$O_j$ за время~$T_{2j-1}$ в~состоянии~$\Gamma^{(2j-1)}$
+обслуживающего устройства и~число~0 в~любом другом состоянии~$\Gamma^{(r)}$,
+$r\hm\neq 2j-1$.
+
+Будем наблюдать за системой в~моменты переключения сигнала светофора. Обозначим
+эти моменты через~$\tau_i$, $i\hm=0, 1, \ldots$ (здесь и~далее для краткости не
+будем писать верхнюю букву~<<н>> в~обозначении $\tau^{\mathrm{н}}_i$). Пусть
+$\tau_0\hm=0$. Обозначим через~$\Gamma_0$ состояние светофора в~момент~$\tau_0$, а
+через~$\Gamma_i$~--- состояние светофора на промежутке $(\tau_{i-1}, \tau_i]$.
+Далее, пусть~$\kappa_{j,i}$~--- число требований в~очереди~$O_j$ в~момент~$\tau_i$, 
+$\eta_{j,i}$~--- число требований потока~$\Pi_j$, поступивших за
+промежуток $(\tau_i, \tau_{i+1}]$, $\xi_{j,i}$~--- число требований по потоку
+насыщения на промежутке $(\tau_i, \tau_{i+1}]$. Введем векторы
+$\eta_i\hm=(\eta_{1,i}, \eta_{2,i}, \ldots, \eta_{m,i})$
+и~$\xi_i\hm=(\xi_{1,i}, \xi_{2,i}, \ldots, \xi_{m,i})$, $i\hm=0, 1, \ldots$
+
+Динамика очередей описывается соотноше\-ни\-ями:
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+\kappa_{j,i+1}= \max\left\{0, \kappa_{j,i}+\eta_{j,i}-\xi_{j,i}\right\}, \\ 
+j=\overline{1,m};\enskip i=0,1,\ldots
+\end{multline*}
+
+\vspace*{-3pt}
+
+\noindent
+Описание входных потоков и~потоков насыщения зададим с~помощью указания свойств
+маркированного точечного процесса
+$\left\{(\tau_i, \kappa_i, \nu_i); i=0, 1, \ldots\right\},
+$
+где $\nu_i=\Gamma_i$~--- метка требований, поступающих на промежутке
+$(\tau_i, \tau_{i+1}]$. Пусть $r \hm\oplus 1$ означает $r+1$\linebreak для $r\hm<2m$ и~принимает
+значение~1 для $r\hm=2m$. Пусть далее~$w_j$ и~$y_j$, $j\hm=\overline{1, m}$,~---
+произ\-вольные целые неотрицательные числа. Тогда\linebreak при условии
+$\nu_{i}\hm=\Gamma^{(r)}$ вероятность события
+%\begin{equation}
+ % \label{AZ:eq:eta-xi}
+$\bigcap\nolimits_{j=1}^m \{ \eta_{i,j}=w_j, \xi_{i,j}=y_j\}
+$ %\end{equation}
+независимо от $\Gamma_0$, $\kappa_0$, $\kappa_1$, \ldots, $\kappa_{i}$ равна
+$
+\prod\nolimits_{j=1}^m \varphi_j(w_j; T_{r\oplus1}),
+$
+если $y_j=0$ при $r\oplus1\hm\neq 2j-1$ и~$y_j\hm=\ell_j$ при $r\hm \oplus1\hm=2j-1$, и~эта
+вероятность равна нулю в~остальных случаях. Здесь распределения вероятностей
+$\varphi_j(b;u)$, $b\hm=0, 1, \ldots$ ($u\hm>0$ рассматривается как параметр), могут
+браться из разложения производящей функции для простого группового
+(неординарного) потока~\cite{Ivchenko:Kashtanov:Kovalenko} следующим
+образом. Введем производящие функции
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+\!f_j(z)=\sum\limits_{b=1}^\infty g_j(b) z^b;
+\enskip
+q_j(z;u)= \exp\{ \lambda_j u (
+f_j(z) -1) \},\\  |z|\leqslant1,\quad j=\overline{1,  m}\,.
+\end{multline*}
+Здесь $\lambda_j>0$ задает интенсивность поступления групп машин по потоку~$\Pi_j$; $g_j(b)$ есть вероятность того, что группа по потоку~$\Pi_j$ состоит
+из~$b$~автомашин. Пусть $f_j(z)\hm\neq1$ при $z\hm\neq1$, $|z|\hm=1$. Тогда
+\begin{equation*}
+\sum\limits_{b=0}^\infty z^b \varphi_j(b; u) = q_j(z;u), \enskip |z|\leqslant1\,.
+%\label{AZ:eq:phi-def}
+\end{equation*}
+
+Введем обозначения:
+$$
+\bar \lambda_j =  \lambda_j f'_j(1)=\lambda_j \sum_{b=1}^\infty b g_j(b), \enskip
+j=\overline{1,m}\,.
+$$
+В сделанных предположениях многомерная последовательность
+$\{(\Gamma_i, \kappa_i);\ i\hm=0, 1, \ldots\}$ при заданном распределении случайного
+элемента $(\Gamma_0, \kappa_0)$ будет однородной цепью Маркова, а необходимое и~достаточное условие существования стационарного распределения будет иметь
+следующий вид:
+\begin{equation}
+  \max\left\{ \fr{{\bar\lambda_1}T}{\ell_1}\,,\;
+  \frac{{\bar\lambda_2}T}{\ell_2}\,,\; \ldots,\;
+  \frac{{\bar\lambda_m}T}{\ell_m}\right\}<1\,,
+  \label{AZ:eq:stat}
+\end{equation}
+где $ T=T_1+T_2+\cdots+T_{2m}$. Содержательно условие~\eqref{AZ:eq:stat}
+означает, что по каждому потоку среднее\linebreak чис\-ло поступающих требований за полный
+цикл меньше соответствующего потока насыщения. Всюду далее будем предполагать
+условие стационарности~\eqref{AZ:eq:stat} выполненным. Кроме того, каждая из
+случайных последовательностей $\{(\Gamma_i, \kappa_{j,i});\ i\hm= 0,1, \ldots\}$, $j\hm=\overline{1,  m}$, 
+также представляет собой однородную цепь Маркова, при выполнении
+условия~\eqref{AZ:eq:stat}~--- положительно возвратную.
+
+\vspace*{-6pt}
+
+\section{Период занятости}
+
+\vspace*{-3pt}
+
+Перейдем теперь к~определению понятия периода занятости. Введем поток
+сиг\-ма-алгебр
+$$
+\mathfrak{F}_{i}\hm= \sigma\{\Gamma_{0}, \kappa_{1,0}, \eta_{1,0}, \eta_{1,1},
+\ldots, \eta_{1,i-1}\}.
+$$
+ Пусть~$\mathfrak s$~--- момент остановки (относительно
+потока $\{\mathfrak F_i; i\hm=0, 1, \ldots\}$) такой, что
+$\kappa_{j,\mathfrak s}\hm=0$. Введем случайную величину~$\nu(\mathfrak s)$
+следующим образом:
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+\nu(\mathfrak s)={}\\
+{}=
+\begin{cases}
+  \infty,& \!\hspace*{-60pt} \mbox{если\ }\kappa_{j,i}>0\ \mbox{для всех}\  i\geqslant \mathfrak s+1;\\
+  \min\{i\geqslant 1\colon \kappa_{j,i+\mathfrak s}=0\}& \!\mbox{в\ противном\ случае}.
+\end{cases}
+\end{multline*}
+Анализ классического понятия периода занятости приводит к~двум возможным
+определениями. Согласно первому определению назовем \textit{периодом занятости}
+для очереди~$O_j$ промежуток
+$(\tau_{\mathfrak s}, \tau_{\mathfrak s+\nu(\mathfrak s)}]$ при условии
+$\kappa_{j,\mathfrak s}\hm=0$. Здесь не исключен случай, когда не поступает ни
+одного требования за следующий такт работы обслуживающего устройства и~никакого
+обслуживания фактически не происходит.  Поэтому можно рассмотреть период
+занятости, начинающийся с~$x\hm=1, 2, \ldots$ требований в~очереди~$O_j$,
+т.\,е.\ распределение случайного промежутка
+$(\tau_{\mathfrak s}, \tau_{\mathfrak s+\nu(\mathfrak s)}]$ можно рассматривать
+при условии $\kappa_{j,\mathfrak s}\hm=x$, $x\hm>0$.
+На событии
+$\{\omega\colon \Gamma_{\mathfrak s}\hm=\Gamma^{(r)}\}$ длину этого промежутка
+можно выразить формулой
+$$
+T_{r\oplus1}+T_{r\oplus2}+\cdots+T_{r\oplus \nu(\mathfrak s)}.
+$$
+Если при заданных свойствах входных потоков, потоков насыщения и~алгоритма
+управления все периоды занятости для данной очереди статистически однородны,
+можно, не уменьшая общ\-ности, \mbox{изучать} условное распределение величины~$\nu(\mathfrak s)$ или величины~$\tau_{\nu(\mathfrak s)}$, положив
+$\mathfrak{s}\hm=0$ и~рассматривая условные распределения при условии
+$\kappa_{j,0}\hm=0$. Цель данного исследования~--- вычисление условных \mbox{средних}
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+\mathbb E\left(T_{r\oplus1}+T_{r\oplus2}+\cdots+T_{r\oplus \nu(\mathfrak s)} \Big\vert \right.\\
+\left.\left\{\kappa_{j,0}=x, \Gamma_0=\Gamma^{(r)}\right\}\right).
+\end{multline*}
+
+\vspace*{-3pt}
+
+Применяемый ниже мартингальный метод восходит в~работам~\cite{Bacelli-1,Bacelli-2}.
+
+Имеют место следующие утверждения. Не уменьшая общности, будем везде далее
+полагать $j\hm=1$. Ниже~$I(\cdot)$ означает индикатор события, указанного в~скобках.
+
+
+\smallskip
+
+\noindent
+\textbf{Теорема~1.}
+\textit{ При $|z|<1$ последовательность}
+  \begin{equation*}
+    M_{i}(z)=
+    \begin{cases}
+      z^{\kappa_{1,0}}, & \hspace*{-33pt}i=0;\\
+      z^{\kappa_{1,i}+ \sum\nolimits_{k=0}^{i-1}
+        \min\{\kappa_{1,k}+\eta_{1,k},\;\xi_{1,k}\}}\times{}&\\
+        {}\times 
+     \displaystyle  \prod\limits_{k=0}^{i-1} \displaystyle \sum\limits_{r=1}^{2m}
+      \fr{I(\Gamma_{k}=\Gamma^{(r)})}
+      {\exp\{\lambda_{1}T_{r\oplus1}(f_{1}(z)-1)\}},&\\
+      & \hspace*{-33pt}i=1,2,\ldots,
+    \end{cases}
+  \end{equation*}
+  \textit{представляет собой мартингал относительно потока}
+  $\{\mathfrak{F}_{i};i=0,1,\ldots\}$.
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ \ состоит в~проверке определения мартингала и~здесь не приводится.
+
+\smallskip
+
+Пусть, по определению, $\mathfrak t(\mathfrak s)= \mathfrak s + \nu(\mathfrak{s})$.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.}
+\textit{Пусть $\mathfrak s$~---  момент остановки относительно потока
+  $\{\mathfrak{F}_{i};\ i\hm=0,1,\ldots\}$. Тогда}
+  
+  \vspace*{-6pt}
+  
+  \noindent
+  \begin{multline}
+    \sum\limits_{r=1}^{2m}\mathbb{E}\Bigl(
+    I\left(\Gamma_{\mathfrak   s}=\Gamma^{(r)}\right)\times{}\\
+    {}\times 
+    z^{\xi_{1,\mathfrak s}+\xi_{1,\mathfrak  s+1}+\cdots +\xi_{1,\mathfrak {t}(\mathfrak s)-2}+
+      \kappa_{1,\mathfrak t(\mathfrak s)-1}+\eta_{1,\mathfrak t(\mathfrak s)-1}}
+    \times{}
+    \\ 
+    {}\times
+    \exp\{\lambda_{1}(T_{r\oplus1}+T_{r\oplus2}+\cdots+
+    T_{r\oplus\nu(\mathfrak s)}) (1-f_{1}(z))\}\Big|
+    \mathfrak{F}_{\mathfrak s}\!\Bigr)\!={}\\
+    {}=
+    z^{\kappa_{1,\mathfrak  s}}.
+    \label{AZ:eq:main-mart}
+  \end{multline}
+
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
+  Поскольку для момента остановки $\mathfrak s$ случайная величина
+  $\mathfrak t(\mathfrak s)$ конечна с~вероятностью единица (как следствие
+  положительной возвратности), то из теоремы Дуба об опциональной остановке
+  должно следовать равенство
+  $M_{\mathfrak s}(z) \hm= \mathbb E(M_{\mathfrak t(\mathfrak s)} \mid \mathfrak
+  F_{\mathfrak s})$. Поскольку
+  
+  \noindent
+\begin{multline*}
+  \mathbb {E}\left(M_{\mathfrak t(\mathfrak s)} \mid \mathfrak F_{\mathfrak{s}}\right) =
+  z^{\sum\nolimits_{k=0}^{\mathfrak{s}-
+1}\min\{\kappa_{1,k}+\eta_{1,k},\;\xi_{1,k}\}}\times{}\\
+{}\times
+  \prod\limits_{k=0}^{\mathfrak s-1}\sum\limits_{r=1}^{2m}
+  \fr{I(\Gamma_{k}=\Gamma^{(r)})}{\exp\{\lambda_{1}T_{r+1}(f_{1}(z)-
+1)\}}\times{}
+\end{multline*}
+
+\noindent
+\begin{multline*}
+{}  \times\mathbb{E}\biggl(z^{\sum\nolimits_{k=\mathfrak s}^{\mathfrak t(\mathfrak
+      s)-1}\min\{\kappa_{1,k}+\eta_{1,k},\;\xi_{1,k}\}}\times{}\\
+      {}\times \prod\limits_{k=\mathfrak
+    s}^{\mathfrak t(\mathfrak s)-1}\sum\limits_{r=1}^{2m}
+  \fr{I(\Gamma_{k}=\Gamma^{(r)})}%
+  {\exp\{\lambda_{1}T_{r\oplus1}(f_{1}(z)-1)\}}\,\bigg|\,\mathfrak{F}_{\mathfrak 
+s}\biggr),
+\end{multline*}
+то
+\begin{multline*}
+  z^{\kappa_{1,\mathfrak s}}=
+  \mathbb{E}\biggl(z^{\sum\nolimits_{k=\mathfrak s}^{\mathfrak t(\mathfrak s)-1}
+    \min\{\kappa_{1,k}+\eta_{1,k},\;\xi_{k}\}}\times{}\\
+    {}\times \prod\limits_{k=\mathfrak s}^{\mathfrak
+    t(\mathfrak s)-1}
+  \sum\limits_{r=1}^{2m}\fr{I(\Gamma_{k}=\Gamma^{(r)})}%
+  {\exp\{\lambda_{1}T_{r\oplus1}(f_{1}(z)-1)\}}\bigg|\mathfrak{F}_{\mathfrak 
+s}\bigg).
+\end{multline*}
+Во-первых, равенство $\mathfrak t(\mathfrak s)\hm=i$ влечет $\kappa_{1,i}\hm=0$,
+откуда $\kappa_{1,i-1}\hm+\eta_{1,i-1}\hm\leqslant\xi_{1,i}$. Для всех~$k$,
+$\mathfrak {s} \hm\leqslant k\hm<i$, имеем
+$\min\{\kappa_{1,k}\hm+\eta_{1,k},\xi_{1,k}\}=\xi_{1,k}$. Значит,
+\begin{multline*}
+  \sum\limits_{k=\mathfrak s}^{\mathfrak t(\mathfrak s)-1}
+  \min\{\kappa_{1,k}+\eta_{1,k},\;\xi_{k}\}={}\\
+  {}= \xi_{1,\mathfrak
+    s}+\xi_{1,\mathfrak s+1}+\cdots+\xi_{1,\mathfrak t(\mathfrak s)-2}+
+  \kappa_{1,\mathfrak t(\mathfrak s)-1}+\eta_{1,\mathfrak t(\mathfrak s)-1}.
+\end{multline*}
+Чтобы окончательно установить равенство~\eqref{AZ:eq:main-mart}, остается
+заметить, что в~силу циклического обслуживания значение~$\Gamma_{\sigma}$
+однозначно определяет все последующие состояния среды, поэтому можно избавиться
+от внутренних сумм по~$r$ в~пользу одной внешней суммы.
+
+
+\smallskip
+
+Чтобы получить практические выводы о периоде занятости, надо в~равенстве~\eqref{AZ:eq:main-mart} положить 
+$\mathfrak s\hm=0$ и~вычислить условные ожидания
+при условиях $\{\kappa_{1,0}\hm=x, \Gamma_0\hm=\Gamma^{(r)}\}$, $x\hm=0, 1, \ldots$ и~$r\hm=\overline{1, 2m}$. 
+Результаты содержатся в~следующих ниже теоремах.
+
+\smallskip
+
+\noindent
+\textbf{Лемма~1.}\
+%  \label{AZ:lem:1}
+ \textit{Пусть $u>0$ и~$\bar\lambda_1 u\hm<\ell_1$. Тогда уравнение}
+  \begin{equation}
+    z^{\ell_1}=\exp\left\{ \lambda_1 u  \left(f_1(z)-1\right)\right\}
+    \label{AZ:eq:maineq}
+  \end{equation}
+ \textit{имеет $\ell_1$ решений в~круге $|z|\hm\leqslant1$, причем ровно одно из них 
+$z\hm=1$}.
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
+  Для доказательства воспользуемся обобщением теоремы Руше из работы~\cite{Klimenok}. Представим уравнение~\eqref{AZ:eq:maineq} в~виде
+  $$
+  \theta_1(z)\hm+\theta_2(z)\hm=0\,,
+  $$ 
+  где 
+  $$
+  \theta_1(z)=z^{\ell_1}; \enskip
+\theta_2(z)\hm=-\exp\{\lambda_1
+  u(f_1(z)-1)\}.
+  $$
+   Необходимо проверить, что 
+   \begin{enumerate}[(1)]
+   \item $|\theta_1(z)|\hm>|\theta_2(z)|$ для
+  всех $z\hm\neq 1$ таких, что $|z|\hm=1$; 
+  \item $\theta_1(1)\hm=-\theta_2(1)$; 
+  \item $(\theta_1'(1)+\theta_2'(1))/\theta_1(1)\hm>0$.
+  \end{enumerate}
+  
+   Пункт~1 следует из неравенств
+\begin{multline*}
+  |\theta_2(z)| = e^{-\lambda_1 u} \left\vert e^{\lambda_1 u f_1(z)} \right\vert <
+  e^{-\lambda_1 u}  e^{\lambda_1 u |f_1(z)|}  \leqslant{}\\
+  {}\leqslant 1=|\theta_1(z)|.
+  \end{multline*}
+  Пункт~2 тривиален. Для доказательства пункта~3 заметим, что
+  $$
+  \hspace{15mm}\fr{\theta_1'(1)+\theta_2'(1)}{\theta_1(1)}=\ell_1-\bar \lambda_1 u>0\,.\hspace{15mm}\square
+  $$
+
+
+Для дальнейшего понадобится обозначение
+\begin{multline*}
+\mathcal T(r)={}\\
+{}=
+\begin{cases}
+  T_{r+1}+T_{r+2}+\cdots+T_{2m}, &\!\! r=\overline{1, 2m-1};\\
+    0, & \! \!r=2m.
+\end{cases}
+\end{multline*}
+
+\noindent
+\textbf{Теорема~3.}\
+\textit{Пусть $x\hm=1, 2, \ldots$ Пусть, далее, $\beta_1, \beta_2, \ldots,
+\beta_{\ell_1-1}$~--- нули уравнения $z^{\ell_1}\hm=q(z;T)$, лежащие в~круге
+  $|z|\hm<1$ и~$\beta_{\ell_1}\hm=1$.  Введем многочлен}
+  
+  \vspace*{-6pt}
+  
+  \noindent
+  \begin{multline*}
+    L_{x,r}(z)=\fr{(z-\beta_{1})(z-\beta_2)\cdots(z-\beta_{\ell_1-1})}
+         {(1-\beta_{1})(1-\beta_2)\cdots(1-\beta_{\ell_1-1})}+{}\\
+{}    +\sum\limits_{j=1}^{\ell_1-1}(\beta_{j})^{x-1}
+    \exp\{\lambda_{1}(T_{1}+\mathcal{T}(r))(f_{1}(\beta_{j})-1)\}
+    \fr{z-1}{\beta_{j}-1}\times{}\\
+    {}\times \prod\limits_{k\neq j}\fr{z-\beta_{k}}{\beta_{j}-\beta_{k}}\,.
+\end{multline*}
+
+\vspace*{-7pt}
+
+\noindent
+\textit{Тогда}
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+    L'_{x,r}(1) =\sum\limits_{j=1}^{\ell_1-1} \fr{1}{1-\beta_{j}} +
+    \sum\limits_{j=1}^{\ell_1-1}(\beta_{j})^{x-1}\times{}\\
+    {}\times
+    \exp\{\lambda_{1}(T_{1}+\mathcal T(r))(f_{1}(\beta_{j})-1)\} 
+    \prod\limits_{k\neq j}\fr{1-\beta_{k}}{\beta_{j}-\beta_{k}}\,;
+   % \label{AZ:eq:E-kappa-eta-1}
+    \end{multline*}
+    
+\vspace*{-12pt}
+
+    \noindent
+    \begin{multline}
+  \mathbb E\left( \kappa_{1,\nu(0)-1}+\eta_{1,\nu(0)-1} \Big\vert
+  \left\{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\right)={}\\
+  {}=1+L'_{x,r}(1);
+   \label{AZ:eq:E-nu0-1}
+   \end{multline}
+   
+  \vspace*{-12pt}
+
+    \noindent
+    \begin{multline*}
+  \mathbb{E}\left(\left[\fr{\nu(0)-
+1}{2m}\right]\bigg|\left\{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\right)={}\\
+{}=
+  \fr{x+\bar\lambda_1(T_1+\mathcal T(r))-1-L'_{x,r}(1)}{\ell_1-\bar\lambda_1 T}\,;
+\end{multline*}
+\textit{средний период занятости очереди~$O_1$ при условии
+$\{\kappa_{1,0}\hm=x,\ \Gamma_0\hm =\Gamma^{(r)}\}$ равен}
+
+\vspace*{-6pt}
+
+\noindent
+  \begin{multline}
+    \mathbb E\left( T_{r\oplus1}+\cdots+T_{r\oplus \nu(0)}\big\vert
+    \kappa_{1,0}=x,  \Gamma_0=\Gamma^{(r)}\right)={}    \\ 
+    {}=
+    T_{1}+\mathcal T(r)+{}\\
+    {}+
+    T     \fr{x+\bar\lambda_1(T_1+\mathcal T(r)-1-L'_{x,r}(1))}
+    {\ell_1-\bar{\lambda}_1 T}\,.\!\!
+    \label{AZ:eq:busy-x-r-1}
+  \end{multline}
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
+  Полагая в~равенстве~\eqref{AZ:eq:main-mart} $\mathfrak {s}\hm=0$, % $x>0$ и~$r\neq 2m$
+  получим:
+  
+  \pagebreak
+  
+  \noindent
+  \begin{multline}
+    \mathbb{E}\biggl(
+    z^{\xi_{1,0}+\cdots+\xi_{1,\nu(0)-1}+%
+      \kappa_{1,\nu(0)-1}+\eta_{1,\nu(0)-1}-\xi_{1,\nu(0)-1}}\times
+    \\ \times
+    \exp\{\lambda_{1}(T_{r\oplus1}+T_{r\oplus2}+\cdots{}\\
+    {}\cdots +T_{r\oplus\nu(0)})
+    (1-f_{1}(z))\}\Big|\{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\}\biggr)={}\\
+    {}=z^x.
+    \label{AZ:eq:e4}
+\end{multline}
+На событии $\{\omega\colon \kappa_{1,0}=x\}$ при
+$x\hm>0$ с~вероятностью единица выполняется равенство
+\begin{equation*}
+  \xi_{1,0}+\cdots+\xi_{1,\nu(0)-1}=
+  \ell_1\left(\left[\fr{\nu(0)-1}{2m}\right]+1\right),
+ % \label{AZ:eq:xi4}
+\end{equation*}
+где квадратные скобки~$[\cdot]$ обозначают целую часть числа.  Кроме того, на
+том же событии при $x\hm>0$ с~вероятностью единица
+\begin{equation*}
+T_{r\oplus1}+T_{r\oplus2}+\cdots+T_{r\oplus\nu(0)}=
+T_1+ \mathcal T(r) +T\left[\fr{\nu(0)-1}{2m}\right]\!.
+%\label{AZ:eq:T-5}
+\end{equation*}
+В силу определения величины $\nu(0)$, $\xi_{1,\nu(0)-1}\hm=\ell_1$. Поэтому
+равенство~\eqref{AZ:eq:e4} примет вид:
+\begin{multline}
+  z^{x}\exp\left\{\lambda_{1}(T_{1}+\mathcal{T}(r))(f_{1}(z)-1)\right\}={}  \\
+  {} =
+  \mathbb{E}\Bigl( z^{\kappa_{1,\nu(0)-1}+\eta_{1,\nu(0)-1}}\times{}\\
+  {}\times 
+  \left( z^{\ell_1}\exp\{ \lambda_{1}T(1-f_{1}(z))\}
+  \right)^{\left[ (\nu(0)-1)/(2m)\right]}\,\Big|\\
+  \left\{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\Bigr).
+  \label{AZ:eq:cyc1}
+\end{multline}
+По лемме~1 уравнение $z^{\ell_1}\hm=q(z;T)$ имеет ровно~$\ell_1$
+заявленных в~формулировке теоремы корней $\beta_1, \beta_2, \ldots,
+\beta_{\ell_1}$  в~круге $|z|\hm\leqslant1$. Перенумеруем корни так, чтобы
+$\beta_{\ell_1}\hm=1$. Из равенства~\eqref{AZ:eq:cyc1} подстановкой $z\hm=\beta_j$
+находим:
+\begin{multline}
+  \label{AZ:eq:bet}
+  (\beta_{j})^{x}\exp\{\lambda_{1}(T_{r\oplus1}+\cdots+T_{2m}+T_{1}) %
+  (f_{1}(\beta_{j})-1)\}={}  \\ 
+  {}=
+  \mathbb{E}\left((\beta_{j})^{\kappa_{1,\nu(0)-1}+\eta_{1,\nu(0)-1}}\Big|
+ \left \{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\right),\\
+  j=\overline{1,\ell_1-1}\,.
+\end{multline}
+Введем условные вероятности
+
+\vspace*{-4pt}
+
+\noindent
+\begin{multline*}
+\alpha_{k}={}\\
+{}+\mathbb{P}\left(X_{\nu(0)-1}\hm+\eta_{\nu(0)-1}\hm=k\big\vert 
+X_{0}\hm=x,\Gamma_{0}\hm=\Gamma^{(r)}\right),\\
+ k=\overline{0, \ell_1}
+\end{multline*}
+
+\vspace*{-4pt}
+
+\noindent
+(зависимость от~$x$, $r$ подразумевается). Заметим, что
+$\kappa_{1,\nu(0)-1}\hm\geqslant1$. Тогда математическое ожидание в~правой части
+равенства~\eqref{AZ:eq:bet}
+
+\vspace*{-4pt}
+
+\noindent
+\begin{multline*}
+\!\mathbb{E}\left((\beta_{j})^{\kappa_{1,\nu(0)-1}+\eta_{1,\nu(0)-1}}
+\Big\vert  \left\{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\right)={}\\
+{}=
+\alpha_{1}\beta_{j}+\alpha_{2}(\beta_{j})^{2}+\cdots
++\alpha_{\ell}(\beta_{j})^{\ell_1}.
+\end{multline*}
+
+\vspace*{-4pt}
+
+\noindent
+Для определения неизвестных величин~$\alpha_1, \alpha_2, \ldots\linebreak
+\ldots,
+\alpha_{\ell_1}$ получаем неоднородные линейные уравнения (с~присоединенным
+условием нормировки):
+
+\columnbreak
+
+\noindent
+\begin{multline*}
+  \alpha_{1}+\alpha_{2}\beta_{j}+\cdots+\alpha_{\ell_1}\beta_{j}^{\ell_1-1}={}\\
+  {}=
+  (\beta_{j})^{x-1}\exp\{\lambda_{1}(T_{1}+
+  \mathcal T(r))(f_{1}(\beta_{j})-1)\},\\
+   j=\overline{1,\ell_1-1}\,;
+   \end{multline*}
+   
+   \vspace*{-9pt}
+   
+   \noindent
+   $$
+\alpha_{1}+\alpha_{2}+\cdots+\alpha_{\ell}=1.
+$$
+Поскольку неизвестные выступают как коэффициенты многочлена степени
+$(\ell_1-1)$, принимающего в~заданных точках заданные значения, естественно
+ввести интерполяционный многочлен
+$$
+L_{x,r}(z)=\alpha_1\hm+\alpha_2 z+\cdots+ \alpha_{\ell_1} z^{\ell_1-1},
+$$
+ который 
+с~необходимостью будет иметь вид, указанный в~формулировке теоремы. Но тогда
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+   \! \mathbb{E} \left( \kappa_{1,\nu(0)-1}+\eta_{1,\nu(0)-1} \Big\vert
+    \left\{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\right)={}    \\ 
+    {}=
+    \alpha_1+2\alpha_2+\cdots+\ell_1 \alpha_{\ell_1} =
+    \fr{d}{dz}\left(z L_{x,r}(z)\right)\Big|_{z=1} ={}\\
+    {}= 1+L'_{x,r}(1).
+\end{multline*}
+
+\vspace*{-4pt}
+
+
+Дифференцируя равенство~(\ref{AZ:eq:cyc1}) по~$z$ в~точке $z\hm=1$, получим:
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+  x+\bar\lambda_{1}(T_{1}+\mathcal T(r))={}\\
+  {}=
+  \mathbb E\left( \kappa_{1,\nu(0)-1}+\eta_{1,\nu(0)-1} \Big\vert 
+ \left\{ \kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\right)+{}\hspace*{-0.5pt}  \\ 
+  {} +
+  (\ell_1-\bar\lambda_{1}T)  \mathbb{E}\biggl(\biggl[\fr{\nu(0)-1}{2m}\biggr]
+  \bigg| \left\{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\biggr).\hspace*{-0.5pt}
+\end{multline*}
+
+\vspace*{-4pt}
+
+\noindent
+Отсюда приходим к~равенству~\eqref{AZ:eq:E-nu0-1}.  Переходя теперь к~абсолютному времени, можно записать длительность периода занятости как
+$$
+  T_{1}+\mathcal T(r)+
+  T\mathbb{E}\biggl(\biggl[\fr{\nu(0)-1}{2m}\biggr]
+  \bigg| \left\{\kappa_{1,0}=x,\Gamma_{0}=\Gamma^{(r)}\right\}\biggr).
+$$
+Отсюда получается соотношение~\eqref{AZ:eq:busy-x-r-1}.
+
+
+%\pagebreak
+
+
+Следующие две теоремы доказываются аналогично.
+
+\noindent
+\textbf{Теорема~4.}\
+\textit{Пусть при $r\hm<2m$ определен полином}
+    \begin{multline*}
+      L_{0,r}(z)=(1-e^{-\lambda_1 T_{r+1}})\times{}\\
+      {}\times
+      \fr{(z-\beta_{1})(z-\beta_2)\cdots(z-\beta_{\ell_1-1})}%
+    {(1-\beta_{1})(1-\beta_2)\cdots(1-\beta_{\ell_1-1})}+\\
+    +\sum\limits_{j=1}^{\ell_1-1}(\beta_{j})^{-1}
+    \left(1-e^{-\lambda_1 T_{r+1}f_1(\beta_j)}\right)\times{}\\
+    {}\times
+    \exp\{\lambda_{1}(T_{1}+\mathcal T(r))(f_{1}(\beta_{j})-1)\}
+    \fr{z-1}{\beta_{j}-1}\prod\limits_{k\neq j}\fr{z-\beta_{k}}{\beta_{j}-\beta_{k}}\,.\hspace*{-2.84pt}
+\end{multline*}
+\textit{Тогда имеют место соотношения}
+
+\noindent
+  \begin{multline*}
+    \mathbb E  \left(  I(\{\nu(0) >1\})  \left[ \fr{\nu(0)-1}{2m} \right] 
+\Bigg\vert \right.\\
+\left. \kappa_{1,0}=0, \Gamma_0=\Gamma^{(r)} 
+\vphantom{\fr{\nu(0)-1}{2m}}
+\right) ={}\\
+{}=
+  \left(\ell_1-\bar\lambda_1 T\right)^{-1}  \Big( \bar\lambda_1 T_{r+1} e^{-\lambda_1
+      T_{r+1}} +{}\\
+      {}+ \bar\lambda_1 \left(T_1+\mathcal T(r)\right)\left(1-e^{-\lambda_1 T_{r+1}}\right)
+    -{}\\
+ {}-\left(1-e^{-\lambda_1 T_{r+1}}\right)-L_{0,r}'(1)    \Big);
+  %\label{AZ:eq:x0r2m-1}
+  \end{multline*}
+  
+  \vspace*{-12pt}
+  
+  \noindent
+  \begin{multline*}
+    \mathbb {E}\left(  T_{r\oplus1} +\cdots+T_{r\oplus \nu(0)}\mid \kappa_{1,0}=0,
+    \Gamma_0=\Gamma^{(r)}\right)={}\\
+    {}= T_{r+1} e^{-\lambda_1 T_{r+1}} +
+    \left(T_1+\mathcal T(r)\right)\left(1-e^{-\lambda_1 T_{r+1}}\right) + {}\\
+    {}+\mathbb{E}\! \left(
+    I(\{\nu(0)>1\}) \left[ \fr{\nu(0)-1}{2m} \right] \Big| \kappa_{1,0}=0,
+    \Gamma_0=\Gamma^{(r)} \!\right).\hspace*{-6pt}
+  %  \label{AZ:eq:x0r2m-2}
+\end{multline*}
+
+
+\noindent
+\textbf{Теорема~5.}\
+\textit{Пусть}
+
+\vspace*{-6pt}
+
+\noindent
+  \begin{multline*}
+    L_{0,2m}(z)=
+    \Bigl(1-{}\\
+    {}-\sum\limits_{b=0}^{\ell_1} \varphi_1(b; T_1)\Bigr)
+      \fr{(z-\beta_{1})(z-\beta_2)\cdots(z-\beta_{\ell_1-1})}%
+    {(1-\beta_{1})(1-\beta_2)\cdots (1-\beta_{\ell_1-1})}+{}\\
+{} +\sum\limits_{j=1}^{\ell_1-1}(\beta_{j})^{-1}
+    \left(
+    \vphantom{\sum\limits_{b=0}^{\ell_1}} 
+    \exp\{\lambda_{1} T_1(f_{1}(\beta_{j})-1)\}-{}\right.\\
+\left.    {}-\sum\limits_{b=0}^{\ell_1} 
+\varphi_1(b; T_1) (\beta_j)^b
+    \right)
+    \fr{z-1}{\beta_{j}-1}\prod\limits_{k\neq j}\fr{z-\beta_{k}}{\beta_{j}-
+\beta_{k}}\,.
+  \end{multline*}
+  
+  \vspace*{-4pt}
+  
+  \noindent
+  \textit{Имеют место равенства}
+  
+\vspace*{-6pt}
+
+\noindent
+  \begin{multline*}
+        \mathbb{E}  \left(  I(\{\nu(0) >1\})  \left[ \fr{\nu(0)-1}{2m} \right] 
+\Big| \right.\\
+\kappa_{1,0}=0,
+\left. \Gamma_0=\Gamma^{(2m)} 
+\vphantom{\left[ \fr{\nu(0)-1}{2m} \right]}
+ \right ) =
+        \left(\ell_1-\bar\lambda_1 T\right)^{-1} \times{}        \\ 
+        {} \times
+        \left(
+        \bar\lambda_1 T_1 - \sum\limits_{b=0}^{\ell_1} b \varphi_1(b; T_1)
+        -L_{0,2m}(1)-L_{0,2m}'(1)    \right);
+ % \label{AZ:eq:x0r2m-3}
+  \end{multline*}
+  
+  \vspace*{-12pt}
+  
+  \noindent
+  \begin{multline*}
+    \mathbb {E}\left(  T_{r\oplus1} +\cdots+T_{r\oplus \nu(0)}\mid \kappa_{1,0}=0,
+    \Gamma_0=\Gamma^{(2m)}\right)={}    \\ 
+    {} =
+    T_{1}+ T 
+    \mathbb {E} \left(
+    I(\{\nu(0)>1\}) \left[ \fr{\nu(0)-1}{2m} \right] \Big|\right.\\
+ \left.     \kappa_{1,0}=0,    \Gamma_0=\Gamma^{(2m)}
+ \vphantom{\left[ \fr{\nu(0)-1}{2m} \right]}
+  \right) .
+  %\label{AZ:eq:x0r2m-4}
+  \end{multline*}
+
+\vspace*{-24pt}
+
+
+
+\section{Заключение}
+
+\vspace*{-3pt}
+
+Для управляющих систем массового обслуживания с~несколькими конфликтными
+потоками интерпретация периода занятости как суммарного времени функционирования
+до опустошения очередей оказывается продуктивным способом переноса понятия на
+задачи с~дискретным временем. При этом использование мартингальной техники
+позволяет изучить длительность периода занятости очереди при циклическом
+обслуживании с~фиксированным ритмом переключения. По-ви\-ди\-мо\-му, 
+данный подход в~дальнейшем необходимо опробовать и~на более сложных входных потоках и~алгоритмах
+обслуживания.
+
+\vspace*{-8pt}
+
+{\small\frenchspacing
+ {\baselineskip=10.8pt
+ %\addcontentsline{toc}{section}{References}
+ 
+ \vspace*{-6pt}
+ 
+ \begin{thebibliography}{99}   
+  \bibitem{Ivchenko:Kashtanov:Kovalenko}% %1
+    \Au{Ивченко Г.\,И., Каштанов~В.\,А., Коваленко~И.\,Н.} Теория массового
+    обслуживания.~--- 2-е изд.~--- М.:
+    Либроком, 2012. 304~c.
+    
+  \bibitem{Bruneel:Kim}%2
+    \Au{Bruneel H., Kim~B.} Discrete-time models for communication systems
+    including ATM.~--- Norwell: Kluwer Academic Publs.,
+    1993.  Vol.~205. 210~p.
+    
+  \bibitem{Alfa}%3
+    \Au{Alfa A.\,S.} Applied discrete-time queues.~--- 2nd ed.~--- New York,
+    NY, USA: Springer-Verlag, 2016. 400~p.
+    
+    \bibitem{Pechinkin:Razumchik}%4
+    \Au{Печинкин~А.\,В., Разумчик~Р.\,В.} Системы массового обслуживания в~дискретном времени.~--- М.: Физматлит, 2018. 432~с.
+    
+  
+    
+  \bibitem{Gergely:Torok:1974} %5
+   \Au{Gergely T., T\,$\ddot{\mbox{\!o}}$r\,$\ddot{\mbox{\!o}}$k~T.\,L.} On the busy period of discrete-time
+    queues~// J.~Appl. Probab., 1974. Vol.~11. Iss.~4. P.~853--857. doi: 10.2307/3212571.
+    
+  \bibitem{Chaudhry:Zhan:1994} %6
+\Au{Chaudhry M.\,L., Zhao Y.\,Q.} First-passage-time and busy-period
+    distributions of discrete-time Markovian queues: $\mathrm{Geom}(n)/\mathrm{Geom}(n)/1/N$~//
+    Queueing Syst., 1994. Vol.~18. P.~5--26. doi: 10.1007/BF01158772.
+    
+  \bibitem{Foss:Sapozhnikov:2004} %7
+\Au{Foss S., Sapozhnikov~A.} On the existence of moments for the busy
+    period in a~single-server queue~// Math. Oper.
+    Res., 2004. Vol. 29. Iss.~3. P.~592--601. doi: 10.1287/moor.1030.0074.
+    
+  \bibitem{Brown:Balakrishnan:2021} %8
+\Au{Brown G.\,B.} Busy periods of discrete-time queues using the Lagrange
+    implicit function theorem~// Oper. Res.
+    Lett., 2021. Vol.~49. P.~650--654.  doi: 10.1016/j.orl.2021.06.014.
+    
+  \bibitem{Fedotkin:1975} %9
+\Au{Федоткин М.\,А.} Тео\-ре\-ти\-ко-мно\-жест\-вен\-ный подход при анализе
+    дискретных нелинейных систем массового обслуживания~// Автоматика 
+    и~вычислительная техника, 1975. №\,2.  С.~58--64.
+    
+  \bibitem{Fedotkin:1978} %10
+\Au{Федоткин М.\,А.} Неполное описание квазирегенерирующих входных потоков 
+неоднородных требований и~транспортные потоки~// 4-е Всесоюзное совещание по статистическим
+    методам тео\-рии управ\-ле\-ния.~--- М.: Наука, 1978. С.~234--236.
+    
+  \bibitem{Fedotkin:1981} %11
+\Au{Федоткин М.\,А.} Неполное описание потоков неоднородных требований~//
+     Теория  массового обслуживания.~--- М.: МГУ--ВНИИСИ, 1981. С.~113--118.
+     
+%\columnbreak
+    
+  \bibitem{Bacelli-1} %12
+\Au{Baccelli F., Makowski~A.\,M.}
+    {Direct martingale argument for stability: The $M/G/1$ case}~//
+    Syst. Control Lett., 1985. Vol.~6. P.~181--186. doi: 10.1016/0167-6911(85)90038-6.
+    
+  \bibitem{Bacelli-2} %13
+\Au{Baccelli F., Makowski~A.\,M.}
+  {Dynamic, transient and stationary behavior of the $M/\mathrm{GI}/1$ queue via 
+martingales}~//
+   Ann. Probab., 1989. Vol.~17. Iss.~4. P.~1691--1699.
+  
+\bibitem{Klimenok} %14
+\Au{Klimenok V.\,L.} On the modification of Rouche's theorem for the queueing
+  theory problems~// Queueing Syst., 2001. Vol.~38. P.~431--434. doi: 10.1023/A:1010999928701.
+  
+  \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-9pt}
+
+\hfill{\small\textit{Поступила в~редакцию 04.03.24}}
+
+%\vspace*{8pt}
+
+%\pagebreak
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+\vspace*{-2pt}
+
+
+\def\tit{TOWARDS A DEFINITION OF~A~BUSY PERIOD\\ UNDER~NONLOCAL DESCRIPTION OF~INPUT FLOWS}
+
+
+\def\titkol{Towards a definition of~a~busy period under~nonlocal description of~input flows}
+
+
+\def\aut{A.\,V.~Zorine}
+
+\def\autkol{A.\,V.~Zorine}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-15pt}
+
+
+\noindent
+National Research Lobachevsky State University of Nizhny Novgorod, 23~Prosp.\ Gagarina, Nizhni Novgorod 603022, Russian Federation
+
+
+
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{2pt}
+
+
+
+
+
+\Abste{In course of a probabilistic modeling and analysis of complex controlled
+queueing systems with several conflicting input flows, in a~series of papers, an approach
+was successfully applied, one of its features being a~nonlocal description of various system
+building blocks. In this description, some information about true arrival and leave
+times of customers is lost. It leads to difficulties in defining a~busy period but that is one of
+classic performance metrics for an operating queueing system. In this paper, a~ controlled
+queuing system busy period definition is based on selecting those observation instants
+when queues reach zero level. A~cyclic service algorithm with fixed switching times as an
+example using a~martingale technique and effective computational formulas are obtained for
+the mathematical expectation of busy periods related to individual queues.}
+
+
+\KWE{controlled queueing system; nonlocal description of blocks; nonordinary
+Poisson flows; cyclic service algorithm; busy period; multivariate denumerable Markov
+chain; martingale; generalized Rouch\'{e}'s theorem; Lagrange interpolation polynomial}
+
+  \DOI{10.14357/19922264240306}{YKSIBJ}
+
+%\vspace*{-12pt}
+
+
+    
+     % \Ack
+
+%\vspace*{-3pt}
+
+%\noindent
+
+
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+
+%1
+\bibitem{Ivchenko:Kashtanov:Kovalenko-1}
+\Aue{Ivchenko, G.\,I., V.\,A.~Kashtanov, and I.\,N.~Kovalenko.} 2012.
+\textit{Teoriya massovogo obsluzhivaniya} [Queueing theory]. 2nd ed.
+Moscow: Librokom. 304~p.
+
+%2
+\bibitem{Bruneel:Kim-1}
+\Aue{Bruneel, H., and B.~Kim}. 1993.
+\textit{Discrete-time models for communication systems including ATM}. 
+Norwell: Kluwer Academic Publs. Vol.~205. 210~p.
+ 
+
+%3
+\bibitem{Alfa-1}
+\Aue{Alfa, A.\,S.} 2016. 
+\textit{Applied discrete-time queues}. 2nd ed. 
+New York, NY: Springer-Verlag. 400~p.
+
+%4
+\bibitem{Pechinkin:Razumchik-1}
+\Aue{Pechinkin, A.\,V., and R.\,V.~Razumchik.} 2018. 
+\textit{Sistemy massovogo obsluzhivaniya v~diskretnom vremeni} [Discrete time queuing systems]. 
+Moscow: Fizmatlit. 432~p.
+
+
+%5
+\bibitem{Gergely:Torok:1974-1} 
+\Aue{Gergely, T., and T.\,L.~T$\ddot{\mbox{o}}$r$\ddot{\mbox{o}}$k.} 1974.
+On the busy period of discrete-time queues. 
+\textit{J.~Appl. Probab.} 11(4):853--857.
+doi: 10.2307/3212571.
+
+%6
+\bibitem{Chaudhry:Zhan:1994-1} 
+\Aue{Chaudhry, M.\,L., and Y.\,Q.~Zhao.} 1994.
+First-passage-time and busy-period distributions of discrete-time Markovian queues: $\mathrm{Geom}(n)/\mathrm{Geom}(n)/1/N$. 
+\textit{Queueing Syst.} 18:5--26. 
+doi: 10.1007/BF01158772.
+
+%7
+\bibitem{Foss:Sapozhnikov:2004-1} 
+\Aue{Foss, S., and A.~Sapozhnikov.} 2004. 
+On the existence of moments for the busy period in a~single-server queue. 
+\textit{Math. Oper. Res.} 29(3):592--601. doi: 10.1287/moor. 1030.0074.
+
+%8
+\bibitem{Brown:Balakrishnan:2021-1} 
+\Aue{Brown, G.\,B.} 2021. 
+Busy periods of discrete-time queues using the Lagrange implicit function theorem. 
+\textit{Oper. Res. Lett.} 49(5):650--654. doi: 10.1016/j.orl.2021.06.014.
+
+%9
+\bibitem{Fedotkin:1975-1} 
+\Aue{Fedotkin, M.\,A.} 1975.
+Set-theoretic approach in analyzing discrete nonlinear queuing systems.
+\textit{Autom. Control  Comp.~S.} 9(2):50--54.
+    
+%10
+\bibitem{Fedotkin:1978-1} 
+\Aue{Fedotkin, M.\,A.} 1978.
+Nepolnoe opisanie kva\-zi\-re\-ge\-ne\-ri\-ru\-yushchikh vkhodnykh potokov neodnorodnykh trebovaniy i~transportnye potoki 
+[Incomplete description of quasi-regenerating input flows of nonhomogeneous customers and transport flows].
+\textit{4-e Vsesoyuznoe soveshchanie po statisticheskim metodam teorii upravleniya} 
+[4th All-Union Meeting on Statistical Methods of Control Theory]. Moscow: Nauka. 234--236.
+
+
+%11
+\bibitem{Fedotkin:1981-1} 
+\Aue{Fedotkin, M.\,A.} 1981. 
+Nepolnoe opisanie potokov neodnorodnykh trebovaniy [Incomplete description of flows of inhomogeneous customers].
+\textit{Teoriya  massovogo obsluzhivaniya} [Queueing theory].
+Moscow: MGU--VNIISI. 113--118.
+
+%12
+\bibitem{Bacelli-1-1}
+\Aue{Baccelli, F., and A.\,M.~Makowski.} 1985.
+Direct martingale argument for stability: The $M/G/1$ case. 
+\textit{Syst. Control Lett.} 6(3):181--186.
+doi: 10.1016/0167-6911(85)90038-6.
+
+%13
+\bibitem{Bacelli-2-1}
+\Aue{Baccelli, F., and A.\,M.~Makowski.} 1989.
+Dynamic, transient and stationary behavior of the $M/\mathrm{GI}/1$ queue via martingales.
+\textit{Ann. Probab.} 17(4):1691--1699.
+
+%14
+\bibitem{Klimenok-1}
+\Aue{Klimenok, V.\,L.} 2001. 
+On the modification of Rouche's theorem for the queueing theory problems. 
+\textit{Queueing Syst.} 38:431--434.
+doi: 10.1023/A:1010999928701.
+
+
+
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received March 4, 2024}} 
+
+\vspace*{-18pt}
+
+\Contrl
+
+\vspace*{-3pt}
+
+\noindent 
+\textbf{Zorine Andrei V.} (b.\ 1978)~--- Doctor of Science in physics and mathematics, associate professor, 
+head of department,
+National Research Lobachevsky State University of Nizhny Novgorod, 
+23~Prosp.\ Gagarina, Nizhni Novgorod 603022, Russian Federation; \mbox{andrei.zorine@itmm.unn.ru}
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

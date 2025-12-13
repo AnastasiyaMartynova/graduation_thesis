@@ -1,0 +1,593 @@
+\def\stat{aliu}
+
+\def\tit{ГИСТЕРЕЗИСНОЕ УПРАВЛЕНИЕ НАГРУЗКОЙ В~БЕСПРОВОДНЫХ СЕНСОРНЫХ 
+СЕТЯХ$^*$}
+
+\def\titkol{Гистерезисное управление нагрузкой в~беспроводных сенсорных 
+сетях}
+
+\def\aut{Б.~Алию$^1$, Е.\,А.~Мачнев$^2$, Е.\,В.~Мокров$^3$}
+
+\def\autkol{Б.~Алию, Е.\,А.~Мачнев, Е.\,В.~Мокров}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Алию Б.}
+\index{Мачнев Е.\,А.}
+\index{Мокров Е.\,В.}
+\index{Aliyu B.}
+\index{Machnev E.\,A.}
+\index{Mokrov E.\,V.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Исследование выполнено за счет 
+гранта Российского научного фонда №\,21-79-00157, 
+{\sf https://rscf.ru/project/21-79-00157} (получатель Е.\,В.~Мокров, системная и~математическая модели), 
+и~при поддержке Программы стратегического академического лидерства РУДН (получатель 
+Е.\,А.~Мач\-нев, введение).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов, bashaliyuu@gmail.com}
+\footnotetext[2]{Российский университет дружбы народов, 1032143100@rudn.ru}
+\footnotetext[3]{Российский университет дружбы народов, mokrov-ev@rudn.ru}
+
+
+\vspace*{-12pt}
+  
+  \Abst{Решается задача анализа перегрузок в беспроводной сенсорной сети. Предложен 
+механизм гистерезисного управления, отсеивающий часть нагрузки в~случае перегрузки 
+системы для стабилизации ее функционирования. Построена математическая модель 
+в~виде марковского процесса с~конечным пространством со\-сто\-яний, и~получена формула для 
+анализа показателей эффективности беспроводной сенсорной сети. Численно исследованы  
+ве\-ро\-ят\-ност\-но-вре\-мен\-ные характеристики гистерезисного управ\-ле\-ния~--- 
+вероятность сброса пакета и~средняя длина очереди. Сравнение гистерезисного механизма 
+и~алгоритма IRED (improved random early detection~--- улучшенное 
+случайное раннее обнаружение)
+при варьировании размера окна управ\-ле\-ния показало, что 
+гистерезисный механизм дает преимущество в~об\-ласти больших нагрузок по сравнению с~механизмом IRED.}
+  
+  \KW{беспроводные сенсорные сети; управление нагрузкой; гистерезисное управление; 
+марковский процесс; система массового обслуживания}
+
+\DOI{10.14357/19922264220311}
+  
+\vspace*{-3pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+  
+\section{Введение}
+
+  Автономный характер беспроводных сенсорных сетей  в сочетании с их способностью 
+воспринимать, обрабатывать и передавать данные об окружающей среде на базовую 
+станцию сотовой сети~[1] способствует их широкому распространению. Согласно 
+данным IoT (Internet of Things) Analytics~[2], более 14,4~млрд сенсоров взаимодействуют 
+с~использованием беспроводных сенсорных сетей. Такое число устройств IoT может 
+привести к перегрузкам в сети (см., например,~[3]), особенно с ростом числа устройств, 
+использующих технологию беспроводных сенсорных сетей.
+  
+  Согласно Cisco Systems~[4] к 2023~г.\ прогнозируется порядка 14,7~млрд 
+активных IoT-со\-еди\-не\-ний, включая датчики, носимые устройства, смартфоны, 
+беспилотные автомобили и~беспилотные летательные аппараты (БПЛА). В~отсутствие 
+управ\-ле\-ния трафиком в~беспроводных сенсорных сетях возможны частые 
+и~продолжительные перегрузки. Эта особенность исследуется в~\mbox{статье} с~по\-мощью 
+сравнительного анализа про\-из\-во\-ди\-тель\-ности сети на основе гистерезисной схемы 
+управления нагрузкой~\cite{6-al, 7-al} и~улучшенной схемы управ\-ле\-ния перегрузкой со 
+случайным ранним обнаружением (IRED)~\cite{5-al}. Именно перегрузки в~беспроводной 
+сенсорной сети и~стали предметом исследования настоящей работы.
+  
+  В статье предложена системная модель для наиболее типичной архитектуры 
+беспроводной сенсорной сети, в~марковских предположениях по\-стро\-ена математическая 
+модель, проведен ее анализ и~предложены формулы для вычисления ее характеристик. 
+Численный анализ направлен на сравнение алгоритма гистерезисного управ\-ле\-ния 
+нагрузкой с~алгоритмом управ\-ле\-ния IRED~\cite{5-al}. Показано, что в~об\-ласти высокой 
+нагрузки гистерезисное управ\-ле\-ние дает преимущество по вероятности сброса, т.\,е.\ 
+потере пакета при поступлении, и~средней длине очереди пакетов на шлюзе.
+
+\vspace*{-6pt}
+  
+\section{Системная модель}
+
+\vspace*{-3pt}
+
+  Рассматривается сценарий, в котором датчики, расположенные в пределах некоторой 
+заданной области, передают информацию на центральный узел, отвечающий за ее 
+хранение и обработку. Для сбора данных с датчиков используются шлюзы, размещенные 
+на БПЛА, патрулирующих территорию аналогично одному из случаев, описанных 
+в~\cite{7-al}, и~более подробно рассмотренному в~\cite{8-al}.
+  
+
+
+
+  Системная модель представляет собой беспроводную сенсорную сеть, в которой 
+кластер беспроводных датчиков загружает полученные данные об окружающей среде 
+через шлюз в базу данных (БД), размещенную в облаке. Архитектура сети, как по-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\end{multicols}
+
+\begin{figure*} %fig1
+\vspace*{1pt}
+  \begin{center}  
+    \mbox{%
+\epsfxsize=163mm
+\epsfbox{ali-1.eps}
+}
+
+\end{center}
+\vspace*{-6pt}
+\Caption{Схема системной модели беспроводной сенсорной сети}
+\end{figure*}
+
+\begin{multicols}{2}
+
+\noindent
+ казано 
+на рис.~1, включает три уровня: уровень физического восприятия, где датчики собирают 
+данные об окружающей среде, например температуру, влажность, освещенность; 
+виртуальный облачный уровень, где размещены БД, в которые передается на хранение 
+собранная датчиками информация; уровень пользователей, на котором расположены\linebreak  
+веб-ин\-тер\-фей\-сы для взаимодействия с~БД. Передача данных между первым и~вторым 
+уровнями происходит через шлюз, на котором размещена сис\-те\-ма управ\-ле\-ния нагрузкой, 
+осу\-ще\-ст\-в\-ля\-ющая \mbox{мониторинг} и~снижение нагрузки для пред\-от\-вра\-ще\-ния перегрузок. 
+  
+  В статье рассматривается гистерезисная схема управления нагрузкой с двумя 
+порогами~\cite{6-al} для пред\-от\-вра\-ще\-ния перегрузок шлюза, результатом которых может 
+стать переполнение памяти \mbox{шлюза}.
+
+\vspace*{-9pt}
+  
+\section{Математическая модель}
+
+\vspace*{-3pt}
+
+\begin{figure*} %fig2
+\vspace*{1pt}
+  \begin{center}  
+    \mbox{%
+\epsfxsize=159.108mm
+\epsfbox{ali-2.eps}
+}
+
+\end{center}
+\vspace*{-6pt}
+\Caption{Диаграмма интенсивностей переходов МП $X(t)$ для системы с гистерезисным 
+управлением}
+\end{figure*}
+
+  Описанная сеть моделируется системой массового обслуживания типа $M/M/1/B$ 
+с~гистерезисным управ\-ле\-ни\-ем нагрузкой~\cite{9-al}. На систему\linebreak с~одним прибором, 
+накопителем емкости~$B$ и экспоненциальным обслуживанием с~па\-ра\-мет\-ром~$\mu$ 
+поступает пуассоновский поток заявок, соответствующих пакетам данных от сенсоров, 
+с~ин\-тен\-сив\-ностью~$\lambda$. Считаем, что заявки сохраняют за собой место в~накопителе 
+до момента окончания обслуживания. 
+
+Для контроля перегрузок в~сис\-те\-ме используются 
+два порога: нижний порог~$L$ и~верхний порог~$H$. Система работает в трех режимах: 
+режиме нормальной работы ($s\hm=0$), режиме сниженной нагрузки ($s\hm=1$) 
+и~режиме блокировки ($s\hm=2$). Когда чис\-ло заявок в~сис\-те\-ме превышает верхний 
+порог~$H$, сис\-те\-ма переходит в~режим сниженной нагрузки ($s\hm=1$). Принятая 
+в~сис\-те\-му нагрузка в этом режиме снижается до уровня $\lambda^*\hm= (1\hm- p)\lambda$, 
+при этом часть нагрузки $p\lambda$ сбрасывается, таким образом $p$~--- это доля 
+сбрасываемой нагрузки при нахождении сис\-те\-мы в~режиме сниженной нагрузки. Сис\-те\-ма 
+продолжает находиться в~режиме сниженной нагрузки либо до заполнения сис\-те\-мы, либо 
+до достижения чис\-лом заявок в~очереди нижнего порога~$L$. В~первом случае сис\-те\-ма 
+перейдет в~режим блокировки ($s\hm=2$) и~перестанет принимать новые, но продолжит 
+обслуживать уже на\-хо\-дя\-щи\-еся в~сис\-те\-ме заявки. В~таком состоянии сис\-те\-ма будет 
+пребывать до тех пор, пока чис\-ло заявок не упадет до верх\-не\-го порога, после чего 
+возвратится в~режим сниженной нагрузки ($s\hm=1$). Во втором случае нагрузка на 
+систему восстановится до исходной, и~сис\-те\-ма перейдет в~режим нормальной работы 
+($s\hm=0$).
+{\looseness=1
+
+}
+  
+  Функционирование системы описывается марковским процессом (МП) $X(t)$ над 
+пространством\linebreak состояний $\mathcal{X}\hm= \{ (n,s): s\hm\in \{0,1,2\},\ n\hm\in \{0,\ldots\linebreak
+\ldots , B\}\}$, которое представимо в виде раз\-биения 
+$$
+\mathcal{X}= \mathcal{X}_0\cup 
+\mathcal{X}_1 \cup \mathcal{X}_2\,,
+$$
+ где $\mathcal{X}_0\hm= \{\{ 0,n): n\hm=0,\ldots , 
+H\hm-1\}$~--- множество состояний нормальной работы; $\mathcal{X}_1\hm= \{ (1,n): 
+n\hm= L,\ldots , B\hm-1\}$~--- множество состояний сниженной нагрузки; 
+$\mathcal{X}_2\hm= \{ (2,n): n\hm= H\hm+1,\ldots , B\}$~--- множество состояний 
+блокировки. На рис.~2 проиллюстрирована диаграмма интенсивностей переходов 
+состояний МП $X(t)$.
+  
+  Решив для МП $X(t)$ систему уравнений равновесия, получим стационарное 
+распределение $p_{sn}$, $(s,n)\hm\in \mathcal{X}$, с~помощью которого в явном виде 
+могут быть представлены следующие ве\-ро\-ят\-но\-ст\-но-вре\-мен\-н$\acute{\mbox{ы}}$е характеристики: 
+$B(\mathcal{X}_0)\hm= \sum\nolimits_{n=0}^{H-1} p_{0,n}$~---  вероятность того, что 
+система работает в режиме нормальной нагрузки; $B(\mathcal{X}_1)\hm= 
+\sum\nolimits_{n=L}^{B-1} p_{1,n}$~--- вероятность того, что сис\-те\-ма работает в режиме 
+сниженной нагрузки и часть заявок будет сброшена; $B(\mathcal{X}_2)\hm= 
+\sum\nolimits_{n=N+1}^B p_{2,n}$~--- вероятность того, что сис\-те\-ма перегружена и не 
+принимает новые заявки; $B\hm= (1\hm-p) B(\mathcal{X}_1) \hm+ B(\mathcal{X}_2)$~--- 
+вероятность сброса заявки; $MQ\hm= \sum\nolimits_{(s,n)\in \mathcal{X}} np_{s,n}$~--- 
+средняя длина очереди.
+
+
+
+  Аналогичные характеристики для алгоритма IRED вычисляются согласно~\cite{5-al}, 
+что позволяет провести сравнение двух механизмов защиты от перегрузок.
+
+\vspace*{-6pt}
+  
+\section{Численный анализ}
+
+\vspace*{-3pt}
+
+  Было проведено численное сравнение вероятностей сброса пакета для обоих 
+рассматриваемых алгоритмов в зависимости от параметров $B$, $L$, $H$, $p$ и~$\rho\hm=\lambda/\mu$ при 
+значениях исходных данных из~\cite{5-al}. В~результате анализа было показано, что 
+алгоритм гистерезисного управ\-ле\-ния более эффективен по сравнению с~алгоритмом IRED 
+при больших значениях нагрузки. Заметим, что при этом с~точ\-ки зрения средней длины 
+очереди алгоритм гистерезисного управ\-ле\-ния уступает алгоритму IRED. Данные 
+результаты пред\-став\-ле\-ны на рис.~3 при фиксированном значении объема накопителя 
+$B\hm=50$ и~нижнего порога $L\hm=10$ и~варьировании остальных па\-ра\-мет\-ров 
+в~пределах $0{,}1\hm\leq p\hm < 1$ и~$12\hm\leq H\hm\leq 40$. График показывает 
+минимальное пороговое значение нагрузки~$\rho_0$, после которого гистерезисный подход 
+позволяет успешно передать больше пакетов, чем алгоритм IRED, т.\,е.\ $\rho_0:\ 
+\forall\,\rho \hm> \rho_0$ $B_{\mathrm{hyst}}(\rho)\hm< B_{\mathrm{IRED}}(\rho)$. Из рис.~3 можно заключить, 
+что пороговое значение нагрузки~$\rho_0$ почти линейно зависит от доли~$p$ 
+сбрасываемой нагрузки в~со\-сто\-янии сниженной на\-груз\-ки и~слабо зависит от изменения 
+верхнего порога при фиксированном нижнем. Аналогичная картина наблюдается и~при 
+других значениях нижнего порога.
+  
+   На рис.~4 отдельно представлены результаты сравнения производительности сис\-те\-мы 
+с гистерезисным управ\-ле\-ни\-ем и~управ\-ле\-ни\-ем с~по\-мощью алгоритма IRED для объема 
+накопителя $B\hm=40$,\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\end{multicols}
+
+\begin{figure*} %fig3
+\vspace*{1pt}
+  \begin{center}  
+    \mbox{%
+\epsfxsize=89.36mm
+\epsfbox{ali-3.eps}
+}
+
+\end{center}
+\vspace*{-6pt}
+\Caption{Пороговое значение нагрузки}
+\vspace*{9pt}
+\end{figure*}
+
+\begin{figure*} %fig4
+\vspace*{1pt}
+  \begin{center}  
+    \mbox{%
+\epsfxsize=160.278mm
+\epsfbox{ali-4.eps}
+}
+
+\end{center}
+\vspace*{-6pt}
+\Caption{Средняя длина очереди~(\textit{а}) и вероятность сброса пакета~(\textit{б}):  
+\textit{1}~--- гистерезисное управление; \textit{2}~--- управление с~по\-мощью алгоритма IRED}
+\end{figure*}
+
+
+\begin{multicols}{2}
+
+\noindent
+ доли сбрасываемых пакетов $p\hm= 0{,}3$, нижнего и~верхнего 
+порогов $L\hm= 10$ и~$H\hm= 30$ со\-от\-вет\-ст\-венно. 
+
+Средняя длина очереди 
+в~за\-ви\-си\-мости от предложенной нагрузки, варьирующейся в~пределах  $0\hm<\rho \hm< 2$, 
+показана на рис.~4,\,\textit{а}. 
+%
+На рис.~4,\,\textit{б} в~логарифмической шкале показана 
+вероятность сброса пакетов в~за\-ви\-си\-мости от предложенной на\-грузки. 
+{\looseness=1
+
+}
+
+Из приведенных 
+результатов видно, что пороговое значение нагрузки также существенно зависит от 
+объема накопителя, поскольку в~данном случае алгоритм IRED показывает более 
+хорошие результаты при низкой нагрузке, а~также при небольшой перегрузке $\rho\hm\leq 
+1{,}2$. Однако уже начиная со значения нагрузки $\rho \hm> 1{,}2$ лучшие 
+характеристики показывает гистерезисное управ\-ле\-ние. Таким образом, в~проведенном 
+эксперименте пороговое значение нагрузки уменьшилось по сравнению с~предыду\-щим 
+экспериментом до значения $\rho_0\hm= 1{,}2$ при тех же значениях порогов и~доли 
+сбрасываемой нагрузки. Это показывает, что значение порога обратно пропорционально 
+размеру накопителя.
+   
+
+   На рис.~5 показано сравнение систем в зависимости от размера окна управления ($H-L$) 
+   при фиксированном верхнем пороге $H\hm= 35$, накопителе объема $B\hm=40$, доле 
+сбрасываемых пакетов $p\hm= 0{,}3$ и изменении нижнего порога~$L$ от~5 до~35. 
+
+Из 
+графиков видно, что, хотя пороговое значение нагрузки достаточно слабо зависит от 
+значения нижнего порога, значение порога достаточно сильно влияет на среднюю длину 
+очереди. 
+   
+\begin{figure*} %fig5
+\vspace*{1pt}
+  \begin{center}  
+    \mbox{%
+\epsfxsize=160.311mm
+\epsfbox{ali-5.eps}
+}
+
+\end{center}
+\vspace*{-6pt}
+\Caption{Средняя длина очереди~(\textit{а}) и вероятность сброса пакета~(\textit{б}) в 
+зависимости от размера окна управления: \textit{1}~--- гистерезисное управление; \textit{2}~---
+управление с~по\-мощью алгоритма  IRED}
+\end{figure*}
+
+
+\section{Заключение}
+
+  Численный эксперимент показал, что наиболее значимыми параметрами, влияющими 
+на пороговое значение нагрузки, при превышении которого гистерезисный подход дает 
+лучшие результаты по сравнению с алгоритмом IRED, с точки зрения вероятности сброса 
+являются объем накопителя и~доля сбрасываемой нагрузки. Также было показано, что эти 
+два па\-ра\-мет\-ра наиболее значимы и~для фиксированного порогового значения нагрузки.
+  
+  Помимо этого, для типичного набора исходных данных исследована зависимость 
+показателей качества функционирования системы от размера окна управления. Показано, 
+что для рассмотренного набора данных при размере окна $H\hm- L\hm \leq 3$ 
+гистерезисное управление дает более хорошие результаты, чем IRED, во всех случаях, 
+когда $\rho\hm> 1$, т.\,е.\ при перегрузках системы. При $\rho\hm= 0{,}8$ в IRED длина 
+очереди меньше, но разница полученных значений для обоих алгоритмов мала, а 
+поведение гистерезисной сис\-те\-мы объясняется ее недогруженностью. Таким образом, 
+размер окна управ\-ле\-ния, хоть и~в~меньшей степени, но также влияет на пороговое 
+значение нагрузки.
+  
+  В работе для модели беспроводной облачной сенсорной сети с механизмом 
+гистерезисного управ\-ле\-ния нагрузкой исследованы основные показатели сис\-те\-мы~--- 
+вероятность сброса пакета и~средняя длина очереди. Проведено численное сравнение 
+гистерезисного подхода с~алгоритмом IRED и~показано, что при перегрузках 
+гистерезисный подход показывает качественно лучшую картину, чем IRED, с~точки 
+зрения вероятности сброса пакета. Также введено понятие порогового значения нагрузки, 
+при превышении которого гистерезисный подход более эффективен, чем алгоритм IRED, 
+и~показана за\-ви\-си\-мость порогового значения нагрузки от па\-ра\-мет\-ров сис\-те\-мы. Для 
+нагрузки ниже порога гистерезисный подход незначительно проигрывает алгоритму типа 
+IRED в некоторых диапазонах значений параметров системы. При этом алгоритм IRED 
+реализуется на сетевом уровне, а~гистерезисное управ\-ле\-ние нагрузкой~--- на при\-клад\-ном 
+уровне, где эти различия оказываются несущественными.
+
+\vspace*{-7pt}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9}
+ 
+ \vspace*{-2pt}
+ 
+\bibitem{1-al}
+\Au{Yadav S.\,L., Ujjwal R.\,L.} Mitigating congestion in wireless sensor networks through clustering 
+and queue assistance: A~survey~// J.~Intell. Manuf., 2021. Vol.~32. P.~2083--2098. 
+doi: 10.1007/s10845-020-01640-8.
+\bibitem{2-al}
+\Au{Hasan M.} State of IoT 2022: Number of connected IoT devices growing 18\% to 14.4~billion 
+globally. Pr., 2022. {\sf https://iot-analytics.com/number-connected-iot-devices}.
+\bibitem{3-al}
+\Au{Shiny S.\,S.\,G., Murugan~K.} TSDN-WISE: Automatic threshold-based low control-flow 
+communication protocol for SDWSN~// IEEE Sens.~J., 2021. Vol.~21. No.\,17.  
+P.~19560--19569. doi: 10.1109/JSEN.2021.3088604.
+\bibitem{4-al}
+Cisco Annual Internet Report (2018--2023) white paper, 2020. {\sf 
+https://www.cisco.com/c/en/us/solutions/\linebreak collateral/executive-perspectives/annual-internet-report/ white-paper-c11-741490.html}.
+
+
+\bibitem{6-al} %5
+\Au{Bashir A., Machnev~E., Mokrov~E.} Queueing model of hysteretic congestion control for cloud 
+wireless sensor networks~// 13th Congress (International) on Ultra Modern Telecommunications 
+and Control Systems and Workshops.~--- Piscataway, NJ, USA: IEEE, 2021. P.~104--108. doi: 
+10.1109/ICUMT54235.2021.9631576.
+\bibitem{7-al} %6
+\Au{Uyoata U., Mwangama~J., Adeogun~R.} Relaying in the Internet of Things (IoT): A~survey~// 
+IEEE Access, 2021. Vol.~9. P.~132675--132704. doi: 10.1109/ACCESS.\linebreak 2021.3112940.
+
+\bibitem{5-al} %7
+\Au{Huang J., Du~D., Duan~Q., Zhang~Y., Zhao~Y., Luo~H., Mai~Z., Liu~Q.} Modeling and analysis 
+on congestion con-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+trol for data transmission in sensor clouds~// Int. J. Distrib. Sens.~N., 
+2014. Vol.~2014. Art. ID 453983. P.~1--9. doi: 10.1155/2014/453983.
+ 
+\bibitem{8-al}
+\Au{Petrov V., Samuylov~A., Begishev~V., Moltchanov~D., And\-re\-ev~S., Samouylov~K., 
+Koucheryavy~Y.} Vehicle-based relay assistance for opportunistic crowdsensing over 
+Narrowband IoT (NB-IoT)~// IEEE Internet Things, 2018. Vol.~5. No.\,5. P.~3710--3723. 
+doi: 10.1109/JIOT.2017.2670363.
+\bibitem{9-al}
+\Au{Красносельский М.\,А., Покровский~А.\,В.} Системы с гистерезисом.~--- М. Наука, 1983. 
+272~с.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 01.07.22}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{HYSTERETIC CONGESTION CONTROL IN~WIRELESS~CLOUD~SENSOR NETWORKS}
+
+
+\def\titkol{Hysteretic congestion control in~wireless cloud sensor networks}
+
+
+\def\aut{B.~Aliyu, E.\,A.~Machnev, and E.\,V.~Mokrov}
+
+\def\autkol{B.~Aliyu, E.\,A.~Machnev, and E.\,V.~Mokrov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+
+\noindent
+Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 
+117198, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2022\ \ \ volume~16\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2022\ \ \ volume~16\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt} 
+
+
+
+
+\Abste{The paper considers the problem of congestion analysis in a wireless sensor network. 
+A~hysteresis control mechanism is proposed which screens out part of the load in the event of an 
+overload of the system in order to stabilize its operation. A~mathematical model is constructed in the 
+form of a~Markov process  with a~finite state space and a~formula is obtained for analyzing the 
+performance indicators of a~wireless sensor network. The probabilistic-temporal characteristics of 
+hysteresis control, the packet drop probability, and the average queue length are studied numerically. The 
+hysteresis mechanism is compared with the IRED (improved random early detection) algorithm with different control window sizes. It is 
+shown that the hysteresis mechanism provides an advantage in the region of high loads compared to the 
+IRED mechanism.}
+
+\KWE{wireless sensor networks; load control; hysteresis control; Markov process; queuing system}
+
+
+
+
+\DOI{10.14357/19922264220311}
+
+\vspace*{-16pt}
+
+\Ack
+\noindent
+The reported study was funded by the Russian Science Foundation, project number 21-79-00157 (E.\,V.~Mokrov, system model 
+and mathematical model) and by the RUDN University Strategic Academic Leadership Program 
+(E.\,A.~Machnev, introduction). 
+
+
+
+%\vspace*{4pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9}
+\bibitem{1-al-1}
+\Aue{Yadav, S.\,L., and R.\,L.~Ujjwal.} 2021. Mitigating congestion in wireless sensor networks 
+through clustering and queue assistance: A~survey. \textit{J.~Intell. Manuf.}  
+32:2083--2098. doi: 10.1007/s10845-020-01640-8.
+\bibitem{2-al-1}
+\Aue{Hasan, M.} 2022.
+State of IoT 2022: Number of connected IoT devices growing 18\% to 14.4~billion globally. Available 
+at: {\sf https://iot-analytics.com/number-connected-iot-devices/} (accessed July~18, 2022).
+\bibitem{3-al-1}
+\Aue{Shiny, S.\,S.\,G., and K.~Murugan.} 2021.TSDN-WISE: Automatic threshold-based low  
+control-flow communication protocol for SDWSN. \textit{IEEE Sens.~J.} 21(17):19560--19569. doi: 
+10.1109/JSEN.2021.3088604.
+\bibitem{4-al-1}
+Cisco Annual Internet Report (2018--2023) white paper. 2020. Available at: {\sf 
+https://www.cisco.com/c/en/us/\linebreak solutions/collateral/executive-perspectives/annual-internet-report/white-paper-c11-741490.html} 
+(accessed July~18, 2022).
+
+\bibitem{6-al-1} %5
+\Aue{Bashir, A., E.~Machnev, and E.~Mokrov.} 2021. Queueing model of hysteretic congestion control 
+for cloud wireless sensor networks. \textit{13th Congress (Internatioanl) on Ultra Modern 
+Telecommunications and Control Systems Proceedings}. Piscataway, NJ: IEEE. 104--108. doi: 
+10.1109/ICUMT54235.2021.9631576.
+\bibitem{7-al-1} %6
+\Aue{Uyoata, U., J.~Mwangama, and R.~Adeogun}. 2021. Relaying in the Internet of Things (IoT): 
+A~survey. \textit{IEEE Access} 9:132675--132704. doi: 10.1109/ACCESS.2021.3112940.
+
+\bibitem{5-al-1} %7
+\Aue{Huang, J., D.~Du, Q.~Duan, Y.~Zhang, Y.~Zhao, H.~Luo, Z.~Mai, and Q.~Liu.} 2014. Modeling 
+and analysis on congestion control for data transmission in sensor clouds. \textit{Int. J.~Distrib. 
+Sens.~N.} 10(3):453983. doi: 10.1155/2014/ 453983.
+
+\bibitem{8-al-1}
+\Aue{Petrov, V., A.~Samuylov, V.~Begishev, D.~Moltchanov, S.~And\-re\-ev, K.~Samouylov, and 
+Y.~Koucheryavy.} 2017. Vehicle-based relay assistance for opportunistic crowd sensing over 
+Narrowband IoT (NB-IoT). \textit{IEEE Internet Things} 5(5):3710--3723. doi: 10.1109/JIOT.2017.2670363.
+\bibitem{9-al-1}
+\Aue{Krasnoselskii, M., and A.~Pokrovskii.} 1989. \textit{Systems with hysteresis}.  
+Berlin\,--Heidelberg\,--New York\,--\,London\,--\,Paris\,--\,Tokio: Springer Verlag. 410~p.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received July 1, 2022}}
+
+\Contr
+
+\noindent
+\textbf{Aliyu Bashir} (b.\ 1975)~--- PhD student, Department of Applied Probability and Informatics, 
+Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 
+117198, Russian Federation; \mbox{bashaliyuu@gmail.com}
+
+\vspace*{4pt}
+
+\noindent
+\textbf{Machnev Egor A.} (b.\ 1996)~--- PhD student, Department of Applied Probability and 
+Informatics, Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian Federation; \mbox{1032143100@rudn.ru}
+
+\vspace*{4pt}
+
+\noindent
+\textbf{Mokrov Evgeniy V.} (b.\ 1988)~--- Candidate of Science (PhD) in physics and mathematics, 
+assistant professor, Department of Applied Probability and Informatics, Peoples' Friendship University 
+of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{mokrov-ev@rudn.ru}
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}    

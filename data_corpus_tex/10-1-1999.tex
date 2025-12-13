@@ -1,0 +1,641 @@
+\documentstyle[%
+righttag%
+,11pt%
+,amssymb%
+,russian%               remove in Eng.
+,izvru%                 Set izven% in Eng.
+]{amsart}
+
+% 
+
+\newcommand{\Div}{\operatorname{div}}
+\newcommand{\Dual}[1]{\langle #1 \rangle_h}
+\newcommand{\Scal}[1]{\left( #1 \right)}
+\newcommand{\ZeroUp}[1]{\overset{\circ}{#1}}
+\newcommand{\tts}[1]{}
+
+\theoremstyle{plain}
+\theorembodyfont{\it}
+\newtheorem{thmnonum}{\hskip\parindent Теорема}
+\renewcommand{\thethmnonum}{}
+
+\theoremstyle{definition}
+\theorembodyfont{\rm}
+\newtheorem{defnnonum}{\hskip\parindent Определение}
+\renewcommand{\thedefnnonum}{}
+
+%\hoffset=-15mm%                  For Eng.
+ 
+\setcounter{page}{69}
+\god{1999}
+\nomer{1~(440)} %                        Remove in Eng.
+%\nomer{Vol.\,43, No.\,1}%               Set in Eng.
+%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
+\udk{519.63}
+\author{\it Е.М.\,Федотов}
+% NB:   ^^ remove in Eng.
+\title{Исследование сходимости разностной схемы \\
+для трехмерных уравнений динамики вязкой жидкости}
+
+\thanks{Работа выполнена при финансовой поддержке Российского фонда
+фундаментальных исследований (проект 95-01-00400).}
+\date{}
+%\pagestyle{myheadings}%         Set in Eng.
+
+\pagestyle{plain} %              Remove in Eng.
+\begin{document}
+
+%\thispagestyle{plain}%          Set in Eng.
+
+\maketitle
+\label{begin}
+
+
+Построение и исследование разностных схем для нестационарных уравнений 
+математической физики представляет значительный практический и 
+теоретический интерес. Одним из наиболее интересных и важных аспектов 
+теории разностных схем является исследование их корректности. 
+Общая теория корректности операторно-разностных схем, построенная 
+в \cite{1}--\cite{4}, позволяет в линейном случае свести исследование
+конкретных
+разностных схем к проверке свойств входящих в них сеточных операторов. 
+Теория разностных схем для нелинейных задач развита слабее. 
+Отметим здесь работы \cite{5}--\cite{F}, в которых формулируются достаточно 
+общие условия на разностные операторы, обеспечивающие разрешимость и 
+устойчивость некоторых классов разностных уравнений. Отметим также 
+работы \cite{12}--\cite{16}, в которых получены оценки точности некоторых видов 
+разностных схем для задач одно- и двумерной газодинамики. 
+В настоящей работе, используя результаты о корректности системы 
+двухслойных операторно-разностных схем (см. \cite{F}), мы исследуем
+сходимость сеточной схемы для трехмерной лагранжевой системы уравнений 
+динамики вязкой сжимаемой жидкости в переменных удельный 
+объем-скорость-энтропия при общих предположения относительно уравнений 
+состояния.  
+
+Рассмотрим задачу о течении вязкой жидкости, занимающей начальный объем
+$\ov\Omega=\linebreak \{0<\ov x_i<1,\ i=\overline{1,m}\}$, $m=2,3$,
+с границей $\Gamma$.
+Течение жидкости описывается системой уравнений
+\begin{align}
+\rho_0&\frac{d\eta}{dt}-|J|\nabla\cdot \Vec v=0,
+\label{nerazd} \\
+\rho_0&\frac{d\Vec v}{dt}+|J|(\nabla p-(\lambda+\mu)\nabla\Div\Vec v-
+\mu \Delta \Vec v )=\rho_0\Vec f,
+\label{dvizd} \\
+\rho_0 T&\frac{ds}{dt}=|J|((\lambda+\mu)(\Div \Vec v)^2+
+\mu \nabla v_i \cdot \nabla v_i),
+\label{energd}\\
+&\frac{d\Vec x}{dt}=\Vec v,\quad t>0,
+\label{x-v}
+\end{align}
+где $\eta$, $\Vec v$, $s$ --- удельный объем,
+скорость, удельная энтропия соответственно,
+$\lambda$ и $\mu$ --- коэффициенты Ляме, $|J|=\det(J)$,
+$J\equiv J(\Vec x)=(\partial x_i/\partial \ov x_j)_{i,j=1}^m$
+--- матрица Якоби перехода от отсчетной декартовой (лагранжевой) системы
+координат $\Vec{\ov x}$ к эйлеровой,
+$p=-\partial \varepsilon /\partial \eta$ --- давление,
+$T=\partial \varepsilon /\partial s$ --- температура,
+$\varepsilon=\varepsilon(\eta,s)$ --- термодинамический потенциал.
+
+Граничные и начальные условия для уравнений (\ref{nerazd})--(\ref{x-v})
+запишем в виде
+\begin{equation}
+\label{BoundCond}
+\begin{split}
+\Vec v&=0,\quad \ov x \in \Gamma,\\
+(\eta,\Vec v,s)=(\eta_0,\Vec v_0,s_0),
+\quad &\Vec x=\Vec x_0\equiv \Vec {\ov x},
+\quad t=0,\quad \ov x\in \Omega.
+\end{split}
+\end{equation}
+Будем полагать, что термодинамический потенциал $\varepsilon(y,z)$ является
+дважды непрерывно
+дифференцируемой функцией, и при $1/\mu_0\ge y\ge \mu_0>0$,
+$1/\mu_0\ge z\ge \mu_0>0$ выполнены условия
+\begin{equation}
+\label{Bete}
+\begin{split}
+p'_\eta(y,z)<c_0<0,\quad T'_s(y,z)>c_0&>0,\\
+\left(\varepsilon''_{\eta \eta}\varepsilon''_{s s}
+-2(\varepsilon''_{\eta s})^2 \right)(y,z)>c_0&>0.
+\end{split}
+\end{equation}
+Будем также предполагать
+существование достаточно гладкого решения $(\eta,\Vec v,s)$ задачи
+(\ref{nerazd})--(\ref{BoundCond}) при $t\in [0,t^*]$ такого, что
+\begin{equation}
+\label{6'}
+1/\mu_0 > \eta,s > \mu_0>0\quad \text{и}\quad |J(x)|>c_0>0.
+\end{equation}
+
+Аппроксимируем уравнения (\ref{nerazd})--(\ref{BoundCond}),
+используя при этом конечноэлементный подход.
+Разобьем регулярным образом область $\Omega$ на равные прямоугольные 
+при $m=2$ или кубические при $m=3$ ячейки $\delta_s$ со сторонами $h$ так,
+чтобы они имели общими либо вершины, либо ребра, грани, либо вовсе не 
+имели пересечений.
+Множество вершин ячеек ($\{x_{kl}\}_{k,l=0}^N$) обозначим через
+$\ov \omega_h$. На каждой ячейке разбиения $\delta_s$ определим локальную 
+нумерацию вершин $b_k^{(s)}$, $k=\ov{1,\, 2^m}$.
+
+Пространство непрерывных в $\Omega$ и полилинейных на ячейках $\delta_s$
+функций обозначим через $V$, через $\ZeroUp{V}$ будем обозначать
+подпространство функций из $V$, равных нулю на $\Gamma$,
+а через $V_{*}$ --- пространство функций кусочно-постоянных на ячейках
+$\delta_s$. Ясно, что функции из $V$  однозначно определяются своими
+значениями в точках сетки 
+$\ov \omega_h$, а функции из $V_{*}$ --- своими значениями в центрах ячеек, 
+множество которых обозначим $\omega_h^{*}$.
+
+Пусть $H_1=V_{*}\otimes \ZeroUp{V}{}^m\otimes V_{*}$,
+$\ZeroUp{H}_1=V_{*}\otimes \ZeroUp{V}{}^m\otimes
+V_{*}$, ${H_2}=V^m$, $\ZeroUp{H}_2=\ZeroUp{V}{}^m$, $H=H_1\otimes H_2$.
+Определим билинейную форму
+$$
+\Dual{y,\eta}=(h/2)^{m}\sum_{\{\delta_s\}}\; \sum_{k=1}^{2^m} (y 
+\eta)(b_k^{(s)}),
+$$
+являющуюся  составной кубатурной формулой трапеций для 
+вычисления интегралов вида\linebreak
+$\int\limits_{\Omega}u(x)z(x)\, dx$. При этом в качестве значений
+функций $y$, $\eta$ в точках $b_k^{(s)}$ будем понимать соответствующие
+пределы со стороны ячеек $\delta_s$.
+
+Положим $\rho_0=1$. Всюду по повторяющимся индексам, если не указано 
+противное, будем предполагать суммирование от $1$ до $m$. 
+Малыми буквами с индексами $p$, $T$ будем 
+обозначать элементы пространства $V_{*}$, с индексами $x$ --- элементы
+пространства $V$ и с индексами $v$ --- элементы
+пространства $\ZeroUp{V}{}^m$. Большими буквами в позициях аргументов при 
+определении
+сеточных операторов и их свойств будем обозначать элементы пространства
+$H_1$: $Y=(y_p,\Vec y_v,y_T)$. Знаком $\partial_j$ всюду будем обозначать 
+частную
+производную $\partial  /\partial \ov x_j$.
+
+Введем в рассмотрение скалярные произведения и нормы в $V$ и $V_{*}$,
+$H_1$, $H_2$
+\begin{gather*}
+\Scal{y,w}=\Dual{y,w},\quad \Scal{y,w}_1= \bigg[ \Dual{y,w}+
+\sum_{i=1}^m \Dual{y_{vi},w_{vi}}+\Dual{y_T,w_T} \bigg],\\
+\Scal{\ov y_x,\ov w_x}_2=\sum_{i=1}^m \Dual{y_{xi},w_{xi}},\quad
+\|y\|=\Scal{y,y}^{1/2},\\
+\|Y\|_1=\Scal{Y,Y}_1^{1/2},\quad  \|Y\|_{(+)}^2=\|Y\|_1^2+
+\sum_{\alpha ,\beta}\Scal{\partial_\alpha  y_{v\beta }, \partial_\alpha  
+y_{v\beta }},\\
+\|y_x\|_2^2=\sum_j \bigg[
+\Scal{y_{xj},y_{xj}}_1+\sum_i \Scal{\partial_i y_{xj},   \partial_i y_{xj}}
+\bigg].
+\end{gather*}
+Определим оператор $A$ равенством
+\begin{gather}
+\Scal{A(y_x,Y),W}_1=
+-\Scal{\wt \partial_{i}y_{v,i},w_p}+
+\Scal{\wt \partial_{i}w_{v,i},y_p}+\notag\\
+\label{opA}
++\Scal{(\lambda+\mu)|J(y_x)|^{-1} \wt \partial_{i}y_{v,i},
+\wt \partial_{j}w_{v,j}}
++\Scal{\mu|J(y_x)|^{-1} \wt \partial_{i}y_{v,j},
+\wt \partial_{i}w_{v,j}}-\\
+-\Scal{(y_T|J(y_x)|)^{-1}\left(\left(\lambda+\mu \right)
+\wt \partial_{i}y_{v,i}\wt \partial_{j}y_{v,j}
++\mu \wt \partial_{i}y_{v,j}\wt \partial_{i}y_{v,j}\right),w_T},\notag\\
+W\in \ZeroUp{H}_1, Y=(y_p,\Vec y_v,y_T)\in H_1, \Vec y_x \in H_2.\notag
+\end{gather}
+Здесь $J(y_x)=(\partial_{j}y_{x,i})^m_{i,j=1}$,
+$|J(y_x)|=\det J(y_x)$, $\wt \partial_{\alpha}\cdot=
+M_{\alpha,k}\partial_{k}\cdot$,
+$M_{\alpha,k}\equiv M_{\alpha,k}(y_x)=|J(y_x)| j_{\alpha,k}(y_x)$,
+$j_{\alpha,k}(y_x)$ --- компоненты матрицы обратной к $J(y_x)$.
+Оператор $P$ определим выражением $P(y_x,Y)=y_v$, а оператор $D$ ---
+равенством
+\begin{equation}
+\label{opD}
+DY=\left(-p(y_p,y_T),\Vec y_v,T(y_p,y_T) \right),\quad Y\in H_1.
+\end{equation}
+На отрезке $[0,t^*]$ построим сетку
+$\ov\omega_\tau=\{0,\tau,2\tau,\dotsc,t^*\}$ и 
+введем в рассмотрение
+пространство $X=X_{\tau,h}=\{(v(t),\chi(t))\in H,\ t\in\ov\omega_\tau\}$ 
+вектор-функций, 
+определенных на $\ov \omega_\tau$, со значениями в пространстве $H$.
+Под приближенным решением $((\eta_h,\Vec v_h,s_h),\ \Vec x_h)$ задачи
+(\ref{nerazd})--(\ref{x-v}) будем понимать решение разностной схемы вида
+\begin{align}
+&
+\begin{cases}
+y_t+A\left(\chi^{(\sigma )},\wt{D}(y,\wh{y})\right)=\varphi(t),\\
+\chi_{t}=P\left(\chi^{(\sigma )},\wt{D}(y,\wh{y})\right),
+\quad t\in\omega_\tau=\ov\omega_\tau\setminus\{t^*\}, \label{1}
+\end{cases}
+\\
+&\quad y(0)=y_0, \ \; \chi(0)=x_0\notag,
+\end{align}
+где $\sigma \in [0,1]$ -- числовой параметр, вес слоя, 
+$v^{(\sigma)}=\sigma \wh v+(1-\sigma) v$,
+$\wt D(y,v)=\displaystyle\int_0^1 D(\sigma v+(1-\sigma) y) d\sigma$,
+$(y,\chi) \in X$, $(y_0,x_0) \in H$, $ y_0=(\eta_0,\Vec v_0,s_0)$, 
+$\Vec x_0=\Vec {\ov x}$.
+
+Исследуем разрешимость и сходимость разностной схемы (\ref{1}). Для этого 
+воспользуемся результатами из \cite{F}, касающимися исследования 
+$(u,\delta)$-корректности операторно-разностных схем
+(ОРС) вида (\ref{1}) в смысле данного там определения.
+
+\begin{defnnonum}[{\series{m}\shape{n}\selectfont\cite{F}}]
+ОРС (\ref{1}) назовем $(u,\delta)$-корректной, если существуют
+$\delta_i=\delta_i(\tau,h)>0$, $i=1,2$, и нормы $\|\cdot\|_{(j)}$,
+$j=1,2$, такие, что при выполнении неравенств
+$\|y_0-u(0)\|_{(1)}\le \delta_1$,
+$\|\Psi\|_{(2)}\le \delta_2$ ОРС (\ref{1}) имеет решение
+$y:\|y(t)-u(t)\|_{(1)}\le \delta$,
+и имеет место оценка (неравенство корректности)
+$$
+\|y(t)-u(t)\|_{(1)}\le J(\Psi(u))\equiv
+M_1\|y_0-u(0)\|_{(1)}+M_2\|\Psi\|_{(2)}\le \delta
+$$
+с постоянными $M_1$, $M_2$, не зависящими от $\tau$, $h$, $\Psi(u)(\wh t)=
+\varphi(\wh t)-A\left(u_x^{(\sigma)},\wt D(u,\wh u)\right)-u_t$,
+$t\in \omega_\tau$, $\Psi(u)(0)=0$.
+\end{defnnonum}
+
+Здесь через $u$ обозначен элемент из $X_1$  
+($X_\alpha=\{v(t)\in H_\alpha,\ t\in \ov \omega_\tau\}$),
+совпадающий при каждом 
+$t \in \ov \omega _\tau $, $\ov x \in \ov \omega _h$ со значениями решения 
+$(\eta, \Vec v,s)$, и элемент $u_x \in X_2$ определяется (ср. с \cite{F}) как 
+решение задачи
+\begin{equation}
+\label{2}
+u_{xt}=P\left(u_x^{(\sigma)},\wt D(u,\wh u)\right),\quad
+t\in \omega_\tau,\quad u_x(0)=x_0.
+\end{equation}
+
+Положим $\delta=\ov c h^{\theta}/2^m$, $2>\theta>m/2$ и определим 
+окрестности в $H$ и $X$ так: $O_\delta(v,\chi)=O_{1,\delta}(v)
+\otimes O_{2,\delta}(\chi)$, $O_{\alpha,\delta}(v)=\{z\in 
+H_\alpha:\|z-v\|_\alpha<\delta\}$,
+$U_\delta(v,\chi)=U_{1,\delta}(v)
+\otimes U_{2,\delta}(\chi)$,
+$U_{\alpha,\delta}(v)=\{z(t)\in O_{\alpha,\delta}(v(t)),
+\ t\in \ov \omega_\tau\}$.
+
+Ясно, что из включения $(Y,y_x) \in O_\delta (u(t),u_x(t))$ следует выполнение 
+в соответствующих точках сеток неравенств
+\begin{gather}
+\max\{ {|y_p-\eta |,\ |y_{vi}-v_i|,\ |y_T-s|}\}\le\ov c h^{\theta-m/2},
+\label{31}\\
+|y_{xi}-u_{xi}|\le\ov c h^{\theta}\ln^{1/2}h^{-1},\quad
+|\partial _j y_{xi}-\partial_j u_{xi} | \le \ov c h^{\theta-m/2}.
+\label{32}
+\end{gather}
+Элемент $u_{x}$, определяемый соотношением (\ref{2}), очевидно, равен 
+$$
+u_x(t)=x(0)+\sum^{t-\tau}_{t'=0} \tau v^{(1/2)}(t')
+= x(t) + O(\tau^2).
+$$
+Отсюда, из (\ref{6'}) и (\ref{32}), а также (\ref{Bete}) и (\ref{31}) следует,
+что найдется такое достаточно малое число  $h_0$, 
+что при любых $h \leq h_0$, $\tau \leq c h^{\theta /2}$  для
+$(Y,y_x) \in O_\delta(u(x),x(t))$ 
+($E$ --- единичная матрица)
+\begin{gather}
+p'_\eta(y_p,y_T)\le c_0<0,\quad T'_s(y_p,y_T)\geq c_0>0,\quad 
+\notag\\
+\left(\varepsilon''_{\eta \eta}\varepsilon''_{s s}
+-2(\varepsilon''_{\eta s})^2 \right)(y_p,y_T)\geq c_0>0,\label{33} \\
+|J(y_x)|\ge c_0>0, \quad \nu _0 E \le \left( {J(y_x)} \right) ^T J(y_x)
+\leq \nu _1 E, \ \; \nu_1 \geq \nu_0>0. \label{34}
+\end{gather}
+
+\begin{thmnonum}[{\series{m}\shape{n}\selectfont\cite{F}}]
+\label{t1}
+Пусть при $\tau\le \tau_0$, $h\le h_0$ операторы $D$, $A$ и $P$ удовлетворяют
+условиям
+
+{\em а)} оператор $D$ дважды непрерывно дифференцируем по Фреше в
+$O_{1,\delta}\left(u^{(\xi)}(t)\right)$
+$\forall \xi \in [0,1]$, потенциален и при любых
+$v$, $v_i \in O_{1,\delta}\left(u^{(\xi)}(t)\right)$, $i=1,2$, $v_j \in H_1$,
+$j=3,4$, выполнены неравенства
+\begin{alignat}{2}
+(Dv_1- Dv_2, v_1- v_2)_1 &\ge  d_{1}\|~v_{1}- v_{2}~\|_1^{2},
+&\quad  d_{1} &> 0,\label{3}\\
+|(D^{(1)}(v)v_{3},v_{4})_1|&\le d_{2}\|v_{3}\|_1\, \|v_{4}\|_1,
+&\quad d_{2}&>0,\label{4}\\
+| Dv_{1}- Dv_{2}| ^{2} &\le  d_{3}\|~v_{1}-v_{2}~\|_1^2, &\quad d_{3}&>0,
+\notag\\
+|(D^{(2)}(v)u_{t}v_3, v_4)_1|&\le d_{4}\|v_{3}\|_1 \, \|v_{4}\|_1, 
+&\quad d_{4} &> 0,
+\label{5}
+\end{alignat}
+
+{\em б)} оператор $A$ является непрерывным в $\bigcup \limits_{\xi \in [0,1]}
+DO_{1,\delta}(u^{(\xi)})\otimes DO_{2,\delta}(u_x^{(\sigma)})$, и при
+$\wh U=\wt D(u,\wh u)$, $t \in \omega_\tau$, $U(0)=\wt D(u(0),u(0))$,
+и любых $v$, $v_2 \in O_{2,\delta}(u_x^{(\sigma)})$,
+$v_1:|v_1-U|\leq \sqrt{d_3} \delta$,
+$v_3 \in H_1$ выполнены неравенства
+\begin{gather}
+d_{6} \left( A(v,v_{1})-A(v,U),v_{1}-U \right)_1+d_{5}| v_{1}-U|^{2}
+\ge  \|~v_{1}- U~\|_{(+)}^{2},\label{6} \\
+\left| \left(A(v,U)-A(v_2,U),v_3\right)_1\right|\le d_7\|v_3\|_{(+)}\
+\|v-v_2\|_2,\quad  d_{5}\ge 0,\ \; d_{6}>0,\ \; d_7\ge 0; \label{7}
+\end{gather}
+
+{\em в)} оператор $P$ при $v,v_1\in O_{2,\delta}(u_x^{(\sigma)})$,
+$v_2,v_3\in DO_{1,\delta}(u^{(\xi)})$ удовлетворяет неравенствам
+\begin{equation}
+\label{8}
+\begin{split}
+\|P(v_1,v_2)-P(v,v_2)\|_2&\le d_8\|v_1-v\|_2,\\
+\|P(v_1,v_2)-P(v_1,v_3)\|_2&\le d_8\|v_2-v_3\|_{(+)}, \quad d_8 \ge0. 
+\end{split}
+\end{equation}
+Тогда ОРС $(\ref{1})$ $(u,\delta)$-корректна, причем неравенство 
+корректности имеет вид
+\begin{gather*}
+\max_{t\in \ov \omega_\tau}\|y(t)-u(t)\|_1+
+\max_{t\in \ov \omega_\tau}\|\chi(t)-u_x(t)\|_2 \le
+J\left(\Psi(u)\right),\\
+J\left(\Psi(u)\right)\equiv\bigg\{M\bigg[\,
+\sum_{t\in \omega_\tau}\tau \|\Psi(u)(\wh t\,)\|_{(-)}^2+
+\|y(0)-u(0)\|_1^2\bigg]\bigg\}^{1/2},
+\end{gather*}
+где постоянная $M$ зависит лишь от $d_\alpha$, $\alpha =\overline{1,8}$,  
+$\tau_0$, $h_0$ и $t^*$, а
+$\|\psi\|_{(-)}=\sup\limits_{z\ne 0}|(z,\psi)_1|/\|z\|_{(+)}$.
+\end{thmnonum}
+
+Покажем, что условия теоремы выполнены. Из определения оператора 
+$D$ (\ref{opD}), 
+гладкости функции $\varepsilon $  и (\ref{33}) следует справедливость 
+неравенства (\ref{3}) 
+с постоянной  $d_1=c_0 /2$ и неравенств (\ref{4}), (\ref{5}) (при этом норму 
+$|\cdot |$ 
+полагаем равной  $\|\cdot \|_1$) с постоянными $d_2$, $d_3$, $d_4$,  
+зависящими лишь от $\mu_0$, 
+производных от потенциала $\varepsilon $  и максимума производных $\partial 
+\eta /\partial t$, $\partial s /\partial t$. 
+Неравенства (\ref{8}), очевидно, выполнены при $d_8=1$.
+
+Проверим справедливость неравенств (\ref{6}) и (\ref{7}). Положим  $Z=Y-U$, 
+$|Y-U|\leq \sqrt{d_3}\delta$
+и рассмотрим выражение
+\begin{multline} 
+\label{35}
+\Scal{A(y_x,Y)-A(y_x,U),Y-U}_1=\Scal{(\lambda+\mu)|J(y_x)|^{-1}
+\wt \partial_{i}z_{v,i}, \wt \partial_{j}z_{v,j}}+ \\
+%
++\Scal{\mu|J(y_x)|^{-1} \wt \partial_{i}z_{v,j},
+\wt \partial_{i}z_{v,j}}-\Big(|J(y_x)|^{-1}( y_T^{-1}(
+(\lambda+\mu) \wt \partial_{i}y_{v,i}\wt \partial_{j}y_{v,j}
++\mu \wt \partial_{i}y_{v,j}\wt \partial_{i}y_{v,j}) -\\
+%
+-u_T^{-1}((\lambda+\mu) \wt \partial_{i}u_{v,i}\wt \partial_{j}u_{v,j}
++\mu \wt \partial_{i}u_{v,j}\wt \partial_{i}u_{v,j})),z_T\Big).
+\end{multline}
+Оценим слагаемые  в правой части (\ref{35}). Для удобства ссылок обозначим 
+их римскими цифрами с индексами I$^{\ref{35}}$--III$^{\ref{35}}$. Первое из
+слагаемых неотрицательно. Вводя обозначение
+$a(y_x,z_v)$= $\Scal{|J(y_x)|^{-1} \wt \partial_{i}z_{v,j}, \wt 
+\partial_{i}z_{v,j}}$, второе запишем в виде
+$$
+{\mathrm{II}}^{\ref{35}} = \mu a(y_x,z_v).
+$$
+Оценим третье слагаемое в (\ref{35}) сверху. Преобразуем его прежде к виду
+\begin{multline} 
+\label{III}
+{\mathrm{III}}^{\ref{35}} =\Scal{ ( |J(y_x)| y_T)^{-1}\left(
+\left(\lambda+\mu \right) \wt \partial_{i}y_{v,i}\wt \partial_{j}z_{v,j}
++\mu \wt \partial_{i}y_{v,j}\wt \partial_{i}z_{v,j}
+\right),z_T} +\\
++\Scal{( |J(y_x)| y_T)^{-1}\left(
+\left(\lambda+\mu \right) \wt \partial_{i}z_{v,i}\wt \partial_{j}u_{v,j}
++\mu \wt \partial_{i}z_{v,j}\wt \partial_{i}u_{v,j}
+\right),z_T} +\\
++\Scal{ z_T (|J(y_x)| y_T u_T)^{-1}\left(
+\left(\lambda+\mu \right) \wt \partial_{i}u_{v,i}\wt \partial_{j}u_{v,j}
++\mu \wt \partial_{i}u_{v,j}\wt \partial_{i}u_{v,j}
+\right),z_T}.
+\end{multline}
+В таком представлении III$^{\ref{35}}$ оценим модуль каждого слагаемого 
+(III$^{\ref{35}}_1$--III$^{\ref{35}}_3$). 
+
+Первое слагаемое в (\ref{III}) мажорируем выражением
+$$
+|{\mathrm{III}}^{\ref{35}}_1|\le 2m\max\bigg|\frac{\lambda+\mu}{ y_T}\bigg|
+\max\bigg|\frac{ \wt \partial_{i}y_{v,i}}{ |J(y_x)|^{1/2}} \bigg| 
+\Scal{|J(y_x)|^{-1}\wt \partial_{i}z_{v,j},\wt 
+\partial_{i}z_{v,j}}^{1/2}\Scal{z_T,z_T}^{1/2}.
+$$
+В силу (\ref{31}) при достаточно малом $h_0$ сомножитель $(\lambda+\mu)/ y_T$ 
+ограничен.
+Сомножитель же $ \max\left|\wt\partial_{i}y_{v,i}/ |J(y_x)|^{1/2}\right|$
+допускает оценку
+сверху величиной $\left|\wt\partial_{i}u_{v,i}/ |J(y_x)|^{1/2} \right|+
+\max\left| \wt \partial_{i}z_{v,i}/ |J(y_x)|^{1/2} \right|$, в которой первое 
+слагаемое ограничено в силу (\ref{32}), (\ref{34}) и гладкости функций
+$u_{v,i}$, а второе слагаемое может быть оценено 
+сверху величиной $2^m  h^{-m/2} a(y_x,z_v)^{1/2}$. Следовательно,
+$$
+|{\mathrm{III}}^{\ref{35}}_1|\leq K_1 a(y_x,z_v)^{1/2} \Scal{z_T,z_T}^{1/2}+ 
+K_2 \left( h^{-m/2}\Scal{z_T,z_T}^{1/2}\right) a(y_x,z_v),
+$$
+где постоянные $K_1$, $K_2$ зависят лишь от $h_0$ и исходных 
+данных задачи.
+Слагаемые III$^{\ref{35}}_2$ и III$^{\ref{35}}_3$ оцениваются 
+аналогично. Подставляя 
+их оценки в (\ref{III}), пользуясь затем неравенством Коши с $\varepsilon $ и 
+учитывая малость 
+величины $ h^{-m/2}\Scal{z_T,z_T}^{1/2}$, получим
+$$
+|{\mathrm{III}}^{\ref{35}}|\le\mu\varepsilon a(y_x,z_v)+
+\ov c_1(\varepsilon^{-1}) \left\| {z_T} \right\|^2, 
+\ \; 0<\varepsilon < 1.
+$$
+
+Подставив оценки для I$^{\ref{35}}$--III$^{\ref{35}}$ в (\ref{35}) и 
+заметив, что в силу (\ref{34}) верно неравенство
+$$
+a(y_x,z_v)\geq c_0 / \nu_1 \Scal{\partial_{i}z_{v,j},\partial_{i}z_{v,j}},
+$$
+придем к (\ref{6}) с постоянными $d_5$, $d_6$, зависящими лишь от $h_0$ и 
+исходных данных задачи.
+
+Проверим справедливость неравенства ({\ref{7}). Для этого при
+$y_x, v_x \in O_{2,\delta}(u_x^{(\sigma)})$, $w\in H_1$ рассмотрим выражение
+\begin{multline}
+\label{20'}
+\left| \left(A(y_x,U)-A(v_x,U),W\right)_1\right|=
+-\Scal{\left( \wt \partial_{i}- \ov \partial_{i}\right) u_{v,i},w_p}+
+\Scal{\left( \wt \partial_{i}- \ov \partial_{i}\right)w_{v,i},u_p}+ \\
++\left[{\Scal{(\lambda+\mu)|J(y_x)|^{-1} \wt \partial_{i}u_{v,i},
+\wt \partial_{j}w_{v,j}}-\Scal{(\lambda+\mu)|J(v_x)|^{-1}
+\ov \partial_{i}u_{v,i},
+\ov \partial_{j}w_{v,j}}} \right]  + \\
++\left[ { \Scal{\mu|J(y_x)|^{-1} \wt \partial_{i}y_{v,j},
+\wt \partial_{i}w_{v,j}}-\Scal{\mu|J(v_x)|^{-1} \ov \partial_{i}u_{v,j},
+\ov \partial_{i}w_{v,j}}} \right]- \\
+-\left[ {\Scal{(u_T|J(y_x)|)^{-1}\left(\left(\lambda+\mu \right)
+\wt \partial_{i}u_{v,i}\wt \partial_{j}u_{v,j}
++\mu \wt \partial_{i}u_{v,j}\wt \partial_{i}u_{v,j}\right),w_T}-} \right.\\
+-\left. {\Scal{(u_T|J(v_x)|)^{-1}\left(\left(\lambda+\mu \right)
+\ov \partial_{i}u_{v,i}\ov \partial_{j}u_{v,j}
++\mu \ov \partial_{i}u_{v,j}\ov \partial_{i}u_{v,j}\right),w_T}} \right].
+\end{multline}
+Здесь $\ov \partial_{\alpha}\cdot=
+M_{\alpha,k}(v_x)\partial_{k}\cdot$,
+$M_{\alpha,k}(v_x)=|J(v_x)| j_{\alpha,k}(v_x)$,
+$j_{\alpha,k}(v_x)$ --- компоненты матрицы, обратной к $J(v_x)$. 
+
+Оценим первое слагаемое в (\ref{20'}).
+Заметим, что $(\wt\partial_{\alpha}- \ov \partial_{\alpha})\cdot= 
+(M_{\alpha,k}(y_x)-M_{\alpha,k}(v_x))\partial_{k}\cdot$.
+Входящие сюда выражения 
+$M_{\alpha,k}(\cdot)$ с точностью до знака совпадают с дополнительными 
+минорами матрицы $J(\cdot)$
+к элементам с индексами $(k,\alpha)$, т.\,е.~равны
+$\partial_{k} \cdot_\alpha$ в случае $m=2$ и 
+представляют собой линейные комбинации произведений вида
+$\partial_{l_1}{}\cdot_{n_1}\,  \partial_{l_2}{}\cdot_{n_2}$,
+$l_1,l_2\neq k$ и $n_1,n_2\neq \alpha$ при $m=3$.
+Следовательно, в силу (\ref{32}) их
+разности представляют собой
+линейные комбинации производных $\partial_{l} (y_{x,n}-v_{x,n})$ с 
+ограниченными сомножителями. 
+Учитывая это, а также гладкость $U$, для первого слагаемого нетрудно 
+получить оценку
+$$
+\left|{\Scal{\left(\wt\partial_i-\ov\partial_{i}\right)u_{v,i},w_p}}\right|
+\leq \ov c_2 \|w_p\|_{(+)}\, \|y_x-v_x\|_2,\quad \ov c_2\ge 0.
+$$
+Второе слагаемое оценивается аналогичным образом.
+Для оценки третьего слагаемого в (\ref{20'}) преобразуем его к виду
+\begin{multline*}
+\Scal{(\lambda+\mu)
+\left(|J(v_x)|-|J(y_x)|\right)\left(|J(v_x)||J(y_x)|\right)^{-1}
+\wt \partial_{i}u_{v,i},\wt \partial_{j}w_{v,j}}+\\
++\Scal{(\lambda+\mu)|J(v_x)|^{-1} \left(\wt \partial_{i}-
+\ov \partial_{i}\right)u_{v,i},\ov \partial_{j}w_{v,j}}+
+\Scal{(\lambda+\mu)|J(v_x)|^{-1} \wt \partial_{i}u_{v,i},
+\left(\wt \partial_{j}-\ov \partial_{j}\right)w_{v,j}}.
+\end{multline*}
+Вновь воспользуемся (\ref{32}), (\ref{33}), гладкостью $U$ и неравенством 
+Коши-Буняковского. 
+Будем иметь
+\begin{multline*}
+\left| {\Scal{(\lambda+\mu)|J(y_x)|^{-1} \wt \partial_{i}u_{v,i},
+\wt\partial_{j}w_{v,j}}-\Scal{(\lambda+\mu)|J(v_x)|^{-1}
+\ov \partial_{i}u_{v,i},\ov \partial_{j}w_{v,j}}} \right| \leq \\
+\leq \ov c_3 \|w\|_{(+)}\,\|y_x-v_x\|_2,\quad \ov c_3\ge 0.
+\end{multline*}
+Оставшиеся в (\ref{20'}) слагаемые оцениваются аналогичным образом. 
+Суммируя полученные для
+слагаемых оценки, приходим к (\ref{7}). 
+
+Таким образом, условия теоремы \ref{t1} выполнены,
+и $(u,\delta)$-корректность разностной схемы 
+(\ref{1}) установлена. Используя традиционный для теории разностных схем 
+прием исследования
+погрешности аппроксимации, основанный на поточечном разложении в ряды 
+Тейлора, нетрудно 
+установить ее второй порядок по параметру $h$ и порядок $\tau^\lambda$ с 
+$\lambda$ = 
+$\{2,\; \sigma =1/2;\; 1, \; \sigma \neq 1/2\}$ по переменной 
+$t$. 
+Это обеспечивает справедливость оценки
+$$
+J\left(\Psi(u)\right)=O\left( {\tau^\lambda+h^2} \right). 
+$$
+Ясно, что при $\tau \leq c h^{\vartheta /\lambda }$, $\vartheta>\theta>m/2$ и 
+достаточно малом $h$ будет 
+верно неравенство $J\left(\Psi(u)\right)$ $\leq $ $\delta $.
+При этом разностная схема (\ref{1})
+будет иметь решение, и для него будет верна оценка точности 
+$$
+\max_{t\in \ov \omega_\tau}\|y(t)-u(t)\|_1+
+\max_{t\in \ov \omega_\tau}\|\chi(t)-u_x(t)\|_2= O\left( 
+{\tau^\lambda+h^2}\right).
+$$
+
+
+\begin{thebibliography}{99}
+
+\bibitem{1}
+Самарский А.А. {\em Введение в теорию разностных схем}. -- М.: 
+Наука, 1971. -- 552~с.
+\bibitem{2}
+Самарский А.А. {\em Классы устойчивых схем} // Журн. вычисл. матем.
+и матем. физ. -- 1967. -- T.\,7. -- \No\,5.
+-- С.\,1096--1133.
+\bibitem{3}
+Самарский А.А., Гулин А.В. {\em Устойчивость разностных схем}. -- М.: 
+Наука, 1973. -- 415~с.
+\bibitem{4}
+Гулин А.В. {\em Теоремы об устойчивости несамосопряженных 
+разностных схем} // Матем. сб. -- 1979. -- T.\,117. -- \No\,2.
+-- С.\,297--303.
+\bibitem{5}
+Арделян Н.В. {\em Разрешимость и сходимость нелинейных разностных 
+схем} // ДАН СССР. -- 1988. -- T.\,302. -- \No\,6. - С.\,1289--1292.
+\bibitem{6}
+Ляшко А.Д.,  Карчевский М.М. {\em Исследование одного класса 
+нелинейных разностных  схем} // Изв. вузов. Математика.
+-- 1970. -- \No\,7. -- С.\,63--71.
+\bibitem{7}
+Ляшко А.Д. {\em О корректности нелинейных двухслойных 
+операторно-разностных схем} // ДАН СССР. -- 1974. -- T.\,215.
+-- \No\,2. -- С.\,263--265.
+\bibitem{8}
+Лапин А.В., Ляшко А.Д. {\em О сходимости разностных схем для 
+квазилинейных уравнений параболических на решении} // Изв. вузов. 
+Математика. -- 1975. -- \No\,12. -- С.\,30--42.
+\bibitem{9}
+Ляшко А.Д., Федотов Е.М. {\em Корректность одного класса 
+консервативных нелинейных операторно-разностных  схем}
+// Изв. вузов. Математика. -- 1985. -- \No\,10. -- С.\,47--55.
+\bibitem{10}
+Федотов Е.М. {\em Разностные схемы для нелинейных нестационарных 
+задач}. -- Изд-во Казанск. ун-та, 1987. - 90~с.
+\bibitem{11}
+Федотов Е.М. {\em Об одном классе двухслойных разностных схем 
+для нелинейных гиперболических уравнений} // Исследов. по прикладной 
+матем. -- Казань. -- 1990. -- \No\,17. -- С.\,129--146.
+\bibitem{F}
+Федотов Е.М. {\em Об одном классе двухслойных разностных схем
+для нелинейных краевых задач с памятью}
+//  Изв. вузов. Математика. - 1997. -- \No\,4. -- C.\,86--97.
+\bibitem{12}
+Абрашин В.Н. {\em О разностных схемах газовой динамики} // 
+Дифференц. уравнения. -- 1981. -- T.\,17. -- \No\,4. -- С.\,710--718.
+\bibitem{13}
+Абрашин В.Н., Матус П.П. {\em О точности разностных схем для 
+одномерных задач  газовой  динамики} //  Дифференц. уравнения. --
+1981. -- T.\,17. -- \No\,7. -- С.\,1155--1161.
+\bibitem{14}
+Смагулов Ш. {\em О сходящихся разностных схемах для уравнений 
+вязкого газа в переменных Эйлера} // ДАН СССР.
+-- 1984. -- T.\,277. -- \No\,3. -- С.\,553--556.
+\bibitem{15}
+Амосов А.А., Злотник А.А. {\em О разностных схемах для некоторых 
+задач об одномерном движении вязкого газа} //
+Num. Anal. and Math. mod. -- Banach 
+Center Publ. Warsaw. -- 1990. -- V.\,24. -- С.\,415--434.
+\bibitem{16}
+Попов А.В. {\em Исследование экономичного конечно-разностного 
+метода для двумерных уравнений вязкого теплопроводного газа} //
+Журн. вычисл. матем. и матем. физ. --
+1991. -- T.\,31. -- \No\,7. -- C.\,1066--1080.
+
+\end{thebibliography}
+
+\vskip 2cm
+
+\post{\it Казанский государственный}{\it Поступила}
+\post{\it университет}{29.09.1997}
+
+\label{end}
+\end{document}
+

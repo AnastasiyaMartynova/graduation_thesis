@@ -1,0 +1,1811 @@
+\renewcommand{\figurename}{\protect\bf Figure}
+\renewcommand{\tablename}{\protect\bf Table}
+
+\def\stat{dolev}
+
+
+\def\tit{HEURISTIC CERTIFICATES VIA APPROXIMATIONS}
+
+\def\titkol{Heuristic certificates via approximations}
+
+\def\autkol{Sh.~Dolev  and M.~Kogan-Sadetsky}
+
+\def\aut{Sh.~Dolev$^1$  and M.~Kogan-Sadetsky$^1$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1] {The work of first and second  authors is partially supported by the
+%Program of Strategy development of Petrozavodsk State University in
+%the framework of the research activity. The third author is a~%postdoctoral fellow with the Research Foundation-Flanders
+%(FWO-Vlaanderen).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Department of Computer Science, Ben-Gurion
+University of the Negev,
+Beer-Sheva 84105, Israel}
+%\footnotetext[2]{Department of Computer Science, Ben-Gurion
+%University of the Negev, Israel, sadetsky@cs.bgu.ac.il}
+
+
+\vspace*{6pt}
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 1}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 1
+\hfill \textbf{\thepage}}}
+
+
+
+\Abste{This paper suggests a~new framework in which the quality of a~(not necessarily optimal) heuristic solution is certified by
+an approximation algorithm.
+Namely, a~result of a~heuristic solution is accompanied by a~scale
+obtained from an approximation algorithm. The creation of a~scale is
+efficient while getting a~solution from an approximation algorithm
+is usually concerned with long calculation relatively to heuristics
+approach. On the other hand, a~result obtained by heuristics without
+scale might be useless. The criteria for choosing an
+approximation scheme for producing a~scale have been investigated. To obtain a~scale in
+practice, not only approximations have been examined  by their
+{asymptotic} behavior but also relations as a~function of an
+input size of a~given problem. For study case only,
+heuristic and approximation algorithms for the {SINGLE
+KNAPSACK}, {MAX 3-SAT}, and {MAXIMUM BOUNDED THREE-DIMENSIONAL
+MATCHING} (MB3DM) NP-hard problems have been examined. The
+certificates for the heuristic runs have been obtained
+by using fitting approximations.}
+
+\KWE{heuristics; approximation algorithm; optimal
+solution; approximation preserving reducibility}
+
+\DOI{10.14357/19922264150103}
+
+%\vspace*{6pt}
+
+
+\vskip 14pt plus 9pt minus 6pt
+
+      \thispagestyle{myheadings}
+
+      \begin{multicols}{2}
+
+                  \label{st\stat}
+
+\section{Introduction}
+
+\noindent
+Many important optimization problems are NP-hard. This rules out the possibility of finding in polynomial
+time an optimal solution (for those that are in NP,
+unless $P=\mathrm{NP}$). Instead, commonly, artificial
+intelligence (AI) methods are used to try to cope with instances of these
+problems. Namely, heuristic solutions are used to get a~near to optimal
+solution for a~given instance of such problems. However, heuristic
+may obtain a~suboptimal solution such as a~local maxima
+rather than the absolute maximum. Evaluation of the result obtained
+from the heuristic is the complicated task that is addressed in this
+work. The present authors suggest using approximation algorithms to obtain a~scale
+that may be used to certify heuristic results.
+
+\noindent
+\textbf{Heuristic solutions.} Heuristic solutions explore
+various states and solutions
+for a~given problem in a~short time\footnote[2]{The authors do not
+refer to
+the $A^*$ heuristic search, in which some optimizations for the exponential
+time exhaustive search are introduced for obtaining the
+optimal solution at the price of worst case exponential time.}.
+There are well-known heuristics such as:
+Hill Climbing search that uses local
+estimates of the distance to the goal and expands the node with the
+smallest estimate; Branch and Bound search that uses the costs of the
+already formed partial paths and expands the partial path with the
+minimum cost, and {Genetic Algorithms (GA)}.
+In particular,  GA  will be explored
+as an example for a~heuristic. Genetic algorothms were invented by John
+Holland~\cite{H1971} and others, finding their inspiration in the
+evolutionary process occurring in nature. A population of
+individuals should collectively adapt to conditions of some
+environment. In order to face this, the reproduction and survival of
+individuals are promoted by the elimination of useless and harmful
+features and by gratifying useful behavior.
+
+The dynamics of the natural evolutionary process are complex and
+mostly unknown. Nevertheless, the artificial optimization approach
+is feasible if in comparison to another approaches, a~good enough
+solution can be obtained. One of such different approaches is the
+solution that uses approximation algorithms rather than
+heuristics.
+
+\noindent
+\textbf{Approximation algorithms.} A way to cope with
+optimization tasks that do not have a~(known) polynomial solution is
+by devising an algorithm that finds a~solution to the problem in a~reasonable time, such that the solution is suboptimal with a~known
+ratio or bound from the (unknown) optimal solution. On one hand,
+heuristics may perform better than approximations in practice,
+namely, obtain a~better solution with the same processing effort, but
+on the other hand, heuristics are associated with uncertainty
+regarding the quality of
+the obtained result.
+
+\noindent
+\textbf{The authors' contribution.} The authors suggest a~new
+framework in which the quality of a~solution that is based on
+heuristics is certified by an approximate algorithm. In this
+framework, a~heuristic solution is accompanied by a~scale obtained
+from the approximation algorithm. The usefulness of
+the framework is demonstrated by presenting criteria for choosing a~fitting
+approximation scheme for producing a~scale. The
+{SINGLE KNAPSACK}, {MAX 3-SAT}, and {MB3DM} NP-hard problems
+are examined.
+
+\noindent
+\textbf{Using polynomial time approximation schemes}. In some cases,
+it is possible to use
+polynomial time approximation schemes (PTAS). Let start by
+demonstrating the framework for such a~case, the case of the
+SINGLE KNAPSACK problem. To solve instances of SINGLE KNAPSACK,
+galib246~\cite{GAlib} library for
+genetic algorithms has been used. In
+order to certificate the solution obtained from the genetic
+algorithm, the approximation algorithm CKPP
+(Cardinality Constrained Knapsack Problem)~\cite{KPP99}, has been used. In
+the present authors'
+experiment~\cite{link-to-the-sofware-cite}, each item has weight and
+profit; the restricted total weight was 300~weight units and the
+optimization task was to maximize the profit while respecting the
+weight bound. The profit obtained by the genetic algorithm was~577~profit
+units (with weight of~293~weight units). The total profit
+of all the given items was much larger $-$ 1,345 profit units. Thus,
+the authors had no clue whether the obtained profit is a~local maxima that is
+way beyond the possible maximum profit. {CKPP} approximation
+certified the heuristic solution as~0.88 of the possible maximum
+profit. Since {CKPP} is {PTAS}, it can be tuned to obtain
+a~refined scale using more and more computation time. Using the
+performance ratio of~0.75,  the profit of~493~profit
+units (with weight of 293~weight units) running in a~few seconds was obtained.
+
+\noindent
+\textbf{Using approximation preserving reducibility.}
+Obtaining certificates as a~part of the practice in using heuristics
+may require the design of many approximations, which is not a~simple
+task. Luckily, in some cases, approximation preserving reductions
+may be used to obtain an approximation algorithm from variant of a~problem in hand to a~known approximation algorithm. Next,
+the way such a~reduction is chosen and used will be demonstrated. The
+experimental demonstration for this example obtained a~0.64
+certificate for the {GA} result~\cite{link-to-the-sofware-cite}.
+
+\noindent
+\textbf{MAX 3-SAT.} An instance of the {MAX 3-SAT}
+problem is a~predicate for which each clause is of not more than~3~literals.
+A~solution is a~truth assignment for the predicate
+variables, such that the number of satisfied clauses is the maximum
+possible. One may evaluate a~given assignment for the predicate
+variables by the number of clauses it satisfies. Once again,
+ galib246 library~\cite{GAlib} was used to solve instances of the {MAX
+3-SAT} problem. In their experimental demonstration, the present authors
+used a~predicate that consisted of~100~clauses. The heuristic algorithm found
+(in a~few seconds) an assignment for the variables that satisfies~58~clauses.
+Again, the authors had no clue whether the solution was only~0.58
+of the optima.
+
+Some maximization problems have trivial bound on solution size which
+is related to the size of the input. This bound gives one a~preliminary Certificate of the heuristic solution. This certificate
+maybe good enough if the heuristic solution is at least, say, 0.8
+of the input size. This implies that an optimal solution for the
+given problem is at least~0.8 of the input size, which is not a~common case. For instance, in the case of the {MAX 3-SAT}
+problem, the trivial upper bound is obvious since all predicate's
+clauses may be satisfiable by some truth assignment. But it is
+possible that any truth assignment can satisfy near to half of
+predicate's clauses, and in this case, the trivial upper bound gives
+a poor certificate to a~heuristic solution. For some problems, it is
+not easy to determine a~trivial upper bound. For example, for the
+{SINGLE KNAPSACK} problem, the common case is that only a~small
+part of the items can be put into the knapsack.
+
+To demonstrate the way reductions are chosen,
+two examples are presented: {MAX 3-SAT} and {MB3DM}.
+
+For the first example,  two reductions
+from {MAX 3-SAT} were used: one to {MAX2-SAT} and the second to
+{MAX INDEPENDENT SET-B}. In this case, both approximations are not
+{PTAS} and, therefore, only a~single scale can be obtained for
+a~given instance. It turned out that the scale obtained for the
+particular instance, by using the reduction to {MAX 2-SAT},
+added no information beyond the trivial bound of 100 clauses, while
+the reduction to {MAX INDEPENDENT SET-B} resulted in a~refined
+scale of~92~clauses.
+
+Also, two reductions were used from {MB3DM}: one to {
+minimization of sum of squared machine loads} and the second to
+{STAR-GCA-SIMPLE}. In this case, the reductions once again, both gave
+a single scale. It will be shown that according to the all comparable
+criteria for choosing reduction $-$ quality of approximation
+preserve, quality of approximation algorithm of a~destination
+problem, inflation of input, and the complexity of reduction (that
+would be defined later in the paper), the reduction to {
+MINIMIZATION OF SUM OF SQUARED MACHINE LOADS} is a~better choice for
+producing a~scale and a~certificate.
+%\end{itemize}
+
+\noindent
+\textbf{Choosing approximation preserving reductions.} There
+are four main criteria that are suggested using for choosing a~specific
+reduction algorithm from a~given problem. The first criterion is the
+quality of approximation preserve. This is a~reduction preservation
+ratio, which is implied by the parameters of reduction constrains.
+The second criterion is the quality of approximation algorithm of
+a~destination problem. This means the performance ratio of (best)
+known approximate algorithm for a~destination problem. The third
+criterion is the inflation of input of a~source problem when it is
+translated to input of a~destination problem. The last criterion is
+the complexity of reduction functions. This parameter represents
+degree of ease of a~reduction usage and also contributes to the
+general performance of a~reduction.
+
+\noindent
+\textbf{Paper organization.} In section~\ref{s:demo},
+the framework will be presented and the way approximation for the
+{SINGLE KNAPSACK} problem is used will be demonstarated
+to certify a~solution obtained
+by a~genetic algorithm. An overview on Genetic Algorithms (the authors'
+choice for examining heuristics) appears in section~\ref{s:GA}.
+Then, in section~\ref{s:AP}, a~short overview on
+approximation algorithms and approximation preserving reductions will
+be given including: PTAS, L-reduction, and AP-reduction. Section~\ref{s:ChoosRed} discusses criteria for choosing an approximation
+preserving reduction to obtain the best scale. Section~\ref{s:Concluding} concludes the paper.
+
+\vspace*{-6pt}
+
+\section{The Framework and the SINGLE KNAPSACK Problem Example}
+\label{s:demo}
+
+\vspace*{-4pt}
+
+\noindent
+\textbf{The framework.} First, let define some concepts that
+will be used in the paper:
+\begin{itemize}
+\item \textit{Input}: an instance of hard optimization problem
+for which there is no (efficient) exact polynomial algorithm or good
+polynomial approximation.
+\item \textit{Heuristic certificate}. Given a~solution of some
+heuristic algorithm, the quality of this
+solution will be determined, i.\,e.,  a~(closest) relation between the
+heuristic and the optimal
+solutions of a~given problem instance will be found.
+\item \textit{Solution scale}. To define a~solution scale,
+a~problem solution upper
+bound obtained from approximation algorithm is used.
+This scale is used to measure the quality of the heuristic solution.
+\item $\displaystyle
+\mathrm{Certificate}$\linebreak
+$=\fr{\mathrm{Heuristic\
+solution}}{\mathrm{upper\ bound\ (obtained\ from\
+approximations)}}.$
+\end{itemize}
+
+The steps defined by the framework are as follows:
+\begin{itemize}
+\item Choose heuristics, for example, GA
+to solve the problem instance.
+\item Find (at least) one approximation for the problem.
+Sometimes, approximation preserving reductions should be used.
+\item Choose, using the criteria that will be defined later in
+the
+paper, the approximation that leads to the best solution scale.
+\item Execute the heuristic and the approximation algorithms
+(possibly, in parallel) and compute the certificate according to the
+results (possibly, repeatedly, in particular, in the case of
+PTAS and {FULLY PTAS}, until the required certificated result is
+obtained).
+\end{itemize}
+
+\noindent
+\textbf{SINGLE KNAPSACK problem example.} Let consider the
+{SINGLE KNAPSACK} problem. Given items of different profits and
+weights, find the most valuable set of items that fit in a~knapsack
+of fixed weight bound. This problem is chosen since it has
+PTAS, i.\,e., the algorithm that for each $\epsilon > 0$
+produces a~solution that is within~$\epsilon$~factor of being optimal. The
+approximation\linebreak\vspace*{-12pt}
+%\begin{table*}
+
+{\small %tabl1
+\begin{center}
+{{\tablename~1}\ \ \small{SINGLE KNAPSACK approximation solution}}\\[6pt]
+\tabcolsep=10pt
+\begin{tabular}{|c|c|c|c|}
+\hline
+$\epsilon$ & \tabcolsep=0pt\begin{tabular}{c}Approximation\\ ratio\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}Solution\\ weight\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Solution\\ profit\end{tabular} \\
+\hline
+0.4 & 2/3 & 293 & 493 \\
+\hline
+\end{tabular}
+\end{center}}
+
+%\vspace*{2pt}
+
+\addtocounter{table}{1}
+
+%\begin{table*}
+{\small %tabl2
+\begin{center}
+{{\tablename~2}\ \ \small{Genetic algorithm solution}}\\[6pt]
+\tabcolsep=4pt
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\tabcolsep=0pt\begin{tabular}{c}Generation\\ id\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Solution\\ weight\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Solution\\ profit\end{tabular}  &
+\tabcolsep=0pt\begin{tabular}{c}Optimal\\ solution\\ upper\\ bound \end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Heuristic\\ certificate\end{tabular}\\
+\hline
+12 & 293 & 577 & 740 & 0.78 \\
+\hline
+\end{tabular}
+\end{center}
+%\vspace*{-3pt}
+}
+%\end{table*}
+
+\vspace*{6pt}
+
+\addtocounter{table}{1}
+
+
+\noindent
+ algorithm used is the algorithm CKPP~\cite{KPP99}. Its running time is
+$O\left(n^{\lceil1/\varepsilon\rceil-2}\right)$ for $\varepsilon < 1/2$, and
+its guaranteed approximation ratio is
+$\left({\lceil1/\varepsilon\rceil-1}\right)/{\lceil1/\varepsilon\rceil}$. The
+test problem instance consists of 30~items, each with integer profit
+and weight, and of a~knapsack with capacity~300. The total profit
+of all items is~1,345~profit units and the total weight of all
+items is~1,712~weight units. The run was performed with $\varepsilon
+= 0.4$ and returns in a~few seconds with the solution presented in
+Table~1.
+
+
+
+
+%\end{table*}
+
+The experimental runs of the GA heuristics were
+performed by using the galib246 library~\cite{GAlib}, with a~mutation rate $p_{m} = 0.001$, crossover rate $p_{c} = 0.6$, and a~one-point crossover operator~\cite{link-to-the-sofware-cite}. The
+initial population consists of a~set of maximal (in respect to
+inclusion) feasible solutions that were obtained by the
+approximation algorithm during its execution. Therefore, the initial
+population set contains a~subpart of an optimal solution assisting
+the GA to easily find a~near-to-optimal solution.
+Thus, the use of approximation may result in an additional advantage
+for the GA. Several runs of the GA
+were performed, each of~50~generations and takes a~few seconds; the
+best result of these runs is presented in Table~2.
+
+
+
+ The quality of the solution that is based on
+heuristics by creating a~scale for the problem using the approximate
+algorithm solution has been determined. The upper bound of the
+solution  can be easily calculated using the approximation algorithm ratio:
+
+\vspace*{-5pt}
+
+\noindent
+\begin{multline*}
+\mathrm{upper\ bound} =
+\fr{\lceil1/\varepsilon\rceil}{\lceil1/\varepsilon\rceil-1}
+\\
+{}\times \mathrm{approximation\ algorithm\ solution\ profit}.
+\end{multline*}
+
+\vspace*{-5pt}
+
+\noindent
+ The
+performance ratio of the heuristic run is ${\mathrm{heuristic
+solution}}/{\mathrm{upper bound}}$, which equals~0.78 in the considered case.
+Thus, 0.78~is the heuristic certificate obtained for the heuristic
+results.
+
+
+\vspace*{-8pt}
+
+\section{Heuristic Choice, Genetic Algorithms (based on~\cite{Sipper1996})} \label{s:GA}
+
+\noindent
+A~GA is an iterative
+search technique which simulates a~population of individuals. The
+search space consists of candidate solutions to the given problem,
+each one is encoded by a~finite string of symbols called
+\textit{gnome}. The GA is especially useful for the
+problems with search space that is too large to be exhaustively
+explored. Mostly, solutions are represented as binary strings, but
+other encodings are also possible, e.\,g., character-based encoding,
+real-value encoding, tree representation, etc.
+
+The evolution usually starts from a~population of individuals which
+is randomly or heuristically generated. Then, it proceeds by
+iterative generations $-$ the fitness of every individual in the
+current population is evaluated according to some predefined
+objective function, referred to as the \textit{fitness function}.
+Multiple individuals are selected from the current population based
+on their fitness. One of the simplest selection procedures is
+\textit{fitness-proportionate selection}, where individuals are
+selected with a~probability proportional to their relative fitness.
+This procedure ensures that the expected number of selections of
+some individual is proportional to its expediency for the
+population. This policy ensures that high-fitness individuals get
+higher chance to be promoted and low-fitness individuals are
+commonly eliminated.
+
+In order to produce new search points, one cannot use a~selection
+only. For this, genetically-inspired operators like
+\textit{crossover} and \textit{mutation} were used. Selected individuals are
+modified, recombined, and possibly mutated to form a~new population.
+Crossover is performed as follows: two individuals called
+$\textit{parents}$ are selected and parts of their gnomes are
+exchanged between them with probability $p_{\mathrm{cross}}$. This forms two
+new individuals, called $\textit{offsprings}$. The simple example of
+crossover is when substrings are exchanged after a~randomly selected
+crossover point. The mutation is used to maintain genetic diversity
+from one generation to the next. It prevents impulsive junction to
+local optima rather than to optimal solution. It is performed by
+flipping random bits with some usually small probability $p_{\mathrm{mut}}$.
+The new population is then used in the next iteration of the
+algorithm. Genetic algorithms are stochastic iterative processes
+that are not guaranteed to converge. There are a~variety of
+termination conditions, e.\,g., a~solution is found that satisfies
+minimum criteria, fixed number of generations reached, computational
+time limitations, etc. In other words, the process stops when some
+acceptable fitness level is reached.
+
+\section{Approximation Algorithms and~Approximation Preserving
+Reductions} \label{s:AP}
+
+\noindent
+An approximation algorithm for an
+optimization problem generates feasible, but not necessarily
+optimal, solutions. Since there are no polynomial-time algorithms to
+get optimal solutions for {NP}-hard problems (unless $P=\mathrm{NP}$),
+usually, nonoptimal solutions are accepted which can be
+obtained in polynomial time. Unlike heuristic, the term
+\textit{approximation algorithm} implies some proven worst case
+bound on the solution quality in measurable time.
+
+The approximation properties of different problems vary a~great
+deal. Some problems cannot be approximated even with a~factor of
+$n$, for instance, a~problem of finding a~maximum clique in a~graph.
+Some other problems can be approximated only with the factor of
+$O(\log n)$ like problems related to graph separators, or with a~predefined constant factor like {MAX 3-SAT} problem. Only a~small quantity of problems can be approximated with any arbitrary
+constant factor, i.\,e., have {PTAS}. One would prefer an
+approximation algorithm to run in polynomial time and have close to~1 \textit{approximation ratio}, i.\,e., the worst-case ratio between
+the solution obtained by the approximation algorithm and the optimal
+solution. But as the solution given by approximation gets closer to
+the optimal solution, the time cost gets closer to exponential.
+Therefore, heuristic algorithm may be preferred
+to get near-optimal solution with potentially better approximation ratio.
+
+\noindent
+\textbf{Polynomial time approximation schemes.} {PTAS} for an optimization problem~$A$ is
+a~polynomial-time algorithm which input is the problem instance and
+$\epsilon > 0$ and output is the solution that approximates a~given
+problem within the factor of~$\epsilon$. The run time of an
+algorithm \mbox{PTAS} may depend not just on an input size of a~given
+problem, but also on~$\epsilon$.
+
+\smallskip
+
+\noindent
+\textbf{Approximation preserving reductions (based on~\cite{TrevisanLuca}).}
+
+\smallskip
+
+\noindent
+\textbf{Definition~1}~\cite{TrevisanLuca}.
+Given a~class of functions~$F$, an NP-optimization ({NPO})
+problem~$A$  that belongs to the class {F-APX} (an abbreviation
+of \textit{approximable}) is defined if an r(n)-approximate algorithm~$T$ for~$A$
+exists, for some function $r \in F$. In particular, {APX},
+$\log\,${APX}, poly{APX}, and exp{APX} will denote the class
+{F-APX} with $F$ equal to the set $O(1)$, to the set $O(\log
+n)$, to the set $O(n^{\log n})$, and to the set $O(2^{n^{O(\log
+n)}})$, respectively.
+
+\smallskip
+
+Given an instance~$I$ of an {NPO} problem,
+$|I|$ is used to denote the length of~$I$ and $\mathrm{OPT}\,(I)$ to denote the optimum
+value for this instance. For any solution~$S$ to~$I$, the
+\textit{objective value} of the solution is denoted by $c(I,S)$.
+
+\smallskip
+
+\noindent
+\textbf{Definition 2}~\cite{TrevisanLuca}.
+ Given a~solution~$S$ to an instance~$I$ of an
+NPO problem, the relative error of~$S$ with respect
+to~$I$ is defined as
+$$
+\varepsilon(I,S):=\max\left\{\fr{c(I,S)}{\mathrm{OPT}\left(I\right)},\,\fr{\mathrm{OPT}\left(I\right)}{c(I,S)}\right\}
+$$
+The above definition is applied to maximization and
+minimization problems as well.
+
+\smallskip
+
+\noindent
+\textbf{Definition 3}~\cite{TrevisanLuca}.
+An approximation algorithm~$A$ for an
+optimization problem~$\Pi$ has performance ratio $R(n)$ if, given an
+instance~$I$ of~$\Pi$ with $|I|=n$, the solution $A(I)$ satisfies
+
+\noindent
+$$
+\max\left\{\fr{c(I,S)}{\mathrm{OPT}\left(I\right)},\,\fr{\mathrm{OPT}\left(I\right)}{c(I,S)}\right\}
+\leq R(n)\,.
+$$
+
+
+ A solution of value within a~multiplicative factor~$r$ of
+the optimal value is referred to as an {r-approximation}.
+
+A reduction from a~problem~$A$ to a~problem~$B$ specifies some
+procedure to solve~$A$ by means of an algorithm solving~$B$. In
+content of approximation, the reduction should guarantee that an
+approximate solution for~$B$ can be used to obtain an approximate
+solution for~$A$. The reduction functions~$f$ and~$g$ are used where~$f$
+maps an instance of a~problem~$A$ to an instance of a~problem~$B$
+and~$g$ maps an approximate solution of a~problem~$B$ into
+a~feasible solution of a~problem~$A$.
+
+\smallskip
+
+\noindent
+\textbf{Definition 4}~\cite{TrevisanLuca}. Let~$A$ and~$B$ be two {NPO}
+problems, a~reduction template $(f,g)$ between them is a~tuple of polynomial
+computable functions such that the following properties hold:
+\begin{itemize}
+\item for any $x \in I_{A}, f(x) \in I_{B}$;\\[-14pt]
+\item for any $x \in I_{A}$, if  $\mathrm{sol}\left(x\right) \neq \emptyset$ then also
+$\mathrm{sol}\left(f(x)\right) \neq \emptyset$; and\\[-14pt]
+\item for any $y' \in \mathrm{sol}\left(f(x)\right),g(x,y') \in \mathrm{sol}\left(x\right)$.
+\end{itemize}
+
+\smallskip
+
+Typically, polynomial time reductions do not preserve the
+near-optimality of the solutions. Indeed, all {NP}-complete
+problems are equally hard from the viewpoint of obtaining exact
+solutions. However, from the viewpoint of obtaining near-optimal
+solutions, they exhibit a~rich set of possibilities. An
+approximation preserving reduction not only has to map instances of
+a problem~$A$ to instances of a~problem~$B$, but it also has to be
+able to obtain good solutions for~$A$ from good solutions for~$B$.
+Approximation preserving reducibilities are defined by imposing some
+relations between the performance ratios of~$y'$ and $g(x,y')$.
+Several kinds of reducibilities may be found in literature:
+\textit{Strict reducibility, L-reducibility, E-reducibility,
+PTAS-reducibility, AP-reducibility}.
+These reducibilities are identical with respect to the overall scheme but
+differ essentially in the way they preserve approximability: they
+range from the \textit{Strict reducibility} in which the error
+cannot increase to the \textit{PTAS-reducibility} where there are
+basically no restrictions. Below,  only two
+reductions will be described in detail:
+L-reduction and AP-reduction which are used later in this paper.
+
+\smallskip
+
+\noindent
+\textbf{L-reducibility}~\cite{TrevisanLuca}. L-reduction
+stands for \textit{linear reduction} because there is a~linear
+blow-up in the relative approximation error. The L-reduction
+enforces both optimal and approximation solutions of an instance~$I$
+of~$A$ to be linearly related, respectively, to optimal and
+approximation solutions of the instance~$I'$ of~$B$ to which it is
+mapped.
+
+Let $f$ and $g$ be polynomial-time reduction functions from
+optimization problem~$A$ to optimization problem~$B$. We say that
+$(f,g)$ is an $\textit{L-reduction}$ if there are constants
+$\alpha,\beta > 0$ such that for each instance~$x$ of~$A$:
+\begin{itemize}
+\item the optima of $x$ and $f(x)$, $\mathrm{OPT}\left(x\right)$ and
+$\mathrm{OPT}\left(f(x)\right)$, respectively,
+satisfy $\mathrm{OPT}\left(f(x)\right) \leq \alpha \mathrm{OPT}\left(x\right)$; and
+\item for any solution $y'$ of $f(x)$ with objective value~$c'$,
+one can find in a~polynomial time a~solution $y = g(x,y')$ of $x$
+with objective value $c$, so that $|\mathrm{OPT}\,(x)-c(y)| \leq
+\beta |\mathrm{OPT}\left(f(x)\right)-c'(y')|$.
+\end{itemize}
+
+From the definition above, one gets that $E_A(x,g(x,y))\leq \alpha\beta
+E_B(f(x),y)$. This inequality implies that if~$A$ is a~minimization
+problem and an \mbox{r-approximate} algorithm for~$B$ exists, then
+a~$(1+\alpha\beta (r$\linebreak $-1))$-approximate algorithm for~$A$ exists. The
+difficulty of L-reducibility is, mainly, due to the fact that it does
+not allow the function~\textit{g} to depend on~$\epsilon$: as a~consequence, this function is forced to map optimum solution into
+optimum solution. The L-reducibility preserves membership in
+PTAS but does not preserve membership in {APX} unless {P}\;=\;{NP} $\bigcap$ co-{NP}. This means that it cannot be
+blindly used to obtain the existence of approximation algorithms via
+reductions. The constant~$\beta$ will be usually~1.
+
+\smallskip
+
+\noindent
+\textbf{AP-reducibility}~\cite{TrevisanLuca}. The
+AP-reduction lets the functions~$f$ and~$g$ depend on the expected
+performance ratio of the reduction. AP-reducibility preserves
+approximation but not optimal solution. There are two different
+constraints that are put on the computational time of~$g$ and~$f$:
+the computation time should be polynomial for fixed values of the
+performance ratio (to preserve membership in PTAS) and the
+reduction should be efficient even when poor performance ratios are
+required (to preserve membership in $\log$\;{APX} and poly{APX}).
+Thus, the computation time should not increase when the performance
+ratio decreases.
+
+\smallskip
+
+\noindent
+\textbf{Definition 5}~\cite{TrevisanLuca}.
+Let~$A$ and~$B$ be two {NPO} problems, with
+instances $I_{A}$ and $I_{B}$, respectively. An extended reduction
+template $(f,g)$ between them is an ordered
+2-tuple of functions such that the following properties hold:
+\begin{itemize}
+\item for any $x \in I_{A}$ and for any rational $r >
+1,f(x,r)$\linebreak $\in I_{B}$ and is computable in time $t_{f}(|x|,r)$.
+
+Moreover, if $\mathrm{sol}\left(x\right) \neq \emptyset$ then also $\mathrm{sol}\left(f(x,r)\right) \neq
+\emptyset$;
+\item for any $y' \in \mathrm{sol}\left(f(x,r)\right), g(x,y',r) \in \mathrm{sol}\left(x\right)$ is
+computable in time $t_{g}(|x|,|y|,r)$;
+\item for any fixed $r$, both $t_{f}(\cdot,r)$ and
+$t_{g}(\cdot,\cdot,r)$ are bounded by a~polynomial; and
+\item for any fixed $n$ and $m$, both $t_{f}(n,\cdot)$ and
+$t_{g}(n,m,\cdot)$ are nonincreasing functions.
+\end{itemize}
+
+\smallskip
+
+Let~$A$ and~$B$ be two {NPO} problems. $A$~is said to be
+\textit{AP-reducible} to $B$, denoted by $A\leq_{AP}B$, if an
+extended template $(f,g)$ between $A$ and~$B$ exists and
+holds~5~properties. The first four properties are of the extended template
+above. They ensure that~$f$ and~$g$ reduction functions are
+polynomial in time, when~$f$~maps instances of~$A$ into instances of~$B$
+and~$g$~maps solutions for instances of~$B$ into solutions for
+instances of~$A$. The fifth property implies the existence of a~positive constant~$\alpha$ such that for any $x \in I_{A}$, for any
+rational $r > 1$, and for any $y \in \mathrm{sol}_{B}(f(x,r))$,
+$R_{B}(f(x,r),y) \leq r$ implies $R_{A}(x,g(x,y,r)) \leq 1 +
+\alpha(r-1)$. The triple $(f,g,\alpha)$ is said to be an
+AP-reduction from~$A$ to~$B$.
+
+\section{Choosing Approximation Preserving Reductions}
+\label{s:ChoosRed}
+
+\noindent
+There are four main criteria that are proposed to
+use when choosing a~specific reduction algorithm from a~given
+problem. Unlike the traditional criteria,  constants and
+not only asymptotic
+functions are considered.
+\begin{enumerate}[1.]
+\item {\it Quality of approximation preserve.} Some of
+the reductions preserve approximation by imposing a~linear relation
+between the performance ratios of~$y'$ and $g(x,y')$. Others
+preserve approximation by putting constrains also on the additive
+errors of~$y'$ and $g(x,y')$. The reduction preservation ratio is
+implied by the parameters of these constrains.
+\item {\it Quality of approximation algorithm of a~destination
+problem.} A performance ratio of the (best) known approximate
+algorithm for a~destination problem.
+\item {\it Inflation of input and the run time complexity of
+a~destination problem.} This parameter is implicitly included in
+a~quality of approximation preserve parameters. Besides, this
+parameter impacts on a~complexity of the
+required execution of the approximation algorithm of the destination
+problem.
+\item {\it Complexity of reduction functions~$f$ and~$g$.} This
+parameter represents a~degree of ease of a~reduction use and also
+contributes to the general performance of a~reduction.
+\end{enumerate}
+
+\subsection{Approximation preserve reductions of~MAX 3-SAT}
+
+\noindent
+Let examine two examples of approximation preserving reductions of
+{MAX 3-SAT} NPO problem and compare them.
+
+\smallskip
+
+\noindent
+\textbf{Example 1}.\
+\textbf{MAX 3-SAT\;{\boldmath{$\leq_{L}$}}\;MAX~2-SAT}
+
+
+\smallskip
+
+\noindent
+Let consider an instance of MAX 3-SAT $\varphi = \varphi_1$\linebreak $
+\wedge \varphi_2 \wedge\cdots\wedge \varphi_k$ with $k$ clauses, each contains
+at most 3~literals. The reduction~$f$~maps $\varphi$ to an instance~$\varphi'$ of MAX 2-SAT, clause by clause, based on the
+following roles:
+\begin{itemize}
+\item if $\varphi_i$ has at most 2~variables, i.\,e., of
+the form $(x^{1}_{i})$ or $(x^{1}_{i} \vee x^{2}_{i})$, then
+$\varphi'_{i} =
+\varphi_i$; and
+\item if $\varphi_i$ has 3~variables, i.\,e., of the form
+$(x^{1}_{i}\vee x^{2}_{i}\vee x^{3}_{i})$, then $\varphi'_{i} =
+(x^{1}_{i}) \wedge (x^{2}_{i}) \wedge (x^{3}_{i}) \wedge (y_{i})
+\wedge
+  (\bar{x}^{1}_{i} \vee \bar{x}^{2}_{i})$\linebreak $ \wedge (\bar{x}^{1}_{i} \vee
+\bar{x}^{3}_{i}) \wedge
+  (\bar{x}^{2}_{i} \vee \bar{x}^{3}_{i}) \wedge (x^{1}_{i} \vee \bar{y}_{i})
+\wedge (x^{2}_{i} \vee
+  \bar{y}_{i}) \wedge (x^{3}_{i} \vee \bar{y}_{i})$, where~$y_i$ is the new
+  variable.
+  \end{itemize}
+
+Suppose a~truth assignment~$\tau$ for~$\varphi$. If~$\varphi_i$ is
+of the first form mentioned above and~$\varphi_i$ is satisfied by~$\tau$,
+then, clearly,~$\varphi'_i$ is also satisfied by~$\tau$. If a~clause~$\varphi_i$ is of the second
+form and~$\varphi_i$ is
+satisfied by~$\tau$, it can be shown that~$\tau$ can be extended to
+a~truth assignment~$\tau'$ for~$\varphi'_i$ which satisfies exactly
+(and not more) seven clauses of~$\varphi'_i$. Let consider several
+cases. In the first case, exactly one literal among $x^{1}_{i}$,
+$x^{2}_{i}$, and $x^{3}_{i}$ is set to \textit{true}.
+Then, by setting~$y_i$ to \textit{false}, let get an assignment that satisfies exactly
+seven of ten clauses in~$\varphi'_i$. In the second case, exactly
+two literals among $x^{1}_{i}$, $x^{2}_{i}$, and $x^{3}_{i}$ are set to
+\textit{true}. Then, by setting $y_i$ indifferently to \textit{true}
+or \textit{false}, one gets an assignment that satisfies exactly seven
+of ten clauses in~$\varphi'_i$. In the third case, all literals
+$x^{1}_{i}$, $x^{2}_{i}$, and $x^{3}_{i}$ are set to \textit{true}. Then, by
+setting~$y_i$ to \textit{false}, one gets an assignment that satisfies
+exactly seven of ten clauses in~$\varphi'_i$. Finally, if~$\varphi_i$ is not satisfied by~$\tau$, no truth assignment for~$y_i$ can satisfy more than six clauses of~$\varphi'_i$ while six
+are guaranteed by setting~$y_i$ to \textit{false}.
+
+\smallskip
+
+\noindent
+\textbf{Lemma 1}~\cite{AP2005}.
+\textit{Given a~propositional formula in conjunctive normal form, at least
+one half of its clauses can always be satisfied}. (Proof: try some
+random assignment. If this does not satisfy half the clauses, then
+its bitwise complement will.)
+
+
+\smallskip
+
+Denote the number of 3-literal clauses of~$\varphi$ by~$m$. This
+implies that $\mathrm{opt}\,(\varphi') = 6m + \mathrm{opt}\,(\varphi)$. By using the lemma
+above, one gets that $m \leq 2\mathrm{opt}\,(\varphi)$ and $\mathrm{opt}\,(\varphi') = 6m +
+\mathrm{opt}\,(\varphi) \leq 13\mathrm{opt}\,(\varphi)$. This means that
+$\mathrm{opt}\,(\varphi')
+\leq 13\mathrm{opt}\,(\varphi)$ and $\alpha = 13$. Given a~truth assignment
+$\tau'$ for~$\varphi'$, let consider its restriction $\tau =
+g(\varphi,\tau')$ on the variables of~$\varphi$; for such assignment
+$\tau$, one has: $m(\varphi,\tau) \geq m(\varphi',\tau') - 6m$. Then
+$\mathrm{opt}\,(\varphi) - m(\varphi,\tau)$\linebreak $ = \mathrm{opt}\,(\varphi') - 6m -
+m(\varphi,\tau) \leq \mathrm{opt}\,(\varphi') - m(\varphi',\tau')$. This means
+that $\mathrm{opt}\,(\varphi) - m(\varphi,\tau) \leq \mathrm{opt}\,(\varphi') -
+m(\varphi',\tau')$ and $\beta = 1$.
+
+\smallskip
+
+\noindent
+\textbf{Conclusion 1}.\ According to~\cite{AP2005}, there is an L-reduction
+with $\alpha=13$ and $\beta=1$ which implies approximation
+algorithm with ratio of $1/(1+\alpha\beta (1/0.955-1)) = 0.62$
+for MAX 3-SAT.
+
+\smallskip
+
+Therefore, the values of the four main criteria mentioned
+before to analyze the quality of the L-reduction above are:
+\begin{enumerate}[(1)]
+\item {\it quality of approximation preserve according
+to}~\cite{AP2005}: in L-reduction, this criterion is measured by
+multiplication of values of the reduction parameters~$\alpha$ and~$\beta$
+and equals~13 in this example;
+\item {\it quality of approximation algorithm of a~destination
+problem according to}~\cite{H1997}: {MAX 2-SAT} can be
+approximated with the ratio~0.955;
+\item {\it inflation of input and the run time complexity of a~destination problem according
+to}~\cite{AP2005}: recall that a~size
+of~$\varphi$ is $k$~clauses, where~$m$~of them have 3~variables. A~size
+of~$\varphi'$ is, thus, $k - m + 10m = k + 9m$ clauses, since
+every clause with 3~variables is expanded to~10~clauses with~2 and~1~variables. The run time complexity
+of the used approximation scheme of {MAX 2-SAT} is much more than
+linear; and
+\item {\it complexity of reduction functions $f$ and~$g$
+according to}~\cite{AP2005}: both functions $f$ and~$g$ are linear
+in a~size of input.
+\end{enumerate}
+
+\noindent
+\textbf{Example 2}.\
+ \textbf{MAX 3SAT-B {\boldmath{$\leq_{L}$}} MAX INDEPENDENT}
+
+\hspace*{34pt}\textbf{SET-B}
+
+ \smallskip
+
+\noindent
+Let consider an instance of MAX 3-SAT $\varphi = \varphi_1$\linebreak $ \wedge
+\varphi_2 \wedge\cdots\wedge \varphi_k$ with~$k$~clauses, where there
+are at most~$B$ occurrences of each variable, for some constant~$B$.
+The reduction~$f$~maps~$\varphi$ to a~graph with vertex degree
+bounded by~$B$, for some constant~$B$ (need not be the same as for
+MAX 3SAT-B instance) in the following way. Construct a~graph~$G$
+with one node for every occurrence of every literal. There is an
+edge connecting literal occurrences from the same clause~---
+a~triangle for every 3-literal clause and a~single edge for every
+2-literal clause. In addition, there is an edge connecting any two
+occurrences of complementary literals.
+
+\smallskip
+
+\noindent
+\textbf{Claim 1}~\cite{MSAT3Example, P1994}.
+If every variable of~$\varphi$
+occurs $\leq k$ times in the clauses, then the degree of the graph $G$
+is $\leq k + 1$.
+
+\smallskip
+
+Every literal has at most 2 edges to the literals that
+appear in its clause, and at most $k-1$ edges to its complementary
+instances in other clauses of~$\varphi$. Thus, one gets that a~degree
+of the nodes in the graph~$G$ is upper bounded by $k+1$.
+
+\smallskip
+
+\noindent
+\textbf{Claim 2}~\cite{MSAT3Example, P1994}.
+An independent set of size~$c$
+corresponds to a~truth assignment that satisfies at least~$c$~clauses of~$\varphi$.
+
+\smallskip
+
+An independent set cannot select both a~literal and its
+complement and can select at most one literal from each clause; so,
+a truth assignment can be obtained by setting the variables
+according to which nodes were in the independent set. For each node
+in the independent set, there is a~satisfied clause. Note that there
+may be other satisfied clauses of~$\varphi$.
+
+\smallskip
+
+\noindent
+\textbf{Conclusion 2}~\cite{MSAT3Example, P1994}. Let~$c$ be an
+independent set of G, and $\tau$ be $g(c)$. Thus,
+\begin{multline*}
+\mathrm{opt}\,(\varphi) - m(\varphi,\tau)\\
+{} =
+\mathrm{opt}\,(G) - m(\varphi,\tau) \leq \mathrm{opt}\,(G) - m(G,c)\,.
+\end{multline*}
+This means that $\beta = 1$.
+
+\columnbreak
+
+\noindent
+\textbf{Claim 3}~\cite{MSAT3Example, P1994}. The size of the maximum independent
+set in the graph is equal to the maximum number of clauses that can
+be satisfied.
+
+\smallskip
+
+For each satisfied clause, there is a~node in the graph~$G$ that can be added to the independent set. This means that
+$\mathrm{opt}\,(\varphi) = \mathrm{opt}\,(G)$ and, thus, $\alpha = 1$.
+
+\smallskip
+
+\noindent
+\textbf{Conclusion 3}.
+According to~\cite{MSAT3Example, P1994},
+there is an \mbox{L-reduction} with $\alpha = \beta = 1$, which implies
+approximation algorithm with ratio of $\alpha\beta B/6+o(1) =
+B/6+o(1)$ or $\alpha\beta O({B}/{\log\log B}) =
+O({B}/{\log\log B})$.
+
+\smallskip
+
+Therefore, the values of the four main criteria mentioned
+before to analyze the quality of the L-reduction above are:\\[-13pt]
+\begin{enumerate}[(1)]
+\item {\it quality of approximation preserve according
+to}~\cite{MSAT3Example, P1994}: in L-reduction, this criterion
+is measured by multiplication of values of the reduction parameters~$\alpha$ and~$\beta$
+and equals~1 in this
+example;\\[-14pt]
+\item {\it quality of approximation algorithm of a~destination
+problem according to}~\cite{HR1994}: {MAX INDEPENDENT SET-B} can
+be approximated with the ratio ${B}/{6}+o(1)$ or
+$O({B}/{\log\log B})$ (depends on a~value of~$B$);\\[-14pt]
+\item {\it inflation of input and the run time complexity of
+a~destination problem according to}~\cite{MSAT3Example, P1994}:
+recall that a~size of~$\varphi$ is~$k$~clauses where~$m$~of them
+have 3~literals. Denote the number of distinct literals of~$\varphi$
+by~$n$. A size of the graph~$G$ is, thus, $k - m + 3m + n{\lceil k/2
+\rceil}^2 = k + 2m + n{\lceil k/2 \rceil}^2$ edges of a~graph~$G$,
+where $3m$ stands for number of edges of a~clause with 3~literals,
+and $n{\lceil k/2 \rceil}^2$ stands for an upper bound on the number
+of edges between literals and their complementary literals. Each
+literal appears at most $k$~times (i.\,e., in each clause) and
+${\lceil k/2 \rceil}^2$ is the maximal size of full dual graph of~$k$~nodes. A~number of nodes
+of graph~$G$ is the total number of
+literals, with duplicates, in all clauses of~$\varphi$. The run time
+complexity of the used approximation scheme of {MAX INDEPENDENT
+SET-B} is near to linear: $N{k}/({j-1})+\min\{k^2N,N\log
+N\}+|E|$ where $N$ is number of nodes in the graph~$G$; $E$ is the
+number of nodes;  and $j$ is the maximal degree of cliques that should be
+removed from graph~$G$ according to the approximation scheme; and
+\item {\it complexity of reduction functions~$f$ and~$g$
+according to}~\cite{MSAT3Example, P1994}: both functions~$f$
+and~$g$ are
+linear in a~size of input.
+\end{enumerate}
+
+\begin{table*}\small %tabl3
+\begin{center}
+\Caption{Comparison of Examples~1 and~2}
+\label{tab:LReductionsCompare}
+\vspace*{2ex}
+
+\tabcolsep=1.1pt
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Example& \tabcolsep=0pt\begin{tabular}{c}Quality\\ of approximation\\ preserve\end{tabular} &
+ \tabcolsep=0pt\begin{tabular}{c}Approximation ratio\\ of a~destination\\ problem\end{tabular} &
+Inflation of input &
+ \tabcolsep=0pt\begin{tabular}{c}Run time\\ of a~destination\\ problem\end{tabular} &
+ \tabcolsep=0pt\begin{tabular}{c}Complexity\\ of $f$ and $g$\end{tabular}&
+ \tabcolsep=0pt\begin{tabular}{c}Approximation ratio\\ of a~source problem\end{tabular} \\
+\hline
+1 & $\alpha \beta = 13$ & 0.955 & $k + 9m$ &
+$\gg$ linear & Linear & 0.509 \\
+\hline
+&&&&&&\\[-10pt]
+2 & $\alpha  \beta = 1$\hphantom{9} & \tabcolsep=0pt\begin{tabular}{c}${B}/{6}+o(1)$,\\
+$O({B}/{\log\log B})$\end{tabular} & $k+2m+n{\lceil k/2 \rceil}^2$ &
+\tabcolsep=0pt\begin{tabular}{l}$N({k}/({j-1}))$\\
+$+{}\min\{k^2N,N\log N\}$\\ $+|E|$, (near to
+linear)\end{tabular} &
+Linear & \tabcolsep=0pt\begin{tabular}{c}${B}/{6}+o(1)$,\\
+$O({B}/{\log\log B})$\end{tabular} \\
+\hline
+\end{tabular}
+\end{center}
+%\vspace*{-6pt}
+\end{table*}
+
+\noindent
+\textbf{Comparison of Examples~1 and~2.} The approximation
+ratio of a~source problem depends on the parameter~$k$. Note that
+$6/(k+1)>0.509$ leads to $k \leq 10$, and this is the case when one
+should prefer {MAX INDEPENDENT SET-B} reduction according to
+this criterion. The inflation of input is better for {MAX
+2-SAT}, but its run time complexity of destination problem is worse
+than of {MAX INDEPENDENT SET-B}. Besides, {MAX 2-SAT}
+approximation scheme is cumbersome. So, there are trade-offs in
+choosing of reduction in this case. The present authors suggest to make a~choice
+according to a~given instance of {MAX 3-SAT} problem.
+
+In the following,  let examine the reductions above with specific
+(simplest) approximation algorithms for {MAX 2-SAT} and {MAX
+INDEPENDENT SET-B}. It will be shown how to choose a~reduction for getting a~scale given an instance of {MAX 3-SAT}. The comparison
+parameters are summarized in Table~3. %~\ref{tab:LReductionsCompare}.
+
+
+
+
+It seems natural to consider first the reduction to {MAX 2-SAT},
+since {MAX 2-SAT} and {MAX 3-SAT} are common problems, and
+the {MAX 2-SAT} approximation algorithm is easier to
+implement~\cite{link-to-the-sofware-cite}. Unfortunately, the reduction to
+{MAX 2-SAT} is found useless, and the present authors turned to examine the
+reduction to {MAX INDEPENDENT SET-B} which resulted with a~nontrivial scale.
+
+Let use the following input $\varphi = (x_1)\wedge (\bar{x_1})\wedge
+\cdots $\linebreak $\cdots\wedge(x_{40})\wedge (\bar{x_{40}})\wedge(x_{41}\vee
+x_{42})\wedge(x_{43})\wedge(\bar{x_{41}}\vee
+\bar{x_{43}})$\linebreak $\wedge(x_{41}\vee \bar{x_{42}} \vee x_{43})\wedge \cdots
+\wedge (x_{53}\vee x_{54})\wedge(x_{55})\wedge(\bar{x_{53}}$\linebreak $\vee
+\bar{x_{55}})\wedge(x_{53}\vee \bar{x_{54}} \vee x_{55})$ of {MAX 3-SAT}.
+There are~100~clauses in $\varphi$, 85 of them are
+one-literal, 10~of them are 2-literal, and~5~of them are 3-literal.
+The approximation algorithm for MAX 2-SAT is described
+in~\cite{Y1994} and is called \textit{the probabilistic method}. The
+approximation algorithm for {MAX INDEPENDENT SET-B} is a~Greedy
+algorithm which is described in~\cite{HR1994}. First,  it will be shown that
+for the input~$\varphi$, ahead can be determine (i.\,e., without
+running the reduction code) that the {MAX 2-SAT} reduction above
+does not produce a~good enough scale (in fact, it produces a~trivial
+scale that is related to the length of the input).
+
+According to the used approximation algorithm for {MAX 2-SAT},
+the translated input~$\varphi^\prime$ is approximated with the ratio
+$r=0.37$ of an input size. According to L-reduction properties, this
+means that the reduction is $1/(1+\alpha\beta(1/r-1)) =
+1/(1+13\cdot1\cdot(1/0.37-1)) = 0.04$-approximative. Assume that the
+reduction obtains a~truth assignment $\tau$ that satisfies all~5\
+3-literal clauses of~$\varphi$. This means that exactly 7 of~10
+clauses of~$\varphi^\prime$ that represent every 3-literal clause
+of~$\varphi$, are satisfied. Since there are 5 3-literal clauses in~$\varphi$,
+there are $7\cdot5 = 35$ satisfied clauses of total
+145~clauses of~$\varphi^\prime$. Since at least~0.37 of~$\varphi^\prime$
+clauses should be satisfied, at least~19 2-literal or unit clauses
+of~$\varphi^\prime$ are also satisfied. These clauses are not
+transformed when~$\varphi$ is translated to~$\varphi^\prime$; so, they
+are satisfied also in the reduction solution for~$\varphi$. Thus, one
+gets the upper bound of $\min\{|\varphi|,19/0.04\} = \min\{100,475\} =
+100$, which adds no information beyond the trivial upper bound
+of~$\varphi$ (i.\,e., equals to the input size) and implies the trivial
+scale. Otherwise, the reduction obtains a~truth assignment~$\tau$
+that does not satisfy all~5 3-literal clauses of~$\varphi$. In this
+case, even more 2-literal or unit clauses of~$\varphi$ are satisfied
+by~$\tau$ and the reduction once again returns a~trivial upper
+bound for~$\varphi$.
+
+The {MAX INDEPENDENT SET-B} reduction~\cite{link-to-the-sofware-cite}
+results in a~few seconds in~0.55
+of satisfied clauses of~$\varphi$ and its performance ratio is~0.6.
+This implies a~non-trivial upper bound of $55/0.6=92$
+clauses.
+
+The run of {GA} for {MAX 3-SAT} is performed by using, once
+again, galib246 library~\cite{GAlib} with a~mutation rate $p_{m} =
+0.001$, crossover rate $p_{c} = 0.6$, and a~one-point crossover
+operator~\cite{link-to-the-sofware-cite}. The initial population is
+random. In a~few seconds, a~truth assignment was got that satisfies~58
+of~100 clauses of~$\varphi$. The solution scale from {MAX
+INDEPENDENT SET-B} reduction certifies the {GA} solution as
+$58/92=0.64$ of the best possible result.
+
+\vspace*{-6pt}
+
+\subsection{Approximation preserve reductions of~MB3DM}
+
+\vspace*{-2pt}
+
+\noindent
+The MB3DM {NPO}
+problem is defined as follows. Given are disjointed sets~$A$, $B$,
+and~$C$ and a~subset of triples $T \subseteq A \times B \times C$.
+Let consider the restricted version of the {MB3DM} problem where
+$|A|=|B|=|C|=q$ and each element of these sets appears in one, two,
+or three triples of~$T$. The goal is to find a~subset $T' \subseteq T$
+of maximum cardinality such that no two triples of~$T'$ agree in any
+coordinate. This version of the MB3DM problem has been shown to be
+{APX}-hard in~\cite{P1994}. Note that each triple can intersect
+at most six other triples, which implies that the maximum matching
+consists of at least $|T|/7$ triples. Let examine two examples of
+approximation preserving reductions of {MB3DM} and compare them.
+
+\pagebreak
+
+\noindent
+\textbf{Example~3.}\ \textbf{MB3DM {\boldmath{$\leq_{L}$}}
+MINIMIZATION OF SUM}
+
+\hspace*{34pt}\textbf{OF SQUARED MACHINE
+LOADS}
+
+
+\smallskip
+
+\noindent
+The problem of {scheduling unrelated parallel machines} is
+defined as follows. Given are a~set of~$n$ independent jobs,
+$J_1,\ldots,J_n$ and a~set of~$m$~parallel machines $M_1,\ldots,M_m$. Each
+job~$j$ can be allocated to one of the machines in a~subset $M(j)
+\subseteq {1,\ldots ,m}$. Each machine can process one job at a~time
+and all machines are available at start time. Denote the time a~job~$j$ takes to be proceeded on a~machine~$M_i$ by~$p_{ij}$. In
+addition, each job~$j$ has nonnegative weight~$w_j$. The goal is to
+arrange the jobs to machines so that the minimal sum of the weighted
+completion times is achieved.
+
+Denote the sum of weights of jobs assigned to the machine~$i$ by the
+load~$l_i$. Let define {Sum of Squared Machine Loads} as the~$l_2$
+norm of the machines load vector
+$\overrightarrow{l}=(l_1,\ldots,l_m)$, where $l_2$ is defined by
+$(\sum\limits_{i=1}^{m}l_i^2)^{1/2}$. Indeed,~$l_2$ is a~measure of the
+quality of a~given assignment.
+
+Let consider an instance~$I$ of the restricted version of MB3DM.
+The reduction~$f$~maps~$I$ into an instance of the Sum of Squared
+Machine Loads problem in the following way. Let define $3q$ machines,
+a machine $M(T_i)$ for each triple~$T_i$ in~$T$, and $3q-|T|$ dummy
+machines. Also, let define $5q$ jobs, a~job per each element of~$A$,
+$B$, and $C$ and $2q$ dummy jobs. On all machines, each element job
+has a~processing time~1 and each dummy job has a~processing time~3.
+The element job can be assigned only to some triple machine
+$M(T_i)$ and only if the triple assigned with the machine contains
+the appropriate element.
+
+Note that for the restricted version of MB3DM, the optimal solution
+$\mathrm{Opt}\,(I)$ consists of $q=|A|=|B|=|C|$ triples, since each element of~$A$,
+$B$, and $C$ appear in at least one triple of~$T$ and a~feasible
+solution consists of disjoint triples, the size of optimal solution
+is~$q$. Let estimate a~size of the optimal solution of $f(I)$.
+The best case is when all three jobs of each triple~$T_i$ in
+$\mathrm{Opt}\,(I)$ are scheduled to the appropriate machine $M(T_i)$. The $2q$
+dummy jobs are scheduled to the $2q$ dummy machines, one job per
+machine. One gets that every machine has load~3 (three element jobs
+with load~1, or one dummy job with load~3). Then the objective value
+of this schedule is the sum of squares of machine load and equals to
+$3^2 \cdot 3q = 27q$. Thus, $\mathrm{Opt}\,(f(I)) \leq 27q = 27\mathrm{Opt}\,(I)$ which
+means that the parameter~$\alpha$ of the L-reduction equals to~27.
+
+Denote by $m_k$, $k=0,\ldots, 3$, a~number of machines in some feasible
+solution of $f(I)$ that process exactly~$k$~element jobs. Then the
+total number of machines equals $m_0+m_1+m_2+m_3 = 3q$, and
+$m_1+2m_2+3m_3 = 3q$ is the total number of element jobs. Note that
+according to the reduction definition, the objective value
+$c(g(f(I))) = m_3$.
+
+\smallskip
+
+\noindent
+\textbf{Lemma 2}~\cite{AERW2002}.
+\textit{The objective value $c(s)$ of the feasible solution~$s$ of the
+scheduling instance $f(I)$ satisfies $c(s) \geq 29q-2m_3$.}
+
+\smallskip
+
+This lemma yields that $|c(g(s))-\mathrm{Opt}\,(I)| = q$\linebreak $-\;m_3 =
+1/2(29q-2m_3-27q) \leq 1/2|c(s)-\mathrm{Opt}\,(f(I))|$ which means that
+the~$\beta$ parameter of the L-reduction equals to~1/2.
+
+\smallskip
+
+\noindent
+\textbf{Conclusion 4}.
+According to~\cite{AERW2002}, there is an L-reduction with
+$\alpha=27$ and $\beta=1/2$, which implies approximation algorithm
+with ratio of
+$1/(1+\alpha\beta(1+\sqrt{2}-1))$\linebreak $=1/(1+27\cdot1/2\cdot\sqrt{2})=0.05$
+for {MB3DM}.
+
+\smallskip
+
+Therefore, the values of the four main criteria mentioned
+before to analyze the quality of the L-reduction above are:
+\begin{enumerate}[(1)]
+\item {\it quality of approximation preserve according
+to}~\cite{AERW2002}: in L-reduction this criterion is measured by
+multiplication of values of the reduction parameters~$\alpha$ and~$\beta$
+and equals~13.5 in this example;
+\item {\it quality of approximation algorithm of a~destination
+problem according to}~\cite{AAGKKV}: the {SUM OF SQUARED MACHINE
+LOADS} problem can be approximated with the ratio $1+\sqrt{2}$;
+\item {\it inflation of input and the run time complexity of a~destination problem according
+to}~\cite{AERW2002}: 3q
+machines and 5q jobs are defined  which implies the inflation of input to be 8q.
+The run time complexity of the used approximation scheme of {SUM
+OF SQUARED MACHINE
+LOADS} is quadratic in input size; and
+\item {\it complexity of reduction functions $f$ and~$g$
+according to}~\cite{AERW2002}: both functions $f$ and~$g$ are linear
+in a~size of input.
+\end{enumerate}
+
+\smallskip
+
+\noindent
+\textbf{Example 4}.
+\textbf{MB3DM {\boldmath{$\leq_{AP}$}} STAR-GCA-SIMPLE}
+
+\smallskip
+
+\noindent
+Let $A$ and $B$ be two NPO problems. $A$ is said to be
+\textit{AP-reducible} to~$B$, denoted by $A\leq_{AP}B$, if an
+extended template $(f,g)$ between~$A$ and~$B$ and a~positive
+constant~$\alpha$ exist such that for any $x \in I_{A}$, for any
+rational $r> 1$, and for any $y \in \mathrm{sol}_{B}(f(x,r))$,
+$R_{B}(f(x,r),y) \leq r$ implies $R_{A}(x,g(x,y,r)) \leq 1 +
+\alpha(r-1)$. The triple $(f,g,\alpha)$ is said to be an
+AP-reduction from $A$ to~$B$~\cite{TrevisanLuca}.
+
+The problem of {STAR-GCA} (General Call Admission control
+problem in STAR networks) is defined as follows. A star network is
+the undirected graph $G=(V,E)$, when the node $0$ represents a~unique
+central node and rest of nodes are connected to it and called outer
+nodes. The edge set $E$ consists of the edges $e_i=(i,0)$ for
+$i=1,\ldots,n$ according to the network links structure. Each link has
+a positive capacity $c(e)$.
+
+A request for a~connection ({call}) is defined by a~tuple
+$(u_i,v_i,t_i,d_i,b_i,p_i)$ consisting of a~source node $u_i \in V$,
+a destination node $v_i \in V$, a~starting time $t_i$,
+a~duration~$d_i$, a~positive bandwidth requirement $b_i$, and a~profit~$p_i$.
+A~solution is a~set of accepted calls of those arrived. A feasibility
+of a~solution is determined by the sum of bandwidth requirements of
+simultaneously active calls using the same edge does not exceed the
+capacity of that edge. The goal is to maximize the sum of profits of
+the accepted calls.
+
+{STAR-GCA-SIMPLE} is the restriction of the {STAR-GCA}
+problem which is defined as follows. Each call~$i$ has one of $t_i
+\in {0,1,2}$ starting times, duration $d_i=2$ and unit profit
+and the needed bandwidth is also one unit on each call edge. The
+capacity of each edge is a~unit which implies that only a~single
+path per edge can be active in every given moment. Thus, the
+objective function is a~cardinality of accepted calls set.
+
+Let $I$ be an instance of MB3DM problem. The reduction~$f$~maps~$I$
+into instance of STAR-GCA-SIMPLE in the following way. For every
+element $a_i \in A, b_i \in B$, and $c_i \in C$,  a~link of
+this element to the central node~$0$ is defined. For each triple $t_j =
+(a_j,b_j,c_j) \in T$, additional three nodes $d_{j,1}$, $d_{j,2}$, and
+$d_{j,3}$ are defined and linked to the central node. Also, 5
+additional requests are added: $r_1 = (d_{j,1}, d_{j,2})$ with time
+interval $[0,2)$; $r_2 = (d_{j,2}, d_{j,3})$ with time interval
+$[2,4)$; $r_3 = (d_{j,1}, a_j)$ with time interval $[1,3)$; $r_4 =
+(d_{j,2}, b_j)$ with time interval $[1,3)$; and $r_5 = (d_{j,3}, c_j)$
+with time interval $[1,3)$.
+
+One has to ensure that no more than three requests for one triple
+are accepted. Note that according to the reduction definition above,
+either the requests $r_1$ and $r_2$ are accepted since they have
+disjoint time intervals or the requests $r_3,r_4$, and $r_5$ are
+accepted since they do not share any edge. In any case, the accepted
+requests of one triple block the rest of the requests of the same
+triple. Let obtain an approximate solution $M_1$ for a~given instance
+of MB3DM problem using the following
+
+\smallskip
+
+\noindent
+\textbf{Lemma 3}~\cite{AEMSSW2005}. \textit{There is a~greedy
+procedure that computes a~1/3-approximation for the bounded maximum
+3-dimensional matching problem.}
+
+
+\smallskip
+
+Then the reduction function~$g$ composes a~solution~$M_2$
+using the solution obtained for the instance $f(I)$ of the
+STAR-GCA-SIMPLE problem in the following way. If three calls
+$r_3$, $r_4$, and $r_5$ of some triple $t \in T$ are accepted, this
+triple is added to the solution of the MB3DM problem instance~$I$.
+Then, let choose the maximal solution obtained from the reduction and
+from the approximation algorithm for MB3DM, i.\,e.,
+$|g(f(I))|=\max\{|M_1|,|M_2|\}$. From the lemma above, one gets that
+$|M_1| \geq |M^*|/3$ where $M^*$ is the maximum matching for $I$. By
+the following
+
+\smallskip
+
+\noindent
+\textbf{Lemma 4}~\cite{AEMSSW2005}.
+\textit{Let $T \subseteq A \times B \times C$ be an
+instance of the maximum three-dimensional matching problem, and let
+$(G,R)$ be the corresponding instance of STAR-GCA-SIMPLE defined
+above. There is a~feasible solution for $(G,R)$ that accepts
+$2|T|+k$ requests iff $T$ has a~matching of size~$k$.}
+
+
+\smallskip
+
+\noindent
+one obtains that $|M_2| \geq |g(f(I))|-2|T|$. Till now,
+the first four properties of AP-reduction have been satisfied. Let show
+that the fifth property is also holds with $\alpha=43$. According to
+the lemma above, an optimal solution for~$f(I)$ consists of
+$|M^*|+2|T|$ requests where $M^*$ is the optimal solution of an
+instance~$I$. Assume that one has an $r$-approximation algorithm for
+$f(I)$ that implies a~solution~$Q$ consists of at least
+$(|M^*|+2|T|)/r$ requests. If $r \geq 45/43$, the inequality
+$|g(f(I))| \geq |M_1| \geq |M^*|/3$ shows that $g$ computes a~1/3-approximation.
+Since $3=1+43(45/43-1)$\linebreak $ \leq 1+43(r-1)$,
+$|g(f(I))| \geq {M^*}/({1+43(r-1)})$ and $1+43(r-1) \geq
+{M^*}/{|g(f(I))|}$. According to the fifth property of the
+AP-reduction, this means that the value of the reduction parameter~$\alpha$
+equals~43. Otherwise, $r < 45/43$. From $|Q| \geq
+(|M^*|+2|T|)/r$, one  gets
+\begin{multline*}
+|Q| \geq \fr{2r|T|+\left\vert M^*\right\vert -2(r-1)|T|}{r}\\
+{} =
+2|T|+ \fr{\left\vert M^*\right\vert-2(r-1)|T|}{r} \\
+{}\geq 2|T|+
+\fr{\left\vert M^*\right\vert(1-14(r-1))}{r}
+\end{multline*}
+ where the property $|T| \leq
+7|M^*|$ mentioned before in the last inequality was used. As $|g(f(I))| \geq
+|M_2| $\linebreak $\geq |Q|-2|T| \geq {(1-14(r-1))|M^*|}/{r}$, one gets that
+\begin{multline*}
+\fr{\left\vert M^*\right\vert}{|g(f(I))|} \leq \fr{\left\vert M^*\right\vert}
+{(1-14(r-1))\left\vert M^*\right\vert/r}\\
+{} =
+1+\fr{15}{15-14r}(r-1) \leq 1+43(r-1)
+\end{multline*}
+ where the last inequality
+holds for $1<r<45/43$. Again, the fifth property is fulfilled with
+$\alpha=43$.
+
+\smallskip
+
+\noindent
+\textbf{Conclusion~5}.
+According to~\cite{AEMSSW2005}, there is an AP-reduction with
+$\alpha=43$, which implies approximation algorithm with ratio of
+$1/(1+\alpha(1/1/18-1))$\linebreak $=1/(1+43(18-1))=1/732=0.001$ for {MB3DM}.
+
+\smallskip
+
+\begin{table*}\small %tabl4[htb!]
+\begin{center}
+\Caption{Comparison of Examples 3 and~4}
+\label{tab:APLReductionsCompare}
+\vspace*{2ex}
+
+\tabcolsep=1.8pt
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Example& \tabcolsep=0pt\begin{tabular}{c}Quality\\ of approximation\\ preserve\end{tabular} &
+ \tabcolsep=0pt\begin{tabular}{c}Approximation ratio\\ of a~destination\\ problem\end{tabular} &
+Inflation of input &
+ \tabcolsep=0pt\begin{tabular}{c}Run time\\ of a~destination\\ problem\end{tabular} &
+ \tabcolsep=0pt\begin{tabular}{c}Complexity\\ of $f$ and $g$\end{tabular}&
+ \tabcolsep=0pt\begin{tabular}{c}Approximation ratio\\ of a~source problem\end{tabular} \\
+\hline
+3 & $\alpha \beta = 13.5$ & $1+\sqrt{2}$ & $8q$ & Quadratic in input size & Linear & 0.05 \\
+%\hline
+4 & $\alpha = 43$ & $1/18$ & $11q\leq\cdots\leq27q$ & Quadratic in input size & Linear & 0.001 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+
+Therefore, the values of the four main criteria mentioned
+before to analyze the quality of the AP-reduction above are:
+\begin{enumerate}[(1)]
+\item {\it quality of approximation preserve according
+to}~\cite{AEMSSW2005}: in AP-reduction this criterion is measured by
+the value of the reduction parameter~$\alpha$ and
+equals~43 in this example;
+\item {\it quality of approximation algorithm of a~destination
+problem according to}~\cite{AEMSSW2005}: the {STAR-GCA-SIMPLE}
+problem can be approximated with the ratio~1/18;
+\item {\it inflation of input and the run time complexity of
+a~destination problem according to}~\cite{AEMSSW2005}: suppose the
+restricted version of {MB3DM} problem as of the Example~3
+reduction, where $|A|=|B|=|C|=q$ and $q\leq|T|\leq 3q$. Let add a~vertex for each element of~$A$, $B$, and $C$, and for each triple of~$T$,
+let add~3~vertices and~5~requests to~\textit{R}. Then the
+inflation of input in this case is $3q+8|T|$. Since $q \leq |T| \leq
+3q$, one gets that $11q \leq 3q+8|T| \leq 27q$. The run time complexity
+of the used approximation scheme of {STAR-GCA-SIMPLE} is
+quadratic in
+input size; and
+\item {\it complexity of reduction functions~$f$ and~$g$
+according to}~\cite{AEMSSW2005}: both functions~$f$ and~$g$ are
+linear in a~size of input.
+\end{enumerate}
+
+\smallskip
+
+\noindent
+\textbf{Comparison of Examples~3 and~4.} The approximation
+ratio of the destination problem in Example~3 is tighter than the
+approximation ratio of the destination problem in Example~4, namely
+$1+\sqrt{2}$ vs.\ $1/18$. Since these examples use different kinds
+of reductions,  the quality of approximation
+preserve cannot be compared directly but only the approximation ratios obtained for
+{MB3DM} problem. According to this criterion, the reduction of
+Example~3 is better: 0.05 vs.~0.001. The input inflation for
+Example~3 is only slightly smaller, and the execution time of both
+destination problems approximation algorithms is quadratic in input
+size. Therefore, this criterion does not dominate the choice of a~reduction. The complexity of the reduction functions~$f$ and~$g$ of
+both reductions is linear in a~size of input.
+
+According to all comparable criteria, summarized in Table~4,
+the reduction of Example~3 is better than the reduction of Example~4.
+
+\vspace*{-6pt}
+
+\section{Concluding Remarks}
+\label{s:Concluding}
+
+\vspace*{-4pt}
+
+\noindent
+The main goal of this
+paper is to define a~new framework in which the quality of a~solution that is based on heuristics is certified by an
+approximation algorithm. The framework  was defined and it was
+verified that
+it is feasible, useful, and essential in order to get a~certificate
+for a~heuristic.
+
+It was note that it is possible that the approximation ratio
+stated for a~particular approximation algorithm is the
+worst case ratio over all inputs, one may investigate
+tight approximation ratio for a~given input.
+This may further motivate the designer of approximation
+schemes to provide a~function from
+inputs to approximation ratio rather than
+only the worst case single bound. Also, it was found that
+the approximation results are useful to define the initial generation
+of the GA as an important technique.
+
+The authors hope that the computation of a~scale and a~certificate will become a~standard practice accompanying any
+heuristics which, in turn, will assist in core AI tasks such as symbolic planning,
+scheduling, and theorem proving.
+
+%\vspace*{-6pt}
+
+\Ack
+\noindent
+The authors thank Moshe Sipper and Eitan Bachmat for helpful discussions.
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+
+%\vspace*{-6pt}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\begin{thebibliography}{99}
+
+\bibitem{H1971} %1
+\Aue{Holland, J.} 1971.
+Genetic algorithms and the optimal allocation of
+trials. \textit{SIAM J.~Comput.} 2:88--105.
+
+
+\bibitem{GAlib} %2
+Wall, M., and MIT. 1994--2005.
+GAlib: A~C++ library of genetic algorithm
+components. Available at: {\sf
+http:// lancet.mit.edu/ga/} (accessed February~10, 2015).
+
+\bibitem{KPP99} %3
+\Aue{Kellerer, H., U.~Pferschy, and D.~Pisinger}. 2004.
+\textit{Knapsack problems}.
+Berlin: Springer. 161--166.
+
+\bibitem{link-to-the-sofware-cite} %4
+{\sf http://www.cs.bgu.ac.il/$\sim$sadetsky/Thesis/}
+(accessed February~10, 2015).
+
+\bibitem{Sipper1996} %5
+\Aue{Sipper, M.}  1996.
+A~brief introduction to genetic algorithms.
+Available at: {\sf http://www.cs.bgu.ac.il/$\sim$sipper/ ga.html}
+(accessed February~10, 2015).
+
+\bibitem{TrevisanLuca} %6
+\Aue{Trevisan, L.} 1997.
+Reductions and (non-)approximability. Universita
+Degli Studi di Roma `La Sapienza,' dotoorato di Rjcerca in
+Informatica. IX-97-7:17--35.
+
+
+
+
+\bibitem{AP2005} %7
+\Aue{Ausiello, G., and V.~Th.~Paschos}.  2005.
+Approximability preserving
+reductions. \textit{Cahier Du Lamsade} 227:12.
+
+\bibitem{H1997} %8
+\Aue{Hastad, J.} 1997.
+Some optimal inapproximability results.
+\textit{29th ACM Symposium on Theory of
+Computing Proceedings}.  1--10.
+
+\bibitem{MSAT3Example} %9
+{\sf http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/cla ss/15451-s00/www/lectures/lect0406post.txt}
+(accessed February~10, 2015).
+
+\bibitem{P1994} %10
+\Aue{Papadimitriou, C., and M.~Yannakakis}.
+1988. Optimization, approximation,
+and complexity classes. \textit{20th Annual ACM Symposium on the
+Theory of Computing Proceedings.} %ISBN:0-89791-264-0,
+229--234.
+
+\bibitem{HR1994} %11
+\Aue{Halldorsson, M., and J.~Radhakrishnan}. 1994.
+Greed is good: Approximating
+independent sets in sparse and\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+ bounded-degree graphs. \textit{30th
+ACM Symposium on Theory of Computing Proceedings}.
+439--448.
+
+\bibitem{Y1994} %12
+\Aue{Yannakakis, M.}  1994.
+\textit{On the approximation of maximum satisfiability}.
+\textit{3rd Annual ACM-SIAM Symposium on Discrete Algorithms Proceedings}.
+Orlando, FL, USA.
+475--502.
+
+
+\bibitem{AERW2002} %13
+\Aue{Azar, Y., L.~Epstein, Y.~Richter, and G.~Woeginger}.
+2004. All-norm approximation algorithms. \textit{J.~Algorithm.} 52(2):120--133.
+%ISSN:0196-6774, pp. 120-133, 2004.
+
+
+\bibitem{AAGKKV} %14
+\Aue{Awerbuch,~B.,  Y.~Azar, E.~Grove, M.~Kao, P.~Krishman,
+and J.~Vitter}. 1995. Load balancing in the $L_p$ norm.
+\textit{IEEE Symposium on Foundations of Computer Science
+(FOCS) Proceedings}.
+
+
+%\bibitem{MM1971} S. \ Matuura, T. \ Mastui,
+%``0.935-Approximation Randomized Algorithm for MAX 2SAT and its
+%Derandomization,'' Technical Report METR 2001-03, University of
+%Tokyo, pp. 10, 2001.
+
+%\bibitem{P1988}
+%\Aue{Petrank,  E.} 1994.
+%The hardness of approximation: Gap location.
+%\textit{Computational Complexity} 4:133--157.
+
+
+%\bibitem{book}
+%\Aue{Vazirani, V.} 2001. \textit{Approximation algorithms}.
+%Berllin: Springer-Verlag. 69--72.
+
+\bibitem{AEMSSW2005} %15
+\Aue{Adamy,~U., T.~Erlebach, D.~Mitsche, I.~Schurr,
+B.~Speckmann, and E.~Welzl}. 2005.
+Off-line admission control for advance
+reservations in star networks.
+\textit{Approximation Online
+Algorithms} 3351:211--224.
+
+\end{thebibliography} } }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received January 12, 2015}}
+
+\vspace*{-24pt}
+
+\Contr
+
+\noindent
+\textbf{Dolev Shlomi} (b.\ 1958)~---
+Doctor of Science in computer science, professor, Ben-Gurion University of the Negev,
+Beer-Sheva 84105, Israel; dolev@cs.bgu.ac.il
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Kogan-Sadetsky Marina} (b.\ 1977)~--- PhD student,
+Ben-Gurion University of the Negev,
+Beer-Sheva 84105, Israel; sadetsky@cs.bgu.ac.il
+
+\vspace*{10pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{10pt}
+
+%\newpage
+
+
+\def\tit{ЭВРИСТИЧЕСКИЕ СЕРТИФИКАТЫ ПОСРЕДСТВОМ ПРИБЛИЖЕНИЙ}
+
+\def\aut{Ш.~Долев$^1$, М.~Коган-Садецкая$^2$}
+
+
+\def\titkol{Эвристические сертификаты посредством приближений}
+
+\def\autkol{Ш.~Долев$^1$, М.~Коган-Садецкая$^2$}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]{Работа проводится при финансовой поддержке Программы
+%стратегического развития Петрозаводского государственного университета в рамках
+%на\-уч\-но-ис\-сле\-до\-ва\-тель\-ской деятельности.}}
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-12pt}
+
+\noindent
+$^1$Факультет компьютерных наук, Университет Бен-Гурион
+в~Негеве, Израиль, dolev@cs.bgu.ac.il
+
+\noindent
+$^2$Факультет компьютерных наук, Университет Бен-Гурион
+в~Негеве, Израиль, sadetsky@cs.bgu.ac.il
+
+\vspace*{6pt}
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill ИНФОРМАТИКА И ЕЁ ПРИМЕНЕНИЯ\ \ \ том\ 9\ \ \ выпуск\ 1\ \ \ 2015}
+}%
+ \def\rightfootline{\small{ИНФОРМАТИКА И ЕЁ ПРИМЕНЕНИЯ\ \ \ том\ 9\ \ \ выпуск\ 1\ \ \ 2015
+\hfill \textbf{\thepage}}}
+
+
+\Abst{Предложен новый метод, в~котором качество (необязательно
+оптимального) эвристического
+решения сертифицировано приближенным алгоритмом, а~именно: результат
+эвристического решения
+сопровождается шкалой, получаемой из приближенного алгоритма. Создание шкалы
+эффективно,
+в~то время как  получение решения от алгоритма аппроксимации обычно требует
+длительных
+расчетов относительно эвристического подхода. С~другой стороны, результаты,
+полученные с~помощью эвристики без шкалы, могут быть бесполезными. Исследованы
+ критерии
+для выбора
+схемы аппроксимации для получения шкалы. Чтобы получить шкалу на
+практике, приближения рассмотрены не только по их асимптотическому
+поведению,
+но также изучены соотношения между ними относительно размера ввода для данной
+проблемы.
+Для практического примера рассмотрены эвристические и приближенные алгоритмы
+для задач
+{SINGLE KNAPSACK}, {MAX 3-SAT} и~{MAXIMUM BOUNDED THREE-DIMENSIONAL
+MATCHING}, которые
+являются известными {NP}-слож\-ны\-ми задачами. Получены сертификаты для
+эвристических запусков с~использованием подходящих приближений.}
+
+
+\KW{эвристика; приближенный алгоритм;
+оптимальное решение; сводимости сохраняющие приближения}
+
+\DOI{10.14357/19922264150103}
+
+%\vspace*{6pt}
+
+
+ \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily Литература}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\begin{thebibliography}{99}
+
+\bibitem{H1971-1} %1
+\Au{Holland J.}
+Genetic algorithms and the optimal allocation of
+trials~// \textit{SIAM J.~Comput.}, 1971. Vol.~2. P.~88--105.
+
+\bibitem{GAlib-1} %2
+Wall, M., and MIT. 1994--2005.
+GAlib: A~C++ library of genetic algorithm
+components. {\sf
+http://lancet. mit.edu/ga/}.
+
+
+\bibitem{KPP99-1} %3
+\Au{Kellerer H., Pferschy U., Pisinger ~D.}
+{Knapsack problems}.~---
+Berlin: Springer, 2004. P.~161--166.
+
+\bibitem{link-to-the-sofware-cite-1} %4
+{\sf http://www.cs.bgu.ac.il/$\sim$sadetsky/Thesis/}.
+
+\bibitem{Sipper1996-1} %5
+\Au{Sipper M.}  1996.
+A~brief introduction to genetic algorithms.
+{\sf http://www.cs.bgu.ac.il/$\sim$sipper/ga.html}.
+
+\columnbreak
+
+\bibitem{TrevisanLuca-1} %6
+\Au{Trevisan~L.} 1997.
+Reductions and (non-)approximability. Universita
+Degli Studi di Roma `La Sapienza,' dotoorato di Rjcerca in
+Informatica. Vol.~IX-97-7. P.~17--35.
+
+\bibitem{AP2005-1} %7
+\Au{Ausiello G., Paschos~V.\,Th.}
+Approximability preserving
+reductions~// {Cahier Du Lamsade}, 2005. Vol.~227. P.~12.
+
+\bibitem{H1997-1} %8
+\Au{Hastad J.}
+Some optimal inapproximability results~//
+\textit{29th ACM Symposium on Theory of
+Computing Proceedings}, 1997.  P.~1--10.
+
+\bibitem{MSAT3Example-1} %9
+{\sf http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/cla ss/15451-s00/www/lectures/lect0406post.txt}.
+
+
+\bibitem{P1994-1} %10
+\Au{Papadimitriou C., Yannakakis~M.}
+Optimization, approximation,
+and complexity classes~// {20th Annual ACM Symposium on the
+Theory of Computing Proceedings}, 1988. %ISBN:0-89791-264-0,
+P.~229--234.
+
+\bibitem{HR1994-1} %11
+\Au{Halldorsson M., Radhakrishnan J.}
+Greed is good: Approximating
+independent sets in sparse and bounded-degree graphs~// {30th
+ACM Symposium on Theory of Computing Proceedings},  1994.
+P.~439--448.
+
+\bibitem{Y1994-1} %12
+\Au{Yannakakis M.}
+{On the approximation of maximum satisfiability}~//
+3rd Annual ACM-SIAM Symposium on Discrete Algorithms Proceedings.~---
+Orlando, FL, USA,  1994. P.~475--502.
+
+\columnbreak
+
+\bibitem{AERW2002-1} %13
+\Au{Azar, Y., L.~Epstein, Y.~Richter, and G.~Woeginger}.
+All-norm approximation algorithms~// {J.~Algorithm.}, 2004.
+Vol.~52. No.\,2. P.~120--133.
+%ISSN:0196-6774, pp. 120-133, 2004.
+
+\bibitem{AAGKKV-1} %14
+\Au{Awerbuch~B.,  Azar Y., Grove~E., Kao~M., Krishman~P.,
+Vitter~J.} 1995. Load balancing in the $L_p$ norm.
+\textit{IEEE Symposium on Foundations of Computer Science
+(FOCS) Proceedings}.
+
+\bibitem{AEMSSW2005-1} %15
+\Au{Adamy~U., Erlebach T., Mitsche~D., Schurr~I.,
+Speckmann~B., Welzl~E.}
+Off-line admission control for advance
+reservations in star networks~//
+{Approximation Online
+Algorithms}, 2005. Vol.~3351. P.~211--224.
+
+%\bibitem{MM1971} S. \ Matuura, T. \ Mastui,
+%``0.935-Approximation Randomized Algorithm for MAX 2SAT and its
+%Derandomization,'' Technical Report METR 2001-03, University of
+%Tokyo, pp. 10, 2001.
+
+
+
+%\bibitem{P1988-1}
+%\Au{Petrank  E.}
+%The hardness of approximation: Gap location~//
+%{Computational Complexity},  1994. Vol.~4. P.~133--157.
+
+
+%\bibitem{book-1}
+%\Au{Vazirani~V.} {Approximation algorithms}.~---
+%Berllin: Springer-Verlag, 2001. P.~69--72.
+
+
+\end{thebibliography}
+} }
+
+\end{multicols}
+
+ \label{end\stat}
+
+% \vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в редакцию 12.01.2015}}
+\renewcommand{\bibname}{\protect\rm Литература}
+\renewcommand{\figurename}{\protect\bf Рис.}
+\renewcommand{\tablename}{\protect\bf Таблица}
+
+

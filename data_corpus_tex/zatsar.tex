@@ -1,0 +1,664 @@
+\def\stat{zats+shabanov}
+
+\def\tit{МЕТОДИЧЕСКИЙ ПОДХОД\\ К~КОНТРОЛЮ КАЧЕСТВА ТРАНСФОРМАЦИИ ДАННЫХ\\ 
+В~МЕЖДИСЦИПЛИНАРНОЙ ЦИФРОВОЙ ПЛАТФОРМЕ}
+
+\def\titkol{Методический подход к~контролю качества трансформации данных 
+в~МЦП} %междисциплинарной цифровой платформе}
+
+\def\aut{А.\,А.~Зацаринный$^1$, А.\,П.~Шабанов$^2$}
+
+\def\autkol{А.\,А.~Зацаринный, А.\,П.~Шабанов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Зацаринный А.\,А.}
+\index{Шабанов А.\,П.}
+\index{Zatsarinny A.\,A.}
+\index{Shabanov A.\,P.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Исследование выполнено с~использованием ЦКП <<Информатика>> ФИЦ ИУ РАН.}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{azatsarinny@ipiran.ru}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> 
+Российской академии наук, \mbox{apshabanov@mail.ru}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}
+ 
+ 
+
+
+\Abst{Объектом исследования выбраны процессы обработки данных в~междисциплинарной 
+циф\-ро\-вой платформе (МЦП), обес\-пе\-чи\-ва\-ющей информационное вза\-имо\-дей\-ст\-вие меж\-ду субъектами 
+экономической, управ\-лен\-че\-ской и~научной дея\-тель\-ности. Приведены результаты 
+анализа входящего и~исходящего процессов трансформации данных. Показано, что время 
+обработки транс\-фор\-ми\-ру\-емых данных на вы\-чис\-ли\-тель\-ных ресурсах зависит от информации, 
+которую содержат эти данные и~которая определяется намерениями субъектов. Выявлено, 
+что для экономических агентов важ\-ны па\-ра\-мет\-ры свое\-вре\-мен\-ности предостав\-ле\-ния 
+информации о~новых знаниях, которая передается им научными партнерами.  
+Па\-ра\-мет\-ры времени обработки данных на вы\-чис\-ли\-тель\-ных ресурсах классифицируются 
+как па\-ра\-мет\-ры качества трансформации данных, которые утверж\-да\-ют\-ся в~договорах 
+субъектов с~оператором плат\-фор\-мы и~учитываются в~требованиях к~процессам контроля 
+качества. Впер\-вые предложен методический подход к~контролю качества, по\-стро\-ен\-ный 
+на сравнительной оцен\-ке степени соответствия фактических значений па\-ра\-мет\-ров 
+времени трансформации данных их доверенным значениям, которые утверж\-де\-ны 
+в~договорах. Практическая зна\-чи\-мость методического подхода заключается в~обеспечении 
+функций объективного инструмента для контроля над соблюдением договорных 
+обязательств оператора циф\-ро\-вой платформы перед вза\-и\-мо\-дей\-ст\-ву\-ющи\-ми субъектами.}
+
+\KW{цифровая платформа;  трансформация данных;  информационное взаимодействие;  
+своевременность;  доверенный контроль}
+
+\DOI{10.14357\!/\!08696527230311}{MEONXL}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-18pt}
+ 
+
+\section{Введение. Постановка задачи}
+
+\vspace*{-2pt}
+
+  В рамках реализации задач федеральных проектов <<Циф\-ро\-вые 
+технологии>>, <<Информационная инфраструктура>> и~<<Циф\-ро\-вое 
+государственное управ\-ле\-ние>>, вы\-пол\-ня\-емых в~соответствии 
+с~национальной программой <<Циф\-ро\-вая экономика>>, все большую 
+ак\-ту\-аль\-ность приобретают МЦП 
+как новый тип ор\-га\-ни\-за\-ци\-он\-но-тех\-ни\-че\-ско\-го комплекса.  
+Ак\-ту\-аль\-ность их применения обуслов\-ле\-на не\-об\-хо\-ди\-мостью 
+повышения эффективности решения экономических задач по консолидации 
+производственной мощ\-ности экономических агентов и~интеллектуального 
+потенциала их научных партнеров. 
+  
+  Одним из направлений развития МЦП~[1] стало наращивание информационного взаимодействия между 
+организационными системами (ОС)~--- субъектами экономической, 
+управ\-лен\-че\-ской и~на\-уч\-ной дея\-тель\-ности. Необходимым условием для 
+обеспечения информационного взаимодействия служит наличие договорных 
+обязательств оператора МЦП перед вза\-и\-мо\-дей\-ст\-ву\-ющи\-ми субъектами, в~том 
+чис\-ле о~соблюдении перед ними доверенных значений па\-ра\-мет\-ров времени 
+трансформации данных, которые содержат новые знания, пе\-ре\-да\-ва\-емые 
+экономическим агентам от их научных партнеров,~--- времени, за\-тра\-чи\-ва\-емо\-го 
+на обработку этих данных на производительных ресурсах МЦП. 
+  
+  Наличие договорных обязательств о~времени трансформации данных 
+обусло\-ви\-ло ак\-ту\-а\-ль\-ность требований к~автоматизации деятельности по 
+контролю качества трансформации данных на основе сле\-ду\-ющих процессов: 
+  \begin{itemize}
+  \item  записи и~изменения доверенных значений па\-ра\-мет\-ров времени 
+обработки данных в~МЦП, утверж\-ден\-ных в~договорах между ОС 
+и~пред\-при\-яти\-ем-опе\-ра\-то\-ром МЦП и~опре\-де\-ля\-ющих достигнутый уровень 
+качества трансформации в~ней данных;
+  \item измерения фактических значений па\-ра\-мет\-ров времени 
+трансформации данных; 
+  \item проведения сравнительной оценки фактических и~доверенных значений 
+па\-ра\-мет\-ров времени трансформации данных с~определением 
+и~предостав\-ле\-ни\-ем информации об уровне качества трансформации лицам, 
+при\-ни\-ма\-ющим решения.
+  \end{itemize}
+  
+  В представленном исследовании решается задача формализации 
+методического подхода к~контролю качества трансформации данных в~МЦП, 
+удовле\-тво\-ря\-юще\-го изложенным выше тре\-бо\-ва\-ниям.
+
+\begin{figure}[b] %fig1
+\vspace*{-6pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{zac-1.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Схема производительных ресурсов МЦП}
+\end{figure}
+
+\section{Анализ процессов трансформации данных}
+  
+  Исходя из намерения формализации методического подхода к~контролю 
+качества трансформации данных произведен анализ входящего в~МЦП 
+и~исходящего из МЦП процессов трансформации данных с~учетом сле\-ду\-ющих 
+факторов: 
+  \begin{itemize}
+\item намерений субъектов информационного взаимодействия по\-средст\-вом 
+МЦП в~отношении передачи добытых новых знаний одними субъектами 
+и~приобретения этих знаний другими субъектами~[2]; 
+\item мирового опыта применения в~циф\-ро\-вых транспортных сетях 
+технологий трансформации данных, которые основаны на намерениях 
+вза\-и\-мо\-дей\-ст\-ву\-ющих субъектов, сетевом управ\-ле\-нии при передаче данных 
+и~управ\-ле\-нии ин\-фор\-ма\-ци\-он\-но-тех\-но\-ло\-ги\-че\-ски\-ми услугами (см., например,~[3--10]);
+\item методов оценки производительности при трансформации данных для 
+ОС в~облачных вы\-чис\-ли\-тель\-ных структурах (см., например,~[11--15]);
+\item функций и~производительных ресурсов (функциональных, 
+информационных, вы\-чис\-ли\-тель\-ных, транспортных), ис\-поль\-зу\-емых в~МЦП 
+в~соответствии с~регламентированными процедурами процессной технологии 
+для трансформации данных, при которой для работы с~каж\-дой ОС 
+за\-креп\-ля\-ют по одной при\-клад\-ной программе с~базой данных, 
+а~вы\-чис\-ли\-тель\-ные ресурсы за\-креп\-ля\-ют за группами (подмножествами) ОС 
+с~одинаковыми доверенными значениями ве\-ро\-ят\-ност\-но-вре\-мен\-н\'{ы}х  
+па\-ра\-мет\-ров. 
+\end{itemize}
+  
+  Для наглядного отображения взаимосвязей ресурсов и~функций разработана 
+и~пред\-став\-ле\-на на рис.~1 схема производительных ресурсов МЦП.
+    
+  На основании результатов проведенного анализа выявлено, что:
+  \begin{itemize}
+\item время обработки трансформируемых данных носит динамический 
+характер, который обуслов\-лен за\-ви\-си\-мостью времени от информации, 
+которую содержат данные;
+\item эта информация определяется намерениями субъектов взаимодействия 
+и,~как следствие, па\-ра\-мет\-ра\-ми маршрутов для доставки информации 
+в~циф\-ро\-вой транспортной сети~[1];
+\item важными для экономических агентов считаются все па\-ра\-мет\-ры 
+своевременности до\-став\-ки им этой информации, которая содержит новые 
+знания, в~том числе па\-ра\-мет\-ры трансформации данных на ресурсах 
+МЦП. 
+\end{itemize}
+
+\begin{figure}[b] %fig2
+\vspace*{-6pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=127.34mm 
+\epsfbox{zac-2.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Схема группового вычислительного ресурса МЦП}
+\end{figure}
+
+\section{Модели трансформации данных на~ресурсах междисциплинарной~цифровой платформы}
+  
+  С учетом приведенных выше соображений определен глав\-ный принцип 
+контроля качества трансформации данных на групповых вы\-чис\-ли\-тель\-ных 
+ресурсах МЦП, который со\-сто\-ит в~применении процедуры измерения в~них 
+дли\-тель\-ности \textit{интервалов за\-ня\-тости} с~учетом динамических свойств 
+времени обработки транс\-фор\-ми\-ру\-емых данных. 
+  
+  Разработана схема группового вычислительного ресурса МЦП (рис.~2), 
+которая отоб\-ра\-жа\-ет изложенный выше подход.
+ 
+  При описании группового вычислительного ресурса МЦП (см.\ рис.~2) 
+используются сле\-ду\-ющие па\-ра\-метры:
+  \begin{description}
+  \item [\,] $P_N^k(j)$~--- вероятность того, что требование~--- пакет данных, 
+по\-сту\-пив\-ший $k$-м по порядку в~интервале за\-ня\-тости вы\-чис\-ли\-тель\-но\-го 
+ресурса дли\-тель\-ностью в~$N$ пакетов данных~--- условных единиц,~--- 
+застанет в~нем $j$ пакетов данных;
+  \item[\,] $T$~--- максимально допустимое (доверенное) значение времени 
+ожидания пакетом данных обслуживания; 
+  \item[\,] ${\sf P}(\leq T)$~--- минимально допустимое (доверенное) значение 
+вероятности непревышения времени~$T$; 
+  \item[\,] $[J=(T/t_{\mathrm{cu}})]$~--- максимально допустимое значение времени 
+ожидания пакетом данных обслуживания, вы\-ра\-жен\-ное чис\-лом условных 
+единиц, где через $[x]$ обозначена целая часть чис\-ла~$x$.
+  \item[\,] $t_{\mathrm{cu}}$~--- длительность 1~условной единицы.
+  \end{description}
+  
+  В МЦП образуются два типа трактов трансформации данных 
+с~использованием групповых вы\-чис\-ли\-тель\-ных ре\-сур\-сов.
+  
+  Модель трансформации данных во входящем тракте пред\-став\-ле\-на на рис.~3.
+
+\begin{figure}[b] %fig3
+\vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=127.252mm 
+\epsfbox{zac-3.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Модель трансформации данных во входящем тракте}
+\end{figure}
+
+  В модели трансформации данных во входящем трак\-те (см.\ рис.~3) выполняются 
+сле\-ду\-ющие функции:
+  \begin{itemize}
+\item функции распределения 2-го типа выполняют запись данных из 
+транспортного ресурса в~вы\-чис\-ли\-тель\-ный ресурс в~соответствии с~адресом 
+ОС, из которой данные переданы;
+\item вычислительный ресурс инициирует запуск функций распределения  
+1-го типа, используя код и~базу данных той при\-клад\-ной программы 
+(функциональный и~информационный ресурс), которая востребована для 
+проведения трансформации над по\-сту\-пив\-ши\-ми данными;
+\item функции распределения 1-го типа выполняют на вы\-чис\-ли\-тель\-ном 
+ресурсе необходимые операции, например по установке канала передачи 
+данных в~локальной сети между вы\-чис\-ли\-тель\-ным комплексом, с~одной 
+стороны, и~накопителем с~программой и~базой данных, с~другой стороны;
+\item вычислительный ресурс обеспечивает выполнение операций 
+программы, например по криптографическому де\-шиф\-ро\-ва\-нию данных, 
+и~передает данные в~со\-от\-вет\-ст\-ву\-ющую базу данных (информационный 
+ре\-сурс).
+\end{itemize}
+  
+  Модель трансформации данных в~исходящем тракте пред\-став\-ля\-ет собой 
+зеркальное отоб\-ра\-же\-ние модели трансформации данных во входящем тракте 
+(см.\ рис.~3), при этом выполняются сле\-ду\-ющие функ\-ции:
+  \begin{itemize}
+\item соответствующая программа на информационных ресурсах ини\-ци\-иру\-ет 
+запуск функций распределения 1-го типа, используя код того 
+вы\-чис\-ли\-тель\-но\-го ресурса, который востребован для проведения 
+трансформации данных, например код ОС, в~которую 
+данные долж\-ны быть пе\-ре\-даны;
+\item функции распределения 1-го типа выполняют процедуры, необходимые 
+для выполнения операций на вы\-чис\-ли\-тель\-ном ресурсе, например по 
+уста\-нов\-ке канала передачи данных в~локальной сети между вы\-чис\-ли\-тель\-ным 
+комплексом, с~одной стороны, и~накопителем с~программой и~базой данных, 
+с~другой сто\-роны;
+\item вычислительный ресурс обеспечивает выполнение операций 
+программы, например по криптографическому шиф\-ро\-ва\-нию данных, 
+и~ини\-ци\-иру\-ет запуск функций распределения 2-го типа, используя коды 
+устройств передачи данных и~связи, востребованные для передачи данных 
+в~со\-от\-вет\-ст\-ву\-ющую~ОС;
+\item функции распределения 2-го типа выполняют запись данных из 
+вы\-чис\-ли\-тель\-но\-го ресурса последовательно в~со\-от\-вет\-ст\-ву\-ющие устройства 
+передачи данных и~связи из со\-ста\-ва транспортных ресурсов.
+\end{itemize}
+
+  Транспортный ресурс осуществляет передачу данных в~циф\-ро\-вую 
+транспортную сеть и~далее в~со\-от\-вет\-ст\-ву\-ющую ОС.
+
+\section{Формальное описание методического подхода к~контролю~над~трансформацией~данных 
+в~междисциплинарной~цифровой~платформе} 
+  
+  Методический подход к~контролю над трансформацией данных 
+в~МЦП, исходя из пред\-став\-лен\-ной выше 
+информации, формально мож\-но пред\-ста\-вить как по\-сле\-до\-ва\-тель\-ность 
+выполнения сле\-ду\-ющих ша\-гов:
+  \begin{enumerate}[1.]
+\item Заключают договоры с~обязательствами оператора МЦП перед 
+ОС~--- пользователями ее ресурсов~--- 
+о~соблюдении значений па\-ра\-мет\-ров времени передачи данных о~новых 
+знаниях экономическим агентам от их научных партнеров~--- времени, 
+за\-тра\-чи\-ва\-емо\-го на трансформацию этих данных в~МЦП.
+\item Определяют в~качестве доверенных значений максимально до\-пус\-ти\-мые 
+значения времени~$T_v$ ожидания требованиями обслуживания на 
+групповых вы\-чис\-ли\-тель\-ных ресурсах, $v\hm=1, 2, \ldots, V$ (см.\ рис.~2), 
+и~минимально до\-пус\-ти\-мых значений ве\-ро\-ят\-ности $P_v(\leq T_v)$ 
+непревышения этого вре\-мени.
+\item Преобразуют доверенные значения времени~$T_v$ для групповых 
+вы\-чис\-ли\-тель\-ных ресурсов в~без\-раз\-мер\-ные значения $[J_v \hm= T_v/t^v_{\mathrm{cu}}]$, 
+которые выражены чис\-лом услов\-ных единиц, при\-чем:
+\begin{itemize}
+\item формат данных соответствует раз\-ряд\-ности вы\-чис\-ли\-тель\-но\-го 
+ресурса;
+\item время обработки одного формата (пакета) данных рав\-но  
+одной безразмерной услов\-ной единице (в~процедурах измерений 
+используются показатели времени~--- мик\-ро-, мил\-ли\-се\-кун\-ды и~др.). 
+\end{itemize}
+\item Измеряют фактические значения дли\-тель\-ности интервалов~$T_v^*$ 
+за\-ня\-тости на групповых вы\-чис\-ли\-тель\-ных ресурсах и~преобразуют их 
+к~без\-раз\-мер\-ным значениям $[J_v^* \hm= T_v^*/t^v_{\mathrm{cu}}]$.
+\item Проводят сравнительную оценку со\-от\-вет\-ст\-ву\-ющих доверенных 
+и~фактических без\-раз\-мер\-ных значений дли\-тель\-ности интервалов за\-ня\-тости 
+на групповых вы\-чис\-ли\-тель\-ных ресурсах:
+$$
+\left[J_v = \fr{T_v}{t^v_{\mathrm{cu}}}\right] - \left[J_v^* = \fr{T_v^*}{t^v_{\mathrm{cu}}}\right] = L_v\,.
+$$
+
+Если $L_v \geq 0$, то классифицируют значение~$L_v$ как 
+\textit{доверенное значение} качества трансформации данных на 
+групповом вы\-чис\-ли\-тель\-ном ресурсе~$v$ и~до\-бав\-ля\-ют~1 (единицу) в~базу 
+данных доверенных значений МЦП.
+
+Если $L_v \hm< 0$, то переходят к~шагу~6.
+\item С использованием известной формулы~[16, с.~13, формула~(6)] проводят 
+расчет ве\-ро\-ят\-ности~$P_N^k(j)$ того, что пакет данных, по\-сту\-пив\-ший $k$-м по 
+порядку в~интервале за\-ня\-тости вы\-чис\-ли\-тель\-но\-го ресурса дли\-тель\-ностью 
+в~$N$ пакетов данных, застанет в~нем $j$ пакетов данных. Исходные данные 
+для рас\-чета:
+$$
+j = J_v - 1;\quad k = N\,.
+$$
+
+Если $P_N^k(j) \geq P_v(\leq T_ v)$, то классифицируют значение~$L_v$ как 
+\textit{доверенное} значение качества трансформации данных на 
+групповом вы\-чис\-ли\-тель\-ном ресурсе~$v$ и~до\-бав\-ля\-ют~1 (единицу) 
+в~счетчик доверенного качества МЦП.
+
+Если $P_N^k(j) < P_v(\leq T_v)$, то классифицируют значение~$L_v$ как 
+\textit{недостаточное} значение качества трансформации данных на 
+групповом вы\-чис\-ли\-тель\-ном ресурсе~$v$ до\-бав\-ля\-ют~1 (единицу) 
+в~счетчик недостаточного качества МЦП.
+\item Циклично с~параметром~$\Delta T$ (например, декада, месяц, квартал) 
+по соглашению оператора МЦК и~субъектов взаимодействия на основе 
+показаний счетчиков доверенного ($S_1$) и~недостаточного ($S_2$) качества 
+МЦП проводят расчет уров\-ня качества трансформации данных на 
+вы\-чис\-ли\-тель\-ных ре\-сур\-сах:
+
+если $[S_1/(S_1+S_2)] \cdot 100\% \hm\geq P_v(\leq T_v)$, то уровень  
+качества~--- \textit{доверенный};
+
+если $[S_1/(S_1+S_2)] \cdot 100\% \hm< P_v(\leq T_v)$, то уровень качества~--- 
+\textit{недостаточный}.
+
+Формируют отчет и~предоставляют лицам, при\-ни\-ма\-ющим решения.
+\end{enumerate}
+  
+  Наличие расчетных процедур в~предлагаемом методическом подходе 
+к~контролю качества поз\-во\-ля\-ет получить более точ\-ные значения при оценке 
+уровня качества трансформации данных в~МЦП.
+
+\section{Заключение }
+  
+  Впервые поставлена, обосно\-ва\-на и~решена научная задача о~разработке 
+методического подхода к~контролю качества трансформации данных 
+в~МЦП, обес\-пе\-чи\-ва\-юще\-го проведение 
+оцен\-ки степени соответствия фактических значений па\-ра\-мет\-ров времени 
+трансформации данных их доверенным значениям, которые записаны 
+в~договорах субъектов с~оператором циф\-ро\-вой плат\-формы.
+  
+  Разработана схема производительных ресурсов циф\-ро\-вой плат\-фор\-мы, 
+отобра\-жа\-ющая взаимосвязи функциональных, информационных, 
+вы\-чис\-ли\-тель\-ных и~транспортных ресурсов, и~типовая схема группового 
+вы\-чис\-ли\-тель\-но\-го ресурса, ис\-поль\-зу\-емая при проведении оцен\-ки уров\-ня 
+качества трансформации данных. 
+  
+  Предложена двухуровневая процедура оценки качества трансформации 
+данных, обес\-пе\-чи\-ва\-ющая повышение точ\-ности оцен\-ки качества, что 
+стимулирует рост доверия субъектов и~оператора циф\-ро\-вой плат\-фор\-мы 
+к~по\-лу\-ча\-емой ими информации о~качестве обработки данных. 
+  
+  Предлагаемый методический подход к~контролю качества транс\-фор\-ма\-ции 
+данных может найти практическое применение в~МЦП, пред\-на\-зна\-чен\-ных для организации и~поддержки 
+информационного взаимодействия меж\-ду субъектами экономической, 
+управ\-лен\-че\-ской и~научной де\-я\-тель\-ности при реализации задач федеральных 
+проектов, вы\-пол\-ня\-емых в~соответствии с~национальной программой 
+<<Циф\-ро\-вая экономика>>. 
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-zac}
+\Au{Zatsarinnyy~A.\,A., Shabanov~A.\,P.} The software-controlled digital platform model for the 
+transmission of new knowledge~/\!\!/  Conference (International) on Modern Network 
+Technologies Proceedings.~--- Piscataway, NJ, USA: IEEE, 2022. Art. 9960743. 8~p. doi: 
+10.1109\!/\!MoNeTec55448.2022.9960743.
+\bibitem{2-zac}
+\Au{Xu~J., Smyth~H., Zerjav~V.} Towards the dynamics of trust in the relationship between  
+project-based firms and suppliers~/\!\!/ Int. J. Proj. Manag., 2021. Vol.~39. Iss.~1.  
+P.~32--44. doi: 10.1016\!/\!j.ijproman.2020.09.005.
+\bibitem{10-zac} %3
+\Au{Yazici~A., Mishra~A., Kontogiorgis~P.} IT service management (ITSM) education and research: 
+Global view~/\!\!/ Int. J. Eng. Educ., 2015. Vol.~31. Iss.~4. P.~1071--1080.
+\bibitem{6-zac} %4
+\Au{Asikainen~A.-L., Mangiarotti~G.} Open innovation and growth in IT sector~/\!\!/ Serv. 
+Bus., 2017. Vol.~11. P.~45--68. doi: 10.1007\!/\!s11628-015-0301-2.
+\bibitem{8-zac} %5
+\Au{Lattemann~C., Siemon~D., Dorawa~D., Redlich~B.} Digitization of the design thinking process 
+solving problems with geographically dispersed teams~/\!\!/ Design, user experience, 
+and usability: Theory, methodology, and management~/ Eds. A.~Marcus, W.~Wang.~--- Lecture notes in computer science 
+ser.~--- Cham: Springer, 2017. Vol.~10288.  
+P.~71--88. doi: 10.1007\!/\!978-3-319-58634-2\_6.
+\bibitem{3-zac} %6
+\Au{Shao~G., Latif~H., Martin~C., Denno~P.} Standards-based integration of advanced process 
+control and optimization~/\!\!/ J.~Industrial Information Integration, 2019. Vol.~13. P.~1--12. doi: 
+10.1016\!/\!j.jii.2018.11.001.
+\bibitem{4-zac} %7
+\Au{Semenov~V., Ilyin~D., Morozov~S., Tarlapan~O.} Effective consistency management for  
+large-scale product data~/\!\!/ J.~Industrial Information Integration, 2019. Vol.~13. P.~13--21. doi: 
+10.1016\!/\!j.jii.2018.11.006.
+\bibitem{9-zac} %8
+\Au{Потапов~С.\,Е.} Исследование процесса передачи информации по виртуальным 
+марш\-ру\-там в~радиосети сис\-те\-мы связи с~подвижными объектами~/\!\!/ Теория и~техника 
+радиосвязи, 2019. №\,3. С. 11--23.
+\bibitem{5-zac} %9
+\Au{Morshedzadeh~I., Ng~A.\,H.\,C., Jeusfeld~M.} Managing manufacturing data and information 
+in product lifecycle management systems considering changes and revisions~/\!\!/ Int. J. Product 
+Lifecycle Management, 2021. Vol.~13. Iss.~3. P.~244--264. doi: 10.1504\!/\!IJPLM.2021.118041.
+
+\bibitem{7-zac} %10
+\Au{Auemhammer~J., Bernard~R.} The origin and evolution of Stanford University's design 
+thinking: From product design to design thinking in innovation management~/\!\!/ J.~Prod. 
+Innovat. Manag., 2021. Vol.~38. P.~623--644. doi: 10.1111\!/\!jpim.12594.
+\bibitem{12-zac} %11
+\Au{Орехов~С.\,Е., Артамонов~Д.\,П., Ива\-нов~С.\,А.} Технологии облачных вы\-чис\-ле\-ний 
+в~интегрированных сис\-те\-мах управ\-ле\-ния~/\!\!/ Инфокоммуникационные технологии, 
+2020. Т.~18. №\,4. С.~477--484. doi: 10.18469\!/\!ikt.2020.18.4.13.
+\bibitem{13-zac} %12
+\Au{Volkov~A.\,O.} Evaluation of cloud computing cluster performance~/\!\!/  
+T-Comm, 2020. Vol.~14. Iss.~12. P.~72--79. doi: 10.36724\!/\!2072-8735-2020-14-12-72-79.
+\bibitem{14-zac} %13
+\Au{Шейхгасанов~Ш.\,К., Колотилов~Ю.\,В.} Методы достижения энер\-го\-эф\-фек\-тив\-ности 
+в~об\-лач\-ных вы\-чис\-ле\-ни\-ях~/\!\!/ Вест\-ник Астраханского государственного технического 
+университета. Сер.\ Управ\-ле\-ние, вы\-чис\-ли\-тель\-ная техника и~информатика, 2020. №\,2.  
+С.~77--83. doi: 10.24143\!/\!2072-9502-2020-2-77-83.
+\bibitem{15-zac} %14
+\Au{Файзуллин~Р.\,В., Херинг~Ш., Ва\-си\-лен\-ко~К.\,А.} Модели оценки эф\-фек\-тив\-ности 
+об\-лач\-ных технологий и~туманных вы\-чис\-ле\-ний~/\!\!/ Моделирование, оптимизация 
+и~информационные технологии, 2020. Т.~8. №\,1. С.~30--31. doi:  
+10.26102\!/\!2310-6018/2020.28.1.025.
+\bibitem{11-zac} %15
+\Au{Спицын~А.\,А.} Алгоритм настройки параметров расписания облачных вычислений на 
+основе оптимизации роя частиц~/\!\!/ Вестник Рязанского государственного 
+радиотехнического университета, 2021. Вып.~75. С.~44--52. doi:  
+10.21667\!/\!1995-4565-2021-75-44-52.
+\bibitem{16-zac}
+\Au{Зацаринный~А.\,А., Шабанов~А.\,П.} Методологический подход к~управ\-ле\-нию 
+качеством информации в~слож\-ных инфокоммуникационных проектах~/\!\!/ Сис\-те\-мы 
+и~средства информатики, 2011. Т.~21. №\,2. С.~3--20.
+   \end{thebibliography}
+} }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 07.05.23}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+%\vspace*{8pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+
+
+\def\tit{METHODOLOGICAL APPROACH\\ TO~QUALITY CONTROL OF~DATA 
+TRANSFORMATION\\ IN~AN~INTERDISCIPLINARY DIGITAL PLATFORM}
+
+
+
+\def\titkol{Methodological approach to~quality control of~data 
+transformation} % in~an~interdisciplinary digital platform}
+
+\def\aut{A.\,A.~Zatsarinny and A.\,P.~Shabanov}
+
+\def\autkol{A.\,A.~Zatsarinny and A.\,P.~Shabanov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119133, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2023 vol~33 no\,3}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2023 vol~33 no\,3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+  \Abste{The object of the research are the processes of data transformation in an interdisciplinary digital platform that 
+  provides information interaction between subjects of economic, managerial, and scientific activities. 
+  The results of the analysis of incoming and outgoing data transformation processes in the digital platform are presented. 
+  It is shown that the processing time of transformed data in computing resources depends on the information that these data 
+  contain and which is determined by the intentions of the subjects. It is revealed that for economic agents, 
+  the parameters of the timeliness of providing information about new knowledge which is transmitted to them by scientific 
+  partners are important. The parameters of data processing time in computing resources are classified as data transformation 
+  quality parameters which are approved in the contracts of subjects with the platform operator and are taken into account 
+  in the requirements for quality control processes. For the first time, a~methodological approach to quality control is proposed 
+  based on a~comparative assessment of the degree of compliance of the actual values of the time parameters of data transformation 
+  with their trusted values which are approved in contracts. The practical significance of the methodological approach is to 
+  provide the functions of an objective tool for 
+  monitoring compliance with the contractual obligations of the operator of the digital platform to the interacting entities.}
+  
+  \KWE{digital platform; data transformation; information interaction; timeliness; 
+trusted control}
+  
+\DOI{10.14357\!/\!08696527230311}{MEONXL}  
+
+%\vspace*{-10pt}
+
+
+%\Ack
+%\noindent
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-zac-1}
+  \Aue{Zatsarinnyy, A.\,A., and A.\,P.~Sha\-ba\-nov.} 2022. The software-controlled 
+digital platform model for the transmission of new knowledge. \textit{Conference 
+(International) on Modern Network Technologies Proceedings}. Piscataway, NJ: IEEE. 9960743. 
+8~p. doi: 10.1109\!/\!MoNeTec55448.2022.9960743.
+\bibitem{2-zac-1}
+  \Aue{Xu, J., H. Smyth, and V.~Zerjav.} 2021. Towards the dynamics of trust in the 
+relationship between project-based firms and suppliers. \textit{Int. J. Proj. Manag.} 
+39(1):32--44. doi: 10.1016\!/\!j.ijproman.2020.09.005.
+\bibitem{10-zac-1} %3
+\Aue{Yazici, A., A.~Mishra, and P.~Kontogiorgis.} 2015. IT service management 
+(ITSM) education and research: Global view. \textit{Int. J. Eng. Educ.}  
+31(4):1071--1080.
+\bibitem{6-zac-1} %4
+  \Aue{Asikainen, A.-L., and G.~Mangiarotti.} 2017. Open innovation and growth in 
+IT sector. \textit{Serv. Bus.} 11:45--68. doi: 10.1007\!/\!s11628-015-0301-2.
+\bibitem{8-zac-1} %5
+  \Aue{Lattemann, C., D.~Siemon, D.~Dorawa, and B.~Redlich.} 2017. Digitization 
+of the design thinking process solving problems with geographically dispersed teams. 
+\textit{Design, user experience, and usability: Theory, methodology, and 
+management}. Eds. A.~Marcus 
+and W.~Wang. Lecture notes in computer science ser. Cham: Springer.  
+10288:71--88. doi: 10.1007\!/\!978-3-319-58634-2\_6.
+\bibitem{3-zac-1} %6
+  \Aue{Shao, G., H.~Latif, C.~Martin, and P.~Denno.} 2019. Standards-based 
+integration of advanced process control and optimization. \textit{J.~Industrial 
+Information Integration} 13:1--12. doi: 10.1016\!/\!j.jii.2018.11.001.
+\bibitem{4-zac-1} %7
+  \Aue{Semenov, V., D.~Ilyin, S.~Morozov, and O.~Tar\-la\-pan.} 2019. Effective 
+consistency management for large-scale product data. \textit{J.~Industrial 
+Information Integration} 13:13--21. doi: 10.1016\!/\!j.jii.2018.11.006.
+\bibitem{9-zac-1} %8
+  \Aue{Potapov, S.\,E.} 2019. Is\-sle\-do\-va\-nie pro\-tses\-sa pe\-re\-da\-chi  
+in\-for\-ma\-tsii po vir\-tu\-al'\-nym marsh\-ru\-tam v~ra\-dio\-se\-ti sistemy svya\-zi 
+s~pod\-vizh\-ny\-mi ob''ek\-ta\-mi [Research of process of information transfer on 
+virtual routes in the radio network of the communication system with mobile objects]. 
+\textit{Teo\-riya i~tekh\-ni\-ka ra\-dio\-svy\-azi} [Radio Communication Theory and 
+Technology] 3:11--23.
+\bibitem{5-zac-1} %9
+  \Aue{Morshedzadeh, I., A.\,H.\,C.~Ng, and M.~Jeusfeld.} 2021. Managing 
+manufacturing data and information in product lifecycle management systems 
+considering changes and revisions. \textit{Int. J. Product Lifecycle Management} 
+13(3):244--264. doi: 10.1504\!/ IJPLM.2021.118041.
+\bibitem{7-zac-1} %10
+  \Aue{Auemhammer, J., and R.~Bernard.} 2021. The origin and evolution of 
+Stanford University's design thinking: From product design to design thinking in 
+innovation management. \textit{J.~Prod. Innovat. Manag.} 38(6):623--644. doi: 
+10.1111\!/\!jpim.12594.
+\bibitem{12-zac-1} %11
+  \Aue{Orekhov, S.\,E., D.\,P.~Artamonov, and S.\,A.~Iva\-nov.} 2020. 
+ Tekh\-no\-lo\-gii ob\-lach\-nykh vy\-chis\-le\-niy v~in\-teg\-ri\-ro\-van\-nykh  
+sis\-te\-makh uprav\-le\-niya [Cloud computing technologies in integrated 
+management systems]. \textit{In\-fo\-kom\-mu\-ni\-ka\-tsi\-on\-nye tekh\-no\-lo\-gii} 
+[Infocommunication Technologies] 18(4):477--484. doi: 
+10.18469\!/\!ikt.2020.18.4.13.
+\bibitem{13-zac-1} %12
+  \Aue{Volkov, A.\,O.} 2020. Evaluation of cloud computing cluster performance. 
+\textit{T-Comm} 14(12):72--79. doi: 10.36724\!/\!2072-8735-2020-14-12-72-79.
+\bibitem{14-zac-1} %13
+  \Aue{Sheykhgasanov, Sh.\,K., and Yu.\,V.~Kolotilov.} 2020. Me\-to\-dy  
+do\-sti\-zhe\-niya ener\-go\-ef\-fek\-tiv\-nosti v~ob\-lach\-nykh vy\-chis\-le\-ni\-yakh 
+[Methods for achieving energy efficiency in cloud computing]. \textit{Vestnik  
+Astra\-khan\-sko\-go go\-su\-dar\-st\-ven\-no\-go tekh\-ni\-che\-sko\-go 
+ uni\-ver\-si\-te\-ta. Ser. Uprav\-le\-nie, vy\-chis\-li\-tel'\-naya tekh\-ni\-ka  
+i~in\-for\-ma\-ti\-ka} [Bulletin of Astrakhan State Technical University. Ser. 
+Management, Computer Science, and Informatics] 2:77--83. doi:  
+10.24143\!/\!2072-9502-2020-2-77-83.
+\bibitem{15-zac-1} %14
+  \Aue{Fayzullin, R.\,V., Sh.~Khering, and K.\,A.~Va\-si\-len\-ko.} 2020. Mo\-de\-li  
+otsen\-ki ef\-fek\-tiv\-nosti ob\-lach\-nykh tekh\-no\-lo\-giy i~tu\-man\-nykh  
+vy\-chis\-le\-niy [Models of evaluations of the cloud technology and fog computing]. 
+\textit{Mo\-de\-li\-ro\-va\-nie, op\-ti\-mi\-za\-tsiya i~in\-for\-ma\-tsi\-on\-nye  
+tekh\-no\-lo\-gii} [Modeling, Optimization, and Information Technology] 8(1):30--31. 
+doi: 10.26102\!/\!2310-6018/2020.28.1.025.
+\bibitem{11-zac-1} %15
+  \Aue{Spitsyn, A.\,A.} 2021. Al\-go\-ritm na\-stroy\-ki pa\-ra\-met\-rov  
+ras\-pi\-sa\-niya ob\-lach\-nykh vy\-chis\-le\-niy na osno\-ve op\-ti\-mi\-za\-tsii roya  
+chas\-tits [Algorithm for configuring cloud computing schedule parameters based on 
+particle swarm optimization]. \textit{Vestnik Ryazanskogo gosudarstvennogo 
+radiotekhnicheskogo universiteta} [Bulletin of the Ryazan State Radio Engineering 
+University] 75:44--52. doi: 10.21667\!/\!1995-4565-2021-75-44-52.
+\bibitem{16-zac-1}
+  \Aue{Zatsarinnyy, A.\,A., and A.\,P.~Sha\-ba\-nov.} 2011. 
+ Me\-to\-do\-lo\-gi\-che\-skiy pod\-khod k~uprav\-le\-niyu ka\-chest\-vom  
+in\-for\-ma\-tsii v~slozh\-nykh in\-fo\-kom\-mu\-ni\-ka\-tsi\-on\-nykh pro\-ek\-takh 
+[Methodological approach to quality management in complex communication 
+projects]. \textit{Sis\-te\-my i~Sred\-st\-va In\-for\-ma\-ti\-ki~--- Systems and Means of 
+Informatics} 21(2):3--20.
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received May 7, 2023}} 
+
+\vspace*{-12pt} 
+  
+  \Contr
+  
+  \noindent
+  \textbf{Zatsarinny Alexander A.} (b.\ 1951)~--- Doctor of Science in technology, 
+professor, principal scientist, %Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences,  
+44-2~Vavilov Str., Moscow 119133, Russian Federation; 
+\mbox{AZatsarinny@ipiran.ru}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Shabanov Alexander P.} (b.\ 1949)~--- Doctor of Science in technology, 
+leading scientist, %Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov 
+Str., Moscow 119133, Russian Federation; \mbox{apshabanov@mail.ru}
+  
+
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}    
+  

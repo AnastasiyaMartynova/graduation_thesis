@@ -1,0 +1,596 @@
+
+\newcommand{\mujk}{\mu_{j,k}}
+\newcommand{\sumk}{\sum\limits_{k=0}^{2^j-1}}
+
+
+\def\stat{shestakov}
+
+\def\tit{СХОДИМОСТЬ РАСПРЕДЕЛЕНИЯ ОЦЕНКИ РИСКА ПОРОГОВОЙ
+ОБРАБОТКИ К~СМЕСИ НОРМАЛЬНЫХ ЗАКОНОВ
+ПРИ~СЛУЧАЙНОМ ОБЪЕМЕ ВЫБОРКИ$^*$}
+
+\def\titkol{Сходимость распределения оценки риска пороговой
+обработки} % к~смеси нормальных законов при~случайном объеме выборки}
+
+
+\def\aut{О.\,В.~Шестаков$^1$}
+
+\def\autkol{О.\,В.~Шестаков}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Шестаков О.\,В.}
+\index{Shestakov O.\,V.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при финансовой поддержке Российского научного фонда 
+(проект 18-11-00155).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский государственный университет им.\ М.\,В.~Ломоносова, 
+кафедра математической статистики факультета вычислительной математики и~кибернетики; 
+Институт проб\-лем информатики Федерального исследовательского центра 
+<<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{oshestakov@cs.msu.su}}
+
+
+ \label{st\stat}
+
+                  \thispagestyle{headings}
+                  
+  \vspace*{-12pt}
+  
+
+
+\Abst{Популярность алгоритмов обработки сигналов, использующих методы вейв\-лет-ана\-ли\-за, 
+значительно возросла за последние десятилетия. Объясняется это тем, что вейв\-лет-раз\-ло\-же\-ние 
+представляет собой удобный математический аппарат, способный решать задачи, 
+в~которых применение традиционного Фурье-ана\-ли\-за оказывается неэффективным. 
+Основные задачи, для решения которых используются методы вейв\-лет-ана\-ли\-за,~--- 
+это компрессия сигналов и~удаление шума. При этом чаще всего используется пороговая 
+обработка коэффициентов вейв\-лет-раз\-ло\-же\-ния, которая обнуляет коэффициенты, 
+не превышающие заданного порога. Наличие шума и~процедуры пороговой обработки 
+неизбежно приводят к~погрешностям в~оцениваемом сигнале. Свойства оценки таких 
+погрешностей (среднеквадратичного риска) исследовались во многих работах. 
+В~частности, показано, что при определенных условиях оценка риска является 
+сильно состоятельной и~асимптотически нормальной. При использовании методов 
+пороговой обработки обычно предполагается, что число вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов 
+фиксировано. Однако в~некоторых ситуациях объем выборки заранее не известен 
+и~моделируется случайной величиной. В~данной работе рассматривается модель со
+ случайным числом наблюдений и~описывается класс распределений, которые 
+ могут быть предельными для оценки среднеквадратичного риска.}
+
+\KW{пороговая обработка; случайный объем выборки; оценка среднеквадратичного риска}
+
+\DOI{10.14357\!/\!08696527190203} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+      \vspace*{-18pt} 
+  
+
+
+\section{Введение}
+
+\vspace*{-2pt}
+
+Задачи обработки и~анализа сигналов возникают во многих прикладных областях, 
+включая физику плазмы, медицину, геофизику, астрономию, радиолокацию, системы
+ связи и~передачи информации и~т.\,д. В~некоторых ситуациях объем данных 
+ (число отсчетов сигнала) заранее не известен. Время получения сигнала может 
+ быть ограничено, а~моменты
+регистрации отсчетов могут быть случайными. Может отсутствовать точная информация 
+о~характеристиках используемого оборудования или возникать пропуски данных. 
+В~этом случае часто предполагается, что объем выборки представляет собой случайную 
+величину с~некоторым распределением вероятностей.
+
+Часто одним из этапов анализа и~обработки сигналов является преобразование, 
+приводящее к~его <<экономному>> представлению. Примером такого преобразования 
+служит разложение по некоторому вейв\-лет-ба\-зи\-су. 
+Затем осуществляется пороговая обработка коэффициентов разложения. В~результате
+  часть коэффициентов, которая считается несущественной, обнуляется. 
+ Такие процедуры позволяют подавить б$\acute{\mbox{о}}$льшую часть шума, содержащегося в~сигнале, 
+ и~осуществить компрессию данных для более эффективной передачи по каналам связи. 
+ В~моделях с~фиксированным объемом выборки эти процедуры хорошо изучены и~получены 
+ выражения для оптимальных параметров обработки, ориентированные на разные 
+ классы сигналов и~функции потерь~\cite{DJ94, DJ95, DJ98, Jan01, Jan06, KS16-1}. 
+ Также исследованы статистические свойства оценок среднеквадратичного риска, 
+ которые дают возможность получить представление о~возникающих погрешностях, 
+ используя только наблюдаемые данные~\cite{MSH10, SH12}. 
+ В~данной работе рассматривается модель со случайным числом вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов 
+ функции сигнала и~описывается класс распределений, к~которым может сходиться 
+ распределение оценки риска при возрастающем объеме выборки.
+
+\section{Пороговая обработка вейвлет-коэффициентов}
+
+Рассмотрим следующую модель данных:
+\begin{align*}
+X_i = f_i + \eps_i, \qquad i = 1, \dots, 2^J, %\notag
+%\label{Data_Model}
+\end{align*}
+где $f_i$~--- отсчеты функции сигнала; $\eps_i$~--- 
+независимые случайные величины, имеющие нормальное распределение с~нулевым 
+средним и~дисперсией~$\sigma^2$.
+Предполагается, что $f\hm\in\mathrm{Lip}(\gamma)$, т.\,е.\
+ функция сигнала принадлежит классу функций, регулярных по Липшицу с~некоторым 
+ показателем $\gamma\hm>0$.
+
+После вейвлет-преобразования сигнала получается набор эмпирических 
+вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов, имеющих следующий вид:
+\begin{equation*}
+%\label{data_model}
+Y_{j,k}=\mujk+z_{j,k}, \qquad j=0,\ldots,J-1,\quad k=0,\ldots,2^j-1,
+\end{equation*}
+где $\mujk$~--- вейвлет-коэффициенты <<чистого>> сигнала;  $z_{j,k}$~--- 
+<<шумовые>> коэффициенты, которые имеют такую же структуру, как и~$\eps_i$.
+
+Популярным методом удаления шума является пороговая обработка эмпирических 
+вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов, которая заключается в~обнулении коэффициентов, 
+чьи абсолютные значения не превышают заданного порога. Оценка~$\hat{Y}_{j,k}$ 
+вычисляется с~помощью пороговой функции~$\rho_T(Y_{j,k})$ с~порогом~$T$. 
+Наиболее распространены функция жесткой пороговой обработки $\rho_T^{(h)}(x)
+\hm=x \mathbf{1} (|x|>T)$ и~мягкой пороговой обработки $\rho_T^{(s)}(x)
+\hm={\mathrm{sign}}\left(x)(|x|-T\right)_+$. Смысл такой обработки заключается в~том,
+ что, поскольку большинство <<чистых>> коэффициентов малы по абсолютному значению, 
+ обнуление эмпирических коэффициентов должно удалить шум, не сильно затронув 
+ полезный сигнал.
+
+Основным критерием качества методов пороговой обработки выступает 
+среднеквадратичный риск:
+\begin{equation}
+\label{Risk_Definition}
+r_J=\sum\limits_{j=0}^{J-1}\sum\limits_{k=0}^{2^j-1} \e
+\left(\hat{Y}_{j,k}-\mujk\right)^2.
+\end{equation}
+
+Выражение~(\ref{Risk_Definition}) содержит значения <<чистых>>
+ коэффициентов~$\mujk$, и~поэтому в~практических задачах его 
+ можно использовать только для вычисления величины риска обработки 
+ <<модельных>> (известных) функций сигналов. Когда функция сигнала 
+ неизвестна, можно построить статистическую оценку~$r_J$. 
+ Если в~слагаемом $\abs{Y_{j,k}}\hm>T$, то вклад этого слагаемого в~риск 
+ составляет~$\sigma^2$ в~случае жесткой и~$\sigma^2+T^2$ 
+ в~случае мягкой пороговой обработки, а если $\abs{Y_{j,k}}\leqslant T$, 
+ то вклад составляет~$\mujk^2$ в~обоих случаях. Поскольку $\e Y_{j,k}^2
+ \hm=\sigma^2+\mujk^2$, величину~$\mujk^2$ следует оценить разностью $Y_{j,k}^2
+ \hm-\sigma^2$. Таким образом, в~качестве оценки среднеквадратичного риска 
+ можно использовать величину:
+\begin{equation*}
+%\label{MSE_Estimate}
+\widehat{r}_J=\sum\limits_{j=0}^{J-1}\sum\limits_{k=0}^{2^j-1} F\left[Y_{j,k}\right],
+\end{equation*}
+где 
+
+\noindent
+$$
+F\left[Y_{j,k}\right]=
+\begin{cases}
+\left(Y_{j,k}^2-\sigma^2\right)\mathbf{1}(|Y_{j,k}|\leqslant T)
++\sigma^2\mathbf{1}(|Y_{j,k}|>T) &\\
+&\hspace*{-60mm} \mbox{в~случае~жесткой~пороговой~обработки}\,;\\ 
+\left(Y_{j,k}^2\hm-\sigma^2\right)\mathbf{1}(|Y_{j,k}|\hm\leqslant T)
++(\sigma^2+T^2)\mathbf{1}(|Y_{j,k}|>T) &\\
+&\hspace*{-60mm} \mbox{в~случае~мягкой~пороговой~обработки}.
+\end{cases}
+$$
+
+Для мягкой пороговой обработки 
+эта оценка является несмещенной~\cite{Mall99}. Кроме того, справедливо 
+утверждение об асимптотической нормальности~$\widehat{r}_J$~\cite{SH16-1}.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~1.} \textit{Если $f\hm\in\mathrm{Lip}(\gamma)$ c~$\gamma\hm>0$ 
+при мягкой пороговой обработке и~$\gamma\hm>1/2$ при жесткой пороговой обработке, 
+то при выборе асимптотически оптимального порога}
+
+\noindent
+\begin{equation*}
+%\label{risk_norm}
+\p\left(\fr{\widehat{r}_J - r_J}{ \sigma^2\sqrt{2^{J+1}} }<x\right) \to \Phi(x) \quad
+\mbox{при}\quad J \rightarrow \infty\,,
+\end{equation*}
+\textit{где $\Phi(x)$~--- функция распределения стандартного нормального закона}.
+
+\pagebreak
+
+{Асимптотически оптимальный порог в~теореме~$1$ при $J\hm\to\infty$ удовлетворяет 
+соотношению}~\cite{Jan01}:
+
+\noindent
+$$
+T\simeq\sigma\sqrt{\fr{4\gamma}{2\gamma+1}\ln 2^J}\,.
+$$
+
+%\smallskip
+
+В следующем разделе показывается, что в~модели со случайным числом 
+вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов предельное распределение оценки риска уже 
+не обязано быть нормальным.
+
+
+\section{Оценка риска в~модели со~случайным числом вейвлет-коэффициентов}
+
+Пусть $M$~--- положительная целочисленная случайная величина. 
+Тогда оценка среднеквадратичного риска принимает вид:
+
+\noindent
+\begin{equation}
+\label{MSE_Estimate_Rand}
+\widehat{R}_{M}=\sum\limits_{j=0}^{M-1}\sum\limits_{k=0}^{2^j-1} F\left[Y_{j,k}\right].
+\end{equation}
+
+Чтобы получить осмысленные асимптотические результаты для
+ оценки~\eqref{MSE_Estimate_Rand}, величина~$M$ должна быть <<большой>>. 
+ Рассмотрим последовательность~$2^{M_J}$, $J\hm=1,\ldots$, и~исследуем 
+ поведение~\eqref{MSE_Estimate_Rand} при $J\hm\to \infty$.
+ 
+ \smallskip
+
+\noindent
+\textbf{Теорема~2.}\
+\textit{Пусть выполнены условия теоремы~$1$. 
+Пусть также $M_J\xrightarrow{\p}\infty$ 
+и~для некоторой последовательности~$R_J$ совместное распределение пар}
+
+\noindent
+$$
+\left(U_J,V_J\right)\equiv\left(\fr{2^{M_J}}{2^{J}},\fr{r_{M_J}-R_J}
+{\sigma^2\sqrt{2^{J+1}}}\right)$$ 
+\textit{сходится к~распределению некоторого случайного вектора $(U,V)$ 
+при $J\hm\to\infty$. Тогда}
+
+\noindent
+\begin{equation}
+\label{rand_risk_dist}
+\p\left(\fr{\widehat{R}_{M_J} - R_J}{ \sigma^2\sqrt{2^{J+1}} }<x\right) \to H(x) \quad
+\mbox{при}\quad J \rightarrow \infty\,,
+\end{equation}
+\textit{где $H(x)$~--- функция распределения, соответствующая характеристической 
+функции $h(t)\hm=\e\varphi(t\sqrt{U})e^{itV}$ $($$\varphi(t)$~--- 
+характеристическая функция стандартного нормального закона$)$.}
+
+
+
+\textit{Таким образом, предельные распределения в~\eqref{rand_risk_dist} 
+представляют собой сдвиг-мас\-штаб\-ные смеси нормальных законов.}
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
+ Пусть $h_J(t)$~--- характеристическая функция $(\widehat{R}_{M_J}-$\linebreak 
+ $- R_J)/(\sigma^2\sqrt{2^{J+1}})$. 
+ 
+ %\pagebreak
+ 
+ \noindent
+ Тогда
+$$
+h_J(t)=\sum\limits_{j=1}^{\infty}\p(M_J=j)\exp\left(it\fr{r_{j}-R_J}
+{\sigma^2\sqrt{2^{J+1}}}\right)\varphi_j\left(t\fr{\sqrt{2^j}}{\sqrt{2^J}}\right),
+$$
+где $\varphi_j(t)$~--- характеристическая функция 
+$({\widehat{r}_j - r_j})/(\sigma^2\sqrt{2^{j+1}})$. Обозначим
+$$
+g_J(t)=\e\varphi\left(t\sqrt{U_J}\right)e^{itV_J}=
+\sum\limits_{j=1}^{\infty}\p(M_J=j)\exp\left(it\fr{r_{j}-R_J}
+{\sigma^2\sqrt{2^{J+1}}}\right)\varphi\left(t\fr{\sqrt{2^j}}{\sqrt{2^J}}\right).
+$$
+Имеем
+\begin{multline*}% \label{aux_etimate}
+\abs{h_J(t)-g_J(t)}={}\\
+{}=
+\abs{\sum\limits_{j=1}^{\infty}\p(M_J=j)\exp\left(it\fr{r_{j}-R_J}
+{\sigma^2\sqrt{2^{J+1}}}\right)\left(\varphi_j\left(t\fr{\sqrt{2^j}}{\sqrt{2^J}}\right)-\varphi\left(t\frac{\sqrt{2^j}}{\sqrt{2^J}}\right)\right)}.
+\end{multline*}
+Фиксируем $t\neq0$. Рассуждая, как в~работе~\cite{KZ16}, для произвольного $\eps\hm>0$ 
+можно выбрать такое число $\kappa\hm>0$, что
+\begin{equation*}
+\sum\limits_{j>\kappa +J}\p(M_J=j)=\p(U_J>2^\kappa)<\eps
+\end{equation*}
+и, начиная с~некоторого~$J$, зависящего от~$\eps$ и~$\kappa$,
+\begin{equation*}
+\abs{\sum\limits_{j>\kappa + J}\p(M_J=j)
+\exp\left(it\frac{r_{j}-R_J}{\sigma^2\sqrt{2^{J+1}}}\right)\left(\varphi_j\left(t
+\fr{\sqrt{2^j}}{\sqrt{2^J}}\right)-\varphi\left(t\fr{\sqrt{2^j}}{\sqrt{2^J}}\right)\right)}<2\eps\,.
+\end{equation*}
+Далее в~силу теоремы~1
+\begin{multline*}
+\abs{\sum\limits_{j\leqslant\kappa + J}\p(M_J=j)\exp\left(it\frac{r_{j}-R_J}{\sigma^2\sqrt{2^{J+1}}}\right)\left(\varphi_j\left(t\frac{\sqrt{2^j}}{\sqrt{2^J}}\right)-\varphi\left(t\frac{\sqrt{2^j}}{\sqrt{2^J}}\right)\right)}\leqslant{}\\
+{}\leqslant\sum\limits_{j\leqslant\kappa +J}\p(M_J=j)
+\sup\limits_{\tau\leqslant 2^{\kappa/2} t}
+\abs{\varphi_j\left(\tau\right)-\varphi\left(\tau\right)}<
+\e\sup\limits_{\tau\leqslant 2^{\kappa/2} t}
+\abs{\varphi_{M_J}\left(\tau\right)-\varphi\left(\tau\right)}<\eps\,,
+\end{multline*}
+так как $M_J\xrightarrow{\p}\infty$~\cite{KZ16}.
+
+Таким образом, для произвольного~$t$
+\begin{equation*}
+\abs{h_J(t)-g_J(t)}\to 0  \quad \mbox{при}\quad J \rightarrow \infty\,.
+\end{equation*}
+
+Далее при любом фиксированном~$t$
+\begin{equation*}
+\abs{g_J(t)-h(t)}=
+\abs{\e\varphi(t\sqrt{U_J})e^{itV_J}-\e\varphi(t\sqrt{U})e^{itV}}\to 0  \quad \mbox{при}\quad
+ J \rightarrow \infty\,,
+\end{equation*}
+поскольку функция $q_t(u,v)\hm=\varphi(t\sqrt{u})e^{itv}$ непрерывна 
+и~ограничена и~$(U_J,V_J)\hm\Rightarrow(U,V)$ при $J\hm\to\infty$. Следовательно,
+$$
+\abs{h_J(t)-h(t)}\to 0  \quad \mbox{при}\quad J \rightarrow \infty 
+$$
+и имеет место~\eqref{rand_risk_dist}. Теорема доказана.
+
+
+\smallskip
+
+\noindent
+\textbf{Замечание.}\
+ Распределения, получаемые в~качестве предельных в~теореме~2, 
+ могут существенно отличаться по своим свойствам от нормального закона. 
+ В~частности, они могут иметь гораздо более тяжелые хвосты. Кроме того, 
+ порядок теоретического среднеквадратичного риска в~модели со случайным 
+ числом вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов может быть существенно больше порядка 
+ риска в~модели с~фиксированным числом коэффициентов~\cite{SH18}.
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+\bibitem{DJ94}
+\Au{Donoho D., Johnstone~I.\,M.} 
+Ideal spatial adaptation via wavelet shrinkage~/\!\!/ Biometrika, 1994. Vol.~81. No.\,3. P.~425--455.
+
+\bibitem{DJ95}
+\Au{Donoho D., Johnstone~I.\,M., Kerkyacharian~G., Picard~D.} 
+Wavelet shrinkage: Asymptopia?~/\!\!/ J.~Roy. Stat. Soc.~B, 1995. Vol.~57. No.\,2. P.~301--369.
+
+\bibitem{DJ98}
+\Au{Donoho D., Johnstone~I.\,M.} Minimax estimation via wavelet shrinkage~/\!\!/ 
+Ann. Stat., 1998. Vol.~26. No.\,3. P.~879--921.
+
+\bibitem{Jan01}
+\Au{Jansen M.} Noise reduction by wavelet thresholding.~--- Lecture notes 
+in statistics ser.~--- New York, NY, USA: Springer Verlag, 2001. Vol.~161. 196~p.
+
+\bibitem{Jan06}
+\Au{Jansen M.} Minimum risk thresholds for data with heavy noise~/\!\!/ 
+IEEE Signal Proc. Let., 2006. Vol.~13. No.\,5. P.~296--299.
+
+\bibitem{KS16-1}
+{\it Кудрявцев А. А., Шестаков О. В.} Асимптотическое поведение 
+порога, минимизирующего усредненную вероятность ошибки вычисления 
+вейвлет-ко\-эф\-фи\-ци\-ен\-тов~/\!\!/ Докл. Акад. наук, 2016. Т.~468. №~5. С.~487--491.
+
+\bibitem{MSH10}
+\Au{Маркин А.\,В., Шестаков О.\,В.} 
+О~состоятельности оценки риска при пороговой обработке вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов~/\!\!/ 
+Вестн. Моск. ун-та. Сер.~15: Вычисл. матем. и~киберн., 2010. №\,1. C.~26--34.
+
+\bibitem{SH12}
+\Au{Шестаков О.\,В.} 
+Асимптотическая нормальность оценки риска пороговой обработки вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов 
+при выборе адаптивного порога~/\!\!/ Докл. Акад. наук, 2012. Т.~445. №\,5. С.~513--515.
+
+\bibitem{Mall99}
+\Au{Mallat S.} A~wavelet tour of signal processing.~--- New York, NY, USA: 
+Academic Press, 1999. 857~p.
+
+\bibitem{SH16-1}
+\Au{Шестаков О.\,В.} Вероятностно-статистические 
+методы анализа и~обработки сигналов на основе вейв\-лет-ал\-го\-рит\-мов.~--- 
+М.: Аргамак-Медиа, 2016. 200~с.
+
+\pagebreak
+
+\bibitem{KZ16}
+\Au{Korolev V.\,Yu., Zeifman~A.\,I.} On convergence of the 
+distributions of random sequences with independent random indexes to 
+variance-mean mixtures~/\!\!/ Stoch. Models, 2016. Vol.~32. Iss.~3. P.~414--432.
+
+\bibitem{SH18}
+\Au{Шестаков О.\,В.} 
+Среднеквадратичный риск пороговой обработки при случайном объеме выборки~/\!\!/ 
+Информатика и~её применения, 2018. Т.~12. Вып.~3. С.~14--17.
+        \end{thebibliography}
+} }
+
+
+\vspace*{-7pt}
+
+\hfill{\small\textit{Поступила в~редакцию 28.02.19}}
+
+
+
+
+\vspace*{6pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{CONVERGENCE OF~THE~DISTRIBUTION OF~THE~THRESHOLD PROCESSING RISK ESTIMATE 
+TO~A~MIXTURE OF~NORMAL LAWS AT~A~RANDOM SAMPLE SIZE}
+
+\def\titkol{Convergence of~the~distribution of~the~threshold processing risk estimate} 
+%to~a~mixture of~normal laws at~a~random sample size}
+
+
+\def\aut{O.\,V.~Shestakov$^{1,2}$}
+\def\autkol{O.\,V.~Shestakov}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+$^1$Department of Mathematical Statistics, Faculty of Computational Mathematics\linebreak 
+$\hphantom{^1}$and Cybernetics, M.\,V.~Lomonosov Moscow State University, 
+1-52~Leninskiye\linebreak
+$\hphantom{^1}$Gory, GSP-1,  Moscow 119991, Russian Federation
+
+\noindent
+$^2$Institute of Informatics Problems, Federal Research Center 
+``Computer Science\linebreak
+$\hphantom{^1}$and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow\linebreak
+$\hphantom{^1}$119333, Russian Federation
+
+ \noindent
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2019 vol~29 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2019   vol~29   no\,2
+\hfill \textbf{\thepage}}}
+
+
+
+\Abste{The popularity of signal processing algorithms using wavelet analysis 
+methods has increased significantly over the past decades. This is explained 
+by the fact that the wavelet decomposition is a~convenient mathematical 
+apparatus capable of solving problems in which the use of traditional 
+Fourier analysis is ineffective. The main tasks for which the methods of 
+wavelet analysis are used are signal compression and noise removal. 
+In this case, the most commonly used method is threshold processing 
+of wavelet expansion coefficients, which zeroes coefficients not exceeding
+ a~given threshold. The presence of noise and threshold processing procedures 
+ inevitably lead to errors in the estimated signal. The properties of estimates 
+ of such errors (mean square risk) have been studied in many papers.
+  In particular, it has been shown that under certain conditions, the risk 
+  estimate is strongly consistent and asymptotically normal. 
+  When using threshold processing methods, it is usually assumed that the number 
+  of wavelet coefficients is fixed. However, in some situations, the sample 
+  size is not known in advance and is modeled by a random variable. In this 
+  paper, a~model with a random number of observations is considered and
+   a~class of distributions is described that can be limiting for the mean-square 
+   risk estimate.}
+
+\KWE{threshold processing; random sample size; mean square risk estimate}
+
+
+
+
+\DOI{10.14357\!/\!08696527190203} 
+
+\vspace*{-14pt}
+
+\Ack
+
+\vspace*{-3pt}
+
+
+\noindent
+This research is supported by the Russian Science Foundation (project No.\,18-11-00155).
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+\bibitem{1-shest-1}
+\Aue{Donoho, D., and I.\,M.~Johnstone.} 1994. 
+Ideal spatial adaptation via wavelet shrinkage. \textit{Biometrika} 81(3):425--455.
+
+\bibitem{2-shest-1}
+\Aue{Donoho, D., I.\,M.~Johnstone, G.~Kerkyacharian, and D.~Picard.}
+1995. Wavelet shrinkage: Asymptopia? \textit{J.~Roy. Stat. Soc.~B} 
+57(2):301--369.
+
+\bibitem{3-shest-1}
+\Aue{Donoho, D., and I.\,M.~Johnstone.} 1998. Minimax estimation via wavelet shrinkage. 
+\textit{Ann. Stat.} 26(3):879--921.
+
+\bibitem{4-shest-1}
+\Aue{Jansen, M.} 2001. \textit{Noise reduction by wavelet thresholding}. 
+{Lecture notes in statistics ser}.
+New York, NY: Springer Verlag.  Vol.~161. 196~p.
+
+\bibitem{5-shest-1}
+\Aue{Jansen, M.} 2006. Minimum risk thresholds for data with heavy noise. 
+\textit{IEEE Signal Proc. Let.} 13(5):296--299.
+
+\bibitem{6-shest-1}
+\Aue{Kudryavtsev, A.\,A., and O.\,V.~Shestakov.} 
+2016. Asymptotic behavior of the threshold minimizing the average probability of 
+error in calculation of wavelet coefficients. \textit{Dokl. Math.} 93(3):295--299.
+
+\bibitem{7-shest-1}
+\Aue{Markin, A.\,V., and O.\,V.~Shestakov.} 2010. 
+Consistency of risk estimation with thresholding of wavelet coefficients. 
+\textit{Moscow Univ. Comput. Math. Cybern.} 34(1):22--30.
+
+\bibitem{8-shest-1}
+\Aue{Shestakov, O.\,V.} 2012. Asymptotic normality of adaptive 
+wavelet thresholding risk estimation. \textit{Dokl. Math.} 86(1):556--558.
+
+\bibitem{9-shest-1}
+\Aue{Mallat, S.} 1999. 
+\textit{A~wavelet tour of signal processing}. New York, NY: Academic Press. 857~p.
+
+\bibitem{10-shest-1}
+\Aue{Shestakov, O.\,V.} 2016. \textit{Veroyatnostno-statisticheskie metody analiza 
+i~obrabotki signalov na osnove veyvlet-algoritmov} 
+[Probabilistic-statistical methods of signal analysis and processing 
+based on wavelet algorithms]. Moscow: Argamak-Media Publ. 200~p.
+
+\bibitem{11-shest-1}
+\Aue{Korolev, V.\,Yu., and A.\,I.~Zeifman.} 2016. 
+On convergence of the distributions of random sequences with independent random 
+indexes to variance-mean mixtures. \textit{Stoch. Models} 32(3):414--432.
+
+\bibitem{12-shest-1}
+\Aue{Shestakov, O.\,V.} 2018. Srednekvadratichnyy risk porogovoy obrabotki pri 
+sluchaynom ob''eme vyborki [Mean-square thresholding risk with a~random sample size]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.}  12(3):14--17.
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received February 28, 2019}} 
+
+\Contrl
+
+\noindent
+\textbf{Shestakov Oleg V.} (b.\ 1976)~--- 
+Doctor of Science in physics and mathematics, professor, 
+Department of Mathematical Statistics, Faculty of Computational Mathematics 
+and Cybernetics, M.\,V.~Lomonosov Moscow State University, 
+\mbox{1-52}~Leninskiye Gory, GSP-1, Moscow 119991, Russian Federation; 
+senior scientist, Institute of Informatics Problems, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{oshestakov@cs.msu.su}
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

@@ -1,0 +1,781 @@
+\documentstyle[%
+righttag%
+,11pt%
+,amssymb%
+,russian%               remove in Eng.
+,izvru1%                 Set izven% in Eng.
+]{amsart}
+
+% replace the dot in STY-file
+% NB: separating "," 
+% LOOK FOR FUCKED UPPER INDICES
+\newcommand{\const}{\operatorname{const}}
+\newcommand{\ussa}{{\overset{s+1}{u}{}^{(\alpha)}}}
+\newcommand{\ussb}{{\overset{s+1}{u}{}^{(\beta)}}}
+\newcommand{\usva}{{\overset{s}{u}{}^{(\alpha)}}}
+\newcommand{\usvb}{{\overset{s}{u}{}^{(\beta)}}}
+\newcommand{\usa}{{\overset{s}{u}_{\alpha}}}
+\newcommand{\usb}{{\overset{s}{u}_{\beta}}}
+\newcommand{\ussat}{{\overset{s+1}{u}{}_{\!\!\!t}^{(\alpha)}}}
+\newcommand{\ussbt}{{\overset{s+1}{u}{}_{\!\!\!t}^{(\beta)}}}
+\newcommand{\tts}[1]{}
+
+%\hoffset=-15mm%                  For Eng.
+\setcounter{page}{3}
+\god{2000}
+\nomer{11~(462)} %                        Remove in Eng.
+%\nomer{Vol.\,44, No.\,11}%               Set in Eng.
+%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
+
+\udk{519.63}
+
+\author{\it В.Н.\,Абрашин, А.А.\,Егоров, Н.Г.\,Жадаева}
+% NB:   ^^ remove in Eng.
+\title{Экономичные итерационные схемы реализации метода \\
+конечных элементов для стационарных краевых задач \\
+математической физики}
+
+\date{}
+%\pagestyle{myheadings}%         Set in Eng.
+\pagestyle{plain} %              Remove in Eng.
+\begin{document}
+%\thispagestyle{plain}%          Set in Eng.
+\maketitle
+\label{begin}
+
+В работе предлагаются и исследуются экономичные итерационные
+методы решения стационарных задач математической физики с использованием
+метода Гал\"еркина [1], [2]. В [2] был впервые предложен метод
+расщепления в сочетании с методом конечных элементов для двухмерных
+параболических уравнений конвекции-диффузии. Эта идея получила дальнейшее
+развитие при разработке методов решения более широкого класса нестационарных
+задач [3]--[5]. Следует однако отметить, что построение экономичных
+разностных схем на основе метода суммарной аппроксимации (покомпонентного
+расщепления) [2], [3], когда исходный оператор разбивается на четыре одномерных
+неотрицательных оператора, приводит к ограничениям на коэффициенты исходного
+уравнения более жестким, чем условие эллиптичности. Кроме того,
+при использовании этого метода возникают,
+на наш взгляд, существенные трудности, связанные, во-первых, с ограничениями
+на выбор шагов сетки для обеспечения устойчивости алгоритма, и, во-вторых, с
+наличием дополнительных требований на конфигурацию конечного элемента.
+
+В развитие работ [6], [7] в [8]--[10] был предложен многокомпонентный вариант
+метода переменных направлений, который обладает абсолютной устойчивостью
+при разбиении оператора на произвольное число, вообще говоря, 
+некоммутируемых операторов и относится к методам расщепления полной
+аппроксимации. В [11], [12] на основе данного метода построены экономичные
+алгоритмы решения конечно-элементных разностных схем (количество разбиений
+четыре и шесть), при этом неестественные ограничения, возникающие
+при использовании метода расщепления, в этих работах сняты. 
+
+Отметим, что при решении стационарных задач математической физики трудности,
+возникающие при разработке экономичных итерационных методов, значительно
+возрастают. В частности, упомянутый метод суммарной аппроксимации практически
+неприменим как итерационный метод установления, поскольку требует
+существенного уменьшения итерационного параметра для достижения
+заданной точности. Наличие в исходном дифференциальном операторе смешанных
+производных не позволяет также эффективно использовать и классический метод
+переменных направлений, требующий коммутируемость операторов разбиения.
+В данной статье конструируются и изучаются итерационные схемы
+многокомпонентного метода переменных направлений в сочетании с методом
+конечных элементов для решения стационарных уравнений типа конвекции-диффузии.
+Результаты, полученные в работе, позволяют существенно расширить область
+применения указанного класса методов, ранее используемых лишь в качестве
+конечно-разностных итерационных схем для эллиптических краевых задач
+[13]--[15].
+
+В области $G$ с границей $\Gamma$, $G\subset{\bold R}^2$ --- 
+ограниченная односвязная область, $\Gamma\in {\bold C}^2$,
+рассмотрим эллиптическую краевую задачу второго порядка
+со смешанными производными
+\begin{gather}
+Lu\equiv -\frac{\partial}{\partial x}A(x,y)\frac{\partial u}{\partial x}
+-\frac{\partial}{\partial y}B(x,y)\frac{\partial u}{\partial y}
+-\frac{\partial}{\partial x}Y(x,y)\frac{\partial u}{\partial y}
+-\frac{\partial}{\partial y}Z(x,y)\frac{\partial u}{\partial x}=
+F(x,y),\ \; (x,y)\in G,\\
+%
+u(x,y)=0,\quad x\in \Gamma.
+\end{gather}
+Преобразуем задачу (1), (2).
+Разделив в (1) симметричную и кососимметричную части
+оператора $L$ с помощью преобразования
+$C=(Y-Z)/2$, $D=(Y+Z)/2$ [2], получим уравнение
+\begin{equation}
+-\frac{\partial}{\partial x}A\frac{\partial u}{\partial x}
+-\frac{\partial}{\partial y}B\frac{\partial u}{\partial y}
+-\frac{\partial}{\partial x}D\frac{\partial u}{\partial y}
+-\frac{\partial}{\partial y}D\frac{\partial u}{\partial x}
+-\frac{\partial}{\partial x}C\frac{\partial u}{\partial y}
++\frac{\partial}{\partial y}C\frac{\partial u}{\partial x}=F.
+\end{equation}
+Будем предполагать, что коэффициенты и правая часть уравнения (3) 
+удовлетворяют условиям
+\begin{gather*}
+A,B,C,D \in {\bold C^2}(G),\quad F \in {\bold C}^1(G),\quad |C|\le\gamma_0,\\
+\gamma_1 (\xi_1^2+\xi_2^2) \le A\xi_1^2+B\xi_2^2+2D\xi_1\xi_2
+\le \gamma_1(\xi_1^2+\xi_2^2), \quad (\xi_1,\xi_2) \in {\bold R}^2,
+\end{gather*}
+где $\gamma_0,\gamma_1,\gamma_2=\const>0$.
+
+Сформулируем обобщенную постановку задачи (1), (2): требуется
+найти функцию $u=u(x,y)\in\overset{\circ}{W}{}_2^1(G)$,
+удовлетворяющую равенству
+\begin{gather}
+I(u,v)=(F,v),\\
+%
+I(u,v)=\int_G\biggl(A\frac{\partial u}{\partial x}
+\frac{\partial v}{\partial x}+B\frac{\partial u}{\partial y}
+\frac{\partial v}{\partial y}+D\frac{\partial u}{\partial y}
+\frac{\partial v}{\partial x}+D\frac{\partial u}{\partial x}
+\frac{\partial v}{\partial y}+C\frac{\partial u}{\partial y}
+\frac{\partial v}{\partial x}-C\frac{\partial u}{\partial x}
+\frac{\partial v}{\partial y}\biggr)dx\,dy, \notag
+\end{gather}
+$(F,v)=\int\limits_GFv\,dx\,dy$,
+$v=v(x,y)$ --- произвольная функция из 
+$\overset{\circ}{W}^1_2(G)$.
+При сделанных ограничениях задача (4) имеет единственное решение
+$u(x,y)\in\overset{\circ}{W}^1_2(G)$.
+
+Для приближенного решения (4) используем метод конечных элементов.
+Рассмотрим прямоугольник $\Pi=[a,b]\times [c,d]$ такой, что $G\subset\Pi$.
+Разобьем $\Pi$ на подобласти прямыми $x_i=a+ih_x$, $i=0,\ldots,N_x$,
+$y_j=b+jh_y$, $j=0,\dotsc,N_y$, $N_x$, $N_y$ --- положительные целые числа.
+Каждый из образовавшихся прямоугольников разделим диагональю на два
+треугольника, т.\,е. осуществим триангуляцию области $G$. Множество
+полученных треугольников обозначим через $\Theta=\{T\}$ (отметим, что при
+разбиении на треугольники мы не уточняем ориентацию диагоналей). Пусть
+$\widetilde\Theta=\{T\in\Theta:T\subset\overline G\}$, $\widetilde\Gamma$ ---
+граница $\widetilde G=\bigcup\limits_{T\in\widetilde\Theta}T$,
+$\widetilde R^h=\{(i,j):(x_i,y_j)\in\widetilde
+G\setminus\widetilde\Gamma\}$, $\widetilde S^h=\{(i,j):(x_i,y_j)\in
+\widetilde\Gamma\}$. Каждому узлу $(x_i,y_j)$, $(i,j)\in\widetilde R^h$,
+поставим в соответствие функцию $\varphi_{ij}(x,y):\widetilde G\to {\bold R}$
+с компактным носителем $K_{ij}$, линейную в каждом треугольнике
+$T\in\widetilde\Theta$:
+$$
+\varphi_{ij}(x_m,y_n)=
+\begin{cases}
+1, & (x_i,y_j)=(x_m,y_n), \\
+0, & (x_i,y_j)\ne(x_m,y_n),
+\end{cases}
+\quad (i,j),(m,n)\in \widetilde R^h.
+$$
+
+Пусть $u=u_{ij}$, $i=0,\dotsc,N_x$, $j=0,\dotsc,N_y$, --- сеточная функция,
+определенная в узлах $(x_i,y_j)$. Построим линейную комбинацию
+\begin{equation}
+u^h(x,y)=\sum_{(i,j)\in\widetilde R^h}u_{ij}\varphi_{ij}(x,y).
+\end{equation}
+Обозначим линейную оболочку функций (5) через
+$\overset{\circ}{M}{}^h\equiv
+\overset{\circ}{W}{}_2^{1,h}$,
+$\overset{\circ}{M}^h\subset
+\overset{\circ}{W}{}_2^1(G)$. Тогда, учитывая, что
+множество функций $\{\varphi_{ij}:(i,j)\in\widetilde R^h\}$ является
+базисом в пространстве $\overset{\circ}{M}{}^h$,
+решение $u^h$ по методу Гал\"еркина находим из системы
+линейных алгебраических уравнений
+$$
+I(u^h,\varphi_{ij})=(F,\varphi_{ij}),
+$$
+которую можно записать в операторном виде
+\begin{equation}
+\Lambda u=f,
+\end{equation}
+где
+$u=\{u_{ij}\}\in\overset{\circ}{Q}{}^h$,
+$\overset{\circ}{Q}{}^h=\{u_{ij}:(i,j)\in\widetilde R^h\cup
+\widetilde S^h;\ u_{ij}=0,\ (i,j)\in\widetilde S^h\}$,
+$f_{ij}=W_{ij}^{-1}\int\limits_GF\varphi_{ij}\,dx\,dy$,
+$W_{ij}=\int\limits_G\varphi_{ij}\,dx\,dy$,
+$(i,j)\in\widetilde R^h$.
+Оператор $\Lambda$ определяется следующим образом:
+$\Lambda u=A^hu+B^hu+D^hu+C^hu$,
+\begin{gather*}
+(A^hu)_{ij}=\sum_{k=-1}^1A_{i+k,j}^{(ij)}u_{i+k,j},\quad
+(B^hu)_{ij}=\sum_{k=-1}^1B_{i,j+k}^{(ij)}u_{i,j+k}, \\
+%
+(D^hu)_{ij}=\sum_{\alpha=1}^2(\overset{\alpha}{D}{}^hu)_{ij},\quad
+(\overset{\alpha}{D}{}^hu)_{ij}=\sum_{k,l=-1}^1
+\overset{\alpha}{D}{}^{(ij)}_{i+k,j+l}u_{i+k,j+l}, \\
+%
+(C^hu)_{ij}=\sum_{\alpha=1}^2(\overset{\alpha}{C}{}^hu)_{ij},\quad
+(\overset{1}{C}{}^hu)_{ij}=C_{i+1,j}^{(ij)}u_{i+1,j}+
+C_{i-1,j}^{(ij)}u_{i-1,j},\quad
+(\overset{2}{C}{}^hu)_{ij}=C_{i,j+1}^{(ij)}u_{i,j+1}+
+C_{i,j-1}^{(ij)}u_{i,j-1}, \\
+%
+(\overset{3}{C}{}^hu)_{ij}=C_{i+1,j+1}^{(ij)}u_{i+1,j+1}+
+C_{i-1,j-1}^{(ij)}u_{i-1,j-1},\quad
+(\overset{4}{C}{}^hu)_{ij}=C_{i-1,j+1}^{(ij)}u_{i-1,j+1}+
+C_{i+1,j-1}^{(ij)}u_{i+1,j-1}, \\
+%
+A_{mn}^{(ij)}=W_{ij}^{-1}\int_{\Omega}A\frac{\partial\varphi_{mn}}{
+\partial x}\frac{\partial\varphi_{ij}}{\partial x}\,dx\,dy,\quad
+B_{mn}^{(ij)}=W_{ij}^{-1}\int_{\Omega}B\frac{\partial\varphi_{mn}}{
+\partial y}\frac{\partial\varphi_{ij}}{\partial y}\,dx\,dy, \\
+%
+\overset{1}{D}{}^{(ij)}_{mn}=W_{ij}^{-1}\int_{\Omega}D
+\frac{\partial\varphi_{mn}}{\partial y}\frac{\partial\varphi_{ij}}{
+\partial x}\,dx\,dy,\quad
+\overset{2}{D}{}^{(ij)}_{mn}=W_{ij}^{-1}\int_{\Omega}D
+\frac{\partial\varphi_{mn}}{\partial x}\frac{\partial\varphi_{ij}}{
+\partial y}\,dx\,dy, \\
+%
+C_{mn}^{(ij)}=W_{ij}^{-1}\int_{\Omega}C\biggl(\frac{\partial\varphi_{mn}}{
+\partial y}\frac{\partial\varphi_{ij}}{\partial x}-
+\frac{\partial\varphi_{mn}}{\partial x}\frac{\partial\varphi_{ij}}{
+\partial y}\biggr)dx\,dy,\quad
+\Omega=K_{ij}\cap K_{mn}\cap G.
+\end{gather*}
+
+Для решения задачи (6) используем итерационный процесс многокомпонентного
+метода переменных направлений
+\begin{equation}
+\frac{\overset{s+1}{u}_{\!\!\!\alpha}-\overset{s}{\tilde u}}{\tau}
++\sigma\Lambda_\alpha\bigl(\ussa-\usva\bigr)+\sum_{\beta=1}^6
+\Lambda_\beta\usvb=f,\quad \alpha=1,\dotsc,6,
+\end{equation}
+\begin{gather*}
+u^{(\alpha)}=u_\alpha,\quad \alpha=1,3,5,6,\quad u^{(2)}=(u_1,u_2),\quad
+u^{(4)}=(u_3,u_4),\quad
+u_\alpha\in\overset{\circ}{Q}{}^h,\quad \alpha=1,\dotsc,6, \\
+%
+(\Lambda_1u^{(1)})_{ij}=0,5\bigl((A^hu_1)_{ij}+
+(\overset{1}{C}{}^hu_1)_{ij}\bigr),\quad
+(\Lambda_2u^{(2)})_{ij}=0,5\bigl((B^hu_2)_{ij}+
+(\overset{2}{C}{}^hu_2)_{ij}\bigr)+
+(\overset{2}{D}{}^hu_1)_{ij}, \\
+%
+(\Lambda_3u^{(3)})_{ij}=0,5\bigl((B^hu_3)_{ij}+
+(\overset{2}{C}{}^hu_3)_{ij}\bigr),\quad
+(\Lambda_4u^{(4)})_{ij}=0,5\bigl((A^hu_4)_{ij}+
+(\overset{1}{C}{}^hu_4)_{ij}\bigr)+
+(\overset{1}{D}{}^hu_3)_{ij}, \\
+%
+(\Lambda_5u^{(5)})_{ij}=(\overset{3}{C}{}^hu_5)_{ij},\quad
+(\Lambda_6u^{(6)})_{ij}=(\overset{4}{C}{}^hu_6)_{ij},\quad
+\overset{s}{\tilde u}=\frac16
+\sum_{\alpha=1}^6\overset{s}{u}_\alpha.
+\end{gather*}
+Группы компонент метода $(\overset{s+1}{u}_{\!\!\!1},
+\overset{s+1}{u}_{\!\!\!2})$, $(\overset{s+1}{u}_{\!\!\!3},
+\overset{s+1}{u}_{\!\!\!4})$, $(\overset{s+1}{u}_{\!\!\!5},
+\overset{s+1}{u}_{\!\!\!6})$ на каждой итерации вычисляются независимо
+друг от друга с помощью скалярных прогонок и поэтому метод (7)
+можно назвать блочно распараллеленным.
+
+Исследуем сходимость итерационного процесса (7) при
+$\sigma=\sigma_0=6$. Введем в пространстве $\overset{\circ}{Q}{}^h$
+скалярное произведение и норму
+$(u,y)=\sum\limits_{(i,j)\in\widetilde R^h}u_{ij}y_{ij}h_xh_y$,
+$\|u\|=\sqrt{(u,u)}$. Умножим (7) скалярно на $\tau\Lambda_\alpha
+\ussat=\Lambda_\alpha\ussa-\Lambda_\alpha\usva$ и просуммируем по
+$\alpha=1,\dotsc,6$:
+\begin{multline}
+\sum_{\alpha=1}^6\bigl(\overset{s+1}{u}_{\!\!\!\alpha}-
+\overset{s}{\tilde u},\Lambda_\alpha\ussat\bigr)+\sigma_0\tau^2
+\sum_{\alpha=1}^6\big\|\Lambda_\alpha\ussat\big\|^2- \\
+%
+-0,5\tau^2\bigg\|
+\sum_{\alpha=1}^6\Lambda_\alpha\ussat\bigg\|^2+0,5\|r(s+1)\|^2=
+0,5\|r(s)\|^2,
+\end{multline}
+где $r(s)=\sum\limits_{\alpha=1}^6\Lambda_\alpha\usva-f$. Преобразуем
+выражение в левой части равенства (8). Введем обозначение
+$\overset{s}{v}{}^{(\alpha,\beta)}=\usa-\usb$. Тогда нетрудно
+показать, что справедливо тождество
+$$
+\sum_{\alpha=1}^6\bigl(\overset{s+1}{u}_{\!\!\!\alpha}-
+\overset{s}{\tilde u},\Lambda_\alpha\ussat\bigr)=\tau\sum_{\alpha=1}^6
+\bigl(\Lambda_\alpha\ussat,\overset{s+1}{u}_{\!\!\!\alpha t}\bigr)+
+\frac{1}{\sigma_0}\sum \begin{Sb} \alpha,\beta=1\\ 
+\alpha>\beta \end{Sb}^6
+\bigl(\overset{s}{v}{}^{(\alpha,\beta)},\Lambda_\alpha
+\ussat-\Lambda_\beta\ussbt\bigr),
+$$
+которое с учетом соотношения $\Lambda_\alpha\ussat-\Lambda_\beta\ussbt=
+-\sigma_0^{-1}\tau^{-2}\overset{s+1}{v}{}^{(\alpha,\beta)}$
+принимает вид
+\begin{multline*}
+\frac{1}{\sigma_0}\sum \begin{Sb} \alpha,\beta=1\\
+\alpha>\beta \end{Sb}^6
+\bigl(\overset{s}{v}{}^{(\alpha,\beta)},\Lambda_\alpha
+\ussat-\Lambda_\beta\ussbt\bigr)=-\frac{1}{\sigma_0}\tau^{-2}
+\sum \begin{Sb} \alpha,\beta=1\\ \alpha>\beta \end{Sb}^6\bigl(
+\overset{s}{v}{}^{(\alpha,\beta)},
+\overset{s+1}{v}{}^{(\alpha,\beta)}\bigr)= \\
+%
+=0,5\sigma_0^{-2}\tau^{-2}\bigl(\tau^2
+\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2-
+\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2-
+\|\overset{s}{v}\big\|_{\mathrm{III}}^2\bigr),
+\end{multline*}
+где $\|\overset{s}{v}\big\|_{\mathrm{III}}^2=
+\sum\limits\begin{Sb} \alpha,\beta=1\\ \alpha>\beta\end{Sb}^6\bigl(
+\overset{s}{v}{}^{(\alpha,\beta)},
+\overset{s}{v}{}^{(\alpha,\beta)}\bigl)$.
+Из равенства
+$$
+0,5\sigma_0\tau^2\sum_{\alpha=1}^6\big\|\Lambda_\alpha\ussat\big\|^2-
+0,5\tau^2\bigg\|\sum_{\alpha=1}^6\Lambda_\alpha\ussat\bigg\|^2=
+0,5\tau^2\sum\begin{Sb} \alpha,\beta=1\\ \alpha>\beta\end{Sb}^6
+\big\|\Lambda_\alpha\ussat-\Lambda_\beta\ussbt\big\|^2=
+0,5\sigma_0^{-2}\tau^{-2}\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2
+$$
+вытекает оценка
+$$
+\sigma_0\tau^2\sum_{\alpha=1}^6\big\|\Lambda_\alpha\ussat\big\|^2-
+0,5\tau^2\bigg\|\sum_{\alpha=1}^6\Lambda_\alpha\ussat\bigg\|^2\geq
+\sigma_0^{-2}\tau^{-2}\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2.
+$$
+
+Отличительной особенностью излагаемой здесь методики доказательства
+сходимости аддитивного итерационного процесса (7) является тот факт,
+что некоторые из операторов разбиения $\Lambda_\alpha$ могут быть
+неотрицательными, т.\,е. допускается их вырождение. В нашем случае
+$\Lambda_\alpha>0$, $\alpha=1,\dotsc,4$,
+а $\Lambda_5,\Lambda_6\geq 0$. Пусть $\Lambda_{\alpha_0}\geq c_0>0$, где
+в качестве $\alpha_0$ можно взять одно из значений $\alpha$, для которого
+оператор $\Lambda_\alpha$ является положительно-определенным.
+Тогда с учетом проведенных выше преобразований из (8) приходим к неравенству
+\begin{multline}
+\tau\bigl(\Lambda_{\alpha_0}\overset{s+1}{u}_{\!\!\!t}{}^{(\alpha_0)},
+\overset{s+1}{u}_{\!\!\!\alpha_0 t}\bigr)+
+0,5\sigma_0^{-2}\tau^{-2}\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2+
+0,5\sigma_0^{-2}\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2+
+0,5\|r(s+1)\|^2\leq \\
+%
+\leq 0,5\sigma_0^{-2}\tau^{-2}
+\|\overset{s}{v}\big\|_{\mathrm{III}}^2+0,5\|r(s)\|^2.
+\end{multline}
+Поскольку
+$y_{\alpha_0}^2=y_\alpha^2-2y_\alpha(y_\alpha-y_{\alpha_0})+
+(y_\alpha-y_{\alpha_0})^2$, то, суммируя это равенство по $\alpha=1,\dotsc,6$
+и применяя $\varepsilon$-неравенство, получим оценку
+\begin{equation}
+\tau\bigl(\Lambda_{\alpha_0}\overset{s+1}{u}_{\!\!\!t}{}^{(\alpha_0)},
+\overset{s+1}{u}_{\!\!\!\alpha_0 t}\bigr)\geq c_0\sigma_0^{-1}\tau
+\biggl((1-\varepsilon)\sum_{\alpha=1}^6\|\overset{s+1}{u}_
+{\!\!\!\alpha t}\|^2+\bigl(1-\tfrac{1}{\varepsilon}\bigr)\sum_{\alpha=1}^6
+\|\overset{s+1}{v}_{\!\!\!\!t}{}^{(\alpha,\alpha_0)}\|^2\biggr),\quad
+0<\varepsilon<1.
+\end{equation}
+С учетом последнего неравенства из (9) имеем
+\begin{multline}
+c_1\tau\sum_{\alpha=1}^6\|\overset{s+1}{u}_{\!\!\!\alpha t}\|^2+
+0,5\sigma_0^{-2}\tau^{-2}\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2+
+\bigl(0,5\sigma_0^{-2}+c_0\sigma_0^{-1}(1-1/\varepsilon)\tau\bigr)
+\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2+ \\
+%
++0,5\|r(s+1)\|^2 \leq 0,5\sigma_0^{-2}\tau^{-2}
+\|\overset{s}{v}\big\|_{\mathrm{III}}^2+0,5\|r(s)\|^2,
+\end{multline}
+где $c_1=c_0\sigma_0^{-1}(1-\varepsilon)$. Просуммируем уравнение (7) по
+$\alpha=1,\dotsc,6$ $(\sigma=\sigma_0)$
+\begin{equation}
+\frac{\overset{s+1}{\tilde u}-\overset{s}{\tilde u}}{\tau}+
+\sum_{\beta=1}^6\Lambda_\beta\ussb=f.
+\end{equation}
+В силу равенства
+$\sum\limits_{\alpha=1}^6\|\overset{s+1}{u}_{\!\!\!\alpha t}\|^2=
+\sigma_0\|\overset{s+1}{\tilde u}_{\!\!\!t}\|^2+\sigma_0^{-1}
+\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2$
+и вытекающего из (12) очевидного свойства
+$\overset{s+1}{\tilde u}_{\!\!\!t}=
+(\overset{s+1}{\tilde u}-\overset{s}{\tilde u})/\tau=-r(s+1)$
+для первого слагаемого (11) получим выражение
+\begin{equation}
+c_1\tau\sum_{\alpha=1}^6\|\overset{s+1}{u}_{\!\!\!\alpha t}\|^2=
+c_1\tau\bigl(\sigma_0\|r(s+1)\|^2+\sigma_0^{-1}
+\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2\bigr).
+\end{equation}
+
+Представим константу $c_1$ в виде суммы $c_1=\theta_0+\theta_1$,
+$\theta_0,\theta_1=\const>0$. Тогда с учетом (13) из (11) приходим
+к неравенству
+\begin{multline}
+0,5(1+2\theta_0\sigma_0\tau)\|r(s+1)\|^2+
+\theta_1\tau\sum_{\alpha=1}^6\|\overset{s+1}{u}_{\!\!\!\alpha t}\|^2+
+\bigl(0,5\sigma_0^{-2}+c_0\sigma_0^{-1}(1-1/\varepsilon)\tau
++\theta_0\sigma_0^{-1}\tau\bigr)
+\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2+ \\
+%
++0,5\sigma_0^{-2}\tau^{-2}\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2\leq
+0,5\|r(s)\|^2+0,5\sigma_0^{-2}\tau^{-2}
+\|\overset{s}{v}\big\|_{\mathrm{III}}^2.
+\end{multline}
+Для оценки величины 
+$\sum\limits_{\alpha=1}^6\|\overset{s+1}{u}_{\!\!\!\alpha t}\|^2$
+воспользуемся тождеством
+$$
+\overset{s+1}{u}_{\!\!\!\alpha t}=-\bigg(\sigma_0^{-1}\tau^{-1}
+\sum_{\beta=1}^6(\usa-\usb)+\sigma_0\tau\Lambda_\alpha
+\ussat+r(s)\bigg),
+$$
+которое следует непосредственно из (7). Возводя
+последнее равенство скалярно в квадрат и суммируя по $\alpha=1,\dotsc,6$,
+получим следующее соотношение:
+\begin{multline}
+\sum_{\alpha=1}^6\|\overset{s+1}{u}_{\!\!\!\alpha t}\|^2=
+\sigma_0^{-2}\tau^{-2}\sum_{\alpha=1}^6\bigg\|\sum_{\beta=1}^6\bigl(\usa
+-\usb\bigr)\bigg\|^2+\sigma_0^2\tau^2\sum_{\alpha=1}^6\big\|\Lambda_\alpha
+\ussat\big\|^2+2\sigma_0\tau\sum_{\alpha=1}^6
+\bigl(\Lambda_\alpha\ussat,r(s)\bigr)+ \\
+%
++\sigma_0\|r(s)\|^2-2\sum
+\begin{Sb} \alpha,\beta=1\\ \alpha>\beta\end{Sb}^6
+\bigl(\overset{s}{v}{}^{(\alpha,\beta)},\Lambda_\alpha
+\ussat-\Lambda_\beta\ussbt\bigr)+2\sigma_0^{-1}\tau^{-1}
+\sum_{\alpha=1}^6\biggl(\sum_{\beta=1}^6\bigl(\usa-\usb\bigr),r(s)\biggr).
+\end{multline}
+Так как 
+\begin{gather*}
+\sigma_0^2\tau^2\sum_{\alpha=1}^6\big\|\Lambda_\alpha\ussat\big\|^2+
+2\sigma_0\tau\sum_{\alpha=1}^6\bigl(\Lambda_\alpha\ussat,r(s)\bigr)
++\sigma_0\|r(s)\|^2=\sigma_0^2\tau^2\sum_{\alpha=1}^6
+\big\|\Lambda_\alpha\ussat\big\|^2- \\
+%
+-\sigma_0\tau^2\bigg\|\sum_{\alpha=1}^6
+\Lambda_\alpha\ussat\bigg\|^2+\sigma_0\|r(s+1)\|^2=
+\sigma_0^{-1}\tau^{-2}\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2+
+\sigma_0\|r(s+1)\|^2, \\
+%
+-2\sum \begin{Sb} \alpha,\beta=1\\
+\alpha>\beta\end{Sb}^6
+\bigl(\overset{s}{v}{}^{(\alpha,\beta)},\Lambda_\alpha
+\ussat-\Lambda_\beta\ussbt\bigr)=2\sigma_0^{-1}\tau^{-2}
+\sum \begin{Sb} \alpha,\beta=1\\
+\alpha>\beta\end{Sb}^6
+\bigl(\overset{s}{v}{}^{\!(\alpha,\beta)},
+\overset{s+1}{v}{}^{(\alpha,\beta)}\bigr)= \\
+%
+=\sigma_0^{-1}\tau^{-2}\bigl(\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2
++\|\overset{s}{v}\big\|_{\mathrm{III}}^2-\tau^2
+\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2\bigr),\quad
+2\sigma_0^{-1}\tau^{-1}\sum_{\alpha=1}^6
+\biggl(\sum_{\beta=1}^6\bigl(\usa-\usb\bigr),r(s)\biggr)=0,
+\end{gather*}
+то из равенства (15) получим
+$$
+\sum_{\alpha=1}^6\|\overset{s+1}{u}_{\!\!\!\alpha t}\|^2=
+2\sigma_0^{-1}\tau^{-2}\|\overset{s+1}{v}
+\big\|_{\mathrm{III}}^2+\sigma_0^{-1}
+\tau^{-2}\|\overset{s}{v}\big\|_{\mathrm{III}}^2+
+\sigma_0^{-2}\tau^{-2}\sum_{\alpha=1}^6\bigg\|\sum_{\beta=1}^6
+\overset{s}{v}{}^{(\alpha,\beta)}\bigg\|^2-\sigma_0^{-1}
+\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2+\sigma_0\|r(s+1)\|^2.
+$$
+Окончательно из (14) имеем оценку
+\begin{multline}
+(1+2c_1\sigma_0\tau)\|r(s+1)\|^2+\sigma_0^{-2}\tau^{-2}
+(1+4\theta_1\sigma_0\tau)\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2+ \\
+%
++\sigma_0^{-2}\bigl[1+2\sigma_0\bigl(\theta_0-\theta_1+c_0
+(1-1/\varepsilon)\bigr)\tau\bigr]\|\overset{s+1}{v}_{\!\!\!t}\big\|
+_{\mathrm{III}}^2\leq \|r(s)\|^2+\sigma_0^{-2}\tau^{-2}
+\|\overset{s}{v}\big\|_{\mathrm{III}}^2.
+\end{multline}
+Отсюда видно, что для неотрицательности последнего слагаемого в левой
+части (16) необходимо выполнение условия $0,5c_0\bigl(\sigma_0^{-1}
+(1-\varepsilon)+1/\varepsilon-1\bigr)\leq \theta_0<c_0$.
+Это неравенство всегда имеет место при
+$0,35\leq \varepsilon<1$. В частности, если $\varepsilon=1/2$,
+то можно положить $\theta_0=(13/24)c_0$, $\theta_1=(11/24)c_0$.
+
+Таким образом, доказана
+
+\begin{thm}
+При $\sigma=\sigma_0$ для аддитивного итерационного метода
+$(7)$ справедлива оценка
+\begin{equation}
+\overset{s}{Q}{}^{2} \le \bigg(\frac{1}{q}\bigg)^{s}
+\overset{\circ}{Q}{}^{2},
+\end{equation}
+где
+$\overset{s}{Q}{}^{2}=\|r(s)\|^2+\sigma_0^{-2}\tau^{-2}
+\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2$,
+$q=\min\{1+2c_1\sigma_0\tau,1+4\theta_1\sigma_0\tau\}$,
+$c_1$, $\theta_1$ --- положительные постоянные.
+\end{thm}
+
+Следует отметить, что из теоремы, вообще говоря, не следует сходимость
+итерационного процесса (7). Оценка (17) лишь гарантирует стремление к нулю
+невязки метода $r(s)=\sum\limits_{\alpha=1}^6\Lambda_\alpha\usva-f$
+и сходимость компонент друг к другу, т.\,е. выполнение условий
+$\|r(s)\|\to 0$ и $\|\overset{s}{v}\big\|_{\mathrm{III}}\to 0$ при
+$s\to\infty$. Однако малость $r(s)$ не обеспечивает малости естественной
+невязки $\Lambda\overset{s}{\tilde u}-f$ в силу рассогласованности
+отдельных компонент решения $\overset{s}{\tilde u}$. 
+
+Для получения оценки сходимости введем сеточную функцию погрешности
+$\overset{s}{\rho}=\overset{s}{\tilde u}-u$. Тогда, используя
+тождество
+$$
+\usa=\overset{s}{\tilde u}+\frac{1}{\sigma_0}\sum_{\beta=1}^6\bigl(\usa-
+\usb\bigr)=\overset{s}{\tilde u}+\frac{1}{\sigma_0}\sum_{\beta=1}^6
+\overset{s}{v}{}^{(\alpha,\beta)}
+$$
+и выражение для $r(s)$, имеем
+\begin{equation}
+\Lambda\overset{s}{\rho}=-\sum_{\alpha=1}^6\Lambda_\alpha\biggl(
+\frac{1}{\sigma_0}\sum_{\beta=1}^6\overset{s}{v}{}^{(\alpha,\beta)}
+\biggr)+r(s).
+\end{equation}
+Умножим (18) скалярно на $\overset{s}{\rho}$ и оценим правую часть
+полученного равенства с помощью стандартных теорем вложения
+$$
+\|\overset{s}{\rho}\|_\Lambda \leq \biggl(\sum_{\alpha=1}^6
+\sigma_0\Delta\bigg\|\frac{1}{\sigma_0}\sum_{\beta=1}^6
+\overset{s}{v}{}^{(\alpha,\beta)}\bigg\|^2\biggr)^{1/2}+
+\delta^{-1/2}\|r(s)\|,
+$$
+где $\Lambda>\delta$, $\Delta=\max\limits_\alpha\Delta_\alpha$,
+$\Lambda_\alpha<\Delta_\alpha$, $\alpha=1,\dotsc,6$.
+Из последнего соотношения и оценок
+$$
+\|r(s)\|^2\leq \bigg(\frac{1}{q}\bigg)^s\overset{\circ}{Q}{}^{2},\quad
+\|\overset{s}{v}\big\|_{\mathrm{III}}^2\leq \sigma_0^2\tau^2
+\bigg(\frac{1}{q}
+\bigg)^s\overset{\circ}{Q}{}^{2},
+$$
+очевидным образом вытекающих из (17), следует неравенство
+\begin{equation}
+\|\overset{s}{\rho}\|_\Lambda\leq
+\bigl(\delta^{-1/2}+(\sigma_0\Delta)^{1/2}\tau\bigr)\bigg(\frac{1}{q^s}
+\bigg)^{1/2}\overset{\circ}{Q},
+\end{equation}
+которое позволяет сформулировать теорему сходимости метода (7).
+
+\begin{thm}
+При $\sigma=\sigma_0$ итерационный процесс $(7)$ сходится и для его
+скорости сходимости справедлива оценка $(19)$.
+\end{thm}
+
+Из теоремы 2 следует, что в соответствии с оценкой (19), в правую часть
+которой входит выражение $\sigma_0^{1/2}\Delta^{1/2}\tau$, скорость сходимости
+метода (7) регулируется соотношением между итерационным параметром $\tau$
+и сеточным шагом $h=\max(h_x,h_y)$. Это условие сходимости соответствует
+ограничению на $\tau$, характерному для классического метода переменных
+направлений.
+
+Можно получить и другую оценку сходимости метода (7). Из равенства (18)
+следует выражение
+$$
+\overset{s}{\rho}=-\sum_{\alpha=1}^6\widetilde\Lambda_\alpha\biggl(
+\frac{1}{\sigma_0}\sum_{\beta=1}^6\overset{s}{v}{}^{(\alpha,\beta)}
+\biggr)+\Lambda^{-1}r(s),
+$$
+$\widetilde\Lambda_\alpha=\Lambda^{-1}\Lambda_\alpha=
+E\Big/\Big(E+\sum\limits_{\beta=1}^6\Lambda_\alpha\Lambda_\beta
+\Big)$, откуда вытекает, что для сходимости метода необходимо требование
+ограниченности оператора $\Lambda^{-1}\Lambda_\alpha$.
+
+\begin{thm}
+Пусть выполнены условия теоремы $1$, $\|\Lambda^{-1}\Lambda_\alpha\|
+<\Delta_0$, $\Delta_0=\const>0$, $\alpha=1,\dotsc,6$.
+Тогда аддитивный итерационный метод $(7)$ сходится
+и для его скорости сходимости имеет место оценка
+\begin{equation}
+\|\overset{s}{\rho}\|\leq \delta^{-1}\|r(s)\|+\Delta_0\|\overset{s}{v}
+\big\|_{\mathrm{III}}.
+\end{equation}
+\end{thm}
+
+Оценка (20) не накладывает дополнительного ограничения на соотношение между
+$\tau$ и $h$, имеющее место в (19). При условии коммутируемости операторов
+$\Lambda_\alpha$ норма $\|\widetilde\Lambda_\alpha\|<1$ и скорость сходимости
+метода несколько выше.
+
+Доказательство теорем 1--3 было проведено при $\sigma=\sigma_0$, что формально
+соответствует чисто неявной итерационной схеме метода установления (12).
+Аналогичные результаты нетрудно получить и для $\sigma_0/2<\sigma<\sigma_0$.
+Более подробно рассмотрим случай $\sigma=\sigma_0/2$ (симметричная схема).
+
+\begin{thm}
+Пусть $\sigma=\sigma_0/2$, $0,25\mu_0\theta_0\sigma^2\tau^2\geq
+\mu_1\Delta^{-1}$, $\mu_0+\mu_1=1$, $\mu_0$, $\mu_1$ --- положительные
+константы, $\Delta>\Lambda_\alpha$, $\alpha=1,\dotsc,6$. Тогда для
+итерационного метода $(7)$ справедлива оценка
+$$
+\overset{s}{Q}{}^{2} \le \bigg(\frac{1}{q}\bigg)^{s}
+\overset{\circ}{Q}{}^{2},
+$$
+где $\overset{s}{Q}{}^{2}=\|r(s)\|^2+(1-4\gamma)^{-1}\sigma^{-2}
+\tau^{-2}\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2$,
+$q=\frac{1+4\gamma}{1-4\gamma}$, если
+$q=\frac{1-4\gamma}{1+4\gamma}\bigl(1+4\mu_0\theta_1\sigma\tau
+\bigr)\leq 1;$ $\overset{s}{Q}{}^{2}=\|r(s)\|^2+\sigma^{-2}\tau^{-2}
+\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2$,
+$q=\min\{1+4\gamma,\ 1+4\mu_0\theta_1
+\sigma\tau\}$, если $|1-4\gamma|\leq 1;$ $\gamma=\mu_1\sigma^{-1}\Delta^{-1}
+\tau$.
+\end{thm}
+
+\begin{pf}
+Обратимся к основному соотношению, полученному в теореме 1,
+\begin{multline}
+\tau\sum_{\alpha=1}^6\bigl(\Lambda_\alpha\overset{s+1}{u}_{\!\!\!t}{}^
+{(\alpha)},\overset{s+1}{u}_{\!\!\!\alpha t}\bigr)+
+0,5\sigma_0^{-2}\tau^{-2}\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2+
+0,5\sigma_0^{-2}\|\overset{s+1}{v}_{\!\!\!t}\big\|_{\mathrm{III}}^2+
+0,5\|r(s+1)\|^2\leq \\
+%
+\leq 0,5\sigma_0^{-2}\tau^{-2}
+\|\overset{s}{v}\big\|_{\mathrm{III}}^2+0,5\|r(s)\|^2.
+\end{multline}
+Для оценки первого слагаемого в (21) воспользуемся неравенствами
+$\bigl(\Lambda_\alpha\ussat,\overset{s+1}{u}_{\!\!\!\alpha t}\bigr)\geq
+c_0\|\overset{s+1}{u}_{\!\!\!\alpha t}\|^2$, $\Delta^{-1}\|\Lambda_\alpha
+\ussat\|^2\leq \bigl(\Lambda_\alpha\ussat,\overset{s+1}{u}_{\!\!\!\alpha t}
+\bigr)$, где $\Delta>\Lambda_\alpha$ --- верхняя граница спектра операторов
+$\Lambda_\alpha$, $\alpha=1,\dotsc,6$. Пусть $\mu_0+\mu_1=1$, $\mu_j>0$,
+$j=0,1$. Тогда с учетом (10) из (21) получим
+\begin{multline}
+0,5\|r(s+1)\|^2+0,5\sigma^{-2}\tau^{-2}(1+4\mu_0\theta_1\sigma\tau)
+\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2+0,5\sigma_0^{-2}
+\big[1+2\mu_0\sigma\big(\theta_0-\theta_1+ \\
+%
++c_0(1-1/\varepsilon)\big)\tau\big]\|\overset{s+1}{v}_{\!\!\!t}
+\big\|_{\mathrm{III}}^2+\mu_0\theta_0\sigma
+\tau\|\overset{s+1}{\tilde u}_{\!\!\!t}\|^2+\mu_1\sigma^{-1}\Delta^{-1}
+\tau\bigg\|\sum_{\alpha=1}^6\Lambda_\alpha\ussat\bigg\|^2,
+\end{multline}
+где $\theta_0+\theta_1=c_1$, $c_1=c_0\sigma^{-1}(1-\varepsilon)$.
+Принимая во внимание тождества
+$$
+\overset{s+1}{\tilde u}_{\!\!\!t}=-0,5\bigl(r(s+1)+r(s)\bigr),\quad
+\tau\sum_{\alpha=1}^6\Lambda_\alpha\ussat=r(s+1)-r(s),
+$$
+преобразуем два последних слагаемых в левой части (22):
+\begin{multline*}
+\mu_0\theta_0\sigma\tau\|\overset{s+1}{\tilde u}_{\!\!\!t}\|^2+
+\mu_1\sigma^{-1}\Delta^{-1}\tau\bigg\|\sum_{\alpha=1}^6\Lambda_\alpha\ussat
+\bigg\|^2=0,25\mu_0\theta_0\sigma\tau\|r(s+1)+r(s)\|^2+ \\
+%
++\mu_1\sigma^{-1}\Delta^{-1}\tau^{-1}\|r(s+1)-r(s)\|^2=\bigl(0,25\mu_0
+\theta_0\sigma\tau-\mu_1\sigma^{-1}\Delta^{-1}\tau^{-1}\bigr)
+\|r(s+1)+r(s)\|^2+ \\
+%
++2\mu_1\sigma^{-1}\Delta^{-1}\tau^{-1}\bigl(\|r(s+1)\|^2+
+\|r(s)\|^2\bigr).
+\end{multline*}
+Если $\tau$ удовлетворяет неравенству $0,25\mu_0\theta_0\sigma^2\tau^2\geq
+\mu_1\Delta^{-1}$, то при тех же предположениях относительно констант
+$\theta_0,\theta_1$ получим оценку
+$$
+(1+4\gamma)\|r(s+1)\|^2+\sigma^{-2}\tau^{-2}(1+4\mu_0\theta_1\sigma\tau)
+\|\overset{s+1}{v}\big\|_{\mathrm{III}}^2
+\leq(1-4\gamma)\|r(s)\|^2+\sigma^{-2}
+\tau^{-2}\|\overset{s}{v}\big\|_{\mathrm{III}}^2,
+$$
+$\gamma=\mu_1\sigma^{-1}\Delta^{-1}\tau^{-1}$,
+из которой и следует утверждение теоремы.
+\end{pf}
+
+Для сходимости итерационного процесса (7) при $\sigma=\sigma_0/2$ справедливы
+теоремы, аналогичные теоремам 2, 3.
+\medskip
+
+{\bf Замечание.}
+Предложенный в работе подход может быть эффективно использован при построении
+алгоритмов декомпозиции области. В этом случае применение
+многокомпонентного метода переменных направлений в сочетании с методом
+конечных элементов позволяет конструировать явные итерационные схемы
+на минимальных подобластях [12].
+
+\begin{thebibliography}{99}
+
+\bibitem{1}
+Марчук Г.И.
+{\it Методы расщепления.} -- М.: Наука, 1988. -- 264 с.
+\bibitem{2}
+Marchuk G.I., Kuzin V.I.
+{\it On the combination of finite element and splitting-up methods in the
+solution of parabolic equations}
+// J. Comput. Phys. -- 1983. -- V.\,52. -- \No\,2.
+-- P.\,237--272.
+\bibitem{3}
+Кузин В.И. {\it Численная модель глобальной циркуляции океана,
+основанная на методе конечных элементов с расщеплениeм} //
+Численное моделирование динамики океана и внутренних
+водоемов. -- Новосибирск, 1984. -- C.\,118--140.
+\bibitem{4}
+Лаевский Ю.М.
+{\it Методы декомпозиции области при решении двумерных параболических
+уравнений}
+// Вариационно-разностные методы в задачах численного анализа.
+-- Новосибирск, 1987. -- С.\,112--128.
+\bibitem{5}
+Лаевский Ю.М.
+{\it Об одном алгоритме декомпозиции области без налегания подобластей
+при решении параболических уравнений}
+// Журн. вычисл. матем. и матем. физ. -- 1992. -- Т.\,32. -- \No\,11.
+-- C.\,1744--1755.
+\bibitem{6}
+Peaceman D.W., Rachford H.H
+{\it The numerical solution of parabolic and elliptic
+differential equations}
+// J. Soc. Industr. and Appl. Math. -- 1955. -- V.\,3. --
+\No\,1. -- P.\,28--41.
+\bibitem{7}
+Douglas J.
+{\it On the numerical integration of
+$\partial^2u/\partial x^2+\partial^2u/\partial y^2=\partial u/\partial t$
+by implicit methods}
+// J. Soc. Industr. and Appl. Math. -- 1955. -- V.\,3. --
+\No\,1. -- P.\,42--65.
+\bibitem{8}
+Абрашин В.Н., Жадаева Н.Г.
+{\it Разностные схемы для задач математической физики в области
+произвольной формы}
+// Дифференц. уравнения и их применение. -- Вильнюс, 1988. -- \No\,43.
+-- С.\,22--30.
+\bibitem{9}
+Абрашин В.Н.
+{\it Об одном варианте метода переменных направлений решения
+многомерных задач математической физики}
+// Дифференц. уравнения. -- 1990. -- Т.\,26. -- \No\,2. -- C.\,314--323.
+\bibitem{10}
+Абрашин В.Н., Муха В.А.
+{\it Об одном классе экономичных разностных схем для решения многомерных
+задач математической физики}
+// Дифференц. уравнения. -- 1992. -- Т.\,28. -- \No\,10. -- C.\,1186--1199.
+\bibitem{11}
+Абрашин В.Н., Лэхтиков С.Н.
+{\it О сочетании методов переменных направлений и конечных элементов
+при решении задач математической физики.} I
+// Дифференц. уравнения. -- 1995. -- Т.\,31. -- \No\,7. -- C.\,1161--1169.
+\bibitem{12}
+Абрашин В.Н., Лэхтиков С.Н.
+{\it О сочетании методов переменных направлений и конечных элементов
+при решении задач математической физики.} II
+// Дифференц. уравнения. -- 1996. -- Т.\,32. -- \No\,7. -- C.\,889--897.
+\bibitem{13}
+Абрашин В.Н., Жадаева Н.Г.
+{\it Об одном методе композиции построения итерационных алгоритмов
+решения стационарных задач математической физики}
+// Дифференц. уравнения. -- 1999. -- Т.\,35. -- \No\,7. -- C.\,948--958.
+\bibitem{14}
+Абрашин В.Н., Егоров А.А., Жадаева Н.Г., Самарская Н.Г.
+{\it Итерационный многокомпонентный метод переменных направлений
+решения стационарных задач математической физики}
+// Тр. ин-та матем. НАН Беларуси. -- 1999. -- Т.\,3. -- C.\,99--105.
+\bibitem{15}
+Абрашин В.Н.
+{\it Многокомпонентные итерационные методы переменных направлений}
+// Матем. моделир. -- 2000. -- Т.\,12. -- \No\,2. -- C.\,45--58.
+
+\end{thebibliography}
+
+\vskip 2cm
+
+\post{\it Институт математики Национальной}{\it Поступила}
+\post{\it Академии Наук Беларуси,}{05.05.2000}
+\smallskip
+\post{\it Белорусский государственный университет}{}
+
+\label{end}
+\end{document}

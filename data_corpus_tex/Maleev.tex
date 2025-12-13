@@ -1,0 +1,595 @@
+\def\stat{maleev}
+
+\def\tit{ИССЛЕДОВАНИЕ ЭФФЕКТИВНОСТИ ПРИМЕНЕНИЯ БИНАРНЫХ НЕЙРОННЫХ СЕТЕЙ 
+ПРИ~ДЕТЕКТИРОВАНИИ ОБЪЕКТА НА~ИЗОБРАЖЕНИИ}
+
+\def\titkol{Исследование эффективности применения бинарных нейронных сетей 
+при~детектировании объекта на~изображении}
+
+\def\aut{Д.\,О.~Королев$^1$, О.\,Г.~Малеев$^2$}
+
+\def\autkol{Д.\,О.~Королев, О.\,Г.~Малеев}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Королев Д.\,О.}
+\index{Малеев О.\,Г.}
+\index{Korolev D.\,O.}
+\index{Maleev O.\,G.}
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа выполнена с~использованием инфраструктуры Центра коллективного пользования <<Высокопроизводительные вы\-чис\-ле\-ния и~большие данные>> 
+%(ЦКП <<Информатика>>) ФИЦ ИУ РАН (г.~Москва).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт компьютерных наук и~технологий Санкт-Петербургского политехнического университета Петра 
+Великого, \mbox{korolev.do512@gmail.com}}
+\footnotetext[2]{Институт компьютерных наук и~технологий Санкт-Петербургского 
+политехнического университета Петра Великого, \mbox{maleev\_og@spbstu.ru}}
+
+
+%\vspace*{-10pt}
+
+ 
+\Abst{Глубокие сверточные нейронные сети широко применяются для задач детектирования 
+объектов. Однако современные модели глубоких сверточных нейронных сетей требуют 
+больших вы\-чис\-ли\-тель\-ных ресурсов, что за\-труд\-ня\-ет их развертывание на мобильных 
+и~встро\-ен\-ных устройствах с~ограниченными ресурсами. Бинарные нейронные сети 
+поз\-во\-ля\-ют снизить требования к~устройствам. В~бинарных нейронных сетях активации 
+и/или веса принимают только двоичные значения $(-1, 1)$. Пред\-став\-лен\-ный в~работе метод 
+применяет балансировку и~нормализацию це\-ло\-чис\-лен\-ных значений весов при прямом 
+распространении и~двухэтапную аппроксимацию функции знака при обрат\-ном. 
+Приведены результаты срав\-не\-ния точ\-ности обнаружения на наборе данных PASCAL Face 
+и~ско\-рости работы и~размера модели на мобильном устройстве для 
+пред\-став\-лен\-но\-го в~работе метода, модели без применения бинаризации, сети TinyML 
+и~методов Bi-Real Net и~ABC-Net.}
+
+\KW{бинарные нейронные сети; сверточные нейронные сети; обнаружение объектов; 
+ускорение модели}
+
+\DOI{10.14357/19922264230312}{TOCVAL}
+  
+\vspace*{-4pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+\vspace*{-2pt}
+
+  Вопросам разработки методов, алгоритмов и~про\-грам\-мно-ап\-па\-рат\-ных 
+комплексов обработки и~классификации изображений с~детектированием 
+объектов по\-свя\-ще\-но до\-ста\-точ\-но много научных работ~[1--4]. Практические 
+решения данной задачи находят широкое применение в~сис\-те\-мах управ\-ле\-ния 
+и~безопас\-ности, видеоаналитике, сис\-те\-мах конт\-ро\-ля производства, сельском 
+хозяйстве и~т.\,д. Распространенным подходом к~классификации изображений 
+и~обнаружению объектов стало применение сверточных нейронных сетей~[5]. 
+Благодаря глубокой структуре с~множеством уровней и~миллионами па\-ра\-мет\-ров, 
+глубокие сверточные нейронные сети демонстрируют высокую точ\-ность 
+в~широком классе задач. Например, сеть VGG-16, содержащая около 
+140~млн 32-бит\-ных па\-ра\-мет\-ров с~пла\-ва\-ющей запятой, достигает  
+точ\-ности~92,7\% в~задаче классификации изображений на наборе данных 
+ImageNet~[6]. Вмес\-те с~тем такая сеть требует более 500~МБ дискового 
+пространства и~для выполнения классификации требует около $1{,}6\cdot 
+10^{10}$ ариф\-ме\-ти\-че\-ских операций с~пла\-ва\-ющей запятой. Понятно, что 
+использование такой архитектуры приводит к~не\-об\-хо\-ди\-мости применения 
+до\-ста\-точ\-но высокопроизводительного оборудования, вклю\-ча\-юще\-го, как 
+правило, графические ускорители для проведения мат\-рич\-ных вы\-чис\-ле\-ний~[6]. 
+  
+  Предлагаемая в~статье реализация алгоритма детектирования объектов 
+с~применением бинарных нейронных сетей требует значительно меньшего 
+объема вы\-чис\-ле\-ний и~памяти, что поз\-во\-ля\-ет проводить детектирование 
+объектов в~реальном мас\-шта\-бе времени на встро\-ен\-ных устрой\-ст\-вах. 
+
+  \begin{figure*} %fig1
+  \vspace*{1pt}
+\begin{center}
+   \mbox{%
+\epsfxsize=162.253mm 
+\epsfbox{mal-1.eps}
+}
+
+\vspace*{6pt}
+
+  {\small Форма функций Identity~(\textit{а}) и~Hardtanh~(\textit{б})}
+  \end{center}
+  \end{figure*}
+  
+  \vspace*{-9pt}
+  
+\section{Бинарные нейронные сети}
+
+  В бинарных нейронных сетях значения выходов нейронов и/или весов 
+принимают только двоичные значения $(-1, 1)$. При этом 32-бит\-ные операции 
+умножения и~на\-коп\-ле\-ния могут быть заменены поразрядными логическими 
+операциями XNOR и~операциями под\-сче\-та накопления bitcount, 
+за\-клю\-ча\-ющи\-ми\-ся в~подсчете количества единиц~[6]. Такой подход поз\-во\-ля\-ет 
+получить значительное увеличение быст\-ро\-дей\-ст\-вия и~уменьшение размера 
+мо\-дели.
+  
+  Для прямого распространения в~качестве функции активации может быть 
+применена функ\-ция \mbox{знака}:
+
+\noindent
+  \begin{equation*}
+  \mathrm{sgn}\,(x)= \begin{cases}
+  1, &\mbox{если}\ x\geq 0\,;\\
+  0, & \mbox{если}\ x<0\,.
+  \end{cases}
+  %\label{e1-mal}
+  \end{equation*}
+  
+  Функция знака прос\-та в~реализации и~неплохо работает на прак\-ти\-ке, однако 
+ее не\-воз\-мож\-но использовать при обуче\-нии в~алгоритме обрат\-но\-го 
+рас\-про\-стра\-не\-ния ошиб\-ки из-за ее не\-диф\-фе\-рен\-ци\-ру\-емости при $x\hm = 0$.
+  
+  Для решения этой проб\-ле\-мы при обуче\-нии применяют функции Identity 
+и~Hardtanh~[6]. Функция Identity, в~отличие от Hardtanh, передает информацию 
+о~градиенте без учета эффекта бинаризации. Функция Hardtanh учитывает 
+бинаризацию, однако из-за наличия интервала отсечения от\-бра\-сы\-ва\-ет 
+информацию за его пределами. Обе эти функции теряют информацию 
+о~градиенте и~на прак\-ти\-ке могут приводить к~уменьшению точ\-ности: 
+  \begin{alignat*}{2}
+  \mbox{Identity}:&\ &y&=x\,;\\[6pt]
+  \mbox{Hardtanh}:&\ &y&=\mathrm{Hardtanh}\,(x).
+  \end{alignat*}
+  
+  На рисунке пред\-став\-ле\-на форма функций Identity и~Hardtanh~\cite{5-mal}.
+    
+  
+  Из вышесказанного понятно, что реализация бинарной нейронной сети~--- 
+задача не\-три\-ви\-аль\-ная. Далее рас\-смот\-рим основные этапы пред\-ла\-га\-емо\-го 
+авторами метода по\-стро\-ения бинарной \mbox{сети}. 
+  
+\section{Алгоритм бинаризации}
+
+  В основе использованного в~работе метода лежит способ IR-Net (Information Retention Network)~[5]. Для 
+дополнительной минимизации ошиб\-ки бинаризации применяется 
+це\-ло\-чис\-лен\-ный битовый сдвиг со значением~$s$ над двоичными весами. Это 
+поз\-во\-ля\-ет расширить возможности пред\-став\-ле\-ния двоичных весов без 
+не\-об\-хо\-ди\-мости выполнять операции с~це\-ло\-чис\-лен\-ны\-ми значениями в~процессе 
+обуче\-ния. При этом бинаризация весов и~активаций сети имеет сле\-ду\-ющий вид:
+
+\noindent
+  \begin{align*}
+  Q_w(\hat{w}_{\mathrm{std}})&=B_w\;\mbox{<<>>}\;s 
+=\mathrm{sign}\,(\hat{w}_{\mathrm{std}})\;\mbox{<<>>}\;s\,;\\
+  Q_a(a)&=B_a =\mathrm{sign}\,(a)\,.
+  \end{align*}
+   Значение битового сдвига $s$ определяется как
+  $$
+  s=\mathrm{round}\left( \log_2\left( \fr{\| \hat{w}_{\mathrm{std}}\|_1}{n}\right)\right)\,,
+  $$
+где $n$~--- размерность век\-то\-ра весов; $\|\hat{w}_{\mathrm{std}}\}_1$~--- \mbox{L1-нор}\-ма 
+век\-то\-ра весов (сумма абсолютных значений век\-то\-ра).
+  
+Основная операция сети для прямого рас\-про\-стра\-не\-ния может быть 
+пред\-став\-ле\-на~как
+  $$
+  z=\left( B_w \odot B_a\right)\;\mbox{<<>>}\;s\,.
+  $$
+  
+\subsection{Бинаризация весов и~активаций при~прямом 
+распространении}
+ 
+  Для уменьшения влияния ошибок бинаризации в~рас\-смат\-ри\-ва\-емом методе 
+предлагается уравновешивать веса, вычитая сред\-нее значение из весов пол\-ной 
+точ\-ности:
+  $$
+  \hat{w}=w-\bar{w}\,.
+  $$
+  
+  Кроме того, для увеличения ста\-биль\-ности процесса обуче\-ния и~уменьшения 
+влияния эф\-фек\-та снижения точ\-ности, связанного с~чрезмерным рос\-том 
+величины весов и,~следовательно, рос\-том величины градиента, дополнительно 
+предлагается проводить нормализацию урав\-но\-ве\-шен\-ных ве\-сов:
+  $$
+  \hat{w}_{\mathrm{std}} =\fr{\hat{w}}{\sigma(\hat{w})}\,,
+  $$
+где $\sigma(\cdot)$~--- стандартное от\-кло\-не\-ние. 
+
+  
+
+%\pagebreak
+  
+  Эти операции делают веса полной точ\-ности рав\-но\-мер\-но распределенными, 
+что повышает ста\-биль\-ность обуче\-ния бинарных нейронных сетей и,~как 
+следствие, точ\-ность.
+  
+  Для прямого распространения в~качестве функции активации используется 
+функ\-ция знака. При этом двоичные значения могут быть получены  
+сле\-ду\-ющим об\-ра\-зом:
+  \begin{align*}
+  Q_w\left(\hat{w}_{\mathrm{std}}\right) &= B_w =\mathrm{sign}\left( 
+\hat{w}_{\mathrm{std}}\right)\,;\\
+  Q_a(a) &= B_a =\mathrm{sign}\left(a\right)\,.
+  \end{align*}
+
+\subsection{Двухэтапная аппроксимация при~обратном 
+распространении}
+
+  Бинарная функция активации может приводить к~потере точ\-ности, за\-труд\-няя 
+передачу градиента при обрат\-ном распространении. Для эффективного 
+обуче\-ния сети долж\-ны быть применены методы, обес\-пе\-чи\-ва\-ющие большую 
+спо\-соб\-ность к~об\-нов\-ле\-нию в~начале процесса обуче\-ния и~небольшую ошиб\-ку 
+градиента в~\mbox{конце}.
+  
+  Для обратного распространения предлагается применять двухэтапный способ 
+аппроксимации функ\-ции знака~\cite{5-mal}: 
+  \begin{enumerate}[(1)]
+\item на первом этапе для аппроксимации функции знака применяется 
+функ\-ция Identity. При этом на пер\-вом этапе не проводится отсечения 
+градиентов (значение отсечения очень велико). При переходе ко второму 
+этапу форма ап\-прок\-си\-ма\-ции изменяется от функ\-ции Identity к~форме 
+Hardtanh, а~значение отсечения по\-сте\-пен\-но снижается до еди\-ницы; 
+\item на втором этапе значение интервала отсечения становится рав\-ным 
+единице. Форма аппроксимации по\-сте\-пен\-но принимает вид функ\-ции знака, 
+обес\-пе\-чи\-ва\-ющей со\-гла\-со\-ван\-ность прямого и~об\-рат\-но\-го рас\-про\-стра\-не\-ния. 
+  \end{enumerate}
+  
+  Функция аппроксимации $g(x)$ для обратного распространения опре\-де\-ля\-ет\-ся~как
+  $$
+  g(x)=k\,\mathrm{tanh}\,tx\,,
+  $$
+где $g(x)$~--- аппроксимация функции знака; $t$ и~$k$~--- управ\-ля\-ющие 
+переменные, из\-ме\-ня\-ющие свои значения в~процессе обуче\-ния. Эти переменные 
+могут быть опре\-де\-ле\-ны~как
+
+\noindent
+\begin{align*}
+t &= T_{\min} \cdot 10^{(i/N)\mathrm{log}\left (T_{\max}/T_{\min}\right)}\,;\\
+k&= \max\left( \fr{1}{t}, 1\right),
+\end{align*}
+где $i$~--- текущая эпоха; $N$~--- чис\-ло эпох; $T_{\min}$ и~$T_{\max}$~---  
+па\-ра\-мет\-ры, рав\-ные $10^{-1}$ и~$10^1$.
+
+\vspace*{-6pt}
+
+\section{Результаты}
+
+  Для экспериментальной нейронной сети в~работе выбрана широко известная 
+архитектура SSD (single shot detector)~\cite{9-mal} с~до\-бав\-ле\-ни\-ем слоя пакетной 
+нормализации~\cite{10-mal}. Модель бинарной сети, реализованная на основе 
+пред\-став\-лен\-но\-го метода, была обуче\-на для детектирования объектов 
+с~определением координат огра\-ни\-чи\-ва\-ющей рамки~\cite{12-mal}. 
+В~качестве обуча\-ющей выборки использовался набор данных WIDER 
+FACE~\cite{11-mal}, содержащий 12\,881~изоб\-ра\-же\-ние. 
+  
+  Тестирование производительности бинарной нейронной сети проводилось на 
+мобильном устройстве с~процессором MediaTek Helio P22 MT6762  
+(4\;$\times$\;Cortex-A53 2000~МГц, 4\;$\times$\;Cortex-A53 1500~МГц). 
+Тестирование точ\-ности производилось на наборе данных PASCAL 
+Face~\cite{13-mal}, содержащем 851~изобра\-же\-ние и~1341~лицо, ограниченные 
+прямоугольными рам\-ками.
+  
+   Для развертывания предварительно обученной модели использовался 
+фрейм\-ворк daBNN~\cite{14-mal}, под\-дер\-жи\-ва\-ющий мобильные 
+устройства с~операционной сис\-те\-мой Android.
+  
+  Результаты экспериментов в~сравнении с~ранее известными методами Bi-Real 
+Net~\cite{7-mal} и~ABC-Net~\cite{8-mal} и~применении автоматического 
+преобразования модели с~использованием фрейм\-вор\-ка \mbox{TensorFlow} Lite 
+приведены в~таб\-лице.
+
+
+
+%\begin{table*}[b]\small
+  \begin{center}
+  \tabcolsep=2.5pt
+  {\small \begin{tabular}{|l|c|c|c|}
+  \multicolumn{4}{c}{Результаты работы моделей}\\
+  \multicolumn{4}{c}{\ }\\[-6pt]
+  \hline
+\multicolumn{1}{|c|}{Модель}&\tabcolsep=0pt\begin{tabular}{c}Точность,\\ \%\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}Время\\ работы, мс\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Размер,\\ МБ\end{tabular}\\
+\hline
+Полной точности&98,61&1811\hphantom{9}&89,69\\
+Предложенный метод&98,04&223&11,91\\
+Bi-Real Net&97,98&254&12,56\\
+ABC-Net&97,02&240&11,64\\
+TensorFlow Lite&98,56&645&23,78\\
+\hline
+\end{tabular}
+}
+\end{center}
+%\end{table*}
+  
+  
+\vspace*{-6pt}
+
+\section{Заключение}
+  
+  Предлагаемый в~данной \mbox{статье} метод по\-стро\-ения бинарной нейронной сети 
+поз\-во\-ля\-ет уменьшить время обработки изоб\-ра\-же\-ния в~8,1~раза, а~объем 
+памяти, за\-ни\-ма\-емый моделью, в~7,5~раза. При этом происходит 
+незначительное падение точ\-ности обнаружения на тес\-то\-вом наборе данных 
+\mbox{PASCAL} Face (0,57\%).
+  
+  Реализованный метод превосходит ранее известные методы Bi-Real 
+Net~\cite{7-mal} и~ABC-Net~\cite{8-mal} по точ\-ности и~имеет лучшее  
+быст\-ро\-дей\-ст\-вие. 
+  
+  Также предлагаемый авторами метод продемонстрировал в~2,8~раза лучшее 
+быст\-ро\-дей\-ст\-вие и~более чем в~2~раза меньшие требования по памяти, чем 
+рас\-про\-стра\-нен\-ный в~на\-сто\-ящее время инструмент TensorFlow  
+Lite~\cite{15-mal}, под\-дер\-жи\-ва\-ющий выполнение квантования весов 
+до~8~бит точ\-ности.
+  
+  Реализованный метод показал высокую точ\-ность обнаружения, практически 
+не усту\-па\-ющую пол\-но\-раз\-мер\-ным сверточным сетям, и~может эффективно 
+применяться для по\-стро\-ения моделей нейронных сетей, ре\-ша\-ющих задачи 
+обнаружения объектов, на мобильных и~встро\-ен\-ных устройствах 
+с~ограниченными ре\-сур\-сами.
+  
+{\small\frenchspacing
+ {\baselineskip=10.7pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-mal}
+\Au{Pathak A.\,R., Pandey~M., Rautaray~S.\,S.} Application of deep learning for object 
+detection~// Procedia Comput. Sci., 2018. Vol.~132. P.~1706--1717. doi: 
+10.1016/j.procs. 2018.05.144.
+
+\bibitem{3-mal} %2
+\Au{Jiao L., Zhang F., Liu~F., Yang~S., Li~L., Feng~Z., Qu~R.} A~survey of deep learning-based 
+object detection~// IEEE Access, 2019. Vol.~7. P.~128837--128868. doi: 
+10.1109/ \mbox{ACCESS}.2019.2939201.
+\bibitem{4-mal} %3
+\Au{Lu S., Wang~B., Wang~H., Chen~L., Linjian~M., Zhang~X.} A~real-time object detection 
+algorithm for video~// Comput. Electr. Eng., 2019. Vol.~77. P.~398--408. doi: 
+10.1016/ j.compeleceng.2019.05.009.
+\bibitem{2-mal} %4
+\Au{Wu X., Sahoo~D., Hoi~S.\,C.} Recent advances in deep learning for object detection~// 
+Neurocomputing, 2020. Vol.~396. P.~39--64. doi: 10.1016/j.neucom.2020.01.085.
+\bibitem{5-mal} %5
+ \Au{Qin H., Gong~R., Liu~X., Shen~M., Wei~Z., Yu~F., Song~J.} Forward and backward 
+information retention for accurate binary neural networks~// Conference on Computer 
+Vision and Pattern Recognition Proceedings.~--- Seattle, WA, USA: IEEE, 2020. P.~2247--2256. doi: 
+10.1109/ CVPR42600.2020.00232.
+\bibitem{6-mal}
+\Au{Qin H., Gong~R., Liu~X., Bai~X., Song~J., Sebe~N.} Binary neural networks: A~survey~// 
+Pattern Recogn., 2020. Vol.~105. Art.~107281. 14~p. doi: 10.1016/j.patcog. 2020.107281.
+
+\bibitem{9-mal} %7
+\Au{Liu W., Anguelov~D., Erhan~D., Szegedy~C., Reed~S.\,E., Fu~C., Berg~A.\,C.}  SSD: Single 
+shot MultiBox detector~// Computer vision~/ Eds. B.~Leibe, J.~Matas, 
+N.~Sebe, M.~Welling.~--- Lecture notes in computer science ser.~--- Cham: Springer, 2016. 
+Vol.~9905. P.~21--37. doi: 10.1007/ 978-3-319-46448-0\_2.
+\bibitem{10-mal} %8
+\Au{Cai Z., He~X., Sun~J., Vasconcelos~N.} Deep learning with low precision by half-wave 
+Gaussian quantization~// Conference on Computer Vision and Pattern Recognition Proceedings.~--- IEEE, 
+2017. P.~5406--5414. doi: 10.1109/ CVPR.2017.574.
+\bibitem{12-mal} %9
+\Au{Ren S., He~K., Girshick~R.\,B., Sun~J.} Faster \mbox{R-CNN}: Towards real-time object detection 
+with region proposal networks~// IEEE T. Pattern Anal., 2015. Vol.~39. 
+P.~1137--1149. doi: 10.1109/\mbox{TPAMI}.2016.2577031.
+\bibitem{11-mal} %10
+\Au{Yang S., Luo~P., Loy~C.\,C., Tang~X.} WIDER FACE: A~face detection benchmark~//  
+Conference on Computer Vision and Pattern Recognition Proceedings.~--- IEEE, 2016. P.~5525--5533. doi: 
+10.1109/CVPR.2016.596.
+
+\bibitem{13-mal} %11
+\Au{Yan J., Zhang~X., Lei~Z., Li~S.} Face detection by structural models~// Image Vision 
+Comput., 2014. Vol.~32. P.~790--799. doi: 10.1016/j.imavis.2013.12.004.
+\bibitem{14-mal} %12
+\Au{Zhang J., Pan~Y., Yao~T., Zhao~H., Mei~T.} daBNN: A~super fast inference 
+framework for binary neural networks on ARM devices~// 27th ACM Conference (International)  
+on Multimedia Proceedings.~--- New York, NY, USA: ACM, 2019. P.~2272--2275. doi: 
+10.1145/3343031.3350534.
+
+\bibitem{7-mal} %13
+\Au{Liu Z., Wu~B., Luo~W., Yang~X., Liu~W., Cheng~K.} Bi-Real Net: Enhancing the performance 
+of 1-bit CNNs with improved representational capability and advanced training algorithm~// 
+Computer vision~/ Eds. V.~Ferrari, M.~Hebert, 
+C.~Sminchisescu, Y.~Weiss.~--- Lecture notes in computer science 
+ser.~--- Cham: Springer, 2018. Vol.~11219. P.~747--763. doi:  
+10.1007/978-3-030-01267-0\_44.
+\bibitem{8-mal} %14
+\Au{Lin X., Zhao~C., Pan~W.} Towards accurate binary convolutional neural network~// 31st  
+Conference (International) on Neural Information Processing Systems Proceedings.~--- Red Hook, 
+NY, USA: Curran Associates Inc., 2017. P.~345--353.
+\bibitem{15-mal}
+TensorFlow. TensorFlow Lite guide. {\sf https://www.\linebreak tensorflow.org/lite}.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-7pt}
+
+\hfill{\small\textit{Поступила в~редакцию 22.07.22}}
+
+\vspace*{6pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{-2pt}
+
+
+
+\def\tit{EFFICIENCY OF~BINARY NEURAL NETWORKS FOR~OBJECT~DETECTION~ON~AN~IMAGE}
+
+
+\def\titkol{Efficiency of~binary neural networks for~object 
+detection on~an~image}
+
+
+\def\aut{D.\,O.~Korolev and~O.\,G.~Maleev}
+
+\def\autkol{D.\,O.~Korolev and~O.\,G.~Maleev}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-12pt}
+
+
+\noindent
+  Peter the Great St.\ Petersburg Polytechnic University, 29~Polytechnicheskaya 
+Str., St.\ Petersburg 195251, Russian Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+  
+    
+  \Abste{Deep convolutional neural networks are widely used for object detection. However, modern deep convolutional neural network models are 
+  computationally expensive hindering their deployment in resource-constrained mobile and embedded devices. Binary neural networks help to alleviate the resource 
+requirements of devices. Activations and weights in binary neural networks are limited by binary values $(-1, 1)$. 
+The proposed method implements balancing and standardization of floating-point weights in forward propagation and 
+two-stage\linebreak\vspace*{-12pt}}
+
+\Abstend{sign function approximation in back propagation. The paper presents the results of detection accuracy on 
+the PASCAL Face dataset as well as the results of speed and model size on the mobile device
+ for the proposed method, the model without binarization, the TinyML network, and Bi-Real Net and ABC-Net methods.}
+  
+  \KWE{binary neural networks; convolutional neural networks; objects 
+detection; model acceleration}
+  
+\DOI{10.14357/19922264230312}{TOCVAL}
+
+%\vspace*{-20pt}
+
+%\Ack
+%\noindent
+
+  
+
+%\vspace*{6pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99} 
+\bibitem{1-mal-1}
+\Aue{Pathak, A.\,R., M.~Pandey, and S.\,S.~Rautaray.} 2018. Application of deep learning for 
+object detection. \textit{Procedia Comput. Sci.} 132:1706--1717. doi: 10.1016/j.procs. 2018.05.144.
+\bibitem{3-mal-1} %2
+\Aue{Jiao, L., F.~Zhang, F.~Liu, S.~Yang, L.~Li, Z.~Feng, and R.~Qu.} 2019. A~survey of deep 
+learning-based object detection. \textit{IEEE Access} 7:128837--128868. doi: 
+10.1109/ \mbox{ACCESS}.2019.2939201.
+\bibitem{4-mal-1} %3
+\Aue{Lu, S., B.~Wang, H.~Wang, L.~Chen, M.~Linjian, and X.~Zhang.} 2019. A~real-time object 
+detection algorithm for video. \textit{Comput. Electr. Eng.} 77:398--408. doi: 
+10.1016/ j.compeleceng.2019.05.009.
+\bibitem{2-mal-1} %4
+\Aue{Wu, X., D.~Sahoo, and S.\,C.~Hoi.} 2020. Recent advances in deep learning for object 
+detection. \textit{Neurocomputing} 396:39--64. doi: 10.1016/j.neucom.2020.01.085.
+
+\bibitem{5-mal-1}
+\Aue{Qin, H., R.~Gong, X.~Liu, M.~Shen, Z.~Wei, F.~Yu, and J.~Song.} 2020. Forward and 
+backward information retention for accurate binary neural networks. \textit{Conference on 
+Computer Vision and Pattern Recognition Proceedings}. Seattle, WA: IEEE. 2247--2256. doi: 
+10.1109/ CVPR42600.2020.00232.
+\bibitem{6-mal-1}
+\Aue{Qin, H., R.~Gong, X.~Liu, X.~Bai, J.~Song, and N.~Sebe.} 2020. Binary neural networks: 
+A~survey. \textit{Pattern Recogn.} 105:107281. 14~p. doi: 10.1016/j.patcog.2020.107281.
+
+\bibitem{9-mal-1} %7
+\Aue{Liu, W., D.~Anguelov, D.~Erhan, C.~Szegedy, S.\,E.~Reed, C.~Fu, and A.\,C.~Berg.} 2016. 
+SSD: Single shot MultiBox detector. \textit{Computer vision}. Eds. 
+B.~Leibe, J.~Matas, N.~Sebe, and M.~Welling. Lecture notes in computer science ser. Cham: 
+Springer. 9905:21--37. doi: 10.1007/978-3-319-46448-0\_2.
+\bibitem{10-mal-1} %8
+\Aue{Cai, Z., X.~He, J.~Sun, and N.~Vasconcelos.} 2017. Deep learning with low precision by 
+half-wave Gaussian quantization. \textit{Conference on Computer Vision and Pattern 
+Recognition Proceedings}. IEEE. 5406--5414.  doi: 10.1109/ CVPR.2017.574.
+
+\bibitem{12-mal-1} %9
+\Aue{Ren, S., K.~He, R.\,B.~Girshick, and J.~Sun.} 2017. Faster R-CNN: Towards real-time object 
+detection with region proposal networks. \textit{IEEE T. Pattern Anal.} 39(6):1137--1149. doi: 
+10.1109/\mbox{TPAMI}.2016.2577031.
+\bibitem{11-mal-1} %10
+\Aue{Yang, S., P.~Luo, C.\,C.~Loy, and X.~Tang.} 2016. WIDER FACE: A~face detection 
+benchmark. \textit{Conference on Computer Vision and Pattern Recognition Proceedings}. IEEE.
+ 5525--5533. doi: 10.1109/CVPR.2016.596.
+
+\bibitem{13-mal-1} %11
+\Aue{Yan, J., X.~Zhang, Z.~Lei, and S.~Li.} 2014. Face detection by structural models. 
+\textit{Image Vision Comput.} 32(10):790--799. doi: 10.1016/j.imavis.2013.12.004.
+\bibitem{14-mal-1} %12
+\Aue{Zhang, J., Y.~Pan, T.~Yao, H.~Zhao, and T.~Mei.} 2019. daBNN: A~super fast inference 
+framework for binary neural networks on ARM devices. \textit{27th ACM Conference (International) on 
+Multimedia Proceedings}. New York, NY: ACM. 2272--2275. doi: 10.1145/3343031.3350534.
+
+\bibitem{7-mal-1} %13
+\Aue{Liu, Z., B.~Wu, W.~Luo, X.~Yang, W.~Liu, and K.~Cheng.} 2018. Bi-Real Net: Enhancing 
+the performance of 1-bit CNNs with improved representational capability and advanced training 
+algorithm. \textit{Computer vision}. Eds. V.~Ferrari, M.~Hebert, 
+C.~Sminchisescu, and Y.~Weiss. Lecture notes in computer science ser. Cham: Springer. 
+11219:747--763. doi: 10.1007/978-3-030-01267-0\_44.
+\bibitem{8-mal-1} %14
+\Aue{Lin, X., C.~Zhao, and W.~Pan.} 2017. Towards accurate binary convolutional neural 
+network. \textit{31st Conference (International) on Neural Information Processing Systems Proceedings}. Red 
+Hook, NY: Curran Associates Inc. 345--353.
+
+ \bibitem{15-mal-1}
+  TensorFlow. TensorFlow Lite guide. Available at: {\sf   https:// www.tensorflow.org/lite} (accessed 
+July~13, 2023).
+  \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received July 22, 2022}} 
+
+\vspace*{-12pt}
+  
+  \Contr
+  
+  \noindent
+  \textbf{Korolev Denis O.} (b.\ 1999)~--- student, Institute of Computer Science 
+and Technology, Peter the Great St.\ Petersburg Polytechnic University,  
+29~Polytechnicheskaya Str., St.\ Petersburg 195251, Russian Federation; 
+\mbox{korolev.do512@gmail.com}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Maleev Oleg G.} (b.\ 1971)~--- Candidate of Science (PhD) in technology, 
+associate professor, Institute of Computer Science and Technology, Peter the Great 
+St.\ Petersburg Polytechnic University, 29~Polytechnicheskaya Str., St.\ Petersburg 
+195251, Russian Federation; \mbox{maleev\_og@spbstu.ru}
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

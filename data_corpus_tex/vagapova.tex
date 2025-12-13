@@ -1,0 +1,734 @@
+\def\stat{vagapova}
+
+\def\tit{СРАВНИТЕЛЬНЫЙ АНАЛИЗ ПРИМЕНЕНИЯ ЭВРИСТИЧЕСКОГО И~МЕТАЭВРИСТИЧЕСКОГО АЛГОРИТМОВ К~ЗАДАЧЕ О~ШКОЛЬНОМ АВТОБУСЕ$^*$}
+
+\def\titkol{Сравнительный анализ применения эвристического и~метаэвристического алгоритмов к задаче о школьном автобусе}
+
+\def\aut{Е.\,М.~Бронштейн$^1$, Д.\,М.~Вагапова$^2$}
+
+\def\autkol{Е.\,М.~Бронштейн, Д.\,М.~Вагапова}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Бронштейн Е.\,М.}
+\index{Вагапова Д.\,М.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проект 13-01-00005).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Уфимский государственный авиационный технический университет, bro-efim@yandex.ru}
+\footnotetext[2]{Уфимский государственный авиационный технический университет, vagapova-dm@mail.ru}
+
+\Abst{Рассматривается задача о школьном автобусе, которая заключается в~обеспечении доставки школьников по окончании занятий из школы по их
+остановкам. Целью является минимизация длины максимального из
+маршрутов. Представлен краткий обзор работ по данной
+тематике.  Приведена постановка задачи и~формализация.
+Описан эвристический алгоритм, предложенный
+авторами ранее. Также описан двухэтапный алгоритм на основе
+метаэвристики муравьиной колонии: после первоначальной кластеризации
+остановок, на которых высаживаются школьники, к каждому кластеру
+применяется алгоритм муравьиной колонии с~различными значениями
+параметров. Представлены результаты сравнения
+эффективности предложенных алгоритмов, а~также результаты работы
+программ для двух алгоритмов.}  %В~заключении приводятся выводы.}
+
+\KW{маршрутизация; задача о школьном автобусе; алгоритм муравьиной
+колонии; кластеризация}
+
+\DOI{10.14357/19922264150207}
+
+\vskip 14pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+     Задача о школьном автобусе (School Bus Routing Problem, SBRP)
+заключается в~доставке школьников после окончания занятий до их остановок
+за минимальное время. Впервые задача была сформулирована в~\cite{1-va}.
+Задача о школьном автобусе входит в~общее семейство задач маршрутизации\linebreak
+(Vehicle Routing Problem, VPR). Обзор точных и~эвристических методов
+решения задач маршрутизации пред\-став\-лен в~\cite{2-va}. Задача маршрутизации с~одним транспортным средством без дополнительных ограничений является
+задачей коммивояжера (Traveling Salesman Problem, TSP).
+
+   Рассматриваемые задачи относятся к классу NP-труд\-ных, поэтому для их
+решения целесообразно использовать эвристические и~метаэвристические
+алгоритмы. Простой эвристический алгоритм решения задачи о школьном
+автобусе предложен в~работе~\cite{3-va}. В~статье разработано решение
+данной задачи с~помощью двухэтапного подхода на основе метаэвристического
+алгоритма муравьиной колонии (Ant Colony Optimization, ACO). На первом
+этапе производится кластеризация остановок, на которых высаживаются
+школьники, а~затем к каж\-до\-му кластеру применяется алгоритм муравьиной
+колонии. Для расширения области поиска решений итерационно производится
+смещение границ кластеров. Число таких итераций равно числу остановок.
+Впервые двухэтапный подход такого типа для решения задачи маршрутизации
+был предложен в~\cite{4-va}.
+
+     В~\cite{5-va} предложен новый подход к решению задачи о школьном
+автобусе в~городе. Рассматривается многомерная целевая функция. Задача
+разбивается на две подзадачи. Первая~--- это распределение студентов по
+автобусам, и~вторая~--- построение автобусных маршрутов. Для первой
+подзадачи используется алгоритм районирования.
+
+     Решение задачи о~школьном автобусе с~по\-мощью модифицированного
+алгоритма муравьиной колонии предложено в~[6]. Задача решается на
+реальных данных г.~Богота (Колумбия). Используется двухэтапный подход:
+сначала производится кластеризация остановок согласно их географическому
+расположению (с~севера на юг, затем с~запада на восток), а~потом применяется
+модифицированный алгоритм муравьиной колонии для задачи коммивояжера.
+
+     Алгоритм муравьиной колонии является достаточно эффективной
+метаэвристикой для нахождения приближенных решений различных задач
+дискретной оптимизации. Результаты, полученные с~помощью разработанного
+варианта двухэтапного подхода, сравниваются с~результатами, полученными с~помощью эвристического алгоритма из работы~\cite{3-va}.
+
+\section{Постановка задачи}
+
+     Более подробное описание задачи приведено в~\cite{3-va}. По окончании
+занятий требуется развезти школьников по их остановкам на нескольких
+автобусах. При этом школьников следует доставить за минимально возможное
+время. Это условие будет выполнено, если маршрут с~максимальной длиной
+будет минимальным среди всех способов доставки. Предполагается, что
+автобусы движутся с~постоянной скоростью.
+
+     Для построения математической модели введем соответствующие
+величины.
+     \begin{enumerate}[1.]
+\item Для каждой из $N$ остановок задана величина~$D_n$ ($n\hm=1,\ldots
+,N$)~--- число школьников, которых надо доставить на эту остановку. Для
+единообразия школу считаем 0-й остановкой.
+\item Каждый из $K$ автобусов характеризуется чис\-лом~$T^k$ ($k\hm = 1,\ldots
+, K$) посадочных мест.
+\item Матрица $C =\parallel c(i, j)\parallel$ содержит минимальные
+расстояния (от $i$-й остановки до $j$-й). Элементы матрицы~$C$
+удовлетворяют неравенству треугольника.
+\item Необходимо найти величины~$x_n^k$ ($n\hm= 1,\ldots, N$; $k\hm=1,\ldots
+,K$)~--- число школьников, которых необходимо доставить $k$-м автобусом на
+$n$-ю остановку.
+\end{enumerate}
+
+     Опишем ограничения задачи.
+
+     На каждую остановку, кроме школы,
+должно быть доставлено не\-от\-ри\-ца\-тель\-ное число школьников:
+     \begin{equation}
+     x_n^k\geq 0 \enskip (n=1,\ldots , N;\ k=1,\ldots , K), \ \mbox{целые}\,.
+     \label{e1-va}
+     \end{equation}
+
+     На каждую остановку необходимо доставить всех школьников, для
+которых это необходимо:
+     \begin{equation}
+     \sum\limits_{k=1}^K x_n^k=D_n\enskip (n=1,\ldots, N)\,.
+     \label{e2-va}
+     \end{equation}
+
+     Ограничения на вместимость автобусов:
+     \begin{equation}
+     \sum\limits_{n=1}^N x_n^k \leq T^k\enskip (k=1,\ldots, K)\,.
+     \label{e3-va}
+     \end{equation}
+
+     Добавлением виртуальных школьников в~количестве
+$\sum\nolimits_{k=1}^K T^k\hm- \sum\nolimits_{n=1}^N D_n$ (в~случае
+положитель\-ности этой величины), для которых пунктом доставки является
+школа, можно добиться того, что ограничения~(\ref{e3-va}) выполняются в~форме равенств. Таким образом, полагаем, что общее число школьников равно
+числу мест в~автобусах: $\sum\nolimits_{n=1}^N D_n\hm= \sum\nolimits_{k=1}^K
+T^k$.
+
+     Пусть $R^k=\left\{ i\colon x_i^k\geq1\right\}$~--- множество остановок, на
+которых должен высадить пассажиров \mbox{$k$-й} автобус. Следует отметить, что
+величинами~$x_n^k$ маршруты автобусов однозначно не определяются. Пусть
+$P(R^k)$~--- минимальная длина маршрута, проходящего через все остановки
+из~$R^k$, у~которого начальный пункт~--- школа.
+
+     Целевая функция:
+     \begin{equation}
+     \max\limits_k \left\{ P(R^k)\right\}\to \min\,.
+     \label{e4-va}
+     \end{equation}
+
+     Результатом решения задачи~(\ref{e1-va})--(\ref{e4-va}) является график
+доставки, при котором школьник, покидающий автобус последним, проедет
+минимально возможное расстояние. Очевидно, что
+     задача~(\ref{e1-va})--(\ref{e4-va}) имеет решение (возможно, не
+единственное).
+
+В работе~\cite{3-va} путем добавления новых переменных данная задача
+сведена к линейной частично целочисленной форме, для задач малой
+раз\-мер\-ности приведено точное решение, а~также предложен эвристический
+алгоритм, описанный далее.
+
+\section{Эвристический алгоритм}
+
+     Для простоты полагаем, что все автобусы имеют одну и~ту же
+вместимость~$T$.
+
+     Найдем максимальное из расстояний в~графе от нулевой вершины
+(школы) до всех вершин. Пусть соответствующий путь имеет вид
+     0--$i_1$--$\cdots$--$i_k$.
+
+Заполняем автобус по следующим правилам.
+
+     Если $\sum\nolimits_{s=1}^k D_{i_s} \geq T$, то автобус доставит школьников на
+остановки, расположенные на пути 0--$i_1$--$\cdots$--$i_k$, начиная от
+последней в~пределах вмес\-ти\-мости (может оказаться, что на одну из остановок
+будут доставлены этим автобусом не все школьники, которым это необходимо),
+иначе \mbox{найдем} остановки~$i_{s^*}, j^*$, на которых достигается
+     $\min\limits_{s,j}\ \left\{
+     c(i_k,j)\colon \ \ j\hm\not\in \{i_0,\ldots, i_k\};\ \
+     c(i_s,j)\hm+c(j,i_{s+1}) \hm-\right.$\linebreak $\left.-\;c(i_s,i_{s+1})\colon
+s\hm=0,\ldots, k-1, j\hm\not\in
+\{i_0,\ldots, i_k\}
+\right\}$,
+где $c(i, j)$~--- минимальное расстояние между остановками, $i_0\hm =0$.
+
+     Если число школьников, которых необходимо доставить на остановки
+$i_1,\ldots, i_k, j^*$, не меньше~$T$, то назначаем автобус, который доставит
+школьников в~пределах вместимости автобусов на остановки пути
+     0--$i_1$--$\cdots$--$i_k$--$j^*$, начиная с~последней, если минимум
+достигается на величинах первого вида, и~пути
+     0--$i_1$--$\cdots$--$i_{s^*}$--$j^*$--$i_{s^*+1}$--$\cdots$--$i_k$ если
+минимум достигается на величинах второго типа.
+
+     В противном случае процесс добавления вершин к пути продолжается
+аналогично до заполнения автобуса. В~результате как число свободных
+автобусов, так и~число остановок, на которые еще не доставлены все
+школьники, уменьшаются. Далее автобусы заполняются последовательно по
+тому же алгоритму.
+
+\section{Двухэтапный алгоритм на~основе метаэвристики
+муравьиной колонии}
+
+     Алгоритм муравьиной колонии был предложен М.~Дориго~\cite{7-va}.
+Алгоритм имитирует поведение му-\linebreak равьев в~колонии. Отдельный муравей не
+\mbox{способен} выжить, однако вся колония достигает высокого уровня
+самоорганизации благодаря <<со\-ци\-аль\-ности>> муравьев. Цель муравьев~---
+найти кратчайший путь от жилища до источника пищи. В~ряде работ
+(см., например,~[8--14]) были предложены различные модификации алгоритма.
+В~данной работе воспользуемся классическим вариантом данного алгоритма.
+
+     Введем следующие обозначения:
+\begin{description}
+\item[\,]     $A_{ij}(t)$~--- количество феромона на дуге $(i, j)$ перед $t$-й итерацией
+(начальные значения $A_{ij}(1)$ принимаются одинаковыми положительными
+величинами для всех дуг);
+\item[\,]
+     $\tau_{ij}^k(t)$~--- количество феромона, которое $k$-й муравей
+оставляет на дуге $(i,j)$ на $t$-й итерации;
+\item[\,]
+     $B_{ij}(t)=\sum\nolimits_{k=1}^m \tau_{ij}^k(t)$~--- количество феромона,
+которое все муравьи оставляют на дуге $(i,j)$ на $t$-й итерации ($m$~--- число
+муравьев).
+\end{description}
+
+     Для достижения цели муравьи пользуются четырьмя принципами:
+     \begin{enumerate}[1.]
+\item \textit{Положительная обратная связь. }
+\begin{equation}
+\tau_{ij}^k(t) =\begin{cases}
+\fr{Q}{L^k(t)}\,, &\ \mbox{если } (i,j)\in T^k(t)\,;\\
+0 & \ \mbox{иначе}\,,
+\end{cases}
+\label{e5-va}
+\end{equation}
+где $T^k(t)$~--- маршрут, пройденный $k$-м му\-равь\-ем на $t$-й итерации;
+$L^k(t)$~--- длина маршрута $T^k(t)$;
+$Q$~--- масштабирующий параметр, одного порядка с~длиной оптимального
+маршрута (в~частности, за $Q$ можно принять длину самого длинного пути от
+школы до всех остановок).
+\item \textit{Отрицательная обратная связь.} Феромон испаряется со
+временем. После каждой итерации количество феромона определяется по
+сле\-ду\-ющей формуле:
+\begin{equation}
+A_{ij}(t+1) =(1-\rho) A_{ij}(t)+B_i(t)\,,
+\label{e6-va}
+\end{equation}
+где $\rho$~--- коэффициент испарения, $\rho \hm\in [0,1]$.
+\item \textit{Случайность.} Каждый муравей выбирает дугу случайным
+образом. Вероятность перехода \mbox{$k$-го} муравья от $i$-й остановки к $j$-й на
+итерации~$t$ вычисляется по следующей формуле:
+
+\noindent
+\begin{multline}
+\rho_{ij}^k(t)={}\\{}=\begin{cases}\fr{[A_{ij}(t)]^\alpha [1/D_{ij}]^\beta} {\sum_{l\in
+J_i^k} [A_{ij}(t)]^\alpha [1/D_{il}]^\beta}\,, &\ \mbox{если } j\in J_i^k\,;\\
+0 &\ \mbox{иначе}\,,
+\end{cases}
+\label{e7-va}
+\end{multline}
+где $D_{ij}$~--- расстояние от $i$-й до $j$-й остановки;
+$\alpha$~--- параметр, регулирующий влияние уровня феромона на вероятность
+$p_{ij}^k(t)$, при $\alpha \hm=0$ муравей будет выбирать следующую
+остановку, только исходя из расстояния до нее (жадный алгоритм);
+$\beta$~--- параметр, регулирующий влияние расстояния между остановками на
+вероятность $p_{ij}^k(t)$, при $\beta\hm = 0$ муравей будет выбирать
+следующую остановку, только исходя из уровня феромона, что приведет к
+быст\-рой схо\-ди\-мости к некоторому субоптимальному решению;
+$J_i^k$~--- список остановок, еще не посещенных $k$-м муравьем.
+
+По формуле~(\ref{e7-va}) вычисляются вероятности перехода муравья на
+каждую из непосещенных остановок, выбор следующей остановки
+производится случайно в~соответствии с~вычисленными вероятностями.
+\item \textit{Многократность (множество муравьев)}. Длинные дуги будут
+содержать меньшее количество феромона, чем короткие, в~соответствии
+с~(\ref{e5-va}). Муравьи будут стремиться к дугам с~большим количеством
+феромонов и~тем самым будут предпочитать короткие дуги длинным.
+\end{enumerate}
+
+     Двухэтапный алгоритм решения задачи о~школьном автобусе имеет
+следующую структуру. Первый этап заключается в~кластеризации пунктов
+(остановок). На втором этапе для построения маршрутов будет использоваться
+алгоритм муравьиной колонии с~различными значениями параметров~$\alpha$,
+$\beta$, $\rho$. Заметим, что для формирования маршрута одного автобуса
+запускается колония муравьев.
+
+     \textit{Первый этап~--- кластеризация.}
+
+     Целью данного этапа является распределение школьников по маршрутам
+(автобусам). Для этого разобьем всю плоскость, на которой лежат остановки
+(рис.~1), на кластеры (штриховые линии~--- границы кластеров), каждый
+кластер соответствует одному автобусу. Выбираем начальный луч, проходящий
+через некоторую остановку. Двигаемся по часовой стрелке (на рис.~1
+обозначена пунктиром). Кластером является минимальный сектор, для
+ко-\linebreak\vspace*{-12pt}
+
+\begin{center}  %fig1
+\vspace*{-1pt}
+ \mbox{%
+ \epsfxsize=71.512mm
+ \epsfbox{vag-1.eps}
+ }
+
+
+\end{center}
+
+\noindent
+{{\figurename~1}\ \ \small{Схема разбиения множества остановок на клас\-теры}}
+
+
+
+
+\vspace*{9pt}
+
+
+\addtocounter{figure}{1}
+
+
+\noindent
+торого число школьников, которых надо доставить
+ на остановки,
+принадлежащие этому кластеру, не
+меньше вместимости транспортного
+средства. Затем формируются следующие кластеры. Если упомянутое число
+школьников в~кластере больше вмес\-ти\-мости автобуса, то граничная остановка
+кластера войдет в~следующий кластер с~соответственно уменьшенным чис\-лом
+школьников. Для по\-стро\-ения начальных лучей при разбиении на кластеры
+последовательно перебираются все остановки.
+
+
+
+     Приведем пример, который показывает целесообразность изменения
+начального луча. Пусть три остановки имеют координаты: $A(1,\,0)$, $B(1,\,1)$,
+$C(0,\,1)$; школа расположена в~точке О(0,\,0); вместимость автобуса~---
+20~школьников; автобусов~--- два; на остановки~$A$ и~$C$ надо доставить по
+10~школьников; на остановку~$B$~--- 20; прямые дороги с~двусторонним
+движениям соединяют пары остановок ($OA$), ($AB$), ($BC$), ($CO$). Если в~качестве
+начального принять луч~$OB$, то в~один кластер попадает остановка~$B$,
+а~в~другой~--- остановки~$A$ и~$C$. Расстояние, необходимое для доставки одного
+из школьников во втором кластере, равно~3. Если же в~качестве начального
+луча взять~$OA$, то в~один кластер попадут остановки~$A$ и~$B$ (с частичной
+доставкой), а~во второй~--- $B$ (с~частичной доставкой) и~$C$. Максимальное
+расстояние доставки равно 2.
+
+     \textit{Второй этап~--- маршрутизация.}
+
+     Целью данного этапа является построение маршрутов движения
+автобусов, т.\,е.\
+установление порядка посещения остановок автобусами
+в~каж\-дом кластере (минимальных гамильтоновых путей). Следует отметить, что
+маршруты в~общем случае могут выходить за границы кластеров. Для
+по\-стро\-ения маршрутов используется алгоритм муравьиной колонии. Автобус
+доставляет всех школьников на каждую из остановок кластера, кроме
+последней, а~оставшихся школьников на эту остановку до\-став\-ля\-ет автобус,
+обслуживающий следующий кластер (возможно, не один). Ниже приводится
+описание алгоритма.
+     \begin{enumerate}[1.]
+\item Цикл по числу кластеров $u\hm= (1$, число автобусов).\\[-13.5pt]
+\item Инициализация параметров алгоритма~--- $\alpha$, $\beta$, $\rho$,
+$Q$, $A_{ij}(1)$.\\[-13.5pt]
+\item Размещение муравьев в~начальной вершине (школе). Число
+муравьев равно числу остановок на данном маршруте.\\[-13.5pt]
+\item Выбор начального кратчайшего маршрута и~определение длины
+этого пути~$L^{u*}$.\\[-13.5pt]
+\item Цикл по времени жизни колонии $t\hm=(1$, время жизни колонии).\\[-13.5pt]
+\item Цикл по числу муравьев $ k\hm = (1$, число остановок на маршруте
+($m$)).\\[-13.5pt]
+\item Построение маршрута $T^{ku}(t)$ по формуле~(\ref{e7-va}) и~расчет длины~$L^{ku}(t)$.\\[-13.5pt]
+\item Конец цикла по муравьям.\\[-13.5pt]
+\item Проверка всех $L^{ku}(t)$ на лучшее решение по сравнению
+с~$L^{u*}$.\\[-13.5pt]
+\item В случае если решение $L^{ku}(t)$ лучше, обновление~$L^{u*}$
+и~$T^{u*}$.\\[-13.5pt]
+\item Цикл по всем дугам графа.\\[-13.5pt]
+\item Обновление следов феромона на дуге по правилам~(\ref{e5-va})
+и~(\ref{e6-va}).\\[-13.5pt]
+\item Конец цикла по дугам.\\[-13.5pt]
+\item Конец цикла по времени жизни колонии.\\[-13.5pt]
+\item Вывод кратчайшего маршрута~$T^{u*}$ и~его длины~$L^{u*}$.\\[-13.5pt]
+\item Конец цикла по кластерам.
+\end{enumerate}
+
+\vspace*{-9pt}
+
+
+
+\section{Вычислительный эксперимент}
+
+\vspace*{-2pt}
+
+     Двухэтапный алгоритм, описанный в~разд.~4, и~эвристический алгоритм,
+описанный в~разд.~3, были реализованы в~среде Borland DELPHI~6. Вычисления
+проводились на персональном компьютере
+(процессор: Intel(R) Core(TM) 2~Duo CPU T5750 2,00~GHz,
+ОЗУ (RAM): 3~ГБ, ОС: Windows Vista Home Premium~32). Число автобусов
+принималось равным~10 или~20. Вместимость автобусов принималась равной
+20, 30 или~60. Число остановок~--- 50, 60, 70 или~80. Параметр~$\alpha$
+принимался равным~0, 1, 2 или~6; $\beta$~--- 0, 1, 2,~6; $\rho$~---
+0,2, 0,5, 0,7;
+$Q\hm = 10\,000$; начальный уровень феромона $A_{ij}(1) \hm= 100$. Время
+жизни колонии~--- 200. С~помощью датчика псевдослучайных чисел
+генерировались значения
+ координат каждой остановки
+(расстояние бралось
+ евклидово), а~также чис\-ло школьников на каждой\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\end{multicols}
+
+     \begin{figure} %fig2
+         \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=162.28mm
+ \epsfbox{vag-2.eps}
+ }
+\end{center}
+ \vspace*{-13pt}
+\Caption{Время работы эвристического~(\textit{а})
+и~двухэтапного~(\textit{б}) алгоритмов}
+%\end{figure*}
+%     \begin{figure*} %fig3
+              \vspace*{3pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=162.28mm
+ \epsfbox{vag-4.eps}
+ }
+\end{center}
+ \vspace*{-13pt}
+     \Caption{Отношение времени работы двухэтапного алгоритма к времени работы
+эвристического алгоритма~(\textit{а})
+и~отношение максимальных длин маршрутов, полученных двухэтапным
+и~эвристическим алгоритмами~(\textit{б})}
+\vspace*{-3pt}
+      \end{figure}
+
+
+\begin{multicols}{2}
+
+\noindent
+остановке с~учетом того, что общее число школьников равно общему чис\-лу
+посадочных мест. Для каждого
+чис\-ла остановок генерировалось 10~примеров.
+{\looseness=-1
+
+}
+
+     Рисунки~2 и~3 иллюстрируют зависимость средних значений величин,
+полученных в~ходе вы\-чис\-ли\-тельного эксперимента, от числа остановок.
+     	
+
+     Отметим, что приводится время расчета (до 4~мин)\ для одного набора
+параметров алгоритма муравьиной колонии и~для одного расположения
+начального луча на первом этапе, а~именно для тех, при которых получен
+лучший результат. При переборе всех наборов величин время вычислений
+доходит до 10~ч.
+
+\vspace*{-14pt}
+
+
+    \section{Заключение}
+
+    \vspace*{-4pt}
+
+В работе рассматривается задача о школьном автобусе, разработан
+двухэтапный алгоритм решения, основанный на алгоритме муравьиной
+колонии. Производится сравнение его эффективности с~простым
+эвристическим алгоритмом.
+
+	Вычислительный эксперимент показал, что
+\begin{enumerate}[(1)]
+\item время работы эвристического алгоритма слабо
+изменяется с~ростом числа остановок;
+\item время работы двухэтапного алгоритма и~его отношение к времени
+работы эвристического алгоритма резко возрастают с~ростом числа остановок;
+\item отношение максимальных длин маршрутов находится в~промежутке
+0,75--1,15 и~слабо изменяется с~ростом числа остановок.
+\end{enumerate}
+
+Таким образом, простой эвристический алгоритм сопоставим по
+эффективности полученного результата с~двухэтапным, но гораздо менее
+трудоемок.
+
+\vspace*{-9pt}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-va}
+\Au{Newton R.\,M., Thomas W.\,H.} Design of school Bus Routes by computer~//
+Socio-Economic Planning Science, 1969. Vol.~3. P.~75--85.
+\bibitem{2-va}
+\Au{Archetti C.} Matheuristics for routing problems. {\sf
+http:// www.sintef.no/contentassets/cfb19ab9b7c74d03904c7\linebreak
+746ee1d8e77/matheuristics\_routing\_verolog2014\_new.\linebreak pdf}.
+\bibitem{3-va}
+\Au{Бронштейн Е.\,М., Вагапова Д.\,М., Назмутдинова~А.\,В.} О~построении
+семейства маршрутов доставки школьников за минимальное время~//
+Автоматика и~телемеханика, 2014. №\,7. С.~43--51.
+\bibitem{4-va}
+\Au{Fisher M.\,L., Jaikumar R.} A~generalized assignment heuristic for vehicle
+routing~// Networks, 1981. Vol.~11. No.\,2. P.~109--124.
+\bibitem{5-va}
+\Au{Bowerman R., Hall B., Calamai P.} A~multi-objective optimization approach to
+urban school Bus Routing: Formulation and solution method~// Transportation
+Research Part~A: Policy and Practice, 1995. Vol.~29. No.\,2. P.~107--123.
+\bibitem{6-va}
+\Au{Arias-Rojas J.\,S., Jimenez J.\,F., Montoya-Torres~J.\,R.} Solving of school bus
+routing problem by ant colony~// Revista EIA, 2012. Vol.~9. No.\,17. P.~193--208.
+\bibitem{7-va}
+\Au{Dorigo M.} Optimization, learning and natural algorithms. PhD Thesis.~---
+Milano, Italy: Politecnico di Milano, 1992.
+\bibitem{11-va} %8
+\Au{Gambardella L.\,M., Dorigo M.} Ant-Q: A~reinforcement learning approach to
+the traveling salesman problem~// 12th Conference (International) on Machine
+Learning.~--- Tahoe City: Morgan Kaufmann, 1995. P.~252--260.
+\bibitem{8-va} %9
+\Au{Dorigo M., Maniezzo V., Colorni~A.} The Ant System: Optimization by a
+colony of cooperating agents~// IEEE Trans. Systems Man Cybernetics. Part~B,
+1996. Vol.~26. No.\,1. P.~29--41.
+\bibitem{9-va} %10
+\Au{Dorigo M., Gambardella L.\,M.} Ant Colony System: A~cooperative learning
+approach to the traveling salesman problem~// IEEE Trans. Evol.
+Comput., 1997. Vol.~1. No.\,1. P.~53--66.
+\bibitem{10-va} %11
+\Au{St$\ddot{\mbox{u}}$tzle T., Hoos H.} MAX-MIN Ant System and local search
+for the traveling salesman problem~// IEEE International Conference on Evolutionary
+Computation.~--- Indianapolis: IEEE, 1997. P.~309--314.
+
+\bibitem{12-va}
+\Au{Штовба С.\,Д.} Муравьиные алгоритмы~// Exponenta Pro. Математика в~приложениях, 2003. №\,4. С.~70--75.
+\bibitem{13-va}
+\Au{Курейчик В.\,М., Кажаров А.\,А.} О~некоторых модификациях
+муравьиного алгоритма~// Известия Южного федерального университета.
+Технические науки, 2008. Т.~81. №\,4. С.~7--12.
+\bibitem{14-va}
+\Au{Сластников С.\,А.} Применение метаэвристических алгоритмов для задачи
+маршрутизации транспорта~// Экономика и~математические методы, 2014.
+Т.~50. №\,1. С.~117--126.
+
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-9pt}
+
+\hfill{\small\textit{Поступила в~редакцию 19.02.15}}
+
+%\newpage
+
+\vspace*{7pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{12pt}
+
+\def\tit{COMPARATIVE ANALYSIS OF APPLICATION OF~HEURISTIC AND~METAHEURISTIC ALGORITHMS TO~THE~SCHOOL BUS ROUTING PROBLEM}
+
+\def\titkol{Comparative analysis of application of heuristic and metaheuristic algorithms to the school bus routing problem}
+
+\def\aut{E.\,M.~Bronshtein and D.\,M.~Vagapova}
+
+\def\autkol{E.\,M.~Bronshtein and D.\,M.~Vagapova}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Bronshtein E.\,M.}
+\index{Vagapova D.\,M.}
+
+\vspace*{-12pt}
+
+\noindent
+Ufa State Aviation Technical University, 12 K.~Marx Str., Ufa 450000,
+Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{2pt}
+
+
+\Abste{This paper considers the school bus routing problem,
+which is to ensure delivery of students after lessons from school to their stops.
+The objective function is to minimize the maximum length of the routes.
+A~short review of the literature on this theme is provided.
+The problem definition and formalization is given. The
+heuristic algorithm proposed by the authors earlier is described.
+A~two-step algorithm based on ant colony metaheuristics is described.
+The algorithm consists of initial clustering of stops at which students drop
+off, and subsequent ant colony optimization with different parameters,
+which is applied to each cluster. The results of comparing the efficiency of
+the proposed algorithms and the performance of the program for two algorithms
+are presented.}
+
+\KWE{vehicle routing problem; school bus routing problem; ant colony optimization; clustering}
+
+
+\DOI{10.14357/19922264150207}
+
+\vspace*{-20pt}
+
+\Ack
+
+\vspace*{-2pt}
+\noindent
+The research was supported by the Russian Foundation for
+Basic Research (project 13-01-00005).
+
+
+\vspace*{-3pt}
+
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+ \vspace*{-2pt}
+
+\bibitem{1-va-1}
+\Aue{Newton, R.\,M., and W.\,H. Thomas}. 1969. Design of school Bus Routes by
+computer. \textit{Socio-Economic Planning Science} 3:75--85.
+\bibitem{2-va-1}
+\Aue{Archetti, C.} Matheuristics for routing problems. Available at: {\sf
+http://www.sintef.no/contentassets/cfb19ab9\linebreak b7c74d03904c7746ee1d8e77/matheuristics\_routing\_\linebreak verolog2014\_new.pdf} (accessed March~10, 2015).
+\bibitem{3-va-1}
+\Aue{Bronshtein, E.\,M., D.\,M. Vagapova, and A.\,V.~Nazmutdinova}. 2014.
+O~postroenii semeystva marshrutov dostavki shkol'nikov za minimal'noe vremya
+[About creating a set of delivery routes of students in a minimal time].
+\textit{Avtomatika i~Telemekhanika} [Automation and Remote Control] 7:43--51.
+\bibitem{4-va-1}
+\Aue{Fisher, M.\,L., and R.\,A. Jaikumar}. 1981. Generalized assignment heuristic
+for vehicle routing. \textit{Networks} 11(2):109--124.
+\bibitem{5-va-1}
+\Aue{Bowerman, R., B.~Hall, and P.\,A.~Calamai}. 1995. Multi-objective
+optimization approach to urban school Bus Routing: Formulation and solution
+method. \textit{Transportation Research Part~A: Policy and Practice}
+29(2):107--123.
+\bibitem{6-va-1}
+\Aue{Arias-Rojas, J.\,S., J.\,F. Jimenez, and J.\,R.~Montoya-Torres}. 2012. Solving
+of school bus routing problem by ant colony. \textit{Revista EIA} 9(17):193--208.
+\bibitem{7-va-1}
+\Aue{Dorigo, M.} 1992. \textit{Optimization, learning and natural algorithms}. PhD
+Thesis. Milan, Italy: Politecnico di Milano.
+\bibitem{11-va-1} %8
+\Aue{Gambardella, L.\,M., and M. Dorigo}. 1995. Ant-Q: A~reinforcement learning
+approach to the traveling salesman problem. \textit{12th Conference (International)
+on Machine Learning}. Tahoe City. 252--260.
+\bibitem{8-va-1} %9
+\Aue{Dorigo, M., V.~Maniezzo, and A.~Colorni}. 1996. The Ant System:
+Optimization by a colony of cooperating agents. \textit{IEEE Trans. Syst. Man
+Cybernetics B} 26(1):29--41.
+\bibitem{9-va-1} %10
+\Aue{Dorigo, M., and L.\,M.~Gambardella}. 1997. Ant Colony System:
+A~cooperative learning approach to the traveling salesman problem. \textit{IEEE
+Trans. Evol. Comput.} 1(1):53--66.
+\bibitem{10-va-1} %11
+\Aue{St$\ddot{\mbox{u}}$tzle, T., and H.~Hoos}. 1997. MAX-MIN Ant System
+and local search for the traveling salesman problem. \textit{IEEE Conference
+(International) on Evolutionary Computation}. Indianapolis. 309--314.
+
+\bibitem{12-va-1}
+\Aue{Shtovba, S.\,D.} 2003. Murav'inye algoritmy [Ant colony algorithms].
+\textit{Exponenta Pro. Matematika v~prilozheniyakh} [Exponenta-Pro. Mathematics
+in Applications] (4):70--75.
+\bibitem{13-va-1}
+\Aue{Kureychik, V.\,M., and A.\,A.~Kazharov}. 2008. O~nekotorykh
+modifikatsiyakh murav'inogo algoritma [About some modifications of the ant colony
+algorithm]. \textit{Izvestiya Yuzhnogo Federal'nogo Universiteta. Tekhnicheskie
+Nauki} [News of  South Federal University. Technical Sciences] 81(4):7--12.
+\bibitem{14-va-1}
+\Aue{Slastnikov, S.\,A.} 2014. Primenenie metaevristicheskikh algoritmov dlya
+zadachi marshrutizatsii transporta [Application of metaheuristic algorithms for
+vehicle routing problem]. \textit{Ekonomika i~Matematicheskie Metody} [Economics
+and Mathematical Methods] 50(1):117--126.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received February 19, 2015}}
+
+%\vspace*{-18pt}
+
+\Contr
+
+\noindent
+\textbf{Bronshtein Efim M.} (b.\ 1946)~---
+Doctor of Science in physics and mathematics; professor, Ufa State Aviation Technical University, 12 K.~Marx Str., Ufa 450000,
+Russian Federation; bro-efim@yandex.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Vagapova Diana M.} (b.\ 1987)~---
+applicant, Ufa State Aviation Technical University, 12 K.~Marx Street, Ufa 450000, Russian Federation; vagapova-dm@mail.ru
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}
+

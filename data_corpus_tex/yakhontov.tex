@@ -1,0 +1,716 @@
+%\input{../preamblw}
+%%
+%
+%
+%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobot}[1]{\raisebox{-6pt}[1pt][2pt]{#1}} 
+%\begin{document}
+%
+
+
+
+\renewcommand{\firstpage}{149}
+\renewcommand{\lastpage}{156}
+
+
+
+\udk{519.677}
+\msc{03F60; 68Q17}% Коды MSC см. http://www.ams.org/msc/
+
+\title{Вычисление гипергеометрических рядов с~квазилинейной временной и~линейной \"eмкостной сложностью}
+{Вычисление гипергеометрических рядов \dots}
+
+\author{С.\,В.~Яхонтов}{Я\,х\,о\,н\,т\,о\,в~С.\,В.}
+
+\institute{Санкт-Петербургский государственный университет, математико-механический факультет, \\ 
+198504, Санкт-Петербург, Старый Петергоф, Университетский пр-т, 28.}
+
+
+\email{E-mails}{sergey\_home\_mail@inbox.ru} %E-mail's авторов
+
+\otherinf{\fullauthor{Яхонтов Сергей Викторович}
+\regalia{к.ф.-м.н.}\position{доцент}\dept{каф. информатики}}
+
+\keywords{конструктивные вещественные числа, гипергеометрические ряды, квазилинейная временная сложность, линейная ёмкостная сложность}
+
+\workabstract{Проводится построение простого для практической реализации алгоритма
+со сложностью ${\sf O}(M(n)\log(n)^2)$ по времени и~${\sf O}(n)$ по памяти для
+вычисления гипергеометрических рядов с рациональными коэффициентами
+на машине Шёнхаге, где $M(n)$ "--- сложность умножения целых чисел.
+Показывается, что данный алгоритм пригоден в практической информатике
+для построения конструктивных аналогов часто используемых констант
+математического анализа.
+}
+
+\engtitle{Calculation of hypergeometric series with quasi-linear time and linear space complexity}
+
+
+
+\engauthor{S.\,V.~Yakhontov}{Y\,a\,k\,h\,o\,n\,t\,o\,v~S.\,V.}
+
+
+\enginstitute{St. Petersburg State University, Mathematics and Mechanics Faculty,\\ 
+28, Universitetskiy prosp., Stariy Petergoff, St. Petersburg,  198504.}
+
+
+\otherenginf{\fullauthor{Sergey V. Yakhontov}
+\regalia{Ph.\,D. (Phys. \& Math.)}
+\position{Associate Professor}\dept{Dept. of Informatics}}
+
+\engabstract{A simple for practical implementation algorithm with the time complexity
+${\sf O}(M(n)\log(n)^2)$ and space complexity ${\sf O}(n)$ for the evaluation
+of hypergeometric series with rational coefficients on the Sch\"onhage machine is constructed
+$($here $M(n)$ is the complexity of integer multiplication$)$. It is shown that
+this algorithm is suitable in practical informatics for constructive analogues
+of often used constants of analysis.
+}
+
+\engkeywords{constructive real numbers, hypergeometric series, quasi-linear time, linear space complexity}
+
+\date{01/II/2011} % Дата поступления статьи в редакцию.
+\revisiondate{24/VIII/2011} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maketitle
+
+
+\Section[n]{Введение}
+Предлагается простой для практической реализации
+алгоритм, квазилинейный по времени и линейный по памяти, на машине
+Шёнхаге \cite{yakhontov:bib:Schonhage}, для вычисления приближённых
+значений гипергеометрических рядов с рациональными коэффициентами.
+Данные ряды используются для расчёта некоторых констант математического
+анализа и элементарных функций в рациональных точках. 
+
+С помощью $Sch(FQLINTIME//LINSPACE)$ будем обозначать класс алгоритмов,
+вычислимых на машине Шёнхаге, квазилинейных по времени и линейных по памяти.
+Основной особенностью машины Шёнхаге является возможность рекурсивных
+вызовов процедур. Под квазилинейностью понимается ограниченность сверху
+функцией вида ${\sf O}(n\log(n)^k)$ при некотором $k$.
+
+Отличительной особенностью алгоритмов, основанных на разложениях в ряды,
+является относительная простота как самих алгоритмов, так и анализа
+их вычислительной сложности, так как при этом обычно производятся только
+арифметические операции над рациональными числами без обращения к
+дополнительным алгоритмам.
+Для вычислений с небольшим количеством знаков после двоичной точки
+ряды эффективнее других способов в связи с небольшими константами в
+оценках вычислительной сложности. Поэтому такие алгоритмы важны в информатике
+для практических приложений.
+
+Известно \cite{yakhontov:bib:Haible}, что линейно сходящиеся
+гипергеометрические ряды с рациональными коэффициентами можно
+вычислять с помощью метода двоичного деления с временной сложностью
+${\sf O}(M(n)(\log(n))^2)$ и ёмкостной сложностью ${\sf O}(n\log(n))$ ($M(n)$
+"--- сложность умножения $n$-битовых целых чисел).
+В~последнее время появились работы, например \cite{yakhontov:bib:Cheng},
+в которых описываются алгоритмы (на основе модифицированного метода
+двоичного деления) вычисления значений линейно сходящихся
+гипергеометрических рядов с~временной сложностью
+${\sf O}(M(n)(\log(n))^2)$ и ёмкостной сложностью ${\sf O}(n)$.
+В~\cite{yakhontov:bib:Yakhontov} предложены простые для 
+практической реализации алгоритмы для вычисления степенных рядов
+с полиномиальной временной и линейной ёмкостной сложностью.
+
+Недостатком метода из \cite{yakhontov:bib:Cheng} является
+относительная сложность практической реализации. В~настоящей
+работе предлагается простой для практической реализации алгоритм,
+который, так же как и алгоритм из \cite{yakhontov:bib:Cheng},
+является квазилинейным по времени и линейным по памяти.
+Идея работать с некоторой заданной точностью для того, чтобы
+вычислить значение гипергеометрического ряда с линейной
+ёмкостной сложностью, предложена в~\cite{yakhontov:bib:numbers}.
+
+Вычислительная сложность конструктивных вещественных чисел и функций
+подробно освещается в монографии \cite{yakhontov:bib:Ko}. Множество
+конструктивных вещественных чисел с квазилинейной по времени и линейной
+по памяти сложностью вычисления двоично-рациональных приближений будем
+обозначать $Sch(FQLINTIME//LINSPACE)_{CF}$ (данное множество можно определить
+по аналогии с множеством $FLINSPACE$ вычислимых действительных чисел
+\cite{yakhontov:bib:Yakhontov} с учётом другой вычислительной модели).
+
+Везде далее через $n$ будет обозначаться длина записи точности вычисления
+$2^{-n}$ двоично"=рациональных приближений. Под функцией $\log(k)$ будем
+понимать логарифм по основанию 2.
+
+
+\smallskip
+
+\Section{Метод двоичного деления}
+Данный метод предназначен для вычисления значений линейно сходящихся
+рядов с~рациональными коэффициентами, в частности, для вычисления
+гипергеометрических рядов вида
+\begin{equation}
+S=\sum_{i=0}^{\infty}{\frac{a(i)}{b(i)}
+\prod_{j=0}^{i}{\frac{p(j)}{q(j)}}},
+\label{eq:yah:SeriesDef}
+\end{equation}
+где $a$, $b$, $p$, $q$ "--- полиномы с целыми коэффициентами;
+данный ряд линейно сходится, если его частичная сумма
+\begin{align}
+S(\mu(k))=\sum_{i=0}^{\mu(k)}{\frac{a(i)}{b(i)}
+\prod_{j=0}^{i}{\frac{p(j)}{q(j)}}},
+\label{eq:yah:SeriesPartialSum}
+\end{align}
+где $\mu(k)$ "--- линейная функция от $k$, отличается от точного значения не более чем на $2^{-k}$: $|S-S(\mu(k))|\le 2^{-k}$.
+
+В классическом варианте метод двоичного деления состоит в следующем.
+Обозначим $k_1=\mu(k)$. Рассмотрим частичную сумму \eqref{eq:yah:SeriesPartialSum}
+для некоторых чисел $i_1$ и $i_2$, $0\le i_1 \le k_1$, $0\le i_2 \le k_1$,
+$i_1\le i_2$:
+\begin{align}
+S(i_1,i_2)=\sum_{i=i_1}^{i_2}{\frac{a(i)p(i_1)
+\ldots p(i)}{b(i)q(i_1)\ldots q(i)}}.
+\label{eq:yah:Seriesi1i2Sum}
+\end{align}
+Будем вычислять величины $P(i_1,i_2)=p(i_1)\ldots p(i_2)$,
+$Q(i_1,i_2)=q(i_1)\ldots q(i_2)$, $B(i_1,i_2)=b(i_1)\ldots b(i_2)$
+и $T(i_1,i_2)=B(i_1,i_2)Q(i_1,i_2)S(i_1,i_2)$. Если $i_1=i_2$, то величины
+вычисляются напрямую. Иначе ряд делится на две части, левую и правую,
+и величины $P(i_1,i_2)$, $Q(i_1,i_2)$, $B(i_1,i_2)$ вычисляются для каждой
+из частей рекурсивно. Затем полученные величины комбинируются:
+\begin{align}
+\begin{split}
+P(i_1,i_2)&=P_l P_r,\quad Q(i_1,i_2)=Q_l Q_r,\quad B(i_1,i_2)=B_l B_r,\\
+T(i_1,i_2)&=B_r Q_r T_l + B_l P_l T_r.
+\end{split}
+\label{eq:yah:PQBTCalculation}
+\end{align}
+Алгоритм начинает свою работу с $i_1=0$, $i_2=k_1$. После вычисления
+величин $T(0,k_1)$, $B(0,k_1)$, $Q(0,k_1)$ осуществляется деление $T(0,k_1)$
+на $B(0,k_1)Q(0,k_1)$, чтобы получить результат с заданной точностью.
+Длины чисел $T(0,k_1)$ и $B(0,k_1)Q(0,k_1)$ пропорциональны
+$k\log(k)$, то есть алгоритм двоичного деления является квазилинейным
+по памяти; временная сложность данного алгоритма "--- ${\sf O}(M(k)\log(k)^2)$
+\cite{yakhontov:bib:Haible}.
+
+\smallskip
+
+\Section{Алгоритм вычисления гипергеометрических рядов из \cite{yakhontov:bib:Cheng}}
+В алгоритме из \cite{yakhontov:bib:Cheng} вычисляются редуцированные
+числитель и знаменатель
+дроби ${\widehat{T}}/{\widehat{Q}}$, где $\widehat{T}=TBQ$,
+$\widehat{Q}=BQ$, имеющие длину ${\sf O}(n)$, тогда как в классическом
+варианте вычисляются числитель и знаменатель длины ${\sf O}(n\log(n))$.
+Затем производится деление редуцированного числителя на редуцированный
+знаменатель с тем, чтобы получить значение суммы ряда с заданной
+точностью. Параметром усовершенствованного алгоритма из
+\cite{yakhontov:bib:Cheng} является модуль $m$ "--- верхняя граница
+длины редуцированных $\widehat{T}$ и $\widehat{Q}$; модуль $m$
+вычисляется как произведение достаточного числа простых чисел.
+Ряд разбивается на $N/G$ групп, где $G$ "--- величина, зависящая от
+$m$, и для каждой группы применяется классический алгоритм двоичного
+деления. Далее вычисленные значения комбинируются по модулю $m$ с
+использованием реконструкции рациональных чисел с тем, чтобы
+получить $\widehat{T}$ и $\widehat{Q}$.
+
+Недостатком данного алгоритма является необходимость оценивать
+величину $m$ для каждого вида ряда отдельно; в \cite{yakhontov:bib:Cheng}
+для этого предлагается достаточно трудоемкий метод, на примере
+которого оценивается $m$ для ряда $\zeta(3)$. Недостатком алгоритма
+из \cite{yakhontov:bib:Cheng} является также необходимость реализовывать
+достаточно сложный алгоритм реконструкции рациональных чисел
+(rational number reconstruction), имеющий временную сложность
+${\sf O}(M(n)\log(n))$ и ёмкостную сложность ${\sf O}(n)$.
+
+\smallskip
+
+\Section{Основной алгоритм класса $\boldsymbol{Sch(FQLINTIME//LINSPACE)}$}
+Модифицируем метод двоичного деления для гипергеометрических рядов
+так, чтобы алгоритм получился простой и при этом вычисления находились в
+пределах класса $Sch(FQLINTIME//LINSPACE)$.
+
+Пусть требуется вычислить значения гипергеометрического ряда
+\eqref{eq:yah:SeriesDef} с~точностью $2^{-n}$. Для этого достаточно
+вычислить частичную сумму \eqref{eq:yah:SeriesPartialSum} с точностью
+$2^{-(n+1)}$, так как
+%
+\begin{multline*}
+|S-S(\mu(n+1))^*|
+\le|S-S(\mu(n+1))|+|S(\mu(n+1))-S(\mu(n+1))^*|\le \\
+\le 2^{-(n+1)}+2^{-(n+1)}=2^{-n}.
+\end{multline*}
+Здесь $S(\mu(n+1))^*$ "--- обозначение для приближенного значения
+$S(\mu(n+1))$.
+%
+Обозначим $r=\mu(n+1)$. Возьмем минимальную величину $k_1$ такую, что
+$2^{k_1}\ge r$; пусть $r_1=\lceil{r}/{k_1}\rceil$. Запишем
+частичную сумму \eqref{eq:yah:SeriesPartialSum} в виде
+\begin{align}
+P(r)
+=\sigma_1+\tau_2\left[\sigma_2+\tau_3\big[\sigma_3+\ldots+
+\tau_{k_1-1}[\sigma_{k_1-1}+\tau_{k_1}\sigma_{k_1}]\big]\right],
+\label{eq:yah:PmukEquation}
+\end{align}
+\begin{align*}
+\text{где}	\quad  \sigma_1&=
+\sum_{i=0}^{r_1-1}{\frac{a(i)}{b(i)}
+\prod_{j=0}^{i}{\frac{p(j)}{q(j)}}}=\sigma_1',\\
+%
+\tau_2&=
+\prod_{j=0}^{r_1}{\frac{p(j)}{q(j)}},\quad
+\sigma_2=
+\frac{a(r_1)}{b(r_1)}+
+\sum_{i=r_1+1}^{2r_1-1}{\frac{a(i)}{b(i)}
+\prod_{j=r_1+1}^{i}{\frac{p(j)}{q(j)}}}
+=\xi_2+\sigma_2',
+\\
+%
+\tau_3&=
+\prod_{j=r_1+1}^{2r_1}{\frac{p(j)}{q(j)}},\quad
+\sigma_3=
+\frac{a(2r_1)}{b(2r_1)}+
+\sum_{i=2r_1+1}^{3r_1-1}{\frac{a(i)}{b(i)}
+\prod_{j=2r_1+1}^{i}{\frac{p(j)}{q(j)}}}
+=\xi_3+\sigma_3', \quad \cdots
+\end{align*}
+%
+Величины $\sigma_t'$ будем вычислять классическим методом двоичного деления
+для суммы \eqref{eq:yah:Seriesi1i2Sum}, где $i_1=(t-1)r_1+1$,
+$i_2=t\cdot r_1-1$; для $\sigma_1'$ возьмем $i_1=0$, $i_2=r_1-1$.
+
+Введём следующие обозначения:
+$\omega=l(W)+1$, $W=\max(A,B)$,
+где
+$A=\max\limits_{i=0..r}(|a(i)|,|b(i)|),$
+$B=\max\limits_{j=0..r}(|p(j)|,|q(j)|)$,
+$l(u)$ "--- длина битового представления $u$.
+Оформим оценку вычислительной сложности расчёта $\sigma_t$ и $\tau_t$
+в виде двух лемм.
+
+\smallskip
+
+\begin{lemma}[1]Временная сложность алгоритма двоичного деления для вычисления
+$\sigma_t$ ограничена сверху ${\sf O}(M(r)\log(r));$ ёмкостная сложность
+ограничена сверху ${\sf O}(r).$
+\end{lemma}
+
+\textit {Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о}.
+Рассмотрим произвольную максимальную цепочку рекурсивных вызовов,
+полученных в результате вычислений в соответствии с формулами
+\eqref{eq:yah:PQBTCalculation}. Условимся, что  нумерация в цепочке
+начинается с самого глубокого элемента цепочки: $i=1,\ldots,\varsigma$,
+где $\varsigma$ "--- длина цепочки, $\varsigma\le\lceil\log(2r_1)\rceil$.
+
+Пользуясь методом математической индукции по $i$, покажем, что длина
+представления числа $T$ на глубине $i$ при вычислении
+$\sigma_t'$ удовлетворяет соотношению $l(T_i)<2^{i+1}\omega+2^{i}$.
+При этом заметим, что $l(P_i)\le 2^{i}\omega$, $l(Q_i)\le 2^{i}\omega$,
+$l(B_i)\le 2^{i}\omega$, так как при увеличении $i$ происходит удвоение
+длины числа. База индукции: $i=1$, $l(T_1)\le 2\omega<2^{2}\omega+2^{1}$;
+индукционный переход:
+%
+\begin{align*}
+l(T_{i+1})
+<2^{i}\omega+2^{i}\omega+2^{i+1}\omega+2^{i}+1
+<2^{(i+1)+1}\omega+2^{i+1}.
+\end{align*}
+%
+Отметим, что исходя из этой оценки $T_{\varsigma}$ имеет длину
+$O(r)$, так как
+%
+\begin{align*}
+l(T_\varsigma)
+&<C_1 2^{\varsigma}\omega\le C_2\frac{r}{\log(r)}\log(r)=C_2 r;
+\end{align*}
+%
+здесь учитывается тот факт, что все коэффициенты $a(i)$, $b(i)$,
+$p(j)$, $q(j)$ являются полиномами.
+
+Оценим временную сложность вычисления $\sigma_t'$.
+При этом будем учитывать свойство функции сложности умножения:
+$2M(2^{-1}m)\le M(m)$ (квазилинейные и полиномиальные функции
+удовлетворяют этому свойству). Так как в узле дерева вызовов
+на уровне $i$ производится $C_3$ умножений $2^{\varsigma-i}$
+чисел, длины которых не превосходят $2^{i+1}\omega+2^{i}$,
+ получаем следующую оценку количества операций, требуемых
+для вычисления $\sigma_t'$:
+\begin{multline*}
+{\rm Time}(\sigma_t')
+\le C_3\sum_{i=1}^{\varsigma}{2^{\varsigma-i}M(2^{i+1}\omega+2^{i})}
+< C_4\sum_{i=1}^{\varsigma}{2^{\varsigma-i}M(2^{i+2}\omega)}=\\
+= C_4\sum_{i=1}^{\varsigma}{2^{\varsigma-i}M(2^{\varsigma-(\varsigma-(i+2))}\omega)}
+\le C_5\sum_{i=1}^{\varsigma}{2^{\varsigma-i}2^{-\varsigma+(i+2)}M(2^{\varsigma}\omega)}\le \\
+\le C_6 \varsigma M(r)\le C_7\log(r)M(r)
+\end{multline*}
+%
+(здесь используется неравенство для $2^{\varsigma}\omega$ из оценки для $l(T_\varsigma)$).
+Заключительное деление дает ${\sf O}(M(r))$ операций.
+
+Теперь оценим ёмкостную сложность вычисления $\sigma_t'$.
+Учитывая, что в узле дерева вызовов вложенности $i$ количество
+памяти, расходуемой на временные переменные, "--- это
+$C_8(2^{i+1}\omega+2^{i})$, получаем, что количество памяти
+во всех одновременно существующих рекурсивных вызовах оценивается
+следующим образом:
+%
+\begin{align*}
+{\rm Space}(\sigma_t')
+\le\sum_{i=1}^{\varsigma}{C_8(2^{i+1}\omega+2^{i})}
+\le C_{9}(2^{\varsigma}\omega+2^{\varsigma})
+\le C_{10}r={\sf O}(r).\quad \square
+\end{align*}
+
+
+
+\begin{lemma}[2]Временная сложность алгоритма двоичного деления для вычисления
+числителя и знаменателя $\tau_t$ ограничена сверху ${\sf O}(M(r)\log(r));$
+ёмкостная сложность ограничена сверху ${\sf O}(r).$
+\end{lemma}
+
+\smallskip
+\begin{proof}
+Оценки вычислительной сложности $\tau_t$ совпадают с таковыми
+для $\sigma_t$ в силу того, что неравенства из доказательства
+леммы~1 также актуальны и~для $\tau_t$, если вычислять числитель и
+знаменатель $\sigma_t$ с~помощью алгоритма двоичного деления для
+произведений.
+\end{proof}
+
+\smallskip
+
+Рассчитывать приближённые значения $P(r)^*$ с точностью
+$2^{-(n+1)}$ по формуле \eqref{eq:yah:PmukEquation}
+будем в соответствии со следующим итеративным процессом:
+%
+\begin{align}
+&h_1(m)=\sigma_{k_1}^*,\notag\\
+&\widehat h_i(m)=\sigma_{k_1-i+1}^*+\tau_{k_1-i+2}^* h_{i-1},
+\quad i=1,\dots,k_1,
+\label{eq:yah:hiScheme}
+\\
+&h_i(m)=\widehat h_i(m)+\varepsilon_i;\notag
+\end{align}
+%
+при $i=k_1$ полагаем $P(r)^*=h_{k_1}(m)$.
+Здесь $m\ge r$ (величину $m$ выберем позже); $\sigma_i^*$, $\tau_i^*$ "---
+приближения $\sigma_i$, $\tau_i$ с точностью $2^{-m}$.
+%
+Величины $h_i(m)$ получаются отбрасыванием битов
+$q_{m+1}q_{m+2}\dots q_{m+j}$ чисел $\widehat h_i(m)$ после
+двоичной точки, начиная с $(m+1)$-го, т. е.
+%
+\begin{align}
+|\varepsilon_i|=|h_i(m)-\widehat h_i(m)|=
+0.0\dots 0 q_{m+1}q_{m+2}\dots q_{m+j},
+\label{eq:yah:varepsilonEquation}
+\end{align}
+%
+а знак $\varepsilon_i$ совпадает со знаком $\widehat h_i(m)$ (ясно,
+что $|\varepsilon_i|<2^{-m}$).
+
+Предположим, что выполняются следующие условия:
+%
+\begin{align}
+|b(i)|\ge 2\thickspace\text{для всех}\thickspace i,
+\quad{|p(j)|}/{|q(j)|}\le 1\thickspace\text{для всех}\thickspace j.
+\label{eq:yah:ConditionsOnSeries}
+\end{align}
+%
+Покажем, что тогда верны следующие две леммы.
+
+\begin{lemma}[3]Для любого $i = 1, 2, \dots, k_1$ справедлива оценка
+\begin{align}
+|h_i(m)|<(i+1)r_1 W.
+\label{eq:yah:lemma1Inequality}
+\end{align}
+\end{lemma}
+
+\vspace{-5mm}
+
+
+\textit{Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о}. \
+Применим математическую индукцию по $j$ для $h_j(m)$.
+База индукции при $j$, равном $1$:
+$|h_1(m)|\le r_1 W+2^{-m}<2 r_1 W$.
+Индукционный переход для $(j+1)\geq 2$:
+%
+\begin{multline*}
+|h_{j+1}(m)|
+=|\sigma_{k_1-(j+1)+1}^*+\tau_{k_1-(j+1)+2}^* h_{j}+\varepsilon_{j+1}|\le \\
+\le\frac{1}{2}r_1 W+(j+1)r_1 W+2^{-m}<
+((j+1)+1)r_1 W. \quad \square
+\end{multline*}
+
+\smallskip
+
+\begin{lemma}[4]
+Погрешность вычисления $h_{k_1}(m)$ по схеме \eqref{eq:yah:hiScheme}
+оценивается как
+\begin{align*}
+\Delta(k_1,m)<2^{-m}m k_1^{2} W.
+\end{align*}
+\end{lemma} 
+
+\vspace{-5mm}
+
+\begin{proof}
+Обозначим
+$H_1=\sigma_{k_1},$
+$H_i=\sigma_{k_1-i+1} + \tau_{k_1-i+2}H_{i-1},$
+$\eta(i,m)=|h_i(m)-H_i|.$
+Воспользуемся методом математической индукции для $\eta(j,m)$
+по $j$. База индукции при $j$, равном $1$:
+%
+\begin{align*}
+\eta(1,m)=|h_1(m)-H_1|=|\sigma_{k_1}^*-\sigma_{k_1}|<2^{-m}.
+\end{align*}
+%
+Индукционный переход для $(j+1)\geq 2$:
+%
+\begin{multline*}
+\eta(j+1,m)
+=|\sigma_{k_1-(j+)+1}^*+\tau_{k_1-(j+1)+2}^*h_{j}(m)+\varepsilon_{j+1}-\\
+-\sigma_{k_1-(j+1)+1}-\tau_{k_1-(j+1)+2}H_{j}|<\\
+<|\tau_{\upsilon}^*h_{j}(m)-\tau_{\upsilon}h_{j}(m)+
+\tau_{\upsilon}h_{j}(m)-\tau_{\upsilon}H_{j}|+2\cdot 2^{-m}\leq \\
+\leq 2^{-m}h_{j}(m)+\eta(j,m)+2\cdot 2^{-m}.
+\end{multline*}
+%
+Так как из \eqref{eq:yah:lemma1Inequality} $|h_j(m)|<(j+1)r_1 W$ и,
+по индукционному предположению, $\eta(j,m)<2^{-m} m j^2 W$, можно записать
+%
+\begin{multline*}
+\eta(j+1,m)
+<2^{-m}(j+1)r_1 W+2^{-m} m j^2 W+2\cdot 2^{-m}<\\
+<2^{-m}(j+1)m W+2^{-m} m (j+1)^2 W = 2^{-m}m(j+2)^2 W.
+\end{multline*}
+%
+Из $\Delta(k_1,m)=\eta(k_1,m)$ получаем искомое неравенство.
+%
+\end{proof}
+
+\smallskip
+
+Из леммы 4 следует, что достаточно взять $m$ такое, чтобы выполнялось
+\begin{align}
+m\ge(n+1)+\lceil 2\log(n+1)+2\log(r)+\log(W)\rceil,
+\label{eq:yah:mRule}
+\end{align}
+для вычисления $P(r)^*$ с точностью $2^{-(n+1)}$.
+
+Обозначим алгоритм расчёта гипергеометрического ряда, использующий
+схему \eqref{eq:yah:hiScheme}, через {\itshape LinSpaceBinSplit}
+(linear space binary splitting).
+
+\smallskip
+
+{\small \sc Алгоритм LinSpaceBinSplit. Приближённое значение ряда (\ref{eq:yah:SeriesDef}).} 
+\begin{description} \it 
+
+\item{\tt Вход:} Запись точности вычисления $2^{-n}.$
+
+\item{\tt Выход:} Приближённое значение ряда \eqref{eq:yah:SeriesDef}
+с точностью $2^{-n}.$
+
+\item{\tt Описание:}
+%
+\begin{enumerate}
+\item[\rm 1)] вычисляем $r:=\mu(n+1);$ подбираем $k_1$ так$,$ чтобы $2^{k_1}\ge r;$ вычисляем $r_1:=\lceil{r}/{k_1}\rceil;$ рассчитываем $W;$
+\item[\rm 2)] рассчитываем $m$ по формуле \rm \eqref{eq:yah:mRule}; \it 
+\item[\rm 3)] $h:=\sigma_{k_1}^*$ $($с помощью обычного алгоритма двоичного деления с точностью $2^{-m});$
+\item[\rm 4)] выполняем цикл по $i$ от $2$ до \rm $k_1$: \it 
+\begin{enumerate}
+\item[\rm а)] рассчитываем $v_1:=\sigma_{k_1-i+1}^*$ с точностью $2^{-m}$
+с помощью обычного алгоритма двоичного деления и $v_2:=\tau_{k_1-i+2}^*$ с
+точностью $2^{-m},$
+\item[\rm б)] вычисляем выражение $\widehat h:=v_1+v_2 h,$
+\item[\rm в)] $h$ присваиваем величину $\widehat h,$ округлённую в соответствии с~\rm \eqref{eq:yah:varepsilonEquation}; \it
+\end{enumerate}
+\item[\rm 5)] на выход записываем $h.$
+\end{enumerate}
+
+\end{description}
+
+\smallskip
+
+Оценим временную вычислительную сложность данного алгоритма,
+учитывая, что $r$ и $m$ линейно зависят от $n$:
+\begin{itemize}
+\item{${\sf O}(\log(n))$ вычислений $\sigma_t$ дают ${\sf O}(M(n)\log(n)^2)$;}
+\item{${\sf O}(\log(n))$ вычислений $\tau_t$ дают ${\sf O}(M(n)\log(n)^2)$;}
+\item{${\sf O}(\log(n))$ умножений чисел длины ${\sf O}(n)$ дают
+${\sf O}(M(n)\log(n))$;}
+\end{itemize}
+итого получаем ${\sf O}(M(n)\log(n)^2)$ битовых операций. Ёмкостная
+сложность алгоритма {\itshape LinSpaceBinSplit} "--- ${\sf O}(n)$, так как во
+всех вычислениях в данном алгоритме фигурируют числа длины ${\sf O}(n)$.
+
+\smallskip
+
+\begin{theorem}
+Модифицированный алгоритм двоичного деления для расчёта
+гипергеометрических рядов {\itshape LinSpaceBinSplit}
+принадлежит классу сложности $Sch(FQLINTIME//LINSPACE)$.
+\end{theorem}
+
+\smallskip
+
+\Section[n]{Заключение}
+В табл. \ref{yakhontov:tab1}, \ref{yakhontov:tab2} приведены формулы
+и ряды для расчёта некоторых часто используемых на практике констант
+математического анализа. 
+Данные ряды линейно сходятся
+(см. [\citen{yakhontov:bib:Haible}--\citen{yakhontov:bib:Yakhontov}]), и
+они удовлетворяют условиям \eqref{eq:yah:ConditionsOnSeries};
+следовательно, для расчёта их приближённых значений можно использовать алгоритм
+{\itshape LinSpaceBinSplit}, то есть перечисленные константы принадлежат
+множеству конструктивных чисел $Sch(FQLINTIME//LINSPACE)_{CF}$. Алгоритм
+{\itshape LinSpaceBinSplit} можно также использовать для вычисления приближений
+многих других констант и приближений элементарных функций в рациональных
+точках.
+
+\begin{table}[b!]
+\centering \vspace{-3mm}
+\small 
+\caption{\bf Формулы для расчёта констант}\vspace{-3mm}
+\begin{tabular}{c|c|c}
+\hline
+{\scriptsize Константы} & {\scriptsize Формулы} & {\scriptsize Ряды}
+\\
+\hline
+\rule{0mm}{12pt}%
+$e$
+&
+$e=\exp(1)$
+&
+$\exp(1)=2\sum_{i=0}^{\infty}{\frac{1}{2i!}}$ 
+\\
+\tobot{$\pi$}
+&
+\tobot{$\pi=16\alpha-4\beta$}
+&
+\rule{0mm}{16pt}%
+$\alpha= \arctg\left(\frac{1}{5}\right)=2\frac{1}{5}
+\sum_{i=0}^{\infty}{(-1)^{i}\frac{1}{2(2i+1)5^{2i}}}$,
+\\
+&
+&
+$\beta = \arctg\left(\frac{1}{239}\right)=2\frac{1}{239}
+\sum_{i=0}^{\infty}{(-1)^{i}\frac{1}{2(2i+1)239^{2i}}}$
+\\
+&
+\\
+$\zeta(3)$
+&
+&
+$\sum_{i=0}^{\infty}{\frac{(-1)^i(205i^2+250i+77)((i+1)!)^5(i!)^5}
+{2((2i+2)!)^5}}$\\
+\hline
+\end{tabular}
+\label{yakhontov:tab1} \vspace{-4mm}
+\end{table}
+%
+\begin{table}[t!]
+\small \centering
+\caption{\bf Ряды для расчёта констант}\vspace{-3mm}
+\begin{tabular}{c|c|c|c|c}
+\hline
+{\footnotesize Константы} & 
+\footnotesize $a(i)$ & 
+\footnotesize $b(i)$ &
+\footnotesize $p(j)$ & 
+\footnotesize $q(j)$ \\
+\hline
+\rule{0mm}{12pt}%
+$e$ & $1$ & $2$ & $1$ & $j$\\
+\tobot{$\pi$} & \rule{0mm}{12pt}%
+$1$ & $2(2i+1)$ & $-1$ & $5^2$ \\
+& $1$ & $2(2i+1)$ & $-1$ & $239^2$ \\
+\rule{0mm}{12pt}% 
+$\zeta(3)$ &
+$205i^2+250i+77$ & $2$ & $p(0)=1$, $p(j)=-j^5$& $32(2j+1)^5$\\
+\hline
+\end{tabular}
+\label{yakhontov:tab2} \vspace{-3mm}
+\end{table}
+
+Если для умножения использовать алгоритм Шёнхаге"--~Штрассена с
+временной сложностью ${\sf O}(n\log(n)\log\log(n))$, то временная сложность
+алгоритма {\itshape LinSpaceBinSplit} будет ${\sf O}(n\log(n)^3\log\log(n))$;
+при использовании для умножения простого рекурсивного метода с~временной
+сложностью ${\sf O}(n^{\log(3)})$ временная сложность алгоритма
+{\itshape LinSpaceBinSplit} будет ${\sf O}(n^{\log(3)}\log(n)^2)$.
+
+Отметим, что ряд константы $e$ сходится со скоростью
+$2^{-{\sf O}(n\log(n))}$, поэтому временная сложность расчёта $e$ в соответствии
+с алгоритмом {\itshape LinSpaceBinSplit} будет ${\sf O}(M(n)\log(n))$,
+а~ёмкостная "--- ${\sf O}\left({n}/{\log(n)}\right)$.
+
+Из дальнейших исследований можно отметить построение алгоритмов
+расчёта гипергеометрических рядов с рациональными коэффициентами
+с временной сложностью ${\sf O}(n\log(n)^k)$, $k\le 3$,
+и при этом имеющих линейную ёмкостную вычислительную сложность.
+
+
+\vspace{-3mm}
+
+\begin{thebibliography}{9}
+
+\Bibitem{yakhontov:bib:Schonhage}
+\by Sch\"onhage~A., Grotefeld~A.\,F.\,W, Vetter E.
+\book Fast algorithms. A multitape Turing machine implementation
+\publaddr Mannheim, Germany
+\publ BI-Wissenschaftsverlag
+\yr 1994
+\totalpages 298 
+
+\Bibitem{yakhontov:bib:Haible}
+\by Haible~B., Papanikolaou~T.
+\paper  Fast multiprecision evaluation of series of rational numbers 
+\inbook  Algorithmic number theory
+\bookinfo Proceedings of  3rd international symposium (Portland, OR, 1998)  
+\publaddr Berlin
+\publ Springer
+\yr 1998
+\pages 338--350
+\serial Lect. Notes Comput. Sci.
+\vol 1423
+
+\Bibitem{yakhontov:bib:Cheng}
+\by Cheng~H., Gergel~B., Kim~E., Zima~E.
+\paper Space-efficient evaluation of hypergeometric series
+\jour SIGSAM Bull.
+\vol 39
+\yr 2005
+\issue 2
+\pages 41--52
+
+\Bibitem{yakhontov:bib:Yakhontov}
+\by Yakhontov~S.\,V.
+\book FLINSPACE constructive real numbers and functions (in Russian)
+\publaddr Saarbr\"ucken, Germany
+\publ Lambert Academic Publishing
+\yr 2010
+\totalpages  167
+
+
+\Bibitem{yakhontov:bib:numbers}
+\by Gourdon~X., Sebah~P.
+\eprint Binary splitting method 
+\eprintinfo \href{http://numbers.computation.free.fr/Constants/Algorithms/splitting.ps}{\tt http://numbers.computation.free.fr/ Constants/Algorithms/splitting.ps}
+
+
+\Bibitem{yakhontov:bib:Ko}
+\by Ko~K.-I
+\book Complexity theory of real functions. Progress in Theoretical Computer Science
+\publaddr Boston, MA
+\publ Birkh\"auser Boston, Inc.
+\yr 1991
+\totalpages 310 
+
+
+\end{thebibliography}
+
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+\vspace{-6mm}
+
+\makeengtitle
+
+\newpage
+
+%\end{document}

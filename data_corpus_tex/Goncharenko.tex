@@ -1,0 +1,1107 @@
+\def\stat{goncharenko}
+
+\def\tit{ОЦЕНКА ФОРМЫ ОТКЛИКА В~СИГНАЛАХ МАГНИТОЭНЦЕФАЛОГРАММ С~ШУМОМ\\ В~ВИДЕ КОНЕЧНОЙ НОРМАЛЬНОЙ 
+СМЕСИ}
+
+\def\titkol{Оценка формы отклика в~сигналах МЭГ с~шумом в~виде конечной нормальной 
+смеси}
+
+
+\def\aut{М.\,Б.~Гончаренко$^1$}
+
+\def\autkol{М.\,Б.~Гончаренко}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Гончаренко М.\,Б.}
+\index{Goncharenko M.\,B.}
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Работа выполнена при поддержке РФФИ (проект 15-07-02053).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский государственный университет имени 
+М.\,В.~Ломоносова, факультет вычислительной математики и~кибернетики, 
+\mbox{goncharenko.mir@yandex.ru}}
+
+
+ \label{st\stat}
+
+                  \thispagestyle{headings}
+                  
+  %\vspace*{-10pt}
+
+
+
+
+\Abst{Статья посвящена методам оценки формы отклика (или паттерна активации), 
+возникающего в~сигналах испытуемого в~ответ на внешний стимул во время 
+проведения нейрофизиологического эксперимента. Особенностью математической 
+модели является представление шума в~виде конечной 
+нормальной смеси. Данный подход лучше согласуется с~экспериментальными данными. 
+В~рамках рассматриваемой модели проведен анализ различных оценок отклика 
+и~исследованы их статистические свойства. Автором предложено несколько новых 
+оценок, использующих особенности распределения шума. Доказана более высокая 
+эффективность новых оценок в~терминах величины дисперсии по отношению к широко 
+используемым в~исследованиях оценкам методом моментов. Несмотря на то что акцент 
+ сделан на применении оценок к сигналам магнитоэнцефалограмм (МЭГ), 
+рассматриваемые методы могут быть использованы в~аналогичных приложениях для 
+любых нейрофизиологических сигналов, а~также в~наиболее общей постановке~--- для 
+оценки параметра сдвига конечной многомерной нормальной смеси.}
+
+\KW{магнитоэнцефалография; обработка сигналов; конечные 
+нормальные смеси; точечные оценки; эффективные оценки; информация Фишера; оценка 
+сдвига распределения}
+
+
+\DOI{10.14357\!/\!08696527180306}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+      %\vspace*{-14pt} 
+
+\section{Введение}
+
+%\vspace*{-3pt}
+
+В~современной нейронауке важное место занимают методы обработки результатов 
+экспериментов. В~случае энцефалографических данных особый интерес представляет 
+задача оценки формы отклика, или паттерна активации, в~сигналах испытуемого. 
+Откликом называют зарегистрированный во время эксперимента физиологический ответ 
+испытуемого на внешний стимул: визуальный, звуковой, тактильный или ка\-кой-ли\-бо 
+другой. Этот довольно популярный у исследователей подход называют методом 
+вызванных потенциалов. Во время эксперимента многократно подается стимул, 
+разделяя итоговый сигнал на эпохи~--- участки, содержащие отклик на один стимул 
+(подробнее о~методах обработки подобных сигналов можно прочесть в~\cite{our}). 
+Оценка отклика, полученная на данных всех эпох, используется для изучения 
+физиологических процессов, поэтому важно не только получать такую оценку, но 
+и~знать ее свойства. В статье рассматриваются сигналы МЭГ с~моделью шума в~виде 
+конечной нормальной смеси (всесторонний обзор применения МЭГ 
+в~нейрофизиологических исследованиях содержится в~статье~\cite{hama_main}). 
+Проведен анализ широко используемой оценки усреднения сигнала по эпохам, 
+доказана ее несмещенность и~состоятельность. Также предложены другие, более 
+эффективные оценки, использующие особенности распределения шума.
+
+
+\section{Порождающая модель сигналов магнитоэнцефалограмм}
+
+Для начала рассмотрим внимательнее, что представляют собой сигналы МЭГ и~что 
+измеряют с~помощью МЭГ-уста\-нов\-ки.
+Порождающая модель сигналов может быть представлена как
+\begin{equation}
+\label{general_forward}
+Y_t = L\left(J_t\right) + \mathcal{E}_t\,,
+\end{equation}
+где $Y_t$~--- значение магнитной индукции, измеряемое МЭГ-сен\-со\-ра\-ми;
+$L(\cdot)$~--- оператор Био--Са\-ва\-ра--Лап\-ла\-са; $J$~--- неизвестная 
+плот\-ность тока  источников; $\mathcal{E}_t$~--- шум.
+
+
+Единицей активации во всех формализациях прямой и~обратной задачи являются 
+токовые диполи. Токовый диполь представляет собой абстрактную физическую модель 
+активации $5\cdot 10^4$ нейронов на площади примерно $30~\mbox{мм}^2 \hm\approx 5{,}5 
+\cdot 5{,}5$~мм$^2$ (более подробное описание токовых диполей можно найти 
+в~\cite{hama_main}).
+
+
+Оператор Био--Савара--Лапласа для токового диполя имеет вид:
+\begin{equation*}
+%\label{Bio-Savart_formula}
+L_r = \fr{\mu_0}{4\pi} \,
+\fr{\left(\left[\vec{Q}\times\vec{r_Q}\right],\vec{e_r}\right)}
+{|\vec{r}-\vec{r_Q}|^3}\,.
+\end{equation*}
+Здесь $\vec{r}$~--- радиус-вектор точки в~пространстве, где определяется значение 
+индукции, наведенное диполем; $\vec{r_Q}$~--- ра\-ди\-ус-век\-тор диполя; $\vec{Q}$~--- 
+его дипольный момент; $\mu_0$~--- магнитная проницаемость среды; $\vec{e_r} \hm= 
+{\vec{r}}/{\left \| r \right \|}$~--- единичный вектор.
+
+
+Общую модель~(\ref{general_forward}) можно упростить, используя квазистатическую 
+аппроксимацию уравнений Максвелла и~уравнения Пуассона: $L(\cdot) \sim L$, 
+где~$L$~--- линейный оператор (известный под названием lead-field, или gain matrix).
+
+
+Условия, позволяющие сделать подобный переход:
+\begin{itemize}
+\item топология мозга не изменяется во время эксперимента;
+\item все потоки (поток крови и~др.) стационарны (т.\,е.\ обладают 
+одинаковыми характеристиками во время измерения);
+\item голова испытуемого не двигается, и~не двигаются лицевые мышцы.
+\end{itemize}
+
+
+В этом случае задача формулируется в~линейной форме (Generalized linear model) 
+как
+\begin{equation}
+Y = LJ + \mathcal{E}\,.
+\label{glm_forward}
+\end{equation}
+Здесь
+$$
+Y \in \mathbb{R}^{N_s \times N_t};\enskip
+L \in \mathbb{R}^{N_s \times N_d};\enskip
+J\in \mathbb{R}^{N_d \times N_t};\enskip 
+\mathcal{E} \in \mathbb{R}^{N_s \times N_t},
+$$ 
+где $N_s$, $N_d$ и~$N_t$~--- число сенсоров, возможных позиций диполей и~временных 
+отсчетов соответственно.
+
+
+Подход~\eqref{glm_forward} подразумевает фиксирование~$N_d$ позиций токовых 
+диполей (или~$3 N_d$ с~учетом ориентации) и~поиск интенсивности 
+источников~$J$ в~этих точках. Такая формализация задачи называется 
+распределенной или <<имаджинговой>>. Подробнее об обратной задаче МЭГ можно 
+прочесть в~\cite{bayes_inverse},
+решения обратной задачи в~замкнутом виде для сферической и~эллиптической 
+аппроксимации приведены в~\cite{inverse_elips, inverse_spher}.
+
+Довольно часто исследовательский интерес представляет оценка формы отклика 
+(паттерна активации) сигналов испытуемого на внешний стимул. На 
+рис.~\ref{img:one_chan} представлен МЭГ-сигнал одной эпохи, а~на 
+рис.~\ref{img:avg_chan}~--- усредненный отклик
+(проведено шкалирование амплитуд и~передискретизация временн$\acute{\mbox{ы}}$х отсчетов, 
+это обычная процедура при обработке сигналов, позволяющая нивелировать проб\-ле\-мы 
+округления в~конечной арифметике и~сократить объем анализируемых данных). 
+Данные взяты из эксперимента по 
+распознаванию лиц~\cite{dataset}.
+
+\begin{figure} %fig1
+\vspace*{1pt}
+\begin{minipage}[t]{65mm}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=63.794mm 
+ \epsfbox{gon-1.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{МЭГ-сигнал одной эпохи}
+\label{img:one_chan}
+\end{minipage}
+%\end{figure}
+\hfill
+%\begin{figure} %fig2
+\vspace*{1pt}
+\begin{minipage}[t]{63mm}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=59.69mm 
+ \epsfbox{gon-2.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Усредненный отклик}
+\label{img:avg_chan}
+\end{minipage}
+\end{figure}
+
+В терминах модели~\eqref{glm_forward} оценка формы отклика представляет собой 
+поиск~$\hat{\Theta}$, где $\Theta \hm= LJ$ на участке сигнала~$Y$, содержащем 
+физиологическую реакцию пациента на поданный внешний стимул.
+
+
+\section{Различные оценки формы отклика}
+
+Для упрощения выкладок в~дальнейшем анализе будет рассматриваться сигнал только 
+одного сенсора, т.\,е.\ следующая порождающая модель:
+\begin{equation}
+\label{simplified_model}
+Y = \theta + \varepsilon\,,
+\end{equation}
+где 
+$$
+Y \in \mathbb{R}\,;\quad
+\theta \in \mathbb{R}\,;\quad
+\varepsilon \sim 
+\sum\limits_{i=1}^m\mathcal{N}\left(\mu_i,\sigma_i^2\right),\quad
+\mathbb{E}\,\varepsilon  = \sum\limits_{i=1}^m \alpha_i\mu_i = 0\,.
+$$
+
+
+При дизайне эксперимента с~использованием метода вызванных потенциалов 
+осуществляется многократная подача внешнего стимула на протяжении всей записи. 
+Участки сигнала, содержащие нейрофизиологический отклик испытуемого на один 
+стимул, называются эпохами и~обозначаются~$\tilde{Y}_i$, где $i \hm= 
+\overline{1,n}$~--- порядковый номер эпохи.
+
+\subsection{Оценка методом моментов}
+
+В подавляющем большинстве прикладных исследований, а~так\-же во многих программных 
+пакетах для анализа нейрофизиологических сигналов, для нахождения формы отклика 
+используется оценка усреднением:
+\begin{equation}
+\label{avg_est}
+\hat{\theta}_{\mathrm{avg}} = \fr{1}{n}\sum\limits^n_{i=1}\tilde{Y_i}\,,
+\end{equation}
+где $\tilde{Y_i}$~--- сигнал $i$-й эпохи.
+Дисперсия оценки~\eqref{avg_est} равна
+$$
+\mathbb{D}\,\hat{\theta}_{\mathrm{avg}} = 
+\mathbb{D}\,\fr{1}{n}\sum\limits^n_{i=1}\tilde{Y_i} = 
+\fr{1}{n^2}\,\mathbb{D}\sum\limits^n_{i=1}\tilde{Y_i} = 
+\fr{1}{n}\,\mathbb{D}\tilde{Y_1} = 
+\fr{1}{n}\sum\limits_{i=1}^m\alpha_i\sigma_i\,.
+$$
+
+\noindent
+\textbf{Теорема~1.}
+\textit{Оценка}~\eqref{avg_est} \textit{несмещенная}. %\label{Th:unbiased}
+
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+Вычислим смещение оценки $\hat{\theta}_{\mathrm{avg}}$:
+$$
+b(\hat{\theta}_{\mathrm{avg}}) = \mathbb{E}\,\hat{\theta}_{\mathrm{avg}} - \theta = 
+\mathbb{E}\,\fr{1}{n}\sum\limits_{i=1}^n\tilde{Y_i} - \theta = 
+\fr{1}{n}\sum\limits_{i=1}^n\mathbb{E}\,\tilde{Y_i} - \theta = 
+\fr{1}{n}\sum\limits_{i=1}^n\theta - \theta = 0\,.
+$$
+Теорема доказана.~\hfill$\square$
+
+
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.}\
+\textit{Оценка}~\eqref{avg_est} \textit{состоятельна}.
+
+
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+Воспользуемся неравенством Чебышёва с~учетом того, что 
+$\mathbb{E}\hat{\theta}_{\mathrm{avg}} \hm= \theta$ (по тео\-ре\-ме~1):
+
+\noindent
+$$
+{\sf P}\left(\left\vert \hat{\theta}_{\mathrm{avg}} - \theta\right\vert > \varepsilon\right) \le 
+\fr{\mathbb{E}\,\left\vert \hat{\theta}_{\mathrm{avg}} - \theta\right\vert}{\varepsilon} \le 
+\fr{\mathbb{D}\,\hat{\theta}_{\mathrm{avg}}}{\varepsilon^2} 
+\xrightarrow[n\rightarrow\infty]{} 0\,, ~\forall \varepsilon > 0\,,
+$$
+так как
+$$
+\mathbb{D}\,\hat{\theta}_{\mathrm{avg}} = 
+\fr{1}{n^2}\,\mathbb{D}\sum\limits_{i=1}^n\tilde{Y_i} = 
+\fr{1}{n}\,\mathbb{D}\,\tilde{Y_1} = 
+\fr{1}{n}\sum\limits_{i=1}^m\alpha_i\sigma_i^2 
+\xrightarrow[n\rightarrow\infty]{} 0\,.
+$$
+Теорема доказана.\hfill$\square$
+
+
+%\pagebreak
+
+\noindent
+\textbf{Теорема~3.}\
+\textit{Оценка}~\eqref{avg_est} \textit{асимптотически нормальна}.
+
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+Это утверждение напрямую следует из теоремы, приведенной в~\cite{lagutin}, 
+причем имеет место следующая сходимость:
+$$
+\sqrt{n}\left(\theta - \hat{\theta}_{\mathrm{avg}}\right) \xrightarrow{d} \xi \sim 
+\mathcal{N}\left(0,\mathbb{D}Y - (\mathbb{E}Y)^2\right).
+$$
+Теорема доказана.\hfill$\square$
+
+
+\subsection{Оценка максимального правдоподобия}
+\label{section:MLE}
+
+Оценки максимального правдоподобия занимают важное место в~статистике 
+и~применяются во множестве прикладных задач. В широком спектре моделей они 
+демонстрируют такие замечательные свойства, как асимптотическая эффективность 
+и~асимптотическая нормальность.
+
+
+\smallskip
+
+\noindent
+\textbf{Определение~1.}
+Оценкой максимального правдоподобия величины~$\theta$ по выборке~$Y$ называют 
+оценку
+$$
+\hat{\theta}_{\mathrm{mle}} = \argmax\limits_\theta \mathcal{L}(Y;\theta)\,,
+$$
+где $\mathcal{L}(Y;\theta)$~--- функция правдоподобия выборки~$Y$.
+
+
+\smallskip
+
+
+В модели~\eqref{simplified_model} функция правдоподобия имеет вид:
+\begin{equation}
+\label{likelihood_explicit}
+\mathcal{L}(Y;\theta) = 
+\prod\limits_{j=1}^n\sum\limits_{i=1}^m\left(\fr{\alpha_i}{\sqrt{2\pi}\sigma_i
+}\,e^{-{(y_j - \mu_i - \theta)^2}/\left({2\sigma_i^2}\right)}\right)\,.
+\end{equation}
+
+
+В теории вероятностей доказано, что для класса регулярных моделей оценка 
+максимального правдоподобия является наиболее эффективной (т.\,е.\ обладает 
+наименьшей возможной дисперсией, см.~\cite{lagutin}).
+
+
+\smallskip
+
+\noindent
+\textbf{Определение~2.}
+Вероятностная модель называется регулярной, если плотность распределения 
+$\mathit{p}(x;\theta)$ удовлетворяет следующим условиям регулярности:
+%\newcounter{saveenum}
+\begin{enumerate}[1.]
+\item $\Theta$~--- открытый интервал на прямой (возможно, 
+бесконечный), где $\Theta$~--- параметрическое множество всех возможных 
+значений~$\theta$.
+\item  Носитель распределения $A \hm= \{x: \mathit{p}(x;\theta)\hm > 0\}$ не 
+зависит от~$\theta$.
+\item Для $\forall x \in A$ и~$\theta \in \Theta$ производная 
+$({\partial}/{\partial \theta}) \mathit{p}(x; \theta)$ существует и~конечна.
+\item Для случайной величины $U_1 \hm= ({\partial}/{\partial \theta}) 
+\ln \mathit{p}(X_1; \theta)$ при всех $\theta \hm\in \Theta$ справедливы тождество 
+$\mathbb{E}\,U_1 \hm\equiv 0$ и~неравенство $0 \hm< \mathbb{D}U_1\hm < \infty$.
+\end{enumerate}
+
+
+
+Согласно известной теореме (см.~\cite{lagutin}) оценка максимального 
+правдоподобия будет асимптотически эффективной и~асимптотически нормальной при 
+справедливости~1--4 и~выполнении дополнительных условий регулярности:
+\noindent
+\begin{enumerate}[1.]
+\setcounter{enumi}{4}
+\item Плотности $\mathit{p}(x;\theta)$ различны при разных $\theta\hm \in \Theta$.
+\item Плотность $\mathit{p}(x;\theta)$ при любом $x \hm\in A$ трижды 
+непрерывно дифференцируема по~$\theta$.
+\item  $\int\nolimits_A \mathit{p}(x;\theta) \mathrm{d}x$ можно дважды 
+дифференцировать по~$\theta$ под знаком интеграла.
+\item  Существует функция $h(x)$ такая, что для $\forall~x \in A$ 
+и~$\theta \hm\in \Theta$ выполнено $\left|({\partial^3}/{\partial \theta^3}) \ln 
+\mathit{p}(x;\theta) \right| \hm\le h(x)$ и~$\mathbb{E}h(X_1) \hm< \infty$.
+\end{enumerate}
+
+\smallskip
+
+\noindent
+\textbf{Теорема~4.}\
+\textit{Для модели}~\eqref{simplified_model} \textit{выполнены условия регулярности}~1--8.
+
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+Пункты~1--3 и~5--7 с~очевидностью выполнены для~\eqref{simplified_model}.
+
+
+Рассмотрим п.~4. Для его доказательства необходимы сведения из подразд.~4.1. 
+Заметим, что $\mathbb{D}U_1 \hm= 
+\mathcal{I}_1(\theta)$~--- информация Фишера величины~$\tilde{Y}_1$. Лемма~1
+доказывает, что $\mathbb{D}U_1 \hm< \infty$.
+
+
+В то же время условие $\mathbb{E}U_1 \hm\equiv 0$ выполнено для всех плотностей 
+$\mathit{p}(x;\theta)$, для которых справедливо (см.~\cite{lagutin}):
+$$
+\fr{\partial}{\partial \theta} \int\limits_A \mathit{p}(x;\theta) \,{d}x 
+= \int\limits_A \fr{\partial}{\partial \theta}\,  \mathit{p}(x;\theta) 
+\,{d}x\,.
+$$
+С очевидностью это выполнено для модели~\eqref{simplified_model}.
+
+
+Докажем справедливость пункта~8. Выпишем в~явном виде его условие:
+\begin{multline*}
+\left|\fr{\partial^3}{\partial \theta^3} \,\ln \mathit{p}(x;\theta) \right| = 
+\left| \fr{\mathit{p}'''(x;\theta)}{\mathit{p}(x;\theta)} + 
+\fr{2(\mathit{p}'(x;\theta))^3}{(\mathit{p}(x;\theta))^3} - 
+\fr{3\mathit{p}'(x;\theta)\mathit{p}''(x;\theta)}{(\mathit{p}(x;\theta))^2} 
+\right| \le{} \\ 
+{}\le \left| 
+\fr{\mathit{p}'''(x;\theta)}{\mathit{p}(x;\theta)}\right| + 
+2\left|\fr{\mathit{p}'(x;\theta)}{\mathit{p}(x;\theta)}\right|^3 + 
+3\left|\fr{\mathit{p}'(x;\theta)\mathit{p}''(x;\theta)}{(\mathit{p}(x;\theta))
+^2} \right|.
+\end{multline*}
+Таким образом, достаточно доказать ограниченность каждого из последних 
+слагаемых. Ограниченность $\mathit{p}(x;\theta)$ очевидна:
+\begin{equation}
+\label{P_limit}
+\mathit{p}(x;\theta) \le \sum\limits_{i=1}^m\fr{\alpha_i}{\sqrt{2\pi}\,\sigma_i} 
+= C_{\mathit{p}}\,,
+\end{equation}
+где константа $0 < C_{\mathit{p}} \hm< \infty$.
+
+
+Рассмотрим производные функции $\mathit{p}(x;\theta)$ по $\theta$:
+\begin{multline}
+\label{dp}
+\mathit{p}'(x;\theta) = 
+\sum\limits_{i=1}^m\fr{\alpha_i}{\sqrt{2\pi}\,\sigma_i^3}e^{{-\left(x-\mu_i-
+\theta\right)^2}/\left({2\sigma_i^2}\right)}\left(x-\mu_i-\theta\right)\le {}\\
+{}\le
+\sum\limits_{i=1}^m\fr{\alpha_i}{\sqrt{\pi}\,\sigma_i^2}\,\fr{1}{2e} = 
+C_{\mathit{p}'} < \infty\,; 
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\label{ddp}
+\mathit{p}''(x;\theta) = 
+\sum\limits_{i=1}^m\left(\fr{\alpha_i}{\sqrt{2\pi}\sigma_i^5}\,e^{{-\left(x-
+\mu_i-\theta\right)^2}/\left({2\sigma_i^2}\right)}\left(x-\mu_i-\theta\right)^2 -{} \right.\\
+\left.{}-
+\fr{\alpha_i}{\sqrt{2\pi}\,\sigma_i^3}\,e^{{-(x-\mu_i-
+\theta)^2}/\left({2\sigma_i^2}\right)}\right) \le 
+\sum\limits_{i=1}^m\fr{\sqrt{2}\,\alpha_i}{\sqrt{\pi}\,\sigma_i^3}\,\fr{1}{e} = 
+C_{\mathit{p}''} < \infty\,;
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\label{dddp}
+\mathit{p}'''(x;\theta) = 
+\sum\limits_{i=1}^m\!\left(\!\fr{\alpha_i}{\sqrt{2\pi}\sigma_i^5}\,e^{{-\left(x-
+\mu_i-\theta\right)^2}/\left({2\sigma_i^2}\right)}\left(x-\mu_i-\theta\right)\!\left(\!
+\left(x-\mu_i-\theta\right)^2 - 
+3\right)\!\!\right) \le{}\hspace*{-0.17236pt} \\ 
+{}\le 
+\sum\limits_{i=1}^m\fr{2\alpha_i}{\sqrt{\pi}\,\sigma_i^2}\,
+\fr{3\sqrt{3/2}}{2e^{3/2}} - 3\sum\limits_{i=1}^m
+\fr{\alpha_i}{\sqrt{\pi}\,\sigma_i^4}\,\fr{1}{2e} = 
+C_{\mathit{p}'''} < \infty \,.
+\end{multline}
+
+
+Учитывая ограничения~\eqref{dp}--\eqref{dddp}, получаем итоговое выражение:
+\begin{equation*}
+\left|\fr{\partial^3}{\partial \theta^3}\, \ln \mathit{p}(x;\theta) \right| \le 
+\left|\fr{C_{\mathit{p}'''}}{C_{\mathit{p}}}\right| + 
+2\left|\fr{C_{\mathit{p}'}}{C_{\mathit{p}}}\right|^3 + 
+3\left|\fr{C_{\mathit{p}'}C_{\mathit{p}''}}{C_{\mathit{p}}^2}\right| = h(x) < 
+\infty\,.
+\end{equation*}
+
+Из вида $h(x)$ очевидно, что $\mathbb{E}h(X_1) < \infty$.
+Теорема доказана.\hfill$\square$
+
+\smallskip
+
+
+
+Таким образом, оценка максимального правдоподобия в~модели~\eqref{simplified_model} 
+является эффективной. Однако функция~\eqref{likelihood_explicit} 
+имеет сложный вид, и~ее непосредственная 
+максимизация в~прикладных задачах выполняется численно и~сопряжена со множеством 
+трудностей~\cite{korolev}.
+
+
+\subsection{Оценки, основанные на классификации наблюдений}
+
+
+Для упрощения выкладок при работе со смесями распределений удобно использовать 
+вспомогательные латентные переменные, показывающие принадлежность конкретного 
+наблюдения одной из компонент. Используя данный подход, построим процедуру 
+оценки сдвига в~несколько этапов.
+Для этого воспользуемся утверждением из~\cite{korolev}, позволяющим вычислить 
+вероятность принадлежности наблюдения~$y_j$, где $j \hm= \overline{1,n}$, одной из 
+компонент смеси~$\{C_i\}$, где $i \hm= \overline{1,m},$
+\begin{equation}
+\label{prob_of_component}
+{\sf P}\left(C_i|y_j\right) = \fr{({\alpha_i}/{\sigma_i})e^{{-\left(y_j - \mu_i - 
+\theta\right)^2}/\left({2\sigma_i}\right)}}{\sum\nolimits_{k=1}^m ({\alpha_k}/{\sigma_k})
+e^{{-
+\left(y_j - \mu_k - \theta\right)^2}/({2\sigma_k})}}\,,
+\end{equation}
+где ${\sf P}(C_i|y_j)$~--- вероятность того, что наблюдение~$y_j$ порождено $i$-й 
+ком\-по\-нентой.
+{\looseness=1
+
+}
+
+
+Таким образом, предлагается воспользоваться следующим алгоритмом:
+\begin{enumerate}[1.]
+\item Классифицировать каждое наблюдение~$y_j$ по 
+компонентам  $\{C_i\}$, $i\hm = \overline{1,m}$, используя
+ формулу~\eqref{prob_of_component} для подсчета вероятностей.
+\item  Вычислить оценки $\tilde{\theta}_i$ для каждой из~$C_i$.
+\item  Вычислить итоговую оценку $\hat{\theta}$ как 
+композицию оценок~$\tilde{\theta}_i$.
+\end{enumerate}
+
+Рассмотрим каждый из шагов по отдельности. На шаге~1 каждое из наблюдений~$y_j$ 
+классифицируется на основании максимизации вероятности компоненты, используя 
+формулу~\eqref{prob_of_component}.
+
+
+На шаге 2 вычисляется~$m$~оценок сдвига~$\tilde{\theta}_i$. Поскольку 
+рассматривается случай нормальной смеси, то каждая из этих оценок является 
+оценкой сдвига в~классической нормальной модели. 
+В~таком случае (см.~\cite{lagutin}) будет эффективной следующая оценка:
+
+\vspace*{-3pt}
+
+\noindent
+\begin{equation}
+\label{Theta_i_est}
+\tilde{\theta}_i = \fr{1}{n_i}\sum\limits_{k=1}^{n_i}y_k\,,
+\end{equation}
+
+\vspace*{-2pt}
+
+\noindent
+где $n_i$~--- число наблюдений, отнесенных к компоненте~$C_i$.
+
+
+Вычислим дисперсию~\eqref{Theta_i_est}:
+$$
+\mathbb{D}\,\tilde{\theta}_i = \mathbb{D}\,\fr{1}{n_i}\sum\limits_{k=1}^{n_i}y_k = 
+\fr{1}{n_i^2}\sum\limits_{k=1}^{n_i}\mathbb{D}\,y_k = \fr{1}{n_i^2}\, n_i 
+\sigma_i^2 = \fr{\sigma_i^2}{n_i} \approx \fr{\sigma_i^2}{\alpha_i n}\,.
+$$
+В последнем равенстве используется приближение $n_i \hm\approx \alpha_i n$, которое 
+справедливо при больших~$n$.
+
+
+На шаге~3 из оценок шага~2 необходимо получить итоговую оценку сдвига модели~\eqref{simplified_model}.
+
+Простейшим подходом будет воспользоваться методом моментов и~получить оценку
+
+\vspace*{-3pt}
+
+\noindent
+\begin{equation}
+\label{cavg_est}
+\hat{\theta}_{\mathrm{cavg}} = \fr{1}{m}\sum\limits_{i=1}^m\tilde{\theta}_i\,.
+\end{equation}
+
+\vspace*{-2pt}
+
+\noindent
+Эта оценка будет несмещенной и~состоятельной как линейная комбинация несмещенных 
+и~состоятельных оценок.
+
+
+Вычислим дисперсию~\eqref{cavg_est}:
+$$
+\mathbb{D}\hat{\theta}_{\mathrm{cavg}} = 
+\mathbb{D}\,\fr{1}{m}\sum\limits_{i=1}^m\tilde{\theta}_i = 
+\fr{1}{m^2}\sum\limits_{i=1}^m\mathbb{D}\,\tilde{\theta}_i = 
+\fr{1}{m^2}\sum\limits_{i=1}^m \fr{\sigma_i^2}{\alpha_i n}\,.
+$$
+
+
+
+С другой стороны, оценка~\eqref{cavg_est} смешивает оценки разных дисперсий 
+с~одинаковым весом. Логично было бы ввести меньший вес для оценок с~большей 
+дисперсией, такой подход приводит к оценке
+
+\noindent
+\begin{multline}
+\label{cwavg_est}
+\hat{\theta}_{\mathrm{cwavg}} = \left(\sum\limits_{i=1}^m 
+\left(\mathbb{D}\,\tilde{\theta}_i\right)^{-1}\right)^{-1} \sum\limits_{i=1}^m 
+\left(\mathbb{D}\,\tilde{\theta}_i\right)^{-1} \tilde{\theta}_i
+= \left(\sum\limits_{i=1}^m \fr{n_i}{\sigma_i^2}\right)^{-1} 
+\sum\limits_{i=1}^m \fr{n_i}{\sigma_i^2} \,\tilde{\theta}_i \approx{} \\
+{}\approx \left(\sum\limits_{i=1}^m \fr{\alpha_i n}{\sigma_i^2}\right)^{-1} 
+\sum\limits_{i=1}^m \fr{\alpha_i n}{\sigma_i^2} \,\tilde{\theta}_i\,,
+\end{multline}
+где $n_i$~--- число наблюдений, отнесенных к компоненте~$C_i$. В~последнем 
+равенстве используется приближение $n_i \hm\approx \alpha_i n$, которое справедливо 
+при больших~$n$. Оценка~\eqref{cwavg_est} является несмещенной и~состоятельной 
+как линейная комбинация несмещенных и~состоятельных оценок.
+
+
+Вычислим дисперсию \eqref{cwavg_est}:
+\begin{multline*}
+\mathbb{D}\,\hat{\theta}_{\mathrm{cwavg}} = \mathbb{D} \left(\sum\limits_{i=1}^m 
+\fr{\alpha_i n}{\sigma_i^2}\right)^{-1} \sum\limits_{i=1}^m \fr{\alpha_i 
+n}{\sigma_i^2} \,\tilde{\theta}_i =
+\left(\sum\limits_{i=1}^m \fr{\alpha_i n}{\sigma_i^2}\right)^{-2} 
+\sum\limits_{i=1}^m \left(\fr{\sigma_i^2}{\alpha_i n}\right)^{-2} \mathbb{D} \,
+\tilde{\theta}_i ={} \\
+= \left(\sum\limits_{i=1}^m \fr{\alpha_i n}{\sigma_i^2}\right)^{-2} 
+\sum\limits_{i=1}^m \left(\fr{\sigma_i^2}{\alpha_i n}\right)^{-2} 
+\fr{\sigma_i^2}{\alpha_i n} = \left(n \sum\limits_{i=1}^m 
+\fr{\alpha_i}{\sigma_i^2}\right)^{-1}\,.
+\end{multline*}
+
+
+\section{Сравнение эффективностей оценок}
+
+\subsection{Граница Рао--Крамера для дисперсии оценок}
+
+
+Как уже было отмечено в~подразд.~3.2, оценки максимального 
+правдоподобия в~регулярных моделях являются эффективными, т.\,е.\ достигают 
+нижней границы неравенства Рао--Кра\-ме\-ра~\cite{lagutin}. Таким образом,
+$\mathbb{D}\,\hat{\theta}_{\mathrm{mle}} \hm= (n\mathcal{I}_1(\theta))^{-1}$, где 
+$\mathcal{I}_1(\theta)$~--- информация Фишера случайной величины~$Y_1$.
+
+
+\smallskip
+
+\noindent
+\textbf{Определение~3.}
+Информацией Фишера параметра~$\theta$, содержащейся в~случайной величине~$\xi,$ 
+называют величину
+$$
+\mathcal{I}_\xi(\theta) = \mathbb{E}_\theta\left(\fr{\partial}{\partial 
+\theta}\,\ln \mathit{p}_\xi(\theta)\right)^2\,,
+$$
+где $\mathit{p}_\xi(\theta)$~--- плотность случайной величины~$\xi$, зависящая от 
+параметра~$\theta$.
+
+
+\smallskip
+
+
+В рассматриваемой модели информация Фишера величины~$Y_1$ имеет вид:
+\begin{multline}
+\label{Fisher_info}
+\mathcal{I}_1(\theta) = 
+\int\limits_\mathbb{R}\left(\sum\limits_{i=1}^m\fr{\alpha_i}{\sqrt{2\pi}\,\sigma_i}
+\,e^{{-\left(x-\mu_i-\theta\right)^2}/\left({2\sigma_i^2}\right)}\right)^{-1} \times{}\\
+{}\times
+\left(\sum\limits_{i=1}^m\fr{\alpha_i}{\sqrt{2\pi}\,\sigma_i^3}\,e^{{-\left(x-
+\mu_i-\theta\right)^2}/\left({2\sigma_i^2}\right)}(x-\mu_i-\theta)\right)^2 \,{d}x\,.
+\end{multline}
+
+\noindent
+\textbf{Лемма~1.}
+\textit{Информация Фишера}~\eqref{Fisher_info} \textit{конечна}. 
+
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+Воспользовавшись неравенствами~\eqref{P_limit} и~\eqref{dp}, 
+получим ограничение для обеих скобок в~\eqref{Fisher_info}. Следовательно, 
+$\mathcal{I}_1(\theta) \hm< \infty$. Лемма доказана.~\hfill$\square$
+
+
+\smallskip
+
+
+Выражение \eqref{Fisher_info} довольно тяжело вычислять и~использовать 
+в~прикладных задачах, так что в~данном случае имеет смысл воспользоваться 
+наблюдаемой информацией Фишера (см.~\cite{obs_fisher}).
+
+
+\smallskip
+
+\noindent
+\textbf{Определение~4.}
+Наблюдаемой информацией Фишера параметра $\theta$, содержащейся в~выборке 
+$\xi_1, \dots,\xi_n$ реализаций случайной величины $\xi$ с~плотностью 
+$\mathit{p}_\xi(\theta)$, называют величину
+$$
+\mathcal{J}(\theta) = -\sum\limits_{i=1}^n \fr{\partial^2}{\partial\theta^2}\,\ln 
+\mathit{p}_\xi\left(\xi_i;\theta\right)\,,
+$$
+где $\mathit{p}_\xi(\xi_i;\theta)$~--- значение плотности~$\mathit{p}_\xi(\theta)$ в~точке~$\xi_i$.
+
+
+\smallskip
+
+Наблюдаемая информация Фишера величины~$Y_1$ в~модели~\eqref{simplified_model} 
+имеет вид:
+\begin{equation}
+\label{observed_Fisher_info}
+\mathcal{J}(\theta) = \sum\limits_{j=1}^n \fr{\left(\mathit{p}'\left(y_j;\theta\right)\right)^2 - 
+\mathit{p}\left(y_j;\theta\right)\mathit{p}''\left(y_j;\theta\right)}{
+\left(\mathit{p}\left(y_j;\theta\right)\right)^2}\,.
+\end{equation}
+Производные $\mathit{p}(y; \theta)$ были получены ранее в~\eqref{dp} и~\eqref{ddp}.
+
+
+Выражение \eqref{observed_Fisher_info} гораздо удобнее для численных расчетов, 
+чем~\eqref{Fisher_info}.
+
+\subsection{Вычисление относительных эффективностей оценок}
+
+В этом разделе под эффективностью оценки понимается величина ее дисперсии. Таким 
+образом, одна оценка считается эффективнее другой, если она обладает меньшей 
+дисперсией и,~следовательно, меньшей погрешностью при оценке 
+параметров.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~5.}
+\textit{При $m > \max\nolimits_{i \in {I}}({1}/{\alpha_i})$ 
+оценка}~\eqref{cavg_est} \textit{эффективнее оценки}~\eqref{avg_est}, 
+\textit{а~при $m < 
+\min\nolimits_{i \in {I}} ({1}/{\alpha_i})$ оценка}~\eqref{avg_est} 
+\textit{эффективнее}~\eqref{cavg_est}, 
+\textit{где ${I}\hm = \{1,\dots, n\}$}. 
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+Сравним дисперсии~\eqref{cavg_est} и~\eqref{avg_est}:
+\begin{align*}
+\mathbb{D}\,\hat{\theta}_{\mathrm{avg}} &\vee \mathbb{D}\,\hat{\theta}_{\mathrm{cavg}}\,; \\
+\fr{1}{n}\sum\limits_{i=1}^m\alpha_i\sigma_i^2 &\vee \fr{1}{m^2 
+n}\sum\limits_{i=1}^m \fr{\sigma_i^2}{\alpha_i}\,.
+\end{align*}
+Рассмотрим коэффициенты при~$\sigma_i$. Неравенство 
+$\mathbb{D}\,\hat{\theta}_{\mathrm{avg}} \hm> \mathbb{D}\hat{\theta}_{\mathrm{cavg}}$ будет 
+справедливо, если для $\forall i\hm = \overline{1,m}$ выполнено следующее:
+\begin{equation*}
+\alpha_i > \fr{1}{m^2\alpha_i}\,; \enskip
+m^2 \alpha_i^2 > 1\,;\enskip
+m \alpha_i > 1\,;\enskip
+m  > \max\limits_{i \in I} \fr{1}{\alpha_i}\,.
+\end{equation*}
+Нетрудно заметить, что при $m < \min\nolimits_{i \in I} ({1}/{\alpha_i})$ 
+справедливо обратное неравенство. Теорема доказана.~\hfill$\square$
+
+\vspace*{2pt}
+
+
+Таким образом, теорема~5 задает условия, при которых одна из оценок~\eqref{avg_est} 
+и~\eqref{cavg_est} предпочтительнее другой в~смысле величины 
+дисперсии.
+
+
+\vspace*{2pt}
+
+\noindent
+\textbf{Теорема~6.}\ 
+\textit{Оценка}~\eqref{cwavg_est} \textit{эффективнее оценок}~\eqref{avg_est} 
+\textit{и}~\eqref{cavg_est}.
+
+\vspace*{2pt}
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+Для начала сравним дисперсии оценок~\eqref{cwavg_est} и~\eqref{avg_est}:
+
+\vspace*{-1pt}
+
+\noindent
+\begin{align*}
+\mathbb{D}\,\hat{\theta}_{\mathrm{avg}} &\vee \mathbb{D}\hat{\theta}_{\mathrm{cwavg}}\,; \\
+\fr{1}{n}\sum\limits_{i=1}^m \alpha_i\sigma_i^2 &\vee \fr{1}{n} 
+\left(\sum\limits_{i=1}^m\fr{\alpha_i}{\sigma_i^2}\right)^{-1}\,; \\
+\fr{1}{n}\sum\limits_{i=1}^m \alpha_i\left(\fr{1}{\sigma_i^2}\right)^{-1} 
+&\vee \fr{1}{n} \left(\sum\limits_{i=1}^m 
+\alpha_i\fr{1}{\sigma_i^2}\right)^{-1}\,.
+\end{align*}
+Используя неравенство Йенсена, получим
+
+\noindent
+$$
+\fr{1}{n}\sum\limits_{i=1}^m \alpha_i\left(\fr{1}{\sigma_i^2}\right)^{-1} 
+\ge \fr{1}{n} \left(\sum\limits_{i=1}^m \alpha_i\fr{1}{\sigma_i^2}\right)^{-1}\,,
+$$
+из чего следует, что $\mathbb{D}\,\hat{\theta}_{\mathrm{avg}} \hm\ge 
+\mathbb{D}\,\hat{\theta}_{\mathrm{cavg}}$. Таким образом, оценка~\eqref{cwavg_est} 
+предпочтительнее оценки~\eqref{avg_est} в~терминах величины дисперсии.
+
+
+Сравним дисперсии~\eqref{cwavg_est} и~\eqref{cavg_est}:
+
+\noindent
+\begin{align*}
+\mathbb{D}\,\hat{\theta}_{\mathrm{cavg}} &\vee \mathbb{D}\,\hat{\theta}_{\mathrm{cwavg}}\,; \\
+\fr{1}{n m^2}\sum\limits_{i=1}^m \fr{\sigma_i^2}{\alpha_i} &\vee \fr{1}{n} 
+\left(\sum\limits_{i=1}^m\fr{\alpha_i}{\sigma_i^2}\right)^{-1}\,.
+\end{align*}
+Обозначим $\gamma_i = {\sigma_i^2}/{\alpha_i} > 0$. Тогда:
+
+\vspace*{-2pt}
+
+\noindent
+\begin{align*}
+\sum\limits_{i=1}^m\gamma_i \sum\limits_{i=1}^m\gamma_i^{-1} &\vee m^2\,; \\
+\sum\limits_{i,j} \fr{\gamma_i}{\gamma_j} &\vee m^2\,.
+\end{align*}
+
+Рассмотрим внимательнее сумму, стоящую слева. Ее можно раскрыть как
+$$
+\sum\limits_{i,j} \fr{\gamma_i}{\gamma_j} = m + \sum\limits_{k=1}^{m(m-1)/2} 
+\!\tau_k + \sum\limits_{k=1}^{m(m-1)/2} \!\tau_k^{-1} = m + \sum\limits_{k=1}^{m(m-
+1)/2} \left(\tau_k + \tau_k^{-1}\right)\,,
+$$
+где $\tau_k = {\gamma_i}/{\gamma_j} > 0$, т.\,е.\ при $k \hm= \overline{1,m(m-
+1)/2}$ величина~$\tau_k$ пробегает все возможные значения частных 
+${\gamma_i}/{\gamma_j}$ при $i \hm\ne j$.
+
+\pagebreak
+
+Для окончательного разрешения неравенства необходимо показать, что 
+$$
+\sum\limits_{k=1}^{m(m-1)/2} \left(\tau_k + \tau_k^{-1}\right) \ge m(m-1)\,.
+$$ 
+Это  выполнено, так как $\tau_k + \tau_k^{-1} \hm\ge 2$, $\forall \tau_k \hm> 0$.
+
+
+Таким образом, $\mathbb{D}\,\hat{\theta}_{\mathrm{cavg}} \ge 
+\mathbb{D}\,\hat{\theta}_{\mathrm{cwavg}}$. Теорема доказана.
+
+\section{Заключение}
+
+Статистические методы оценки параметров находят важное применение в~обработке 
+сигналов нейрофизиологических экспериментов, в~част\-ности для получения формы 
+физиологического отклика. Правильная оценка отклика позволяет неинвазивно 
+изучать процессы, происходящие в~человеческом мозге.
+
+
+В данной статье показано, что широко используемые в~прикладных исследованиях 
+оценки усреднением обладают множеством важных статистических свойств, таких как 
+несмещенность, состоятельность и~асимптотическая нормальность. К~тому же 
+использование более сложной модели шума в~виде конечной нормальной смеси не 
+нарушает справедливости этих свойств и~не ограничивает применимость 
+распространенных процедур обработки данных.
+
+
+С другой стороны, использование особенностей новой модели шума позволяет строить 
+более эффективные оценки. В~статье предложен алгоритм построения таких оценок на 
+основе классификации наблюдений. Результаты данной работы, несмотря на то что 
+они были выполнены с~опорой на данные МЭГ, применимы в~самой широкой 
+статистической постановке~--- для оценки сдвига конечной нормальной смеси.
+
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+    \bibitem{our}           
+    \Au{Захарова Т.\,В., Никифоров С.\,Ю., Гончаренко~М.\,Б., 
+    Драницына~М.\,А., Климов~Г.\,А., Хазиахметов~М.\,Ш., Чаянов~Н.\,В.} Методы 
+обработки сигналов для локализации невосполнимых областей головного мозга~/\!\!/ 
+Системы и~средства информатики, 2012. Т.~22. №\,2. С.~157--175.
+    \bibitem{hama_main}     
+    \Au{Hamalainen M., Hari R., Ilmoniemi~R.\,J.,  Knuutila~J., Lounasmaa~O.\,V.} 
+    Magnetoencephalography~--- theory, instrumentation, 
+and applications to noninvasive studies of the working human brain~/\!\!/ Rev. 
+Mod. Phys., 1993. Vol.~65. No.\,2. P.~413--497. doi: 10.1103\!/\!revmodphys.65.413.
+    \bibitem{bayes_inverse} 
+    \Au{Гончаренко М.\,Б., Захарова~Т.\,В.} 
+Вероятностный подход к решению обратной задачи магнитоэнцефалографии~/\!\!/ Системы и~средства 
+информатики, 2018. Т.~28. №\,1. С.~35--52. doi: 10.14357\!/\!08696527180103.
+    \bibitem{inverse_elips} 
+    \Au{Zakharova T.\,V., Karpov P.\,I., Bugaevskii~V.\,M.} 
+    Localization of the activity source in the inverse problem of 
+magnetoencephalography~/\!\!/ Comput. Math. Model., 2017.  Vol.~28. No.\,2.  P
+P.~148--157. doi: 10.1007\!/\!s10598-017-9353-6.
+    \bibitem{inverse_spher} 
+    \Au{Karpov P.\,I., Zakharova T.\,V.} 
+Magnetoencephalography inverse problem in the spheroid geometry~/\!\!/ 
+J.~Inverse Ill-Pose.~P., 2018 (in press). doi: 10.1515\!/\!jiip-2017-0101.
+    \bibitem {dataset} 
+    \Au{Henson R.\,N., Wakeman D.\,G., Litvak~V., Friston~K.\,J.} 
+    A~parametric empirical Bayesian framework for the EEG\!/\!MEG inverse 
+problem: Generative models for multi-subject and multi-modal integration~/\!\!/ 
+Front. Hum. Neurosci., 2011. Vol.~5. No.\,76. P.~1--16.
+doi: 10.3389\!/\!fnhum.2011.00076.
+    \bibitem{lagutin} 
+    \Au{Лагутин М.\,Б.} Наглядная математическая 
+статистика.~--- Москва: БИНОМ, 2013. 472~с.
+    \bibitem{korolev} 
+    \Au{Королев В.\,Ю.} Вероятностно-статистические методы 
+декомпозиции волатильности хаотических процессов.~--- М.: Изд-во 
+Московского ун-та, 2011. 510~с.
+    \bibitem{obs_fisher}  
+    \Au{Efron B., Hinkley~D.\,V.} Assessing the 
+accuracy of the maximum likelihood estimator: Observed versus expected Fisher 
+Information~/\!\!/ Biometrika, 1978. Vol.~65. No.\,3. P.~457--487.
+doi: 10.1093\!/\!biomet\!/\!65.3.457.
+        \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 30.03.18}}
+
+
+
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{EVALUATION OF~THE~WAVEFORM IN~THE~MAGNETOENCEFALOGRAPHIC
+SIGNALS\\ WITH NOISE IN~THE~FORM OF~A~FINITE NORMAL MIXTURE}
+
+\def\titkol{Valuation of~the~waveform in~the~magnetoencefalographic
+signals with noise}
+
+% in~the~form of~a~finite normal mixture}
+
+
+\def\aut{M.\,B.~Goncharenko}
+\def\autkol{M.\,B.~Goncharenko}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+Department of Mathematical Statistics, Faculty of Computational 
+Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University, 
+1-52~Leninskiye Gory, GSP-1, Moscow 119991, Russian Federation
+
+
+ \noindent
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2018 vol~28 no\,3}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2018   vol~28   no\,3
+\hfill \textbf{\thepage}}}
+
+
+
+
+\Abste{The article is devoted to the methods of evaluation of the waveform 
+(or activation pattern) that occurs in the signals of the subject in response 
+to an external stimulus during a~neurophysiological experiment. The peculiarity 
+of the mathematical model considered is the representation of noise 
+in terms of finite normal mixtures. This approach is more consistent with the 
+experimental data. Within the framework of the considered model, the analysis
+ of different waveform estimators is carried out and their statistical properties 
+ are investigated. Several new estimators that utilize features of noise 
+ distribution were proposed. The author proved higher efficiency of new estimators 
+ in terms of variance amount in relation to the method of moments 
+ which is widely used in studies. Despite the fact that the article focuses
+  on the application of estimators to the magnetoencephalographic  signals, 
+  the considered methods can be used in similar applications for any neurophysiological 
+  signals as well as in the most general setting~--- 
+for bias estimation of a~finite normal mixture.}
+
+\KWE{magnetoencephalography; signal processing; finite Gaussian mixtures; 
+point estimators; efficient estimators; 
+Fisher information; estimation of distribution bias}
+
+
+\DOI{10.14357\!/\!08696527180306}
+
+%\vspace*{-24pt}
+
+%\Ack
+%\noindent
+
+ 
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{9}
+
+\bibitem{1-gon}
+\Aue{Zakharova, T.\,V., S.\,Yu.~Nikiforov, M.\,B.~Goncharenko, M.\,A.~Dranitsyna, 
+G.\,A.~Klimov, M.\,Sh.~Khaziakhmetov, and N.\,V.~Chayanov.} 2012. Metody 
+obrabotki signalov dlya lokalizatsii nevospolnimykh oblastey golovnogo mozga 
+[Signal processing methods for localization of nonrenewable brain regions]. 
+\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics}
+22(2):157--175.
+\bibitem{2-gon}
+\Aue{Hamalainen, M., R.~Hari, R.\,J.~Ilmoniemi, J.~Knuutila, and O.\,V.~Lounasmaa.} 
+1993. Magnetoencephalography~--- theory, instrumentation, and 
+applications to noninvasive studies of the working human brain. \textit{Rev. 
+Mod. Phys.} 65(2):413--497. doi: 10.1103\!/ revmodphys.65.413.
+    \bibitem{3-gon}
+    \Aue{Goncharenko, M.\,B., and T.\,V.~Zakharova.} 2018. Veroyatnostnyy podkhod 
+    k~resheniyu obratnoy zadachi magnitoentselografii [Probabilistic approach 
+    to solving the magnetoencephalography inverse 
+problem]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of 
+Informatics} 28(1):35--52. doi: 10.14357\!/\!08696527180103.
+    \bibitem{4-gon}
+    \Aue{Zakharova, T.\,V., P.\,I.~Karpov, and V.\,M.~Bugaevskii.} 2017. 
+Localization of the activity source in the inverse problem of 
+magnetoencephalography. \textit{Comput. Math. Model.} 
+28(2):148--157. doi: 10.1007\!/\!s10598-017-9353-6.
+    \bibitem{5-gon}
+    \Aue{Karpov, P.\,I., and T.\,V.~Zakharova.} 2018 (in press). Magnetoencephalography inverse 
+problem in the spheroid geometry. \textit{J.~Inverse Ill-Pose.~P}.
+doi: 10.1515\!/\!jiip-2017-0101.
+    \bibitem{6-gon}
+    \Aue{Henson, R.\,N., D.\,C. Wakeman, V.~Litvak, and K.\,J.~Friston.} 2011. 
+    A~parametric empirical Bayesian framework for the EEG\!/\!MEG inverse problem: 
+Generative models for multi-subject and multi-modal integration. \textit{Front. 
+ Hum. Neurosci.} 5(76):1--16. doi: 10.3389\!/\!fnhum.2011.00076.
+    \bibitem{7-gon}
+    \Aue{Lagutin, M.\,B.} 2013. \textit{Naglyadnaya matematicheskaya statistika} 
+[Evident mathematical statistics]. Moscow: BINOM. 472~p.
+    \bibitem{8-gon}
+    \Aue{Korolev, V.\,Yu.} 2011. \textit{Veroyatnostno-statisticheskie metody 
+dekompozitsii volatil'nosti khaoticheskikh protsessov} 
+[Probabilistic-statistical methods of decomposition of volatility of chaotic 
+processes]. Moskow: Publishing House of Moscow University. 510~p.
+\bibitem{9-gon}
+\Aue{Efron, B., and D.\,V.~Hinkley.} 1978. Assessing the accuracy of the 
+maximum likelihood estimator: Observed versus expected Fisher Information. 
+\textit{Biometrika} 65(3): 457--487. doi: 10.1093\!/\!biomet\!/\!65.3.457.
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received March 30, 2018}} 
+
+
+
+\Contrl
+
+\noindent
+\textbf{Goncharenko Miroslav B.} (b.\ 1991)~--- 
+PhD student, Department of Mathematical Statistics, Faculty of Computational 
+Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University, 
+1-52~Leninskiye Gory, GSP-1, Moscow 119991, Russian Federation; 
+\mbox{goncharenko.mir@yandex.ru}
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

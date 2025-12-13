@@ -1,0 +1,612 @@
+\def\stat{razumchik}
+
+\def\tit{АЛГОРИТМ ГЛОБАЛЬНОЙ ОПТИМИЗАЦИИ НЕКОТОРЫХ СТАЦИОНАРНЫХ 
+ВРЕМЕННЫХ ХАРАКТЕРИСТИК ЗАДАНИЙ В~ЧАСТИЧНО НАБЛЮДАЕМЫХ 
+СТОХАСТИЧЕСКИХ СИСТЕМАХ С~ПАРАЛЛЕЛЬНЫМ ОБСЛУЖИВАНИЕМ$^*$}
+
+\def\titkol{Алгоритм глобальной оптимизации некоторых стационарных 
+временных характеристик
+%заданий в~частично наблюдаемых стохастических системах с~параллельным обслуживанием
+}
+
+\def\aut{М.\,Г.~Коновалов$^1$, Р.\,В.~Разумчик$^2$}
+
+\def\autkol{М.\,Г.~Коновалов, Р.\,В.~Разумчик}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Коновалов М.\,Г.}
+\index{Разумчик Р.\,В.}
+\index{Konovalov M.\,G.}
+\index{Razumchik R.\,V.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнялась с~использованием инфраструктуры Центра коллективного пользования 
+<<Высокопроизводительные вычисления и~большие данные>> (ЦКП <<Информатика>>) ФИЦ ИУ РАН 
+(г.~Москва).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{mkonovalov@ipiran.ru}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{rrazumchik@ipiran.ru}}
+
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+\vspace*{-12pt}
+
+
+\Abst{Рассматривается модель стохастической системы с~параллельным 
+(неоднородным) обслуживанием, единственным потоком независимых заданий, 
+централизованной диспетчеризацией и~частичным наблюдением, под которым 
+понимается отсутствие в~модели обратной связи. Диспетчеру для принятия решения 
+доступна только априорная информация о характеристиках системы (включая ее 
+исходное состояние) и~информация о~совершенных им действиях, включая моменты, в~которые эти действия совершались. Предложен (параметрический) алгоритм 
+глобальной оптимизации стационарного среднего времени пребывания или 
+стационарного среднего времени ожидания заданием начала обслуживания, 
+применимый в~общих предположениях о распределениях времен между поступлениями 
+заданий, их размерах и~дисциплинах обслуживания. В~основе алгоритма лежит 
+предположение о~том, что оптимального значения целевой функции можно достичь 
+с~произвольной точ\-ностью с~по\-мощью диспетчеризации конечной глубины.} 
+
+\KW{системы с~параллельным обслуживанием; диспетчеризация; управ\-ле\-ние при 
+неполном наблюдении; программное управ\-ление}
+
+\DOI{10.14357\!/\!08696527230405}{PQAIRH}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-16pt}
+
+\section{Введение}
+
+\vspace*{-2pt}
+
+  Рассматриваемая в~статье задача относится к~известному направлению 
+теоретических и~прикладных исследований, цель которых~--- повышение 
+качества использования потенциальных возможностей, заложенных или 
+закладываемых в~стохастические системы распределенных вычислений. 
+Приемы повышения качества их работы довольно разнообразны 
+(распараллеливание, увеличение уровня иерархий, смена дисциплин 
+обслуживания и~т.\,п.). Однако из-за технических особенностей наиболее 
+действенные приемы могут оказаться неприменимы, и~показатели 
+производительности остаются на уровнях, значительно от\-ли\-ча\-ющих\-ся от 
+максимально возможных. Такой особенностью является частичная 
+наблюдаемость, под которой в~этой статье понимается полное отсутствие 
+ка\-кой-ли\-бо информации в~реальном времени о ее состоянии или, другими 
+словами, невозможность наблюдения ее состояния после 
+запуска\footnote{При этом исходное состояние и~вообще вся априорная информация 
+о~характеристиках системы считаются известными в~точности.}. 
+  
+  \addtocounter{footnote}{1}
+Примером реально функционирующих систем распределенных вычислений 
+с~частичной наблюдаемостью служат системы добровольных вычислений\footnote{См.\ 
+таксономию, например, в~[1].}; однако, вообще говоря, любая система распределенных 
+вычислений, в~которой планировщик ограничен в~своих решениях простейшей 
+рандомизированной или программной стратегией\footnote{Подробное описание 
+стратегий приведено, например, в~[2].}, может рассматриваться как частично 
+наблюдаемая система в~указанном смысле. Центральное место в~процессе 
+оперативного управ\-ле\-ния системами распределенных вычислений занимает проблема 
+оптимальной диспетчеризации, т.\,е.\ оптимального управления выбором ресурсов для 
+поступающих заданий. Даже если ограничиться простейшей из содержательных 
+моделей\footnote{Имея в~виду системы добровольных вычислений, которые по-преж\-не\-му 
+остаются предметом научных исследований~[3--5].}, что и~сделано в~данной статье (см.\ разд.~2), 
+то существующий в~литературе арсенал подходов не дает ответа на вопрос, чему равен 
+оптимум\footnote{Здесь имеются в~виду классические целевые функционалы и~предполагается, что 
+сис\-те\-ма гетерогенна (например, производительности процессоров различны). Более подробно см.~[6] 
+и~разд.~1 в~[2].} при рассматриваемых жестких 
+ограничениях в~наблюдаемости.
+
+ В~данной статье предложен 
+алгоритм\footnote{Относящийся к~алгоритмам первого порядка.} (см.\ разд.~3), позволяющий 
+находить ответ на этот вопрос, когда целевой функцией служит стационарное среднее 
+время пребывания задания в~системе или стационарное среднее время ожидания начала 
+обслуживания. В~его основе лежит предположение\footnote{ Для определенного класса 
+управляемых регенерируемых объектов аналогичное утверждение доказано (см.~\cite{7-raz}.)} о~том, 
+что как угодно близко к~оптимуму можно приблизиться путем применения, начиная 
+с~некоторого момента, одного и~того же правила конечной глубины (см.~(1)). Алгоритм 
+предназначен для использования на компьютерной имитационной модели, возможной 
+благодаря наличию точной априорной информации о характеристиках системы, 
+и~представляет собой последовательность изменяющихся во времени правил 
+управления. Результатом его работы является диспетчеризация\footnote{Своя для каждого 
+набора конкретных значений параметров модели.} конечной глубины, которая может быть 
+реализована в~программном обеспечении планировщика реальной сис\-те\-мы и~не 
+требует ка\-ких-ли\-бо аппаратных изменений. Хотя в~процессе поиска оптимума 
+алгоритм не требует исследования всех вариантов предыстории, его трудоемкость остается 
+высокой из-за необходимости работы с~несчетными множествами. 
+
+\section{Описание модели }
+
+  Рассматривается совокупность из $K$ параллельно и~независимо друг от 
+друга работающих процессоров постоянной производительности $v_1, 
+\ldots , v_K$, каждый с~очередью неограниченной емкости для хранения 
+заданий. Дисциплина обслуживания очереди значения не имеет, но 
+считается известной и~принадлежащей классу консервативных дисциплин. 
+Функция распределения~$F$ входящего потока, равно как и~функция 
+распределения~$G$ размера заданий считаются известными. 
+Предполагается, что задания поступают по одному к~единственному 
+диспетчеру, который мгновенно выбирает номер процессора, не имея 
+информации ни о~размерах заданий, ни о загруженности процессоров 
+и~очередей в~них. Однако диспетчер может запоминать все свои 
+предыдущие решения, а~также моменты поступления заданий. 
+  
+  Будем обозначать через $t(n)$ момент поступления $n$-го по счету 
+задания. В~эти моменты диспетчеру нужно принять решение о номере 
+процессора. Положим
+ $\theta(n)\hm= t(n+1)\hm- t(n)$.
+Пусть $x_i(n)$~--- 
+длина очереди на процессоре~$i$ в~момент~$t(n)$, $\xi(n)$~--- длина 
+задания, поступившего в~момент~$t(n)$, а~$y(n)\hm\in \{1,\ \ldots , K\}$~---  
+управ\-ле\-ние в~момент $t(n)$. Исходя из возможностей наблюдения 
+и~име\-ющей\-ся априорной информации, $y(n)$ при каждом~$n$ можно 
+считать случайной функцией, зависящей от предыстории управ\-ле\-ний 
+и~промежутков между поступлениями заданий, причем эта функция 
+может быть построена с~по\-мощью распределений~$F$ и~$G$. Пусть 
+$w(n)$~--- среднее время пребывания (или ожидания начала 
+обслуживания) задания, поступившего в~момент~$t(n)$. Целью  
+управ\-ле\-ния ставится минимизация стационарного среднего\footnote{Для 
+моделей рассматриваемого типа вопрос о существовании конечного предела решается, как 
+правило, достаточно легко и~связан с~тем условием, чтобы загрузка системы была меньше 
+единицы.} 
+$$\lim_{N\to\infty} \fr{1}{N} \sum_{n=1}^N w(n)\,.$$ 
+  
+\section{Структура правил конечной глубины}
+
+  Из данного в~предыдущем разделе описания следует, что 
+рас\-смат\-ри\-ва\-емый процесс диспетчеризации представим в~виде 
+управляемой марковской цепи   с~(одношаговыми) 
+доходами~$g(n)$. Зафиксируем натуральное число~$h$ и~введем 
+обозначения:
+  $$
+  y^h=\left( y_1, \ldots , y_n\right);\enskip \theta^h=\left(\theta_1, \ldots , 
+\theta_h\right),\enskip y_i \in \{1,\ldots , K\}\,,\ 0< \theta_i<\infty\,.
+  $$
+  
+  Будем говорить, что цепь имеет в~момент~$t(n)$ предысторию $(y^h, 
+\theta^h)$, если
+  $$
+  y(n-h) =y_h\,;\  \theta(n-h)=\theta_h;\enskip\ldots ;\enskip y(n-1)=y_1;\ \theta(n-
+1)=\theta_1\,.
+  $$
+  
+  Определим управление $y(n)$ с~по\-мощью условного распределения 
+$\sigma(y; y^h,\theta^h)$:
+  \begin{multline*}
+  \sigma(n,k; y^h,\theta^h)=\mathrm{Pr}\left\{ y(n)=k\vert y(n-h)=y_h,\ldots, 
+y(n-1)=y_1;
+\right.\\
+  \left.{}\theta(n-h)=\theta_h,\ldots , \theta(n-1)=\theta_1\right\},
+  \end{multline*}
+где в~условии стоит вся наблюдаемая предыстория до момента $t(n-h)$\linebreak 
+включительно. Таким образом, функция $\sigma(y;y^h,\theta^h)$ служит 
+правилом диспетчеризации в~момент~$t(n)$, которое задает вероятность 
+направить задание на сервер с~номером $k\hm\in \{1,\ldots , K\}$ при 
+наличии предысто\-рии $(y^h, \theta^h)$. 
+Последовательность\footnote{В~которой первые $h$ значений (т.\,е.\ правил, 
+управлений) произвольны.} вероятностных распределений 
+$\left\{ (\sigma(n,1;y^h,\theta^h),\ldots , \sigma(n,K;y^h,\theta^h)) , n\hm= 
+h\hm+1, h\hm+2,\ldots \right\}$ является однородной диспетчеризацией 
+конечной глубины. 
+
+  Обозначим через $\Omega=\{\omega:\omega=(y^h,\theta^h)\}$ множество 
+всех наборов $(y^h,\theta^h)$. Пусть задано конечное разбиение 
+множества~$\Omega$ на $d\hm\geq 1$ непересекающихся подмножеств 
+$\{\Omega_1, \ldots , \Omega_d\}$. Рассмотрим ку\-соч\-но-по\-сто\-ян\-ные 
+диспетчеризации глубиной~$h$ вида
+  \begin{equation}
+  \sigma(k;\omega) =\sum\limits^d_{i=1} p_i(k)I_i(\omega),\enskip k\in 
+\{1,\ldots , K\},\ \omega\in\Omega\,,
+  \label{e1-raz}
+  \end{equation}
+где $(p_i(1),\ldots , p_i(K))$~--- некоторое вероятностное распределение; 
+$I_i(\omega)$~--- индикаторная функция множества~$\Omega_i$. 
+Применение правила~(1) в~момент, когда предыстория равнялась 
+$\omega\hm\in \Omega_i$, означает, что задание направляется на сервер 
+с~номером~$k$ с~вероятностью~$p_i(k)$. 
+
+\section{Алгоритм поиска диспетчеризации заданной конечной 
+глубины}
+
+  В основе алгоритма поиска кусочно-постоянной диспетчеризации 
+$\sigma(k;\omega)$ лежит параллельное решение двух задач: поиска 
+подходящих семейств распределений $(p_i(1),\ldots , p_i(K))$ и~правильной 
+дискретизации множества~$\Omega$. 
+  
+  Следуя~\cite{7-raz}, первая задача может быть решена однотипно для 
+всех~$i$ при зафиксированном разбиении $\{\Omega_1, \ldots , 
+\Omega_d\}$. Пусть~$i$ фиксировано, $k\hm\in\{1,\ldots ,K\}$ и~пусть 
+$t(n_m)$, $m\hm= 1,2,\ldots$,~--- моменты принятия решения, в~которые 
+происходило событие
+  $$
+\{\mbox{{предыстория\ содержится\ в\ множестве\ $\Omega_i$\ и\ 
+выбирается\ сервер\ с\ номером}}\ k\}.
+$$
+  
+  Определим величину $v(k,m)$ как сумму~$L$~одношаговых доходов, 
+полученных в~моменты $t(n_m), t({n_m}+1),\ldots , t(n_m+L-1)$, и~положим
+  $$
+  V(k,m)=M^{-1}(v(k,D-M+1) +\cdots+ v(k,m)),
+  $$
+где $L$ и~$M$~--- некоторые натуральные числа. Величины $V(k,m)$ 
+играют роль оценок для компоненты~$p_i(k)$ распределения $(p_i(1),\ldots 
+, p_i(K))$. Пересчет распределения осуществляется в~моменты $t(n_m)$ по 
+формуле:
+$$
+p_i(k)=\prod_\delta (p_i(k) -\alpha V(k,m)),\ \enskip k\in \{1,\ldots , 
+K\},
+$$
+где $\alpha>0$ и~$\delta>0$; $\prod_\delta$~--- оператор проектирования 
+на множество 
+$\{ (p_i(1),\ldots , p_i(K)): \sum\nolimits^K_{k=1} 
+p_i(k)=1, p_i(k)\hm\geq \delta\}$. 
+  
+  Для описания решения второй задачи~--- построения разбиения 
+множества~$\Omega$~--- введем следующее отношение порядка ($\prec$). 
+Зафиксируем $\varepsilon\hm>0$. В~случае предыстории глубиной 
+$h\hm=1$ для двух элементов $\omega_1\hm= (y_1,\theta_1)\hm\in \Omega$ и~$\omega_2\hm= (y_2,\theta_2)\hm\in \Omega$ будем считать, что 
+$\omega_1\hm\prec \omega_2$, если либо $y_1\hm<y_2$, либо $y_1\hm= 
+y_2$ и~$\theta_1\hm< \theta_2\hm-\varepsilon$. Если же выполнены условия 
+$y_1\hm= y_2$ и~$\vert\theta_1\hm- \theta_2\vert \hm<\varepsilon$, то будем 
+писать $\chi_1\hm\approx \chi_2$. При предыстории глубиной $h\hm=2$ 
+для двух элементов $\omega_1\hm= \left(\omega_1^1, 
+\omega_1^2\right)\hm\in \Omega\times\Omega$ и~$\omega_2\hm= 
+\left(\omega_2^1,\omega_2^2\right)\hm\in \Omega\times\Omega$ будем 
+считать, что $\omega_1\hm\prec\omega_2$, если либо $\omega_1^1\hm\prec 
+\omega_2^1$, либо $\omega_1^1\hm\approx \omega_2^1$ 
+и~$\omega_1^2\hm\prec \omega_2^2$. Если же $\omega_1^1\hm\approx 
+\omega_2^1$ и~$\omega_1^2\hm\approx \omega_2^2$, то будем писать 
+$\omega_1\hm\approx\omega_2$. На случай произвольной глубины 
+предыстории отношение~$\prec$ распространяется по индукции. 
+  
+Динамическую структуру разбиения будем отображать\footnote{Отметим, что похожий прием 
+использовался в~\cite{8-raz}.} с~по\-мощью на\-прав\-лен\-но\-го дерева с~переменным множеством вершин 
+и~дуг. Рассмотрим древовидный двоичный направленный связный граф~$\mathcal{G}$, все узлы которого 
+могут иметь исходящие дуги, которые ведут к~нижележащим узлам, <<левому>> и~<<правому>>. Одна 
+или обе такие дуги (и соответствующие узлы) могут отсутствовать. Каждому узлу соответствует 
+<<метка>>~--- элемент из множества~$\Omega$. Между метками узлов установлена следующая 
+закономерность. Пусть $\psi$, $\psi_l$ и $\psi_r$~--- метки соответственно некоторого узла, его левого 
+узла и~его правого узла\footnote{Если таковые имеются.}. Тогда выполняются <<неравенства>> 
+$\psi_l\prec \psi\ \prec \psi_r$. Граф~$\mathcal{G}$ позволяет однозначно сопоставить произвольному 
+элементу $\omega\hm\in \Omega$ некоторый его узел $\varphi_{\mathcal{G}}(\omega)$. 
+Пусть в~графе есть по крайней мере один (корневой) узел. Функция 
+$\varphi_{\mathcal{G}}(\chi)$ определяется следующим алгоритмом.
+  \begin{description}
+\item[Шаг~1.] Выбирается корневой узел графа.
+  \item[Шаг~2.] Определяется метка~$\psi$ выбранного узла. 
+  \item[Шаг~3.] Если $\omega \approx \psi$, то выбранный узел объявляется 
+значением функции $\varphi_{\mathcal{G}}(\omega)$ и~алгоритм 
+заканчивается. Если $\omega\prec\psi$ и~если левая дуга существует, то 
+выбирается левый узел и~повторяется шаг~2. Если левая дуга отсутствует, 
+то она добавляется в~граф вместе с~новым узлом, для которого назначается 
+метка~$\omega$. Новый узел объявляется значением функции и~алгоритм 
+заканчивается. Если $\psi\prec\omega$ и~если правая дуга существует, то 
+выбирается правый узел и~повторяется шаг~2. Если правая дуга 
+отсутствует, то она добавляется в~граф вместе с~новым узлом, для которого 
+назначается метка~$\omega$. Новый узел объявляется значением функции 
+$\varphi_{\mathcal{G}}(\omega)$ и~алгоритм заканчивается.
+\end{description}
+  
+  Нетрудно видеть, что разбиение множества~$\Omega$, задаваемое парой 
+$(\mathcal{G},\varphi_{\mathcal{G}})$, представляется в~виде набора 
+подмножеств $\{\Omega_g, g\hm\in \mathcal{G}\}$. Таким образом, 
+в~моменты $t(h\hm+1), t(h\hm+2),\ldots$ имеется граф~$\mathcal{G}$, 
+с~каждым узлом~$g$ которого ассоциирован вектор $(p_g(1), \ldots , 
+p_g(K))$. Если~$\omega$~--- предыстория в~момент~$t(n)$, $n\hm> h$, 
+и~$g\hm= \varphi_{\mathcal{G}}(\omega)$, то управление 
+в~момент\footnote{Напомним, что первые~$h$~управлений произвольны.} $t(n)$ 
+выбирается с~помощью вектора $(p_g(1),\ldots , p_g(K))$.
+  
+\section{Некоторые численные результаты}
+  
+  Остановимся лишь на одном примере, дающем первое представление о 
+качестве новой диспетчеризации. Рассмотрим полностью марковскую 
+модель из $K\hm=2$ процессоров и~очередями, обслуживаемыми по 
+дисциплине FIFO (first in, first out). В~таблице приведены значения стационарного среднего 
+времени пребывания задания в~модели при диспетчеризации по новому 
+алгоритму, а~также при лучших из известных диспетчеризаций для 
+частично наблюдаемых сис\-тем с~параллельным 
+обслуживанием\footnote{Подробное описание стратегий см., например, в~[1; 4, разд.~5].}: рандомизированной (далее~--- RND), \linebreak
+
+\begin{table}[h!]\small
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\multicolumn{6}{p{85mm}}{Стационарное среднее время пребывания задания в~модели с~двумя 
+процессорами при различных диспетчеризациях. Производительности процессоров 
+$v_1\hm= 2/3$, $v_2\hm= 1/3$, входящий поток~--- пуассоновский, распределение 
+размера заданий~--- экспоненциальное со средним~1}\\
+\multicolumn{6}{c}{\ }\\[-2pt]
+\hline
+&\multicolumn{5}{c|}{Загрузка системы}\\
+\cline{2-6}
+\multicolumn{1}{|c|}{\raisebox{6pt}[0pt][0pt]{Алгоритм}}&0,1&0,3&0,5&0,7&0,9\\
+\hline
+RND&1,76&2,58&3,77&6,39&19,4\\
+PROG&1,76&2,40&3,22&5,17&15,0\\
+AA&1,74&2,28&3,14&5,11&14,9\\
+Алгоритм из разд.~4&1,74&2,28&3,14&5,12&14,9\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\addtocounter{footnote}{-2}
+\noindent
+программной\footnote{Алгоритм SG в~\cite[с.~184]{9-raz} (см.\ также описание в~\cite{10-raz}).} (далее~--- PROG), диспетчеризации по 
+предыстории\footnote{Алгоритм~\cite{11-raz}.} (далее~--- AA). 
+
+\addtocounter{footnote}{2}
+  Указанные в~таблице диспетчеризации~--- параметрические: для RND, 
+PROG и~AA использовались\footnote{Полученные либо путем решения 
+оптимизационной задачи, либо путем оптимизации на имитируемых траекториях.} 
+оптимальные значения параметров. Что касается предложенного 
+алгоритма, то значения его параметров выбирались из общих соображений 
+достаточно произвольно; например, глубина памяти~$h$ варьировалась от 
+нескольких единиц (при низкой загрузке) до нескольких десятков (при 
+высокой загрузке). Как видно из таблицы, такого подхода к~выбору 
+значений неизвестных параметров достаточно, чтобы новый алгоритм 
+оптимизировал целевую функцию не хуже\footnote{Наблюдаемое расхождение 
+при загрузке~0,7 объясняется тем, что параметры предложенного алгоритма не подвергались 
+целенаправленной оптимизации.} лучшего из ранее известных алгоритмов~--- 
+алгоритма АА, основанного на совершенно иной идее. 
+
+\section{Заключение}
+  
+  Несмотря на то что накопленный объем знаний по аналитическим 
+моделям диспетчеризации (маршрутизации, распределения ресурсов) 
+огромен, остаются относительно простые, но важные случаи, в~которых 
+вопросы оптимизации не получили должного разрешения. Данная статья 
+посвящена задаче поиска глобального оптимума стационарного среднего 
+времени пребывания или ожидания начала обслуживания в~модели 
+частично наблюдаемых систем с~параллельным обслуживанием, в~которых 
+диспетчеризация осуществляется централизованно. Предложенный 
+алгоритм (при сделанном в~разд.~1 предложении) реализует 
+принципиально общий подход к~решению рассматриваемого класса задач. 
+Однако на пути его реализации есть серьезный барьер~--- организация 
+вычислительной процедуры. Его преодоление и~численное нахождение до 
+сих пор неизвестных оптимумов представляется заключительным шагом 
+в~цикле исследований проблемы диспетчеризации без обратной связи.
+  
+  Важно отметить, что полученный результат справедлив в~самых общих 
+предположениях о~входящем потоке, числе процессоров и~дисциплинах 
+обслуживания очередей. Ввиду этого он (в~числе прочих алгоритмов 
+диспетчеризации по предыстории), будучи программно реализован 
+в~существующих планировщиках центров коллективного пользования, 
+гарантированно позволит повысить эффективность функционирования 
+системы, не требуя изменений ее структуры и~состава. 
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-raz}
+\Au{Mengistu T.\,M., Che~D.} Survey and taxonomy of volunteer computing~/\!\!/ ACM 
+Comput. Surv., 2019. Vol.~52. No.\,3. Art.~59. 35 p. doi: 10.1145\!/\!3320073.
+
+\bibitem{2-raz}
+\Au{Коновалов М.\,Г., Разумчик~Р.\,В.} Диспетчеризация в~частично на\-блю\-да\-емых 
+стохастических системах конечной емкости с~параллельным обслуживанием~/\!\!/ 
+Сис\-те\-мы и~средства информатики, 2023. Т.~33. №\,3. С.~29--47. doi: 
+10.14357\!/ 08696527230303. EDN: XUVVNH.
+
+\bibitem{3-raz}
+\Au{Albertian A., Kurochkin~I., Vatutin~E.} Improving the heterogeneous computing node 
+performance of the desktop grid when searching for orthogonal diagonal latin squares~/\!\!/ 
+High-performance computing systems and technologies in scientific research, 
+automation of control and production~/ Eds. V.~Jordan, I.~Tarasov,  V.~Faerman.~--- 
+Communications in computer and information science ser.~--- Cham: Springer, 2022. Vol.~1526. 
+P.~161--173. doi: 10.1007/978-3-030-94141-3\_13.
+\bibitem{4-raz}
+\Au{Lakshmi L.} Resource and history-aware IoT task scheduling in volunteer assisted Fog 
+computing~/\!\!/  Conference (International) on Smart Applications, Communications 
+and Networking Proceedings.~--- Piscataway, NJ, USA: IEEE, 2022. Art.~9993995. 6 p. doi: 
+10.1109\!/\!SmartNets55823.2022.9993995.
+\bibitem{5-raz}
+\Au{Gonzalo S., Marqu\`{e}s~J., Garc\'{\i}a-Villoria~A., Panadero~J., Calvet~L.} CLARA: 
+A~novel clustering-based resource-allocation mechanism for exploiting low-availability 
+complementarities of voluntarily contributed nodes~/\!\!/ Future Gener. Comp. 
+Sy., 2022. Vol.~128. P.~248--264. doi: 10.1016\!/\!j.future.2021.10.002.
+\bibitem{6-raz}
+\Au{Hordijk W., Hordijk~A., Heidergott~B.} A~genetic algorithm for finding good balanced 
+sequences in a customer assignment problem with no state information~/\!\!/ Asia Pac. J. 
+Oper. Res., 2015. Vol.~32. No.\,3. Art. 1550015. 20 p. doi: 10.1142\!/ S0217595915500153.
+\bibitem{7-raz}
+\Au{Коновалов М.\,Г.} Методы адаптивной обработки информации и~их  
+приложения.~--- М.: ИПИ РАН, 2007. 212~с.
+\bibitem{8-raz}
+\Au{Коновалов М.\,Г., Разумчик Р.\,В.} Диспетчеризация в~системе с~параллельным 
+обслуживанием с~помощью распределенного градиентного управления марковской 
+цепью~/\!\!/ Информатика и~её применения, 2021. Т.~15. Вып.~3. С.~41--50. doi: 
+10.14357\!/\!19922264210306.
+\bibitem{9-raz}
+\Au{Hordijk A., van der Laan~D.} Periodic routing to parallel queues and billiard 
+sequences~/\!\!/ Math. Method. Oper. Res., 2004. Vol.~59. No.\,2.  
+P.~173--192. doi: 10.1007\!/\!s001860300322.
+\bibitem{10-raz}
+\Au{Konovalov M., Razumchik~R.} Minimizing mean response time in batch-arrival non-
+observable systems with single-server FIFO queues operating in parallel~/\!\!/ 
+Communications ECMS, 2021. Vol.~35. No.\,1. P.~272--278. doi: 10.7148\!/\!2021-0272.
+\bibitem{11-raz}
+\Au{Konovalov M., Razumchik~R.} Improving routing decisions in parallel non-observable 
+queues~/\!\!/ Computing, 2018. Vol.~100. No.\,10. P.~1059--1079. doi: 10.1007\!/\!s00607-018-0598-5.
+
+   \end{thebibliography}
+} }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.09.23}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+
+
+%\hrule
+
+%\vspace*{8pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+\def\tit{ALGORITHM FOR GLOBAL OPTIMIZATION OF~TIME-RELATED STATIONARY 
+CHARACTERISTICS OF~JOBS IN~NONOBSERVABLE PARALLEL QUEUES}
+
+
+
+\def\titkol{Algorithm for global optimization of~time-related stationary 
+characteristics of~jobs% in~nonobservable parallel queues
+}
+
+\def\aut{M.\,G.~Konovalov and~R.\,V.~Razumchik}
+
+\def\autkol{M.\,G.~Konovalov and~R.\,V.~Razumchik}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+Federal Research Center ``Computer Science and Control'' of the Russian Academy
+of Sciences,   44-2~Vavilov Str., Moscow 119133, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2023 vol~33 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2023 vol~33 no\,4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+\Abste{Consideration is given to the model of a stochastic system comprised of a finite number of parallel 
+independently running queues with heterogeneous servers, a~single flow of independent jobs, and a~single 
+dispatcher which possesses full \textit{a priori} information about the system's parameters and its initial state. At any 
+moment, the dispatcher does not have any feedback from the queues but can memorize its previous routing 
+decisions and time instants at which the decisions were made. Under quite general assumptions about the jobs' 
+interarrival and jobs' size distributions and queues' scheduling, the (policy gradient) algorithm is proposed
+which allows one to locate the global optimum of the job's stationary mean sojourn or waiting time. The 
+algorithm is based on the assumption that one can reach the neighborhood of the global optimum by applying 
+the dispatching policy with a~finite memory.}
+
+\KWE{parallel service systems; dispatching; control under incomplete observations; program control}
+
+
+
+
+\DOI{10.14357\!/\!08696527230405}{PQAIRH}  
+
+\vspace*{-10pt}
+
+
+\Ack
+
+\vspace*{-3pt}
+
+\noindent
+The research was carried out using the infrastructure of the Shared Research Facilities ``High 
+Performance Computing and Big Data'' (CKP ``Informatics'') of FRC CSC RAS (Moscow).
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-raz-1}
+\Aue{Mengistu, T.\,M., and D.~Che.} 2019. Survey and taxonomy of volunteer computing. 
+\textit{ACM Comput. Surv.} 52(3):59. 35~p. doi: 10.1145\!/\!3320073.
+\bibitem{2-raz-1}
+\Aue{Konovalov, M., and R. Razumchik. 2023. Dispetcherizatsiya v chastichno na\-blyu\-da\-emykh stokhasticheskikh sistemakh konechnoy emkosti
+s parallel'nym obsluzhivaniem [Dispatching in nonobservable parallel queues with 
+finite capacities]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics}  
+33(3):29--47. doi: 10.14357\!/\!08696527230303. EDN: XUVVNH.
+\bibitem{3-raz-1}
+\Aue{Albertian, A., I.~Kurochkin, and E.~Vatutin.} 2022. Improving the heterogeneous computing 
+node performance of the desktop grid when searching for orthogonal diagonal latin squares. 
+\textit{High-performance computing systems and technologies in scientific research, 
+automation of control and production}. Eds. V.~Jordan, I.~Tarasov, and V.~Faerman. 
+Communications in computer and information science ser. Cham: Springer. 1526:161--173. doi: 
+10.1007\!/\!978-3-030-94141-3\_13.
+\bibitem{4-raz-1}
+\Aue{Lakshmi, L.} 2022. Resource and history-aware IoT task scheduling in volunteer assisted Fog 
+computing. \textit{Conference (International) on Smart Applications, Communications and 
+Networking Proceedings}. Piscataway, NJ: IEEE. Art. 9993995. 6~p. doi: 10.1109\!/\!SmartNets55823.2022.9993995.
+\bibitem{5-raz-1}
+\Aue{Gonzalo, S., J.~Marqu\`{e}s, A.~Garc\{\i}a-Villoria, J.~Panadero, and L.~Calvet.} 2022. 
+CLARA: A~novel clustering-based resource-allocation mechanism for exploiting low-availability 
+complementarities of voluntarily contributed nodes. \textit{Future Gener. Comp. Sy.} 
+128:248--264. doi: 10.1016\!/\!j.future.2021.10.002.
+\bibitem{6-raz-1}
+\Aue{Hordijk, W., A.~Hordijk, and B.~Heidergott.} 2015. A~genetic algorithm for finding good 
+balanced sequences in a customer assignment problem with no state information. \textit{Asia Pac. 
+J. Oper. Res.} 32(3):1550015. 20~p. doi: 10.1142\!/\!S0217595915500153.
+\bibitem{7-raz-1}
+\Aue{Konovalov, M.\,G.} 2007. \textit{Metody adaptivnoy obrabotki informatsii i~ikh prilozheniya} 
+[Methods of adaptive information processing and their applications]. Moscow: IPI RAN. 212~p.
+\bibitem{8-raz-1}
+\Aue{Konovalov, M., and R.~Razumchik.} 2021. Dispetcherizatsiya v sisteme s parallel'nym obsluzhivaniem s pomoshch'yu raspredelennogo gradientnogo upravleniya markovskoy tsep'yu
+[Routing jobs to heterogeneous parallel queues using 
+distributed policy gradient algorithm]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.}  
+15(3):41--50. doi: 10.14357\!/\!19922264210306.
+\bibitem{9-raz-1}
+\Aue{Hordijk, A., and D.\,A.~van der Laan.} 2004. Periodic routing to parallel queues and billiard 
+sequences. \textit{ Math. Method. Oper. Res.} 59(2):173--192. doi: 10.1007\!/\!s001860300322.
+\bibitem{10-raz-1}
+\Aue{Konovalov, M., and R.~Razumchik.} 2021. Minimizing mean response time in batch-arrival  
+non-observable systems with single-server FIFO queues operating in parallel. \textit{Communications  
+ECMS} 35(1):272--278. doi: 10.7148\!/\!2021-0272.
+\bibitem{11-raz-1}
+\Aue{Konovalov, M., and R.~Razumchik.} 2018. Improving routing decisions in parallel non-observable queues. \textit{Computing} 100(10):1059--1079. doi: 10.1007\!/\!s00607-018-0598-5.
+
+\end{thebibliography}
+} }
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received September 15, 2023}} 
+
+\vspace*{-14pt} 
+
+\Contr
+
+\vspace*{-3pt}
+
+\noindent
+\textbf{Konovalov Mikhail G.} (b.\ 1950)~--- Doctor of Science in technology, principal scientist, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences,  
+44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{mkonovalov@ipiran.ru}
+
+\vspace*{3pt}
+
+
+\noindent
+\textbf{Razumchik Rostislav V.} (b.\ 1984)~--- Doctor of Science in physics and mathematics, 
+Deputy Director, Federal Research Center ``Computer Science and Control'' of the Russian Academy 
+of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{rrazumchik@ipiran.ru}
+
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}    

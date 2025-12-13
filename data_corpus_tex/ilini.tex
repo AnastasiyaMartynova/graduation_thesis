@@ -1,0 +1,679 @@
+
+\def\stat{ilini}
+
+\def\tit{МЕТОД ЦЕЛЕВОГО ПЕРЕМЕЩЕНИЯ РЕШЕНИЯ В~ТЕХНОЛОГИЯХ СИТУАЦИОННОГО 
+УПРАВЛЕНИЯ}
+
+\def\titkol{Метод целевого перемещения решения в~технологиях ситуационного 
+управления}
+
+\def\aut{А.\,В.~Ильин$^1$, В.\,Д.~Ильин$^2$}
+
+\def\autkol{А.\,В.~Ильин, В.\,Д.~Ильин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Ильин А.\,В.}
+\index{Ильин В.\,Д.}
+\index{Ilyin A.\,V.}
+\index{Ilyin V.\,D.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Результаты 
+%получены при выполнении на\-уч\-но-ис\-сле\-до\-ва\-тель\-ской работы 
+%<<Моделирование социальных, экономических и~экологических 
+%процессов>> (№\,0063-2016-0005) в~соответствии 
+%с~государственным заданием ФАНО России для Федерального 
+%исследовательского центра <<Информатика и~управ\-ле\-ние>> РАН.}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Государственный научно-исследовательской институт авиационных систем,\\ \mbox{ilyin@res-plan.com}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управ\-ле\-ние>> Российской академии наук, 
+\mbox{vdilyin@yandex.ru}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-10pt} 
+  
+
+
+
+\Abst{Рассмотрена обновленная технология интерактивного решения линейных задач 
+ситуационного управления методом целевого перемещения решения. Формулировки задач
+ и~требования к~качеству решения формируются на основе анализа портретов целевой 
+ и~достигнутой ситуации. Метод целевого перемещения решения (в~отличие от методов 
+линейного программирования) позволяет получить требуемый результат и~при 
+несовместности системы ограничений. Интерактивность метода предоставляет 
+возможность эксперту на каждом шаге поиска решения изменять формулировку задачи, 
+исходя из его представлений о~реализуемости и~эффективности. Технология 
+ориентирована на реализацию в~виде он\-лайн-сер\-ви\-сов.} 
+
+\KW{ситуационное управление; линейные задачи ситуационного управ\-ле\-ния; 
+распределение ресурсов; портрет ситуации; метод целевого перемещения решения;  
+он\-лайн-сер\-ви\-сы}
+
+\DOI{10.14357\!/\!08696527220412}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-16pt}
+
+\section{Введение}
+
+\vspace*{-2pt}
+
+  В наши дни интенсивного развития облачных вычислений  
+и~ин\-тер\-нет-сер\-ви\-сов различного назначения (навигационных, 
+образовательных и~др.) внимание исследователей и~разработчиков 
+информационных технологий привлечено к~идее комплексной автоматизации 
+различных видов деятельности на основе ин\-тер\-нет-сер\-ви\-сов. С~середины 
+1990-х~гг.\ значение успешной реализации этой идеи [получившей название 
+\textit{digital economy} (цифровая экономика)] неуклонно рас\-тет 
+и~связывается с~конкурентоспособностью корпораций и~стран~[1--3]. 
+В~2017~г.\ в~нашей стране утверждена программа <<Цифровая 
+экономика Российской Федерации>>~[4]. 
+  
+  Увеличиваются темпы применения технологий M2M  
+(Machine-to-Machine)~[5, 6], IoT (Internet of Things)~[7, 8] и~IoS (Internet of 
+Services)~[9--12], которые становятся эффективным средством циф\-ро\-ви\-за\-ции 
+различных областей де\-я\-тель\-ности. Растет число M2M-, IoT- и~IoS-применений 
+в~энергетике, промышленности, сельском хозяйстве, здравоохранении и~других 
+сферах деятельности. Темпы распространения технологий M2M, IoT и~IoS во 
+многом определяются снижением сто\-и\-мости вы\-чис\-ли\-тел\-ьных устройств 
+и~передачи данных, рос\-том до\-ступ\-ности гиб\-ких сис\-тем хранения и~анализа 
+данных (благодаря развитию <<облачных>> технологий и~технологий 
+<<больших данных>>). 
+  
+  Постоянно актуальной остается проблема методологического обеспечения 
+технологий решения задач ситуационного управ\-ле\-ния слож\-ны\-ми  
+че\-ло\-ве\-ко-ма\-шин\-ны\-ми сис\-те\-ма\-ми~\cite{13-il, 14-il, 15-il, 16-il}.
+  
+  \textbf{О применимости методов линейного программирования.} 
+Применимость методов линейного программирования (ЛП)~\cite{17-il} для 
+решения линейных задач ситуационного управления существенно ограничена 
+предположением о~том, что прогнозируемые входные данные, используемые 
+для поиска решения, совпадают с~реальными при реализации решения. 
+Известно, что в~практически значимых ЛП-за\-да\-чах решений, как правило, не 
+существует из-за несовместности системы ограничений. Кроме того, расчетные 
+входные данные могут значительно отличаться от реальных в~процессе 
+реализации решения. В~предельных случаях за время между получением 
+решения и~его реализацией могут измениться множество основных 
+переменных и~система ограничений. 
+  
+  Обычно ЛП-задачи решаются сим\-плекс-ме\-то\-дом~\cite{17-il} или 
+методом внутренних точек~\cite{18-il}. Решения могут быть найдены только 
+при совместности системы ограничений. В~случае несовместности может быть 
+решена задача поиска чебышёвской точки, которая также решается симплекс-ме\-то\-дом. 
+Известно, что, во-пер\-вых, ЛП-за\-да\-ча относится к~числу 
+математически некорректных (из-за неустойчивости решения к~малым 
+изменениям входных данных)~\cite{19-il}; во-вто\-рых, решения, найденные 
+как чебышёвская точка, неприменимы, так как нарушают заданные 
+ограничения.
+  
+  Чтобы создать метод решения практически значимых линейных задач, была 
+предложена идея неформальной постановки таких задач на основе 
+\textit{систем обязательных и~ориентирующих требований}~\cite{16-il, 20-il}. 
+Идея была реализована в~\textit{методе целевого перемещения 
+решения}~\cite{20-il, 21-il, 22-il, 23-il, 24-il}. 
+  
+  
+
+\section{Портреты ситуаций: формирование и~анализ }
+  
+  \textit{Целевой} будем называть ситуацию, которую планируется создать 
+в~результате управляющего воздействия на объект ситуационного управ\-ле\-ния; 
+\textit{стартовой}~--- применительно к~которой проектируется управ\-ля\-ющее 
+воздействие; \textit{достигнутой}~--- полученную в~результате управ\-ля\-юще\-го 
+воздействия.
+  
+  \textit{Портрет ситуации}~--- описание, включающее данные о~со\-сто\-янии 
+объекта, располагаемых вариантах управляющих воздействий и~ресурсного 
+обеспечения их реализации~\cite{16-il}.
+  
+  Комплекс формирования и~анализа портретов ситуаций работает 
+  в~соответствии с~\textit{системой правил} $\langle R, S\rangle$, где $R$~--- множество 
+правил; $S\hm\subseteq R\times R$~--- бинарное отношение на~$R$. 
+\textit{Правило} имеет вид либо $D_1\Rightarrow D_2$, либо $D\hm\Rightarrow 
+I$ (здесь $D$, $D_1$ и~$D_2$~--- произвольные описания; $I$~--- любая инструкция). Правила 
+упорядочены с~помощью отношения \textit{специализации} $S$, 
+замыкание~$S^\circ$ которого иррефлексивно (т.\,е.\ ни для какого $r\hm\in R$ 
+не имеет места $\langle r, r\rangle \hm \in S^\circ$; замыкание отношения $S$~--- 
+множество $S^\circ$ пар $\langle r, r^\prime \rangle$ таких, что $\langle r^\prime, 
+r^{\prime\prime}\rangle \hm\in S^\circ$ в~том и~только в~том случае, когда 
+существует последовательность правил $r^\prime\hm= r_0, r_1,\ldots ,r_m \hm= 
+r^{\prime\prime}$ ($m\hm \geq 1$), причем $\langle r_i, r_{i+1}\rangle \hm\in S$ для каждого 
+$0 \hm\leq  i \hm\leq m\hm- 1$). Если для любых двух правил $r_1$ и~$r_2$ указано, 
+что $r_2$ является \textit{специализацией}~$r_1$, то~$r_1$ является 
+\textit{обобщением} $r_2$. Каждое \textit{пра\-ви\-ло-спе\-ци\-а\-ли\-за\-ция} 
+предназначено для срабатывания в~более част\-ных ситуациях, чем 
+со\-от\-вет\-ст\-ву\-ющее  
+\textit{пра\-ви\-ло-обоб\-ще\-ние}. Любое пра\-ви\-ло-спе\-ци\-а\-ли\-за\-ция 
+имеет приоритет в~срабатывании перед со\-от\-вет\-ст\-ву\-ющим  
+пра\-ви\-лом-обоб\-ще\-нием.
+  
+  \textit{Механизм интерпретации} запроса на множестве правил указывает, 
+какие правила и~в~каком порядке применять, а~так\-же какие описания считать 
+истинными. За\-прос пред\-став\-ля\-ет собой набор данных, который включает 
+значения параметров пространства со\-сто\-яний объекта, спецификации 
+располагаемых типов управляющих воздействий и~ресурсов, необходимых для 
+реализации воздействий~\cite{21-il}. 
+
+\section{Общая линейная задача распределения ресурсов, решаемая~методом~целевого~перемещения решения}
+  
+  Пусть $a_{ij}$ ($i\hm=1,\ldots , m$, $j\hm=1,\ldots , n$)~--- расход $i$-го ресурса 
+при единичной интенсивности использования $j$-го варианта (средства) 
+деятельности; $b_i$ ($i\hm=1,\ldots , m$)~--- рас\-по\-ла\-га\-емый объем $i$-го ресурса; 
+$x_j$ ($j\hm=1,\ldots , n$)~--- искомая ин\-тен\-сив\-ность использования $j$-го 
+средства. Суммарный расход $i$-го ресурса выражается линейной формой 
+$a_{i1}x_1+ \cdots + a_{in}x_n$. Таким образом, составное требование 
+к~искомому распределению имеет вид $\{a_{i1}x_1 +\cdots + a_{in}x_n \hm\leq bi\}$ 
+($i\hm=1,\ldots , m$). Кроме того, может быть задан набор показателей 
+эф\-фек\-тив\-ности общей де\-я\-тель\-ности: $\{c_{i1}x_1 +\cdots +c_{in}x_n\}$ 
+($i\hm=1,\ldots , k$), где $c_{ij}$~--- удельный показатель полезности $i$-го типа от 
+использования единицы интенсивности действий $j$-го средства. Для всякого 
+показателя эф\-фек\-тив\-ности может быть задано некоторое прос\-тое правило. 
+Также могут быть заданы приоритеты требований~$p_i$ ($0\hm< p_i \hm\leq \infty$, 
+$i\hm\in  [1, m\hm+k]$).
+  
+  В общем случае для каждой ресурсной функ\-ции может быть определено 
+двустороннее ограничение (конъюнкция двух простых требований). Таким 
+образом, общую сис\-те\-му требований мож\-но записать в~сле\-ду\-ющем виде:
+  $$
+\left\{ \left[b_i\leq \right] a_{i1}x_1 +\cdots + a_{in}x_n \left[\leq B_i\right]\left[p_i\right];\ x_j 
+\geq0\right\}\ (i = 1,\ldots , m + k,\ j=1,\ldots , n)
+$$
+(все коэффициенты ресурсных ограничений и~показателей эф\-фек\-тив\-ности 
+обозначены через $a_{ij}$; квадратные скоб\-ки обозначают не\-обя\-за\-тель\-ность 
+задания ограничений и~приоритетов; переменные~$x_j$ неотрицательны 
+в~соответствии со смыс\-лом задачи).
+  
+  \textit{Простое требование} может быть пред\-став\-ле\-но одной из трех форм: 
+  $$
+  F_i(\bm{x})=c_i[p_i];\enskip F_i(\bm{x}) \leq c_i[p_i];\enskip 
+F_i(\bm{x}) \geq c_i[p_i],
+$$
+ где $F_i(\bm{x})$~--- $i$-я функция (например, 
+ресурсная или оценочная); $\bm{x}$~--- вектор решения (здесь и~далее векторы 
+и~мат\-ри\-цы выделены жир\-ным шриф\-том); $c_i$~--- константа; $p_i$~--- 
+приоритет требования ($0\hm<p_i \hm\leq \infty$) (квадратные скобки обозначают 
+необязательность задания приоритета). \textit{Составное требование}~--- 
+логическая комбинация простых требований, полученная с~помощью 
+логических связок конъюнкции, дизъюнкции и~отрицания ($\wedge$, $\vee$ и~$\neg$). 
+\textit{Обязательные требования} не могут быть нарушены (имеют 
+абсолютный приоритет $p_i\hm=\infty$). \textit{Ориентирующие требования} 
+задают предпочтительные значения функций ($p_i\hm > 0$).
+  
+  Задача заключается в~отыскании вектора распределения ресурсов 
+$\bm{x}\hm= (x_1 \cdots x_n)$, которому соответствуют значения ре\-сурс\-ных 
+функций, оцениваемые экспертом как наиболее эффективные в~данной 
+ситуации. 
+  
+  В процессе поиска решения эксперт решает некоторую по\-сле\-до\-ва\-тель\-ность 
+част\-ных задач, име\-ющих формальные по\-ста\-нов\-ки и~алгоритмы, и~выполняет 
+сравнительный анализ решений~\cite{24-il}.
+  
+  Начальное решение (начальная точка) может быть выбрано экспертом 
+произвольно. По умолчанию предлагается компромиссное решение 
+(чебышёвская точка). На любом шаге поиска решения эксперт, 
+проанализировав значения функций в~составе требований и~оценив степень 
+эффективности и~реализуемости найденного решения, может изменить любые 
+требования. В~частности, может зафиксировать значение некоторой функции 
+(если оно устраивает его). Таким образом эксперт пошагово приближается 
+к~решению, по его мнению, со\-че\-та\-юще\-му свойства эффективности 
+и~реализуемости. Любое решение может быть занесено в~базу возможных 
+решений для последующего анализа.
+  
+  Шаг целевого перемещения решения выполняется следующим способом. 
+Пусть $\bm{x}^\prime \hm = (x_1^\prime\cdots  x_n^\prime)$ ($x_j^\prime \hm\geq 0$, $ j \hm= 
+1,\ldots , n$)~--- решение, полученное на предыду\-щем шаге, и~сформированы 
+правила перемещения из~$\bm{x}^\prime$ в~целевую точку $\bm{x}\hm = 
+(x_1\cdots x_n)$ ($x_j\hm\geq 0$, $j \hm= 1,\ldots , n$): 
+  $$
+\left\{ F_i(x) = F_i(x^\prime) + h_i[p_i]\right\},
+  $$
+где $F_i(x) = a_{i1}x_1 +\cdots+ a_{in}x_n$, $i \hm= 1,\ldots , l$; $0 \hm< p_i\hm\leq \infty$ 
+для $h_i\not= 0$, $p_i \hm= \infty$ для $h_i = 0$. 
+  
+  Формально система правил может быть несовместной. Поэтому правила 
+с~$h_i \not=0$ рассматриваются как \textit{ориентирующие}, а~$h_i$~--- как 
+\textit{задающий шаг} (нередко отличающийся от реального шага, который 
+может быть получен для данного набора правил). Если реальные и~задающие 
+шаги имеют один и~тот же знак для всех правил, новая точка в~любом случае 
+повышает эффективность решения. 
+  
+  Точка $\bm{x}$ отыскивается следующим образом. Сначала вычисляется 
+проекция точки на гиперплоскость 
+$$
+a_{i1}x_1 +\cdots + a_{in}x_n = F_i(x^\prime) 
++ h_i\  \forall \,h_i\not=0\,.
+$$
+
+ Направляющий вектор нормали к~этой гиперплоскости 
+равен ($a_{i1}\cdots a_{in}$). Чтобы найти проекцию, необходимо дать переменным 
+приращения $ha_{i1}\cdots ha_{in}$ (где $h$~--- неизвестное число). Перемещение 
+по нормали дает приращение функции $h(a_{i1}^2 +\cdots + a_{in}^2)$, которое 
+должно быть равно~$h$, так что $h \hm= h_i/(a_{i1}^2 +\cdots + a_{in}^2)$ 
+(естественно, $a_{i1}^2 +\cdots + a_{in}^2\not= 0$). Таким образом получается 
+проекция 
+  $$
+\left(x_1^\prime + \fr{a_{i1}h_1}{a_{i1}^2 +\cdots+ a_{in}^2}\right)\cdots \left(
+x_n^\prime + \fr{a_{in}h_n }{a_{i1}^2 +\cdots + a_{in}^2}\right).
+  $$
+Когда проекции найдены $\forall \,h_i\not=0$, ищутся требуемые приращения по 
+всем переменным: $\Delta x_{ji}\hm = a_{ij}h_i/(a_{i1}^2 +\cdots + a_{in}^2)$ ($j \hm= 
+1,\ldots , n$; индексы функций пробегают значения от~1 до~$s$, $1 \hm\leq s 
+\hm\leq l$). Далее вычисляется конец среднедействующей  
+век\-то\-ров-нор\-малей 
+  $$
+x_j = x_j^\prime + \fr{p_1\Delta x_{j1} + \cdots + p_s\Delta x_{js}}{p_1 +\cdots + p_s}\quad   
+(j = 1,\ldots , n).
+  $$
+Такая точка ближе к~тем гиперплоскостям, которые соответствуют правилам 
+с~более высокими приоритетами. Если приоритеты не были установлены, они 
+полагаются равными~1 и~получаются следующие формулы: 
+  $$
+  x_j=  x_j^\prime + \fr{\Delta x_{j1} + \cdots + \Delta x_{js}}{s}\quad  (j = 1,\ldots , n).
+  $$
+  
+  Если $\exists\,k: h_k = 0$ ($1 \hm\leq k \hm\leq l$), конец среднедействующей 
+проецируется на гиперплоскость $a_{k1}x_1 + \cdots + a_{kn}x_n \hm= 
+F_k(x^\prime)$; в~противном случае на роль искомой точки~$\bm{x}$ 
+претендует конец среднедействующей. Затем контролируется 
+неотрицательность переменных ($x_j \hm\geq 0$, $j \hm= 1,\ldots , n$): 
+отрицательные обнуляются. И,~наконец, проверяется совпадение знаков 
+реальных и~за\-да\-ющих шагов. Если они совпадают для всех правил, 
+вычисленная точ\-ка считается целевой точ\-кой~$\bm{x}$. Если не совпадают, 
+эксперту предлагается скорректировать сис\-те\-му правил.
+  
+  Сравнение результатов, полученных с~помощью программно реализованного 
+метода целевого перемещения решения, с~результатами, полученными с~по\-мощью программы LINGO~\cite{29-il}, реализующей  
+симп\-лекс-ме\-тод~\cite{17-il}, приведено в~\cite{24-il}. 
+
+\section{Заключение}
+  
+  Подход к~решению линейных задач ситуационного управ\-ле\-ния методом 
+целевого перемещения решения создан на основе концепций ситуационного 
+управ\-ле\-ния~\cite{13-il, 14-il}, поддержки принятия решений в~нештатных 
+ситуациях~\cite{15-il} и~ситуационной информатизации~\cite{16-il}. 
+Обновленная версия метода целевого перемещения решения содержит ряд 
+уточнений предыдущего варианта~\cite{22-il, 24-il}. 
+  
+  Технология решения последовательности задач в~режиме вычислительного 
+эксперимента ориентирована на реализацию в~виде 
+ ин\-тер\-нет-сер\-ви\-са~\cite{12-il}. Эта технология позволяет эксперту (или 
+обучаемому роботу) отыскивать решения, соответствующие его 
+представлениям о~реализуемости и~эф\-фек\-тив\-ности. Представления, зависящие 
+от опыта и~информированности эксперта, могут изменяться с~изменением 
+ситуации. 
+  
+  Программно реализованная технология прошла проверку на задачах 
+производственного планирования (по назначению аналогичных 
+рас\-смат\-ри\-ва\-емым в~\cite{25-il, 26-il, 27-il, 28-il}), ресурсного обоснования 
+решений при планировании операций в~условиях чрезвычайных ситуаций 
+и~др.~\cite{24-il}.
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-il}
+\Au{Tapscott D.} The digital economy: Promise and peril in the age of networked intelligence.~--- 
+New York, NY, USA: McGraw-Hill, 1996. 342~p.
+\bibitem{2-il}
+\Au{Christensen C.\,M.} The innovator`s dilemma: When new technologies cause great firms to 
+fail.~--- Boston, MA, USA: Harvard Business School Press, 1997. {\sf 
+http://www. hbs.edu/faculty/Pages/item.aspx?num=46}.
+\bibitem{3-il}
+ The new digital economy: How it will transform business.~--- Oxford, U.K.: Oxford Economics, 2015. 34~р.
+ {\sf http://www.pwc.com/mt/en/publications/assets/the-new-digital-economy.pdf}.
+\bibitem{4-il}
+Цифровая экономика Российской Федерации: Программа, утвержденная распоряжением 
+Правительства Российской Федерации от 28~июля 2017~г.\ №\,1632-р. 87~с. {\sf  
+http://d-russia.ru/wp-content/uploads/2017/07/programma-tsifrov-econ.pdf}.
+
+\bibitem{6-il} %5
+\Au{Kim R.\,Y.} Efficient wireless communications schemes for machine to machine 
+communications~/\!\!/ Comm. Com. Inf. Sc., 2011. Vol.~181. No.\,3. P.~313--323.
+
+\bibitem{5-il} %6
+\Au{Lien S.\,Y., Liau T.\,H., Kao~C.\,Y., Chen~K.\,C.} Cooperative access class barring for 
+machine-to-machine communications~/\!\!/ IEEE T. Wirel. Commun., 2012. Vol.~11. No.\,1. 
+P.~27--32.
+\bibitem{7-il} %7
+\Au{Perera C., Liu~C.\,H., Jayawardena~S.} The emerging Internet of Things marketplace from 
+an industrial perspective: A~survey~/\!\!/ IEEE T. Emerging Topics Computing, 2015. Vol.~3. 
+No.\,4. P.~585--598. 
+\bibitem{8-il}
+<<Интернет вещей>> (IoT) в~России. Технология будущего, доступная уже сейчас~/\!\!/ 
+Новости ИТ-канала, 4~августа 2017~г. 64~с.  {\sf https://ru.investinrussia.com/data/file/ IoT-inRussia-research\_rus.pdf}.
+
+\bibitem{9-il}
+\Au{Jede A., Teuteberg F.} Understanding socio-technical impacts arising from software  
+as-a-service usage in companies~/\!\!/ Bus.  Inf. Syst. Eng., 2016. Vol.~58. 
+No.\,3. P.~161--176.
+
+\bibitem{12-il} %10
+\Au{Ильин А.\,В.} Интернет-сервисы планирования ресурсов, 2016. {\sf  
+https://www.res-plan.com}.
+
+\bibitem{10-il} %11
+Five benefits of Software as a~Service. Trumba Corporation, 2017. {\sf 
+http://www.trumba.\linebreak com/connect/knowledgecenter/pdf/Saas\_paper\_WP-001.pdf}.
+\bibitem{11-il} %12
+Internet Services~/\!\!/ Tutorialspoint, 2018. {\sf 
+http://www.tutorialspoint.com/internet\_\linebreak technologies/internet\_services.htm}.
+
+\bibitem{13-il}
+\Au{Клыков Ю.\,И.} Ситуационное управление большими сис\-те\-ма\-ми.~--- М.: Энергия, 1974. 
+241~с.
+\bibitem{14-il}
+\Au{Поспелов Д.\,А.} Ситуационное управление: тео\-рия и~практика.~--- М.: Наука, 1986. 
+288~с.
+
+
+\bibitem{16-il} %15
+\Au{Ильин В.\,Д.} Основания ситуационной информатизации.~--- М.: Наука, Физматлит, 
+1996. 180~с.
+
+\bibitem{15-il} %16
+\Au{Геловани В.\,А., Башлыков~А.\,А., Бритков~В.\,Б., Вязилов~Е.\,Д.} Интеллектуальные 
+системы поддержки принятия решений в~нештатных ситуациях с~использованием 
+информации о~со\-сто\-янии природной среды.~--- М.: Эдиториал УРСС, 2001. 304~с.
+
+\bibitem{17-il}
+\Au{Dantzig G.\,B.} Linear programming and extensions.~--- Princeton, NJ, USA: Princeton University Press 
+and the RAND Corp., 1963. 656~p.
+\bibitem{18-il}
+\Au{Karmarkar N}. A~new polynomial-time algorithm for linear programming~/\!\!/ 
+Combinatorica, 1984. Vol.~4. No.\,4. P.~373--395. 
+\bibitem{19-il}
+\Au{Tikhonov A.\,N., Arsenin V.\,Y.} Solutions of ill-posed problems.~--- New York, NY, USA: Winston, 1977. 258~p.
+\bibitem{20-il}
+\Au{Ильин А.\,В., Ильин В.\,Д.} Архитектура вы\-чис\-ли\-тель\-но\-го ядра комплекса про\-граммных 
+средств ресурсного обоснования решений.~--- М.: ИПИ РАН, 1995. 23~с.
+\bibitem{21-il}
+\Au{Ильин В.\,Д., Гавриленко Ю.\,В., Ильин~А.\,В., Макаров~Е.\,М.} Математические 
+средства ситуационной информатизации.~--- М.: Наука, Физматлит, 1996, 88~с.
+\bibitem{22-il}
+\Au{Ильин А.\,В.} Математическое обеспечение процессов преобразования ресурсов~/\!\!/ 
+Сис\-те\-мы и~средства информатики, 1999. Вып.~9. С.~159--177.
+\bibitem{23-il}
+\Au{Ильин А.\,В., Ильин В.\,Д.} Интерактивный преобразователь ресурсов с~изменяемыми 
+правилами поведения~/\!\!/ Информационные технологии и~вы\-чис\-ли\-тель\-ные сис\-те\-мы, 2004. 
+№\,2. С.~67--77.
+\bibitem{24-il}
+\Au{Ильин А.\,В.} Экспертное планирование ресурсов.~--- М.: ИПИ РАН, 2013. 58~с.
+
+\bibitem{29-il} %25
+\Au{Schrage L.} Optimization modeling with LINGO.~--- Lindo Systems Inc., 1998. 550~p. {\sf 
+https://www.lindo.com/downloads/Lingo\_Textbook\_5thEdition.pdf}.
+\bibitem{25-il} %26
+\Au{Al-Mashari M.} Enterprise resource planning (ERP) systems: A~research agenda~/\!\!/ 
+Ind. Manage.  Data Syst., 2002. Vol.~103. No.\,1. P.~22--27. 
+\bibitem{26-il} %27
+\Au{Umble E.\,J., Haft R.\,R., Umble~M.\,M.} Enterprise resource planning: Implementation 
+procedures and critical success factors~/\!\!/ Eur. J.~ Oper. Res., 2003. Vol.~146. No.\,2. 
+P.~241--257.
+\bibitem{27-il} %28
+\Au{Marnewick C., Labuschagne L.} A~conceptual model for enterprise resource planning 
+(ERP)~/\!\!/ Information Management Computer Security, 2005. Vol.~13. No.\,2. P.~144--155. 
+\bibitem{28-il} %29
+\Au{Amoako-Gyampah K.} Perceived usefulness, user involvement and behavioral intention: An 
+empirical study of ERP implementation~/\!\!/ Comput. Hum. Behav., 2007. Vol.~23. No.\,3. 
+P.~1232--1248. 
+
+ \end{thebibliography}
+} }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 14.08.22}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{8pt}
+
+\def\tit{METHOD OF TARGET DISPLACEMENT OF~SOLUTION IN~SITUATIONAL 
+MANAGEMENT TECHNOLOGIES}
+
+
+
+\def\titkol{Method of target displacement of~solution in~situational 
+management technologies}
+
+\def\aut{A.\,V.~Ilyin$^1$ and V.\,D.~Ilyin$^2$}
+
+\def\autkol{A.\,V.~Ilyin and V.\,D.~Ilyin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+$^1$State Research Institute of Aviation Systems, 7~Viktorenko Str., Moscow 125319,\linebreak
+$\hphantom{^1}$Russian  Federation
+
+\noindent
+$^2$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
+$\hphantom{^1}$of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2022 vol~32 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2022 vol~32 no\,4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+  
+
+
+\Abste{The updated technology for interactive solving of linear problems of situational 
+management by the method of target displacement of solution is considered. The formulations of 
+tasks and the requirements for the quality of solutions are based on the analysis of portraits of the 
+target and achieved situations. The method of target displacement of solution (as opposed to the 
+standard linear programming methods) allows the expert to get the desired result even if the 
+constraints system is incompatible. The interactivity of the method allows the expert to change the 
+problem formulation at each step of the solution search based on his\!/\!her opinion on the feasibility and 
+effectiveness. The technology is focused on implementation in the form of online service.}
+
+\KWE{situational management; linear problems of situational management; resources allocation; 
+portrait of the situation; method of target displacement of solution; online service}
+
+\DOI{10.14357\!/\!08696527220412}  
+
+%\vspace*{-10pt}
+
+
+%\Ack
+
+%\vspace*{-4pt}
+
+%\noindent
+%The results were obtained in the course of the research work ``Modeling of social, 
+% economic, and ecological processes'' (No.\,0063-2016-0005) carried out in accordance
+%  with the state assignment of FANO of Russia for the Federal Research Center 
+%  ``Computer Science and Control'' of the Russian Academy of Sciences.
+
+
+
+
+\vspace*{-4pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+\vspace*{-2pt}
+
+\bibitem{1-il-1}
+\Aue{Tapscott, D.} 1996. \textit{The digital economy: Promise and peril in the age of networked 
+intelligence}. New York, NY: McGraw-Hill. 342~p.
+\bibitem{2-il-1}
+\Aue{Christensen, C.\,M.} 1997. \textit{The innovator's dilemma: When new technologies cause 
+great firms to fail}. Boston, MA: Harvard Business School Press. Available at: {\sf 
+http:// www.hbs. edu/faculty/Pages/item.aspx?num=46} (accessed February~4, 2018).
+\bibitem{3-il-1}
+\textit{The new digital economy: How it will transform business}. 2015. 
+Oxford, U.K.: Oxford Economics. 34~p. Available at: 
+{\sf http://www.pwc.com/mt/en/publications/assets/the-new-digital-economy.pdf} (accessed 
+September~12, 2022).
+\bibitem{4-il-1}
+ Tsifrovaya ekonomika Rossiyskoy Fe\-de\-ra\-tsii: 
+Programma, utverzhdennaya ras\-po\-rya\-zhe\-ni\-em Pravitel'stva Rossiyskoy Federatsii ot 28~iyulya 
+2017~g. No.\,\mbox{1632-r} [The program ``Digital Economy of the Russian Federation'' approved by 
+Government Order No.\,\mbox{1632-r} dated July~28, 2017]. 87~p. Available at: {\sf  
+http://d-russia.ru/wp-content/\linebreak uploads/2017/07/programma-tsifrov-econ.pdf} (accessed 
+September~12, 2022).
+
+\bibitem{6-il-1} %5
+\Aue{Kim, R.\,Y.} 2011. Efficient wireless communications schemes for machine to machine 
+communications. \textit{Comm. Com. Inf. Sc.} 181(3):313--323.
+
+\bibitem{5-il-1} %6
+\Aue{Lien, S.\,Y., T.\,H. Liau, C.\,Y. Kao, and K.\,C.~Chen.} 2012. Cooperative access class 
+barring for machine-to-machine communications. \textit{IEEE T.~Wirel. Commun.} 11(1):27--32.
+
+\bibitem{7-il-1}
+\Aue{Pereyra, C., C.\,H.~Liu, and S.~Jayawardena.} 2015. The emerging Internet of Things 
+marketplace from an industrial perspective: A~survey. \textit{IEEE T. Emerging Topics 
+Computing} 3(4):585--598.
+\bibitem{8-il-1}
+PWC. 2017. ``Internet veshchey'' (IoT) v~Rossii. Tekhnologiya budushchego, dostupnaya uzhe 
+seychas [``Internet of Things'' (IoT) in Russia. Technology of the future, available now]. 64~p. Available 
+at: {\sf https://ru.investinrussia.com/data/file/IoT-inRussia-research\_rus.} (accessed 
+October 27, 2022).
+\bibitem{9-il-1}
+\Aue{Jede, A., and F. Teuteberg.} 2016. Understanding socio-technical impacts arising from 
+software as-a-service usage in companies. \textit{Bus. Inf. Syst. Eng.} 58(3):161--176.
+
+\bibitem{12-il-1} %10
+\Aue{Ilyin, A.\,V.} 2016. Internet-servisy planirovaniya resursov [Online resource planning 
+services]. Available at: {\sf https://www.res-plan.com} (accessed September~12, 2022).
+
+\bibitem{10-il-1} %11
+Trumba Corp. 2017. Five benefits of software as a service.  {\sf 
+https://www.trumba.\linebreak com/connect/knowledgecenter/pdf/Saas\_paper\_WP-001.pdf} (accessed 
+September~12, 2022).
+\bibitem{11-il-1} %12
+Internet services. 2018. Tutorialspoint. {\sf http://www.tutorialspoint.com/internet\_\linebreak technologies/internet\_services.htm} 
+(accessed September 12, 2022).
+
+\bibitem{13-il-1}
+\Aue{Klykov, Yu.\,I.} 1974. \textit{Situatsionnoe upravlenie bol'shimi sistemami} [Situational 
+management of large systems]. Moscow: Energiya. 241~p.
+\bibitem{14-il-1}
+\Aue{Pospelov, D.\,A.} 1986. \textit{Situatsionnoe upravlenie: teoriya i~praktika} [Situational 
+management: Theory and practice]. Moscow: Nauka. 288~p.
+
+\bibitem{16-il-1} %15
+\Aue{Ilyin, V.\,D.} 1996. \textit{Osnovaniya situatsionnoy informatizatsii} [Fundamentals of 
+situational informatization]. Moscow: Nauka, Fizmatlit. 180~p.
+
+\bibitem{15-il-1} %16
+\Aue{Gelovani, V.\,A., A.\,A.~Bashlykov, V.\,B.~Britkov, and E.\,D.~Vyazilov.} 2001. 
+\textit{Intellektual'nye sistemy podderzhki prinyatiya resheniy v~neshtatnykh situatsiyakh 
+s~ispol'zovaniem informatsii o~sostoyanii prirodnoy sredy} [Intelligent decision support systems 
+in emergency situations using information about the state of the natural environment]. Moscow: 
+URSS. 304~p.
+
+\bibitem{17-il-1}
+\Aue{Dantzig, G.\,B.} 1963. \textit{Linear programming and extensions}. Princeton, NJ: Princeton 
+University Press and the RAND Corp. 656~p.
+\bibitem{18-il-1}
+\Aue{Karmarkar, N.} 1984. A~new polynomial-time algorithm for linear programming. 
+\textit{Combinatorica} 4(4):373--395.
+\bibitem{19-il-1}
+\Aue{Tikhonov, A.\,N., and V.\,Y.~Arsenin.} 1977. \textit{Solutions of ill-posed problems}. New 
+York, NY: Winston. 258~p.
+\bibitem{20-il-1}
+\Aue{Ilyin, A.\,V., and V.\,D.~Ilyin.} 1995. \textit{Arkhitektura vychislitel'nogo yadra kompleksa 
+programmnykh sredstv resursnogo obosnovaniya resheniy} [Architecture of computational kernel 
+of software designed to search for resource management decisions]. Moscow: Institute of 
+Informatics Problems of the Russian Academy of Sciences. 23~p.
+\bibitem{21-il-1}
+\Aue{Ilyin, V.\,D., Yu.\,V.~Gavrilenko, A.\,V.~Il'in, and E.\,M.~Makarov.} 1996. 
+\textit{Ma\-te\-ma\-ti\-che\-skie sredstva situatsionnoy informatizatsii} [Mathematical means of situational 
+informatization]. Moscow: Nauka, Fizmatlit. 88~p.
+\bibitem{22-il-1}
+\Aue{Ilyin, A.\,V.} 1999. Matematicheskoe obespechenie protsessov preobrazovaniya re\-sur\-sov 
+[Mathematical means of resource transformation processes]. \textit{Sistemy i~Sredstva 
+Informatiki~--- Systems and Means of Informatics} 9:159--177.
+\bibitem{23-il-1}
+\Aue{Ilyin, A.\,V., and V.\,D.~Ilyin.} 2004. Interaktivnyy preobrazovatel' resursov 
+s~izmenyaemymi pravilami povedeniya [Interactive resource converter with customisable rules of 
+behavior]. \textit{Informatsionnye tekhnologii i~vychislitel'nye sistemy} [J.~Information Technologies 
+and Computing Systems] 2:67--77.
+\bibitem{24-il-1}
+\Aue{Ilyin, A.\,V.} 2013. \textit{Ekspertnoe planirovanie resursov} [Expert resource planning]. 
+Moscow: Institute of Informatics Problems of the Russian Academy of Sciences. 58~p.
+
+\bibitem{29-il-1} %25
+\Aue{Schrage, L.} 1998. \textit{Optimization modeling with LINGO}. Lindo Systems Inc. 550~p. 
+{\sf 
+https://www.lindo.com/downloads/Lingo\_Textbook\_5thEdition.pdf}.
+\bibitem{25-il-1} %26
+\Aue{Al-Mashari, M.} 2002. Enterprise resource planning (ERP) systems: A research agenda. 
+\textit{Ind. Manage. Data Syst.} 103(1):22--27. 
+\bibitem{26-il-1} %27
+\Aue{Umble, E.\,J., R.\,R. Haft, and M.\,M.~Umble.} 2003. Enterprise resource planning: 
+Implementation procedures and critical success factors. \textit{Eur. J.~Oper. Res.}  
+146(2):241--257.
+\bibitem{27-il-1} %28
+\Aue{Marnewick, C., and L. Labuschagne.} 2005. A~conceptual model for enterprise resource 
+planning (ERP). \textit{Information Management Computer Security} 13(2):144--155.
+\bibitem{28-il-1} %29
+\Aue{Amoako-Gyampah, K.} 2007. Perceived usefulness, user involvement and behavioral 
+intention: An empirical study of ERP implementation. \textit{Comput. Hum. Behav.}  
+23(3):1232--1248. 
+
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received August 14, 2022}} 
+
+%\vspace*{-8pt} 
+
+\Contr
+
+\noindent
+\textbf{Ilyin Alexander V.} (b.\ 1975)~--- Candidate of Science (PhD) in technology, leading 
+scientist, State Research Institute of Aviation Systems, 7~Viktorenko Str., Moscow 125319, 
+Russian Federation; \mbox{ilyin@res-plan.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Ilyin Vladimir D.} (b.\ 1937)~--- Doctor of Science in technology, professor, leading 
+scientist, A.\,A.~Dorodnicyn Computing Center, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 40~Vavilov Str., Moscow119333, Russian 
+Federation; \mbox{vdilyin@yandex.ru}
+  
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

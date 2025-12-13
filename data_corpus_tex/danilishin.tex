@@ -1,0 +1,903 @@
+\def\stat{danilishin}
+
+\def\tit{ОЦЕНКА СТОИМОСТИ ОПЦИОНОВ НА~ОСНОВЕ 
+МОДЕЛЕЙ ARIMA--GARCH С~ОШИБКАМИ, РАСПРЕДЕЛЕННЫМИ 
+ПО~ЗАКОНУ~$S_U$ ДЖОНСОНА}
+
+\def\titkol{Оценка стоимости опционов на основе моделей  
+ARIMA--GARCH с~ошибками, распределенными по закону~JSU} %$S_U$  Джонсона}
+
+\def\aut{А.\,Р.~Данилишин$^1$, Д.\,Ю.~Голембиовский$^2$}
+
+\def\autkol{А.\,Р.~Данилишин, Д.\,Ю.~Голембиовский}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Данилишин А.\,Р.}
+\index{Голембиовский Д.\,Ю.}
+\index{Danilishin A.\,R.}
+\index{Golembiovsky D.\,Yu.}
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа выполнена при частичной поддержке РФФИ (проект 19-07-00187-A).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский государственный университет имени М.\,В.~Ломоносова, факультет 
+вычислительной математики и~кибернетики, \mbox{danilishin-artem@mail.ru}}
+\footnotetext[2]{Московский государственный университет имени М.\,В.~Ломоносова, факультет 
+вычислительной математики и~кибернетики; Московский фи\-нан\-со\-во-про\-мыш\-лен\-ный университет 
+<<Синергия>>, \mbox{golemb@cs.msu.su}}
+
+%\vspace*{-12pt}
+
+
+\Abst{В продолжение статьи <<Риск-нейтральная динамика для модели ARIMA--GARCH 
+с~ошибками, распределенными по закону $S_U$ Джонсона>> в~данной работе приводятся 
+результаты экспериментов для моделей ARIMA--GARCH 
+(autoregressive integrated moving average\,--\,generalized autoregressive conditional heteroskedasticity)
+с~нормальными (N), 
+экспоненциальными бета второго типа (EGB2) и~$S_U$ Джонсона (JSU) распределениями 
+ошибок. Стоимость европейских опционов оценивается методом Мон\-те-Кар\-ло на основе 
+результатов, полученных в~указанной статье при помощи расширенного принципа 
+Гирсанова. Параметры моделей ARIMA--GARCH-N, ARIMA--GARCH-EGB2 и~ARIMA--GARCH-JSU 
+были найдены методом квазимаксимального правдоподобия. Эффективность 
+полученных риск-нейтральных моделей исследовалась на примере биржевых европейских 
+опционов PUT и~CALL на базовые активы DAX  (Deutscher Aktienindex)
+и~Light Sweet Crude Oil. }
+
+\KW{ARIMA; GARCH; риск-нейтральная мера; расширенный принцип Гирсанова; 
+распределение $S_U$ Джонсона; ценообразование опционов}
+
+\DOI{10.14357/19922264200412} 
+  
+%\vspace*{9pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+
+\section{Введение}
+
+Данная работа является продолжением \mbox{статьи}~[1]. В~указанной статье была 
+введена модель  
+ARIMA$\,(p,d,q)$--GARCH$\,(P,Q)$-JSU$\,(\xi,\lambda, \gamma,\delta)$ для 
+доходности базового актива в~следующем виде (для распределения JSU 
+$\tilde{Y}_t\hm= S_t/S_{t-1}\hm -1$, для N- и~EGB2-рас\-пре\-де\-ле\-ний 
+$Y_t\hm= \ln(S_t/S_{t-1})$)~[2--5]:
+\begin{equation}
+\left.
+\begin{array}{l}
+\!\!\!\Delta^d Y_t=m_t +\sqrt{h_t}\,\varepsilon_t\,,\ \varepsilon_t\vert \sim 
+\mathrm{JSU}(\xi,\lambda,\gamma,\delta)\,;\\[12pt]
+\!\!\!m_t=\mathbb{E}\left[ \Delta^dY_t\vert \mathcal{F}_{t-1}\right]=
+\phi_0+\cdots+\phi_p\Delta^d Y_{t-p} +{}\\[6pt]
+\!\!\!\hspace*{10mm}{}+\theta_1\sqrt{h_{t-1}}\,\varepsilon_{t-1}+
+\cdots+\theta_q \sqrt{h_{t-q}}\,\varepsilon_{t-q}\,;\\[12pt]
+\!\!\!h_t=\mathrm{Var}\left[ \Delta^d Y_t\vert \mathcal{F}_{t-1}\right]=
+\alpha_0+\cdots+\alpha_P h_{t-P} +{}\\[6pt]
+\!\!\!\hspace*{15mm}{}+\beta_1h_{t-1}\varepsilon^2_{t-1}+\cdots+\beta_Q h_{t-Q} 
+\varepsilon^2_{t-Q}
+\end{array} \!\!
+\right\} \!\!
+\label{e1-dan}
+\end{equation}
+с ограничениями на математическое ожидание и~дисперсию ошибки
+\begin{align*}
+\mathbb{E}[\varepsilon_t] &=\xi-\lambda e^{1/(2\delta^2)}\mathrm{sinh}\left(
+\fr{\gamma}{\delta}\right)=0\,;\\
+\mathrm{Var}\left[\varepsilon_t\right]&=\fr{\lambda^2}{2}\left( e^{1/\delta^2}-1\right)\times{}\\
+&\hspace*{10mm}{}\times \left( 
+e^{1/\delta^2} \mathrm{cosh}\left( \fr{2\gamma}{\delta}\right) +1\right)=1\,.
+\end{align*}
+
+%\label{e2-dan}
+
+  Далее к~разностному (стационарному) ряду~(\ref{e1-dan}) применялся 
+расширенный принцип Гирсанова~[6, 7], а~в~случае распределения~JSU~---
+ его найденная модификация. Для распределения JSU %$S_U$ Джонсона 
+полученные коэффициенты модели, обес\-пе\-чи\-ва\-ющие риск-ней\-т\-раль\-ную 
+динамику процесса даются сле\-ду\-ющи\-ми соотношениями:
+  \begin{equation}
+  \left.
+  \begin{array}{rl}
+  Y_t&=r+\delta_t\fr{1+r}{1+m_t}\,\varepsilon_t\,;\\[9pt]
+   \varepsilon_{t\vert
+  \mathcal{F}_{t-1}} &\sim \mathrm{JSU}\left( 
+\tilde{\xi},\tilde{\lambda},\gamma,\delta\right);\\[9pt]
+  \tilde{\xi}&=\tilde{\lambda}e^{1/(2\delta^2)}\mathrm{sinh}\left( \fr{\gamma} 
+{\delta} \right);\\[9pt] 
+\tilde{\lambda}&=\sqrt{2}\left( \left( e^{1/\delta^2}-1\right)\times{}\right.\\[9pt]
+&\hspace*{3mm}\left.{}\times\left(
+  e^{1/\delta^2}\mathrm{cosh}\left( \fr{2\gamma}{\delta}\right)+1\right)\right)^{-1/2}.
+  \end{array}
+  \right\}
+  \label{e3-dan}
+  \end{equation}
+  
+  Риск-нейтральные коэффициенты для моделей ARIMA--GARCH-EGB2  
+и~ARIMA--GARCH-N представлены соотношениями~\cite{7-dan}:
+  \begin{multline}
+  Y_t=r-\ln\fr{B(\alpha+\delta_t\overline{\delta},\beta-
+\delta_t\overline{\delta})}{B(\alpha,\beta)}+{}\\
+{}+\delta_t\overline{\delta}\overline{\omega}(\alpha,\beta)+
+  \delta_t\varepsilon_t\,;
+  \label{e4-dan}
+  \end{multline}
+  
+  \noindent
+  \begin{equation}
+  \left.
+  \begin{array}{c}
+  \varepsilon_{t\vert\mathcal{F}_{t-1}}\sim 
+\mathrm{EGB2}\left(\alpha,\beta,\overline{\delta},\overline{\mu}\right);\\[6pt]
+  \overline{\delta}=\fr{1}{\sqrt{l(\alpha,\beta)}};\quad
+   \overline{\mu}=-
+\fr{\overline{\omega}(\alpha,\beta)}{\sqrt{l(\alpha,\beta)}};\\[12pt]
+  Y_t=r-\fr{1}{2}\,\delta^2_t+\delta_t \varepsilon_t\,; \quad 
+\varepsilon_{t\vert\mathcal{F}_{t-1}} \sim N(0,1)\,.
+  \end{array}
+  \right\}
+  \label{e5-dan}
+  \end{equation}
+  
+  В данной статье приводятся результаты чис\-лен\-ных экспериментов, 
+подтверждающие корректность теоретических результатов первой работы 
+и~эффективность полученных риск-ней\-траль\-ных моделей  
+ARIMA--GARCH-N, ARIMA--GARCH-EGB2 и~ARIMA--GARCH-JSU. 
+  
+  Работа построена следующим образом. В~разд.~2 приводятся формулы для 
+оценки справедливой стоимости опционов CALL и~PUT методом Мон\-те-Кар\-ло. 
+В~разд.~3 описываются два набора данных для проведения 
+численных экспериментов: цены закрытия торгов по опционам на индекс 
+немецких акций DAX и~на нефть Light Sweet Crude Oil, а~также 
+соответствующие ряды цен базовых активов. В~разд.~4 даются формулы 
+оценки параметров моделей ARIMA--GARCH методом квазимаксимального 
+правдоподобия~\cite{8-dan}. В~разд.~5 приводятся тесты, определяющие 
+спецификации моделей и~результаты оценок параметров моделей. Раздел~6 
+содержит результаты оценки справедливой стоимости опционов, полученные 
+при использовании различных моделей динамики базовых активов. 
+В~заключении формулируются выводы исследования.
+
+\vspace*{-6pt}
+
+\section{Оценка справедливой стоимости опциона методом  
+Монте-Карло}
+
+\vspace*{-3pt}
+
+  Оценка справедливой стоимости опционов проводится по методу Мон\-те-Кар\-ло~\cite{9-dan}. 
+  Европейские опционы CALL и~PUT с~ценой 
+исполнения~$X$ и~стоимостью базового актива~$S_T$ в~день 
+экспирации~$T$ характеризуются функциями выплат $b_c (S_T,X)\hm= \max 
+(S_T\hm - X,0)$ и~$b_p(S_T, X)\hm= \max (X\hm- S_T,0)$. Стоимость опционов 
+определяется как среднее значение соответствующей функции выплаты 
+относительно риск-ней\-траль\-ной меры~$\mathbb{Q}$, приведенное 
+к~текущему моменту времени~\cite{10-dan}:
+  \begin{equation}
+\! \fr{p_{\mathrm{call}}}{p_{\mathrm{put}}} \!=\!\fr{\mathbb{E}^{\mathbb{Q}} [b_{c/p}(S_T,X)]} {(1+r)^T} 
+\!=\! \fr{\mathbb{E}^{\mathbb{P}} [b_{c/p}(S_T,X)d\mathbb{Q}/d\mathbb{P}]} 
+{(1+r)^T},\!\!
+  \label{e6-dan}
+  \end{equation}
+где $d\mathbb{Q}/d\mathbb{P}$~--- производная Ра\-до\-на--Ни\-ко\-ди\-ма  
+риск-ней\-т\-раль\-ной меры (в~рамках данной работы это мера, полученная на 
+основе расширенного принципа Гирсанова либо его модификации) 
+относительно физической меры~$\mathbb{P}$~\cite{11-dan, 12-dan}. Метод 
+Мон\-те-Кар\-ло позволяет по реализациям построенного процесса ARIMA--GARCH 
+оценить среднее значение относительно  
+риск-ней\-т\-раль\-ной меры~$\mathbb{Q}$:
+\vspace*{-6pt}
+
+\noindent
+\begin{multline}
+\fr{1}{M}\sum\limits_{m=1}^M b_{c/p}\left( S_T, X\right) 
+\fr{d\mathbb{Q}}{d\mathbb{P}}\,(m) 
+\xrightarrow[M\to\infty]{P}{} \\
+{}\xrightarrow[M\to\infty]{P}
+\mathbb{E}^{\mathbb{P}} \left[ b_{c/p}\left( 
+S_T,X\right)\fr{d\mathbb{Q}}{d\mathbb{P}}\right]\,.
+\label{e7-dan}
+\end{multline}
+
+\vspace*{-9pt}
+
+\section{Описание данных}
+
+\vspace*{-3pt}
+
+  Данные для проведения численных экспериментов состоят из двух 
+однотипных наборов цен закрытия торгов по опционам на 3~июня 2019~г. По 
+дате экспирации опционы были поделены на самые ближние и~дальние 
+с~учетом ликвидности.
+  
+  Первый набор данных представлен европейскими опционами на фондовый 
+индекс DAX. Индекс отражает суммарный доход по 
+капиталу, поэтому при его расчете учитываются полученные дивидендные 
+доходы по акциям, которые, как предполагается, реинвестируются в~акцию, 
+по которой был получен дивиденд. Рас\-смат\-ри\-ва\-ют\-ся 19~опционов CALL 
+и~19~опционов PUT, величина страйка варьируется от~9\,400 до~13\,000 
+с~шагом~200. Базовым активом выступает фьючерс с~датой экспирации, 
+соответствующей дате экспирации самого опциона. Дата экспирации ближних 
+опционов~--- 22~июня 2019~г., а~дальних~--- 22~декабря 2023~г. Валюта 
+опционов~--- евро. Данные взяты с~сайта {\sf www.eurexchange.com}.
+  
+  Во второй набор данных вошли 10 европейских опционов CALL и~PUT на 
+фьючерс, базовым активом которого выступает нефть (Light Sweet Crude Oil). 
+Величина страйка варьируется от~51,0 до~55,5 с~шагом~0,5. Дата экспирации 
+ближних опционов~--- 20~июня 2019~г., дальних~--- 22~июня 2020~г. 
+Валюта~--- доллар США. Источник данных: {\sf www.cmegroup.com}.
+  
+  В представленных данных фигурируют два вида валют; соответственно, при 
+расчете справедливой стоимости опционов использовались две\linebreak безрисковые 
+процентные ставки. В~качестве таковых были взяты соответствующие ставки 
+LIBOR. На дату расчета (03~июня 2019~г.)\ ставка USD \mbox{LIBOR} равнялась 
+2,36075\%, а~ставка EUR \mbox{LIBOR} со\-став\-ля\-ла~0,46614\%. Источник данных: 
+{\sf www.global-rates.com}.
+
+\vspace*{-12pt}
+
+\section{Калибровка моделей ARIMA--GARCH}
+
+\vspace*{-3pt}
+
+\begin{table*}[b] %\small %tabl1
+\vspace*{-3pt}
+\begin{minipage}[t]{80mm}
+\begin{center}
+{\small 
+\Caption{Результаты оценивания моделей ARIMA(0,0,1)--GARCH(1,1) для 
+$Y_t^{\mathrm{N/EGB2}}\hm=\ln (S_t/S_{t-2})$  
+и~$\tilde{Y}_t^{\mathrm{JSU}} \hm= S_t/S_{t-2}\hm-1$ фондового индекса DAX}
+\vspace*{2ex}
+
+\tabcolsep=8.15pt
+\begin{tabular}{|c|c|c|c|}
+\hline
+\tabcolsep=0pt\begin{tabular}{c}Распре-\\ деление\\ ошибок\end{tabular}&N&EGB2&JSU \\
+\hline
+$L_n(\hat{v})$&1652,609&1658,26&1658,657\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\phi_0$\\ Std.\ error\\ $t$-value\end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} $-$0,000100\\ (0,000798)\\ $-$0,12480 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} $-$0,00006\\ (0,000786)\\ $-$0,076381 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c}  $-$0,000074\\ (0,000792)\\ $-$0,093104 \end{tabular}\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\theta_1$\\ Std.\ error\\ $t$-value\end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,950806\\ (0,013106)\\ 72,54849 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,948445\\ (0,015226)\\ 62,292279 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,949900\\ (0,013229)\\ 71,806222 \end{tabular}\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\alpha_0$\\ Std.\ error\\ $t$-value\end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,000003\\ (0,000005)\\ 0,55453 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,000003\\ (0,000004)\\ 0,687438 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,000003\\ (0,000004)\\ 0,718274 \end{tabular}\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\alpha_1$\\ Std.\ error\\ $t$-value \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,071761\\ (0,031491)\\ 2,27881 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,067895\\ (0,027377)\\ 2,480017 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,067271\\ (0,030275)\\ 2,222013 \end{tabular}\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\beta_1$\\ Std.\ error\\ $t$-value \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,894232\\ (0,050380)\\ 17,74964 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,902903\\ (0,037822)\\ 23,872549 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,900226\\ (0,041630)\\ 21,624622 \end{tabular}\\
+\hline
+AIC&$-$6,5773&$-$6,5919&$-$6,5934\\
+\hline
+BIC&$-$6,5352&$-$6,5369&$-$6,5385\\
+\hline
+$\xi$&---&$-$0,224916&$-$0,543876\\
+\hline
+$\kappa$&---&2,897165&2,298773\\
+\hline
+\end{tabular}
+}
+\end{center}
+\end{minipage}
+%\end{table*}
+\hfill
+%\begin{table*}%{\small %tabl2
+\begin{minipage}[t]{80mm}
+\begin{center}
+{\small 
+\Caption{Результаты оценивания моделей ARIMA(2,0,0)--GARCH(1,1) 
+для $Y_t^{\mathrm{N/EGB2}}\hm= \ln (S_t/S_{t-2})$ 
+и $\tilde{Y}_t^{\mathrm{JSU}}\hm= S_t/S_{t-2}\hm-1$ (Light Sweet Crude Oil)}
+\vspace*{2ex}
+
+\tabcolsep=8.14pt
+\begin{tabular}{|c|c|c|c|}
+\hline
+\tabcolsep=0pt\begin{tabular}{c}Распре-\\ деление\\ ошибок\end{tabular}&N&EGB2&JSU\\
+\hline
+$L_n(\hat{v})$&1261,086&1267,017&1268,022\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\phi_1$\\ Std.\ error\\ $t$-value \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,667116\\ (0,043985)\\ 15,1668 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,657088\\ (0,043122)\\ 15,2379 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,659745\\ (0,043152)\\ 15,2888\end{tabular}\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\phi_2$\\ Std.\ error\\ $t$-value \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} $-$0,313186\\ (0,043636)\\ $-$7,1773 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} $-$0,323465\\ (0,042236)\\ $-$7,6585 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} $-$0,322464\\ (0,042439)\\ $-$7,5983 \end{tabular}\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\alpha_0$\\ Std.\ error\\ $t$-value \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,000015\\ (0,000002)\\ 8,341500 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,000013\\ (0,000001)\\ 16,4056 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,000013\\ (0,000001)\\ 16,1163\end{tabular}\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\alpha_1$\\ Std.\ error\\ $t$-value \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,049707\\ (0,007002)\\ 7,0988\end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,042324\\ (0,005701)\\ 7,424 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,041834\\ (0,005506)\\ 7,5984\end{tabular}\\
+\hline
+\tabcolsep=0pt \begin{tabular}{c} $\beta_1$\\ Std.\ error\\ $t$-value \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,913128\\ (0,013747)\\ 66,424300 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,92728\\ (0,011196)\\ 82,8231 \end{tabular}&
+\tabcolsep=0pt \begin{tabular}{c} 0,928020\\ (0,011169)\\ 83,0925\end{tabular}\\
+\hline
+AIC&$-$4,9944&1267,752&$-$5,0140\\ 
+\hline
+BIC&$-$4,9524&$-$4,9542&$-$4,9553\\
+\hline
+$\xi$&&$-$0,70877&$-$0,27232\\
+\hline
+$\kappa$&&4,405384&2,663401\\
+\hline
+\end{tabular}
+}
+\end{center}
+\end{minipage}
+\vspace*{-3pt}
+\end{table*}
+
+  Пусть $\ln(L_n(v))$~--- логарифм функции правдоподобия модели  
+ARIMA--GARCH для доходности базового актива с~вектором параметров 
+$v\hm\in \Theta$. В~случае модели  
+ARIMA$\,(p,d,q)$--GARCH$\,(P,Q)$-JSU$\,(\xi,\lambda,\gamma,\delta)$~(1) 
+имеется вектор параметров 
+\begin{multline*}
+v= \left(\gamma, \delta, \phi_0, \phi_1, \ldots , \phi_p, 
+\theta_1, \ldots , \theta_q, \alpha_0, \alpha_1, \ldots , \alpha_P,\right.\\
+\left. \beta_1, \ldots , 
+\beta_Q\right).
+\end{multline*}
+ Число параметров равно $n\hm= p\hm+ 1\hm+q\hm+ P\hm+Q\hm+2$. 
+Оптимальные параметры определяются исходя из максимума функции  
+правдоподобия~\cite{8-dan}:
+  \begin{multline}
+  \hat{v}_n=\argmax\limits_{v\in\Theta} \ln (L_n(v))={}\\[-3pt]
+  {}=\argmax\limits_{v\in \Theta} \sum\limits^T_{t=0} \left( \ln(\delta)-
+\ln \left(\sqrt{\fr{2h_t}{A}}\right)-{}\right.\\[-1pt]
+\left.{}- \fr{1}{2}\ln\left(1+\left( 
+\fr{\varepsilon_t}{\sqrt{2h_t/A}}-B\right)^{\!2}\right) \right.-{}\\[-3pt]
+  \left.{}-\fr{1}{2}\left(\gamma+\delta\mathrm{sinh}^{-1}\left( 
+\fr{\varepsilon_t}{\sqrt{2h_t/A}}-B\right)\right)^{\!2}\right)\,,\\[-1pt]
+\delta, \alpha_0>0,\alpha_1,\ldots , \alpha_P, \beta_1,\ldots , \beta_Q\geq 0\,,
+\label{e8-dan}
+\end{multline}
+где 
+%\vspace*{-6pt}
+
+
+\noindent
+$$
+A=\left(e^{1/\delta^2}-1\right)\left(e^{1/\delta^2}\mathrm{cosh}\left(\fr{2\gamma}{\delta}\right)+1\right);
+$$ 
+$$
+B=e^{1/(2\delta^2)}\mathrm{sinh}\left(\fr{\gamma}{\delta}\right); \enskip
+\sum\limits_{i=1}^P 
+\alpha_i+ \sum\limits^Q_{j=1} \beta_j <1\,.
+$$ 
+  
+  Для случая EGB2-распределения число па\-ра\-мет\-ров $v\hm= (\alpha, \beta, 
+\phi_0, \ldots , \phi_p, \theta_1, \ldots , \theta_q, \alpha_0, \alpha_1, \ldots$\linebreak $\ldots , \alpha_P, 
+\beta_1, \ldots , \beta_Q)$ такое же, как в~предыдущем случае. 
+Оптимизационная задача имеет следующий вид:
+
+\vspace*{-6pt}
+
+\noindent
+  \begin{multline}
+  \hat{v}_n=\argmax\limits_{v\in \Theta} \ln (L_n(v))={}\\
+  {}=\argmax\limits_{v\in \Theta} \sum\limits^T_{t=0} \left( 
+  \vphantom{\fr{\varepsilon_t\sqrt{l(\alpha,\beta)}}{\sqrt{h_t}}}
+  \ln \left( \sqrt{l(\alpha,\beta)}\right) -
+\ln(B(\alpha,\beta)) +{}\right.\\
+{}+ \alpha\overline{\omega}(\alpha,\beta)+ 
+\fr{\alpha\varepsilon_t\sqrt{l(\alpha,\beta)}}{\sqrt{h_t}}
+- \ln\left(\sqrt{h_t}\right)-{}\\
+{} -(\alpha+\beta) \ln \left( 1+\exp \left( 
+\fr{\varepsilon_t\sqrt{l(\alpha,\beta)}}{\sqrt{h_t}}
+%+{}\right.\right.\\\left.\left.
+\left.{}+\overline{\omega}(\alpha,\beta)
+ \vphantom{\fr{\varepsilon_t\sqrt{l(\alpha,\beta)}}{\sqrt{h_t}}}
+ \right)\right)\right)\!,\\
+  \alpha,\beta,\alpha_0>0\,, \enskip \alpha_1,\ldots, \alpha_P,\beta_1,\ldots , \beta_Q\geq 0\,,
+  \label{e9-dan}
+  \end{multline}
+\vspace*{-6pt}
+  
+\noindent
+где $\Gamma(c)$~--- гамма-функция;
+\begin{align*}
+\overline{\omega}(\alpha,\beta)&=\left.\fr{d\ln\Gamma(c)}{dc}\right\vert_{c=\alpha}-
+\left.\fr{d\ln\Gamma(c)}{dc}\right\vert_{c=\beta}\,;\\
+l(\alpha,\beta)&=\left.\fr{d^2\ln\Gamma(c)}{dc^2}\right\vert_{c=\alpha} +
+\left.\fr{d^2\ln\Gamma(c)}{dc^2}\right\vert_{c=\beta}\,;
+\end{align*}
+$$
+\sum\limits^P_{i=1}\alpha_i+\sum\limits^Q_{j=1} \beta_j<1\,.
+$$
+  
+\begin{figure*}[b] %fig1
+\vspace*{1pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=162.997mm 
+ \epsfbox{dan-1.eps}
+ }
+\end{center}
+\vspace*{-12pt}
+\Caption{Графики ACF~(\textit{а}) и~PACF~(\textit{б}) для $Y_t\hm= \ln(S_t/S_{t-2})$ (DAX)}
+%\end{figure*}
+%\begin{figure*} %fig2
+\vspace*{5pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=162.997mm 
+ \epsfbox{dan-2.eps}
+ }
+\end{center}
+   \vspace*{-12pt}
+  \Caption{Графики ACF~(\textit{а}) и~PACF~(\textit{б}) для $Y_t\hm= \ln (S_t/S_{t-2})$ (Light Sweet Crude Oil)}
+  \end{figure*}
+
+  Для случая нормального распределения использовались функции 
+библиотеки rugarch среды~R~\cite{8-dan}.
+
+\vspace*{-9pt}
+   
+\section{Калибровка параметров моделей ARIMA--GARCH}
+
+\vspace*{-3pt}
+
+  В табл.~1 и~2 представлены результаты оценки параметров моделей  
+ARIMA--GARCH. Для обоих временн$\acute{\mbox{ы}}$х рядов был проведен Q-тест  
+Льюн\-га--Бок\-са для разного числа лагов (нулевая гипотеза заключается 
+в~отсутствии автокорреляций для первых~$k$~лагов), который показал, что 
+автокорреляционные связи для рядов $\ln (S_t/S_{t-1})$ и~$S_t/S_{t-1}\hm-1$ 
+отсутствуют с~вероятностью 99\% (значение статистики составило~30,123 для 
+индекса DAX и~24,576 для Light Sweet Crude Oil, в~то время как критическое 
+значение для $k\hm=30$~лагов и~уровня значимости~99\% равно~50,892). 
+В~результате были рассмотрены ряды $\ln(S_t/S_{t-2})$  
+и~$S_t/S_{t-2}\hm- 1$ и~на основе их коррелограмм ACF и~PACF (рис.~1 и~2) 
+был сделан вывод о спецификации ARIMA части моделей ARIMA--GARCH.
+{\looseness=-1
+
+}
+
+  Для коррелограмм индекса DAX характерна модель ARIMA$(\,(0,0,1)$ 
+(ненулевое значение автокорреляции первого лага и~затухающая динамика 
+значений частных автокорреляций). Коррелограммы цен на нефть определяют 
+модель ARIMA$(\,2,0,0)$  (ненулевые значения частных автокорреляций двух 
+первых лагов и~затухающее поведение автокорреляций). 
+{\looseness=-1
+
+}
+  
+  Коэффициенты всех трех моделей имеют одинаковый знак и~порядок. Все 
+полученные коэффициенты моделей статистически значимы на уровне 
+значимости~99\% (следует из $t$-кри\-те\-рия). Можно также заметить, что 
+коэффициенты, соответствующие моделям с~распределениями ошибок EGB2 
+и~JSU, почти идентичны.
+
+  
+\begin{figure*}[b] %fig3
+\vspace*{1pt}
+ \begin{center}  
+ \mbox{%
+ \epsfxsize=161.099mm 
+ \epsfbox{dan-3.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Абсолютные ошибки цен опционов CALL~(\textit{а}) и~PUT~(\textit{б})
+ на индекс DAX со сроком 22~июня 2019~г.: \textit{1}~---  
+ARIMA--GARCH-N; \textit{2}~--- 
+ARIMA--GARCH-EGB2; \textit{3}--- ARIMA--GARCH-JSU }
+%\end{figure*}
+%\begin{figure*} %fig4
+\vspace*{5pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=162.999mm 
+ \epsfbox{dan-5.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Абсолютные ошибки цен опционов CALL~(\textit{а}) и~PUT~(\textit{б})
+ на индекс DAX со сроком 22~декабря 2023~г.: \textit{1}~--- 
+ARIMA--GARCH-N; \textit{2}~--- 
+ARIMA--GARCH-EGB2; \textit{3}--- ARIMA--GARCH-JSU}
+\end{figure*}
+
+  Предсказательная сила моделей оценивалась с~помощью информационных 
+критериев Акаике (AIC) и~Байеса (BIC), статистики которых рассчитываются 
+по следующим формулам:
+
+\noindent
+  \begin{align*}
+    \mathrm{AIC} &= 2k-2\ln\left( L_n\!\left( \hat{v}\right)\right)\,;\\[6pt]
+  \mathrm{BIC} &= k\ln(N) -2\ln\left( L_n\!\left( \hat{v}\right)\right)\,,
+  %  \label{e10-dan}
+  \end{align*}
+где $N$~--- объем выборки; $k$~--- число параметров; $L_n(\hat{v})$~--- 
+значение функции правдоподобия для найден\-ных оптимальных 
+параметров~$\hat{v}$. Таблицы~1 и~2 показывают, что асимметричные 
+распределения EGB2 и~JSU лучше моделируют ряд, чем нормальное 
+распределение.
+
+
+\section{Ценообразование опционов}
+
+  В рамках данной работы справедливая стоимость опционов оценивалась 
+  с~помощью метода Мон\-те-Кар\-ло в~соответствии с~формулами~(\ref{e6-dan}) 
+и~(\ref{e7-dan}) по риск-ней\-т\-раль\-ным траекториям моделей  
+ARIMA--GARCH~(\ref{e3-dan})--(\ref{e5-dan}), где число 
+реализаций доходности базового актива $M\hm= 10\,000$. Эффективность 
+каждой модели ARIMA--GARCH оценивалась по абсолютной ошибке (AE):
+  \begin{multline*}
+  \mathrm{АО}(\mathrm{Moneyness})={}\\
+\!=\!\,\left\vert p^m_{\mathrm{call}}/p^m_{\mathrm{put}}
+  \left( \mathrm{Moneyness}\right) -
+p_{\mathrm{call}}/p_{\mathrm{put}}\left( \mathrm{Moneyness}\right)
+  \!\,\right\vert\!,\hspace*{-5.9pt}
+  %\label{e11-dan}
+  \end{multline*}
+где $p^m_{\mathrm{call}}/p^m_{\mathrm{put}}$~---  рыночные котировки опционов; 
+$\mathrm{Moneyness}\hm=X/s_0$. 
+
+
+
+  Абсолютные ошибки оценивания опционов иллюстрируются на рис.~3--6. 
+Для опционов на индекс DAX наиболее близкие значения к~рыночным 
+котировкам дает модель с~распределением ошибок JSU, модель 
+с~нормальным распределением хуже всего находит стоимость опционов DAX. 
+При этом стоит также отметить, что для опционов с~датой экспирации 
+22~декабря 2023~г.\ расхождения между моделями становятся существенней, 
+показывая неэффективность использования моделей с~нормальным 
+распределением ошибок на длинных временн$\acute{\mbox{ы}}$х
+горизонтах. 
+\pagebreak
+
+\end{multicols}
+
+
+\begin{figure*} %fig5
+\vspace*{.1pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=162.238mm 
+ \epsfbox{dan-7.eps}
+ }
+\end{center}
+\vspace*{-12.5pt}
+\Caption{Абсолютные ошибки цен опционов CALL~(\textit{а}) и~PUT~(\textit{б})
+ Light Sweet Crude Oil (20~июня 2019~г.): \textit{1}~---  
+ARIMA--GARCH-N; \textit{2}~--- 
+ARIMA--GARCH-EGB2; \textit{3}--- ARIMA--GARCH-JSU}
+%\end{figure*}
+%\begin{figure*} %fig6
+\vspace*{5pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=161.542mm 
+ \epsfbox{dan-9.eps}
+ }
+\end{center}
+\vspace*{-12.5pt}
+\Caption{Абсолютные ошибки цен опционов CALL~(\textit{а}) и~PUT~(\textit{б})
+ Light Sweet Crude Oil (22~июня 2020~г.): \textit{1}~---  
+ARIMA--GARCH-N; \textit{2}~--- 
+ARIMA--GARCH-EGB2; \textit{3}--- ARIMA--GARCH-JSU}
+\vspace*{-1pt}
+\end{figure*}
+
+
+\begin{multicols}{2}
+
+Результаты 
+оценки спра\-вед\-ли\-вой стои\-мости опционов на индекс DAX аналогичны 
+результатам работы~\cite{7-dan}, в~которой среди рас\-смат\-ри\-ва\-емых опционов 
+присутствовали опционы на индекс S\&P~500 и~делался вывод о~том, что 
+модели ARIMA--GARCH с~ошибками, распределенными по закону EGB2, дают 
+лучшие оценки стоимости опционов в~деньгах (для опционов CALL 
+$\mathrm{Moneyness}\hm< 1$, для PUT $\mathrm{Moneyness}\hm>1$) по сравнению с~моделями, 
+где ошибки распределены нормально. 
+  
+  Опционы на базовый актив Light Sweet Crude Oil также характеризуются 
+существенным преимуществом модели JSU. Однако теперь уже модель 
+с~распределением EGB2 показывает результаты хуже, чем модель с~нормальным 
+распределением.
+  
+\vspace*{-7pt}
+
+\section{Заключение}
+\vspace*{-2pt}
+
+  В данной статье были рассмотрены три альтернативные модели временн$\acute{\mbox{ы}}$х 
+рядов с~условным средним ARIMA и~условной дисперсией GARCH 
+структуры. Оценка справедливой стоимости опционов проводилась по методу  
+Мон\-те-Кар\-ло~(\ref{e6-dan}), (\ref{e7-dan}) на основе риск-ней\-т\-раль\-ной 
+динамики моделей в~соответствии с~формулами~(\ref{e3-dan})--(\ref{e5-dan}). 
+Калибровка моделей осуществлялась методом 
+квазимаксимального правдоподобия в~соответствии 
+с~соотношениями~(\ref{e8-dan}) и~(\ref{e9-dan}). Определение порядка моделей 
+было выполнено на основе Q-тес\-та  
+Льюн\-га--Бок\-са и~графиков коррелограмм ACF и~PACF. 
+  
+  Результаты эмпирических исследований показывают, что на небольших 
+временн$\acute{\mbox{ы}}$х промежутках модели обеспечивают близкие значения 
+справедливой стоимости опционов. Для опционов с~дальней датой 
+экспирации (больше года) модели показывают существенно разные 
+результаты. Модель, построенная для распределения JSU, дает 
+оценки стоимости, максимально близкие к~ценам закрытия биржевых торгов 
+для всех рас\-смат\-ри\-ва\-емых опционных контрактов. 
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+  
+\bibitem{1-dan}
+\Au{Данилишин А.\,Р., Голембиовский~Д.\,Ю.} Риск-нейт\-раль\-ная динамика для модели 
+ARIMA--GARCH с~ошиб\-ка\-ми, распределенными по закону $S_U$ Джонсона~// 
+Информатика и~её применения, 2020. Т.~14. Вып.~1. С.~48--55.
+
+\bibitem{5-dan} %2
+\Au{Bollerslev T.} A~conditionally heteroskedastic time series model for speculative prices and 
+rates of return~//  Rev. Econ. Stat., 1987. Vol.~69. Iss.~3. P.~542--547. doi: 10.2307/1925546.
+\bibitem{3-dan} %3
+\Au{Akgiray V.} Conditional heteroscedasticity in time series of stock returns: Evidence and 
+forecasts~// J.~Bus., 1989. Vol.~62. Iss.1. P.~55--80. doi: 10.1086/296451.
+\bibitem{4-dan} %4
+\Au{Follmer H., Schied A.} Stochastic finance: An introduction in discrete time.~--- Berlin: 
+Walter de Gruyter, 2002.\linebreak 422~p.
+\bibitem{2-dan} %5
+\Au{Terasvirta T.} An introduction to univariate GARCH models~//  Handbook of 
+financial time series~/
+Eds. T.\,G.~Andersen, R.\,A.~Davis, J.-P.~Kreiss, Th.\,V.~Mikosch.~--- Berlin--Heidelberg: 
+Springer, 2009. Vol.~10.  
+P.~17--42. doi: 10.1007/978-3-540-71297-8\_1.
+\bibitem{6-dan} %6
+\Au{Elliott R.\,J., Madan D.\,B.} A~discrete time equivalent martingale measure~// Math. 
+Financ., 1998. Vol.~8. Iss.~2. P.~127--152. doi: 10.1111/1467-9965.00048.
+\bibitem{7-dan}
+\Au{Yi Xi.} Comparison of option pricing between ARMA-GARCH and GARCH-M models.~--- 
+London, Ontario, Canada: University of Western Ontario, 2013. MoS Thesis. 73~p.
+\bibitem{8-dan}
+\Au{Christian F., Francq M.} GARCH models: Structure, statistical inference and financial 
+applications.~--- New York, NY, USA: Wiley, 2019. 504~p.
+\bibitem{9-dan}
+\Au{Boyle T.} A~Monte Carlo approach~// J.~Financ. Econ., 2012. Vol.~4. P.~323--338. 
+doi: 10.1016/0304-405x(77)90005-8.
+\bibitem{10-dan}
+\Au{Hull J.} Options, futures, and other derivatives.~--- 10th ed.~--- Pearson, 2018. 896~p.
+\bibitem{11-dan}
+\Au{Williams D.} Probability with martingales.~--- Cambridge: Cambridge University Press, 
+1991. 251~p.
+\bibitem{12-dan}
+\Au{Bell D.} Transformations of measure on an infinite dimensional vector space~// Seminar on 
+stochastic processes, 1990~/ Eds. \mbox{E.~{\ptb{\c{C}}}inlar}, P.\,J.~Fitzsimmons, 
+R.\,J.~Williams.~--- Progress in probability book ser.~--- Boston, MA, USA:
+Birkh$\ddot{\mbox{a}}$user, 1991. 
+Vol.~24. P.~15--25. doi: 10.1007/978-1-4684-0562-0\_3.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-12pt}
+
+\hfill{\small\textit{Поступила в~редакцию 01.10.19}}
+
+\vspace*{6pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{-2pt}
+
+\def\tit{ESTIMATING THE FAIR VALUE OF~OPTIONS\\
+ BASED~ON~ARIMA--GARCH MODELS WITH~ERRORS\\ DISTRIBUTED ACCORDING 
+TO~THE~JOHNSON'S $S_U$ LAW}
+
+
+\def\titkol{Estimating the fair value of options based on~ARIMA--GARCH models 
+with~errors distributed according to~the~Johnson's $S_U$ law}
+
+
+\def\aut{A.\,R.~Danilishin$^1$ and D.\,Yu.~Golembiovsky$^{1,2}$}
+
+\def\autkol{A.\,R.~Danilishin and D.\,Yu.~Golembiovsky}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+\noindent
+$^1$Department of Operations Research, Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov\linebreak
+$\hphantom{^1}$Moscow State University,  
+1-52~Leninskie Gory, Moscow 119991, GSP-1, Russian Federation
+
+\noindent
+$^2$Department of Banking, Sinergy University, 80-G~Leningradskiy Prosp., Moscow 125190, Russian 
+Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{6pt} 
+
+
+\Abste{In continuation of the article ``Risk-neutral dynamics for the ARIMA--GARCH 
+(autoregressive integrated moving average\,--\,generalized autoregressive conditional heteroskedasticity)
+random process with errors distributed according to the Johnson's $S_U$ law,'' this 
+paper presents the experimental results for the ARIMA--GARCH 
+(autoregressive integrated moving average\,--\,generalized autoregressive conditional heteroskedasticity)
+models with normal (N), exponential beta of the second type 
+(EGB2), and $S_U$ Johnson (JSU) error distributions. The fair value of European 
+options is estimated by the Monte-Carlo method based on the results obtained in the 
+specified article by using the extended Girsanov principle. The parameters of the 
+ARIMA--GARCH-N,  
+ARIMA--GARCH-EGB2, and ARIMA--GARCH-JSU models were found by the 
+quasi-maximum likelihood method. The efficiency of the resulting risk-neutral models 
+was studied using the example of European exchange-traded options PUT and CALL 
+on basic assets DAX and Light Sweet Crude Oil.}
+
+\KWE{ARIMA; GARCH; risk-neutral measure; Girsanov extended principle; 
+Johnson's $S_U$ distribution; option pricing}
+
+\DOI{10.14357/19922264200412} 
+
+%\vspace*{-20pt}
+
+%\Ack
+%\noindent
+
+
+%\vspace*{-6pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\vspace*{-4pt}
+
+\bibitem{1-dan-1}
+\Aue{Danilishin, A.\,R., and D.\,Y. Golembiovsky.} 2020. Risk-neytral'naya dinamika 
+dlya ARIMA--GARCH modeli
+%\linebreak
+%\vspace*{-12pt}
+%\columnbreak
+%\noindent
+s~oshib\-ka\-mi, raspredelennymi po zakonu $S_U$ 
+Dzhonsona. [Risk-neutral dynamics for ARIMA--GARCH random process with errors 
+distributed according to the Johnson's $S_U$ law]. \textit{Informatika i~ee 
+Primeneniya~--- Inform. Appl.} 14(1):56--62.
+
+\bibitem{5-dan-1} %2
+\Aue{Bollerslev, T.} 1987. A~conditionally heteroskedastic time series model for 
+speculative prices and rates of return. \textit{Rev. Econ. Stat.} 69(3):542--547. doi: 
+10.2307/ 1925546.
+{\looseness=1
+
+}
+\bibitem{3-dan-1} %3
+\Aue{Akgiray, V.} 1989. Conditional heteroscedasticity in time series of stock returns: 
+Evidence and forecasts. \textit{J.~Bus.} 62(1):55--80. doi: 10.1086/296451.
+\bibitem{4-dan-1} %4
+\Aue{Follmer, H., and A. Schied.} 2002. \textit{Stochastic finance: An introduction in 
+discrete time}. Berlin: Walter de Gruyter. 422~p.
+
+\bibitem{2-dan-1} %5
+\Aue{Terasvirta, T.} 2009. An introduction to univariate GARCH models. 
+\textit{Handbook of financial time series}. Eds. T.\,G.~Andersen, R.\,A.~Davis, 
+J.-P.~Kreiss, and Th.\,V.~Mikosch. Berlin--Heidelberg: Springer. 10:17--42. doi:  
+10.1007/978-3-540-71297-8\_1.
+
+\bibitem{6-dan-1}
+\Aue{Elliott, R.\,J., and D.\,B. Madan.} 1998. A~discrete time equivalent martingale 
+measure. \textit{Math. Financ.} 8(2):127--152. doi: 10.1111/1467-9965.00048.
+\bibitem{7-dan-1}
+\Aue{Yi, Xi.} 2013. Comparison of option pricing between ARMA--GARCH and 
+GARCH-M models. London, Ontario, Canada: University of Western Ontario. MoS 
+Thesis. 73~p.
+\bibitem{8-dan-1}
+\Aue{Christian, F., and M. Francq.} 2019. \textit{GARCH models: Structure, 
+statistical inference and financial applications.} New York, NY: Wiley. 504~p.
+\bibitem{9-dan-1}
+\Aue{Boyle, P.} 2012. Options: A~Monte Carlo approach. \textit{J.~Financ. 
+Econ.} 4(3):323--338.  doi: 10.1016/0304-405x(77)90005-8.
+\bibitem{10-dan-1}
+\Aue{Hull, J.} 2018. \textit{Options, futures, and other derivatives}. 10th ed. Pearson. 
+896~p.
+\bibitem{11-dan-1}
+\Aue{Williams, D.} 1991. \textit{Probability with martingales}. Cambridge: 
+Cambridge University Press. 251~p.
+\bibitem{12-dan-1}
+\Aue{Bell, D.} 1991. Transformations of measure on an infinite dimensional vector 
+space. \textit{Seminar on stochastic processes, 1990}. Eds. \mbox{E.~{\ptb{\c{C}}}inlar}, 
+P.\,J.~Fitzsimmons, and R.\,J.~Williams. Progress in probability book ser. Boston, MA: 
+Birkh$\ddot{\mbox{a}}$user. 
+24:15--25. doi: 10.1007/978-1-4684-0562-0\_3.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received October 1, 2019}}
+
+%\pagebreak
+
+%\vspace*{-24pt}
+
+
+\Contr
+
+\noindent
+\textbf{Danilishin Artem R.} (b.\ 1992)~--- PhD student, Department of Operations Research, Faculty of 
+Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University, 1-52~Leninskie 
+Gory, GSP-1, Moscow 119991, Russian Federation; \mbox{danilishin-artem@mail.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Golembiovsky Dmitry Y.} (b.\ 1960)~--- Doctor of Science in technology, professor, Department of 
+Operation Research, Faculty of Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow 
+State University, 1-52~Leninskie Gory, GSP-1, Moscow 119991, Russian Federation; professor, Department 
+of Banking, Sinergy University, 80-G~Leningradskiy Prosp., Moscow 125190, Russian Federation; 
+\mbox{golemb@cs.msu.su}
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 
+      
+ 

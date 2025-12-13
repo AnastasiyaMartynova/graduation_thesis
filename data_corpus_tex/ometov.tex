@@ -1,0 +1,926 @@
+\def\stat{ometov}
+
+\def\tit{АНАЛИЗ ПРОИЗВОДИТЕЛЬНОСТИ БЕСПРОВОДНОЙ 
+СИСТЕМЫ АГРЕГАЦИИ ДАННЫХ С~СОСТЯЗАНИЕМ 
+ДЛЯ~СОВРЕМЕННЫХ СЕНСОРНЫХ СЕТЕЙ$^*$}
+
+\def\titkol{Анализ производительности беспроводной 
+системы агрегации данных с~состязанием} 
+%для современных сенсорных сетей}
+
+\def\aut{А.\,Я.~Омётов$^1$, С.\,Д.~Андреев$^2$, А.\,М.~Тюрликов$^3$, 
+Е.\,А.~Кучерявый$^4$}
+
+\def\autkol{А.\,Я.~Омётов, С.\,Д.~Андреев, А.\,М.~Тюрликов, 
+Е.\,А.~Кучерявый}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Омётов А.\,Я.}
+\index{Андреев С.\,Д.}
+\index{Тюрликов А.\,М.} 
+\index{Кучерявый Е.\,А.}
+\index{Ometov A.\,Ya.}
+\index{Andreev S.\,D.}
+\index{Turlikov A.\,M.}
+\index{Koucheryavy E.\,A.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Исследование выполнено при частичной финансовой поддержке РФФИ (проект 15-07-03051), 
+а~также 
+Фонда содействия развитию малых форм предприятий в~на\-уч\-но-тех\-ни\-че\-ской сфере в~рамках 
+программы <<УМНИК>>  по договору №\,8268ГУ2015 от~02.12.2015.}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Санкт-Петербургский государственный университет телекоммуникаций им.\ М.\,А.~Бонч-Бруевича, 
+\mbox{alexander.ometov@gmail.com}}
+\footnotetext[2]{Российский университет дружбы народов, \mbox{serge.andreev@gmail.com}}
+\footnotetext[3]{Санкт-Петербургский государственный университет аэрокосмического приборостроения, 
+\mbox{turlikov@vu.spb.ru}}
+\footnotetext[4]{Национальный исследовательский университет <<Высшая школа экономики>>, 
+\mbox{ykoucheryavy@hse.ru}}
+
+\vspace*{-12pt}
+
+
+\Abst{Рассматривается беспроводная система связи, 
+учитывающая особенности современных сенсорных сетей, в~которых 
+устройства передают свои данные на множество промежуточных 
+агрегирующих узлов, имеющих подключение к~сети Интернет по 
+технологии IEEE 802.11-2014 (WiFi). Предполагается, что агрегатор 
+осуществляет пересылку данных от многих сенсоров, участвуя при этом 
+в~состязании за общий канал связи с~другими агрегаторами. Предлагается 
+аналитическая модель такого состязания, учитывающая специфику 
+алгоритма разрешения коллизий, характеристики протокола доступа 
+к~каналу, а~также возможность потери данных на узле агрегации. 
+Полученные аналитические результаты сопоставляются с~данными 
+имитационного моделирования, и~вычисляется максимальное количество 
+поддерживаемых системой связи сенсоров.}
+
+\KW{Интернет вещей; беспроводные сенсорные сети; регенеративный 
+анализ; БЛВС; стандарт IEEE 802.11-2014}
+
+ \DOI{10.14357/19922264160304} 
+  
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+    
+  \section{Введение}
+     
+    В последнее время все более усиливается влияние беспроводных 
+технологий на современное общество, что, в~свою очередь, предвещает 
+рост научного интереса к~данной тематике в~ближайшие\linebreak годы и~влечет за 
+собой потенциальную возможность установления беспроводного 
+соединения в~любом месте и~в любое время~[1]. Данная возможность 
+является привлекательной для внедрения концепции <<Интернета 
+вещей>> (Internet of Things, IoT)~[2]. При интеграции IoT многие 
+устройства могут быть оборудованы сенсорами и~расширяющими 
+модулями, с~помощью которых появляется возможность обрабатывать 
+и~передавать информацию без вмешательства человека. Данные 
+беспроводные технологии открывают дорогу для широкого спектра 
+сервисов, начиная с~удаленного наблюдения и~заканчивая 
+здравоохранением. 
+
+Основной целью текущих исследований является 
+разработка системы связи, использующей подходящие  
+IoT-тех\-но\-ло\-гии для реализации подключения разнородных сенсоров. 
+{\looseness=-1
+
+}
+    
+    Исторически беспроводные сети разрабатывались для использования 
+людьми, а для использования их машинами необходима значительная 
+оптимизация, что определяет необходимость разработки или улучшения 
+технологий связи для поддержки большого числа устройств~[3]. 
+Основными требованиями к~таким технологиям остаются низкая 
+сложность обработки данных, дешевизна в~производстве и~высокая 
+энергоэффективность. 
+    
+    Беспроводные локальные сети на основе стандарта IEEE 802.11 
+(WiFi) являются одним из самых распространенных технических 
+решений для ор\-ганизации беспроводного доступа в~домах и~на 
+предприятиях. Благодаря их высокой пропускной спо\-соб\-ности, 
+относительно низкой сто\-и\-мости и~повсеместной распространенности 
+использование WiFi для сценариев IoT является все более 
+привлекательным. 
+
+\begin{figure*}[b] %fig1
+\vspace*{1pt}
+ \begin{center}  
+\mbox{%
+ \epsfxsize=114.889mm
+ \epsfbox{ome-1.eps}
+ }
+\end{center} 
+\vspace*{-9pt}
+\Caption{Предполагаемая топология беспроводной сети}
+     \end{figure*}
+
+В~данной работе производится исследование 
+принципиальной возможности и~эффективности использования 
+современной технологии WiFi с~учетом ее технических характеристик 
+для типовых сценариев IoT. В~частности, предлагается аналитическая 
+модель для учета особенностей работы технологии WiFi (состязание 
+между агрегаторами, особенности протокола доступа, режимы передачи 
+данных и~т.\,д.), основанная на теории регенерирующих процессов. 
+Аналитические результаты сопоставляются с~данными, полученными 
+имитационным моделированием, и~делается вывод о наибольшем 
+возможном количестве сенсоров, поддерживаемых такой системой связи.
+
+\vspace*{-6pt}
+   
+   \section{Модель системы и~анализ}
+   
+   \vspace*{-6pt}
+   
+\subsection{Описание сценария и~протокола}
+
+\vspace*{-1pt}
+    
+    В данной работе рассматривается изолированный сегмент (кластер) 
+беспроводной сети для IoT-при\-ло\-же\-ний со статичным размещением~$M$ 
+агрегирующих узлов, в~котором отсутствуют <<скрытые>> станции. 
+Топология данной сети представлена на рис.~1. 
+
+Агрегаторы оборудованы 
+двумя модулями беспроводной связи: WiFi и~ZigBee. Сенсоры передают 
+собранную ими информацию на агрегаторы посредством ZigBee, и~далее 
+поток данных перенаправляется в~канал WiFi, соединяющий агрегаторы 
+с~сетью Интернет. Агрегаторы взаимодействуют в~нелицензированном 
+частотном диапазоне WiFi и~используют протокол случайного 
+множественного доступа для передачи накопленных данных в~общий 
+канал связи. При передаче более чем от одного агрегатора единовременно 
+возникает наложение таких передач в~канале~--- коллизия. В~случае если 
+передавало только одно устройство, передача считается успешной 
+в~предположении, что в~канале отсутствует шум. Третье возможное 
+событие~--- пус\-той слот~--- происходит в~случае, если ни один из 
+агрегаторов не осуществлял передачу. В~то же время известные решения 
+для сотовых сетей в~данной работе рассматриваться не будут~[4].
+    
+
+     
+    В данной работе рассматривается система среднего/большого 
+производства, где в~каждом помещении находится один агрегатор, 
+обслуживающий не более~20~узлов. Интерференция и~конфликты 
+в~канале сен\-сор--аг\-ре\-га\-тор для данного исследования не являются 
+критическими, так как алгоритмы беспроводной связи ближнего радиуса 
+действия не подвержены интерференции от кластеров из соседних 
+помещений, в~то время как агрегаторы могут конфликтовать в~связи 
+с~более широким радиусом действия беспроводного покрытия. 
+
+Таким 
+образом, в~работе предполагается худший случай насыщенного трафика 
+между всеми агрегирующими узлами~[5]. Иными словами, на уровне 
+управления доступом к~среде можно наблюдать целиком заполненный 
+буфер исходящих сообщений. Более высокие уровни модели связи 
+в~данной работе не рассматриваются ввиду предположения о~прос\-то\-те 
+сенсоров. Данное допущение дает возможность оценивать наихудший 
+сценарий загрузки сети и~поз\-во\-ля\-ет производить оценку с~точки зрения 
+пропускной способности насыщения~$S$.
+    
+    Согласно спецификации стандарта IEEE 802.11, процесс доступа 
+агрегаторов к~общему каналу связи основан на алгоритме двоичной 
+экспоненциальной отсрочки (ДЭО) и~состоит в~выборе случайного 
+интервала отсрочки перед передачей из некоторого окна отсрочки 
+(CW). В~процессе работы алгоритма ДЭО в~случае передачи 
+единовременно двумя или более агрегаторами происходит коллизия. Она 
+отслеживается на стороне получателя (точки доступа), а~каждому из 
+передающих абонентов пред\-остав\-ля\-ет\-ся возможность повторной 
+передачи, если это позволит сделать счетчик повторных передач (RC).
+
+
+\pagebreak
+
+
+%\begin{table*}
+\noindent
+{\small
+\begin{center}
+
+\begin{tabular}{|l|c|}
+\multicolumn{2}{c}{Основные обозначения, использованные в~работе}\\
+\multicolumn{2}{c}{\ }\\[-4pt]
+\hline
+\multicolumn{1}{|c|}{Параметр}&Обозначение\\
+\hline
+Максимальная длительность доступа&$T_{\mathrm{TXOP}}$\\
+Количество агрегаторов&$M$\\
+Текущее окно отсрочки&$W_i$, CW\\
+Начальное окно отсрочки&$W_0$\\
+Длительность пустого слота&$\Sigma$\\
+Длительность AIFS&$T_{\mathrm{AIFS}}$\\
+Длительность SIFS&$T_{\mathrm{SIFS}}$\\
+Длительность BA&$T_{\mathrm{BA}}$\\
+Длительность RTS&$T_{\mathrm{RTS}}$\\
+Длительность CTS&$T_{\mathrm{CTS}}$\\
+Длительность CFE&$T_{\mathrm{CFE}}$\\
+Средняя длительность блока данных&$T_{E[P]}$\\
+Длительность передачи преамбулы $P$&$T_P$\\
+\hline
+\end{tabular}
+\end{center}}
+
+\vspace*{18pt}
+%\end{table*}
+
+\noindent 
+В~данном случае значение окна отсрочки CW будет удвоено 
+($W_{i+1}\hm= 2W_i$) с~целью уменьшения вероятности повторной 
+коллизии. В~то же время будет уменьшен счетчик повторных передач 
+RC. Возможный рост~CW ограничен максимальным значением 
+($\mathrm{CW}_{\max}\hm= 2^mW_0$), где~$m$ определяется как <<степень>> 
+отсрочки. Основные используемые в~работе сокращения представлены 
+в~таблице.
+    
+
+    
+    Данная схема передачи может использовать два альтернативных 
+механизма доступа, подробно описанных в~спецификации IEEE 802.11. 
+При использовании механизма базового доступа в~канал (Basic) пакет 
+данных (либо агрегированная группа пакетов с~единой преамбулой~$P$) 
+передается незамедлительно после ожидания регуляционного 
+межкадрового интервала (AIFS) и~случайного времени отсрочки 
+(BOT). Информация об успешной передаче пакета/блока данных 
+передается в~блоковом под\-тверж\-де\-нии (BA). Механизм доступа 
+<<запрос на от\-прав\-ку\,/\,раз\-ре\-ше\-ние отправки>> (RTS/CTS) 
+использует алгоритм <<двукратного рукопожатия>> при передаче 
+сообщения. Иными словами, канал резервируется за определенным 
+агрегатором на время его предполагаемой передачи.
+    
+    В результате агрегации пакетов данных на физическом уровне, на 
+высоких скоростях передачи влияние служебной информации на 
+пропускную способность становится менее значительно. Однако 
+длительность нового пакета данных после агрегирования не должна 
+превышать интервала захва\-та среды передачи (TXOP), включая 
+необходимые межкадровые интервалы (SIFS), блоковое под\-тверж\-де\-ние 
+(BA) и~(опционально) RTS/CTS. При не\-об\-хо\-ди\-мости агрегатор может 
+также преждевременно закончить передачу, в~случае если длительность 
+передачи пакета данных оказалась меньше TXOP, отправив сообщение об 
+освобождении канала (CFE).
+    
+    Согласно стандарту после первого интервала AIFS значение 
+счетчика отсрочки (BC) выбирается как равномерно распределенная 
+величина~$W_i$ в~промежутке между~0 и~$W_0\hm-1$, где~$W_i$ 
+является окном отсрочки~CW. После каждого пустого слота~BC 
+уменьшается на единицу. Как только~BC достигает нуля, выбранный 
+агрегатор пытается передать. При возникновении коллизии происходит 
+повторная передача, в~случае если счетчик повторных передач~RC не 
+равен нулю. В~случае повторной передачи $W_i\hm= 2W_{i-1}$. Рост 
+CW также ограничен максимальным значением~$W_{\max}$, но 
+агрегатор может продолжать передавать повторно, пока~RC не 
+достигнет нуля. В~момент, когда пакет успешно передан или принято 
+решение об отказе от передачи, CW устанавливается в~некоторое 
+начальное значение~$W_0$. Эквивалентно CW$_{\max}\hm= 2^m W_0$, 
+где $m$~--- степень отсрочки.
+    
+    Далее представлен анализ работы системы доступа к~каналу, 
+функционирующей на основе алгоритма ДЭО с~потерями согласно 
+описанию выше. В~работе~[6] предложно рассматривать два параметра 
+функционирования системы на основании циклов регенерации: 
+вероятность передачи~$p_t$ пользователем в~конкретный временной слот 
+и~вероятность ошибки~$p_c$ в~случае осуществленной передачи. 
+Данные параметры предполагаются неизменными на всем протяжении 
+работы насыщенной системы. Вследствие данного допущения весь 
+кластер может быть рассмотрен с~точки зрения одного <<меченого>> 
+абонента этой системы. Влияние всех прочих факторов учитывается 
+в~значении вероятности ошибки~$p_c$. Необходимо отметить, что 
+данная замена допустима только в~случае справедливой системы, т.\,е.\ 
+когда все пользователи получают приблизительно равную долю времени 
+доступа к~каналу~\cite{7-om}.
+
+    
+\subsection{Общие понятия для~системы без~потерь}
+    
+    Рассмотрим модель, представленную на рис.~2, основываясь на 
+концепции \textit{циклов регенерации}. 
+    
+\begin{figure*} %fig2
+\vspace*{1pt}
+ \begin{center}  
+\mbox{%
+ \epsfxsize=136.118mm
+ \epsfbox{ome-2.eps}
+ }
+\end{center} 
+\vspace*{-9pt}
+\Caption{Упрощенная модель алгоритма ДЭО}
+     \end{figure*}
+     
+    Данная модель рассматривает равные временн$\acute{\mbox{ы}}$е слоты, где начало 
+передачи пакета совпадает с~началом слота. Каждая передача занимает 
+в~точности один слот. Подобное упрощение типично для моделирования 
+протоколов случайного множественного доступа~\cite{9-om} 
+и~позволяет легко масштабировать модель согласно требуемым 
+временн$\acute{\mbox{ы}}$м характеристикам конкретного протокола, что будет показано 
+в~следующем подразделе. Отметим, что меченый агрегатор имеет 
+сле\-ду\-ющую вероятность конфликта в~произвольно взятом слоте:
+
+\pagebreak
+
+\noindent
+    \begin{equation}
+    p_c=1-(1-p_t)^{M-1}\,.
+    \label{e1-om}
+    \end{equation}
+    %
+    Важно также обратить внимание, что вероятность передачи в~канал 
+для данного агрегатора может быть рассчитана как отношение числа 
+попыток передачи на пакет $B^{(i)}$ в~течение некоторого цикла 
+регенерации к~длительности данного цикла в~слотах~$D^{(i)}$:
+    \begin{equation}
+    p_t=\lim\limits_{n\to\infty} \fr{\sum\nolimits_{i=1}^n 
+B^{(i)}}{\sum\nolimits_{i=1}^n D^{(i)}}=\fr{E[B]}{E[D]}\,.
+    \label{e2-om}
+    \end{equation}
+    
+    Предполагая, что система находится в~насыщении и~не имеет потерь, 
+можно с~легкостью получить~$E[B]$:
+    \begin{multline}
+    E[B]= \sum\limits_{i=1}^\infty \mathrm{Pr}\,\{B=i\} ={}\\
+    {}=\left(1-p_c\right) 
+\sum\limits_{i=1}^\infty ip_c^{i-1} =\fr{1}{1-p_c}\,.
+    \label{e3-om}
+    \end{multline}
+    
+    Выражение для $E[D]$ может быть получено аналогичным 
+способом~\cite{10-om}:
+    \begin{multline}
+    E[D]= \sum\limits_{i=1}^\infty  D^{(i)} \mathrm{Pr}\,\{D=i\}={}\\
+    {}=\left(1-p_c\right) 
+\sum\limits_{i=1}^\infty D^{(i)} p_c^{i-1}\,,
+    \label{e4-om}
+    \end{multline}
+где $D^{(i)}$~--- длина цикла регенерации при условии, что было 
+произведено~$i$~попыток передачи.
+
+    Основываясь на зависимости~$i$ и~$m$, можно также получить 
+следующие правила вычисления величины $D^{(i)}$:
+    \begin{equation}
+    D^{(i)}= \begin{cases}
+    2^{i-1}W_0-\fr{W_0-1}{2}\,, &\\
+    &\hspace*{-30mm} \mbox{если } 1\leq i\leq m+1\,;\\
+    2^{m-1} W_0(i-m+1) - \fr{W_0-i}{2}\,, &\\
+    &\hspace*{-30mm} \mbox{если } i>m+1\,.
+    \end{cases}
+    \label{e5-om}
+    \end{equation} 
+    
+    Подставив~(\ref{e5-om}) в~(\ref{e4-om}), после преобразования 
+получим:
+
+\noindent
+    \begin{multline}
+    E[D]={}\\
+    {}= \fr{(1-2p_c) (W_0+1) +p_c W_0 (1-(2p_c)^m)}{2(1-2p_c) (1-
+p_c)}\,.
+    \label{e6-om}
+    \end{multline}
+    
+    Далее, подставляя~(\ref{e3-om}) и~(\ref{e6-om}) в~(\ref{e2-om}), 
+имеем:
+    \begin{equation}
+    p_t= \fr{2(1-2p_c)} {(1-2p_c) (W_0+1) +p_c W_0 (1-(2p_c)^m)}\,.
+    \label{e7-om}
+    \end{equation}
+    
+    Следует отметить, что аналогичные результаты были получены 
+в~известной работе~\cite{8-om}, где аналитические расчеты были 
+основаны на двумерных цепях Маркова, которые сложно 
+масштабировать на случай дополнительных параметров системы. Здесь 
+же использован иной математический подход, яв\-ля\-ющий\-ся более 
+простым, но не менее эффективным. Выражения~(\ref{e1-om})  
+и~(\ref{e7-om}) составляют систему двух нелинейных уравнений 
+с~неизвестными~$p_c$ и~$p_t$, которую можно решить численно. 
+    
+\subsection{Система с~потерями}
+     
+    В данном подразделе представлен анализ ис\-ходной системы, 
+работающей с~потерями, т.\,е.\linebreak с~определенным максимальным числом 
+повторных передач~$K$ для отдельно взятого пакета. Для 
+вы\-чис\-ле\-ния~$p_t$ в~данной системе определяем $E[B]$ и~$E[D]$ 
+согласно~(\ref{e2-om}), но выражение для расчета среднего числа 
+попыток передачи в~цикле $E[B]$ необходимо модифицировать 
+следующим образом:
+    \begin{multline}
+    E[B]= \sum\limits_{i=1}^{K+1} i Pr\{B=i\} = {}\\
+    {}=\left(1-p_c\right) 
+\sum\limits_{i=1}^{K+1} i p_c^{i-1} (K+1) p_c^{K+1} = \fr{1-
+p_c^{K+1}}{1-p_c}\,.
+    \label{e8-om}
+    \end{multline}
+    
+    Далее вычисляем среднюю длительность цикла регенерации как
+    \begin{multline*}
+    E[D]= \sum\limits_{i=1}^{K+1} D(i) \mathrm{Pr}\,\{B=i\} = {}\\
+    {}=\left(1-p_c\right) 
+\sum\limits_{i=1}^{K+1} D(i) p_c^{i-1} +D(K+1) p_c^{K+1}\,.
+%    \label{e9-om}
+    \end{multline*}
+    
+    Возможны две ситуации, зависящие от соотношения~$m$ и~$K$: 
+когда $K\hm\leq m$ и~$K\hm>m$. В~первом случае
+    \begin{multline}
+    E\left[ D^\prime\right] = (1-p_c) \left[ \sum\limits_{i=1}^{K+1}\! \left( 
+2^{i-1} W_0 -\fr{W_0-2}{2}\right) p_c^{i-1}\right] +{}\\
+{}+
+    p_c^{K-1} \left( 2^K W_0 -\fr{W_0-(K+1)}{2}\right)\,.
+    \label{e10-om}
+    \end{multline}
+    
+    Соответственно, вероятность выхода в~канал~$p^\prime_t$ может 
+быть получена при расчете выражения~(\ref{e2-om}) в~результате 
+подстановки~$E[B]$ из~(\ref{e8-om}) и~$E[D]$ (в~данном случае 
+$E[D^\prime]$) из~(\ref{e10-om}):
+    \begin{multline}
+    p^\prime_t = 2(1-2p_c) \left(1-2p_c^{K+1}\right)\!\Big /\!
+    \left[ \left(1-2p_c\right) 
+\left( \vphantom{\left(2p_c\right)^{K+1}}
+1-{}\right.\right.\\
+\hspace*{-5mm}\left.\left.{}-\left(2p_c\right)^{K+1}\right) 
++ W_0 \left(1-p_c\right) \left(1-\left(2p_c\right)^{K+1}\right)\right]\,.
+    \label{e11-om}
+    \end{multline}
+    
+    Чтобы рассчитать второй случай (когда $K\hm>m$), необходимо 
+получить соответствующее значение~$E[D^{\prime\prime}]$:
+    \begin{multline}
+   \! E[D^{\prime\prime}] = (1-p_c) \left[ \sum\limits_{i=1}^{m+1} \left( 
+2^{i-1}W_0 -\fr{W_0-i}{2}\right) p_c^{i-1}+ {}\right.\\
+\left.{}+
+    \sum\limits_{i=1}^{m+1} \left( 2^{i-1}W_0(i-m+1)-\fr{W_0-i}{2}\right) 
+p_c^{i-1}\right] + {}\\
+{}+p_c^{K-1} \left( 2^KW_0 - \fr{W_0-(K+1)}{2}\right)\,.
+\label{e12-om}
+    \end{multline}
+     
+     Аналогично можно получить вероятность 
+передачи~$p^{\prime\prime}_t$, подставляя $E[B]$ из~(\ref{e8-om}) 
+и~$E[D]$ (в данном случае $E[D^{\prime\prime}]$) из~(\ref{e12-om}) 
+в~(\ref{e2-om}):
+    \begin{multline}
+    p^{\prime\prime}_t =   2\left(1-2p_c\right)\left(1-2p_c^{K+1}\right)\Big / 
+    \left[ \vphantom{\left(2p_c\right)^m}
+    (1-2p_c)\times{}\right.\\
+   {}\times 
+\left(W_0\left(1-\left(2p_c\right)^{K+1}\right)\right)+
+\left(1-\left(2p_c\right)^{K+1}\right) +{}\\
+\left. {}+W_0 p_c\left(1-\left(2p_c\right)^m\right)\right]\,.
+    \label{e13-om}
+    \end{multline}
+    
+    Итак, вероятность выхода в~канал~$p_t$ в~системе с~потерями может 
+быть получена двумя способами: как~$p^\prime_t$ из~(\ref{e11-om}) или 
+как~$p_t^{\prime\prime}$ из~(\ref{e13-om}), в~зависимости от 
+соотношения~$K$ и~$m$. Решая нелинейную систему 
+уравнений~(\ref{e8-om}), получаем итоговое значение~$p_t$.
+    
+    Также в~данной работе были использованы фактические 
+длительности служебных сообщений\linebreak
+ WiFi для вычисления пропускной 
+способности насыщения, которая может быть воспроизведена по 
+аналогии с~\cite{9-om, 8-om, 11-om} и~множеством других работ. Основное 
+отличие от вышеприведенной модели заключается в~том, что 
+используются разные длительности слотов для различных событий 
+в~канале, которые соответствуют текущей спецификации стандарта IEEE 
+802.11-2014. Далее рассматривается работа механизма доступа 
+<<RTS/CTS>>. Размеры слотов разной длительности следующие: 
+$\sigma$ соответствует длительности пустого слота, $T_S$~--- 
+длительности успешной передачи, а $T_C$~--- длительности коллизии. 
+Длительности успеха и~коллизии могут быть рассчитаны 
+согласно~\cite{7-om} как
+    \begin{align*}
+       \hspace*{-2mm}T_S &= T_{\mathrm{RTS}}+ T_{\mathrm{SIFS}}+ T_{\mathrm{CTS}}+ T_{\mathrm{SIFS}} +{}       \hspace*{2mm}\\
+    &\hspace*{13mm}{}+T_P+ T_{E[P]}  +T_{\mathrm{SIFS}} +T_{\mathrm{BA}}+T_{\mathrm{AIFS}}\,,       \\
+          \hspace*{-2mm} T_C &= T_{\mathrm{RTS}} +T_{\mathrm{AIFS}}\,.       \hspace*{2mm}
+   %    \label{e14-om}
+    \end{align*}
+    
+    В итоге можно получить пропускную способность насыщения~$S$:
+    \begin{equation*}
+    S= \fr{P_t P_S E[P]}{(1-P_t)\sigma +P_t P_S T_S +P_t(1-P_S) T_C}\,,
+%    \label{e15-om}
+    \end{equation*}
+где $P_t= 1-(1\hm- p_t)^M$~--- вероятность того, что в~системе данные 
+передавал только один агрегатор, $P_S\hm= Mp_t(1\hm- p_t)^{M-1}P_t^{-
+1}$~--- вероятность успешной передачи (при условии, что передавал 
+один агрегатор). 
+
+    В системе с~потерями можно также выписать вероятность того, что 
+агрегатор отказывается от передачи пакета после~$K$~неуспешных 
+повторных передач, вызванных коллизиями: $P_d\hm= p_c^{K-1}$.
+
+\section{Результаты и~выводы}
+     
+    В данном разделе представлены результаты моделирования для 
+современной версии протокола IEEE~802.11. Также рассмотрено их 
+сопоставление с~аналитическими результатами, полученными выше. 
+Реализованная система имитационного моделирования является гибким 
+программным инструментом, включающим различные сценарии 
+взаимодействия WiFi-агре\-га\-то\-ров, а также набор необходимых 
+механизмов для управления доступом к~среде. Система моделирования 
+была откалибрована по результатам, представленным 
+    в~работе~\cite{8-om} (зависимость пропускной способности~$S$ от 
+количества абонентов~$M$ в~канале). Для этого был оцифрован 
+соответствующий график и~произведено наложение полученных 
+результатов на воспроизведенные данные. Результаты можно наблюдать 
+на рис.~3,\,\textit{а}. 
+
+\begin{figure*} %fig3
+\vspace*{1pt}
+ \begin{center}  
+\mbox{%
+ \epsfxsize=162.694mm
+ \epsfbox{ome-3.eps}
+ }
+\end{center} 
+\vspace*{-9pt}
+\Caption{Пропускная способность насыщения при $T\hm= 1$~(\textit{а}) и 65~Мбит/с~(\textit{б}) 
+и~$K\hm\to\infty$: \textit{1}~--- Basic, $W_0=32$, $m=3$;
+ \textit{2}~--- Basic, $W_0=32$, $m=5$;
+      \textit{3}~--- Basic, $W_0=128$, $m=3$;
+      \textit{4}~--- RTS/CTS, $W_0=32$, $m=3$; 
+      \textit{5}~--- RTS/CTS, $W_0=128$, $m=3$}
+      \vspace*{8pt}
+      \end{figure*}
+           \begin{figure*}[b] %fig4
+     \vspace*{8pt}
+ \begin{center}  
+\mbox{%
+ \epsfxsize=103.26mm
+ \epsfbox{ome-5.eps}
+ }
+\end{center} 
+\vspace*{-9pt}
+\Caption{Максимальное число сенсоров с~агрегацией в~канале WiFi: 
+\textit{1}~--- Basic, $W_0=128$, $m=3$;
+      \textit{2}~--- RTS/CTS, $W_0=32$, $m=3$; 
+      \textit{3}~--- RTS/CTS, $W_0=128$, $m=5$}
+      \end{figure*}
+     
+    Следует отметить, что результаты работы~\cite{8-om} 
+и~проведенного в~данной работе моделирования совпадают 
+в~аналогичных условиях и~с~максимальной скоростью передачи 
+$T\hm=1$~Мбит/с (система без потерь). 
+    
+    Далее рассмотрим сценарий, в~котором~$M$~агрегаторов в~кластере 
+используют реалистичные длительности слотов согласно текущей 
+спецификации IEEE 802.11-2014.\ Для этого установим более вы\-сокую 
+скорость передачи $T\hm=65$~Мбит/с и~сопоставим анализ (кривые) 
+с~результатами моделирования (символы) на рис.~3,\,\textit{б}.
+
+    
+    Рассмотрение системы, работающей без потерь (в~которой 
+количество попыток повторной передачи не ограничено), воссоздает 
+ситуацию, когда~$M$~агрегаторов отправляют сообщения к~точке 
+доступа WiFi в~насыщенном режиме. С~по\-мощью\linebreak предлагаемого 
+подхода получена максимально достижимая пропускная способность 
+сис\-те\-мы. В~целом зависимость на рис.~3,\,\textit{б} аналогична результатам, 
+приведенным на рис.~3,\,\textit{а}, но значение\linebreak 
+достижимой пропускной 
+способности в~случае $T\hm=65$~Мбит/с значительно выше. 
+    
+    В заключение рассмотрим систему предложенной топологии (см.\ 
+рис.~1) с~различным числом агрегаторов (5--16) и~определим 
+максимально возможное число сенсоров, которые могут быть обслужены 
+такой системой.
+ 
+Результаты на рис.~4 получены при условии, что каждый 
+сенсор передает пакеты на агрегатор со средней скоростью~256~бит/с, 
+а~максимальные пропускные способности в~восходящем канале (к~точке 
+доступа WiFi) взяты согласно результатам, пред\-став\-лен\-ным на рис.~3,\,\textit{б}. 
+В~работе~\cite{12-om} пред\-став\-ле\-на статистика реальной плот\-ности 
+размещения сенсоров в~городских условиях, что для типового радиуса 
+покрытия точки доступа WiFi (до~300~м) дает около~1000~устройств на 
+агрегатор. При этом на рис.~4 видно, что при использовании 
+предложенной в~текущем исследовании топологии сети, использующей 
+WiFi-агре\-га\-цию, удается достичь расчетного числа поддерживаемых 
+сенсоров даже при достаточно большом количестве агрегирующих 
+устройств.
+
+
+   
+ \section{Заключение}
+     
+    В данной работе проведен анализ системы передачи данных от 
+сенсорных устройств с~их промежуточной агрегацией и~пересылкой по 
+технологии WiFi (IEEE 802.11-2014). Предполагается, что 
+соответствующая топология станет типовой для многих  
+IoT-при\-ло\-же\-ний с~большим количеством сенсоров, 
+и~рассматривается этап состязания между WiFi-аг\-ре\-га\-то\-ра\-ми за выход 
+в~беспроводной канал связи. 
+
+Предлагается аналитическая модель, 
+построенная на основе теории регенерирующих процессов 
+и~учитывающая основные особенности работы протокола доступа к~каналу, 
+а~также алгоритма разрешения коллизий. 
+    %
+    В частности, предполагается, что данные на агрегаторе могут быть 
+потеряны, если они превысили определенное количество попыток 
+повторной передачи. Значение пропускной способности насыщения, 
+полученное в~рамках предложенной модели, сопоставляется с~данными 
+имитационного моделирования. Делается вывод об их совпадении 
+и~обосновывается максимальное число сенсоров, которые могут быть 
+обслужены системой с~рас\-смат\-ри\-ва\-емой топологией. Полученные 
+значения существенно превышают ожидаемое число сенсоров 
+в~городских условиях даже при достаточно большом количестве 
+агрегаторов, что подтверждает целесообразность использования 
+технологии WiFi в~беспроводных системах агрегации данных с~большим 
+числом сенсоров.
+
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-om}
+\Au{Ahmadian A., Galinina O.\,S., Gudkova~I.\,A., Andreev~S.\,D., 
+Shorgin~S.\,Ya., Samouylov~K.\,E.} On capturing spatial diversity of joint 
+M2M/H2H dynamic uplink transmissions in 3GPP LTE cellular system~// 
+Next Generation Teletraffic and Wired/Wireless Advanced Networking 
+Conference (International) Proceedings.~---  Lecture notes in computer 
+science ser.~--- St.\ Petersburg, Russia, 2015. Vol.~9247. P.~407--421.
+\bibitem{2-om}
+\Au{Кучерявый А.\,Е.} Самоорганизующиеся сети и~новые услуги~// 
+Электросвязь, 2009. Вып.~1. С.~19--23.
+\bibitem{3-om}
+\Au{Восков Л.\,С.} Беспроводные сенсорные сети и~прикладные 
+проекты~// Автоматизация и~IT в~энергетике, 2009. №\,2-3. С.~44--49.
+\bibitem{4-om}
+\Au{Косинов М.\,И., Шорин О.\,А.} Повышение емкости сотовой системы 
+связи при использовании зон перекрытия~// Электросвязь, 2003. Вып.~1. 
+С.~18--20.
+\bibitem{5-om}
+\Au{Гайдамака Ю.\,В., Печинкин~А.\,В., Разумчик~Р.\,В., 
+Самуйлов~А.\,К., Самуйлов~К.\,Е., Соколов~И.\,А., Сопин~Э.\,С., 
+Шоргин~С.\,Я.} Распределение времени выхода из множества состояний 
+перегрузки в~системе $M|M|1|\langle L,H \rangle |\langle H,R \rangle$ 
+с~гистерезисным управлением нагрузкой~// Информатика и~её 
+применения, 2013. Т.~7. Вып.~4. С.~20--33.
+\bibitem{6-om}
+\Au{Bianchi G.} Performance analysis of the IEEE 802.11 distributed 
+coordination function~// IEEE J.~Sel. Area. Comm., 2000. 
+Vol.~18. No.\,3. P.~535--547.
+\bibitem{7-om}
+\Au{Skordoulis D., Ni~Q., Chen~H.\,H., Stephens~A.\,P., Liu~C., 
+Jamalipour~A.} IEEE 802.11n MAC frame aggregation mechanisms for  
+next-generation high-throughput WLANs~// IEEE Wirel. Commun., 
+2008. Vol.~15. No.\,1. P.~40--47.
+
+\bibitem{9-om} %8
+\Au{Sharma G., Ganesh A., Key~P., Needham~R.} Performance analysis of 
+contention based medium access control protocols~// IEEE Trans. 
+Inform. Theory, 2009. Vol.~55. No.\,4. P.~1665--1682.
+\bibitem{10-om} %9
+\Au{Malone D., Duffy~K., Leith~D.} Modeling the 802.11 distributed 
+coordenation function in non-saturated heterogeneous conditions~// 
+IEEE/ACM Trans. Networks, 2007. Vol.~15. No.\,1. P.~159--172.
+\bibitem{8-om} %10
+\Au{Bordenave C., McDonald D., Proutire~A.} Random multi-access 
+algorithms~--- a mean field analysis~// Rapport de Recherche, 2005. Vol.~5632. 
+P.~1--12.
+\bibitem{11-om}
+\Au{Andreev S., Koucheryavy~Y., Sousa~L.} Calculation of transmission 
+probability in heterogeneous ad hoc networks~// IEEE Baltic Congress on 
+Future Internet and Communications (BCFIC) Proceedings, 2011. P.~75--82.
+\bibitem{12-om}
+\Au{Ortiz S.} IEEE 802.11n: The road ahead~// IEEE Computer, 2009. 
+Vol.~42. No.\,7. P.~13--15.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 06.04.16}}
+
+%\vspace*{8pt}
+
+\newpage
+
+\vspace*{-30pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+%\vspace*{8pt}
+
+
+
+\def\tit{PERFORMANCE ANALYSIS OF~A~WIRELESS DATA 
+AGGREGATION SYSTEM WITH~CONTENTION 
+FOR~CONTEMPORARY SENSOR NETWORKS}
+
+\def\titkol{Performance analysis of~a~wireless data 
+aggregation system with~contention 
+for~contemporary sensor networks}
+
+\def\aut{A.\,Ya.~Ometov$^1$, S.\,D.~Andreev$^2$, 
+A.\,M.~Turlikov$^3$, and~E.\,A.~Koucheryavy$^4$}
+
+\def\autkol{A.\,Ya.~Ometov, S.\,D.~Andreev, 
+A.\,M.~Turlikov, and~E.\,A.~Koucheryavy}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+        $^1$Saint-Petersburg State University of Telecommunications, 
+22B~Pr.~Bolshevikov,  St.\ Petersburg 193232, Russian\linebreak
+$\hphantom{^1}$Federation 
+        
+        \noindent
+        $^2$Peoples' Friendship University of Russia, 3~Ordzhonikidze Str., 
+Moscow 115419, Russian Federation
+     
+     \noindent
+        $^3$State University of Aerospace Instrumentation, 67~Bolshaya 
+Morskaya Str., St.\ Petersburg 190000, Russian\linebreak
+$\hphantom{^1}$Federation
+     
+     \noindent
+        $^4$National Research University Higher School of Economics, 
+30~Myasnitskaya Str.,  Moscow 101000, Russian\linebreak
+$\hphantom{^1}$Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2016\ \ \ volume~10\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2016\ \ \ volume~10\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+       
+    
+        
+     \Abste{The paper considers a wireless communication 
+system with a number of sensing devices that transmit their data to 
+multiple aggregating nodes connected to Internet via IEEE  
+802.11-2012 (WiFi) technology. It is assumed that an aggregator 
+retransmits data from many sensors by competing with other 
+aggregators for the shared channel. The paper proposes an 
+analytical model taking into account the features of the collision 
+resolution algorithm, the properties of the channel access protocol, 
+as well as the possibility to discard data at the aggregator. The 
+obtained analytical results are compared with the simulation data, 
+and the maximum number of supported sensors in the 
+communication system is estimated.}
+     
+     \KWE{Internet of Things; wireless sensor networks; 
+saturated system; regenerative analysis; WLAN; IEEE 802.11-2014 
+standard}
+
+
+\DOI{10.14357/19922264160304}
+
+\vspace*{-9pt}
+
+\Ack
+\noindent
+This work is supported by the Russian Foundation for 
+Basic Research (project No.\,15-07-03051) and the Foundation for Assistance to 
+Small Innovative Enterprises (FASIE) within the program ``UMNIK'' 
+under grant 8268GU2015 (02.12.2015).
+
+
+\vspace*{9pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-om-1}
+\Aue{Ahmadian, A.\,M., O.\,S.~Galinina, I.\,A.~Gudkova, S.\,D.~Andreev, 
+S.\,Ya.~Shorgin, and K.\,E.~Samouylov}. 2015. On capturing spatial diversity 
+of joint M2M/H2H dynamic uplink transmissions in 3GPP LTE cellular 
+system. \textit{International Next Generation Teletraffic and Wired/Wireless 
+Advanced Networking Conference Proceedings}. 
+Lecture notes in computer science ser. St.\ Petersburg, Russia.  9247:407--421.
+\bibitem{2-om-1}
+\Aue{Koucheryavy, A.\,E.} 2009. Samoorganizuyushchiesya seti i~novye 
+uslugi [Ad hoc networks and new services]. \textit{Elektrosvyaz'} 
+[Telecommunications] 1:19--23.
+\bibitem{3-om-1}
+\Aue{Voskov, L.\,S.} 2009. Besprovodnye sensornye seti i~prikladnye proekty 
+[Wireless networks and application projects]. \textit{Avtomatizatsiya i~IT 
+v~energetike} [IT automatization in Enegetics] 2-3:44--49.
+\bibitem{4-om-1}
+\Aue{Kosinov, M.\,I., and O.\,A.~Shorin}. 2003. Povyshenie emkosti sotovoy 
+sistemy svyazi pri ispol'zovanii zon perekrytiya [Increasing cellular network 
+capacity utilizing the overlapping zones]. \textit{Elektrosvyaz'} 
+[Telecommunications] 1:18--20.
+\bibitem{5-om-1}
+\Aue{Gaydamaka, Yu.\,V., A.\,V.~Pechinkin, R.\,V.~Razumchik, 
+A.\,K.~Samuylov, K.\,E.~Samuylov, I.\,A.~Sokolov, E.\,S.~Sopin, and 
+S.\,Ya.~Shorgin}. 2013. Raspredelenie vremeni vykhoda iz mnozhestva 
+sostoyaniy peregruzki v~sisteme $M|M|1|\langle L,H \rangle |\langle H,R 
+\rangle$ s~gisterezisnym upravleniem nagruzkoy [The distribution of the return 
+time from the set of overload states to the set of normal load states in a~system 
+$M|M|1|\langle L,H \rangle |\langle H,R \rangle$ with hysteretic load control]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 7(4):\linebreak 20--33.
+\bibitem{6-om-1}
+\Aue{Bianchi, G.} 2000. Performance analysis of the IEEE 802.11 distributed 
+coordination function. \textit{IEEE J.~Sel. Area. Comm}. 
+18(3):535--547.
+\bibitem{7-om-1}
+\Aue{Skordoulis, D., Q.~Ni, H.\,H.~Chen, A.\,P.~Stephens, C.~Liu, and 
+A.~Jamalipour}. 2008. IEEE 802.11~n~MAC frame aggregation mechanisms 
+for next-generation high-throughput WLANs. \textit{IEEE Wirel. 
+Commun.} 15(1):40--47.
+
+
+\bibitem{9-om-1} %8
+\Aue{Sharma, G., A.~Ganesh, P.~Key, and R.~Needham}. 2009. Performance 
+analysis of contention based medium access control protocols. \textit{IEEE 
+Trans. Inform. Theory} 55(4):1665--1682.
+
+\pagebreak
+
+\bibitem{10-om-1} %9
+\Au{Malone, D., K.~Duffy, and D.~Leith}. 2007. Modeling the 802.11 
+distributed coordenation function in non-saturated heterogeneous conditions.  
+\textit{IEEE/ACM Trans. Networks} 15(1):159--172.
+\bibitem{8-om-1} %10
+\Aue{Bordenave, C., D.~McDonald, and A.~Proutire}. 2005. Random  
+multi-access algorithms~--- a~mean field analysis. \textit{Rapport de 
+Recherche}  5632:1--12.
+
+%\columnbreak
+
+\bibitem{11-om-1}
+\Aue{Andreev, S., Y.~Koucheryavy, and L.~Sousa}. 2011. Calculation of 
+transmission probability in heterogeneous ad hoc networks. \textit{IEEE Baltic 
+Congress on Future Internet and Communications (BCFIC) Proceedings}.  
+75--82.
+\bibitem{12-om-1}
+\Aue{Ortiz, S.} 2009. IEEE 802.11n: The road ahead. \textit{IEEE 
+Computer} 42(7):13--15.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received April 06, 2016}}
+
+\Contr
+
+\noindent
+\textbf{Ometov Aleksandr Ya.} (b.\ 1991)~--- PhD student, St.\ Petersburg State University 
+of Telecommunications, 22B~Bolshevikov Pr., St.\ Petersburg 193232, Russian Federation; 
+\mbox{alеxаnder.omеtov@gmаil.com}
+
+\vspace*{4pt}
+
+\noindent
+\textbf{Andreev Sergey D.} (b.\ 1984)~--- Candidate of Sciences, PhD; associate professor, 
+Peoples' Friendship University of Russia, 3~Ordzhonikidze Str., Moscow 115419, Russian 
+Federation; \mbox{serge.аndeev@gmаil.com}
+
+\vspace*{4pt}
+
+\noindent
+\textbf{Turlikov Andrey M.} (b.\ 1957)~--- Doctor of Sciences, professor; Head of 
+Department, St.\ Petersburg State University of Aerospace Instrumentation, 67~Bolshaya 
+Morskaya Str., St.\ Petersburg 190000, Russian Federation; \mbox{turlikоv@vu.spb.ru}
+
+\vspace*{4pt}
+
+\noindent
+\textbf{Koucheryavy Evgeni A.} (b.\ 1974)~--- Candidate of Sciences, PhD; professor, 
+National Research University Higher School of Economics, 20 Myasnitskaya Str., Moscow 
+101000, Russian Federation; \mbox{ykоucheryаvy@hsе.ru}
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}
+     

@@ -1,0 +1,753 @@
+\def\stat{inkova}
+
+\def\tit{ИНТЕРФЕЙС ПОЛЬЗОВАТЕЛЯ НАДКОРПУСНОЙ БАЗЫ ДАННЫХ ИЕРАРХИЙ  
+ЛОГИКО-СЕМАНТИЧЕСКИХ ОТНОШЕНИЙ$^*$}
+
+\def\titkol{Интерфейс пользователя Надкорпусной базы данных иерархий  
+ЛСО} %логико-семантических отношений}
+
+\def\aut{А.\,А.~Дурново$^1$, О.\,Ю.~Инькова$^2$, Н.\,А.~Попкова$^3$}
+
+\def\autkol{А.\,А.~Дурново, О.\,Ю.~Инькова, Н.\,А.~Попкова}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Дурново А.\,А.}
+\index{Инькова О.\,Ю.}
+\index{Попкова Н.\,А.}
+\index{Durnovo A.\,A.}
+\index{Inkova O.\,Yu.}
+\index{Popkova N.\,A.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнялась с~использованием инфраструктуры Центра коллективного пользования 
+<<Высокопроизводительные вычисления и~большие данные>> (ЦКП <<Информатика>>) ФИЦ ИУ РАН 
+(г.~Москва) в~рамках швейцарско-российского проекта <<Методология аннотирования в~надкорпусной базе 
+данных коннекторов>> по гранту Швейцарского государственного секретариата по образованию, 
+исследованиям и~инновациям.}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{duralex49@mail.ru}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук; 
+Женевский университет, \mbox{olyainkova@yandex.ru}}
+\footnotetext[3]{Федеральный исследовательский центр <<Информатика и~управление>> Российской 
+академии наук, \mbox{natasha\_\_popkova@mail.ru}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-10pt} 
+
+ 
+\Abst{Описываются пользовательские возможности Надкорпусной базы данных иерархии (НБДИ)
+логико-семантических отношений (ЛСО), нового инструмента для аннотации 
+дискурсивных отношений, разработанного в~ФИЦ ИУ РАН. Перечислены этапы построения 
+аннотаций в~НБДИ ЛСО: выбор контекста для аннотирования, его возможные модификации, 
+аннотирование показателя ЛСО и~самого ЛСО. Сформированные аннотации не только 
+отражают в~единой аннотации три важных теоретических аспекта дискурсивного анализа: 
+показатель ЛСО (или его отсутствие), иерархию ЛСО и~границы фрагментов текста, 
+непосредственно связанных ЛСО. Интерфейс НБДИ ЛСО позволяет редактировать, 
+дополнять и~фильтровать аннотированную информацию: сохранять предыдущие состояния 
+аннотаций и~при необходимости возвращаться к~одному из них, восстанавливать удаленные 
+аннотации, использовать созданные аннотации для создания новых. Полученные с~помощью 
+НБДИ ЛСО результаты уже позволили уточнить некоторые теоретические положения, 
+в~частности сформулированные в~наиболее популярной теории риторической структуры. 
+Дальнейший анализ материала и~статистические возможности НБДИ ЛСО позволят 
+установить закономерности в~глубине иерархии ЛСО. Эта информация представляет интерес 
+для когнитивных исследований~--- как моноязычных, так и~контрастивных, а~также для 
+автоматической обработки текста и~разработки искусственного интеллекта.}
+
+\KW{надкорпусная база данных; аннотирование корпусов текс\-тов; дискурсивные 
+отношения; коннектор}
+
+\DOI{10.14357\!/\!08696527220310}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+
+\section{Вводные замечания}
+
+  Перед создателями лингвистических ресурсов, позволяющих исследовать 
+дискурсивные, или, в~рассматриваемом подходе, 
+ ло\-ги\-ко-се\-ман\-ти\-че\-ские, отношения, играющие важную роль 
+в~обеспечении связности текста~[1], стоят следующие основные задачи.
+  \begin{enumerate}[1.]
+\item Разметка в~единой аннотации как самих ЛСО, так и~их показателей с~учетом формального 
+и~функционального разнообразия последних~[2]\footnote{Не вдаваясь 
+в~детали, можно сказать, что ЛСО устанавливаются в~тексте между дискурсивными 
+единицами, имеющими, как правило, пропозициональное содержание и~следующими 
+друг за другом. Например, \textit{Петя заболел, поэтому он не пришел}. 
+С~формальной точки зрения, показатели ЛСО могут быть однословными (поэтому, 
+следовательно) и~неоднословными (\textit{так как}, \textit{несмотря на то что}, 
+\textit{хотя}$\ldots$ \textit{но}). С~функциональной точки зрения, выделяются 
+показатели, устанавливающие ЛСО на пропозициональном уровне, на уровне 
+высказывания (например, при обосновании сказанного, как в~\textit{Замолчи, или 
+я~тебя накажу}) или на уровне организации текста  
+(\textit{во-первых}, \textit{во-вторых} и~др.).}.
+\item Разметка ЛСО, не имеющих показателя, так называемых 
+имплицитных ЛСО~[3].
+\item Отображение границ фрагментов текста, непосредственно связанных 
+ЛСО; см. пример:
+
+\noindent
+[(Идеально сделано)$p$, \tabcolsep=0pt\begin{tabular}{c}
+{\cellcolor[gray]{.8}клянусь богом,}\end{tabular}
+\tabcolsep=0pt\begin{tabular}{c}
+{\cellcolor[gray]{.8}~--- говорил Лариосик}\end{tabular}. 
+(Как не идеально!)$q$]$t$ [\tabcolsep=0pt\begin{tabular}{c}
+{\cellcolor[gray]{.8}Вещь}\end{tabular} (под руками)\,r\ \textit{и~в~то же время} (вне 
+квартиры)\,s]$u$ [Михаил Булгаков. Белая гвардия (1924)].
+\item Отображение иерархии ЛСО, т.\,е.\ тех случаев, когда одно ЛСО как 
+бы вкладывается в~другое, нарушая линейность интерпретации текста; см.\ 
+приведенный пример.
+\item Хранение и~визуализация аннотаций в~удобном для пользователя 
+формате с~возможностью поиска по заданным исследователями 
+параметрам и~получения количественных данных по каждому из них. 
+\end{enumerate}
+
+  В приведенном примере ЛСО иллокутивной причины, с~помощью которого 
+говорящий обосновывает истинность сказанного им~[1], связывает без 
+использования ка\-ко\-го-ли\-бо показателя фрагменты текста~$t$ и~$u$ 
+(в~квадратных скобках). Фрагмент~$t$ содержит, в~свою очередь, 
+фрагменты~$p$ и~$q$, связанные ЛСО переформулирования (говорящий 
+говорит одно и~то же, но разными словами). Границы~$p$ и~$q$ обозначены 
+при помощи круглых скобок, а~текст, который непосредственно не 
+задействован в~данном ЛСО, выделен серым цветом. Во фрагменте~$u$ также 
+есть ЛСО (временн\'{о}е), выраженное показателем \textit{и~в~то же время} 
+и~соединяющее предикаты (\textit{быть}) \textit{под руками} и~(\textit{быть}) 
+\textit{вне квартиры} с~общим подлежащим \textit{вещь}. По отношению к~ЛСО 
+иллокутивной причины ЛСО переформулирования и~времени являются 
+встроенными, поскольку они находятся во фрагментах текста, связанных этим 
+ЛСО. Иерархия семантической структуры приведенного примера, границы 
+соединяемых ЛСО фрагментов, а~также наличие или отсутствие его показателя 
+должны быть в~идеале отражены в~аннотации.
+  
+  Существующие ресурсы решают эти проблемы лишь отчасти (см.\
+   \mbox{Ru-RSTreebank}~[4], Пенсильванский дискурсивно аннотированный 
+корпус~[5]) или предоставляют ограниченные возможности для дальнейшего 
+использования аннотаций (см.\ RST Signaling Corpus~[6] или GUM~[7]); 
+подробнее об аннотировании текстовых отношений с~помощью этих ресурсов 
+см.~[8--10].
+  
+  Надкорпусная база данных иерархий ЛСО создана в~Институте 
+проблем информатики ИПИ РАН с~целью расширения возможностей 
+аннотирования ЛСО и~их показателей, предоставляемых Надкорпусной базой 
+данных коннекторов (НБДК), также созданной в~ИПИ РАН~[11]. Как и~последняя, НБДИ ЛСО использует тексты параллельных французских 
+и~итальянских подкорпусов Национального корпуса русского языка~[12] общим 
+объемом свыше 11~млн словоупотреблений, а также аннотации НБДК. 
+В~работе~\cite{8-in} описана архитектура НБДИ ЛСО, в~этом исследовании 
+показано, как в~ней решаются сформулированные выше задачи. 
+
+\section{Аннотирование: построение графа}
+
+\subsection{Выбор текста для~аннотирования и~работа с~ним}
+
+  Логико-семантическими отношениями считаются такие дискурсивные отношения, которые могут быть 
+потенциально выражены коннекторами, выступающими, следовательно, их 
+показателями~\cite[с.~311]{3-in}. К~коннекторам относятся сочинительные 
+и~подчинительные союзы (\textit{или}, \textit{хотя}, \textit{потому что} и~др.), 
+наречия, называемые в~русской грамматической традиции <<аналогами 
+союзов>> (\textit{например}, \textit{однако}, \textit{между тем}, \textit{впрочем} 
+и~др.), и~некоторые предлоги (\textit{несмотря на}, \textit{после} и~др.)~[13]. 
+К~показателям ЛСО следует добавить два семантически значимых знака 
+препинания: двоеточие и~тире, совместимые, в~отличие от других знаков 
+препинания, с~ограниченным набором ЛСО (в~основном причины 
+и~спецификации). Исходя из этой теоретической предпосылки, предметом 
+аннотирования в~НБДИ ЛСО прежде всего следует считать показатель ЛСО 
+в~тексте оригинала или в~тексте перевода\footnote{В~тексте перевода коннектор 
+может иметь нулевой эквивалент; ср.: Это благородно, \textit{то есть} я~хотел сказать, 
+гуманно! [Ф.\,М.~Достоевский. Преступление и~наказание (1866)]~--- C'est noble, je voulais 
+dire humain! [Tr.\ par \'{E}.~Guertik]. Русскому коннектору \textit{то есть} в~переводе не 
+соответствует никакой показатель. Возможна и~обратная ситуация: коннектор в~переводе 
+имеет нулевой стимул: Я~ему советовала: <<Сашка, найди хорошую женщину. 
+Сопьешься>> [С.~Алексиевич. Время секонд хэнд (2013)]~--- Moi, Sacha, je lui donnais des 
+conseils: <<Trouve-toi une gentille femme, \textit{sinon} tu vas te mettre \`{a}~boire>> [Tr.\ par 
+S.~Benech]. Имплицитному ЛСО отрицательной альтернативы в~оригинале соответствует 
+показатель этого ЛСО \textit{sinon} в~переводе. Такие случаи НБДИ ЛСО позволяет 
+аннотировать. На этом вопросе не будем останавливаться подробно; см.~[3].}.
+
+
+  
+  Единицей хранения информации в~НБДИ ЛСО служит аннотация, име\-ющая 
+форму дерева, т.\,е.\ ориентированного связного ациклического графа, 
+позволяющего отразить иерархическую структуру текс\-та. Создание нового 
+дерева начинается на странице главного меню НБДИ ЛСО нажатием кнопки 
+<<Создать новое дерево>> (рис.~1).
+  
+\begin{figure} %fig1
+  \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{ink-1.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+  \Caption{Фрагмент страницы главного меню НБДИ ЛСО}
+  \vspace*{-6pt}
+  %\end{figure}
+  %  \begin{figure}[b] %fig2
+ \vspace*{6pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{ink-2.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Примеры деревьев с~расширенным контекстом}
+\vspace*{-6pt}
+\end{figure}   
+  
+  Существуют две возможности: использовать аннотацию, уже созданную 
+  в~НБДК для выбранного коннектора, указав ее номер, или аннотировать 
+<<с~нуля>>, выбрав контекст употребления коннектора из корпуса текс\-тов по 
+идентификационному номеру. После нажатия на кнопку <<Искать>> в~окне 
+<<Выбранный текст>> появляется соответствующий фрагмент. 
+  
+  На следующем этапе аннотирования лингвист определяет границы 
+фрагментов текста, связанных коннектором. Для этого к~текс\-ту в~окне 
+<<Выбранный текст>> можно добавить текст из левого или правого контекста 
+коннектора. Так, на рис.~2 в~дереве~29 для корректной разметки \textit{но} 
+добавлен текст, пред\-шест\-ву\-ющий \textit{Но Акакий Акакиевич}$\ldots$
+  
+
+
+  С помощью кнопки <<Окружение>> можно вызвать информацию об уже 
+созданных в~НБДК аннотаций с~данным коннектором и~созданными для них 
+графами в~НБДИ ЛСО с~гиперссылками на каждый из них (рис.~3).
+  
+\begin{figure} %fig3
+ \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=123.528mm 
+\epsfbox{ink-3.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Информация, получаемая для контекста №\,1 на рис.~1 нажатием кнопки 
+<<Окружение>>}
+\vspace*{-6pt}
+\end{figure}
+
+\subsection{Аннотирование коннектора и~создание узлов графа}
+
+  После того как текст выбран и~определены левый и~правый контексты 
+коннектора, лингвист приступает непосредственно к~созданию графа (рис.~4). 
+  
+\begin{figure}[b] %fig4
+ \vspace*{-6pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{ink-4.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Начальный этап построения графа-дерева}
+\end{figure}
+
+  Нажав на текст дерева, разметчик может проводить сле\-ду\-ющие операции: 
+<<Отменить>>, <<Редактировать>>, <<Удалить>>, <<Разделить на два>> 
+и~<<Разделить на несколько>>, <<Вставить промежуточный>>, <<Разметить>>, 
+<<Отдельное дерево>> (рис.~5).
+{ %\looseness=1
+
+}
+  
+\begin{figure} %fig5
+ \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=127.738mm 
+\epsfbox{ink-5.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Операции с~узлом дерева}
+\vspace*{-6pt}
+\end{figure}
+
+  Кнопки <<Разделить на два>>, <<Разделить на несколько>> 
+  и~<<Разметить>> служат для создания структуры дерева, а~их использование 
+зависит от того, к~какому классу принадлежит коннектор~[2]: 
+однокомпонентный, т.\,е.\ находящийся в~одном из фрагментов текста, двух- 
+или многокомпонентный, т.\,е.\ находящийся в~каж\-дом из соединяемых 
+фрагментов текс\-та, как, например, \textit{если}$\ldots$ \textit{то} в~№\,2 на 
+рис.~1. Для него будет использована кнопка <<Разделить на два>>. 
+  
+  Дополнительно существуют следующие функции:
+  \begin{itemize}
+\item кнопка <<Отменить>> возвращает обратно в~окно <<Дерево 
+контекстов>>; %\\[-14pt]
+\item кнопка <<Редактировать>> позволяет редактировать текст узла, удалять 
+контекст, непосредственно не задействованный в~установлении ЛСО; %\\[-14pt]
+\item кнопка <<Удалить>> вызывает удаление соответствующего узла (и всех 
+нижестоящих) и~возврат к~режиму про\-смот\-ра дерева; %\\[-14pt]
+\item <<Вставить промежуточный>> служит для встав\-ки промежуточного 
+иерархического уровня; %\\[-14pt]
+\item  <<Отдельное дерево>> позволяет создать отдельное дерево, где 
+текущий узел станет главным.
+\end{itemize}
+
+  После того как определено, на какое число фрагментов должен быть разбит 
+текст, лингвист размечает сам коннектор. Для этого ему нужно определить, 
+есть ли другие коннекторы в~аннотируемом текс\-те, и,~в~этом случае, является ли 
+аннотируемый коннектор встраивающим или 
+встроенным\footnote{Встраивающим называется коннектор, в~сфере действия которого 
+находится еще один коннектор, называемый встроенным. Ср.: Между нами уже было 
+не так, как раньше, \textit{то есть} мы дружили, \textit{но} все больше я~на нее покрикивала 
+[С.~Алексиевич. Время секонд хэнд (2013)]. В~сфере действия коннектора \textit{то есть} 
+(в~его правом контексте, вклю\-ча\-ющем фрагмент <<мы дружили, \textit{но} все больше я~на 
+нее покрикивала>>) находится коннектор \textit{но}. \textit{То есть} является здесь 
+встраивающим коннектором, \textit{но}~--- встроенным. См.\ также приведенный пример.}. 
+В~№\,2 на рис.~1 коннектор \textit{если}$\ldots$ \textit{то}~--- встраивающий, 
+поскольку в~первом из соединяемым им фрагментов текс\-та находятся другие 
+коннекторы: \textit{а~потом} и~\textit{а}, которые, соответственно, являются 
+по отношению к~нему встроенными, причем \textit{а~потом} оказывается, 
+в~свою очередь, встра\-и\-ва\-ющим по отношению к~\textit{а}. Это будет отражено 
+в~структуре дерева, а~именно в~иерархии его узлов. 
+  
+  Для аннотирования коннектора и~выражаемого им ЛСО лингвист использует 
+кнопку <<Выбор коннектора и~отношения>>, которая вызывает 
+соответствующий список. Для выбора коннектора в~окне <<Найти 
+существующий тип>> следует ввести коннектор или его часть и~нажать кнопку 
+<<Искать>>. Сформируется список в~алфавитном порядке из 30 показателей, 
+которые включают введенное значение. После выбора коннектора в~поле 
+<<Результат>> автоматически добавляется то ЛСО, которое наиболее час\-то 
+выражается данным коннектором в~НБДК. Таким образом, данные 
+о~коннекторах и~о~частотности вы\-ра\-жа\-емо\-го им ЛСО в~одной надкорпусной базе данных 
+используются для автоматизации одной из операций в~другой. При отсутствии 
+необходимого коннектора или выражаемого им ЛСО их мож\-но добавить в~со\-от\-вет\-ст\-ву\-ющие списки.
+  
+  После аннотирования коннектора и~ЛСО текст разбивается на фрагменты 
+автоматически или вручную с~помощью соответствующих кнопок. На этом 
+этапе лингвист может удалить текст, который непосредственно не участвует 
+в~установлении ЛСО; см.\ приведенный ранее пример и~рис.~6 для пары №\,2 
+с~рис.~1, где при построении графа для коннектора \textit{если}$\ldots$ 
+\textit{то} пред\-шест\-ву\-ющий \textit{если} текст \textit{Слушай, Глеб, мне как-то 
+Пасюк говорил, что} будет убран\footnote{Насколько известно авторам, ни один из 
+существующих ресурсов дискурсивного аннотирования не позволяет видоизменять 
+фрагменты текста, связанные ЛСО. Единственный ресурс, а~имен\-но PDTB, точ\-но указывает 
+границы фрагментов текс\-та при помощи цветовой разметки. Подробнее см.~\cite{9-in}.}.
+{ %\looseness=1
+
+}
+  
+\begin{figure} %fig6
+ \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=126.874mm 
+\epsfbox{ink-6.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Разбивка фрагмента и~удаление текста}
+\vspace*{-6pt}
+\end{figure}
+
+    Если один из контекстов <<пус\-той>> (содержит только коннектор 
+    и,~например, многоточие), в~нужном окне есть воз\-мож\-ность нажать галочку 
+<<пустой>>. Эта функция недоступна в~существующих ресурсах. 
+    
+    После сохранения результатов аннотирования на странице <<Дерево 
+контекстов>> можно увидеть корневой узел и~узлы первого уровня (рис.~7). 
+Аннотирование встроенных коннекторов приводит к~созданию узлов второго 
+и~третьего уровня (рис.~8). 
+    
+
+  Редактировать узел можно на любом этапе с~по\-мощью кнопки 
+<<Редактировать>>, но нельзя удалить текст, который используется в~узле на 
+уровне ниже. Удаление узла приводит к~удалению всех узлов на уровнях ниже.
+
+
+\vspace*{-6pt}
+  
+\section{Аннотирование: переключение между состояниями, функция 
+<<копировать>> и~<<встроить>>}
+
+\vspace*{-5pt}
+
+  После создания дерева интерфейс НБДИ ЛСО позволяет решить несколько 
+задач по редактированию и~дополнению аннотированной информации.
+
+\begin{figure} %fig7
+ \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{ink-7.eps}
+ }
+\end{center}
+\vspace*{-19pt}
+\Caption{Создание корневого узла}
+%\end{figure}
+%\begin{figure} %fig8
+ \vspace*{6pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{ink-8.eps}
+ }
+\end{center}
+\vspace*{-19pt}
+\Caption{Аннотирование иерархии ЛСО}
+\vspace*{-11pt}
+\end{figure}
+
+%\vspace*{-4pt}
+  
+\subsection{Необходимо вернуться к~предыдущему состоянию дерева или~переключиться на следующее}
+
+\vspace*{-5pt}
+ 
+  Каждое состояние дерева привязано ко времени внесенного изменения 
+  и~к~имени пользователя, который его внес. Можно выбрать нуж\-ное состояние из 
+списка гиперссылок, вызываемого с~по\-мощью кнопки <<История дерева>>. 
+Выбрав одно из состояний, можно <<Вернуться к~текущему со\-сто\-янию>>, 
+<<Вернуться к~истории>>, <<Показать предыдущее со\-сто\-яние>>, <<Сравнить 
+с~предыду\-щим>>, <<Показать последующее>>, а~также <<Сделать текущим>> 
+(текущее со\-сто\-яние дерева зафиксируется как постоянное, и~с~ним можно 
+работать далее). Эти функции позволяют учитывать эволюцию разметки, 
+связанную, в~част\-ности, с~получением лингвистами новых знаний об~ЛСО и~их 
+показателях (рис.~9). 
+  
+  \begin{figure}[h] %fig9
+   \vspace*{-3pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128.059mm 
+\epsfbox{ink-9.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+  \Caption{Одна из версий дерева с~указанием времени и~даты внесенных изменений}
+  \vspace*{-12pt}
+  \end{figure}
+  
+  \vspace*{-6pt}
+  
+\subsection{Разметка узла более высокого или более низкого 
+иерархического уровня}
+
+\vspace*{-2pt}
+
+  Если сначала был размечен встроенный коннектор, то для встраивающего 
+коннектора используется функция <<Копировать>>~--- <<Встроить>>, 
+позволяющая избежать дублирования при аннотировании. После копирования 
+уже созданного дерева необходимо перейти в~окно работы над деревом для 
+встраивающего коннектора и~нажать <<Встроить>>. И~наоборот: может быть 
+создано <<Отдельное дерево>> для встроенного коннектора (такая функция 
+может быть необходима для получения статистики). В~этом случае узел, 
+с~которым работал разметчик, в~новом дереве станет главным. 
+
+\vspace*{-6pt}
+  
+\subsection{Восстановить удаленное дерево и~найти существующее}
+
+\vspace*{-2pt}
+  
+  На рис.~1 показано главное меню. При нажатии на кнопку <<Список 
+удаленных деревьев>> открывается список деревьев, которые были по\-стро\-ены, 
+а~затем удалены,~--- любое из них может быть восстановлено.
+  %
+  Кнопка <<Фильтровать>> используется для отбора деревьев по текс\-ту, на 
+основе которого они были сформированы. Фильтр работает двумя способами:
+
+\noindent
+  \begin{enumerate}[(1)]
+\item если ввести часть текста, заключенную в~кавычки, например 
+<<\textit{ничто не напоминало старику}>>, будут найдены деревья, 
+содержащие фрагмент текс\-та \textit{ничто не напоминало старику}; 
+\item если ввести текст без кавычек, например \textit{ничто не напоминало 
+старику}, будут найдены деревья, каж\-дое из которых содержит все 
+указанные словоформы (\textit{ничто}, \textit{не}, \textit{напоминало} 
+и~\textit{старику}), причем в~любом порядке.
+\end{enumerate}
+
+\section{Заключение }
+
+  Интерфейс НБДИ ЛСО позволяет пользователю-лингвисту создавать графы 
+для ЛСО и~их показателей. Сформированные графы отражают в~единой 
+аннотации три важных теоретических аспекта дискурсивного анализа: 
+показатель ЛСО (или его отсутствие), иерархию ЛСО и~границы фрагментов 
+текста, непосредственно связанных ЛСО. Кроме того, поскольку НБДИ ЛСО 
+использует параллельные корпуса текстов, с~по\-мощью описанного 
+интерфейса лингвист может создать двуязычную аннотацию. 
+Полученные с~по\-мощью НБДИ ЛСО результаты уже позволили уточнить некоторые 
+тео\-ре\-ти\-че\-ские положения, в~част\-ности сформулированные в~наиболее 
+популярной тео\-рии риторической структуры~[14]; подробнее  
+см.~\cite{9-in, 10-in}. Дальнейший анализ материала и~статистические 
+возможности НБДИ ЛСО позволят установить закономерности в~глубине 
+иерархии ЛСО: сколько максимально уровней может быть в~семантической 
+структуре текс\-та при наличии и~при отсутствии показателя ЛСО. Эта 
+информация пред\-став\-ля\-ет интерес для когнитивных исследований~--- как 
+моноязычных, так и~контрастивных, а~также для автоматической обработки 
+текс\-та и~разработки искусственного интеллекта. 
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-in}
+\Au{Инькова О.\,Ю.} Логико-семантические отношения: проб\-ле\-мы классификации~/\!\!/ 
+ Связность текста: Мереологические  
+ло\-ги\-ко-се\-ман\-ти\-че\-ские отношения~/
+Под ред.\ О.~Иньковой, Э.~Манзотти.~--- М.: Языки славянских культур, 2019. 
+ С.~11--98.
+\bibitem{2-in}
+\Au{Инькова О.\,Ю.} Структура коннекторов: лингвистические методы описания~/\!\!/ 
+Структура коннекторов и~методы ее описания~/ Под ред. О.\,Ю.~Иньковой.~--- М.: ТОРУС 
+ПРЕСС, 2019. С.~5--47. 
+\bibitem{3-in}
+\Au{Гончаров А.\,А., Инькова~О.\,Ю.} Имплицитные ло\-ги\-ко-се\-ман\-ти\-че\-ские 
+отношения и~метод их поиска в~параллельных текстах~/\!\!/ Компьютерная лингвистика 
+и~интеллектуальные технологии: По мат-лам ежегодной Междунар. конф. <<Диалог>>.~---  
+М.: РГГУ, 2021. Вып.~20. C.~310--320.
+\bibitem{4-in}
+Ru-RSTreebank: Русскоязычный дискурсивный корпус. {\sf https://rstreebank.ru}.
+\bibitem{5-in}
+Penn Discourse Treebank Project. {\sf https://www.seas.upenn.edu/$\sim$pdtb.}
+\bibitem{6-in}
+\Au{Das D., Taboada~M.} RST ыignalling сorpus Annotation ьanual. 2014. {\sf 
+https://  www.sfu.ca/$\sim$mtaboada/docs/publications/RST\_Signalling\_Corpus\_Annotation\_\linebreak Manual.pdf}.
+\bibitem{7-in}
+GUM: The Georgetown University Multilayer Corpus. {\sf 
+https://corpling.uis.\linebreak georgetown.edu/gum/annotations.html}.
+\bibitem{8-in}
+\Au{Дурново А.\,А., Инькова О.\,Ю., Попкова~Н.\,А.} Архитектура базы данных иерархии 
+логико-семантических отношений~/\!\!/ Системы и~средства информатики, 2022. Т.~32. №\,1. 
+С.~114--125.
+\bibitem{9-in}
+\Au{Дурново А.\,А., Инькова О.\,Ю, Попкова~Н.\,А.} Принципы описания показателей  
+ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений и~их иерархии~/\!\!/ Информатика и~её 
+применения, 2022. Т.~16. Вып.~2. С.~52--59.
+\bibitem{10-in}
+\Au{Inkova O.\,Yu., Nuriev V.\,A., Popkova~N.\,A.} The role of paragraph in the corpora of 
+annotated texts~/\!\!/ Компьютерная лингвистика и~интеллектуальные технологии: По мат-лам 
+ежегодной Междунар. конф. <<Диалог>>.~---  М.: РГГУ, 2022. Вып.~21. C.~273--283. 
+\bibitem{11-in}
+\Au{Inkova O., Popkova~N.} Statistical data as information source for linguistic analysis of Russian 
+connectors~/\!\!/ Информатика и~её применения, 2017. Т.~11. Вып.~3. С.~123--131.
+\bibitem{12-in}
+Национальный корпус русского языка (НКРЯ). {\sf https://ruscorpora.ru/new}.
+\bibitem{13-in}
+\Au{Инькова-Манзотти О.\,Ю.} Коннекторы противопоставления во французском и~русском 
+языках: сопоставительное исследование.~--- М.: МГУ-Информэлектро, 2001. 434~с.
+\bibitem{14-in}
+\Au{Mann W., Thompson~S.} Rhetorical structure theory: Towards a~functional theory of text 
+organization~/\!\!/ Text, 1988. Vol.~8. Iss.~3. P.~243--281. doi: 10.1515\!/ text.1.1988.8.3.243.
+        \end{thebibliography}
+} }
+
+
+
+\vspace*{-8pt}
+
+\hfill{\small\textit{Поступила в~редакцию 08.08.22}}
+
+\vspace*{6pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{6pt}
+
+\def\tit{DATABASE OF~HIERARCHIES OF~LOGICAL-SEMANTIC RELATIONS: USER 
+INTERFACE}
+
+
+
+\def\titkol{Database of~hierarchies of~logical-semantic relations: User 
+interface}
+
+\def\aut{A.\,A.~Durnovo$^1$, O.\,Yu.~Inkova$^{1,2}$, and N.\,A.~Popkova$^1$}
+
+\def\autkol{A.\,A.~Durnovo, O.\,Yu.~Inkova, and N.\,A.~Popkova}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-15pt}
+
+\noindent
+$^1$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
+$\hphantom{^1}$of Sciences,  44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+\noindent
+$^2$University of Geneva, 22 Bd des Philosophes, CH-1205 Geneva 4, Switzerland
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2022 vol~32 no\,3}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2022 vol~32 no\,3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+
+
+
+\Abste{The paper describes user features of the Database of Hierarchies of Logical-Semantic 
+Relations (SBDH LSR), a~new tool for annotating discourse
+relations, developed at FRC CSC RAS. 
+The article lists annotations stages
+in the SBDH LSR: selection of the context for 
+annotation, possible modifications, annotation of the LSR marker and of LSR itself. 
+In a single annotation, the formed 
+annotations reflect  three important theoretical aspects of discourse analysis: 
+the LSR marker (or its absence); the hierarchy of LSR; and the boundaries of text fragments directly 
+connected by LSR. The database's interface allows one to edit, complete, or filter the annotated 
+information: to save annotations' previous states and, if necessary, go back to one of them, to 
+recover deleted\linebreak\vspace*{-12pt}}
+
+\Abstend{ annotations, to use already created annotations to form the new ones. The
+results 
+obtained with the SBDH LSR have already allowed us to clarify some
+theoretical points, in 
+particular, those formulated by the Rhetorical Structure Theory. Further analysis of the examples 
+and statistical capabilities of the SBDH LSR will make it possible to establish regularities in the 
+deep LSR hierarchies. This information might be used in cognitive research, both monolingual and 
+contrastive, as well as for automatic text processing and artificial intelligence development.}
+
+\KWE{supracorpora database; corpus of text annotations; discourse relations; connector}
+
+
+
+\DOI{10.14357\!/\!08696527220310} 
+
+\vspace*{-14pt}
+
+
+\Ack
+
+\vspace*{-4pt}
+
+\noindent
+The research was carried out using the infrastructure of the Shared Research Facilities ``High 
+Performance Computing and Big Data'' (CKP ``Informatics'') of FRC CSC RAS (Moscow) and 
+supported by the Switzerland--Russia Research Preparation Grant ``Annotation methodology in 
+a~supracoprora database of connectives'' of the State Secretariat for Education, Research, and 
+Innovation.
+
+
+\vspace*{-6pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-in-1}
+\Aue{Inkova, O.\,Yu.} 2019. Logiko-semanticheskie otnosheniya: Problemy klassifikatsii 
+[Logical-semantic relations: Classification problems]. \textit{Svyaznost' teksta: mereologicheskie  
+logiko-semanticheskie otnosheniya} [Text coherence: Mereological logical semantic relations]. Eds.\ 
+O.\,Inkova and E.~Manzotti. Moscow: LRC Publishing House. 11--98.
+\bibitem{2-in-1}
+\Aue{Inkova, O.\,Yu.} 2019. \textit{Struktura konnektorov: lingvisticheskie metody opisaniya} 
+[Connectors' structure and linguistic means of their description]. Struktura konnektorov i metody ee 
+opisaniya [Connectives structure and methods of its description]. Ed. O.\,Yu.~Inkova. Moscow: 
+TORUS PRESS. 5--47.
+\bibitem{3-in-1}
+\Aue{Goncharov, A.\,A., and O.\,Yu.~Inkova.} 2020. Implitsitnye logiko-semanticheskie 
+otnosheniya i metod ikh poiska v~parallel'nykh tekstakh [Implicit logical-semantic relations and a 
+method of their identification in parallel texts]. \textit{Computational Linguistics and Intellectual 
+Technologies: Papers from the Annual Conference (International) ``Dialogue.''} Moscow: RSHI. 
+19(26):310--320.
+\bibitem{4-in-1}
+Ru-RSTreebank: Russkoyazychnyy diskursivnyy korpus [Ru-RSTreebank: Russian discourse 
+corpus]. Available at: {\sf https://rstreebank.ru/} (accessed August~19, 2022).
+\bibitem{5-in-1}
+Penn Discourse Treebank Project. Available at: {\sf https:// www.seas.upenn.edu/$\sim$pdtb/} 
+(accessed August~19, 2022).
+\bibitem{6-in-1}
+\Aue{Das, D., and M.~Taboada.} 2014. RST signalling corpus: Annotation manual. Available at: 
+{\sf https://www.sfu.ca/$\sim$mtaboada/docs/publications/RST\_Signalling\_\linebreak Corpus\_Annotation\_Manual.pdf} 
+(accessed August~19, 2022).
+\bibitem{7-in-1}
+GUM: The Georgetown university multilayer corpus. Available at: {\sf 
+https://corpling. uis.georgetown.edu/gum/annotations.html} (accessed August~19, 2022)
+\bibitem{8-in-1}
+\Aue{Durnovo, A.\,A., O.\,Yu.~Inkova, and N.\,A.~Popkova.} 2022. Arkhitektura bazy dannykh 
+iyerarkhii logiko-semanticheskikh otnosheniy [Database of hierarchies of logical-semantic 
+relations: Architecture]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of 
+Informatics} (32)1:114--125.
+\bibitem{9-in-1}
+\Aue{Durnovo, A.\,A., O.\,Yu.~Inkova, and N.\,A.~Popkova.} 2022. Printsipy opisaniya 
+pokazateley logiko-semanticheskikh otnosheniy i~ikh ierarkhii [Logical-semantic relations and 
+their hierarchies: Description principles]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 
+(16)2:52--59.
+\bibitem{10-in-1}
+\Aue{Inkova O.\,Yu., V.\,A.~Nuriev, and N.\,A.~Popkova.} 2022. The role of paragraph in the 
+corpora of annotated texts. \textit{Computational Linguistics and Intellectual Technologies: 
+Papers from the Annual Conference (International) ``Dialogue.''} Moscow: RSHI. 21:273--283.
+\bibitem{11-in-1}
+\Aue{Inkova, O., and N.~Popkova.} 2017. Statistical data as information source for linguistic 
+analysis of Russian connectors. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 
+ 11(3):123--131.
+\bibitem{12-in-1}
+Natsional'nyy korpus russkogo yazyka (NKRYa) [Russian National Corpus (RNC)]. Available at: 
+{\sf http://www.ruscorpora.ru/new} (accessed August~19, 2022)
+\bibitem{13-in-1}
+\Aue{Inkova-Manzotti, O.\,Yu.} 2001. \textit{Konnektory protivopostavleniya vo frantsuzskom 
+i~russkom yazykakh. Sopostavitel'noe issledovanie} [Connectives of opposition in French and 
+Russian. A~comparative study]. Moscow: MSU-Informelektro. 434~p.
+\bibitem{14-in-1}
+\Aue{Mann, W., and S.~Thompson}. 1988. Rhetorical structure theory: Towards a functional 
+theory of text organization. \textit{Text} 8(3):243--281. doi: 10.1515\!/\!text.1.1988.8.3.243.
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received August 8, 2022}} 
+
+\vspace*{-12pt} 
+
+\Contr
+
+\vspace*{-4pt}
+
+\noindent
+\textbf{Durnovo Aleksandr A.} (b.\ 1949)~--- leading programmer, Institute of Informatics 
+Problems, Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{duralex49@mail.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Inkova Olga Yu.} (b.\ 1965)~--- Doctor of Science in philology, senior scientist, Institute of 
+Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; faculty member, 
+University of Geneva, 22~Bd des Philosophes, CH-1205 Geneva 4, Switzerland; 
+\mbox{olyainkova@yandex.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Popkova Nataliia A.} (b.\ 1992)~--- junior scientist, Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{natasha\_\_popkova@mail.ru}
+
+ 
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

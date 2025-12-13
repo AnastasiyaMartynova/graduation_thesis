@@ -1,0 +1,480 @@
+\def\stat{chernous}
+
+\def\tit{АЛГОРИТМ И ПРОГРАММНЫЙ КОМПЛЕКС ДЛЯ~АНАЛИЗА ХАРАКТЕРИСТИК АКУСТИЧЕСКИХ ВОЛН 
+ПЛАЗМЕННОГО АКТУАТОРА, ВСТРОЕННОГО В~МОДЕЛЬНОЕ СОПЛО САМОЛЕТА$^*$}
+
+\def\titkol{Алгоритм и программный комплекс для~анализа характеристик акустических волн} 
+%плазменного актуатора, встроенного в~модельное сопло самолета} 
+
+\def\autkol{А.\,Д.~Черноусов, Д.\,В.~Малахов, Н.\,Н.~Скворцова}
+
+\def\aut{А.\,Д.~Черноусов$^1$, Д.\,В.~Малахов$^2$, Н.\,Н.~Скворцова$^{3}$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Исследование выполнено при поддержке Гранта 
+Президента Российской Федерации для государственной поддержки молодых
+российских ученых МК-5607.2013.2.}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт общей физики им.\ А.\,М.~Прохорова Российской 
+академии наук; Акустический институт имени академика Н.\,Н.~Андреева, 
+chado2008@yandex.ru} 
+\footnotetext[2]{Институт общей физики им.\ А.\,М.~Прохорова Российской академии\\
+$\hphantom{^1}$наук, 89199945791@mail.ru} 
+\footnotetext[3]{Институт общей физики им.\ А.\,М.~Прохорова Российской академии наук;
+Национальный  исследовательский ядерный университет <<МИФИ>>, mukudori@mail.ru} 
+
+
+
+            \label{st\stat}
+            
+\vspace*{-12pt}
+ 
+
+      \Abst{В настоящее время остро стоит проблема по разработке новых технологий 
+снижения шума, в том числе и по направленному воздействию на шум на основе 
+взаимодействия плазменных возмущений и звукообразующих пульсаций. Одним из 
+устройств, построенных на таком принципе, являются разрабатываемые в ИОФ РАН 
+плазменные актуаторы (группа связанных друг с другом разрядников, встроенных по 
+периметру сопла) различной конфигурации и формы. 
+      Цель данной работы~--- сравнительный анализ спектров акустических волн, 
+получаемых в результате работы плазменных актуаторов, на воздушный поток, 
+истекающий из сопел. Исследования проводились для актуаторов различной конструкции 
+и различной формы сопел. Для этого были решены следующие задачи: cортировка и 
+анализ экспериментальных данных; разработка алгоритма и создание программы для 
+исследования спектральных и корреляционных характеристик акустических сигналов; 
+оценка спектральных и корреляционных характеристик акустических сигналов в 
+экспериментах с двумя типами актуаторов: с потоками газа и без таковых; сравнительный 
+анализ спектральных и корреляционных характеристик акустических сигналов, 
+получаемых на выходе из сопла при взаимодействии воздушного потока с плазмой 
+актуаторов различной конфигурации. При помощи созданного в среде MatLab 
+программного комплекса были исследованы спектральные и корреляционные 
+характеристики акустических сигналов, что позволило построить физическую модель 
+работы плазменного актуатора в сопле самолета. С~помощью разработанной методики 
+исследований показана перспективность использования влияния плазменных актуаторов 
+на воздушный поток, проходящий через сопло.}
+
+\vspace*{-3pt}
+     
+      \KWE{плазменный актуатор; акустические волны; программный комплекс; 
+алгоритм; сопло; спектральные характеристики; робастные спектры}
+
+\vspace*{-3pt}
+
+\DOI{10.14357\!/08696527140108}
+  
+
+\vskip 12pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+
+      
+    \section{Введение}
+     
+     С начала 2000-х гг.\ активное управление воздушным потоком при 
+помощи плазменных актуаторов стало набирать все большую популярность. 
+Главное преимущество этого метода в том, что он направленно преобразует 
+электрическую энергию в кинетическую без вовлечения движущихся 
+механических частей. Таким образом, можно считать, что это очень простая 
+микроэлектромеханическая сис\-те\-ма
+(МЭМС). Кроме того, время отклика такой системы очень мало, что позволяет 
+осуществлять управление в реальном времени при высокой частоте. 
+Недостатком метода является низкая эффективность в преобразовании 
+энергии. Поверхностные разряды могут также изменять свойства газа на 
+стенке, такие как плотность или вязкость [1].
+     
+     Свои варианты плазменных актуаторов различной конфигурации и 
+формы были разработаны в ИОФ РАН и названы RING-1 и RING-2~[2]. Эти 
+устройства работают на принципе скользящего разряда и могут быть 
+встроены по периметру сопла. Многоискровые актуаторы RING-1 и RING-2 
+работают от специального источника питания, генерирующего 
+последовательность высоковольтных (ВВ) импульсов с частотой повторения 
+до 1~кГц. Изучение характеристик акустических волн, образующихся в сопле 
+в результате работы актуатора, является важным, потому что они могут 
+понижать шумность истекающего из сопла потока. В~данной работе
+представлены алгоритм и программный комплекс, позволяющие 
+анализировать звуковые волны, получающиеся в результате работы 
+актуатора, включенного на выходе макета сопла, как с воздушным потоком, 
+так и без него. Разработанный алгоритм позволяет выделять из записи 
+экспериментальных данных (различных форматов) составные части~--- от 
+одного конкретного импульса из всей выборки записи до группы из 
+произвольного числа импульсов. А~про\-грам\-мная оболочка (GUI~---
+graphical user interface), созданная 
+в среде MatLab, позволяет построить устойчивые робастные спектральные и 
+автоковариационные функций акустических сигналов.
+  
+    \section{Информация об~экспериментальных данных}
+     
+     Измерения акустических волн проводились с помощью 
+профессиональной звуковой аппаратуры таким образом, чтобы ударная волна 
+не проявлялась в сигнале с микрофона. На расстоянии $\sim1{,}5$~м под 
+углом 30$^\circ$ к оси сопла был установлен микрофон, регистрирующий 
+акустические характеристики системы. С~микрофона записывался 
+электрический сигнал и выводились спектральные характеристики сигнала. 
+Вне зависимости от типа эксперимента (с воздушным потоком через сопло 
+или без него) структура выходных данных имела вид, представленный на 
+рис.~1. Всплески амплитуды акустического сигнала (рис.~1,\,\textit{а}\,--\,1,\,\textit{в}) 
+связаны с плазменными разрядами, генерируемыми актуатором. На 
+рис.~1,\,\textit{б} представлен выделенный фрагмент из полной 
+записи~(см.\ рис.~1,\,\textit{а}), а 
+на рис.~1,\,\textit{в}, изображен одиночный импульс, вычлененный из 
+фрагмента записи~(см.\ рис.~1,\,\textit{б}). 
+На рис.~1,\,\textit{г} показан спектр единичного 
+импульса, изображенного на рис.~1,\,\textit{в}. Весь цикл последовательного 
+разбиения полной выборки записи на фрагменты и их последующей 
+обработки демонстрирует часть тех возможностей, которые предоставляет 
+программный комплекс обработки экспериментальных данных.
+     
+\begin{figure} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=130mm %2.062mm
+ \epsfbox{che-1.eps}
+ }
+ \end{center}
+ \vspace*{-14pt}
+\Caption{Временн$\acute{\mbox{а}}$я выборка амплитуды звукового сигнала при импульсной работе 
+актуатора RING-2 с частотой 50~Гц: (\textit{а})~полная выборка; 
+(\textit{б})~фрагмент  выборки; 
+(\textit{в})~одиночный импульс; 
+(\textit{г})~спектр одиночного  импульса}
+\vspace*{-3pt}
+\end{figure}
+      
+    \section{Алгоритм обработки измерительной информации}
+    
+     Спектр сигнала, построенный по всей выборке (см.\ рис.~1,\,\textit{а}), 
+является суммой двух состояний и не дает информации о том, как ведут себя 
+акустические волны, порождаемые актуатором, внутри сопла. Для получения 
+представления о том, что происходит внутри сопла после одного или серии 
+импульсов плазменного актуатора, было принято решение разбить всю 
+временн$\acute{\mbox{у}}$ю область каждой выборки записанных данных на отдельные 
+импульсы. Для этого был разработан специальный алгоритм и написана 
+программа в среде программирования MatLab, позволяющая исследовать:
+     \begin{figure}[b] %fig2
+     \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=127.24mm
+ \epsfbox{che-2.eps}
+ }
+ \end{center}
+ \vspace*{-12pt}
+     \Caption{Блок-схема алгоритма разбиения данных эксперимента на отдельные 
+импульсы актуаторов~(\textit{а}) и порядка работы с комплексом обработки 
+данных~(\textit{б})}
+\vspace*{-6pt}
+     \end{figure}
+     \begin{itemize}
+\item зависимости сигнала или его фрагмента (одиночного импульса) от 
+времени;
+\item спектры сигнала или его фрагмента, в том числе и робастных спектров 
+для задаваемого количества фрагментов (одиночных импульсов) исходной 
+выборки;
+\item автоковариационную функцию сигнала или его фрагмента (одиночного 
+импульса);
+\item зависимости от времени двух выбранных сигналов или их фрагментов 
+(одиночных импульсов) на одних координатных осях;
+\item робастные спектры двух выбранных сигналов или их фрагментов 
+(одиночных импульсов) на одних координатных осях;
+\item автоковариационные функции двух выбранных сигналов или их 
+фрагментов (одиночных импульсов) на одних координатных осях.
+\end{itemize}
+
+     Блок-схемы алгоритма и принципа работы разработанной программы 
+изоб\-ра\-же\-ны на рис.~2, а внешней вид программного комплекса на рис.~3.
+     
+     
+     
+     \begin{figure}[b] %fig3
+     \vspace*{6pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=100mm
+ \epsfbox{che-3.eps}
+ }
+ \end{center}
+ \vspace*{-6pt}
+     \Caption{Интерфейс пользователя программного комплекса обработки данных}
+      \end{figure}
+      
+      \begin{figure} %fig4
+      \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=123.652mm
+ \epsfbox{che-4.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+      \Caption{Блок-схема нахождения номеров точек, которым соответствуют 
+локальные максимумы}
+      \end{figure}
+     
+     Считывание данных и нахождение численных значений максимума и 
+минимума выборки выполняются стандартными командами MatLab. После 
+считывания данных необходимо вычислить максимум и минимум всей 
+выборки, так как их значения будут служить ориентиром для нахождения 
+локальных экстремумов одиночных импульсов. Наиболее сложной по 
+реализации частью алгоритма является нахождение точек выборки, которым 
+соответствуют локальные экстремумы, служащие признаками возникновения 
+нового импульса. Принцип отбора таких точек проиллюстрирован на 
+блок-схеме (рис.~4). Данная схема на\-хож\-де\-ния точек, удовлетворяющих условию 
+локального экстремума, выбрана из тех соображений, что возможно всего 
+4~варианта возникновения ярко выраженных экстремумов в записях сигнала: 
+\begin{enumerate}[(1)]
+\item точка экстремума и предшествующие ей несколько точек находятся в 
+верхней полуплоскости (рис.~5,\,\textit{а}); 
+\item точка экстремума и 
+предшествующие ей несколько точек находятся в нижней полуплоскости 
+(рис.~5,\,\textit{б}); 
+\item точка экстремума находится в верхней 
+полуплоскости, а предшествующие ей несколько точек находятся в нижней 
+полуплоскости (рис.~5,\,\textit{в}); 
+\item точка экстремума находится в нижней 
+полуплоскости, а предшествующие ей несколько точек находятся в верхней 
+полуплоскости (рис.~5,\,\textit{г}).
+\end{enumerate}
+
+\begin{figure} %fig5
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128.046mm
+ \epsfbox{che-5.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Варианты возникновения локальных экстремумов во временн$\acute{\mbox{о}}$й выборке 
+данных}
+\end{figure}
+
+     Условия выявления локальных максимумов и минимумов таковы:
+     \begin{equation}
+\vert d(n)-d(n-2)\vert > 0{,}8\max\,; \enskip -\vert d(n)-d(n-2)\vert > 
+0{,}8\min\,,
+\label{e1-che}
+\end{equation}
+где $\max$ и $\min$~--- это максимальное и минимальное значения всей 
+временн$\acute{\mbox{о}}$й выборки сигнала соответственно, а $d(n)$~--- текущее значение 
+сигнала во временн$\acute{\mbox{о}}$й выборке. Эти условия были выбраны как оптимальные 
+для всех проведенных измерений, в результате просмотра всех баз данных 
+экспериментов и оптимизации решений нахождения локальных экстремумов 
+одиночных импульсов.
+     
+     Далее из массива данных~$Q$, который состоит из нулей~--- номеров 
+точек выборки, не удовлетворяющих рассмотренным выше условиям,~--- и 
+значений номеров точек выборки, удовлетворяющих условиям, с помощью 
+стандартных команд MatLab убираются нули. Из оставшихся значений~$Q$ 
+отсеиваются все значения, отстоящие на 40~точек от локального экстремума. 
+Это необходимо для того, чтобы убрать те значения локальных экстремумов, 
+которые удовлетворяют условиям~(1), но не являются ориентиром начала 
+импульса, так как в зависимости от условий эксперимента импульсы 
+актуатора могут иметь несколько достаточно больших экстремумов, а 
+интерес представляет самый первый из них.
+     Затем программа рассчитывает общее число импульсов, найденное в выборке. При 
+построении графиков из значений экстремумов вычитается 5~точек, эта мера 
+также выявлена в результате оптимизации баз данных экспериментов и 
+необходима, так как зарождение импульса происходит до появления 
+экстремума.
+     
+    \section{Выводы}
+    
+     Благодаря устойчивым характеристикам робастных спектров и 
+автоковариационным функциям акустических сигналов, полученных с 
+помощью разработанного программного комплекса, было установлено, что 
+акустические волны, образующиеся в результате работы плазменного 
+актуатора RING-2, встроенного в модельное сопло, проходят два этапа: 
+\begin{enumerate}[(1)]
+\item импульс актуатора с последующей реверберацией; 
+\item выход сигнала на 
+квазистационарный уровень, сравнимый с уровнем шума.
+\end{enumerate}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+\bibitem{1-che}
+\Au{Moreau E.} Airflow control by non-thermal plasma actuators~/\!\!/ J.~Phys. 
+D: Appl. Phys., 2007. Vol.~40. No.\,3. P.~605--608.
+\bibitem{2-che}
+\Au{Бархударов Э.\,М., Бережецкая Н.\,К., Коссый~И.\,А., Малахов~Д.\,В., 
+Тактакишвили~М.\,И., Шакаров~М.\,Р., Копьёв~В.\,А.} Акустическая и 
+удар\-но-вол\-но\-вые характеристики многоэлектродного кольцевого 
+плазменного актуатора RING-1~/\!\!/ 2-я Всеросс. открытая конф. по 
+авиационной акустике: Тез. докл.~--- М.: Центральный 
+аэрогидродинамический институт им.\ проф.\ Н.\,Е.~Жуковского (ЦАГИ), 
+2011. С.~147--148.
+\end{thebibliography}
+}
+}
+
+\hfill{\small\textit{Поступила в редакцию 17.02.14}}
+
+
+%\vspace*{12pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+\newpage
+
+\def\tit{ALGORITHM AND PROGRAM COMPLEX FOR~ANALYSIS 
+OF~THE~CHARACTERISTICS OF~ACOUSTIC WAVES OF~PLASMA ACTUATOR FLUSH-MOUNTED 
+IN~THE~MODEL PLANE NOZZLE}
+
+\def\titkol{Algorithm and program complex for~analysis 
+of~the~characteristics of~acoustic waves} % of~plasma actuator flush-mounted  in~the~model plane nozzle}
+
+\def\aut{A.\,D.~Chernousov$^{1,2}$, D.\,V.~Malakhov$^1$, and~N.\,N.~Skvortsovа$^{1,3}$}
+\def\autkol{A.\,D.~Chernousov, D.\,V.~Malakhov, and N.\,N.~Skvortsovа}
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-12pt}
+
+\noindent
+$^1$Prokhorov General Physics Institute, 
+Russian Academy of Sciences, 38 Vavilov\\
+$\hphantom{^1}$Str., Moscow 119991, Russian Federation
+
+\noindent
+$^2$Andreev Acoustic Institute, 4 Shvernik Str., Moscow 117036, Russian\\
+$\hphantom{^1}$Federation
+
+\noindent
+$^3$National Research Nuclear University ``MEPHI,'' 31 Kashirskoye Shosse, 
+Moscow\\
+$\hphantom{^1}$115409, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~--- 
+Systems and Means of Informatics 2014 vol~24 no\,1}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~--- 
+ Systems and Means of Informatics   2014   vol~24   no\,1
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+\Abste{Currently, the problem of developing new technologies of reducing 
+the noise of aircraft engines, including directional impact on the noise on the 
+basis of interaction between plasma disturbances and acoustic waves,
+stands acutely. One of the devices 
+built on this principle is being developed in GPI RAS. These devices are 
+plasma actuators 
+(group of related to each other discharge gaps built on the perimeter of the nozzle) of 
+various shapes and forms.
+The aim of this study was to perform a comparative analysis of spectra of acoustic waves 
+produced as a result of work of a plasma actuator for air flowing out of the nozzle. 
+The research was carried out for actuators of various designs and different shapes of nozzles. 
+The following tasks have been solved: sorting and analysis of experimental data; 
+development of the algorithm and creation of the program for studying spectral and 
+correlation characteristics of acoustic signals; evaluation of spectral and correlation 
+characteristics of acoustic signals in experiments with two types of actuators (with and 
+without gas flow); comparative analysis of correlation and spectral characteristics 
+of acoustic signals received at the outlet of the nozzle when an air 
+flow interacts with 
+plasma actuators of various configurations. With 
+the help of the software program complex created in the MatLab environment,
+spectral and correlation characteristics of acoustic signals were investigated 
+which allowed  to 
+construct the physical model of a plasma actuator in a  plane nozzle. With the help of 
+the developed research methodologies, the promising effect of using plasma actuators influence on
+air  flow through the nozzle was proved.
+}   
+
+\KWE{plasma actuator; acoustic waves; program complex; algorithm; nozzle; 
+spectral characteristics; robust spectra}
+
+
+\DOI{10.14357\!/08696527140108}
+
+
+\Ack
+\noindent
+The research  was supported by the President of Russian Federation 
+Grant for Government Support of Young Russian Scientists
+No.\,МК-5607.2013.2.
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+%\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+\bibitem{1-che-1}
+\Au{Moreau, E.} 2007. 
+Airflow control by non-thermal plasma actuators. 
+\textit{J.~Phys. D: Appl. Phys.} 40(3):605--608.
+
+ \bibitem{2-che-1}
+ \Au{Barhudarov, Je.\,M., N.\,K.~Berezheckaja, I.\,A.~Kossyj, D.\,V.~Malahov, 
+ M.\,I.~Tak\-ta\-ki\-shvi\-li, M.\,R.~Shakarov, and V.\,A.~Kop'jov}. 
+ 2011. Akusticheskaya i udarno-volnovye kharakteristiki mnogoelektrodnogo 
+ kol'tsevogo plazmennogo aktuatora RING-1 
+ [Acoustic and shock-wave characteristics of multielectrode annular plasma actuator RING-1]. 
+ \textit{2-ya Vserossiyskaya Otkrytaya Konferentsiya po Aviatsionnoy Akustike:
+Tezisy dokladov} 
+[{2nd All-Russian Public Conference on Aviation Acoustics: Abstracts}]. 
+Zvenigorod. 147--148.
+
+ \end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received February 17, 2014}}
+
+\vspace*{-6pt}
+
+\Contr
+
+
+
+\noindent
+\textbf{Chernousov Andrey D.} (b.\ 1987)~---
+PhD student, Prokhorov General Physics Institute, 
+Russian Academy of Sciences, 
+38 Vavilov Str., Moscow 119991, Russian Federation;
+leading engineer, Andreev Acoustic Institute (JSC AAI),
+4 Shvernik Str., Moscow 117036, Russian Federation; chado2008@yandex.ru
+
+
+\vspace*{3pt}
+
+
+\noindent
+\textbf{Malahov Dmitrii V.} (b.\ 1985)~---
+Candidate of Science (PhD) in physics and mathematics, scientist, 
+Prokhorov General Physics Institute, Russian Academy of Sciences,
+38 Vavilov Str., Moscow 119991, Russian Federation; 89199945791@mail.ru
+
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Skvortsova Nina N.} (b.\ 1956)~---
+Doctor of Science in physics and mathematics, associate professor; 
+leading scientist, Prokhorov General Physics Institute, 
+Russian Academy of Sciences, 
+38 Vavilov Str., Moscow 119991, Russian Federation;
+professor, National Research Nuclear University ``MEPHI,'' 31 Kashirskoye
+Shosse, Moscow 115409, Russian Federation; mukudori@mail.ru
+
+ 
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rmfamily Литература}

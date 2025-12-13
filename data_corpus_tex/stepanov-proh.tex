@@ -1,0 +1,780 @@
+\def\stat{st-pr}
+
+\def\tit{КАРТОГРАФИРОВАНИЕ ЗЕМЕЛЬ СЕЛЬСКОХОЗЯЙСТВЕННОГО НАЗНАЧЕНИЯ ХАБАРОВСКОГО 
+КРАЯ МЕТОДАМИ МАШИННОГО ОБУЧЕНИЯ С~ИСПОЛЬЗОВАНИЕМ ИЗОБРАЖЕНИЙ  
+SENTINEL-2$^*$}
+
+\def\titkol{Картографирование земель сельскохозяйственного назначения Хабаровского 
+края} % методами машинного обучения с~использованием изображений   Sentinel-2}
+
+\def\aut{И.\,О.~Прохорец$^1$, А.\,С.~Степанов$^2$}
+
+\def\autkol{И.\,О.~Прохорец, А.\,С.~Степанов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Прохорец И.\,О.}
+\index{Степанов А.\,С.}
+\index{Prokhorets I.\,O.}
+\index{Stepanov A.\,S.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Статья публикуется по представлению программного комитета VII Международной на\-уч\-но-прак\-ти\-че\-ской 
+конференции <<Информационные технологии и~высокопроизводительные вычисления>> (ITHPC-2023).}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Вычислительный центр Дальневосточного отделения Российской академии наук,\\ \mbox{ivan0999@inbox.ru}}
+\footnotetext[2]{Дальневосточный научно-исследовательский институт сельского хозяйства, 
+\mbox{stepanfx@mail.ru}}
+
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+\vspace*{-12pt}
+
+
+
+
+  
+  
+
+  \Abst{Проведение автоматизированной классификации сельскохозяйственных земель с 
+использованием методов машинного обуче\-ния (machine learning, ML) стало одной из важнейших задач при 
+переходе к цифровому сельскому хозяйству. Классификация пахотных земель Хабаровского 
+района проводилась методами случайного леса (random forest, RF), минимального расстояния 
+(minimum distance, MD), кластеризацией К-сред\-них (K-means) по снимкам спутников 
+Sentinel-2 за июль, август, сентябрь и октябрь 2022~г. В~качестве входных данных 
+рассматривались значения спектральных каналов, EVI (Enhanced Vegetation Index) 
+и~NDVI (Normalized Difference Vegetation Index). По результатам статистической обработки 
+было установлено, что при изменении даты съемки и~типа входных данных наибольшую 
+стабильность продемонстрировал метод RF. Точность распознавания пахотных земель 
+Хабаровского района в~2022~г.\ составила 92,5\% при использовании в~классификаторе 
+значений NDVI, рассчитанных по сентябрьскому снимку Sentinel-2. Предложенный подход 
+может применяться для автоматизированного классифицирования и~последующего 
+картографирования с~экспертной корректировкой пахотных земель южной части Дальнего 
+Востока.} 
+  
+  \KW{картографирование; машинное обучение; спутниковый мониторинг; пахотные 
+земли; классификация; Хабаровский край}
+  
+\DOI{10.14357\!/\!08696527240105}{YEZNXD}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}
+
+\section{Введение}
+
+\vspace*{-4pt}
+
+  В последнее время в Российской Федерации осуществляется цифровая 
+трансформация сельского хозяйства, заключающаяся во внедрении цифровых 
+технологий для оптимизации производительности, рентабельности 
+и~устойчивости сельскохозяйственных предприятий~[1, 2]. В аграрной области 
+внедрение платформы цифрового сельского хозяйства базируется на принципах 
+цифрового земледелия~[3]. Картографирование земель сельскохозяйственного 
+назначения, поддержание баз данных в актуальном состоянии, контроль 
+севооборота и перманентное уточнение границ отдельных полей стали 
+важными задачами земледелия, при этом в качестве эффективных подходов к 
+их решению используются данные дистанционного зондирования Земли 
+(ДЗЗ)~[4, 5]. Необходимо отметить, что реальные контуры пахотных земель 
+зачастую не совпадают с границами, которые представлены в разных 
+федеральных и~коммерческих базах данных, в~том числе в~Единой федеральной информационной сис\-те\-ме о~землях сельскохозяйственного назначения
+(ЕФИС ЗСН)~[6]. Это 
+связано, во-пер\-вых, с ошибками передачи информации, во-вто\-рых, с~низкой 
+заинтересованностью сельскохозяйственных производителей в~достоверности, в-треть\-их, 
+с~нерегулярностью корректировки границ. Вместе с~тем непрерывно 
+происходящее воздействие природных и~техногенных факторов, 
+разбалансированность структуры посевных площадей, нарушение 
+севооборотов, рост доли залежных земель обуслов\-ли\-ва\-ют необходимость 
+постоянного уточнения границ полей, что особенно актуально для южной части 
+российского Дальнего Востока~[7]. В~целом для картографирования пахотных 
+земель используются данные ДЗЗ: спутниковой и~аэрофотосъемки. Применение 
+беспилотных летательных аппаратов гарантирует высокую точ\-ность 
+определения пашни и~границ отдельных полей, но при этом относится 
+к~достаточно трудозатратным методам, а~использование данных ДЗЗ из 
+космоса обычно требует экспертной корректировки для повышения точ\-ности 
+картографирования.
+  
+  Картографирование пахотных земель РФ проводилось с использованием 
+алгоритма ло\-каль\-но-адап\-тив\-ной классификации (Locally Adaptive Global 
+Mapping Algorithm, LAGMA), разработанного в~Институте космических исследований Российской академии наук: особое внимание 
+уделялось методам и~алгоритмам предварительной обработки спутниковых 
+данных с~целью максимального улучшения входных данных для 
+классификации~[8]. Общая точ\-ность распознавания пахотных земель 
+в~различных регионах России с~использованием LAGMA варьировалась 
+в~диапазоне от~80\% до~98\%, при этом снижалась для дальневосточных 
+регионов. Работы по картографированию пахотных земель на национальном 
+уровне выполнялись на основе временн\'{ы}х рядов, построенных для 7-днев\-ных 
+композитов NDVI, полученных 
+с~помощью спектрорадиометра MODIS (Moderate Resolution Imaging 
+Spectroradiometer)~[9]. Метод продемонстрировал достаточно хорошие 
+результаты для полей с~площадью более~20~га: общая точ\-ность метода 
+составила от~85\% до~95\% для разных территорий. В~ряде работ проводился 
+сравнительный анализ целесообразности использования временн\'{ы}х рядов 
+индексов NDVI и EVI при классификации 
+наземных покровов и~определения типа растительности~[10, 11]. В~работе по 
+оценке растительных покровов в~Бангладеш было установлено, что для разных 
+методов машинного обучения ошибка при применении NDVI составила 
+от~1,5\% до~5\%, а~при использовании EVI~--- от~4\% до~7\%~[11]. Китайские 
+ученые показали, что временн\'{ы}е ряды NDVI и~EVI, рассчитанные по 
+изображениям со спутников Sentinel и~Landsat, могут быть применены для 
+классифицирования пахотных земель и~распознавания культур в~провинции 
+Хэбей с~высокой степенью точ\-ности~[10]. При этом NDVI превзошел EVI 
+в~классификации культур на ранних стадиях созревания. Исследователями из 
+Индии описан подход к картографированию земель Западного Годавари: были 
+выбраны~4~класса (водные объекты, инфраструктура, залежи и~пашня) 
+в~качестве па\-ра\-мет\-ров для ML методом опорных векторов и~RF, 
+рассматривались значения четырех каналов временн\'{ы}х серий снимков со 
+спутников Sentinel и~Landsat~[12]. Было установлено, что общая точ\-ность 
+метода с~использованием Landsat составила около~90\%, с~использованием 
+Sentinel~--- 94\%.
+  
+  Вместе с тем использование временн\'{ы}х рядов значений каналов или 
+рассчитанных индексов вегетации для ML требует большего количества 
+вычислительных часов и,~соответственно, способствует росту вычислительных 
+затрат в~сравнении с~картографированием, базирующемся на использовании 
+одного спутникового изображения. В~исследовании, посвященном 
+картографированию лесов Бразилии, была проведена оценка точности 
+классификации на основе временн\'{ы}х рядов ежемесячных значений NDVI 
+в~сравнении с~классификацией по одному снимку~[13]. Как было установлено, 
+точность метода с~использованием временн\'{о}й серии была существенно 
+выше, чем при применении метода классификации по одиночному 
+изображению (соответственно 89\% и~81,4\%).
+  
+  В связи с~вышеизложенным для российского Дальнего Востока представляет 
+интерес выполнение исследования для оценки возможности идентификации 
+пахотных земель на основе спутникового изображения, поиск метода 
+и~параметров ML, а также даты съемки. Цель работы~--- разработка подходов 
+к~автоматизированному определению границ пахотных земель 
+с~использованием ДЗЗ на примере Хабаровского района. Для достижения цели 
+были поставлены следующие задачи:
+  \begin{itemize}
+  \item получение и обработка мультиспектральных спутниковых изображений 
+для Хабаровского района, расчет значений каналов и индексов вегетации;
+  \item классификация изображений с использованием разных методов и типов 
+входных данныхML;
+  \item оценка точности разных методов.
+  \end{itemize}
+  
+\section{Материалы и методы}
+
+  В качестве области исследования рассматривался Хабаровский 
+муниципальный район, представляющий собой структурную единицу 
+Хабаровского края (рис.~1).
+
+
+
+  Хабаровский район состоит из двух частей: северо-западной (общей 
+пло\-щадью более 24\,000~км$^2$), которая преимущественно относится к горной 
+мест\-ности, и юго-восточной (общей пло\-щадью около~6000~км$^2$), где 
+и~осуществляется хозяйственная де\-я\-тель\-ность. Земли Хабаровского района 
+располагаются в~юго-вос\-точ\-ной части, относящейся к~Среднеамурской 
+низменности, в~пойме реки Амур. Основные типы земель~--- это пахотные земли, 
+луга, болота, мари, гари, смешанные леса, водные объекты и~кустарниковые 
+ассоциации~[14].
+
+
+  
+  Для исследования были получены 4~безоблачных мультиспектральных 
+спутниковых снимка Sentinel-2 уровня обработки~1C с разрешением 10~м за 
+13.07.23, 24.08.23, 11.09.23 и 08.10.23. Использовались значения каналов 
+B2 (BLUE, 490~нм), B3 (560~нм), B4 (RED, 665~нм), B5 (705~нм), B6 (740~нм), 
+B7 (783~нм), B8 (NIR, 842~нм), B8a (865~нм), B11 (1610~нм), B12 (2190~нм), 
+а~также рассчитанные индексы NDVI и~EVI. Индексы NDVI и EVI вычисляются по 
+следующим формулам:
+
+\vspace*{-2pt}
+
+\noindent
+  \begin{align}
+ \mathrm{NDVI} &= \fr{(\mathrm{B}8)-( \mathrm{B}4)}{( \mathrm{B}8)+( 
+\mathrm{B}4)}\,;\label{e1-sp}\\
+  \mathrm{EVI} &= 2{,}5\fr{(\mathrm{B}8)-( \mathrm{B}4)}{( 
+\mathrm{B}8)+6(\mathrm{B}4)-7{,}5(\mathrm{B}2)+1}\,.
+  \label{e2-sp}
+  \end{align}
+  
+  \begin{figure} %fig1
+  \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{pro-1.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Область исследования (пахотные земли Хабаровского района) }
+\end{figure}
+
+\vspace*{-2pt}
+  
+  Рассматривались 5 классов подстилающей поверхности: пахотные земли 
+  с~высокой степенью развития зеленой биомассы (класс~1), пахотные земли 
+  с~низкой степенью развития зеленой биомассы (класс~2),  
+ле\-со\-кус\-тар\-ни\-ко\-вая растительность (класс~3), вода (класс~4) 
+и~инфраструктура (класс~5). 
+  
+  Для классификации были выбраны следующие алгоритмы: случайного леса 
+(RF), минимального расстояния (MD) и~кластеризация методом k-сред\-них\linebreak (K-means)~[14].
+  
+  Схема исследования представлена на рис.~2.
+  
+
+
+  Алгоритм исследования выглядел следующим образом: на первом этапе 
+происходила обработка спутникового снимка Sentinel-2 уровня 1C 
+с~атмосферной коррекцией, затем по формулам~(1) и~(2) вычислялись индексы 
+NDVI и~EVI для каждого пикселя. Для каждого из классов формировалась 
+обучающая выборка: класс~1~--- 642~га; класс~2~--- 350~га; класс~3~--- 
+12\,600~га; класс~4~--- 8600~га; класс~5~--- 15~га. 
+  
+  Далее тремя методами ML, где в качестве параметров рассматривались либо 
+значения NDVI, либо EVI, либо набор значений всех каналов (за исключением 
+B1, B9 и~B10) проводилась классификация всех пикселей снимка.
+  
+  Для оценки точности классификации рассчитывалась доля верно отнесенных 
+пикселей классов~1 и~2 в класс пахотных земель (шейп-файл сформирован 
+путем экспертной обработки полученных данных из ЕФИС ЗСН для 
+Хабаровского района). Точность классификации~$A$, а~также число пикселей 
+каждого класса, отнесенных к классу пахотных земель~$M_{\mathrm{cl}}$, определялись 
+по формулам: 
+  \begin{align*}
+  A &= \fr{\mathrm{TP}_1+\mathrm{TP}_2}{N_{\mathrm{shp}}} \cdot 100\%\,;
+  %\label{e3-sp}
+  \\
+  M_{\mathrm{cl}}&= \fr{N_{\mathrm{cl}}}{N_{\mathrm{shp}}}\cdot 100\%\,,
+ % \label{e4-sp}
+  \end{align*}
+где $\mathrm{TP}_1$ и~$\mathrm{TP}_2$~--- число пикселей классов~1 и~2; $N_{\mathrm{shp}}$~--- число всех 
+пикселей, принадлежащих полигонам шейп-фай\-ла; $N_{\mathrm{cl}}$~--- число пикселей 
+каждого класса.
+  %
+  При этом пиксели классов 3--5, отнесенные к пахотным землям, очевидно, 
+идентифицированы неверно, поэтому значение $M_{\mathrm{cl}}$ в~данном случае 
+служило ошибкой распознавания~--- $E_{\mathrm{cl}}$.
+
+\begin{figure} %fig2
+  \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=127.758mm 
+\epsfbox{pro-2.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Схема исследования}
+\end{figure}
+
+\begin{table}\small %tabl1
+\begin{center}
+\Caption{Доля идентифицированных пикселей каждого класса в классе пахотные земли 
+$M_{\mathrm{cl}}$, \%}
+\vspace*{2ex}
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+&&&&&&\\[-10pt]
+Метод ML&Тип данных ML&Класс 1&Класс 2&Класс 3&Класс 4&Класс 5\\
+\hline
+\multicolumn{7}{|c|}{\ }\\[-10pt]
+\multicolumn{7}{|c|}{13.07.22}\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&51,2&29,3&11,0&0,1&8,4\\
+RF&EVI&52,1&20,0&21,3&0,1&6,5\\
+&NDVI&50,2&24,6&16,9&0,1&8,2\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&54,5&32,2&10,9&0,1&2,3\\
+MD&EVI&21,3&26,7&13,4&37,3\hphantom{9}&1,2\\
+&NDVI&27,3&26,7&15,4&30,5\hphantom{9}&0,0\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&59,3&29,7&\hphantom{9}6,4&0,0&4,5\\
+K-means&EVI&19,2&20,0&\hphantom{9}5,0&55,6\hphantom{9}&0,0\\
+&NDVI&14,3&24,8&11,1&49,8\hphantom{9}&0,0\\
+\hline
+\multicolumn{7}{|c|}{\ }\\[-10pt]
+\multicolumn{7}{|c|}{24.08.22}\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&56,8&\hphantom{9}8,2&17,6&0,1&17,1\hphantom{9}\\
+RF&EVI&26,7&22,8&42,8&0,0&7,4\\
+&NDVI&28,2&16,6&38,2&0,0&17,7\hphantom{9}\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&47,9&22,7&29,0&0,2&0,1\\
+MD&EVI&41,3&24,6&32,9&0,0&1,0\\
+&NDVI&35,2&22,5&41,7&0,0&0,3\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&45,6&\hphantom{9}6,4&28,8&0,1&18,8\hphantom{9}\\
+K-means&EVI&45,6&18,1&20,1&0,1&16,0\hphantom{9}\\
+&NDVI&58,9&16,7&24,1&0,0&0,2\\
+\hline
+\multicolumn{7}{|c|}{\ }\\[-10pt]
+\multicolumn{7}{|c|}{11.09.22}\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&84,7&\hphantom{9}5,6&\hphantom{9}2,2&0,0&7,3\\
+RF&EVI&57,9&14,5&25,8&0,0&1,7\\
+&NDVI&65,6&26,8&\hphantom{9}5,2&0,0&2,1\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&60,5&34,9&\hphantom{9}4,4&0,1&0,0\\
+MD&EVI&49,5&26,2&23,3&0,0&0,7\\
+&NDVI&61,9&21,3&16,3&0,0&0,3\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&44,9&\hphantom{9}6,3&10,1&0,0&38,5\hphantom{9}\\
+K-means&EVI&47,2&28,8&16,3&0,0&7,4\\
+&NDVI&59,8&26,1&13,6&0,0&0,3\\
+\hline
+\multicolumn{7}{|c|}{\ }\\[-10pt]
+\multicolumn{7}{|c|}{08.10.22}\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&52,7&\hphantom{9}4,3&40,1&0,0&2,6\\
+RF&EVI&22,7&38,3&34,4&0,0&4,3\\
+&NDVI&27,9&41,1&26,0&0,0&4,9\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&20,6&39,1&39,6&0,2&0,3\\
+MD&EVI&47,9&22,2&27,0&0,0&2,6\\
+&NDVI&39,1&33,0&26,1&0,0&1,6\\
+\hline
+&&&&&&\\[-10pt]
+&Каналы&39,6&19,8&20,5&0,0&19,9\hphantom{9}\\
+K-means&EVI&57,0&27,8&\hphantom{9}9,7&0,0&5,3\\
+&NDVI&49,2&37,0&13,6&0,0&0,0\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+  
+  Сравнительная оценка достоверности различий в точности алгоритмов 
+классификации (при использовании разных методов ML, параметров и дат 
+съемки) проводилась с использованием дисперсионного анализа. Попарное 
+сравнение проводилось по критерию Фишера ($\alpha\hm=0{,}05$).
+  
+\section{Результаты}
+
+  В табл.~1 представлена оценка доли идентифицированных пикселей каждого 
+класса для снимков за июль, август, сентябрь и~октябрь 2022~г. В~целом 
+достаточно ожидаемо, что $E_{\mathrm{cl}}$ в~классах~3 и~5 обычно существенно выше, 
+чем в~классе~4, что связано с~тем, что объекты инфраструктуры предполагают 
+соседство с~деревьями и~кустарниками, обладающими вегетационной 
+активностью, а~пахотные земли зачастую переходят в~залежные, покрытые не 
+только травянистой, но и~кустарниковой растительностью.
+  
+
+  
+  При классифицировании с использованием июльского снимка MD и  
+K-means демонстрируют низкую эффективность, что связано с высокими 
+значениями $E_{\mathrm{cl}}$  в~классе <<вода>>.
+  
+  Необходимо отметить, что в августе, в сравнении с июлем, наблюдается 
+снижение доли класса~2, так как в южной части Хабаровского края начинается 
+активная вегетация тех культур, которые были посеяны в июле (в~част\-ности, 
+гречиха), а~также зарастание кормовыми травами убранных полей с ранними 
+зерновыми. Вместе с тем возрастала ошибка определения классов~3 и 5, что 
+также связано с наступлением максимума вегетации. В~октябре наблюдалось 
+перераспределение доли класса~1 в~пользу класса~2, что обусловлено уборкой 
+и~распашкой полей. При этом в процессе использования октябрьских снимков 
+затрудняется поиск границ между полями, что связано со снижением 
+вегетационной активности деревьев и кустарников в лесополосе.
+
+\begin{table}\small %tabl2
+\begin{center}
+\Caption{Точность распознавания пахотных земель Хабаровского района с использованием 
+разных методов MLA, \%}
+\vspace*{2ex}
+
+\tabcolsep=5.9pt
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\tabcolsep=0pt\begin{tabular}{c}Метод\\ ML\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}Тип\\ данных\\ ML\end{tabular}&13.07.2022&24.08.2022&11.09.2022&08.10.2022&$p$\\
+\hline
+\multicolumn{1}{|c|}{\raisebox{-18pt}[0pt][0pt]{RF}}&Каналы&80,5&65,1&90,4&57,1&\\
+&EVI&72,1&49,6&72,4&61,1&---\\
+&NDVI&74,7&44,9&92,5&69,0&\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+&$\bm {X}_{\mathbf{ср}}$&\textbf{75,8}&\textbf{53,2}&\textbf{85,1}&\textbf{62,4}& 
+$<$\textbf{0,05}\\
+\hline
+\multicolumn{1}{|c|}{\raisebox{-18pt}[0pt][0pt]{MD}}&Каналы&86,6&70,6&95,4&59,7&\\
+&EVI&47,9&66,0&75,8&70,2&---\\
+&NDVI&54,0&57,8&83,2&72,1&\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+&$\bm{X}_{\mathbf{ср}}$&\textbf{62,8}&\textbf{64,8}&\textbf{84,8}&\textbf{67,4}&$>$\textbf{0,05}\\
+\hline
+\multicolumn{1}{|c|}{\raisebox{-18pt}[0pt][0pt]{K-means}}&Каналы&89,0&52,1&51,3&59,4&\\
+&EVI&39,2&63,7&76,1&84,8&---\\
+&NDVI&39,0&75,7&86,0&86,3&\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+&$\bm{X}_{\mathbf{ср}}$&\textbf{55,7}&\textbf{63,8}&\textbf{71,1}&\textbf{76,8}&$>$\textbf{0,05}\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+  
+  Как следует из табл.~2, при использовании MD и~K-means дата съемки не 
+оказывала значимого влияния на результаты классификации. Связано это с~тем, 
+что в~зависимости от комбинации даты съемки, типа входных данных и~метода 
+ML точ\-ность определения пахотных земель могла находиться в~диапазоне 
+от~40\% до~95\%. Таким образом, для проведения классификации этими 
+методами необходимо подготовить серию снимков в~период с~июля по 
+сентябрь, оценить точ\-ность на обуча\-ющей выборке для разных дат 
+и~впоследствии распознать классы, что увеличит трудоемкость процесса 
+картографирования.
+\begin{figure} %fig3
+  \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=120mm 
+\epsfbox{pro-3.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Результаты классификации подстилающей поверхности Хабаровского района (RF, 
+NDVI, 11.09.2022): (\textit{а})~окрестности с.~Восточное; (\textit{б})~подтопление поймы 
+р.~Амур}
+\end{figure}
+  
+  Достоверно установлено ($p\hm<0{,}05$), что дата снимка оказывает 
+значимое влияние на среднюю точность при применении RF. Наиболее высокая 
+средняя точность~85,1\% была достигнута для сентябрьского снимка. Это 
+обуслов\-ле\-но в~том числе и~тем, что для Хабаровского района характерны 
+заморозки в начале сентября, что вызвало снижение вегетационной активности 
+и~способствовало более высокому качеству разделения классов~1 и~3.  
+Точ\-ность алгоритма при использовании в качества входных данных значений 
+NDVI превысила~92\%.
+
+
+
+  На рис.~3 представлен результат работы классификатора RF по значениям 
+NDVI за 11~сентября 2022~г. Были идентифицированы распаханные поля; 
+часть полей тем\-но-зе\-ле\-но\-го цвета, очевидно, представляла собой поля, 
+перешедшие в~со\-сто\-яние залежи; также достаточно хорошо определялись 
+лесополосы и~границы отдельных полей (рис.~3,\,\textit{а}). На 
+рис.~3,\,\textit{б} хорошо виден разлив Петропавловского озера, находящегося 
+в~пойме Амура, и~подтопление близлежащих сельскохозяйственных угодий.
+  
+
+
+\section{Заключение}
+
+
+  Таким образом, для картографирования подстилающей поверхности 
+предложен сле\-ду\-ющий подход: на основе снимка спутника Sentinel-2, 
+полученного в~первой половине сентября, рассчитываются значения NDVI для 
+каждого пикселя, проводится обучение и~классификация изображения методом 
+RF. Точность распознавания пахотных земель в~2022~г.\ на примере 
+Хабаровского района составила~92,5\%. Разработанная методика, базирующаяся 
+на классификации одного мультиспектрального снимка, может быть применена 
+для картографирования сельскохозяйственных угодий Хабаровского края, 
+в~част\-ности для оценки нерационального использования земель, выявления 
+залежей и~подтоплений, уточнения границ отдельных полей. Использование 
+методики предполагает экспертную ручную корректировку границ отдельных 
+полей после проведения автоматизированной классификации. В~дальнейшем 
+планируется применение описанного подхода для картографирования пахотных 
+земель муниципальных образований южной части российского Дальнего 
+Востока.
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-sp}
+Ведомственный проект <<Цифровое сельское хозяйство>>.~--- М.: 
+Росинформагротех, 2019. 48~с. {\sf https://rosinformagrotech.ru/data/elektronnye-kopii-izdanij/
+normativnye-dokumenty-spravochniki-katalogi-i-dr/send/66-normativnye-dokumenty-spravochniki-katalogi/1346-vedomstvennyj-proekt-tsifrovoe-selskoe-khozyajstvo-2019}.
+\bibitem{2-sp}
+\Au{Будзко В.\,И., Меденников~В.\,И.} Условия результативного применения технологий 
+искусственного интеллекта в агропромышленном комплексе ЕАЭС~/\!\!/ Труды Института 
+системного анализа Российской академии наук, 2023. Т.~73. №\,1. С.~148--158. doi: 
+10.14357\!/\!20790279230117. EDN: YDJZZP.
+\bibitem{3-sp}
+\Au{Кирюшин В.\,И., Иванов А.\,Л., Козубенко~И.\,С., Савин~И.\,Ю.} Цифровое 
+земледелие~/\!\!/ Вестник российской сельскохозяйственной науки, 2018. №\,5. С.~4--9. doi: 
+10.30850\!/\!vrsn\!/\!2018\!/\!5\!/\!4-9. EDN: 
+YLEQTR.
+
+\bibitem{5-sp} %4
+\Au{Villa-Henriksen A., Edwards~G., Pesonen~L., Green~O., S{\o}\,rensen C.} Internet of Things in 
+arable farming: Implementation, applications, challenges and potential~/\!\!/ Biosyst. Eng., 2020. 
+Vol.~191. P.~60--84. doi:10.1016\!/\!j.biosystemseng.2019.12.013.
+
+\bibitem{4-sp} %5
+\Au{Елтошкина Н.\,В.} Геоинформационное картографирование земель 
+сельскохозяйственного назначения~/\!\!/ Московский экономический~ж., 2022. №\,3. 
+С.~31--45. doi: 10.55186\!/\!2413046X\_2022\_7\_3\_142. EDN: ZXMGSO.
+
+\bibitem{6-sp}
+\Au{Студенкова Н.\,А., Добротворская~Н.\,И., Аврунев~Е.\,И., Козина~М.\,В., 
+Пяткин~В.\,П.} Актуальные вопросы инвентаризации и кадастрового учета земель 
+сельскохозяйственного назначения~/\!\!/ Вестник СГУГиТ, 2021. №\,6. С.~140--149. doi: 10.33764\!/\!2411-1759-2021-26-6-140-149.
+
+\bibitem{7-sp}
+\Au{Трофимов И.\,А., Трофимова Л.\,С., Яковлева~Е.\,П., Шпедт~А.\,А., Асеева~Т.\,А.} 
+Аг\-ро\-ланд\-шафт\-но-эко\-ло\-ги\-че\-ское районирование~--- основа устойчивого развития сельского 
+хозяйства Восточной Сибири и Дальнего Востока~/\!\!/ Биосфера, 2022. №\,3. С.~193--199.
+doi: 10.24855\!/\!biosfera.v14i3.695. EDN: BFDPAX.
+\bibitem{8-sp}
+\Au{Барталев С.\,А., Егоров В.\,А., Жарко В.\,О., Лупян~Е.\,А., Плотников~Д.\,Е., 
+Хвостиков~С.\,А., Шабанов~Н.\,В.} Спутниковое картографирование растительного покрова 
+России.~--- М.: ИКИ РАН, 2016. 208~с. EDN: YOBJAV.
+\bibitem{9-sp}
+\Au{Waldner F., De Abelleyra D., Santiago V., Zhang~M., Wu~B., Plotnikov~D., Bartalev~S., 
+Lavreniuk~M., Skakun~S., Kussul~N., Le Maire~G., Dupuy~S., Jarvis~I., Defourny~Р.} Towards 
+a~set of agrosystem-specific cropland mapping methods to address the global cropland 
+diversity~/\!\!/ Int. J. Remote Sens., 2016. Vol.~37. Iss.~14. P.~3196--3231. doi: 
+10.1080\!/\!01431161.2016.1194545.
+
+
+\bibitem{11-sp} %10
+\Au{Hao P., Tang~H., Chen~Z., Meng~Q., Kang~Y.} Early-season crop type mapping using 30-m 
+reference time series~/\!\!/ J. Integr. Agr., 2020. Vol.~19. Iss.~7. P.~1897--1911. doi: 
+10.1016\!/\!S2095-3119(19)62812-1.
+
+\bibitem{10-sp} %11
+\Au{Roy B.} Optimum machine learning algorithm selection for forecasting vegetation indices: 
+MODIS NDVI \& EVI~/\!\!/ Remote Sensing Applications Society Environment, 2021. Vol.~23. Art.~100582. 4~p. doi: 
+10.1016\!/\!j.rsase.2021.100582.
+
+\bibitem{12-sp}
+\Au{Savitha C., Talari~R.} Mapping cropland extent using Sentinel-2 datasets and machine learning 
+algorithms for an agriculture watershed~/\!\!/ Smart Agricultural Technology, 2023. Vol.~4. Art.~100193. 10~p. doi: 
+10.1016\!/\!j.atech.2023.100193.
+\bibitem{13-sp}
+\Au{Andrade J., Cunha~J., Silva~J., Rufino~I., Galv\~{a}~C.} Evaluating single and multi-date 
+Landsat classifications of land-cover in a seasonally dry tropical forest~/\!\!/ Remote Sensing Applications 
+Society Environment, 2021. Vol.~22. Art.~100515. 13~p. doi: 10.1016\!/\!j.rsase.2021.100515.
+\bibitem{14-sp}
+\Au{Ганзей С.\,С., Ермошин~В.\,В., Мишина~Н.\,В.} Динамика использования земель 
+в~бассейне Амура в XX~веке~/\!\!/ География и природные ресурсы, 2010. №\,1. С.~30--38.
+\bibitem{15-sp}
+\Au{Shaikh T.\,A., Rasool~T., Lone~F.\,R.} Towards leveraging the role of machine learning and 
+artificial intelligence in precision agriculture and smart farming~/\!\!/ Comput. Electron. Agr., 
+2022. Vol.~198. Art.~107119. doi: 10.1016\!/\!j.compag.2022.107119.
+     \end{thebibliography}
+} }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 31.01.24}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+
+%\hrule
+
+%\vspace*{8pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+\def\tit{MAPPING OF THE KHABAROVSK REGION ARABLE LANDS BY~MACHINE LEARNING 
+USING SENTINEL-2 IMAGES}
+
+
+
+\def\titkol{Mapping of the Khabarovsk region arable lands by~machine learning 
+using Sentinel-2 images}
+
+\def\aut{I.\,O.~Prokhorets$^1$ and~A.\,S.~Stepanov$^2$}
+
+\def\autkol{I.\,O.~Prokhorets and~A.\,S.~Stepanov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+$^1$Computing Center of the Far Eastern Branch of the Russian Academy of Sciences,\linebreak
+$\hphantom{^1}$65~Kim Yu 
+Chen Str., Khabarovsk 680000, Russian Federation
+
+\noindent
+$^2$Far Eastern Research Institute of Agriculture, 13~Klubnaya Str., Vostochnoe\linebreak
+$\hphantom{^1}$680521,  Khabarovsk Territory, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2024 vol~34 no\,1}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2024 vol~34 no\,1
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+\Abste{Automated classification of arable lands using machine learning methods is one 
+of the most important tasks in the transition to digital agriculture. The classification of arable lands 
+in the Khabarovsk Region was carried out using random forest (RF), minimum distance (MD), and 
+K-means clustering methods based on Sentinel-2 images for July, August, September, and October 2022. 
+The values of spectral bands, EVI (Enhanced Vegetation Index), and NDVI (Normalized Difference Vegetation Index)
+ were considered as input data. Based on the results of 
+statistical processing, it was found that the RF method demonstrated the greatest stability when changing the 
+date of shooting and the type of input data. The accuracy of recognition of arable lands in the 
+Khabarovsk Region in 2022 was 92.5\% when using NDVI values calculated from the September 
+Sentinel-2 image in the classifier. The proposed approach can be used for automated classification 
+and subsequent mapping with expert correction of arable lands in the southern part of the Far East.}
+
+\KWE{mapping; machine learning; satellite monitoring; arable lands; classification; Khabarovsk 
+Region}
+ 
+
+
+\DOI{10.14357\!/\!08696527240105}{YEZNXD}  
+
+\vspace*{-10pt}
+
+
+\Ack
+
+\vspace*{-3pt}
+
+\noindent
+The paper is published on the proposal of the Program Committee of the 7th International Scientific 
+and Practical Conference ``Information Technologies and High Performance Computing''  
+(ITHPC-2023).
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-sp-1}
+\textit{Vedomstvennyy proekt ``Tsifrovoe sel'skoe khozyaystvo''} 
+[Departmental project ``Digital Agriculture'']. 2019. Moscow: 
+Rosinformagrotekh. 48~p. Available at: {\sf https://\linebreak rosinformagrotech.ru/data/elektronnye-kopii-izdanij/normativnye-dokumenty-spravochniki-katalogi-i-dr/send/66-normativnye-dokumenty-spravochniki-katalogi/ 1346-vedomstvennyj-proekt-tsifrovoe-selskoe-khozyajstvo-2019} (accessed February~29, 2024).
+\bibitem{2-sp-1}
+\Aue{Budzko, V.\,I., and V.\,I.~Medennikov.} 2023. Usloviya rezul'tativnogo primeneniya 
+tekhnologiy iskusstvennogo intellekta v~agropromyshlennom komplekse EAES [Conditions for the 
+effective application of artificial intelligence technologies in the agro-industrial complex of the 
+EAEU]. \textit{Trudy Instituta sistemnogo analiza Rossiyskoy akademii nauk} [Proceedings of the 
+Institute for Systems Analysis of the Russian Academy of Sciences] 73(1):148--158. doi: 
+10.14357\!/\!20790279230117. EDN: YDJZZP.
+\bibitem{3-sp-1}
+\Aue{Kiryushin, V.\,I., A.\,L.~Ivanov, I.\,S.~Kozubenko, and I.\,Yu.~Savin.} 2018. Tsifrovoe 
+zemledelie [Digital farming]. \textit{Vestnik rossiyskoy sel'skokhozyaystvennoy nauki} [Vestnik of 
+the Russian Agricultural Science] 5:4--9. doi: 10.30850\!/\!vrsn\!/\!2018\!/\!5\!/\!4-9. EDN: 
+YLEQTR.
+
+\bibitem{5-sp-1} %4
+\Aue{Villa-Henriksen, A., G.~Edwards, L.~Pesonen, O.~Green, and C.~S{\o}rensen.} 2020. 
+Internet of Things in arable farming: Implementation, applications, challenges and potential. 
+\textit{Biosyst. Eng.} 191:60--84. doi: 10.1016\!/j.biosystemseng.2019.12.013.
+
+\bibitem{4-sp-1} %5
+\Aue{Eltoshkina, N.\,V.} 2022. Geoinformatsionnoe kartografirovanie zemel' 
+sel'sko\-kho\-zyayst\-ven\-no\-go naznacheniya [Geoinformation mapping of agricultural land]. 
+\textit{Mos\-kov\-skiy eko\-no\-mi\-che\-skiy zh.} [Moscow Economic~J.] 7(3):31--45. doi: 
+10.55186\!/ 2413046X\_2022\_7\_3\_142. EDN: ZXMGSO.
+
+\bibitem{6-sp-1}
+\Aue{Studenkova, N.\,A., N.\,I.~Dobrotvorskaya, E.\,I.~Avrunev, M.\,V.~Kozina, and 
+V.\,P.~Pyat\-kin.} 2021. Aktual'nye voprosy inventarizatsii i~kadastrovogo ucheta zemel' 
+sel's\-ko\-kho\-zyayst\-ven\-no\-go naznacheniya [Current issues of inventory and cadastral registration of 
+agricultural land]. \textit{Vestnik SGUGiT} [Vestnik of SSUGT] 26(6):140--149. doi: 10.33764\!/\!2411-1759-2021-26-6-140-149.
+\bibitem{7-sp-1}
+\Aue{Trofimov, I.\,A., L.\,S.~Trofimova, E.\,P.~Yakovleva, A.\,A.~Shpedt, and T.\,A.~Aseeva}. 
+2022. Agrolandshaftno-ekologicheskoe rayonirovanie~--- osnova ustoychivogo razvitiya sel'skogo 
+khozyaystva Vostochnoy Sibiri i~Dal'nego Vostoka [Agro-landscape and ecological zoning is the 
+basis for sustainable development of agriculture in Eastern Siberia and the Far East]. \textit{Biosfera} 
+[Biosfera] 14(3):193--199. doi: 10.24855\!/\linebreak biosfera.v14i3.695. EDN: BFDPAX.
+\bibitem{8-sp-1}
+\Aue{Bartalev, S.\,A., V.\,A.~Egorov, V.\,O.~Zharko, E.\,A.~Loupian, D.\,E.~Plotnikov, 
+S.\,A.~Khvostikov, and N.\,V.~Shabanov.} 2016. \textit{Sputnikovoe kartografirovanie 
+rastitel'nogo pokrova Rossii} [Land cover mapping over Russia using Earth observation data]. 
+Moscow:  Russian Academy of Sciences' Space Research Institute. 208~p. EDN: YOBJAV.
+\bibitem{9-sp-1}
+\Aue{Waldner, F., D.~De Abelleyra, V.~Santiago, M.~Zhang, B.~Wu, D.~Plotnikov, S.~Bartalev, 
+M.~Lavreniuk, S.~Skakun, N.~Kussul, G.~Le Maire, S.~Dupuy, I.~Jarvis, and Р.~Defourny.} 
+2016. Towards a set of agrosystem-specific cropland mapping methods to address the global 
+cropland diversity. \textit{Int. J. Remote Sens.} 37(14):3196--3231. doi: 
+10.1080\!/\!01431161.2016.1194545.
+
+\bibitem{11-sp-1} %10
+\Aue{Hao, P., H.~Tang, Z.~Chen, Q.~Meng, and Y.~Kang.} 2020. Early-season crop type mapping 
+using 30-m reference time series. \textit{J.~Integr. Agr.} 19(7):1897--1911. doi:  
+10.1016\!/\!S2095-3119(19)62812-1.
+
+\bibitem{10-sp-1} %11
+\Aue{Roy, B.} 2021. Optimum machine learning algorithm selection for forecasting vegetation 
+indices: MODIS NDVI \& EVI. \textit{Remote Sensing Applications Society Environment} 
+23:100582. 4~p. doi: 10.1016\!/\!j.rsase.2021.100582.
+
+\bibitem{12-sp-1}
+\Aue{Savitha, C., and R.~Talari.} 2023. Mapping cropland extent using Sentinel-2 datasets and 
+machine learning algorithms for an agriculture watershed. \textit{Smart Agricultural Technology} 
+4:100193. 10~p. doi: 10.1016\!/\!j.atech.2023.100193.
+\bibitem{13-sp-1}
+\Aue{Andrade, J., J.~Cunha, J.~Silva, I.~Rufino, and C.~Galv\~{a}}. 2021. Evaluating single and 
+multi-date Landsat classifications of land-cover in a seasonally dry tropical forest. \textit{Remote 
+Sensing Applications Society Environment} 22:100515. 13~p. doi: 
+10.1016\!/ j.rsase.2021.100515.
+\bibitem{14-sp-1}
+\Aue{Ganzei, S.\,S., V.\,V.~Ermoshin, and N.\,V.~Mishina.} 2010. The dynamics of land use 
+within the Amur basin in the 20th century. \textit{Geography Natural Resources} 31(1):18--24. 
+doi: 10.1016\!/\!j.gnr.2010.03.004.
+\bibitem{15-sp-1}
+\Aue{Shaikh, T.\,A., T.~Rasool, and F.\,R.~Lone.} 2022. Towards leveraging the role of machine 
+learning and artificial intelligence in precision agriculture and smart farming. \textit{Comput. 
+Electron. Agr.} 198:107119. 29~p. doi: 10.1016\!/\!j.compag.2022.107119.
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received January 31, 2024}} 
+
+\vspace*{-8pt} 
+
+\Contr
+
+\vspace*{-2pt}
+
+
+\noindent
+\textbf{Prokhorets Ivan O.} (b.\ 1999)~--- PhD student, engineer, Computing Center of the Far 
+Eastern Branch of the Russian Academy of Sciences, 65~Kim Yu Chen Str., Khabarovsk 680000, 
+Russian Federation; \mbox{ivan0999@inbox.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Stepanov Alexey S.} (b.\ 1974)~--- Doctor of Science in pharmacy, leading scientist, Far 
+Eastern Research Institute of Agriculture, 13~Klubnaya Str., Vostochnoe 680521, Khabarovsk 
+Territory, Russian Federation; \mbox{stepanfx@mail.ru}
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

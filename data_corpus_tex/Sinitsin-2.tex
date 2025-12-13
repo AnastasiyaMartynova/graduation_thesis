@@ -1,0 +1,1310 @@
+\def\ss2{\mathop{\sum\sum}}
+
+\def\stat{sinitsin2}
+
+\def\tit{УСЛОВНО-ОПТИМАЛЬНАЯ ФИЛЬТРАЦИЯ В~СТОХАСТИЧЕСКИХ СИСТЕМАХ СО~СЛУЧАЙНЫМИ
+ПАРАМЕТРАМИ И~НЕ~РАЗРЕШЕННЫХ ОТНОСИТЕЛЬНО
+ПРОИЗВОДНЫХ}
+
+\def\titkol{Условно-оптимальная фильтрация в~СтС %стохастических системах 
+со~случайными параметрами и~не~разрешенных относительно
+производных}
+
+\def\aut{И.\,Н.~Синицын$^1$}
+
+\def\autkol{И.\,Н.~Синицын}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Синицын И.\,Н.}
+\index{Sinitsyn I.\,N.}
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа 
+%выполнена при поддержке Программы развития МГУ, проект №\,23-Ш03-03. При анализе 
+%данных использовалась инфраструктура Центра коллективного пользования 
+%<<Высокопроизводительные вычисления и~большие данные>> 
+%(ЦКП <<Информатика>>) ФИЦ ИУ РАН (г.~Москва)}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, %\mbox{sinitsin@dol.ru}; Московский авиационный институт, 
+\mbox{kafedra802@yandex.ru}}
+
+
+\vspace*{-12pt}
+
+
+
+
+\Abst{Для наблюдаемых дифференциальных гауссовских стохастических сис\-тем (СтС), не 
+разрешенных относительно производных (НРОП), со случайными па\-ра\-мет\-ра\-ми 
+в~виде интегральных канонических представлений (ИКП) и~приводимых 
+к~дифференциальным СтС, разработано методическое обеспечение и~алгоритм услов\-но-оп\-ти\-маль\-ной фильт\-ра\-ции и~анализа точ\-ности фильт\-ров.
+Дан обзор результатов в~об\-ласти субоптимальных (СОФ) и~услов\-но-оп\-ти\-маль\-ных фильт\-ров (УОФ) и~приведены необходимые сведения из корреляционной 
+теории ИКП и~многокомпонентных (МК) ИКП. Особое внимание уделено 
+регрессионной линеаризации посредством МК ИКП. Представлено методическое 
+обеспечение и~базовые алгоритмы УОФ для приведенных дифференциальных СтС НРОП. 
+Для оценки точности УОФ используются среднеквадратичные регрессионные уравнения 
+для условных вероятностных характеристик при фиксированном векторе случайных 
+параметров, а~МК ИКП применяется для получения безусловных характеристик для 
+случайных переменных параметров на основе МКМ. В~качестве примера рас\-смот\-рен УОФ 
+для линейной СтС НРОП с~параметрическим шумом. Определены на\-прав\-ле\-ния дальнейших исследований.}
+
+
+\KW{регрессионная среднеквадратичная линеаризация;
+стохастическая система, не разрешенная относительно производных (СтС НРОП);
+стохастический процесс (СтП);
+услов\-но-оп\-ти\-маль\-ный фильтр (УОФ)}
+
+\DOI{10.14357/19922264240303}{XCXLGD}
+  
+%\vspace*{-6pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+
+В~[1] рассмотрены вопросы синтеза нормальных СОФ (НСОФ) для дифференциальных 
+СтС НРОП. Представлены уравнения состояния 
+и~наблюдения нелинейных дифференциальных СтС НРОП. Синтез НСОФ выполнен при следующих условиях: 
+\begin{enumerate}[(1)]
+\item отсутствуют 
+пуассоновские шумы в~наблюдениях; 
+\item коэффициент при гауссовском шуме не зависит 
+от состояния.
+\end{enumerate}
+ Подробно рассмотрен синтез НСОФ при аддитивных шумах в~уравнениях 
+состояния и~наблюдения.
+%
+В~[2] для нелинейных интег\-ро-диф\-фе\-рен\-ци\-аль\-ных\linebreak СтС (ИДСтС), не 
+разрешенных относительно производных и~приводимых к~дифференциальным методом 
+сингулярных ядер, разработаны алгоритмы аналитического моделирования нормальных 
+СтП, при этом нелинейность под интегралом может быть разрывной, а~также синтеза 
+НСОФ для он\-лайн-об\-ра\-бот\-ки информации в~ИДСтС. Предложены алгоритмы оценки 
+качества НСОФ на основе теории чувствительности.
+%
+В~[3] разработано методическое обеспечение для негладких правых частей уравнений 
+СтС НРОП. Рассмотрены вопросы аналитического моделирования нормальных СтП на 
+основе нелинейных регрессионных моделей. Особое внимание уделено методам 
+гауссовской фильтрации и~экстраполяции.\linebreak
+ Изуче\-ны вопросы услов\-но-оп\-ти\-маль\-ной 
+фильт\-ра\-ции и~экстраполяции для СтС НРОП с~па\-ра\-мет\-ри\-че\-ски\-ми шумами.
+В~[4] разработано методическое и~алгоритмическое обеспечение аналитического 
+моделирования оценивания и~\mbox{идентификации} для существенно нестационарных 
+процессов (например, ударных) в~СтС НРОП. Дан обзор профильных пуб\-ли\-ка\-ций 
+и~изучены основные классы регрессионных уравнений СтС НРОП. Основные ре\-зуль\-таты: 
+\begin{enumerate}[(1)]
+\item для общего вида нелинейных СтС НРОП приведены оптимальные алгоритмы 
+совместной фильтрации и~распознавания; 
+\item для линейных гауссовских СтС НРОП 
+получены простые алгоритмы; 
+\item для~СтС НРОП, линейных относительно состояния~$X_t$ 
+и~нелинейных относительно наблюдений~$Y_t$, получены соответствующие  
+алгоритмы; 
+\item в случае~3 методом нормальной аппроксимации (МНА) получен простой 
+алгоритм.
+\end{enumerate}
+ Приводится иллюстративный пример скалярной нелинейной гауссовской СтС 
+НРОП.
+
+В~[5] для наблюдаемых гауссовских дифференциальных СтС НРОП со случайными 
+параметрами в~виде ИКП, приводимых к~дифференциальным СтС, разработано 
+методическое обеспечение анализа точности субоптимальной фильтрации, основанное 
+на МНА при фиксированном векторе параметров для условных вероятностных 
+характеристик и~регрессионной линеаризации посредством ИКП безусловных 
+характеристик.
+
+В настоящей статье рассматривается задача разработки методического обеспечения 
+и~алгоритмов услов\-но-оп\-ти\-маль\-ной фильт\-ра\-ции процессов в~СтС НРОП со случайными 
+переменными параметрами, описываемыми МК ИКП, и~моделирования точ\-ности УОФ. 
+В~разд.~2 приводятся сведения по теории МК ИКП 
+и~их преобразованиям. Раздел~3 посвящен вопросам приведения дифференциальных СтС 
+НРОП к~дифференциальным СтС. Основные результаты по теории УОФ приводятся 
+в~разд.~4. В~разд.~5 рассматривается УОФ в~системах с~мультипликативными 
+шумами. Приводится иллюстративный пример. Заключение содержит основные выводы и~направления дальнейших исследований.
+
+
+\section{Многокомпонентные интегральные канонические представления}
+
+Как известно~[6], для векторного СтП $X(t) =[ X_1(t) \cdots X_n(t)]^{\mathrm{T}}$ 
+справедливы следующие выражения для однокомпонентных ИКП:
+    \begin{multline}
+    X(t) = m^x (t) + \displaystyle\int\limits_\Lambda V(\la) x (t,\la) \,d\la\,,\\
+    X_h(t) = m_h^x (t) \displaystyle \int\limits_\Lambda V(\la) x_h (t,\la) \,d\la\enskip 
+\left(h=\overline{1,n}\right).
+          \label{e2.1-s2}
+     \end{multline}
+%
+Здесь 
+$$
+m^x (t) = \lk m_1^x (t) \cdots m_n^x (t)\rk^{\mathrm{T}}.
+$$
+ При этом ИКП матрицы 
+ковариационных функций $K^x (t, t') \hm= \lk K_{hl}^x (t,t')\rk$ имеет вид
+       \begin{multline}
+    K_{hl}^x (t,t') = \int\limits_\Lambda G(\la) x_h (t,\la) \overline{x_l(t',\la)} 
+\,d\la \\
+ \left( h,l=\overline{1,n}\right),
+\label{e2.2-s2}
+\end{multline}
+где белый шум $V(\la)$  определяется формулой
+    $$
+    V(\la) = \sss_{h=1}^n \int\limits_T \overline{a_h (t,\la)} X_h^0 (t)\,dt,
+    $$
+а его интенсивность $G(\la)$ равна
+
+\vspace*{-4pt}
+
+\noindent
+   \begin{multline*}
+    G(\la) ={}\\
+    {}= \sss_{h,l=1}^n \int\limits_T \int\limits_T \int\limits_T \overline{a_h (t,\la)} a_l (t',\la') K_{hl}^x (t,t')\, dtdt'd\la'.
+\end{multline*}
+Для вычисления координатных функций~$x_h (t,\la)$ и~функций~$a_h (t,\la)$ 
+получим  уравнения
+
+\vspace*{-4pt}
+
+\noindent
+    \begin{multline}
+    x_h (t,\la) =\fr{1}{G(\la)} \sss_{l=1}^n \int_T a_l (t',\la) K_{hl}^x 
+(t,t') \,dt' \\\
+ \left(h=\overline{1,n}\right);
+\label{e2.3-s2}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\sss_{h=1}^n \int\limits_T \overline{a_h(t,\la)} x_h (t, \la') \,dt = \delta (\la-\la'),\\
+    \int\limits_\Lambda \overline{a_l(t',\la)} x_h (t, \la)\, d\la = \delta_{hl} (t-t').
+    \label{e2.4-s2}
+    \end{multline}
+    
+
+Если параметр~$\la$ принимает все возможные значения, принадлежащие нескольким 
+областям $\Lambda_1\tr \Lambda_r$, то такое МК ИКП 
+векторного СтП $X(t) \hm=\lk X_1(t) \cdots X_n(t)\rk^{\mathrm{T}}$ и~матрицы ковариационных 
+функций $K^x (t,t') \hm= \lk K_{hl}^x (t,t')\rk$  будут иметь вид:
+  \begin{multline}
+    X(t) = m^x (t) +\sss_{\rho =1}^r \int\limits_{\Lambda_\rho} V_\rho (\la) x_\rho 
+(t,\la) \,d\la,
+\\
+    X_h(t) = m_h^x(t) +\sss_{\rho =1}^r \int\limits_{\Lambda_\rho} V_\rho (\la) 
+x_{\rho h} (t,\la) \,d\la\\
+ \left(h=\overline{1,n}\right);
+\label{e2.5-s2}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+        \begin{multline}
+    K_{hl}(t, t') =\sss_{\rho =1}^r \int\limits_{\Lambda_\rho} G_\rho (\la) x_{\rho h} (t,\la)\overline{x_{\rho l} (t',\la)}\, d\la\\ 
+\left(h,l=\overline{1,n}\right),
+\label{e2.6-s2}
+\end{multline}
+где $V_1(\la)\tr V_r(\la)$~--- некоррелированные белые шумы, определяемые 
+формулой
+        \begin{equation*}
+    V_\rho (\la) = \sss_{h=1}^n  \int\limits_{T} \overline{a_{\rho h} (t,\la)} X_h^0 
+(t) \,dt\  \left(\la\in \Lambda_\rho; \enskip \rho=\overline{1,n}\right).
+%\label{e2.7-s2}
+\end{equation*}
+
+Интенсивности белых шумов~$V_\rho (\la)$ определяются формулой:
+
+\vspace*{-4pt}
+
+\noindent
+     \begin{multline*}
+     G_\rho (\la) = {}\\
+     {}=\sss_{h,l=1}^n   \int\limits_{\Lambda_\rho}\int\limits_{T}\int\limits_T 
+\overline{a_{\rho h} (t,\la)}a_{\rho l}(t',\la') K_{hl}^x (t,t')\, dt 
+dt'd\la'\\
+ \left(\la\in \Lambda_\rho; \enskip \rho=\overline{1,r}\right).
+%\label{e2.8-s2}
+\end{multline*}
+Для вычисления координатных функций~$x_{\rho h} (t',\la')$ и~функций~$a_{\rho h} 
+(t,\la)$ используются формулы:
+
+\pagebreak
+
+\noindent
+    \begin{multline}
+    x_{\rho h} (t,\la) =\fr{1}{G_\rho (\la)} \sss_{l=1}^n \int\limits_T a_{\rho l} 
+(t',\la)K_{hl}^x(t,t')\,dt'\\
+ \left(\la\in \Lambda_\rho; \enskip 
+\rho=\overline{1,r};\enskip h=\overline{1,n}\right);
+\label{e2.9-s2}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+ \begin{multline}
+    \sss_{h=1}^n \int\limits_T \overline{a_{\mu h} (t,\la)}a_{\rho h} 
+(t,\la')\,dt=\delta_{\rho \mu} \delta (\la-\la')\\[-2pt]
+ \left(\la\in \Lambda_\mu; 
+\enskip \la'\in \Lambda_\rho;\enskip \rho,\mu=\overline{1,r}\right);
+\label{e2.10-s2}
+\end{multline}
+
+\vspace*{-6pt}
+
+\noindent
+    \begin{equation*}
+    \sss_{\rho=1}^r \int\limits_{\Lambda_\rho} \overline{a_{\rho l} (t',\la)}x_{\rho 
+h} (t,\la)\,d\la=\delta_{hl} \delta (t-t')\  
+\left(h,l=\overline{1,n}\right),
+%\label{e2.11-s2}
+\end{equation*}
+выражающие необходимые и~достаточные условия представления векторного СтП 
+посредством МК ИКП.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.1.}\ \textit{В условиях}~(\ref{e2.3-s2}), (\ref{e2.4-s2}) 
+\textit{или}~(\ref{e2.9-s2}), (\ref{e2.10-s2}) \textit{из ИКП}~(\ref{e2.1-s2}) 
+\textit{или}~(\ref{e2.5-s2}) \textit{вытекает МК ИКП 
+матрицы его ковариационных функций}~(\ref{e2.2-s2}) \textit{или}~(\ref{e2.6-s2}).
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.2.}\ \textit{Если известно ИКП векторного СтП}~(\ref{e2.1-s2}), \textit{то вектор математического ожидания 
+и~матрица ковариационных функций линейного преобразования $Y_t (t) \hm= \mathrm{A}_t 
+X_t$ допускают МК ИКП, определяемые формулами}~[6]:
+    \begin{gather*}
+     X_p(t) = m_p^x(t) + \!\sss_{\rho=1}^r \int\limits_{\Lambda_\rho} V_\rho (\la) 
+x_{\rho p}(t,\la) \,d\la\enskip \left(p=\overline{1,n}\right);
+%\label{e2.12-s2}
+\\
+     Y_p(s) = m_p^y(s) + \!\sss_{\rho=1}^r \int\limits_{\Lambda_\rho} V_\rho (\la) 
+y_{\rho p}(s,\la) \,d\la\enskip \left(p=\overline{1,m}\right);
+%\label{e2.13-s2}
+\\
+     y_{\rho p}(s,\la)) = \!\sss_{h=1}^n  A_{ph} x_{\rho h} (t,\la)\enskip 
+\left(p=\overline{1,m}\right);
+%\label{e2.14-s2}
+\end{gather*}
+
+\vspace*{-12pt}
+
+\noindent
+    \begin{multline*}
+%    \left.
+ %     \begin{array}{rl}
+     K^y (s,s') =\lk K_{pq}^y (s,s')\rk,\\
+     K_{pq}^y (s,s') = \displaystyle \sss_{\rho=1}^r \int\limits_{\Lambda_\rho} G_\rho (\la) 
+y_{\rho p}(s,\la) \overline{y_{\rho p}(s',\la)}\,d\la\\
+\left(p,q=\overline{1,m}\right).
+%      \end{array}
+ %     \right\}
+  %    \label{e2.15-s2}
+      \end{multline*}
+
+В задачах нелинейной корреляционной теории невырожденные безынерционные 
+скалярные и~векторные существенно нелинейные преобразования $Y_t \hm=\varphi_t(X_t)$ 
+заменяют оптимальными в~среднеквадратичном смысле линейными регрессионными 
+преобразованиями~[7, 8]. Задача эквивалентной регрессионной линеаризации 
+детерминированной векторной нелинейной функции $Y\hm=\varphi (X)$ при использовании 
+критерия минимума среднеквадратичной ошибки совпадает с~классической задачей 
+линейного регрессионного анализа. В~этом случае оптимальная линейная 
+среднеквадратичная регрессия вектора~$Y$ на вектор~$X$ определяется формулой
+        \begin{equation*}
+     m^y(X) =gX+a;
+     \end{equation*}
+     где
+     
+     \vspace*{-3pt}
+     
+     \noindent
+\begin{align}
+      g&=K^{yx} (K^x)^{-1};     \label{e2.16-s2}\\ 
+      a&=m^y-gm^x.\notag
+\end{align}
+
+\vspace*{-2pt}
+
+
+Пусть $f(y,x)$~--- совместная плотность случайных векторов~$Y$ и~$X$; $m^x$ 
+и~$K^x$~--- математическое ожидание и~ковариационная матрица вектора~$x$, $\mathrm{det}\,|K^x |\hm\ne 0$.  
+Формула~(\ref{e2.16-s2}) при этом принимает вид:
+
+\vspace*{-4pt}
+
+\noindent
+        \begin{multline}
+    g=K^{yx} (K^x)^{-1} ={}\\
+\!\!{}=\!\!\iin \!\lk m^y(x) - m^y\rk \left(x-m^x\right)^{\mathrm{T}} (K^x)^{-1} f_1 (x) \,dx,\!
+    \label{e2.17-s2}
+        \end{multline}
+где  $f_1(x)$~--- плотность случайного вектора~$X$. Эта формула вместе с~приближенной формулой
+        \begin{equation*}
+    m^y(X) \approx m^y +g\left(X-m^x\right)
+   % \label{e2.18-s2}
+        \end{equation*}
+дает статистическую линеаризацию регрессии~$m^y(X)$ по Казакову.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.3.}\ \textit{Если существуют конечные моменты первого и~второго порядка векторного СтП 
+$X=X(t)$, то векторное нелинейное преобразование $Y\hm=\varphi(X)$ допускает линейную 
+среднеквадратичную регрессию $Y\hm=Y(t)$ на $X\hm=X(t)$, определяемую по Казакову 
+формулами}~(\ref{e2.16-s2}) \textit{и}~(\ref{e2.17-s2}).
+
+\smallskip
+
+Первый подход к~линеаризации основан на использовании формул для ИКП~$X_t$ 
+в~тео\-ре\-ме~2.1 в~случае одной об\-ласти~$\Lambda$, а~второй подход~--- для нескольких 
+областей~$\Lambda_\rho$. При этом имеют место сле\-ду\-ющие утверж\-де\-ния.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.4.}\ \textit{Оптимальная среднеквадратичная линеаризация посредством ИКП (тео\-ре\-ма~$2.1$) 
+первого рода определяется сле\-ду\-ющи\-ми формулами}:
+
+\vspace*{-4pt}
+
+\noindent
+\begin{multline*}
+\varphi_t (X_t) \approx m_t^{(1)y} (X_t) = {}\\
+{}=\varphi_{0t}^{(1)} \left(m_t^x, K_t^x\right) + 
+g_t^{(1)} \left(m_t^x, K_t^x\right)\times{}\\
+{}\times \lk \sss_{\rho=1}^r \int\limits_{\Lambda_\rho} V_\rho (\la) 
+x_t (\la) \,d\la-m_t^x\rk; %\label{e2.19-s2}
+\end{multline*}
+
+\vspace*{-6pt}
+
+\noindent
+\begin{equation*}
+%\left.
+\begin{array}{rl}
+\varphi_{0t}^{(1)} \left(m_t^x, K_t^x\right) &= \mathrm{M}_N \lk \varphi \left(X_t\right)\rk;\\[6pt]
+g_{t}^{(1)} \left(m_t^x, K_t^x\right)& = K_t^{yx}\left(K_t^x\right)^{-1}.
+\end{array}
+%\right\}
+%\label{e2.20-s2}
+\end{equation*}
+\textit{Здесь $\mathrm{M}_N$~--- символ математического ожидания для нормального распределения.}
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.5.}\ \textit{Оптимальная среднеквадратичная линеаризация посредством МК ИКП (теорема~$2.1$) 
+второго рода определяется следующими формулами}:
+  \begin{multline*}
+  \varphi_t (X_t) \approx m_t^{(2)y} \left(X_t\right) = \varphi_{0t}^{(2)} \left(m_t^x, K_{\rho t}^x\right) +{}\\
+{}+\sss_{\rho=1}^r \int\limits_{\Lambda_\rho} \!g_{pt}^{(2)} \! \left(m_t^x, K_{\rho t}^x\right) 
+V_\rho (\la) x_{\rho t} \,d\la - g_t^{(2)}  \left(m_t^x, K_t^x\right) m_t^x;\hspace*{-7.8623pt}\\[-25pt] %\label{e2.21-s2}
+\end{multline*}
+
+\pagebreak
+
+\noindent
+  \begin{align*}
+  \varphi_{0t}^{(2)}  \left(m_t^x, K_{\rho t}^x\right) &=\mathrm{M}_N \lk \varphi \left(X_t\right)\rk;\\
+g_{0t}^{(2)}  \left(m_t^x, K_{\rho t}^x\right) &=K_{\rho t}^{yx} \left(K_{\rho t}^x\right)^{- 1}.
+%\label{e2.22-s2}
+\end{align*}
+
+
+\section{Стохастические системы, не~разрешенные относительно~производных}
+
+
+В качестве исходной СтС НРОП рассмотрим детерминированную  векторную сис\-те\-му 
+уравнений
+   \begin{equation}
+   \Phi = \Phi \left( t, X_t, \bar X_t, Y_t, \Theta_t, U_t\right) =0\,.
+    \label{e3.1-s2}
+    \end{equation}
+Здесь $X_t$~--- вектор состояния; $\bar X_t\hm= [ \dot X_t^{\mathrm{T}} \cdots 
+(X^{(l)})^{\mathrm{T}}]^{\mathrm{T}}$~--- расширенный вектор со\-сто\-яния, со\-сто\-ящий из $l$-го порядка 
+производных по времени; $Y_t$~--- вектор наблюдений; $\Theta_t$~--- вектор 
+случайных па\-ра\-мет\-ров, опи\-сы\-ва\-емый МК ИКП (см.\ разд.~2); $\Phi$~--- нелинейная 
+функция переменных  $\bar{\bar X}_t \hm= [ X_t^{\mathrm{T}} \bar X_t^{\mathrm{T}} U_t^{\mathrm{T}}]^{\mathrm{T}}$ 
+и~$\Theta_t$, до\-пус\-ка\-ющая при фиксированном векторе случайных па\-ра\-мет\-ров~$\Theta_t$ 
+среднеквадратичную регрессионную линеаризацию по~$\bar X_t$  и~$U_t$ 
+вида
+      \begin{equation*}
+    \Phi\approx \Phi_0 + \sss_{j=1} k_{\bar X,j}^\Phi \bar X_t^j + k_U^\Phi U_t^0;
+%\label{e3.2-s2}
+\end{equation*}
+$U_t$~--- вектор возмущений, связанный с~гауссовским белым шумом~$V_0$ линейным 
+уравнением формирующего фильтра:
+     \begin{equation}
+    \dot U_t = a_t^U U_t +  a_{0t}^U + b_t^U V_0,
+    \label{e3.3-s2}
+    \end{equation}
+где $\mathrm{M} V_0 =0$; $ \mathrm{M} \lk \nu_0 (t,\Theta_t) \nu_0(t,\Theta_t)^{\mathrm{T}}\rk\hm = \nu_0 
+\delta (t-\tau)$. Тогда при фиксированном~$\Theta$ и~при условиях $\mathrm{det}\ 
+k_{\bar X, l}^\Phi\hm \ne 0$ и~$ \mathrm{det}\ K_U^\Phi \hm\ne 0$ дифференциальная СтС НРОП~(\ref{e3.1-s2}) 
+приводится к~дифференциальной СтС следующего вида (\textbf{теорема~3.1}):
+
+\noindent
+      \begin{multline*}
+      \dot{\bar X}_{1t} = \bar X_{2t} \tr {\dot{\bar X}}_{(l-1)t} =\bar 
+X_{lt},\\
+    \dot{\bar X}_{lt}= -\left(k_{\bar X,l}^\Phi\right)^{-1} \bar X_t^{(l)}-
+\left(k_{\bar X, l}^\Phi\right)^{-1}\left(k_{U}^\Phi\right)^{-1} U_t
+%\label{e3.4-s2}
+\end{multline*}
+и~(\ref{e3.3-s2}). Мат\-ри\-цы коэффициентов~$k_{\bar X, l}^\Phi$ и~$k_{U}^\Phi$ неявно зависят 
+от первых двух вероятностных моментов~$\bar X_t$.
+
+
+
+Пусть объектовая СтС НРОП допускает приведение к~дифференциальной, измерительная 
+сис\-те\-ма вполне наблюдаема, наблюдения влияют на объект, а~уравнение наблюдения 
+разрешено относительно~$Y_t$. Тогда в~качестве исходных приведенных 
+дифференциальных уравнений (объект и~измерительная сис\-те\-ма) можно принять 
+следующую:
+
+\noindent
+    \begin{multline}
+    \dot X_t = A^{\mathrm{п}}\left(X_t, Y_t, \Theta_t, t\right) ={}\\
+    {}= a^{\mathrm{п}}\left( X_t, Y_t, \Theta_t, t\right) + b^{\mathrm{п}}\left( X_t, Y_t, \Theta_t, t\right) V_0 
+\left(\Theta_t\right);
+\label{e3.5-s2}
+\end{multline}
+
+%\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+    Z_t = \dot Y_t= B\left(X_t, Y_t, \Theta_t, t\right) ={}\\
+    {}= a_1 \left( X_t, Y_t, \Theta_t, t\right) +
+b_1\left( X_t, Y_t, \Theta_t,t\right) V_0 \left(\Theta_t\right).
+\label{e3.6-s2}
+\end{multline}
+
+\vspace*{-4pt}
+
+\noindent
+Здесь $a^{\mathrm{п}}$, $a_1$, $b^{\mathrm{п}}$ и~$b_1$~--- известные век\-тор\-но-мат\-рич\-ные функции; 
+$V_0$~--- векторный нормальный (гауссовский) белый шум 
+интенсивности $\nu_0 \hm= \nu_0 (\Theta_t)$.
+
+
+\section{Основные результаты}
+
+
+\noindent
+\textbf{Теорема~4.1.}\ \textit{Пусть составной векторный СтП $Z_t \hm= [ Y_t^{\mathrm{T}} X_t^{\mathrm{T}} \hat X_t^{\mathrm{T}}]^{\mathrm{T}}$  при 
+фиксированном векторе случайных параметров~$\Theta_t$ определяется уравнениями}~(\ref{e3.5-s2}), (\ref{e3.6-s2}) 
+\textit{и~уравнением УОФ}~[8]:
+
+\vspace*{-6pt}
+
+\noindent
+     \begin{multline}
+     \dot{\hat X}_t = C\left(Y_t, \hat X_t, \Theta_t, t\right)=\alp_t \xi \left(Y_t, \hat X_t, \Theta_t, t\right) +{}\\
+     {}+\beta_t \eta \left(Y_t, \hat X_t, \Theta_t, t\right) \dot Y_t + 
+\gamma_t,
+\label{e4.1-s2}
+\end{multline}
+\textit{где}
+
+
+\vspace*{-6pt}
+
+\noindent
+   \begin{multline*}
+    \alp_t m_1 + \beta_t m_2 + \gamma_t = m_0,\\ 
+    m_0 = M a^{\mathrm{п}},\enskip m_1 = \, \xi, \enskip m_2 = \mathrm{M} \eta a_1;
+%\label{e4.2-s2}
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+   \begin{multline*}
+    \beta_t =\kappa_{02} \kappa_{22}^{-1} \left(\mathrm{det}\ \kappa_{22}\ne  0\right),\\
+     \kappa_{02} = \mathrm{M} \left(X_t -\hat X_t\right) a_1^{\mathrm{T}}\eta^{\mathrm{T}} + \mathrm{M} b^{\mathrm{п}} 
+\nu_0^{\mathrm{п}}b_1^{\mathrm{T}} \eta^{\mathrm{T}},\\
+\kappa_{22} = \mathrm{M} \eta b_1\nu_0^{\mathrm{п}}b_1^{\mathrm{T}} \eta^{\mathrm{T}};
+%\label{e4.3-s2}
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+    \alp_t \kappa_{11} + \mathrm{M} \lk \left(\hat X_t - X_t\right) \left(\xi^{\mathrm{T}} \alp_t^{\mathrm{T}} 
++\gamma_t^{\mathrm{T}}\right)\rk \fr{\partial  \xi^{\mathrm{T}}}{\partial  \hat X_t} ={}\\
+{}=\kappa_{01}^\prime -\beta_t \kappa_{21}^\prime,\\
+\kappa_{21} = \mathrm{M} \left(\eta a_1 - m_2\right) \xi^{\mathrm{T}},
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\kappa_{01}' =\kappa_{01} + \mathrm{M} \left( X_t - \hat X_t\right) \fr{\partial  \xi^{\mathrm{T}}}{\partial  
+t} +{}\\
+{}+\mathrm{M} \lk \left(X_t - \hat X_t\right) a_1^{\mathrm{T}}  + b^{\mathrm{п}}\nu_0^{\mathrm{п}} 
+b_1 - \beta_t \eta b_1 \nu_0^{\mathrm{п}} b_1^{\mathrm{T}}\rk \times{}\\
+{}\times \left( \fr{\partial }{\partial  y} + \eta^{\mathrm{T}} \beta_t^{\mathrm{T}} \fr{\partial }{\partial  \hat{X}_t}\right)\xi^{\mathrm{T}} +
+\fr{1}{2} \mathrm{M} \left(X_t - \hat X^t\right)\times{}
+\\
+{}\times\biggl\{ \mathrm{tr} \, \lk b_1 \nu_0^{\mathrm{п}} b_1^{\mathrm{T}} 
+\left(\fr{\partial }{\partial  y} + 2 \eta^{\mathrm{T}} \beta_t^{\mathrm{T}} \fr{\partial }{\partial  \hat X_t}\right) 
+\fr{\partial^{\mathrm{T}}}{\partial  y}\rk+{}\\
+{}+ \mathrm{tr}\, \lk \beta_t \eta b_1 \nu_0^{\mathrm{п}} b_1^{\mathrm{T}} \eta^{\mathrm{T}} 
+\beta_t^{\mathrm{T}} \fr{\partial }{\partial  \hat X_t}\,\fr{\partial^{\mathrm{T}}}{\partial  \hat X^t}\rk\biggr\} 
+\xi^{\mathrm{T}}, \\
+ \kappa_{01} =\mathrm{M} (a^{\mathrm{п}}-m_0)\xi^{\mathrm{T}}.
+%\label{e4.4-s2}
+\end{multline*}
+\textit{Тогда совместное распределение составного вектора~$Z_t$  определяется уравнением 
+Пугачёва для одномерной характеристической функции относительно} $\la \hm=[ 
+\la_1^{\mathrm{T}} \la_2^{\mathrm{T}} \la_3^{\mathrm{T}}]^{\mathrm{T}}$:
+
+\vspace*{-6pt}
+
+\noindent
+    \begin{multline*}
+    \fr{\partial  g_1 (\la_1, \la_2,\la_3 )}{\partial  t} = \mathrm{M} \biggl [ i \la_1^{\mathrm{T}} a_1 
++ i\la_2^{\mathrm{T}} a^{\mathrm{п}} +{}\\
+{}+ i \la_3^{\mathrm{T}} \left(\alp_3 \xi + \beta_t \eta a_1 
++\gamma_t\right)+{}
+\end{multline*}
+
+\noindent
+\begin{multline*}
+{}+\chi_0 \left(b_1^{\mathrm{T}} \la_1 + b^{\mathrm{пT}} \la_2 + b_1^{\mathrm{T}} \eta^{\mathrm{T}} 
+\beta_t^{\mathrm{T}} \la_3;t\right)\biggr]\times{}\\
+{}\times \exp \lk i\la_1^{\mathrm{T}} Y_t + i\la_2^{\mathrm{T}} X_t + i \la_3^{\mathrm{T}} 
+\hat X_t\rk,
+%\label{e4.5-s2}
+\end{multline*}
+
+\vspace*{-3pt}
+
+\noindent
+\textit{где}
+\begin{equation*}
+\chi_0 (\mu; t) = -\fr{1}{2} \,\mu^{\mathrm{T}} \nu_0\mu, %\label{e4.6-s2}
+    \end{equation*}
+\textit{и при начальном условии}
+\begin{equation*}
+g_1 \left(\la_1,\la_2,\la_3;t_0\right) = g_0 \left(\la_1,\la_2,\la_3\right).
+%\label{e4.7-s2}
+\end{equation*}
+\textit{При этом точность УОФ оценивается по следующей формуле для производной 
+ковариационной матрицы ошибки}~$R_t$:
+
+\vspace*{-3pt}
+
+\noindent
+\begin{multline*}
+\dot R_t = D \left(Y_t, X_t, \hat X_t, \Theta_t, t\right) = {}\\
+{}=\mathrm{M} \left[ \left(X_t - \hat X_t\right) a^{\mathrm{п}T}+ a^{\mathrm{п}}\left( X_t^{\mathrm{T}} - 
+\hat X_t^{\mathrm{T}}\right) -{}\right.\\
+\left.{}- \beta_t \eta b_1 \nu_0^{\mathrm{п}} b_1^{\mathrm{T}} \eta^{\mathrm{T}} \beta_t^{\mathrm{T}} + 
+b^{\mathrm{п}}\nu_0^{\mathrm{п}} b^{\mathrm{п}T}
+\vphantom{\left(X_t - \hat X_t\right) a^{\mathrm{п}T}}
+\right].
+%\label{e4.8-s2}
+\end{multline*}
+
+\vspace*{-3pt}
+
+
+
+
+Применяя регрессионную линеаризацию к~уравнениям~(\ref{e3.5-s2})--(\ref{e4.1-s2}) посредством 
+МК ИКП, согласно тео\-ре\-мам~2.4 и~2.5 для условных вероятностных характеристик при 
+фиксированном векторе случайных па\-ра\-мет\-ров~$\Theta_t$ придем к~сле\-ду\-ющим 
+уравнениям аналитического моделирования УОФ:
+  \begin{equation}
+  \hat{\tilde X}_t = \hat{\tilde{\tilde X}}_t +\delta \hat{\tilde 
+X}_t;\enskip \tilde R_t =\tilde{\tilde R}_t + \delta \tilde R_t.
+\label{e4.9-s2}
+\end{equation}
+Здесь введены следующие обозначения:
+\begin{equation}
+\left.
+\begin{array}{rl}
+\fr{d}{dt}\hat{\tilde{\tilde X}}_t &= C_0 \left(Y_t, \hat{\tilde{\tilde X}}_t, O, t\right);\\[6pt]
+\fr{d}{dt}\tilde{\tilde R}_t &= D_0 \left(Y_t, \hat{\tilde{\tilde  X}}_t, O, t\right);
+\end{array}
+\right\}
+\label{e4.10-s2}
+\end{equation}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\fr{d}{dt}\delta\hat{\tilde X}_t = C_{1,\delta X} \left(Y_t,  \hat{\tilde{\tilde X}}_t, O, t\right) \hat{\tilde X}_t+{}\\
+  C_{1,\delta R} \left(Y_t,  \hat{\tilde{\tilde X}}_t, O, t\right)\delta R_t +{}\\
+{}+C_{1,\Theta} \left(Y_t, \hat{\tilde{\tilde X}}_t, O, t\right)\Theta_t;
+\label{e4.11-s2}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\fr{d}{dt}\delta \tilde R_t = D_{1,\delta X} \left(Y_t, \hat{\tilde{\tilde X}}_t, O, t\right)\delta \hat{\tilde X}_t+ {}\\
+{}+
+D_{1,\delta R} \left(Y_t, \hat{\tilde{\tilde  X}}_t, O, t\right)\delta R_t+{}\\
+{}+ D_{1,\Theta} \left(Y_t, \hat{\tilde{\tilde X}}_t, O, t\right)\Theta_t,
+    \label{e4.12-s2}
+    \end{multline}
+    
+    \vspace*{-3pt}
+
+\noindent
+где $C_0=C_0(Y_t, \hat{\tilde{\tilde X}}_t, O, t)$, $D_0 \hm= D_0 (Y_t, 
+\hat{\tilde{\tilde X}}_t, O, t)$, $C_1 \hm= C_1 (Y_t, \hat{\tilde{\tilde X}}_t, O, 
+t)$ и~$D_1 \hm= D_1 (Y_t, \hat{\tilde{\tilde X}}_t, O, t)$ пред\-став\-ля\-ют собой 
+коэффициенты среднеквадратичной линеаризации соответствующих функций посредством 
+МК ИКП.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~4.2.}\ \textit{Пусть в~условиях тео\-ре\-мы~$4.1$ функции~$C$ и~$D$ допускают среднеквадратичную 
+линеаризацию посредством МК ИКП, тогда в~основе алгоритмов аналитического 
+моделирования будут лежать уравнения}~(\ref{e4.9-s2})--(\ref{e4.12-s2}).
+
+
+\section{Применение к~линейным~системам с~мультипликативными шумами }
+
+
+Для приведенных дифференциальных уравнений линейной сис\-те\-мы~(\ref{e3.5-s2}), (\ref{e3.6-s2})  
+с~мультипликативными шумами при фиксированном векторе~$\Theta_t$
+   \begin{multline}
+   \dot X_t = A^{\mathrm{п}}\left(Y_t, X_t, \Theta_t,t\right) = a^{\mathrm{п}}Y_t + 
+a_1^{\mathrm{п}}X_t + a_0^{\mathrm{п}}+ {}\\
+{}+\lk c_{10}^{\mathrm{п}}+\sss_{r=1}^{n_y} c_{1r}^{\mathrm{п}} Y_r + \sss_{r=1}^{n_x} 
+c_{1,n_y+r}^{\mathrm{п}} X_r\rk V_0;
+\label{e5.1-s2}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\dot Y_t = B\left(Y_t, X_t, \Theta_t,t\right) = bY_t + b_1 X_t + b_0 + {}\\
+{}+\left( c_{20}  + \sss_{r=1}^{n_y} c_{2r} Y_r + \sss_{r=1}^{n_x} c_{2,n_y+r} 
+X_r\right)V_0
+%\label{e5.2-s2}
+\end{multline*}
+согласно теореме~4.1 для $\xi\hm=[ Y_t^{\mathrm{T}} \hat X_t^{\mathrm{T}}]^{\mathrm{T}}$ и~$\eta\hm= I_{n_y}$ 
+уравнения УОФ имеют вид~(\ref{e4.1-s2}), где
+  \begin{equation*}
+    \alp_t = \lk \alp_1\,  \alp_2\rk =\lk  a^{\mathrm{п}}- \beta_t b\enskip  
+a_1^{\mathrm{п}}- \beta_t b_1 \rk;
+%\label{e5.3-s2}
+\end{equation*}
+
+\vspace*{-12pt}
+
+\noindent
+ \begin{multline*}
+ \beta_t = \Biggl\{ R_t b_1^{\mathrm{T}} + \left( c_{10}^\Pi + \sss_{r=1}^{n_y+n_x} 
+c_{1r}^{\mathrm{п}}m_r\right) \nu_0^{\mathrm{п}}\times{}\\
+{}\times \left(c_{20}^{\mathrm{T}} + 
+\sss_{r=1}^{n_y+n_x} c_{2r}^{\mathrm{T}} m_r\right)+\!
+\ss2\limits_{r,s=1}^{n_y+n_x} c_{1r}^{\mathrm{п}}\nu_0^{\mathrm{п}} 
+c_{2s}^{\mathrm{T}} K_{rs}\Biggr\}\kappa_{11}^{-1};
+%\label{e5.4-s2}
+\end{multline*}
+\begin{equation}
+\gamma_t = a_0^{\mathrm{п}}-\beta_t b_0;
+\label{e5.5-s2}
+\end{equation}
+\begin{equation*}
+\dot m_t =a^Q m_t + a_0^Q;
+%\label{e5.6-s2}
+\end{equation*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\dot K_t = a^Q K_t + K_t a^{QT} + c^Q_0 \nu_0^{\mathrm{п}}c_0^{QT} + {}\\
+{}+
+\sss_{r=1}^{n_y+n_x} \left( c_0^Q \nu_0^{\mathrm{п}} c_r^{QT} + c_r^Q 
+\nu_0^{\mathrm{п}}c_0^{QT}\right) m_r +{}\\
+{}+ \ss2\limits_{r,s=1}^{n_y+n_x} c_r^Q \nu_0^{\mathrm{п}} c_s^{QT} \left(m_r m_s +K_{rs}\right);
+%\label{e5.7-s2}
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{alignat*}{2}
+a^Q&=\lk \begin{array}{cc}
+    b& b_1\\
+    a^{\mathrm{п}}&a_1^{\mathrm{п}}
+    \end{array}\rk;&\quad
+       a_0^Q&= \lk \begin{array}{c}
+        b_0\\
+        a_0^{\mathrm{п}}
+        \end{array}\rk;
+        \\
+                  c_0^Q&=  \lk \begin{array}{cc}
+            c_{20}\\
+            c_{10}^{\mathrm{п}}
+            \end{array}\rk;&\quad
+               c_r^Q &= \lk \begin{array}{cc}
+                c_{2r}\\
+                c_{1r}^{\mathrm{п}}
+                \end{array}\rk \enskip \left(r=\overline{0, n_y+n_x}\right).
+%                \end{array}
+%                \right\}
+%                \label{e5.8-s2}
+                \end{alignat*}
+Здесь $m_t$ и~$K_t \hm= \lk K_{lh}\rk$~--- соответственно математическое ожидание 
+и~ковариационная матрица составного вектора $Q\hm= [ \hat X_1 \cdots \hat X_{n_x}\,  
+Y_1\cdots Y_{n_y}]^{\mathrm{T}}$.
+Тогда совместное распределение составного вектора определяется уравнением 
+Пугачёва для одномерной характеристической функции:
+  \begin{multline*}
+  \fr{\partial  g_1}{\partial  t} = \left(\la_1^{\mathrm{T}} b + \la_2^{\mathrm{T}} a^{\mathrm{п}} + 
+\la_3^{\mathrm{T}} a^{\mathrm{п}}\right) \fr{\partial  g_1}{\partial  \la_1}+{}\\
+{}+
+    \left(\la_1^{\mathrm{T}} b_1 + \la_2^{\mathrm{T}} a_1 + \la_3^{\mathrm{T}}\beta_t b_1\right) \fr{\partial  
+g_1}{\partial  \la_2}+{}\\
+{}+ \la_3^{\mathrm{T}} (a_1^{\mathrm{п}}+\beta_t a^{\mathrm{п}}) \fr{\partial  
+g_1}{\partial  \la_3} + i\left( \la_1^{\mathrm{T}} b_0 + \la_2^{\mathrm{T}} a_0^{\mathrm{п}}+ \la_3^{\mathrm{T}} 
+a_0^{\mathrm{п}}\right) g_1 +{}\\
+{}+\mathrm{M} \chi_0 \Biggl[ \left(c_{20}^{\mathrm{T}} + \sss_{r=1}^{n_y} c_{2r}^{\mathrm{T}} Y_r 
++\sss_{r=1}^{n_x} c_{2, n_x+r}^{\mathrm{T}} X_r\right) \la_1+{}\\
+{}+\left( c_{20}^{\mathrm{T}} + \sss_{r=1}^{n_y} c_{1r}^{\mathrm{пT}} Y_r + 
+\sss_{r=1}^{n_x} c_{1,n_x+r}^{\mathrm{пT}} X_r \right)\times{}\\
+{}\times \left(\la_2+\beta_t^{\mathrm{T}} \la_3\right);t\Biggr] \exp \lf i \la_1^{\mathrm{T}} Y_t + i\la_2^{\mathrm{T}} 
+X_t +i \la_3^{\mathrm{T}} \hat X_t\rf.
+%\label{e5.9-s2}
+\end{multline*}
+%
+При этом для оценки точности УОФ используется следующее обобщенное уравнение 
+Риккати:
+
+\noindent
+   \begin{multline*}
+    \dot R_t= D(R_t, \Theta_t) = a_1^{\mathrm{п}}R_t + R_t a_1^{\mathrm{пT}}-\left[ 
+    \vphantom{\sss_{r=1}^{n_y+n_x}}
+    R_t b_1^{\mathrm{T}} +{}\right.\\
+   {}+\left(c_{10}^{\mathrm{п}}+\sss_{r=1}^{n_y+n_x} c_{1r}^{\mathrm{п}}m_r\right) \nu_0^{\mathrm{п}} 
+\left(c_{20}^{\mathrm{T}}+\sss_{r=1}^{n_y+n_x} c_{2r}^{\mathrm{T}} m_r\right)+ {}\\
+\left.{}+\ss2_{r,s=1}^{n_y+n_x} 
+c_{1r}^{\mathrm{п}} \nu_0^{\mathrm{п}}c_{2,s}^{\mathrm{T}} K_{rs}\right]\kappa_{11}^{-1} \left[ 
+\vphantom{\sss_{r=1}^{n_y+n_x} }
+b_1 R_t +{}\right.\\
+{}+\left( c_{20} +\sss_{r=1}^{n_y+n_x} c_{2r} m_r\right) 
+\nu_0^{\mathrm{п}}
+\left( 
+\vphantom{\sss_{r=1}^{n_y+n_x} }
+c_{10}^{\mathrm{пT}} +{}\right.\\
+\left.\left.{}+\sss_{r=1}^{n_y+n_x} 
+c_{1r}^{\mathrm{пT}} m_r \right) +\ss2_{r,s=1}^{n_y+n_x}  c_{2r} 
+\nu_0^{\mathrm{п}}c_{1s}^{\mathrm{пT}} K_{rs} \right]+{}\\
+{}+\left(c_{10}^{\mathrm{п}}+\sss_{r=1}^{n_y+n_x} c_{1r}^{\mathrm{п}} 
+m_r\right) \nu_0^{\mathrm{п}} \left(
+\vphantom{\sss_{r=1}^{n_y+n_x} }
+c_{10}^{\mathrm{пT}} + {}\right.\\
+\left.{}+
+\sss_{r=1}^{n_y+n_x} c_{1r}^{\mathrm{пT}} m_r\right) +\ss2_{r,s=1}^{n_y+n_x} 
+c_{1r}^{\mathrm{п}}\nu_0^{\mathrm{п}} c_{1s}^{\mathrm{пT}}  K_{rs},
+%\label{e5.10-s2}
+\end{multline*}
+где
+    \begin{multline*}
+    \kappa_{11} ={}\\
+    {}=\left(c_{20} + \sss_{r=1}^{n_y+n_x} c_{2r} m_r\right) 
+\nu_0^{\mathrm{п}}\left( c_{20}^{\mathrm{T}} + \sss_{r=1}^{n_y+n_x} c_{2r}^{\mathrm{T}} m_r \right)+ {}\\
+{}+
+\sss_{r=1}^{n_y+n_x} c_{2r} \nu_0^{\mathrm{п}} c_{2s}^{\mathrm{T}} K_{rs}.
+%\label{e5.11-s2}
+\end{multline*}
+
+По теореме~4.2 оценка точности УОФ при случайных па\-ра\-мет\-рах проводится в~(\ref{e5.1-s2}), 
+(\ref{e5.5-s2}) путем линеаризации коэффициентов $ a^{\mathrm{п}}\hm=a^{\mathrm{п}}(\Theta_t, t)$,
+$ a_1^{\mathrm{п}}\hm=a_1^{\mathrm{п}}(\Theta_t, t)$,  $ a_0^{\mathrm{п}}\hm=a_0^{\mathrm{п}}(\Theta_t, t)$, 
+$ c_{10}^{\mathrm{п}}\hm=c_{10}^{\mathrm{п}}(\Theta_t, t)$, $ c_{12}^{\mathrm{п}}\hm=c_{12}^{\mathrm{п}}(\Theta_t, t)$ 
+и~$ \nu_0^{\mathrm{п}}\hm=\nu_0^{\mathrm{п}}(\Theta_t, t)$ посредством МК ИКП 
+с~по\-сле\-ду\-ющим решением нелинейных уравнений~(\ref{e4.10-s2}) для средних значений и~линейных 
+уравнений~(\ref{e4.11-s2}), (\ref{e4.12-s2}) для отклонений.
+
+
+\section{Пример}
+
+Рассмотрим систему~[5] при $\gamma\hm=\gamma_0 \Theta_t$ и~$\nu_1\hm =\nu_{10}$, 
+$\nu_2\hm = \nu_{20}$:
+   \begin{gather}
+   \Phi =\Phi_1 (\dot X_{1t}) + \gamma_0 \Theta_t X_{1t} + X_{2t} 
+=0\,;\label{e6.1-s2}\\
+\dot X_{2t} = a^U X_{2t} + V_1;\enskip Z_t=\dot Y_t = b_1 X_{1t} + 
+V_2.\label{e6.2-s2}
+\end{gather}
+Здесь $[X_{1t} X_{2t}]^{\mathrm{T}}=X_t$~--- вектор состояния; $V_1$ и~$V_2$~--- независимые 
+скалярные белые шумы с~интенсивностями~$\nu_1$ и~$\nu_2$; $a^U$ и~$b_1$~--- 
+известные количества; $\Phi_1 \hm=\Phi_1 (\dot X_{1t})$~--- функция, допускающая 
+регрессионную линеаризацию
+   \begin{equation}
+   \Phi_1 \approx \Phi_{10} + k_1 \dot X_{1t}^0,\label{e6.3-s2}
+   \end{equation}
+где $\Phi_{10} \hm=\Phi_{10} (m_{1t}^{\dot X}, D_{1t}^{\dot X})$; $k_1\hm= 
+k_1(m_{1t}^{\dot X}, D_{1t}^{\dot X})$. При  $k_1\hm\ne 0$ уравнение~(\ref{e6.1-s2}) с~учетом~(\ref{e6.3-s2}) приводится к~виду:
+   \begin{equation}
+   \dot X_{1t} = -(\Phi_{10} + \gamma_0 \Theta_t  X_{1t} - X_{2t}) k_1^{-1}. 
+\label{e6.4-s2}
+\end{equation}
+Обозначая
+   \begin{alignat*}{2}
+    a_{0t} &= \lk \begin{array}{c}
+    -\Phi_{10} k_1^{-1}\\
+    0
+    \end{array}\rk; &\enskip
+    a_{1t} &= a_1 (\Theta_t) = \lk \begin{array}{cc}
+    \gamma_0 \Theta_t&k_1^{-1}\\
+    b_1&0
+    \end{array}\rk;
+\\
+b_{1t} &= [b_1\, 0]; &\enskip \tilde R &= \left[\begin{array}{cc}
+    R_{11}& R_{12}\\
+    R_{12}& R_{22}
+    \end{array}\right],
+%    \label{e6.5-s2}
+    \end{alignat*}
+запишем уравнения~(\ref{e6.2-s2}), (\ref{e6.4-s2}) в~форме
+ \begin{align}
+ \dot X_t &= a_{1t}(\Theta_t) X_t + a_{0t} + V_1;
+ \label{e6.6-s2}
+\\
+Z_t &=\dot Y_t = b_{1t} X_t + V_2.
+\label{e6.7-s2}
+\end{align}
+Для~(\ref{e6.6-s2}), (\ref{e6.7-s2}) уравнения НСОФ~[5] для условных характеристик УОФ имеют 
+сле\-ду\-ющий вид:
+    \begin{equation}
+    \dot{\hat{\tilde X}}_t = a_{1t} (\Theta_t){\hat{\tilde X}}_t + a_{0t} 
++\tilde \beta_t (Z_t - b_{1t} {\hat{\tilde X}}_t);
+\label{e6.8-s2}
+\end{equation}
+  \begin{equation}
+  \tilde \beta_t =\tilde R_t b_{1t}^{\mathrm{T}} \nu_{20t}^{-1};
+  \label{e6.9-s2}
+  \end{equation}
+  
+\vspace*{-12pt}
+  
+\noindent
+\begin{multline}
+{\dot{\tilde R}}_t = a_{1t}(\Theta_t) \tilde R_t + \tilde R_t 
+a_{1t}^{\mathrm{T}}(\Theta_t)-{}\\
+{}-\tilde R_t b_{1t}^{\mathrm{T}} \nu_{20t}^{-1} b_{1t} \tilde R_t +\nu_{10}.
+\label{e6.10-s2}
+\end{multline}
+Здесь
+    $$
+    \Theta_t = m_t^\Theta + \int\limits_\Lambda V(\la) x^\Theta (\la,t) \,d\la;
+    $$
+    $$
+    K_t^\Theta (t_1, t_2) =\int\limits_\Lambda G(\la) x^\Theta (\la,t_1) x^\Theta 
+(\la,t_2) \,d\la;
+$$
+    
+\vspace*{-12pt}
+    
+    \noindent
+    \begin{multline*}
+    x^\Theta(\la,t) = q_1 (t) q_2^{-1} (\la) {\bf 1} (t-\la),\\
+     q_1 (t) = 
+e^{-\alp t},\enskip q_2(t) = q_1 (t) \int\limits_{t_0}^t q_1^{-2} (\la)\, d\la;
+\end{multline*}
+
+\vspace*{-4pt}
+
+\noindent
+    $$
+    K^\Theta (t_1, t_2) =\begin{cases}
+    q_1(t_2) q_2 (t_1) &  \mbox{при}\  t_1<t_2;\\
+    q_1(t_1) q_2 (t_2) &  \mbox{при}\  t_1>t_2.\\
+\end{cases}
+   $$
+
+
+Выполняя статистическую линеаризацию функции~$\Theta_t X_{1t}$ в~(\ref{e6.4-s2}) по 
+известной формуле~[8]:
+\begin{equation*}
+\Theta_t X_{1t} \approx m_t^\Theta m_{1t} + K_t^{\Theta X_1} 
++m_{1t}\Theta_t^0 + m_t^\Theta X_{1t}^0,
+%\label{e6.14-s2}
+\end{equation*}
+согласно~(\ref{e6.8-s2})--(\ref{e6.10-s2}) придем к~соответствующим уравнениям для безусловных 
+характеристических функций~$\hat{\tilde{\tilde X}}_t$ и~$\hat{\tilde{\tilde R}}_t$, определяющих точ\-ность УОФ.
+
+\vspace*{-4pt}
+
+
+\section{Заключение}
+
+\vspace*{-2pt}
+
+Для наблюдаемых дифференциальных гауссовских СтС НРОП со случайными параметрами в~виде МК ИКП, приводимых к~дифференциальным уравнениям, разработано 
+методическое обеспечение в~виде алгоритмов услов\-но-оп\-ти\-маль\-ной фильт\-ра\-ции 
+и~моделирования их точ\-ности. Рассмотрена СтС НРОП, приводимая к~линейной 
+дифференциальной СтС с~мультипликативными шумами.
+Полученные результаты обобщают~[5] для НСОФ.
+Результаты могут быть использованы для наблюда\-емых дифференциальных 
+негауссовских СтС НРОП, приводимых к~гауссовским.
+
+Дальнейшее развитие методического обеспечения услов\-но-оп\-ти\-маль\-но\-го оценивания 
+(фильтрации, экстраполяции и~интерполяции) для СтС\linebreak НРОП связано 
+с~использованием методов па\-ра\-мет\-ри\-за\-ции апостериорных распределений, нелинейных 
+регрессионных моделей, а~также комбинированного вероятностного и~статистического 
+\mbox{моделирования}.
+
+Важным направлением дальнейших исследований представляется разработка методов 
+услов\-но-оп\-ти\-маль\-ной фильт\-ра\-ции для явных и~\mbox{неявных} стохастических функ\-ци\-о\-наль\-но-диф\-фе\-рен\-ци\-аль\-ных включений~[9--14].
+
+{\small\frenchspacing
+ {\baselineskip=10.6pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}   
+
+\vspace*{-2pt}
+
+%1
+\bibitem{1-s2}
+\Au{Синицын И.\,Н.}
+Аналитическое моделирование и~оценивание нестационарных нормальных процессов 
+в~стохастических сис\-те\-мах, не разрешенных относительно производных~// Сис\-те\-мы 
+и~средства информатики, 2022. Т.~32.  №\,2. С.~58--71. doi: 10.14357/ 08696527220206. EDN: YMGERJ.
+
+%2
+\bibitem{2-s2}
+\Au{Синицын И.\,Н.}
+Аналитическое моделирование и~фильт\-ра\-ция нормальных процессов 
+в~интегродифференциальных стохастических сис\-те\-мах, не разрешенных относительно 
+производных~// Сис\-те\-мы и~средства информатики, 2021. Т.~31. №\,1. С.~37--56.  doi: 10.14357/08696527210104. EDN: PLYOSF.
+
+%3
+\bibitem{3-s2}
+\Au{Sinitsyn I.\,N.}
+Analytical modeling and estimation of normal processes defined by stochastic differential
+equations with unsolved derivatives~// J.~Mathematics Statistics Research, 2021. 
+Vol.~3. Iss.~1. Art.~139. 7~p. doi: 10.36266/\linebreak JMSR/139. 
+
+%4
+\bibitem{4-s2}
+\Au{Синицын И.\,Н.}
+Совместная фильт\-ра\-ция и~распознавание нормальных процессов в~стохастических 
+сис\-те\-мах, не разрешенных относительно производных~// Информатика и~её 
+применения, 2022. Т.~16. Вып.~2. С.~85--93. doi: 10.14357/19922264220211. EDN: SMJCBB.
+
+%5
+\bibitem{5-s2}
+\Au{Синицын И.\,Н.}
+Субоптимальная фильт\-ра\-ция в~стохастических сис\-те\-мах, не разрешенных относительно 
+производных, со случайными параметрами~// Информатика и~её применения,  2024. Т.~18. Вып.~1. С.~2--10.
+doi: 10.14357/19922264240101. EDN: KUWMKJ.
+
+%6
+\bibitem{6-s2}
+\Au{Синицын И.\,Н.}
+Канонические представления случайных функций. Тео\-рия и~применения.~--- М.: ТОРУС ПРЕСС, 2023. 816~с.
+
+
+
+%8
+\bibitem{8-s2}
+\Au{Пугачёв В.\,С.}
+Теория вероятностей и~математическая статистика.~--- 2-е изд.~--- 
+М.: Физ\-мат\-лит, 2002. 496~с.
+
+%7
+\bibitem{7-s2}
+\Au{Синицын И.\,Н.}
+Фильтры Калмана и~Пугачёва.~--- 2-е изд.~-- М.: Логос, 2007. 
+776~с.
+
+%9
+\bibitem{9-s2}
+\Au{Толстоногов А.\,А., Финогенко~И.\,А.}
+ О~функ\-ци\-о\-наль\-но-диф\-фе\-рен\-ци\-аль\-ных включениях в~банаховых пространствах 
+ с~невыпуклой правой частью~// Докл. Акад.\ наук СССР, 1980. Т.~254. №\,1. С.~45--49.
+
+%10
+\bibitem{10-s2}
+\Au{Финогенко И.\,А.}
+ К вопросу о решениях функ\-ци\-о\-наль\-но-диф\-фе\-рен\-ци\-аль\-ных  включений~// Прикладная 
+математика и~пакеты при\-клад\-ных программ.~--- Иркутск: СЭИСО АН СССР, 1980. С.~95--107.
+
+%11
+\bibitem{11-s2}
+\Au{Финогенко И.\,А.}
+ Свойства множества решений функ\-ци\-о\-наль\-но-диф\-фе\-рен\-ци\-аль\-ных включений~// Краевые 
+задачи.~--- Пермь: ППИ, 1981. С.~145--149.
+
+
+
+%13
+\bibitem{13-s2}
+\Au{Колмановский В.\,Б., Носов~В.\,Р.}
+ Устойчивость и~периодические режимы ре\-гу\-ли\-ру\-емых сис\-тем с~последствием.~--- М.: 
+Наука, 1981. 448~с.
+
+%12
+\bibitem{12-s2}
+\Au{Финогенко И.\,А.}
+ О неявных функ\-ци\-о\-наль\-но-диф\-фе\-рен\-ци\-аль\-ных уравнениях в~банаховом пространстве~// 
+Динамика нелинейных сис\-тем.~-- Новосибирск: Наука, 1983. С.~151--164.
+
+%14
+\bibitem{14-s2}
+\Au{Азбелев Н.\,В., Максимов~В.\,П., Рахматулина~Л.\,Ф.}
+Введение в~тео\-рию функ\-ци\-о\-наль\-но-диф\-фе\-рен\-ци\-аль\-ных уравнений.~--- М.: Наука,  
+1991. 280~с.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-9pt}
+
+\hfill{\small\textit{Поступила в~редакцию 30.10.23}}
+
+%\vspace*{10pt}
+
+%\pagebreak
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+
+
+\def\tit{CONDITIONALLY OPTIMAL FILTERING IN~STOCHASTIC SYSTEMS WITH~RANDOM PARAMETERS AND~UNSOLVED DERIVATIVES}
+
+
+\def\titkol{Conditionally optimal filtering in~stochastic systems with~random parameters and~unsolved derivatives}
+
+
+\def\aut{I.\,N.~Sinitsyn}
+
+\def\autkol{I.\,N.~Sinitsyn}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-6pt}
+
+
+\noindent
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+%\noindent
+%$^{2}$Moscow State Aviation Institute (National Research University), 4~Volokolamskoe Shosse, Moscow 125933, Russian Federation
+
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{8pt}
+
+
+
+\Abste{For observable differential Gaussian stochastic systems (StS) with random parameters in the form of multicomponent integral canonical 
+expansions (MC ICE) and StS with unsolved derivatives (USD), methodological support for synthesis of conditionally optimal 
+filters is presented. A~survey in the fields of analytical modeling and sub- and conditionally optimal filtering,
+ extrapolation, and identification is presented. Necessary information concerning MC ICE is given. Special attention is 
+ paid to mean square regressive linearization including MC ICE. The stochastic systems with USD reducible to differential are considered. 
+ Basic results in normal conditionally optimal filtering (COF) are presented for StS USD reducible to differential. 
+ The theory of COF application to StS USD with multiplicative noises is developed. An illustrative example for scalar 
+ StS USD reducible to differential is given. For future COF generalization, ($i$)~methods of moments, quasi-moments, and
+ one- and multidimensional densities 
+ of orthogonal expansions and ($ii$)~development for stochastic inclusions  are recommended.}
+
+
+\KWE{regression linearization; stochastic 
+system with unsolved derivatives (StS USD); stochastic process;  conditionally optimal filtering (COF)} 
+
+\DOI{10.14357/19922264240303}{XCXLGD} 
+
+%\vspace*{-12pt}
+
+
+    
+     % \Ack
+
+\vspace*{6pt}
+
+%\noindent
+
+
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {\baselineskip=11.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99} 
+%1
+\bibitem{1-s2-1} 
+\Aue{Sinitsyn, I.\,N.} 2022. 
+Analiticheskoe modelirovanie i~otsenivanie nestatsionarnykh normal'nykh protsessov v~stokhasticheskikh sistemakh, 
+ne razreshennykh otnositel'no proizvodnykh [Analytical modeling and estimation of nonstationary normal processors with unsolved derivatives]. 
+\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 32(2):58--71. doi: 10.14357/ 08696527220206. EDN: YMGERJ.
+
+%2
+\bibitem{2-s2-1} 
+\Aue{Sinitsyn, I.\,N.} 2021. 
+Analiticheskoe modelirovanie i~fil'tratsiya normal'nykh protsessov v~integ\-ro\-dif\-fe\-ren\-tsi\-al'\-nykh stokhasticheskikh sistemakh, 
+ne razreshennykh otnositel'no proizvodnykh 
+[Analytical modeling and filtering for integrodifferential systems with unsolved derivatives]. 
+\textit{Sistemy i~Sredstva Informatiki --- Systems and Means of Informatics} 31(1):37--56.
+doi: 10.14357/ 08696527210104. EDN: PLYOSF.
+
+%3
+\bibitem{3-s2-1} 
+\Aue{Sinitsyn, I.\,N.} 2021. 
+Analytical modeling and estimation of normal processes defined by stochastic differential equations with unsolved derivatives. 
+\textit{J. Mathematics Statistics Research} 3(1):139. 7~p. doi: 10.36266/JMSR/139.
+
+%4
+\bibitem{4-s2-1} 
+\Aue{Sinitsyn, I.\,N.} 2022. 
+Sovmestnaya fil'tratsiya i~ras\-po\-zna\-va\-nie normal'nykh protsessov v~stokhasticheskikh sistemakh, ne razreshennykh otnositel'no proizvodnykh 
+[Joint filtration and recognition of normal prosesses in stochastic systems with unsolved derivatives]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 16(2):85--93. 
+doi: 10.14357/19922264220211. EDN: SMJCBB.
+
+%5
+\bibitem{5-s2-1} 
+\Aue{Sinitsyn, I.\,N.} 2024. 
+Suboptimal'naya fil'tratsiya v~stokhasticheskikh sistemakh, ne razreshennykh otnositel'no proizvodnykh, so sluchaynymi pa\-ra\-met\-ra\-mi 
+[Suboptimal filtering in stochastic systems with random parameters and unsolved derivatives].
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 18(1):2--10.
+doi: 10.14357/ 19922264240101. EDN: KUWMKJ.
+
+%6
+\bibitem{6-s2-1} 
+\Aue{Sinitsyn, I.\,N.} 2023. 
+\textit{Kanonicheskie predstavleniya sluchaynykh funktsiy. Teoriya i~primeneniya} 
+[Canonical expansions of random functions. Theory and application]. 
+Moscow: TORUS PRESS. 816~p.
+
+
+
+
+%8
+\bibitem{8-s2-1} 
+\Aue{Pugachev, V.\,S.} 2002. 
+\textit{Teoriya veroyatnostey i~ma\-te\-ma\-ti\-che\-skaya statistika} [Probability theory and mathematical statistics]. 2nd ed. 
+Moscow: Fizmatlit. 496~p.
+
+%7
+\bibitem{7-s2-1} 
+\Aue{Sinitsyn, I.\,N.} 2007. 
+\textit{Fil'try Kalmana i~Pugacheva} [Kalman and Pugachev filters]. 2nd ed. 
+Moscow: Logos. 776~p.
+
+%9
+\bibitem{9-s2-1} 
+\Aue{Tolstonogov, A.\,A., and I.\,A.~Finogenko.} 1980.
+On functional-differential inclusions in a Banach space with a~nonconvex right-hand side. 
+\textit{Soviet Mathematics Doklady} 
+22:320--324.
+
+%10
+\bibitem{10-s2-1} 
+\Aue{Finogenko, I.\,A.} 1980.
+K voprosu o~resheniyakh funktsional'no-differentsial'nykh  vklyucheniy [On the issue of solutions of functional-differential inclusions].
+\textit{Prikladnaya matematika i pakety prikladnykh programm} [Applied mathematics and application software packages]. 
+Irkutsk: SEISO AN SSSR. 95--107.
+
+%11
+\bibitem{11-s2-1} 
+\Aue{Finogenko, I.\,A.} 1981. 
+Svoystva mnozhestva resheniy funktsional'no-differentsial'nykh vklyucheniy [Properties of the solution set of functional differential inclusions]. 
+\textit{Kraevye zadachi} [Boundary value problem]. Perm: PPI. 145--149.
+
+
+
+%13
+\bibitem{13-s2-1} 
+\Aue{Kolmanovskiy, V.\,B., and V.\,R.~Nosov.} 1981.
+\textit{Ustoychivost' i~periodicheskie rezhimy reguliruemykh sistem s~posledstviem} [Stability and periodic modes of regulated systems with consequences]. 
+Moscow: Nauka. 448~p.
+
+%12
+\bibitem{12-s2-1} 
+\Aue{Finogenko, I.\,A.} 1983.
+O neyavnykh funktsional'no-differentsial'nykh uravneniyakh v~banakhovom pro\-stran\-st\-ve [On implicit functional differential equations in a~Banach space].
+\textit{Dinamika nelineynykh sistem} [Dynamics of nonlinear systems]. 
+Novosibirsk: Nauka.\linebreak 151--164.
+
+%14
+\bibitem{14-s2-1} 
+\Aue{Azbelev, N.\,V., V.\,P.~Maksimov, and L.\,F.~Rakhmatulina.} 1991.
+\textit{Vvedenie v~teoriyu funktsional'no-differentsial'nykh uravneniy} [Introduction to the theory of functional differential equations]. 
+Moscow: Nauka. 280~p.
+ 
+
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received October 30, 2023}} 
+
+\vspace*{-18pt}
+
+\Contrl
+
+\vspace*{-3pt}
+
+\noindent 
+\textbf{Sinitsyn Igor N.} (b.\ 1940)~--- 
+Doctor of Science in technology, professor, Honored scientist of RF, principal scientist, Federal Research Center ``Computer Science and Control''
+ of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{sinitsin@dol.ru}
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

@@ -1,0 +1,692 @@
+
+\def\stat{tuchkova}
+
+\def\tit{ПРЕДЕЛЬНЫЕ РАСПРЕДЕЛЕНИЯ ДЛЯ ХАРАКТЕРИСТИК\\
+ ПРИ УСВОЕНИИ ДАННЫХ НАБЛЮДЕНИЙ\\
+  В СТАЦИОНАРНОМ РЕЖИМЕ$^*$}
+
+\def\titkol{Предельные распределения для характеристик при усвоении данных наблюдений в~стационарном режиме}
+
+\def\aut{К.\,П.~Беляев$^1$, Н.\,П.~Тучкова$^2$}
+
+\def\autkol{К.\,П.~Беляев, Н.\,П.~Тучкова}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Беляев К.\,П.}
+\index{Тучкова Н.\,П.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проекты 14-05-00363 и~14-07-00037).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт океанологии им.\ П.\,П.~Ширшова Российской академии наук; Федеральный университет штата Баийя, Сальвадор,  Бразилия, kb@sail.msk.ru}
+\footnotetext[2]{Вычислительный центр им.\,А.\,А.\,Дородницына Российской академии наук, tuchkova@ccas.ru}
+
+
+
+\Abst{Рассматривается линейная задача усвоения данных наблюдений
+в~гидродинамическую модель. Для такой задачи, сформулированной в~терминах
+функционирования марковской цепи, исследуется сходимость переходных
+распределений цепи к~стационарному распределению, находятся достаточные
+условия этой сходимости и~строится функциональное уравнение для характеристической
+функции этого распределения. Далее рассматривается схема серий, зависящих от
+параметра.  Исследуется сходимость стационарных распределений цепи,
+когда параметр стремится  к~нулю. Показывается, что в~такой схеме
+в~стационарном режиме марковской цепи существует предельное распределение
+параметров,  и~доказывается, что оно будет гауссовым, находятся его
+среднее и~дисперсия. Обсуждается, как данная схема может быть применена для
+оценки  характеристик при оперативном усвоении данных и~прогнозировании
+со\-сто\-яния среды.}
+
+
+\KW{методы усвоения данных наблюдений; стационарные распределения цепей Маркова;
+асимптотическое распределение цепей при малом значении параметра}
+
+\DOI{10.14357/19922264150206}
+
+
+
+\vskip 14pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+
+\section{Введение}
+
+Современная оперативная океанография, оперативный прогноз погоды и~ряд других
+областей основаны на сочетании численного моделирования процесса и~усвоения данных
+наблюдений в~модель. Задача усвоения состоит в~том, чтобы оптимальным образом
+сочетать модельный расчет и~наблюдения, сохранить баланс энергии,
+массы, тепла и~других входящих в~модель параметров и~при этом сделать модельный расчет как можно более близким к~наблюдениям в~смысле заданной метрики. Далее модель, стартуя с~оптимального в~этом смысле усвоенного или скорректированного поля, должна дать лучший прогноз, чем в~случае без усвоения данных. При этом качество как самой модели, так и~метода усвоения может быть количественно оценено по степени близости расчета и/или прогноза к~наблюдаемым данным.
+Важна также техническая сторона дела, а~именно: срок обработки данных, используемые ресурсы компьютера, память, время работы процессора, скорость передачи информации от получения данных до доставки потребителю, доступ для визуализации результатов и~многое другое. Все эти проблемы прямо
+или косвенно решаются в~задачах оперативного усвоения данных наблюдений.
+
+Схема линейного усвоения данных достаточно проста, она реализуется в~системе уравнений следующего вида:
+\begin{equation}
+\left.
+\begin{array}{rl}
+X_n&=F\left(X_{n-1}\right)\,;\\[6pt]
+X_{n+1}&=X_n+K\left(Y_n-HX_n\right)\,.
+\end{array}
+\right\}
+\label{1-t}
+\end{equation}
+Здесь и~далее используются следующие обозначения:
+\begin{itemize}
+\item $X_n$, $n=1,3,5,\ldots,$~--- вектор состояния модели,
+ $X_n \hm\in R^r$ , т.\,е.\ $X_n\hm=(x^1_n,\ldots ,x^r_n)$.
+ Например, в~моделях динамики океана~$X_n$ может состоять из
+ компонент температуры, солености, ско\-рости течений и~т.\,п.
+ Для определенности этот вектор в~статье рассматривается в~каждой
+ точке пространства области, состоящей из $N$ точек сетки, где задана модель;
+ \item $F$~--- оператор модели, т.\,е.\ векторная функция из $R^r \mapsto R^r$.
+\item  вектор $Y \hm\in R^{N_{\mathrm{obs}}}$~--- вектор наблюдаемых величин,
+его длина на шаге~$n$ обозначается как~$N_{\mathrm{obs}}$.
+Обычно $N_{\mathrm{obs}}\hm<r$, так как не все расчетные величины
+в~модели могут быть наблюдаемыми. Например, в~моделях циркуляции океана
+обычно наблюдаемыми могут быть температура, соленость, уровень океана и~очень
+редко компоненты скорости течений;
+\item матрица~$K$ в~(\ref{1-t})~--- это $(r\times N_{\mathrm{obs}})$-мат\-ри\-ца,
+она имеет в~литературе название весовой матрицы (Kalman gain matrix).
+Ее физический смысл состоит в~том, чтобы передать вес наблюдения в~точку
+расчетной сетки, т.\,е.\ она передает значения из пространства наблюдений
+в~пространство модели;
+\item матрица $H$ в~(\ref{1-t})~--- это матрица проекционного оператора,
+имеющая размерность $N_{\mathrm{obs}} \times r$ и~осуществляющая обратную операцию,
+т.\,е.\ передающая сигнал от пространства модели в~пространство наблюдений.
+\end{itemize}
+
+ Таким образом, матрица $KH$ будет квадратной $(r \times r)$-мат\-ри\-цей.
+ Расчет начинается с~заданного поля~$X_0$.
+
+Такая ассимиляционная схема описана в~многочисленных книгах и~статьях,
+например в~работах [1--3]. Схемы усвоения различаются конкретным выбором модели~$F$
+и/или матрицы~$K$. В~частности, хорошо известный фильтр Калмана~\cite{Evensen2}
+относится к~данной схеме. Есть и~другие методы определения матрицы~$K$:
+например, в~\cite{Belyaev1} матрица~$K$ строится на основе
+решений параболических дифференциальных уравнений типа Фок\-ке\-ра--Планка.
+
+В схеме~(\ref{1-t}) последовательность~$X_n$ образует цепь Маркова.
+Вектор наблюдений~$Y_n$ предполагается случайным на каждом шаге с~заданным
+распределением. Возникает задача построения распределения случайного
+вектора~$X_n$ и~изучение его предельного поведения при $n \hm\rightarrow \infty$.
+Это достаточно сложная и~до конца не решенная проблема. В~\cite{Belyaev1} приведены некоторые решения для линейной модели $F(X)\hm=\Lambda X$, где $\Lambda$~--- это $(r \times r)$-мат\-рица.
+
+Значительно более сложной задачей будет определение совместного распределения
+векторов $X_{n_1}, X_{n_2}, \ldots, X_{n_k}$ для заданного набора индексов
+$(n_1, n_2, \ldots , n_k)$. В~работе~\cite{Tanajura} показано,\linebreak что
+при физически обоснованных и~про\-ве\-ря\-емых условиях совместное распределение
+векторов $X_{n_1}$, $X_{n_2}, \ldots, X_{n_k}$ стремится к~совместному распределению
+векторов, определяющих диффузионный процесс, для случая
+$X_{n_k}\hm=X_{0+n_k dt}$ при $n_k \hm\rightarrow \infty $ $dt \hm\rightarrow 0$,
+когда временной интервал $[0,T]$ разбивается точками
+$[0, n_1, n_2, \ldots, n_k, \ldots, T]$.
+
+Важный частный случай имеет место, когда мат\-ри\-ца~$K$ мала. Так, например,
+происходит в~случае  ансамблевого фильтра Калмана (EnKF), в~схеме объективного
+анализа~\cite{Jazwinski, Evensen2}, когда матрица~$K$ строится на основе
+статистики аномалий, т.\,е.\ разницы между расчетным и~средним
+многолетним значением ка\-ко\-го-ни\-будь модельного поля, например
+поля температуры или уровня океана. Если реальная изменчивость не очень велика,
+то модельная разница между конкретным расчетом и~средним многолетним для
+температуры в~точке составляет около 2--3~$^\circ$C и~в этом случае матрица~$K$
+по порядку величины будет около $10^{-4}$ в~соответствующих единицах.
+Поэтому имеет смысл изучить предельное поведение распределений~$X_n$
+при малых~$K$, т.\,е.\ когда $K$ можно представить как $K_l\hm=\rho_l K$,
+$l\hm=1, 2, 3, \ldots$, и~устремить $\rho_l\hm\rightarrow 0$. Такого рода
+задачи активно рассматриваются в~теории массового обслуживания при изучении
+пределов характеристик при малой и~большой загрузке.
+
+Цели настоящей работы заключаются в~том, чтобы  получить условия
+стационарного режима цепи Маркова~(\ref{1-t}) и~найти распределение этого
+режима; получить предельное распределение характеристик в~стационарном режиме
+при $K_l\hm=\rho_l K$, $\rho_l\hm\rightarrow 0$. Метод доказательства  теоремы
+является оригинальным и~близок к~опубликованному ранее в~работе~\cite{Belyaev2}.
+
+
+\section{Основные формулировки}
+
+Пусть $X_n$ и~$Y_n$, $n\hm=1, 2, 3, \ldots,$~--- случайные величины,
+определенные на заданном вероятностном пространстве. Для определенности
+представим~$Y_n$ как $Y_n\hm=HZ_n$, где случайная величина $Z_n \hm\in R^r$.
+Как следует из формул~(\ref{1-t}), матрица $KH$ имеет размерность
+$r \times r$. Пусть $G_n(x)\hm=\mathrm{Pr}\,(X_n\hm<x)$
+и~$\Gamma_n(x)\hm=\partial/\partial x [\mathrm{Pr}\,(Z_n\hm<x)]$~---
+их соответствующие функции распределения и~плотности.
+
+\smallskip
+
+\noindent
+\textbf{Лемма~1.} \textit{Пусть $n \rightarrow \infty$ и~$\Gamma_n(x)\hm>0 $.
+Для того чтобы существовало стационарное распределение~$X_n$,
+$\lim P(X_n < x)\hm=G(x)$, достаточно выполнения следующего условия}:
+\textit{для любых $x$ и~$y$ существует решение}
+\begin{equation}
+y=F(x)\,, \quad KHx=y\,.
+\label{2-t}
+\end{equation}
+
+\noindent
+ Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ Покажем, что для любой
+ пары состояний цепи $x, y$  существует такой момент времени~$k$ ,
+ что переходные вероятности
+\begin{equation}
+P(X_{n+k}=x|X_n=y)>0\,.
+\label{3-t}
+\end{equation}
+
+Действительно, определим $P(X_{n+k}\hm=x)$ в~состоянии $x$ для некоторых~$n$ и~$k$.
+Если $n+k$ нечетно, то из условия~(\ref{2-t}) следует, что есть состояние
+$\stackrel{\leftarrow}{x}\hm=F^{-1}(x)$ такое, что
+$P(X_{n+k-1}\hm=\stackrel{\leftarrow}{x})\hm>0$. Тогда если
+$X_{n+k-2}\hm=y$, то для того чтобы цепь в~момент $n\hm+k$ оказалась
+в~состоянии~$x$, требуется, чтобы  $KHZ_{n-1}\hm=\stackrel{\leftarrow}{x}-y-KHy$,
+вероятность чего больше нуля по условию~(\ref{2-t}).
+Аналогично доказывается и~для четных $n\hm+k$ шагов. Следовательно, любые
+два состояния цепи являются смежными в~том смысле, что за конечное число
+шагов можно попасть из одного состояния в~другое с~ненулевой вероятностью.
+Отсюда следует существование стационарного распределения цепи Маркова
+ (см.~\cite{Gikhman}).
+
+\smallskip
+
+\noindent
+\textbf{Замечание~1.} Доказательство проведено для дискретных цепей, но
+легко обобщается на случай непрерывных цепей Маркова. Для опре\-де\-лен\-ности
+в~дальнейшем все распределения будем считать непрерывными.
+
+\smallskip
+
+\noindent
+\textbf{Замечание~2.} Условия~(\ref{2-t}) и~условие $\Gamma_n(x)\hm>0 $
+означают, что данные и~модель не противоречат друг другу. Понятно, например,
+что если модель динамики океана дает температуру воды $y\hm=20$~$^\circ$C
+и~при этом наблюдения показывают $x\hm=2$~$^\circ$C, то вероятности
+перехода~(\ref{3-t}) будут практически нулевые, а~решение уравнения $y\hm=F(x)$,
+хотя теоретически и~возможно, физически не реализуемо. Поэтому при практических расчетах важно, чтобы модель адекватно описывала физику, а~данные измерялись в~соответствии с~этой моделью.	
+
+\smallskip
+
+Рассмотрим теперь вложенную цепь Маркова только для нечетных номеров шага
+по времени $X_{2k}\hm=X_{2k-1}\hm+K(Y_{2k}\hm-HX_{2k-1})$.
+
+\smallskip
+
+\noindent
+\textbf{Лемма~2.} \textit{Пусть выполнены условия леммы~$1$ и~пусть
+$\pi(\omega)$ обозначает характеристическую функцию случайной величины~$X_{2k}$
+в~стационарном режиме, т.\,е.}
+$$
+\pi(\omega)=\underbrace{\lim}_{k\rightarrow \infty}
+\int\limits^\infty_{-\infty}\!\!e^{i \omega x}\, dP(X_{2k}\hm=x)\,.
+$$ \textit{Как обычно}, $i\hm=\sqrt{-1}$.
+
+\textit{Тогда $\pi(\omega)$ удовлетворяет функциональному уравнению}:
+\begin{equation}
+\pi(\omega)=\pi[(I+KH)\omega]\psi ((KH)^{-1} \omega)\,,
+\label{4-t}
+\end{equation}
+\textit{где $\psi (\omega)$~--- характеристическая функция случайной величины  $Z\hm=\underbrace{\lim}_{k\rightarrow \infty}Z_{2k}$ в~стационарном режиме и~$I$~--- единичная матрица размерности} $r\times r$.
+
+\textit{Обозначим} $\pi^{(s)}(0)=\pi_s$, $\psi^{(s)}(0)\hm=\psi_s$.
+
+\smallskip
+
+\noindent
+ Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
+ Из уравнения Кол\-мо\-го\-ро\-ва--Чеп\-ме\-на следует соотношение
+ для переходных вероятностей:
+\begin{multline*}
+dP(X_{2k}=x)={}\\
+{}=\!\!\int\limits^\infty_{-\infty}\!\!
+dP(X_{2k-1}=y)\,dP(KHZ_{2k-1}=x-y-KHy).\hspace*{-1.2pt}
+\end{multline*}
+Умножая обе части этого равенства на $e^{i \omega x}$ и~интегрируя
+по~$x$ от $-\infty$ до~$\infty$ , после простых преобразований приходим к~соотношению:
+
+\noindent
+\begin{multline*}
+\int\limits^\infty_{-\infty}\!\!e^{i \omega x} \,dP(X_{2k}=x)={}\\
+{}=\int\limits^\infty_{-\infty}\!\!e^{i(I+KH)y\omega}\,dP(X_{2k-1}=y)\times{}\\
+{}\times
+\int\limits^\infty_{-\infty}\!\!e^{i \omega x} \,dP(X_{2k-1}=(KH)^{-1}x)\,.
+\end{multline*}
+Из этого равенства переходом к~пределу при $k\hm\rightarrow \infty$
+доказывается формула~(\ref{4-t}). В силу единственности стационарного
+распределения цепи Маркова уравнение~(\ref{4-t}) справедливо для всей цепи.
+
+\smallskip
+
+В дальнейшем $X, Z$ будут обозначать соответствующие предельные случайные
+величины:
+$X\hm=\underbrace{\lim}_{k\rightarrow \infty}X_n$,
+$Z\hm=\underbrace{\lim}_{k\rightarrow \infty}Z_n$.
+
+Сходимость рассматривается по вероятности:
+$P=(|X-\underbrace{\lim}_{k\rightarrow \infty}X_n|>\epsilon)\rightarrow 0$
+$\forall\epsilon > 0$, где $|X|$ обозначает любую из векторных норм в~$R^r$.
+
+\smallskip
+
+\noindent
+\textbf{Замечание~3.} Равенство~(\ref{4-t})  может рассматриваться
+как скалярное или как векторное, где
+
+\noindent
+\begin{align*}
+\pi(\omega)&=(\pi_1(\omega_1), \pi_2(\omega_2), \ldots ,\pi_r(\omega_r))\,;\\
+\pi_i(\omega_i)&=\underbrace{\lim}_{k\rightarrow \infty}
+\int\limits^\infty_{-\infty}e^{i \omega y_{ii}}\, dP(X_{n}\hm=y)\,,\
+i=1,2,\ldots,r\,,
+\end{align*}
+
+\vspace*{-2pt}
+
+\noindent
+ причем все координаты кроме~$y_i$ свертываются.
+
+\smallskip
+
+\noindent
+\textbf{Замечание~4.} Как видно из~(\ref{4-t}), стационарное распределение
+зависит от распределения случайной величины~$Z$ и~от передачи сигнала от~$Z$
+к~$X\hm=\underbrace{\lim}_{k\rightarrow \infty} X_n$ через матрицу~$KH$ и~не
+зависит напрямую от модели~$F$. Это несколько удивительно, но физически оправдано.
+Действительно, неприводимая цепь Маркова аналогична динамической системе с~трением,
+в~которой предельный режим если существует, то не зависит от начального состояния,
+а~определяется внешним воздействием. В~данном случае со временем состояния цепи
+<<перемешиваются>>, а~следовательно, в~пределе стремятся к~равномерному
+распределению, независимо от уравнений модели. Поэтому стационарный режим
+будет определяться внешним воздействием и~передачей этого воздействия
+к~характеристикам цепи Маркова.
+
+\smallskip
+
+\noindent
+\textbf{Следствие.}  Моменты стационарного состояния цепи можно найти по формулам:
+\begin{multline*}
+\hspace*{-6pt}\pi_s=\pi_s(I+KH)^s+ \pi_{s-1}(I+KH)^{s-1} (KH)^{-1}\psi_1+\cdots {}\\
+{}\cdots +(KH)^{-s}\psi_s\,.
+%\label{5-t}
+\end{multline*}
+Здесь и~далее обозначено для вектора $a\hm\in R^r$ и~мат\-ри\-цы $B:\ R^r \mapsto R^r$
+$$
+aB_s=a_i\left(\sum_{j=1}^r B_{ij}\right)\,,\enskip i=1,2,\ldots,r\,.
+$$
+В частности,
+
+\noindent
+\begin{align*}
+\pi_1&=(I+KH)^{-2}\psi_1\,;\\
+\pi_2&=(I+KH)^{-2}[2\pi_1\psi_1+(I+KH)^{-1}\psi_2]\,.
+\end{align*}
+
+В дальнейшем будем рассматривать распределение исходной цепи Маркова
+в~стационарном режиме. Без ограничения общности будем предполагать, что
+случайная величина~$Z$ имеет нулевое среднее ${\sf E}Z\hm=0$ или $\psi_1\hm=0$.
+Понятно, что из-за линейности второго из соотношений~(\ref{1-t})~$X$ можно
+представить как ${\sf E}X\hm+X'$, ${\sf E}X'\hm=0$ и~${\sf E}X$
+определяется из~(\ref{1-t}) для ненулевого~${\sf E}Z$.
+
+Далее рассматривается схема серий для величин $X$, $Z$ и~$K$,
+зависящих от индекса~$l$: $X_l$, $Z_l$ и~$K_l$, $l\hm=1, 2,\ldots$
+Вводится также параметр~$\rho_l$ так, что $\rho_l\hm\rightarrow 0$.
+Очевидно, что характеристическая функция $\pi(\omega)$ также зависит от~$l$,
+что для краткости не показывается.
+
+\smallskip
+
+\noindent
+\textbf{Лемма~3.} \textit{Пусть $K_l\hm=\rho_l K$, $Z_l \hm\rightarrow 0$ так, что $\rho_l^{-1} EZ_l^2\hm < \infty$, $\rho_l\hm \rightarrow 0$}.
+
+\textit{Тогда для любого $s > 0$ верно утверждение}:
+
+\vspace*{2pt}
+
+\noindent
+\begin{equation}
+\rho_l^{s+1}\pi_s\rightarrow 0\,.
+\label{6-t}
+\end{equation}
+
+\noindent
+ Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ Докажем методом математической
+ индукции. Для $s\hm=0$ утверждение~(\ref{6-t}) очевидно. Пусть оно
+ справедливо для некоторого $s\hm>0$. Дифференцируя обе
+ части~(\ref{4-t}) $s\hm+2$ раза, получаем:
+
+ \noindent
+\begin{multline}
+\pi^{(s+2)}(0)=\pi^{(s+2)}(0)(I+KH)^{s+2}+{}\\
+{}+
+\fr{(s+1)(s+2)}{2}\pi^{(s)}(0)(I+KH)^{s}\psi^{(2)}(0) (KH)^{-2}+{}\\
+{}+A_s\,,
+\label{7-t}
+\end{multline}
+где $A_s$ содержит слагаемые с~производными $\pi(\omega)$ порядка меньше~$s$.
+Для получения формулы~(\ref{7-t}) использовано условие $\psi'\hm=0$.
+
+Уравнение~(\ref{7-t}) можно преобразовать и~получить следующее равенство:
+
+\noindent
+\begin{multline*}
+\hspace*{-3mm}\pi_{s+2}(KH)(I^{s+1}+(I+(KH))I^s+\cdots +(I+KH)^{s+1})={}\hspace*{-1.96pt}\\
+{}=\fr{(s+1)(s+2)}{2}\,\pi_{s} (I+KH)^{s} \psi_{2} (KH)^{-2}+A_s\,.
+\end{multline*}
+В схеме серий это равенство переписывается как
+
+\noindent
+\begin{multline*}
+ \pi_{s+2}(K_lH)(I^{s+1}+(I+K_lH))I^s+\cdots\\
+ {}\cdots +(I+K_lH)^{s+1})={}
+\\
+ {}=\fr{(s+1)(s+2)}{2}\pi_{s} (I+K_lH)^{s} \psi_{2} (K_lH)^{-2}+A_s \,.
+\end{multline*}
+
+Из условий леммы~3 следует:
+\begin{multline}
+\pi_{s+2}\rho_l^2(KH)(I^{s+1}+(I+\rho_lKH)I^s+\cdots{}\\
+{}\cdots
++(I+\rho_lKH)^{s+1})={}\\
+{}=\fr{(s+1)(s+2)}{2}\pi_{s} \rho_l (I+\rho_l KH)^{s} \psi_{2} (KH)^{-2}+{}\\
+{}+A_s.
+\label{8-t}
+\end{multline}
+Умножая обе части~(\ref{8-t}) на $\rho_l^{s+1}$, приходим  к~сле\-ду\-юще\-му равенству:
+\begin{multline*}
+\pi_{s+2}\rho_l^{s+3}(KH)(I^{s+1}+(I+\rho_lKH)I^s+\cdots{}\\
+{}\cdots
++(I+\rho_lKH)^{s+1})={}\\
+{}=\fr{(s+1)(s+2)}{2}\pi_{s}\rho_l^{s+1} (I+\rho_l KH)^{s}(\rho_l \psi_{2})
+(KH)^{-2}+{}\\
+{}+A_s \rho_l^{s+1}\,.
+\end{multline*}
+Если $\rho_l \rightarrow 0$, то правая часть этого уравнения из предположения
+индукции и~условий леммы~3 стремится к~$0$. Следовательно, и~левая часть этого
+уравнения стремится к~нулю, что и~требовалось доказать.
+
+\smallskip
+
+Введем обозначение  $\lambda_s \hm= \underbrace{\lim}_{\rho_l\rightarrow 0}
+\pi_s \rho_l^s$.
+
+\smallskip
+
+\noindent
+\textbf{Лемма~4.} \textit{Если выполнены условия леммы~$3$, то
+для любого четного~$s$
+$$
+\lambda_s=(s-1)!!\psi_0^s(KH)^{-2}\,,
+$$
+где $\psi_0 =\underbrace{\lim}_{\rho_l\rightarrow 0} \rho_l^{-1}\psi_2  (2KH)^{-1}$, \\
+и для нечетных}~$s$
+ $$
+ \lambda_s=0\,.
+ $$
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ Из равенства~(\ref{8-t}) можно получить
+\begin{multline}
+\pi_{s}\rho_l^2(KH)(I^{s-1}+(I+(\rho_lKH))I^{s-2}+\cdots{}\\
+{}\cdots
++(I+\rho_lKH)^{s-1})
+={}\\
+{}=\fr{s(s-1)}{2}\pi_{s-2} \rho_l^{-1} (I+\rho_l KH)^{s-2}\psi_{2}
+(KH)^{-2}+{}\\
+{}+A_{s-2}\,.
+\label{9-t}
+\end{multline}
+
+Умножая обе части~(\ref{9-t}) на $\rho_l^{s-2}$ и~принимая
+во внимание утверждение леммы~3, приходим к~следующему равенству:
+\begin{equation}
+\lambda_s s = \fr{s(s-1)}{2} \,\lambda_{s-2}\left[\rho_l^{-1} \psi_{2}(KH)\right] (KH)^{-2}\,.
+\label{10-t}
+\end{equation}
+Так как $\lambda_0=1$,  $\lambda_1\hm=0$, утверждение леммы~4
+непосредственно следует из формулы~(\ref{10-t}).
+
+\smallskip
+
+Теперь сформулируем основное утверждение данной работы.
+
+\smallskip
+
+\noindent
+\textbf{Теорема.} Предельное распределение случайной величины~$X$ при
+условиях лемм~2 и~3 будет  задаваться формулой:
+\begin{equation*}
+\underbrace{\lim}_{\rho_l\rightarrow 0} P\left(\rho_l^{-1}(X-{\sf E}X)<x\right)
+=
+\Phi \left(x; (2KH)^{-2}\psi_0\right)\,.
+%\label{11-t}
+\end{equation*}
+
+Как обычно,  $\Phi (x;\sigma^2)$ обозначает гауссово распределение
+с~нулевым средним и~дисперсией~$\sigma^2$.
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ \ следует из разложения Тейлора
+для характеристической функции случайной величины~$X$:
+$$
+\pi((\rho_l \omega) = Ee^{i\omega \rho_l X} = \sum\limits_{j=0}^{\infty}\fr{(i\varpi)^j \rho_l^j \pi_j }{j!}\,.
+$$
+
+Поскольку
+$$
+\sum\limits_{j=0}^{\infty}\fr{(i\varpi)^j \rho_l^j \pi_j }{j!} \rightarrow \sum\limits_{j=0}^{\infty}\fr{(i\omega)^j  }{j!} \lambda_j\ \mbox{при}\  \rho_l \rightarrow 0\,,
+$$
+ то
+\begin{multline*}
+\sum\limits_{j=0}^{\infty}\fr{(i\omega)^j  }{j!} \lambda_j ={}\\
+{}= \sum\limits_{j=2k, k=0}^{\infty}\fr{(i\omega)^{2k} }{(2k)!} (2k-1)!! \psi_0^{2k} (KH)^{-2k} ={}\\
+{} = \sum\limits_{k=0}^{\infty}\fr{(-1)^{k} }{(2k)!!} (\omega \psi_0)^{2k} (KH)^{-2k} ={}\\
+{}=
+ \sum\limits_{k=0}^{\infty}\fr{(-1)^{k} }{(k)!}  \left(\fr{\omega \psi_0}{2}\right)^{2k} (KH)^{-2k}\,.
+ \end{multline*}
+Последнее соотношение определяет характеристическую функцию
+гауссовой случайной величины с~дисперсией $(2KH)^2$, что и~требовалось показать.
+
+\smallskip
+
+\noindent
+\textbf{Замечание~5.} При доказательстве использовалось
+существование высших моментов распределений случайных величин $X$ и~$Z$
+в~каждой серии. Это ограничение несущественно, так как  в~окончательном ответе
+требуется только существование их вторых моментов.
+
+\smallskip
+
+\noindent
+\textbf{Замечание~6.} Условие $\rho_l^{-1} {\sf E}Z_l^2 \hm< \infty$,
+$l \hm\rightarrow 0$, является стандартным (см., например,~\cite{Gikhman})
+для существования предельного распределения Гаусса.
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9}
+\bibitem{Jazwinski}
+\Au{Jazwinski~A.\,H.} Stochastic processes and filtering theory.~--- New York, NY, USA: Academic Press, 1970. 376~p.
+
+\bibitem{Ghil}
+\Au{Ghil~M.,  Malnotte-Rizzoli~P.} Data assimilation in meteorology and oceanography~// Adv. Geophys., 1991. Vol.~33. P.~141--266.
+
+\bibitem{Evensen1}
+\Au{Evensen~G.} Sequential data assimilation with a non-linear quasi-geostrophic model using Monte-Carlo methods to forecast error statistics~// J.~Geophys. Res., 1994. Vol.~6. P.~1014--1062.
+
+\bibitem{Evensen2}
+\Au{Evensen~G.} The ensemble Kalman filter: Theoretical formulation and practical implementation~// Ocean Dyn., 2003. Vol.~53. P.~343--367.
+
+\bibitem{Belyaev1}
+\Au{Belyaev~K., Tanajura~C.\,A.\,S., O'Brien~J.\,J.}  A data assimilation technique with an ocean circulation model and its application to the tropical Atlantic~// Appl. Math. Model., 2001. Vol.~25. P.~655--670.
+
+\bibitem{Tanajura}
+\Au{Tanajura~C.\.A.\,S., Belyaev~K.} A sequential data assimilation method based on the properties of diffusion-type process~// Appl. Math. Model., 2009.  Vol.~33. P.~2165--2174.
+
+\bibitem{Belyaev2}
+\Au{Belyaev~K., Nazarov~L.} Limit theorems for characteristics of a queuing system with batch processing~// Theory Prob. Appl., 1995.  Vol.~40. No.~4. P.~73--78.
+
+\bibitem{Gikhman}
+\Au{Gikhman~I., Skorokhod~A.} An introduction to the theory of random processes.~--- New York, NY, USA: Dover Publ. Inc., 1996. 519~p.
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 19.02.15}}
+
+\newpage
+
+%\vspace*{12pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+\vspace*{-24pt}
+
+\def\tit{ON A LIMIT DISTRIBUTION OF CHARACTERISTICS IN STATIONARY REGIME FOR THE LINEAR ASSIMILATION PROBLEM}
+
+\def\titkol{On a limit distribution of characteristics in stationary regime for the linear assimilation problem}
+
+\def\aut{K.\,P.~Belyaev$^1$ and N.\,P.~Tuchkova$^2$}
+
+\def\autkol{K.\,P.~Belyaev and N.\,P.~Tuchkova}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Belyaev K.\,P.}
+\index{Tuchkova N.\,P.}
+
+\vspace*{-9pt}
+
+\noindent
+$^1$Shirshov Institute of Oceanology , Russian Academy of Sciences,
+36~Nakhimovsky Pr., Moscow 119299, Russian\linebreak
+$\hphantom{^1}$Federation
+
+\noindent
+$^2$Dorodnicyn Computing Centre, Russian Academy of Sciences,
+40~Vavilov Str., Moscow 119333, Russian\linebreak
+$\hphantom{^1}$Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+\Abste{A commonly used linear assimilation problem when the model
+state vector is corrected by observed data through the system of linear
+equations is considered. This problem is formulated as a Markov chain problem.
+For this problem, convergence of transitional probability of the corresponding
+Markov chain is investigated and the sufficient conditions of this
+convergence are found out.  A~special case of series depending on a~parameter
+when this parameter goes to zero is discussed and the limit theorem about
+convergence to Gaussian distribution for analysis of state vector characteristics
+for this case is proved. The mean value and variance of this distribution are
+determined. The paper discusses how these results can
+be applied to practical operational assimilation and forecasting.}
+
+\KWE{data assimilation methods; Markov chains stationary distributions; asymptotic distribution of chains at a small value of a parameter}
+
+
+
+
+\DOI{10.14357/19922264150206}
+
+\Ack
+\noindent
+The research was supported by the Russian Foundation for Basic Research
+ (projects 14-05-00363 and 14-07-00037).
+
+
+
+%\vspace*{3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9}
+\bibitem{1-tu}
+\Aue{Jazwinski, A.\,H.} 1970. \textit{Stochastic processes and filtering theory}. New York, NY: Academic Press. 376 p.
+\bibitem{2-tu}
+\Aue{Ghil, M., and P.~Malnotte-Rizzoli}. 1991. Data assimilation in meteorology and oceanography. \textit{Adv. Geophys.} 33:141--266.
+\bibitem{3-tu}
+\Aue{Evensen, G.} 1994. Sequential data assimilation with a non-linear quasi-geostrophic model using Monte-Carlo methods to forecast error statistics.
+\textit{J.~Geophys. Res.} 6:1014--1062.
+\bibitem{4-tu}
+\Aue{Evensen, G.} 2003. The ensemble Kalman filter: Theoretical
+formulation and practical implementation. \textit{Ocean Dyn.} 53:343--367.
+\bibitem{5-tu}
+\Aue{Belyaev, K., C.\,A.\,S.~Tanajura, and J.\,J.~O'Brien}. 2001.
+A~data assimilation technique with an ocean circulation model
+and its application to the tropical Atlantic. \textit{Appl. Math. Model.} 25:655--670.
+\bibitem{6-tu}
+\Aue{Tanajura, C.\,A.\,S., and K.~Belyaev}. 2009. A sequential data assimilation method based on the properties of diffusion-type process. \textit{Appl. Math. Model.} 33:2165--2174.
+\bibitem{7-tu}
+\Aue{Belyaev, K., and L.~Nazarov}. 1995. Limit theorems for characteristics of a queuing system with batch processing. \textit{Theory Prob. Appl.} 40(4):73--78.
+\bibitem{8-tu}
+\Aue{Gikhman, I., and A.~Skorokhod}. 1996.  \textit{An introduction to the theory of random processes}. New York, NY: Dover Publ. Inc. 519~p.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received February 19, 2015}}
+
+%\vspace*{-18pt}
+
+\Contr
+
+\noindent
+\textbf{Belyaev Konstantin P.} (b.\ 1955)~--- Doctor of Science in physics
+and mathematics; leading scientist, Shirshov Institute of Oceanology,
+Russian Academy of Sciences, 36~Nakhimovsky Pr., Moscow 119299, Russian Federation;
+kosbel55@gmail.com
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Tuchkova Natalia P.} (b.\ 1955)~--- Candidate of Science (PhD)
+in physics and mathematics; senior scientist, Dorodnicyn Computing Centre,
+Russian Academy of Sciences, 40~Vavilov Str., Moscow 119333, Russian Federation;
+tuchkova@ccas.ru
+
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература} 

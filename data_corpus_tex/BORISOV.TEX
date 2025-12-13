@@ -1,0 +1,1140 @@
+\newcommand {\ebd}{\triangleq}
+\newcommand{\pp}[1]{\mathcal{P}\left\{ #1 \right\}}
+\newcommand {\ff}{{\mathcal F}}
+\newcommand {\ppp}{{\mathcal P}}
+\newcommand {\NII}{{\mathcal N}}
+\newcommand {\qqq}{{\mathcal Q}}
+\newcommand{\me}[2]{\mathsf{E}_{ #1 }\left\{ \mathop{#2} \right\} }
+
+
+\def\stat{borisov}
+
+\def\tit{ВЕРОЯТНОСТНЫЙ АНАЛИЗ КЛАССА МАРКОВСКИХ~СКАЧКООБРАЗНЫХ ПРОЦЕССОВ$^*$}
+
+\def\titkol{Вероятностный анализ класса марковских скачкообразных процессов}
+
+\def\aut{А.\,В.~Борисов$^1$,  Ю.\,Н.~Куринов$^2$,  Р.\,Л.~Смелянский$^3$}
+
+\def\autkol{А.\,В.~Борисов,  Ю.\,Н.~Куринов,  Р.\,Л.~Смелянский}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Борисов А.\,В.}
+\index{Куринов Ю.\,Н.}
+\index{Смелянский Р.\,Л.}
+\index{Borisov A.\,V.}
+\index{Kurinov Yu.\,N.}
+\index{Smeliansky R.\,L.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа 
+выполнена при поддержке Программы развития МГУ, проект №\,23-Ш03-03. При анализе 
+данных использовалась инфраструктура Центра коллективного пользования 
+<<Высокопроизводительные вычисления и~большие данные>> 
+(ЦКП <<Информатика>>) ФИЦ ИУ РАН (г.~Москва).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика 
+и~управление>> Российской академии наук; Московский государственный
+университет имени М.\,В.~Ломоносова, \mbox{aborisov@frccsc.ru}}
+\footnotetext[2]{Московский  государственный университет имени М.\,В.~Ломоносова, \mbox{kurinovurij@gmail.com}}
+\footnotetext[3]{Московский государственный университет имени М.\,В.~Ломоносова, \mbox{smel@cs.msu.su}}
+
+
+\vspace*{-12pt}
+
+
+
+
+ \Abst{Исследован некоторый класс скачкообразных процессов. Их первая блочная 
+компонента представляет собой марковский скачкообразный процесс (МСП) с~конечным 
+множеством состояний. Вторая блочная компонента изменяется синхронно с~первой 
+и~при фиксированной первой компоненте образует последовательность независимых 
+векторов. При этом носители условных распределений второй компоненты могут 
+пересекаться, что не дает возможности точно восстановить значения первой 
+компоненты по наблюдениям второй. Для рассмотренного класса случайных процессов 
+доказано марковское его свойство и~получен ряд важных вероятностных 
+характеристик. Выведен инфинитезимальный генератор и~сопряженный к~нему 
+оператор. Это позволило построить систему уравнений Колмогорова, описывающую 
+эволюцию распределения процесса. Предложено мартингальное разложение 
+произвольной функции от исследуемого процесса: ее удается характеризовать 
+с~по\-мощью сис\-те\-мы линейных стохастических дифференциальных уравнений (СДУ)
+с~мартингалами в~правой части. В~случае если функции исследуемого процесса имеют 
+конечные моменты второго порядка, получен вид квадратичных характеристик 
+мартингалов в~соответствующих разложениях.}
+
+\KW{марковский скачкообразный процесс; инфинитезимальный генератор; 
+мартингальное разложение; стохастическое дифференциальное уравнение}
+
+\DOI{10.14357/19922264240304}{XPVTGJ}
+  
+\vspace*{-6pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+
+\section{Введение}
+
+\vspace*{-8pt}
+
+Марковские скачкообразные процессы, вклю\-чая их управ\-ля\-емые версии, служат 
+математическими моделями большого числа явлений, наблюдаемых в~различных областях 
+техники, биологии и~медицины, социологии, экономики и~пр.~\cite{W_93}. Они так\-же 
+используются при описании более сложных объектов: скрытых марковских моделей 
+и~стохастических динамических сис\-тем переменной структуры~\cite{EM_02, DLW_23}.
+
+Для МСП существует собственный развитый математический аппарат~\cite{D_63, GS_73_2}, позволяющий решать задачи системного анализа применительно к~данному 
+классу процессов. Кроме того, при выполнении некоторых необременительных условий 
+эти функции представляют собой семимартингалы с~возможностью использования 
+результатов стохастического анализа~\cite{LSh_86}.
+
+При построении моделей чаще используются МСП с~конечным или счетным множеством 
+состояний. Это связано с~их простотой, наличием решений различных задач 
+оп\-ти\-маль\-но\-го/ро\-баст\-но\-го оценивания и~управления состояниями подобных процессов~\cite{EAM_10}, а~также набора эффективных вычислительных алгоритмов, реализующих 
+эти решения. В~то же время решения указанных задач для произвольных МСП 
+достаточно сложны для численной реализации~\cite{LSh_86, WD_79, CGT_02}.
+
+Цель работы заключается в~представлении подкласса МСП, обеспечивающего 
+компромисс между общностью и~гибкостью для математического моделирования 
+различных явлений, простотой вероятностного описания и~решения задач оценивания и~управ\-ле\-ния. Работа имеет следующую организа\-цию. Раздел~2 содержит 
+конструктивное представ\-ле\-ние класса процессов на примере описания 
+скачкообразного изменения состояния и~па\-ра\-мет\-ров некоторого 
+телекоммуникационного соединения. В~разд.~3 доказано марковское свойство этих %\linebreak 
+процессов, получен инфинитезимальный генератор, а~также сис\-те\-ма уравнений 
+Колмогорова, описывающая эволюцию распределения. Раздел~4 %\linebreak 
+посвящен 
+мартингальному представлению ис\-сле\-ду\-емо\-го класса МСП и~функций от них. 
+Оказывается, что их можно характеризовать с~по\-мощью решений линейных сис\-тем 
+СДУ с~мартингалами в~правой части. 
+Раздел~5 содержит заключительные замечания.
+
+\section{Конструктивное описание класса процессов}
+
+Для представления класса исследуемых процессов воспользуемся иллюстрацией из 
+области телекоммуникаций~\cite{B_14, B_16_1, B_16_2, G_23_1, B_21_1}. Рассмотрим 
+состояние некоторого гетерогенного (про\-вод\-но\-го/бес\-про\-вод\-но\-го) сетевого 
+соединения. Оно описывается блочным вектором $Z_t \hm\ebd \mathrm{col}(\theta_t, Y_t)$. 
+Первая компонента, $\theta_t$, определяет качественное состояние соединения 
+и~может принимать значения из конечного множества, например:
+\begin{itemize}
+\item
+$\theta_t=e_1$~--- канал, обеспечивающий
+ соединение, загружен умеренно: буфер сетевого устройства~--- <<бутылочного 
+горла>> свободен;
+\item
+$\theta_t=e_2$~--- канал находится в~состоянии, предшествующем перегрузке: буфер 
+<<бутылочного горла>> непуст;
+\item
+$\theta_t=e_3$~--- перегрузка канала: буфер <<бутылочного горла>> заполнен 
+полностью;
+\item
+$\theta_t=e_4$~--- потеря сигнала на беспроводном участке канала.
+\end{itemize}
+Вторая компонента, $Y_t$, определяет текущие средние числовые параметры 
+соединения, например:
+\begin{itemize}
+\item
+$Y_t^1$~--- значение времени кругового обращения сегмента данных (RTT, round-trip time);
+\item[--]
+$Y_t^2$~--- значение джиттера;
+\item
+$Y_t^3$~--- долю потерянных пакетов;
+\item
+$Y_t^4$~--- пропускную способность, обес\-пе\-чи\-ва\-емую соединением.
+\end{itemize}
+Траектории процесса $Z_t$~--- ку\-соч\-но-по\-сто\-ян\-ные функции, и~скачки компоненты~$\theta_t$ 
+синхронизированы со скачками~$Y_t$. Применительно к~данному примеру 
+это означает, что со сменой качественного состояния соединения меняются и~его 
+числовые параметры и~в~процессе, пока качественное состояние остается 
+неизменным, параметры соединения также не меняются. Следует отметить, что 
+в~случае возвращения соединения в~некоторое состояние, ранее уже имевшее место, 
+его чис\-ло\-вые па\-ра\-мет\-ры могут не совпасть с~прошлыми значениями. Например, после 
+возвращения состояния соединения в~$e_1$ значения RTT, джиттера, доли потерянных 
+пакетов и~пропускной способности могут отличаться от предыдущих значений 
+параметров на предшествующих промежутках пребывания в~состоянии~$e_1$. При этом 
+по текущему набору па\-ра\-мет\-ров~$Y_t$ \mbox{нельзя} сделать однозначный вывод о~текущем 
+качественном состоянии соединения~$\theta_t$: одни и~те же значения~$Y_t$ могут 
+соответствовать различным значениям~$\theta_t$. В~этом заключено ключевое 
+отличие представляемого класса процессов от специальных МСП, исследованных 
+в~\cite{B_04_1}. Практической целью ставится выделение класса процессов, 
+неформально определяемых как МСП с~конечным множеством состояний~--- 
+вероятностных распределений. Этот класс, конечно, не охватывает все множество 
+МСП~\cite{D_63, GS_73_2}, однако обладают достаточной степенью общности, чтобы 
+описывать ряд реальных явлений, включающий в~себя маневрирование целей~\cite{LJ_05}, 
+скачки параметров финансового рынка~\cite{mamon2014hidden}, 
+изменение состояния и~параметров сетевого трафика~\cite{DPR_08} и~пр.
+
+Итак, первый блочный компонент, $\theta_t$, пред\-став\-ля\-ет собой МСП с~множеством 
+состояний 
+$$
+\mathbb{S}^N \ebd  \left\{e_1, \ldots, e_N\right\},
+$$
+ матрицей 
+интенсивностей переходов 
+$$
+\Lambda(t)=\|\Lambda_{ij}(t)\|_{i,j=\overline{1,N}}
+$$ 
+и~начальным распределением 
+$$
+p_0=\mathrm{col}\left(p_0^1,\ldots,p_0^N\right).
+$$
+Вторая блочная компонента,  $Y_t \hm\in \mathbb{R}^M$,~--- ку\-соч\-но-по\-сто\-ян\-ный 
+процесс, терпящий скачки синхронно с~$\theta_t$. Если $\{\tau_i\}_{i \in 
+\mathbb{N}}$ -- последовательность моментов скачков~$\theta_t$, то при известной 
+траектории~$\theta_t$ последовательность $\{Y_{\tau_i}\}_{i \in \mathbb{N}}$ 
+составлена из независимых случайных векторов, условное распределение которых 
+определяется вектором 
+$$
+\pi(y) = \mathrm{col}\left(\pi_1(y),\ldots,\pi_N(y)\right),
+$$
+ составленным из 
+известных плотностей ве\-ро\-ят\-ности на~$\mathbb{R}^M$:
+\begin{multline*}
+\pp{Y_{\tau_i}\in B\;|\;\theta_{\tau_i}\! =\! e_n}\! =\! \int\limits_{B} \pi_n(y)\,dy, \forall
+\;B \hm\in \mathcal{B}(\mathbb{R}^M),\\
+  n=\overline{1,N}\,.
+\end{multline*}
+Распределение начального значения $Y_0$ определяется аналогично с~по\-мощью 
+распределения $\phi(y) \hm= \mathrm{col}\,(\phi_1(y),\ldots,\phi_N(y))$:
+\begin{multline*}
+\pp{Y_{0} \in B\;|\;\theta_{0} = e_n} = \int\limits_{B} \phi_n(y)\,dy,\ 
+\forall\,B \hm\in \mathcal{B}(\mathbb{R}^M),\\
+  n=\overline{1,N}\,.
+\end{multline*}
+В~\cite{IK_06} показано, что существует канонический базис с~фильтрацией 
+$(\Omega,\ff,\ppp, \{\ff_t\}_{t \in [0,T]})$, так называемое пространство Ви\-не\-ра--Пуас\-со\-на, 
+на котором подобные процессы могут быть заданы корректно. Ниже 
+представлены вероятностные свойства этих процессов.
+
+\section{Марковское свойство и~производящий оператор}
+
+В дальнейшем изложении используются следующие обозначения:
+\begin{itemize}
+\item
+$I$~--- единичная матрица подходящей раз\-мер\-ности;
+\item
+$\mathbf{I}(t)$~--- единичная ступенчатая функция;
+\item
+$\mathbf{I}_{D}(x)$ -- индикаторная функция множества $D$;
+\item
+$\NII_t$~--- число скачков $\theta_t$, произошедших на отрезке времени $[0,t]$,
+\item
+$\mathcal{T}_n(s,t) \ebd \pp{\NII_t-\NII_s=0|\theta_s=e_n} \hm= \exp \left( \int\nolimits_s^t 
+\Lambda_{nn}(u)\,du\right)$ ($0 \hm\leqslant s \hm< t$)~--- условная функция 
+распределения времени ожидания скачка процесса~$\theta_t$ в~зависимости от его 
+состояния, $\mathcal{T}(s,t) \hm\ebd \mathrm{row}\, (\mathcal{T}_1(s,t),\ldots,\mathcal{T}_N(s,t))$;
+\item
+$\lambda(t) \ebd \mathrm{row}\, (\Lambda_{11}(t),\ldots,\Lambda_{NN}(t))$~--- строка, 
+составленная из диагональных элементов матрицы~$\Lambda(t)$, 
+$\overline{\Lambda}(t) \ebd \Lambda(t) \hm- \mathrm{diag}\, \lambda(t)$;
+\item
+$\ppp(s,t) = \|\ppp_{ij}(s,t)\|_{i,j=\overline{1,N}}$~--- матрица переходных 
+вероятностей~$\theta$ на отрезке $[s,t]$:
+$$
+\ppp_{ij}(s,t) \ebd \pp{\theta_t=e_j\; | \; \theta_s=e_i};
+$$
+ $\ppp(s,t)$ 
+представляет собой решение системы дифференциальных уравнений: 
+$$
+\ppp'_t(s,t)= \ppp(s,t)\Lambda(t),\ 0\leqslant s < t,\ \ppp(s,s) \equiv I\,;
+$$
+\item
+любая функция $f(e,y):\; \mathbb{S}^N \times  \mathbb{R}^M \hm\to \mathbb{R}$ 
+представима в~виде $f(e,y) \hm= \overline{f}(y)e$, где
+$$
+\overline{f}(y) \ebd \mathrm{row}\left(f(e_1,y), \ldots, f(e_N,y)\right);
+$$
+\item
+$ {\sf E}_f^n \ebd \int_{\mathbb{R}^M} f(y,e_n) \pi_n(y)\,dy$, 
+${\sf E}_f \hm= \mathrm{col}\, ({\mathsf E}_f^1,\ldots,{\mathsf E}_f^N) = \int_{\mathbb{R}^M} 
+\mathrm{diag}\,\overline{f}(y)\pi(y) \,dy$;
+\item[--]
+любая вероятностная мера $\qqq(\cdot)$, определенная на $(\mathbb{S}^N \times  
+\mathbb{R}^M ,2^{\mathbb{S}^N}\times  \mathcal{B}(\mathbb{R}^M))$, может быть 
+задана с~помощью распределения 
+$$
+m(B) = \mathrm{col}\left(m_1(B),\ldots,m_N(B)\right),
+$$
+ где
+$$
+m_n(B) \ebd \qqq\{\theta \hm= e_n, Y \hm\in B\}.
+$$
+\end{itemize}
+Важнейшим качеством исследуемых процессов выступает марковское свойство.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~1.}
+%\label{th:th_1}
+\textit{На вероятностном базисе с~фильтрацией $(\Omega,\ff,\ppp, \{\ff_t\}_{t \in 
+[0,T]})$ процесс $Z_t$ обладает марковским свойством.
+Матрица переходной вероятности} $\mathsf{P}(y,s,B,t) 
+=\|\mathsf{P}_{ij}(y,s,B,t)\|_{i,j=\overline{1,N}}$
+($\mathsf{P}_{ij}(y,s,B,t) \hm\ebd \pp{\theta_t = e_j, Y_t \in B | \theta_s = e_i, 
+Y_s=y}$)
+\textit{имеет вид}:
+\begin{multline}
+\mathsf{P}(y,s,B,t) = \mathbf{I}_B(y)\mathrm{diag}\,\mathcal{T}(s,t) + {}\\
+{}+\mathrm{diag}  \int\limits_B 
+\pi(u)\,du \left( \ppp(s,t) - \mathrm{diag}\,\mathcal{T}(s,t) \right).
+\label{eq:eq_trfunc}
+\end{multline}
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ тео\-ре\-мы~1 приведено в~приложении.
+
+\smallskip
+
+В \cite{B_04_1} представлен частный случай~$Z_t$: мно-\linebreak жест\-ва-но\-си\-те\-ли 
+$\{D_n\}_{n=\overline{1,N}}$ распределений $\{\pi_n(\cdot)\}_{n=\overline{1,N}}$ 
+и~$\{\phi_n(\cdot)\}_{n=\overline{1,N}}$ не пересекались. В~этом случае 
+компоненту $\theta_t$ можно было восстановить по компоненте~$Y_t$,
+и~поэтому компонента~$Y_t$, рассмотренная отдельно, также обладала марковским 
+свойством. В~общем же случае~$Y_t$, рассмотренная в~отрыве от~$\theta_t$, 
+марковским свойством не обладает.
+
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.}
+%\label{th:th_2} 
+\textit{Верны следующие утверждения}.
+\begin{enumerate}[1.]
+\item \textit{Пусть $f(e,y): \mathbb{S}^N \times  \mathbb{R}^M \hm\to \mathbb{R}$~--- 
+ограниченная борелевская функция.
+Инфинитезимальный генератор~$\mathcal{A}_t$ процесса~$Z_t$ имеет вид}:
+
+\vspace*{-4pt}
+
+\noindent
+\begin{multline*}
+\mathcal{A}_t f(e,y) \ebd{}\\
+{}\ebd
+\lim\limits_{s \downarrow t}\fr{\me{}{f( \theta_s,Y_s)|Y_t = y, \theta_t = e} - 
+f(e,y)}{s - t} ={}\\
+{}=
+\left[\overline{f}(y) \mathrm{diag}\,\lambda(t) + {\mathsf E}_f^{\top} \overline{\Lambda}^{\top}(t)\right]e\,.
+\end{multline*}
+
+\item \textit{Пусть $m(B) = \mathrm{col}\,(m_1(B),\ldots,m_N(B))$ -- некоторое вероятностное 
+распределение на\linebreak $( \mathbb{S}^N \times  \mathbb{R}^M ,2^{\mathbb{S}^N}\times  
+\mathcal{B}(\mathbb{R}^M))$, тогда оператор~$\mathcal{A}_t^*$, сопряженный к~генератору, имеет вид}:
+
+\vspace*{-4pt}
+
+\noindent
+\begin{multline*}
+\mathcal{A}_t^* m(B)  =
+\mathrm{diag}\left(\lambda (t)\right) m(B) +{}\\
+{}+
+ \mathrm{diag}\left( \int\limits_B \pi(u)\,du \right) 
+\overline{\Lambda}^{\top}(t) m(\mathbb{R}^M).
+\end{multline*}
+
+\item \textit{Распределение $Q_t(B) \hm= \mathrm{col}\, (Q_t^1(B),\ldots,Q_t^N(B))$ процесса 
+$\mathrm{col}\,(\theta_t, Y_t) (Q_t^n(B) \ebd \mathcal{P}\left\{\theta_t \hm= e_n,\right.$\linebreak $\left. Y_t \hm\in B\right\}
+\vphantom{\left(Q_t^n(B)\right)\ebd}\!\!
+)$ 
+определяется решением системы уравнений Колмогорова}:
+
+\noindent
+\begin{align*}
+\fr{dQ_t(B)}{dt} &= \mathrm{diag}\,(\lambda (t)) Q_t(B) + {}\\
+&\hspace*{-5mm}{}+\mathrm{diag}\left( \int\limits_B \pi(u)\,du 
+\right) \overline{\Lambda}^{\top}(t) \; Q_t\left(\mathbb{R}^M\right);\\
+Q_0(B)& = \mathrm{diag}\left( \int\limits_B \phi(u)\,du \right) p_0.
+%\label{eq:sys_1}
+\end{align*}
+
+\item \textit{Функция переходной вероятности ${\sf P}(y,s,B,t)$ определяется решением системы 
+уравнений}:
+
+\pagebreak
+
+\noindent
+\begin{equation}
+\left.
+\begin{array}{l}
+\mathsf{P}'_t(y,s,B,t) = \displaystyle \mathsf{P}(y,s,B,t) \mathrm{diag}\,\lambda(t) +{}\\[9pt]
+\hspace*{10mm}{}+ \mathrm{diag}\left(\, 
+\displaystyle\int\limits_B \pi(u)\,du \right) \ppp(s,t)\overline{\Lambda}(t); \\[16pt]
+\ppp'_t(s,t) = \ppp(s,t)\Lambda (t),\qquad 0 \leqslant s < t; \\[9pt]
+\mathsf{P}(y,s,B,s) = \mathbf{I}_B(y)I,\qquad \ppp(s,s) = I.
+\end{array}
+\right\}
+\label{eq:sys_2}
+\end{equation}
+\end{enumerate}
+
+Истинность утверждений~1 и~2 теоремы~2 следует из определений 
+инфинитезимального генератора 
+%$$
+$\mathcal{A}_t f(e,y)$
+% =
+%\lim\limits_{s \downarrow t}\fr{\me{}{f( \theta_s,Y_s)|Y_t = y, \theta_t = e} - 
+%f(e,y)}{s - t}$$ 
+сопряженного оператора
+\begin{multline*}
+\langle \mathcal{A}_t f,m\rangle = \int\limits_{\mathbb{R}^M} \sum\limits_{n=1}^N\mathcal{A}_t 
+f(e_n, y) m_n(dy) ={}\\
+{}= \int\limits_{\mathbb{R}^M}
+\sum\limits_{n=1}^N f(e_n, y) \mathcal{A}_t^* m_n(dy) = \langle  f,\mathcal{A}_t^* m\rangle.
+\end{multline*}
+ Истинность утверждения~3 теоремы следует из представления 
+распределения~$Z_t$ с~помощью оператора~$\mathcal{A}_t^*$~\cite{GS_73_2}. 
+Система~(\ref{eq:sys_2}) (утверждение~4 теоремы) может быть получена путем 
+непосредственного дифференцирования переходной вероятности~(\ref{eq:eq_trfunc}).
+
+\section{Мартингальное представление}
+
+Пусть $f=f(e,y): \mathbb{S}^N \times  \mathbb{R}^M \hm\to \mathbb{R}$~--- 
+произвольная функция, у которой
+$$
+\int\limits_{\mathbb{R}^M}\sum\limits_{n=1}^N |f(e_n, y)|(\pi_n(y)+\phi_n(y))\,dy < \infty\,.
+$$
+Для процесса $f(\theta_t,Y_t)$ верна формула Дынкина: для любых $0\hm \leqslant s \hm< 
+t$ выполнено равенство
+\begin{multline*}
+\me{}{f(\theta_t,Y_t) - \int\limits_s^t \mathcal{A}_uf(\theta_u,Y_u)\,du \; 
+\Bigl|\;\ff_s} = {}\\
+= {\mathsf E}\left\{f(\theta_t,Y_t) - \int\limits_s^t
+ \left[\overline{f}(Y_u) \mathrm{diag}\,\lambda(u) + {}\right.\right.\\
+\left.\left. {}+{\mathsf E}_f^{\top} 
+\overline{\Lambda}^{\top}(u)\right]\theta_u\,du
+\vphantom{\int\limits_s^t}
+\right\}= 0 \quad \ppp\mbox{-п.~н.}
+\end{multline*}
+Это означает, что процесс $f(\theta_t,Y_t)$ допускает разложение
+\begin{multline*}
+f(\theta_t,Y_t) = f(\theta_0,Y_0) + {}\\
+{}+\int\limits_0^t
+ \left[\overline{f}(Y_u) \mathrm{diag}\, \lambda(u) + E_f^{\top} 
+\overline{\Lambda}^{\top}(u)\right]\theta_u\,du +\mu_t^f,
+\end{multline*}
+где $\mu_t^f$~--- некоторый $\ff_t$-со\-гла\-со\-ван\-ный мартингал. Используя это 
+равенство, можно составить конечную замкнутую систему линейных СДУ, описывающую 
+эволюцию процесса $f(\theta_t,Y_t)$. Рассмотрим расширенный процесс 
+$$
+\mathsf{f}_t \ebd \mathrm{col}\,(\underbrace{\theta_t}_{\ebd \mathsf{f}_t^1}, 
+\underbrace{f(\theta_t,Y_t)\theta_t}_{\ebd \mathsf{f}_t^2})\,.
+$$
+
+\noindent
+\textbf{Теорема~3.}\
+%\label{th:th_3}
+\textit{Процесс~$\mathsf{f}_t$~--- единственное сильное реше-}\linebreak \textit{ние системы линейных СДУ}
+\begin{equation}
+\mathsf{f}_t = \mathsf{f}_0 + \int\limits_0^t D^f(s)\mathsf{f}_s\,ds + \mu_t^f,
+\label{eq:sys_3}
+\end{equation}
+\textit{где $\mu_t^f$~--- $\ff_t$-со\-гла\-со\-ван\-ный мартингал; $D^f(s): \mathbb{R}_+ \hm\to 
+\mathbb{R}^{2N \times 2N}$-мер\-ная матричнозначная функция}
+%\begin{equation*}
+$$
+D^f(t) \ebd \left[
+\begin{array}{ccc}
+\Lambda^{\top}(t) & & 0\\
+ \mathrm{diag}\, {\mathsf E}_f {\overline{\Lambda}}^{\top}(t)  & &  \mathrm{diag}\,\lambda(t)
+\end{array}
+\right].
+$$
+\textit{Если дополнительно}
+\begin{equation}
+\int\limits_{\mathbb{R}^M}\sum\limits_{n=1}^Nf^2(e_n, y)(\pi_n(y)+\phi_n(y))\,dy < \infty\,,
+\label{eq:cond_1}
+\end{equation}
+\textit{то $\mu_t^f$~--- квадратично интегрируемый мартингал с~квадратичной 
+характеристикой}
+$$
+\langle \mu^f, \mu^f \rangle_t = \left[ 
+\begin{array}{cc}
+\langle \mathsf{f}^1, \mathsf{f}^1 \rangle_t & \langle \mathsf{f}^1, 
+\mathsf{f}^2 \rangle_t \\
+\langle \mathsf{f}^1, \mathsf{f}^2 \rangle_t^{\top} & \langle \mathsf{f}^2, 
+\mathsf{f}^2 \rangle_t
+\end{array}
+\right],
+$$
+\textit{где}
+
+\vspace*{-4pt}
+
+\noindent
+\begin{multline}
+\langle \mathsf{f}^1, \mathsf{f}^1 \rangle_t =\int\limits_0^t \left[
+\mathrm{diag}\left( \Lambda^{\top}(s)\mathsf{f}^1_s\right)-  
+\Lambda^{\top}(s)\mathrm{diag}\,(\mathsf{f}^1_s) - {}\right.\\
+\left.{}-\mathrm{diag}\,(\mathsf{f}^1_s)\Lambda(s)
+\right]ds\,;
+\label{eq:sc_11}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\langle \mathsf{f}^1, \mathsf{f}^2 \rangle_t={}\\
+{}=
+\int\limits _0^t \left[
+\left(\mathrm{diag}\,( \overline{\Lambda}^{\top}(s)\mathsf{f}^1_s) -   
+\mathrm{diag}\,(\mathsf{f}^1_s) \overline{\Lambda}(s)
+\right)\mathrm{diag}\, {\mathsf E}_f-{}\right.\\
+\left.{}
+- \Lambda^{\top}(s) \mathrm{diag}\,(\mathsf{f}^2_s) \right]ds\,;
+\label{eq:sc_12}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\langle \mathsf{f}^2, \mathsf{f}^2 \rangle_t= \int\limits_0^t\Bigl[
+\mathrm{diag}\,{\mathsf E}_{f^2}\mathrm{diag}\,( \overline{\Lambda}^{\top}(s)\mathsf{f}^1_s) -{}\\
+{}- \mathrm{diag}\,(\mathsf{f}^2_s) 
+\mathrm{diag}\,\lambda(s)  \mathrm{diag}\, (\mathsf{f}^2_s)
+-  \mathrm{diag}\,(\mathsf{f}^2_s) \overline{\Lambda}(s)\mathrm{diag}\,{\mathsf E}_f - {}\\
+{}-\mathrm{diag}\,{\mathsf E}_f 
+\overline{\Lambda}^{\top}(s) \mathrm{diag}\, (\mathsf{f}^2_s)
+\Bigl] ds\,.
+\label{eq:sc_22}
+\end{multline}
+
+\vspace*{-3pt}
+
+\noindent
+\textit{Если для функции $g=g(e,y)$ выполнено условие}~(\ref{eq:cond_1}) \textit{и~для процесса 
+$g(\theta_t,Y_t)$ верно представление типа}~(\ref{eq:sys_3}), \textit{то совместная квадратичная характеристика}: 
+
+\pagebreak
+
+\noindent
+$$
+\langle  \mu^f,\mu^g\rangle_t= \left[
+\begin{array}{cc}
+\langle \mathsf{f}^1, \mathsf{g}^1 \rangle_t & \langle \mathsf{f}^1, 
+\mathsf{g}^2 \rangle_t \\
+\langle \mathsf{f}^2, \mathsf{g}^1 \rangle_t & \langle \mathsf{f}^2, 
+\mathsf{g}^2 \rangle_t
+\end{array}
+\right],
+$$ 
+\textit{где}
+$\langle \mathsf{f}^1, \mathsf{g}^1 \rangle_t\hm = \langle \mathsf{f}^1, \mathsf{f}^1 \rangle_t$;
+$\langle \mathsf{f}^1, \mathsf{g}^2 \rangle_t\hm = \langle \mathsf{g}^1, 
+\mathsf{g}^2 \rangle_t$;
+$\langle \mathsf{f}^2, \mathsf{g}^1 \rangle_t \hm= \langle \mathsf{f}^2, \mathsf{f}^1 \rangle_t$;
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline}
+\langle \mathsf{f}^2, \mathsf{g}^2 \rangle_t=
+\int\limits_0^t\Bigl[
+\mathrm{diag}\,{\mathsf E}_{fg}\mathrm{diag}\, ( \overline{\Lambda}^{\top}(s)\mathsf{f}^1_s) - {}\\
+{}- \mathrm{diag}\,(\mathsf{f}^2_s) 
+\mathrm{diag}\,\lambda(s)  \mathrm{diag}\, (\mathsf{g}^2_s)
+-  \mathrm{diag}\,(\mathsf{f}^2_s) \overline{\Lambda}(s)\mathrm{diag}\,{\mathsf E}_g - {}\\
+{}-\mathrm{diag}\,{\mathsf E}_f 
+\overline{\Lambda}^{\top}(s) \mathrm{diag}\,(\mathsf{g}^2_s)
+\Bigl]ds\,.
+\label{eq:sc_fg}
+\end{multline}
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ теоремы~3 приведено в~приложении.
+
+\section{Заключение}
+
+В работе представлен класс скачкообразных процессов. Его первая блочная 
+компонента~--- МСП с~конечным множеством состояний $\mathbb{S}^N$. Вторая блочная 
+компонента синхронизирована по скачкам с~первой и~относительно первой блочной 
+компоненты представляет собой последовательность независимых векторов.
+Условные распределения второй блочной компоненты при фиксированной первой 
+известны. Математическая модель такого рода может трактоваться как МСП 
+с~конечным множеством <<сложных>> состояний~--- распределений случайных векторов. 
+
+
+Для исследуемого класса процессов удалось получить ряд полезных результатов. Во-пер\-вых, 
+эти процессы обладают марковским свойством. Во-вто\-рых, для них получены 
+инфинитезимальный генератор и~сопряженный к~нему оператор. Эти результаты 
+позволили получить мартингальное разложение функций от исследуемого класса 
+процессов, а~также обобщения сис\-те\-мы уравнений Колмогорова, описывающей эволюцию 
+как функции переходной вероятности, так и~одномерного распределения. В-третьих, в~случае если функция от исследуемого процесса имеет конечный второй момент, 
+получены квадратичные характеристики мартингалов в~разложении.
+
+Следует особо упомянуть, что произвольные функции процессов~$Z_t$ исследуемого 
+класса удалось выразить через решение конечной сис\-те\-мы линейных СДУ. В~случае же 
+МСП общего вида для такого описания потребуется более сложная сис\-те\-ма 
+стохастических ин\-тег\-ро-диф\-фе\-рен\-ци\-аль\-ных уравнений.
+
+Предложенные процессы планируется использовать в~качестве уравнений состояния 
+в~стохастических сис\-те\-мах наблюдения и~решать задачи оптимальной фильтрации их 
+состояний и~па\-ра\-мет\-ров по разнородным наблюдениям. Этому будут посвящены 
+последующие работы.
+
+
+  
+{\small \section*{\raggedleft Приложение}
+  \noindent
+  Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\  теоремы~1.
+Пусть $f(\theta_t,Y_t)$~--- произвольная 
+ограниченная борелевская функция. Воспользуемся ее представлением в~виде 
+$f(\theta_t,Y_t) \hm= \overline{f}(Y_t)\theta_t$. Для любых моментов времени $0 \hm\leqslant s \hm< t $ верна следующая цепочка равенств:
+\begin{multline*}
+\me{}{f(\theta_t,Y_t)|\ff_s} =\me{}{\overline{f}(Y_t)\theta_t|\ff_s}={} 
+\\
+{}={\sf E}\left\{\mathbf{I}(\NII_t - \NII_s = 0)\overline{f}(Y_t)\theta_t|\ff_s\right\} +{}\\
+{}+
+\me{}{\mathbf{I}(\NII_t - \NII_s > 0)\overline{f}(Y_t)\theta_t|\ff_s} =
+\overline{f}(Y_s)\theta_s\mathcal{T}(s, t)\theta_s + {}\\ 
+{}+   
+    \sum\limits_{j=1}^N {\mathsf E} \left\{\mathbf{I}(\NII_t - \NII_s > 0)\overline{f}(Y_t)\theta_t 
+|\ff_s, \theta_t = e_j,\right.\\
+ \left.\NII_t - \NII_s > 0\right\} \pp{\NII_t - \NII_s > 0,\; \theta_t = e_j| 
+\ff_s} ={} \\
+{}=
+\overline{f}(Y_s)\theta_s\mathcal{T}(s, t)\theta_s +
+    \sum\limits_{j=1}^N  \int\limits_{\mathbb{R}^M} f(y, e_j)\pi_j(y)\,dy \times{}\\
+    {}\times 
+    \pp{\NII_t - \NII_s > 0,\; \theta_t = e_j | \theta_s} ={}
+          \Bigg[ f(\theta_s,Y_s)
+    \mathcal{T}(s, t)+{}\\
+    {}+\sum\limits_{j=1}^N {\mathsf E}_f^{j} \left(\sum\limits_{i=1}^N 
+\mathcal{P}_{ij}(s, t)e_i^\top - \mathcal{T}_j(s, t) e_j^\top\right)
+    \Bigg]\theta_s = \mathbf{f}(\theta_s, Y_s).
+\end{multline*}
+
+Пусть в~момент времени~$s$ выполнены равенства $\theta_s \hm= e_i$ и~$Y_s\hm=y$. 
+Рассмотрим произвольные $e_j \hm\in \mathbb{S}^N$ и~$B \hm\in 
+\mathcal{B}(\mathbb{R}^M)$ и~найдем $\pp{\theta_t \hm= e_j, Y_t \hm\in B | \theta_s \hm= 
+e_i,\;Y_s=y}$:
+\begin{multline*}
+\pp{\theta_t = e_j, Y_t \in B | \theta_s = e_i,\;Y_s=y}
+={}\\
+{}=\pp{\theta_t = e_j, Y_t \in B, \; \NII_t-\NII_s=0 | \theta_s = e_i,\;Y_s=y} + {}\\
+{} +
+\pp{\theta_t = e_j, Y_t \in B, \; \NII_t-\NII_s>0 | \theta_s = e_i,\;Y_s=y}={} \\ 
+{}=
+\delta_{ij} \mathcal{T}_i(s, t)\mathbf{I}_B(y) + (1-\delta_{ij}) 
+\ppp_{ij}(s,t)\int\limits_B \pi_j(u)\,du +{}\\
+{}+
+\delta_{ij}\left[ \ppp_{ii}(s,t) -  \mathcal{T}_i(s, t)\right] \int\limits_B 
+\pi_i(u)\,du.
+%\label{eq:trpr}
+\end{multline*}
+Первое слагаемое
+соответствует отсутствию скачков процесса~$\theta$ на интервале $[s,t]$. 
+Вероятность этого события равна~$\mathcal{T}_i(s, t)$. Второе слагаемое 
+соответствует переходу $e_i \hm\longrightarrow e_j $ компоненты~$\theta_t$ на 
+$[s,t]$, который происходит с~вероятностью $\ppp_{ij}(s,t)$. Третье слагаемое 
+соответствует переходу $e_i \hm\longrightarrow e_i $ компоненты~$\theta_t$ на 
+$[s,t]$ за более чем один скачок. Вероятность этого события равна 
+$\ppp_{ii}(s,t) \hm-  \mathcal{T}_i(s, t)$. Формула~(\ref{eq:eq_trfunc}) 
+представляет собой матричную запись последнего выражения.
+Теорема~1 доказана.
+
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ теоремы~3.
+Система~(\ref{eq:sys_3}) содержит $2N$~уравнений, из которых первые~$N$ образуют 
+замкнутую систему и~описывают мартингальное разложение первой блочной компоненты~--- $\theta_t$~--- МСП с~множеством значений~$\mathbb{S}^N$~\cite{EAM_10}.
+
+ Построим инфинитезимальный оператор одной из оставшихся $N$~компонент
+   $e_n^{\top} \mathsf{f}^2_t= \overline{f}(Y)_t \mathrm{diag}\,e_n \theta_t
+   $:
+   $$
+   \mathcal{A}_t(\overline{f}(Y)_t \mathrm{diag}\,e_n \theta_t)\hm =
+  \left[
+  \Lambda_{nn}(t)\overline{f}(Y)_t\hm + {\mathsf E}_f^n e_n^{\top} 
+\overline{\Lambda}^{\top}(t)
+  \right] \theta_t.
+  $$
+   Инфинитезимальный генератор компоненты $\mathsf{f}^2_t \hm= 
+f(\theta_t,Y_t)\theta_t$ принимает вид:
+$$  
+ \mathcal{A}_t\mathsf{f}^2_t \hm= \mathrm{diag}\,{\mathsf E}_f \overline{\Lambda}^{\top}(t) 
+\mathsf{f}^1_t \hm+ \mathrm{diag}\,\lambda(t) \mathsf{f}^2_t.
+$$
+   Из формулы Дынкина следует, что процесс
+   $   \mathsf{f}^2_t \hm- \mathsf{f}^2_0\hm - \int\nolimits_0^t \mathcal{A}_s\mathsf{f}^2_s \,ds$
+   представляет собой $\ff_t$-со\-гла\-со\-ван\-ный мартингал, что доказывает истинность 
+представления процесса~$\mathsf{f}_t$ как решения системы уравнений~(\ref{eq:sys_3}).
+
+   Далее докажем истинность формулы~(\ref{eq:sc_fg}): формулы~(\ref{eq:sc_11})--(\ref{eq:sc_22}) представляют собой ее частные случаи. Для этого воспользуемся 
+тем фактом, что процессы~$Z_t$, $f(Z_t)$ и~$g(Z_t)$ принадлежат классу 
+специальных семимартингалов, мартингальное разложение которых единственно~\cite{LSh_86}.
+
+   Для скалярных процессов~$f(Z_t)$ и~$g(Z_t)$ построим соответствующие 
+векторные процессы $\mathsf{f}_t \hm= \mathrm{col}\,(\mathsf{f}_t^1,\mathsf{f}_t^2)$ 
+и~$\mathsf{g}_t \hm= \mathrm{col}\,(\mathsf{g}_t^1,\mathsf{g}_t^2)$, описываемые системами типа~(\ref{eq:sys_3}). 
+Из определения этих процессов и~формулы Дынкина следует, что
+  \begin{multline*}
+   \mathsf{f}_t^2 (\mathsf{g}_t^2)^{\top} = \mathrm{diag}\,\mathsf{f}_t^2  \mathrm{diag}\,
+\mathsf{g}_t^2 = \mathrm{diag}\, \mathsf{f}_0^2  \mathrm{diag}\, \mathsf{g}_0^2 +{}\\
+{}+ \int\limits_0^t
+   \left[
+  \mathrm{diag}\, \lambda(s) \mathrm{diag}\, \mathsf{f}^2_s \mathrm{diag}\, \mathsf{g}^2_s + \mathrm{diag}\, E_{fg} 
+\overline{\Lambda}^{\top}(s) \mathsf{f}^1_s
+   \right]ds + \mu_t^1,\hspace*{-2.26256pt}
+  % \label{eq:repr_1}
+   \end{multline*}
+   где $\mu_t^1$~--- некоторый $\ff_t$-со\-гла\-со\-ван\-ный мартингал.
+
+   С другой стороны, мартингальное разложение произведения $\mathsf{f}_t^2 
+(\mathsf{g}_t^2)^{\top} $ может быть получено с~по\-мощью обобщенного правила Ито~\cite{LSh_86}:
+    \begin{multline*}
+   \mathsf{f}_t^2 (\mathsf{g}_t^2)^{\top} =
+   \mathrm{diag}\, \mathsf{f}_0^2  \mathrm{diag}\, \mathsf{g}_0^2 + \!\int\limits_0^t\! \mathsf{f}_{s-}^2d(\mathsf{g}_{s-}^2)^{\top} 
+   +\!\int\limits_0^t \! d \mathsf{f}_{s}^2(\mathsf{g}_{s-}^2)^{\top} +{}\\
+   {}+ \langle 
+\mathsf{f}^2, \mathsf{g}^2\rangle_t + \mu_t^2 =
+        \mathrm{diag}\, \mathsf{f}_0^2  \mathrm{diag}\, \mathsf{g}_0^2 + {}\\
+        {} + \int\limits_0^t
+    \Bigl[ \mathrm{diag}\, \mathsf{f}_{s}^2 \overline{\Lambda}(s) \mathrm{diag}\, E_g +
+    \mathrm{diag}\, E_f \overline{\Lambda}^{\top}(s) \mathrm{diag}\, \mathsf{g}_{s}^2 +{}\\
+    {}+
+    2 \mathrm{diag}\, \lambda(s) \mathrm{diag}\, \mathsf{f}^2_s \mathrm{diag}\, \mathsf{g}^2_s
+    \Bigl]ds +   \langle \mathsf{f}^2, \mathsf{g}^2\rangle_t + \mu_t^3,
+   %\label{eq:repr_2}
+   \end{multline*}
+   где $\mu_t^2$ и~$\mu_t^3$~--- некоторые $\ff_t$-согласованные мартингалы. Из 
+единственности разложения следует $\ppp$-п.~н.\ выполнение равенства:
+       \begin{multline*}
+   \int\limits_0^t
+   \left[
+   \mathrm{diag}\, \lambda(s) \mathrm{diag}\, \mathsf{f}^2_s \mathrm{diag}\, \mathsf{g}^2_s + \mathrm{diag}\,{\mathsf E}_{fg} 
+\overline{\Lambda}^{\top}(s) \mathsf{f}^1_s
+   \right]ds = {}\\
+   {}=  \langle \mathsf{f}^2, \mathsf{g}^2\rangle_t +
+   \int\limits_0^t
+    \Bigl[ \mathrm{diag}\,\mathsf{f}_{s}^2 \overline{\Lambda}(s) \mathrm{diag}\,{\mathsf E}_g +{}\\
+    {}+
+    \mathrm{diag}\,{\mathsf E}_f \overline{\Lambda}^{\top}(s)\mathrm{diag}\, \mathsf{g}_{s}^2 +
+    2\,\mathrm{diag}\, \lambda(s) \mathrm{diag}\,\mathsf{f}^2_s \mathrm{diag}\, \mathsf{g}^2_s
+    \Bigl]ds.
+   \end{multline*}
+   Отсюда в~силу коммутативности диагональных матриц и~тождества 
+$\mathsf{f}_{t}^1 \hm\equiv \mathsf{g}_{t}^1\hm\equiv \theta_t$ следует истинность 
+равенства~(\ref{eq:sc_fg}).
+    Теорема~3 доказана.
+
+
+}
+
+{\small\frenchspacing
+ {\baselineskip=11.5pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+ \bibitem{W_93} %1
+\Au{White D.}
+A~survey of applications of Markov decision processes~//
+J.~Oper. Res. Soc., 1993. Vol.~44. No.\,11. P.~1073--1096. doi: 10.1057/jors.1993.181.
+
+\bibitem{EM_02}%2
+ \Au{Ephraim Y., Merhav~N.} Hidden Markov processes~// IEEE T. 
+Inform. Theory, 2002. Vol.~48. No.~6. P.~1518--1569.
+doi: 10.1109/TIT.2002.1003838.
+
+\bibitem{DLW_23}%3
+{\it Dong S., Liu M., Wu Z.} A~survey on hidden Markov jump systems: 
+Asynchronous control and filtering~// Int. J. Syst. Sci., 
+2023. Vol.~54. No.\,6. P.~1360--1376. doi: 10.1109/ TIT.2002.1003838.
+
+   \bibitem{D_63} %4
+\Au{Дынкин Е.} Марковские процессы.~--- М.:~Наука, 1963. 862~с.
+
+   \bibitem{GS_73_2} %5
+\Au{Гихман И., Скороход~А.} Теория случайных процессов.~--- М.: Наука, 
+1973.  Т.~2. 640~с.
+
+   \bibitem{LSh_86} %6
+\Au{Липцер Р., Ширяев~А.} Теория мартингалов.~--- М.:~Физматлит, 1986. 512~с.
+
+ \bibitem{EAM_10} %7
+\Au{Elliott R.,  Aggoun~L., Moore~J.} Hidden Markov models: Estimation and 
+control.~--- New York, NY, USA: Springer, 2010. 382~p.
+
+ \bibitem{WD_79} %8
+\Au{Wan C., Davis~M.} Existence of optimal controls for stochastic jump 
+processes~// SIAM J. Control Optim., 1979. Vol.~17. No.\,4. P.~511--524. doi: 10.1137/0317037.
+
+\bibitem{CGT_02} %9
+\Au{Ceci C., Gerardi~A., Tardelli~P.} Existence of optimal controls for 
+partially observed jump processes~// Acta Appl. Math., 2002. Vol.~74. Iss.~2. P.~155--175.
+doi: 10.1023/ A:1020669212384.
+
+  \bibitem{B_14} %10
+\Au{Борисов A.} Применение алгоритмов оптимальной фильтрации для решения задачи 
+мониторинга доступности удаленного сервера~// Информатика и~её применения, 2014. 
+Т.~8. Вып.~3. С.~53--69. doi: 10.14375/ 19922264140307. EDN: SMPBCB.
+
+
+  \bibitem{B_16_1} %11
+\Au{Борисов A.} Применение методов оптимальной фильтрации для оперативного 
+оценивания состояний сетей массового обслуживания~// Автоматика и~телемеханика, 2016. Вып.~2. С.~115--141. 
+
+  \bibitem{B_16_2} %12
+\Au{Борисов A., Босов~А., Миллер~Г.} Моделирование и~мониторинг состояния VoIP-со\-еди\-не\-ния~// 
+Информатика и~её применения, 2016. Т.~10. Вып.~2. С.~2--13. doi: 
+10.14357/19922264160201. EDN: WCBWUH.
+
+ 
+
+  \bibitem{B_21_1} %13
+\Au{Borisov A., Bosov~A., Miller~G., Sokolov~I.} Partial diffusion Markov model 
+of heterogeneous TCP link: Optimization with incomplete information~// 
+Mathematics, 2021. Vol.~9. Art.~1632. 31~p. doi: 10.3390/math9141632.
+
+  \bibitem{G_23_1} %14
+\Au{Горшенин A., Горбунов~С., Волканов~Д.} О~кластеризации объектов сетевой 
+вычислительной инфраструктуры на основе анализа статистических аномалий в~трафике~// Информатика и~её применения, 2023. Т.~17. Вып.~3. С.~76--87. doi: 
+10.14357/19922264230311. EDN: XHTMVI.
+
+
+  \bibitem{B_04_1} %15
+\Au{Борисов A.} Анализ и~оценивание состояний специальных марковских 
+скачкообразных процессов. I:~мар-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+тингальное представление~// Автоматика 
+и~телемеханика, 2004. Вып.~1. С.~50--65. 
+
+\bibitem{LJ_05} %16
+\Au{Rong Li X., Jilkov~V.}
+Survey of maneuvering target tracking. Part V. Multiple-model methods~//
+IEEE T. Aero.  Elec. Sys., 2005. Vol.~41. No.\,4. 
+P.~1255--1321. doi: 10.1109/ TAES.2005.1561886.
+
+  \bibitem{mamon2014hidden} %17
+\Au{Mamon R., Elliott~R.}
+Hidden Markov models in finance: Further developments and
+applications.~--- New York, NY, USA: Springer, 2014.  Vol.~II. 283~p.
+
+  \bibitem{DPR_08} %18
+\Au{Dainotti A., Pescap$\acute{\mbox{e}}$~A., Rossi P., \textit{et al.}}
+Internet traffic modeling by means of hidden Markov models~//
+Comput. Netw., 2008. Vol.~52. P.~2645--2662. doi: 10.1016/j.comnet.2008.05.004.
+
+ \bibitem{IK_06} %19
+ \Au{Ishikawa Y., Kunita~H.} Malliavin calculus on the Wiener--Poisson space and 
+its application to canonical SDE with jumps~// Stoch. Proc. Appl., 2006. Vol.~116. No.~12. P.~1743--1769. doi: 10.1016/j.spa.2006.04.013.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 19.04.24}}
+
+\vspace*{10pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+
+
+\def\tit{PROBABILISTIC ANALYSIS OF~A~CLASS OF~MARKOV~JUMP~PROCESSES}
+
+
+\def\titkol{Probabilistic analysis of~a~class of~Markov jump  processes}
+
+
+\def\aut{A.\,V.~Borisov$^{1,2}$, Yu.\,N.~Kurinov$^{2}$, and~R.\,L.~Smeliansky$^{2}$}
+
+\def\autkol{A.\,V.~Borisov, Yu.\,N.~Kurinov, and~R.\,L.~Smeliansky}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+
+\noindent 
+$^1$Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2 Vavilov\linebreak
+$\hphantom{^1}$Str., Moscow 119333, Russian Federation
+
+\noindent 
+$^2$M.\,V.~Lomonosov Moscow State University, 1-52~Leninskie Gory, GSP-1, Moscow
+119991, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{4pt}
+
+
+
+
+
+
+\Abste{The paper introduces a class of the jump processes. 
+The first compound component represents a Markov jump process with a finite 
+state space. The second compound component jumps synchronously with the first 
+one.
+Given the first component trajectory, the second component forms a sequence of 
+independent random vectors.
+The corresponding conditional distributions are known and have intersecting 
+support sets. This makes impossible the exact recovery of the first process 
+component by the second one. The authors prove the Markov property for the considered 
+class of random processes and obtain a collection of their probability 
+characteristics. It includes the infinitesimal generator and its conjugate 
+operator. Their knowledge makes possible the construction of the Kolmogorov 
+equation system describing the evolution of the process probability 
+distribution. Also,  a~martingale decomposition for an arbitrary 
+function of the considered process was derived. It can be characterized by the solution to a 
+system of linear stochastic differential equations with martingales on the right 
+side. If the functions of the investigated process have finite moments of the 
+second order, one may obtain the quadratic characteristics of martingales.}
+
+
+\KWE{Markov jump process; infinitisemal generator; 
+martingale decomposition; stochastic differential equation}
+
+
+
+\DOI{10.14357/19922264240304}{XPVTGJ}
+
+\vspace*{-12pt}
+
+
+    
+      \Ack
+
+\vspace*{-3pt}
+
+\noindent
+The work was done with the support of MSU 
+Program of Development, Project No.\,23-SCH03-03. The research was carried out 
+using the infrastructure of the Shared Research Facilities ``High Performance 
+Computing and Big Data'' (CKP ``Informatics'') of FRC CSC RAS (Moscow).
+
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99} 
+
+%1
+\bibitem{W_93-1}
+\Aue{White, D.} 1993.
+A~survey of applications of Markov decision processes. \textit{J. Oper. Res. 
+Soc.} 44(11):1073--1096.
+doi: 10.1057/jors.1993.181.
+
+%2
+\bibitem{EM_02-1}
+\Aue{Ephraim, Y., and N.~Merhav.} 2002.
+Hidden Markov processes. \textit{IEEE T. Inform. Theory} 48(6):1518--1569. 
+doi: 10.1109/TIT.2002.1003838.
+
+%3
+\bibitem{DLW_23-1}
+\Aue{Dong, S., M.~Liu, and Z.~Wu.} 2023.
+A survey on hidden Markov jump systems: Asynchronous control and filtering. 
+\textit{Int. J. Syst. Sci.} 54(6):1360--1376.
+doi: 10.1080/ 00207721.2023.2171710.
+
+%4
+\bibitem{D_63-1}
+\Aue{Dynkin, E.} 1963. \textit{Markovskie protsessy} [Markov processes]. Moscow: 
+Nauka. 862~p.
+
+%5
+\bibitem{GS_73_2-1}
+\Aue{Gikhman, I.\,I., and A.\,V.~Skorokhod.} 1973. 
+\textit{Teoriya sluchaynykh protsessov} [Theory of random processes]. Moscow: 
+Nauka. Vol.~2. 640~p.
+
+%6
+\bibitem{LSh_86-1}
+\Aue{Liptser, R.\,Sh., and A.\,N.~Shiryayev.} 1989. \textit{Theory of martingales}. New 
+York, NY: Springer. 812~p.
+
+
+
+%7
+\bibitem{EAM_10-1}
+\Aue{Elliott, R., L.~Aggoun, and J.~Moore.} 2010. 
+\textit{Hidden Markov models: Estimation and control}. New York, NY: Springer. 
+382~p.
+
+%8
+\bibitem{WD_79-1}
+\Aue{Wan, C., and M.~Davis.} 1979. 
+Existence of optimal controls for stochastic jump processes. 
+\textit{SIAM J. Control Optim.} 17(4):511--524.
+doi: 10.1137/0317037.
+
+%9
+\bibitem{CGT_02-1}
+\Aue{Ceci, C., A.~Gerardi, and P.~Tardelli.} 2002. 
+Existence of optimal controls for partially observed jump processes. 
+\textit{Acta Appl. Math.} 74(2):155--175.
+doi: 10.1023/ A:1020669212384.
+
+%10
+\bibitem{B_14-1-1}
+\Aue{Borisov, A.} 2014. 
+Primenenie algoritmov optimal'noy fil'tratsii dlya resheniya zadachi 
+monitoringa dostupnosti udalennogo servera [Monitoring remote server 
+accessibility: The optimal filtering approach]. 
+\textit{Informatika i ee primeneniya~--- Inform. Appl.} 8(3):53--69. doi: 
+10.14375/19922264140307. EDN: SMPBCB.
+
+%11
+\bibitem{B_16_1-1-1}
+\Aue{Borisov, A.\,V.} 2016. 
+Application of optimal filtering methods for online of queueing network states. 
+\textit{Automat. Rem. Contr.} 77(2):277--296.
+doi: 10.1134/S0005117916020053. EDN: WPMCUD.
+
+%12
+\bibitem{B_16_2-1}
+\Aue{Borisov, A., A.~Bosov, and G.~Miller.} 2016.
+Mo\-de\-li\-ro\-va\-nie i~monitoring sostoyaniya VoIP-soedineniya [Modeling and 
+monitoring of VoIP connection]. \textit{Informatika i~ee primeneniya~--- Inform. 
+Appl.} 10(2):2--13. 
+doi: 10.14357/19922264160201. EDN: WCBWUH.
+
+
+
+%13
+\bibitem{B_21_1-1}
+\Aue{Borisov, A., A.~Bosov, G.~Miller, and I.~Sokolov.} 2021.
+Partial diffusion Markov model of heterogeneous TCP link: Optimization with 
+incomplete information. 
+\textit{Mathematics} 9:1632. 31~p. doi: 10.3390/math9141632.
+
+%14
+\bibitem{G_23_1-1}
+\Aue{Gorshenin, A.\,K., S.\,A.~Gorbunov, and D.\,Yu.~Volkanov.} 2023.
+O~klasterizatsii ob''ektov setevoy vychislitel'noy inf\-ra\-struk\-tu\-ry na osnove 
+analiza statisticheskikh anomaliy v~trafike 
+[Toward clustering of network computing infrastructure objects based on analysis 
+of statistical anomalies in network traffic]. 
+\textit{Informatika i~ee primeneniya~--- Inform. Appl.} 17(3):76--87. 
+doi: 10.14357/19922264230311. EDN: XHTMVI.
+
+%15
+\bibitem{B_04_1-1}
+\Aue{Borisov, A.\,V.} 2004.
+Analysis and estimation of the states of special jump Markov processes. 
+I.~Martingale representation.
+\textit{Automat. Rem. Contr.} 65(1):44--57.  
+doi: 10.1023/B:AURC.0000011689.11915.24. EDN: MHPDNL.
+
+
+%16
+\bibitem{LJ_05-1}
+\Aue{Rong Li, X., and V.~Jilkov.} 2005. 
+Survey of maneuvering target tracking. Part~V. Multiple-model methods. 
+\textit{IEEE T. Aero. Elec. Sys.} 41(4):1255--1321.
+doi: 10.1109/ TAES.2005.1561886.
+
+%17
+\bibitem{mamon2014hidden-1}
+\Aue{Mamon, R.\,S., and R.~Elliott.} 2014. 
+\textit{Hidden Markov models in finance: Further developments and applications}. 
+New York, NY: Springer. Vol.~II. 283~p.
+
+%18
+\bibitem{DPR_08-1}
+\Aue{Dainotti, A., A. Pescap$\acute{\mbox{e}}$, P.~Rossi, \textit{et al.}} 2008.
+Internet traffic modeling by means of hidden Markov models. 
+\textit{Comput. Netw.} 52(14):2645--2662.
+doi: 10.1016/j.\linebreak comnet.2008.05.004.
+
+%19
+\bibitem{IK_06-1}
+\Aue{Ishikawa, Y., and H.~Kunita.} 2006. 
+Malliavin calculus on the Wiener--Poisson space and its application to canonical 
+SDE with jumps. 
+\textit{Stoch. Proc. Appl.} 116(12):1743--1769.
+doi: 10.1016/j.spa.2006.04.013.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received April 19, 2024}} 
+
+\vspace*{-18pt}
+
+\Contr
+
+\vspace*{-3pt}
+
+\noindent
+\textbf{Borisov Andrey V.} (b.\ 1965)~--- Doctor of Science in physics and 
+mathematics, principal scientist, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences,  44-2~Vavilov Str., Moscow 119333, Russian Federation; professor, Department of 
+Mathematical Statistics, 
+Faculty of Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow 
+State University, 1-52~Leninskie Gory,  GSP-1, Moscow 119991, Russian Federation; \mbox{aborisov@frccsc.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Kurinov Yuri N.} (b.\ 2002)~--- bachelor student, Department of 
+Mathematical Statistics, Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov Moscow State University, 1-52~Leninskie Gory,
+GSP-1, Moscow 119991, Russian Federation, \mbox{kurinovurij@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Smeliansky Ruslan L.} (b.\ 1950)~--- Doctor of Science in physics and 
+mathematics, professor, Corresponding Member of the Russian Academy of Sciences, head of
+department, Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov Moscow State University, 1-52~Leninskie Gory,
+GSP-1, Moscow 119991, Russian Federation; \mbox{smel@cs.msu.ru}
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

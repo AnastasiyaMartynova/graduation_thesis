@@ -1,0 +1,868 @@
+\def\stat{torshin}
+
+\def\tit{О ПОРОЖДЕНИИ СИНТЕТИЧЕСКИХ ПРИЗНАКОВ НА~ОСНОВЕ~ОПОРНЫХ ЦЕПЕЙ 
+И~ПРОИЗВОЛЬНЫХ МЕТРИК В~РАМКАХ~ТОПОЛОГИЧЕСКОГО ПОДХОДА 
+К~АНАЛИЗУ ДАННЫХ.\\ ЧАСТЬ~2.~ЭКСПЕРИМЕНТАЛЬНАЯ АПРОБАЦИЯ\\ НА~ЗАДАЧАХ ФАРМАКОИНФОРМАТИКИ$^*$}
+
+\def\titkol{О порождении синтетических признаков на основе опорных цепей 
+и~произвольных метрик} % в~рамках топологического подхода  к~анализу данных. Часть~2. Экспериментальная апробация на  задачах фармакоинформатики}
+
+\def\aut{И.\,Ю.~Торшин$^1$}
+
+\def\autkol{И.\,Ю.~Торшин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Торшин И.\,Ю.}
+\index{Torshin I.\,Yu.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке гранта РНФ (проект №\,23-21-00154) с~использованием инфраструктуры 
+Центра коллективного пользования <<Высокопроизводительные вычисления и~большие данные>> (ЦКП 
+<<Информатика>>) ФИЦ ИУ РАН (г.~Москва).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{tiy135@yahoo.com}}
+
+\vspace*{-12pt}
+
+
+\Abst{Рассмотрение прецедентных отношений между признаками и~таргетной переменной в~виде наборов элементов булевой решетки указывает на возможность порождения 
+синтетических признаков с~использованием метрических функций расстояния. 
+Сформулированы подходы к~(1)~оценке релевантности (<<информативности>>) метрик 
+по отношению к~решаемым задачам, (2)~порождению и~(3)~отбору синтетических 
+признаков, более информативных, чем исходные признаковые описания. Представленные 
+результаты топологического анализа 2400~выборок данных  
+<<мо\-ле\-ку\-ла--свойство>> из ProteomicsDB позволили получить достаточно 
+эффективные алгоритмы прогнозирования свойств молекул (ранговая корреляция  
+в~кросс-ва\-ли\-да\-ции~--- $0{,}90\pm0{,}23$). На данной выборке задач установлены 
+метрики, которые наиболее часто порождают информативные синтетические признаки: 
+максимальное уклонение Колмогорова, <<косое>> расстояние, метрики Lp, Реньи, фон 
+Мизеса. Для решения изученного комплекса задач показано преимущество полиномных 
+корректоров по сравнению с~нейросетевыми и~с~корректорами типа <<случайный 
+лес>>.}
+
+\KW{топологический анализ данных; теория решеток; алгебраический подход 
+Ю.\,И.~Жу\-рав\-лё\-ва; фармакоинформатика}
+
+\DOI{10.14357/19922264240207}{OTXCUD}
+  
+\vspace*{-1pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+     В первой части работы~[1] принимается, что задано регулярное 
+множество прецедентов 
+$$
+\mathbf{Q}\hm= \{\mathrm{D}(x_i)\vert x_i\in 
+\mathbf{X}\}
+$$ 
+на решетке $L(T(\mathbf{X}))$, по\-рож\-ден\-ное на основе 
+множества исходных описаний объектов $\mathbf{X}\hm= \{ x_1, \ldots , 
+x_{N_0}\}$. Для индивидуального объекта\linebreak $x_i\hm\in \mathbf{X}$ 
+прецедентному соотношению между значениями признаками 
+$\Gamma_k(x_i)$ и~\mbox{$t$-й} таргетной переменной соответствует множество пар 
+$\{(\{\Gamma_k^{-1}(\Gamma_k(x_i)),\linebreak k\hm=\overline{1, ,n}\}, \Gamma_t^{-1}(\Gamma_t(x_i))), i\hm=\overline{1,N_0},\
+ k\hm=\overline{1,n},\linebreak t\hm=\overline{n+1, n+l}\}$, где $l$~--- 
+число таргетных переменных. В~рамках топологической теории 
+распознавания прецедентное соотношение между множествами $\{ 
+\Gamma_k^{-1}(\Gamma_k(x_i))\}$ и~$\Gamma_t^{-1}(\Gamma_t(x_i))$ 
+моделируется как со\-от\-вет\-ст\-ву\-ющие массивы расстояний, по\-рож\-да\-емые той 
+или иной мет\-ри\-кой~$\rho_m$: $L(T(\mathbf{X}))^2\hm\to [0\ldots 1]$, 
+$m\hm= \overline{1, m_0}$. В~[1] предложены способы <<встра\-и\-ва\-ния>> 
+в~формализм полуэмирических рас\-сто\-яний на множествах $a\hm\in 
+L(T(\mathbf{X}))$, векторах $\vec{v}_\alpha [a] \hm= ( v_{\alpha_1}[a], 
+v_{\alpha_2}[a], \ldots , v_{\alpha_i}[a],\ldots)$ и~функциях 
+$\hat{\phi}(x)\bm{\Gamma}_t(u)$. 
+     
+     Здесь для практического приложения формализма сформулированы 
+подходы к~исследованию свойств~$\rho_m$, способы оценки релевантности 
+функций~$\rho_m$ по отношению к~решаемым задачам, способы 
+порождения и~отбора синтетических признаков, основанных на~$\rho_m$. 
+Представлены результаты экспериментальной апробации на задачах 
+фармакоинформатики.
+     
+\section{Об исследовании свойств функций расстояния~$\rho_m$}
+
+    Рабочая гипотеза настоящего исследования со\-сто\-ит в~том, что для 
+порождения более <<информативных>> признаков могут использоваться 
+полуэмпирические функционалы расстояния на \mbox{множествах}, векторах, 
+функциях~[2]. Метрические свойства ис\-поль\-зу\-емых функций 
+расстояния~$\rho_m$ могут исследоваться аналитически или комбинаторно 
+с~использованием аксиом метрики~[3]. Для анализа свойств этих 
+функционалов в~топологической теории распознавания вводится следующее 
+понятие.
+
+\smallskip
+
+\noindent
+\textbf{Определение~1.} Обобщенной оценочной функцией расстояния 
+будем называть конструкцию вида 
+$$
+\rho(a,b) = f(g ( v[a\vee b]) - g(v[a\wedge b])),
+$$
+ в~которой~$f$ и~$g$~--- функции, монотонные на 
+соответствующих участках действительной оси; $v:\ L\hm\to R^+$~--- 
+изотонная оценка, для которой выполнено условие оценки (\textbf{уО}: $\forall_L 
+a,b: v[a]\hm+v[b]\hm= v[a \wedge b]\hm+ v[a\vee b]$) и~изотонности 
+(\textbf{уИ}:  $\forall_L a,b: a\supseteq b \hm\Rightarrow v[a]\hm\geq v[b]$). 
+
+\smallskip
+
+\noindent
+\textbf{Теорема~1.} \textit{Функция расстояния~$\rho$ считается 
+обобщенной оценочной функцией расстояния тогда и~только тогда, когда 
+$\rho(a,b)\hm= \rho(a\vee b, a\wedge b)$, а~термы от $a$ и~$b$ в~формуле для 
+$\rho(a,b)$ представляют собой композицию монотонной функции 
+и~изотонной оценки}. 
+
+\smallskip
+
+Необходимость следует из  $a\vee b\hm= (a\vee b)\vee (a\wedge b)$ и~$a\wedge b \hm= (a\vee b) \wedge (a\wedge b)$  при 
+подстановке $a\vee b$ и~$a\wedge b$ вместо $a$ и~$b$ в~определение~1. 
+Эквивалентность $\rho(a,b)$ и~$\rho(a\vee b, a\wedge b)$ указывает на то, что 
+в~выражение для вычисления~$\rho$ входят тер\-мы-функ\-ци\-о\-на\-лы, 
+содержащие выражения $a\vee b$ и~$a\wedge b$, взаимозаменяемые с~$a$ 
+и~$b$, т.\,е.\ термы вида $g^\prime (a\vee b)$ и~$g^\prime(a\wedge b)$. По 
+условию теоремы эти термы включают монотонную функцию от изотонной 
+оценки, т.\,е.~$g^\prime$ монотонна. Так как $\rho$~--- функция расстояния, 
+то $g^\prime$-тер\-мы не могут входить в~выражение для~$\rho$ в~виде 
+произведения, суммы, отношения, степени или суммы, а~только в~виде 
+разности, т.\,е.\
+$$
+\rho(a,b) = f\left(g^\prime(a\vee b) \hm- g^\prime (a\wedge b)\right),
+$$ 
+из чего следует достаточность. Теорема доказана.
+
+\smallskip
+
+\noindent
+\textbf{Следствие~1.} Для обобщенной оценочной~$\rho$ 
+\begin{multline*}
+\forall \ell \subseteq L(T(\mathbf{X})): \Delta_{\vee\wedge}(\ell)\equiv 0,\\ 
+\Delta_{\vee\wedge}(\ell)=  \sum\limits_{a,b\in \ell} \vert\rho(a,b)- 
+\rho(a\vee b, a\wedge b)\vert \fr{2}{\vert\ell\vert/(\vert\ell\vert -1)}\,.
+\end{multline*}
+
+\smallskip
+
+\noindent
+\textbf{Следствие~2.} Выберем <<опорное>> множество $a\hm\in 
+L(T(\mathbf{X}))$ и~обобщенную оценочную~$\rho$. При $f(x)\hm= g(x)\hm= x$ 
+$v_{a,\rho}[b]\hm= \rho(a,b)\hm= \rho(a\vee b, a\wedge b)$~--- изотонная 
+оценка. 
+
+Следует из того, что любая линейная комбинация изотонных оценок~--- 
+изотонная оценка при условии положительной определенности (теорема~2 
+в~[4]). Также проверяется прямой подстановкой $v_{a,\rho}[b]$ в~уО и~уИ. 
+
+\smallskip
+
+\noindent
+\textbf{Следствие~3.} Расстояния Фре\-ше--Ни\-ко\-ди\-ма, Амана,  
+Рэн\-да/Ще\-ка\-нов\-ско\-го, Со\-ка\-ла--Сни\-са (варианты~1, 2 и~3),  
+Рас\-се\-ла--Рао, Род\-же\-ра--Та\-ни\-мо\-то, Фейта, Тверского и~Юле 
+могут служить обобщенными оценочными функциями расстояния. 
+
+\smallskip
+
+\noindent
+\textbf{Следствие~4.} Расстояния Симпсона, Бра\-у\-на--Блан\-ке, 
+Андерберга и~Говера-2  не входят в~число обобщенных оценочных функций 
+расстояния.
+
+\smallskip
+
+     Теорема~1 со следствиями предоставляет аналитический 
+и~комбинаторный инструментарий для исследования свойств 
+полуэмпирических функций расстояния. Если заданная~$\rho$ служит 
+обобщенной оценочной функцией расстояния, то могут быть получены 
+соответствующие аналитические выражения для функций~$f$ и~$g$. 
+Например, расстояние Со\-ка\-ла--Сни\-са-2
+$$
+\rho(a,b) = 1- \fr{\vert a\cap 
+b\vert }{\vert a\cup b\vert + \vert a\Delta b\vert}
+$$ 
+выступает 
+обобщенным оценочным расстоянием с~$f(x)\hm= (e^x\hm-1)/(0{,}5e^x\hm-1)$ и~$g(x)\hm=\ln (x)$. При невозможности аналитической проверки 
+свойства~$\rho$ как обобщенной оценочной могут быть изучены на 
+подмножествах~$\ell$ решетки $L(T(\mathbf{X}))$ посредством вычисления 
+значений функционала $\Delta_{\vee\wedge}(\ell)$ (следствие~1). 
+
+\section{О способах оценки релевантности метрик~$\rho_m$ по~отношению к~задаче клас\-сификации/прогнозирования}
+
+     Биекция между множеством прецедентов~$\mathbf{Q}$ и~множеством 
+исходных описаний объектов~$\mathbf{X}$, существующая при выполнении 
+условия регулярности по Журавлёву ($\forall \mathrm{x}\hm\in \mathbf{X}, 
+\mathrm{x}\hm= D^{-1}(D(\mathrm{x}))$, гарантирует однозначность 
+соответствия описаний~$x_i$ и~$q_i$. Это делает возможным рассматривать 
+прецедентные соотношения, заданные на~$\mathbf{Q}$, в~терминах 
+множеств $\{ \Gamma_k^{-1}(\Gamma_k(x_i))\}$ и~$\Gamma_t^{-1}( 
+\Gamma_t(x_i))$ с~использованием расстояний~$\rho_m$ на подмножествах 
+множества~$\mathbf{X}$~[1].
+     
+     Пусть таргетный класс объектов $\mathbf{c}_{\bm{\alpha}}$ задан 
+посредством $\alpha$-го значения $t$-й переменной $\lambda_{t\alpha}\hm\in 
+\mathrm{I}_t$, $t\hm= \overline{n+1,  n+l}$, как $\mathbf{c}_{{\bm 
+\alpha}} \hm= \Gamma_t^{-1}(\lambda_{t\alpha})$. В~случае числовой 
+переменной за $\mathbf{c}_{\bm{\alpha}}$ может приниматься каждый из 
+элементов $u(\lambda_{t\alpha})$ цепи~$A_t$. Так как 
+$L(T(\mathbf{X}))$ булева, то дополнение множества 
+$\mathbf{c}_{\bm{\alpha}}$, $\overline{\mathbf{c}}_{\bm{\alpha}} \hm= 
+\mathbf{X}\backslash \Gamma_t^{-1}(\lambda_{t\alpha})$, определено 
+однозначно. Таким образом, выделение класса $\mathbf{c}_{\bm{\alpha}}$ 
+порождает задачу классификации $\mathbf{c}_{\bm{\alpha}}/ 
+\overline{\mathbf{c}}_{\bm{\alpha}}$. Любая задача числового 
+прогнозирования может быть сведена к~последовательности корректно 
+решаемых задач $\mathbf{c}_{\bm{\alpha}}/ 
+\overline{\mathbf{c}}_{\bm{\alpha}}$~\cite{5-tor}.
+     
+     Пусть задано подмножество признаков~$p \hm\subseteq [1\ldots n]$ 
+     и~элемент решетки $c\in L(T(\mathbf{X}))$. Определим функцию 
+$$
+\bm{\rho}_{\mathbf{mc}} (x_i, c, {p}) \hm= \{ \rho_m(c, \Gamma_k^{-1}(\Gamma_k (x_i)),\ k\hm\in {p})\}.
+$$
+ При заданных~$\rho_m$, $p$, 
+$\mathbf{c}_{\bm{\alpha}}$ и~$\overline{\mathbf{c}}_{\bm{\alpha}}$ 
+для~$x_i$ вычислимы множества расстояний $\bm{\rho}_{\mathbf{mc}}(x_i, 
+\mathbf{c}_{\bm{\alpha}}, {p})$ и~$\bm{\rho}_{\mathbf{mc}}(x_i, 
+\overline{\mathbf{c}}_{\bm{\alpha}}, {p})$. Обозначим 
+\begin{align*}
+\bm{\rho}_{\mathbf{m}\bm{\alpha}}(x_i) &=  \bm{\rho}_{\mathbf{mc}} 
+(x_i, \mathbf{c}_{\bm{\alpha}}, [1\ldots n]); \\
+\bm{\rho}_{\mathbf{m}\overline{\bm{\alpha}}} (x_i) &= 
+\bm{\rho}_{\mathbf{mc}}(x_i, \overline{\mathbf{c}}_{\bm{\alpha}} , [1\ldots n]).
+\end{align*}
+ Для $x_i\hm\in \mathbf{X}$ 
+определено множество 
+\begin{multline*}
+\bm{\rho}_{\mathbf{m}}(x_i,{p})=\left \{ \rho_{mk_1k_2}(x_i, {p}) = {}\right.\\
+{}\rho_m\left(\Gamma^{-1}_{k_1}\left(\Gamma_{k_1}(x_i), \Gamma^{-1}_{k_2}\left(\Gamma_{k_2}(x_i)\right)\right)\right),\\
+\left. k_1, k_2\hm \in {p},\  k_1\not= k_2\right\},\ \bm{\rho}_{\mathbf{m}}(x_i)=  \bm{\rho}_{\mathbf{m}}(x_i, [1\ldots n]).
+\end{multline*}
+     
+     На основе $\bm{\rho}_{\mathbf{m}{\bm{\alpha}}}(x_i)$ 
+и~$\bm{\rho}_{\mathbf{m}\overline{\bm{\alpha}}}(x_i)$ вводятся оценки 
+релевантности~$\rho_m$. По отношению к~задаче $\mathbf{c}_{\bm{\alpha}}/ 
+\overline{\mathbf{c}}_{\bm{\alpha}}$ более релевантна или 
+<<информативна>> такая мет\-ри\-ка~$\rho_m$, которая для всех $x\hm\in 
+\mathbf{c}_{\bm{\alpha}}$ минимизирует расстояния в~списке 
+$\bm{\rho}_{\mathbf{m}{\bm{\alpha}}}(x)$ и~максимизирует расстояния 
+в~списке $\bm{\rho}_{\mathbf{m}\overline{\bm{\alpha}}}(x)$ (т.\,е.\ 
+<<приближает>> объекты к~их классам). Выделены два взаимосвязанных 
+направления дальнейших исследований: 
+\begin{enumerate}[(1)]
+\item нахождение подмножеств $p$ 
+признаков, <<более информативных>> для~$\rho_m$;  
+\item на\-строй\-ка/вы\-бор~$\rho_m$ при фиксированном~$p$.
+\end{enumerate}
+     
+     Для $c^\prime\hm\in L(T(\mathbf{X}))$ определим 
+$\vartheta_{\mathbf{mc}}$, операцию слияния списков 
+$\bm{\rho}_{\mathbf{mc}}$:
+$$
+\vartheta_{\mathbf{mc}}(c^\prime, c, 
+{p})\hm= \bigcup\limits_{y\in c^\prime} \bm{\rho}_{\mathbf{mc}} (y,c, 
+{p}).
+$$
+ Обозначим 
+ $$
+ \vartheta_{\mathbf{m}\bm{\alpha}}(\mathbf{c}, 
+{p}) \!=\! \vartheta_{\mathbf{mc}}(\mathbf{c}, 
+\mathbf{c}_{\bm{\alpha}}, {p});\ 
+\vartheta_{\mathbf{m}\bm{\alpha}}(\mathbf{c},{p})\!=\! 
+\vartheta_{\mathrm{mc}}(\mathbf{c}, \overline{\mathbf{c}}_{\bm \alpha}, 
+{p}),
+$$
+ вычислим множества $\vartheta_{\mathbf{m}{\bm \alpha}} 
+(\mathbf{c}_{\bm \alpha}, {p})$ и~$\vartheta_{\mathbf{m}{\bm \alpha}} 
+(\overline{\mathbf{c}}_{\bm \alpha},{p})$ и~сформируем 
+эмпирические функции распределения (э.ф.р.)\ $\hat{\phi}(x) 
+\vartheta_{\mathbf{m}{\bm \alpha}} (\mathbf{c}_{\bm \alpha}, {p})$ 
+и~$\hat{\phi}(x) \vartheta_{\mathbf{m}{\bm \alpha}} 
+(\overline{\mathbf{c}}_{\bm \alpha}, {p})$. На пространстве 
+однородных монотонно возрастающих функций 
+\begin{multline*}
+\mathbf{M}^+_{0\ldots1} ={}\\
+{}= 
+\{f: [0\ldots 1]\hm\to [0\ldots 1],\ x\geq y\hm\Rightarrow f(x)\geq f(y)\}
+\end{multline*}
+введем 
+функционал расстояния $d_f$: $\mathbf{M}^+_{0..1}\hm\to [0\ldots 1]$ 
+(максимальное уклонение Колмогорова $D(f(x), g(x))\hm= \mathrm{sup}_x 
+\vert f(x)\hm- g(x)\vert$, метрики фон Мизеса, Реньи и~др.). Выбор~$d_f$ 
+делает возможной постановку ряда задач топологического анализа данных:
+     \begin{enumerate}[(1)]
+\item количественные оценки релевантности~$\rho_m$ как 
+$d_f(\hat{\phi}(x)\vartheta_{\mathbf{m}{\bm \alpha}}(\mathbf{c}_{\bm \alpha}, 
+{p}), \hat{\phi}(x)\vartheta_{\mathbf{m}{\bm 
+\alpha}}(\overline{\mathbf{c}}_{\bm \alpha}, {p}))$ для 
+разных~$\mathbf{c}_{\bm \alpha}$, $\lambda_{t\alpha} \hm\in \mathrm{I}_t$, 
+$\alpha \hm= \overline{1, \vert \mathrm{I}_t\vert}$;
+\item задачи оптимизации для увеличения разделения классов 
+$\mathbf{c}_{\bm \alpha}/\overline{\mathbf{c}}_{\bm \alpha}$ 
+($\argmax_{\rho_m,{p}} d_f(\hat{\phi}\vartheta_{\mathbf{m}{\bm \alpha}}(\overline{\mathbf{c}}_{\bm \alpha},{p}), 
+\hat{\phi}\vartheta_{\mathbf{m}{\bm \alpha}}(\mathbf{c}_{\bm \alpha}, {p}))$,
+$\argmax_{\rho_m,{p}} d_f(\hat{\phi}\vartheta_{\mathbf{m}\overline{\bm{\alpha}}}, (\overline{\mathbf{c}}_{\bm \alpha}, {p}), 
+\hat{\phi}\vartheta_{\mathbf{m}\overline{\bm \alpha}}
+(\mathbf{c}_{\bm \alpha}, {p}))$  и~др.);
+\item определение $\rho_q$-мет\-рик на пространстве объектов~[2, с.~184--199] 
+(например, в~виде $d_f (\hat{\phi}\bm{\rho}_{\mathbf{m}{\bm \alpha}}(x, 
+{p}), \hat{\phi}\bm{\rho}_{\mathbf{m}{\bm \alpha}}(y, {p})), 
+d_f (\hat{\phi}\bm{\rho}_{\mathbf{m}}(x,{p})$, 
+$\hat{\phi}\bm{\rho}_{\mathbf{m}}(y, {p}))$); 
+\item оценка близости метрик~$\rho_q$ к~метрике разреза по классам 
+$\mathbf{c}_{\bm{\alpha}}/ \overline{\mathbf{c}}_{\bm{\alpha}}$; 
+\item формулировка критериев раз\-ре\-ши\-мости/ре\-гу\-ляр\-ности задачи 
+$\mathbf{c}_{\bm{\alpha}}/ \overline{\mathbf{c}}_{\bm{\alpha}}$~[6]; 
+\item оценки компактности классов $\mathbf{c}_{\bm{\alpha}}$  
+и~$\overline{\mathbf{c}}_{\bm{\alpha}}$~[3]. 
+\end{enumerate}
+
+\section{О способах порождения и~отбора синтетических 
+признаков на~основании функций расстояния}
+
+     Множества $\bm{\rho}_{\mathbf{m}{\bm \alpha}}(x_i,{p})$, 
+$\bm{\rho}_{\mathbf{m}{\overline{\bm \alpha}}}(x_i, {p})$ 
+и~$\bm{\rho}_{\mathbf{m}}(x_i)$ и~отдельные $\rho_m(\mathbf{c}_{\bm 
+\alpha}, \Gamma_k^{-1}(\Gamma_k(x_i))$ используются для формирования 
+синтетических числовых признаков $\Gamma_{k^\prime}(x_i)$ 
+объекта~$x_i$, $k^\prime\hm= \overline{n+ l+1, n+l+n_S}$. 
+Значение синтетического признака~$\Gamma_{k^\prime}(x_i)$ зависит от 
+выбора~$\rho_m$, классов $\mathbf{c}_{\bm{\alpha}}$ 
+и~$\overline{\mathbf{c}}_{\bm{\alpha}}$  и~от способа его вы\-чис\-ле\-ния: 
+\begin{enumerate}[(1)]
+\item $\rho_m(\mathbf{c}_{\bm \alpha}, \Gamma_k^{-1}(\Gamma_k(x_i))$; 
+\item $\rho_m(\overline{\mathbf{c}}_{\bm \alpha}, \Gamma_k^{-1}(\Gamma_k(x_i))$; 
+\item $\rho_m(\mathbf{c}_{\bm \alpha}, \ldots ) \hm- \rho_m(\overline{\mathbf{c}}_{\bm \alpha}, \ldots)$;
+\item $1\hm- \rho_m(\mathbf{c}_{\bm \alpha}, \ldots)$;
+\item значения э.ф.р.\ 
+$\hat{\phi}(x)\bm{\rho}_{\mathbf{m}{\bm \alpha}}(x_i,{p})$ при 
+разных~$x$ (например, соответствующих процентилям 
+$\hat{\phi}\bm{\rho}_{\mathbf{m}{\bm \alpha}}(x_i,{p})$); 
+\item значения $\hat{\phi}(x)\bm{\rho}_{\mathbf{m}\overline{\bm{\alpha}}} 
+(x_i, {p})$ при разных~$x$;
+\item $\hat{\phi}(x\hm+ \Delta x) 
+\bm{\rho}_{\mathbf{m}{\bm \alpha}}(x_i,p) \hm- 
+\hat{\phi}(x)\bm{\rho}_{\mathbf{m}{\bm \alpha}} (x_i, {p})$ 
+и~$\hat{\phi}(x\hm+ \Delta x) \bm{\rho}_{\mathbf{m}{\overline{\bm \alpha}}} 
+(x_i,{p}) \hm- \hat{\phi}(x)\bm{\rho}_{\mathbf{m}\overline{\bm 
+\alpha}} (x_i, {p})$, где $\Delta x$~--- шаг.
+\end{enumerate}
+     
+     Кроме того, $\mathbf{c}_{\bm{\alpha}}$ может определяться как 
+$\Gamma_t^{-1}(\lambda_{t\alpha})$ или как $u(\lambda_{t\alpha})$; если 
+$\mathbf{c}_{\bm \alpha} \hm= \Gamma_t^{-1}(\lambda_{t\alpha})$, то 
+$\overline{\mathbf{c}}_{\bm{\alpha}}$ может быть равно $\Gamma^{-1}_t 
+(\lambda_{t\alpha+1})$; классы $\mathbf{c}_{\bm{\alpha}}/ 
+\overline{\mathbf{c}}_{\bm{\alpha}}$  
+$t$-й переменной могут определяться с~использованием раз\-би\-ений на 
+различные процентили (которые определяются как подвыборка значений 
+$\lambda_{t\alpha} \hm\in \mathrm{I}_t$) и~т.\,д. 
+     
+     Таким образом, предлагаемые схемы порождают значительное число 
+синтетических признаков $\Gamma_{k^\prime}(x_i)$ ($10n$ и~более при $n$ 
+исходных признаках $\Gamma_k$), что делает необходимым введение 
+процедур отбора признаков. Таргетная переменная $\Gamma_t(x_i)$~--- 
+чис\-ло\-вая, и~по\-рож\-да\-емые признаки $\Gamma_{k^\prime}(x_i)$~--- также 
+чис\-ло\-вые. Для данного случая в~прикладной математике имеется несколько 
+различных подходов к~оценке взаимосвязи $\Gamma_t(x_i)$ 
+и~$\Gamma_{k^\prime}(x_i)$: корреляционные оценки (для линейных 
+закономерностей), полиномная аппроксимация с~оценкой качества (для 
+нелинейных закономерностей) и~методы теории  
+ве\-ро\-ят\-но\-стей\,/\,ма\-те\-ма\-ти\-че\-ской статистики, не зависящие от 
+вида закономерности (в~том числе на основе <<взаимной 
+информации>>~[7]).
+{\looseness=1
+
+}
+     
+     Наиболее фундаментальным представляется тес\-ти\-ро\-ва\-ние взаимосвязи 
+двух переменных на осно\-ве <<нулевой гипотезы>> об их независимости. 
+Пусть заданы пары тестируемых значений, $(x_i, y_i)$,\linebreak $i\hm= \overline{1,\mathbf{n}_{(\mathrm{x,y})}}$, э.ф.р.~$F_{xy}(x,y)$ характеризует 
+совместное распределение~$x$ и~$y$, а~э.ф.р.~$F_{{x}}(x)$ 
+и~$F_{{y}}(y)$~--- индивидуальные распределения переменных. 
+Эмпирическая функция распределения нулевой \mbox{гипотезы} (независимость~$x$ и~$y$) определяется как 
+$F_{{x}}(x)F_{{y}}(y)$. 
+     
+     Для оценки отличий между $F_{{xy}}(x,y)$\linebreak 
+и~$F_{{x}}(x) F_{{y}}(y)$ необходимо ввести расстояние 
+меж-\linebreak ду такими функциями (так называемую <<статисти-\linebreak ку>>) и~оценить 
+достоверность различий посред\-ст\-вом \mbox{того} или иного статистического\linebreak \mbox{тес\-та}. 
+В~качестве расстояния можно использовать функции~$d_f$, адап\-ти\-ро\-ван\-ные 
+для 2-мер\-но\-го случая (например, макси\-маль\-ное уклонение 
+     $D(\mathrm{F}_{{xy}}(x,y), \mathrm{F}_{{x}}(x) 
+\mathrm{F}_{{y}}(y)) \hm= \max ( \vert 
+\mathrm{F}_{{xy}}(x_i,y_i) \hm- \mathrm{F}_{{x}}(x_i) 
+\mathrm{F}_{{y}}(y_i)\vert )$) и~статистический тест  
+Кол\-мо\-го\-ро\-ва--Смир\-но\-ва 
+$P_{\mathrm{КС}}$ $(D 
+(\mathrm{F}_{{xy}}(x,y), \mathrm{F}_{{x}}(x) 
+\mathrm{F}_{{y}}(y)), n_{(x,y)})$. Тогда $1\hm- 
+P_{\mathrm{КС}}$ характеризует <<информативность>>~$x$ 
+относительно~$y$. 
+     
+     Более универсальным подходом к~оценке достоверности различий 
+между $\mathrm{F}_{{xy}}(x,y)$ и~$\mathrm{F}_{{x}}(x) 
+\mathrm{F}_{{y}}(y)$ считается прямое вычисление выбранной 
+статистики~$d_f$ на множествах пар значений $(x_i, y_i)$, полученных 
+датчиком случайных чисел. 
+     
+     Пусть \textit{оператор $\hat{\zeta}$, семплирующий} 
+множество~$\mathbf{X}$, формирует набор семплов 
+$$
+\hat{\zeta}\mathbf{X}\hm= \{a_1, a_2, \ldots , a_k, \ldots , 
+a_{\vert\hat{\zeta}X\vert}\vert a_k\hm\subset \mathbf{X}\},
+$$
+ а~процедура 
+random~--- датчик случайных чисел (в~диапазоне $[0\ldots 1]$). Для каждого 
+семпла~$a_k$ принимается, что ${n}_{({x,y})} \hm= \vert 
+a_k\vert$, и~вычисляется множество значений~$d_f$ для случайных 
+выборок, 
+
+\noindent
+\begin{multline*}
+\mathrm{rnd}\,(\hat{\zeta}\mathbf{X}, d_f)= \left\{ 
+\vphantom{i=\overline{1,\left\vert \hat{\zeta} X\right\vert }}
+d_f\left(
+\vphantom{\overline{1, \vert a_i\vert }}
+\mathrm{F}_{{xy}}(x_{ij}, y_{ij}), 
+\mathrm{F}_{{x}}(x_{ij}) \mathrm{F}_{{y}}(y_{ij}),\right.\right.\\
+\left.\left. x_{ij}, 
+y_{ij}= \mathrm{random},\  j=\overline{1, \vert a_i\vert }\right),\ i=\overline{1,\left\vert \hat{\zeta} X\right\vert }\right\}.
+\end{multline*}
+
+ Для $a\hm\in \hat{\zeta} \mathbf{X}$ значение 
+${P}(d_f, \hat{\zeta}\mathbf{X}, a, k^\prime, t)\hm= 1\hm-
+\hat{\phi}(d_f(\mathrm{F}_{k^\prime t}(\Gamma_{k^\prime}(z), \Gamma_t(z)), F_{k^\prime}(\Gamma_{k^\prime}(z)) 
+\mathrm{F}_t(\Gamma_t(z)))\vert z\hm\in a) \mathrm{rnd}\,(\hat{\zeta}\mathbf{X}, d_f)$~--- статистическая достоверность 
+<<зависимости>> $\Gamma_t(z)$ и~$\Gamma_{k^\prime}(z)$ по 
+статистике~$d_f$ на семпле~$a$, а~$1\hm- P(d_f, 
+\hat{\zeta}\mathbf{X}, a, k^\prime, t)$ количественно оценивает зависимость.
+    
+
+При заданном способе оценки зависимости $1\hm- P(d_f, 
+\hat{\zeta}\mathbf{X}, a, k^\prime, t)$ задача отбора информативных 
+признаков решается посредством так называемого\linebreak  
+В-ал\-го\-рит\-ма, исходно разработанного для построения оптимальных 
+словарей финальных ин\-фор\-маций (чему и~соответствует литера~<<В>>)~[8]. 
+\mbox{Данный} алгоритм, основанный на критерии раз\-ре\-ши\-мости по Журавлёву, 
+позволяет выбирать множества финальных информаций на основе 
+максимального час\-тич\-но\-го покрытия при минимуме\linebreak элементов покрытия. 
+Замена мощности пересечения множеств на $1\hm- P(d_f, 
+\hat{\zeta}\mathbf{X}, a, k^\prime, t)$ приведет к~тому, что  
+В-ал\-го\-ритм будет выбирать минимум признаков с~максимальной 
+<<информативностью>>\linebreak (наиболее информативные признаки, см.\ 
+теоремы~1, 7  и~8 работы~[8]).
+
+    Таким образом, в~рамках развиваемого формализма синтез более 
+информативных синтетических~$\Gamma_{k^\prime}(x_i)$ осуществляется 
+в~5~стадий: 
+\begin{enumerate}[(1)]
+\item определяется набор исходных (как правило, 
+<<низкоинформативных>>) признаков~$\Gamma_k(x_i)$ и~таргетная 
+переменная~$\Gamma_t(x_i)$;
+\item вводится набор метрик~$\rho_m$, 
+оценивается их релевантность $d_f(\hat{\phi}(x)\vartheta_{\mathbf{m}{\bm 
+\alpha}}(\mathbf{c}_{\bm \alpha},{p})$,\linebreak 
+$\hat{\phi}(x)\vartheta_{\mathbf{m}{\bm \alpha}}(\overline{\mathbf{c}}_{\bm 
+\alpha}, {p}))$ для каждого класса~$\mathbf{c}_{\bm \alpha}$ 
+значений $t$-й переменной и~отбираются наиболее релевантные~$\rho_m$; 
+\item посредством каждой из отобранных~$\rho_m$ по\-рож\-да\-ют\-ся 
+синтетические признаки~$\Gamma_{k^\prime}(x_i)$;
+\item посредством 
+вычислений $1\hm- P(d_f, \hat{\zeta}\mathbf{X}, a, k^\prime, t)$  
+и~В-ал\-го\-рит\-ма отбирается минимальное чис\-ло признаков максимальной 
+<<ин\-фор\-ма\-тив\-ности>>;
+\item применяется алгоритм прогнозирования 
+таргетной переменной (корректор по Жу\-рав\-лё\-ву--Ру\-да\-кову). 
+\end{enumerate}
+
+\begin{table*}\small
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\multicolumn{3}{p{140mm}}{Ранговые корреляции между экспериментальными 
+и~расчетными значениями $EC_{50}$ и~других величин хемокиномного анализа: $r$~--- 
+коэффициент ранговой корреляции на обучении; $r_c$~---  на контроле. Усреднение~$r$ 
+и~$r_c$ проводилось по 2400~выборкам хемокиномных данных}\\
+\multicolumn{3}{c}{\ }\\[-6pt]
+\hline
+\multicolumn{1}{|c|}{{Эксперимент}}&$r$&$r_c$\\
+\hline
+{\boldmath $f_{\theta_k}$}\textbf{-алгоритмы, корректор~--- нейросеть}&\boldmath{$0{,}88\pm 
+0{,}15$}&\boldmath{$0{,}86\pm0{,}20$}\\
+Синтетические $\Gamma_{k^\prime}(x_i)$, корректор~--- нейросеть (2~слоя)&$0{,}45\pm 
+0{,}22$&$0{,}22\pm 0{,}21$\\
+Синтетические $\Gamma_{k^\prime}(x_i)$, корректор~--- нейросеть 
+(10~слоев)&$0{,}52\pm 0{,}25$&$0{,}21\pm 0{,}20$\\
+Синтетические $\Gamma_{k^\prime}(x_i)$, корректор~--- <<случайный лес>>, 
+вариант~1&$0{,}98\pm 0{,}15$&$0{,}67\pm 0{,}31$\\
+Синтетические $\Gamma_{k^\prime}(x_i)$, корректор~--- <<случайный лес>>, 
+вариант~2&$0{,}99\pm 0{,}14$&$0{,}71\pm 0{,}35$\\
+\textbf{Синтетические {\boldmath $\Gamma_{k^\prime}(x_i)$}, полиномные корректоры, 
+вариант~1}&\boldmath{$0{,}93\pm 0{,}11$}&\boldmath{$0{,}90\pm 0{,}23$}\\
+\textbf{Синтетические {\boldmath $\Gamma_{k^\prime}(x_i)$}, полиномные корректоры, 
+вариант~2}&\boldmath{$0{,}95\pm0{,}08$}&\boldmath{$0{,}86\pm 0{,}27$}\\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+\section{Экспериментальная апробация }
+
+    Формализм апробирован на комплексе задач\linebreak фармакоинформатики: 
+получение количественных оценок ингибирования киназ протеома 
+перспективными лекарствами (хемокиномный анализ)~[9]. Использованы 
+2400~выборок данных <<\mbox{мо\-ле\-ку\-ла}--свой\-ст\-во>> из ProteomicsDB; 
+свойства молекул включили константы $EC_{50}$ и~активности для 
+концентраций~$(E_j(C_i))$.
+
+     Исходные признаки $\Gamma_k(x_i)$ определялись как булевы 
+инварианты над множествами $\chi$-це\-пей и~$\chi$-уз\-лов 
+хемографов~$x_i$, как и~в~[9]. Таргетная $\Gamma_t(x_i)$ определялась как 
+числовое значение прогнозируемого свойства. В~качестве~$\rho_m$ 
+использовались функции расстояния на множествах, векторах и~э.ф.р.\ (всего 
+65~функций из справочника~[2]). Классы~$\mathbf{c}_{\bm{\alpha}}$ 
+определялись как квартили значений~$\Gamma_t$. Векторы элементов 
+$L(T(\mathbf{X}))$ формировались из оценок $v^+_\alpha$, $v^-_\alpha$ 
+и~$d_\alpha$~\cite{4-tor} для каждого~$\mathbf{c}_{\bm{\alpha}}$. 
+Релевантность~$\rho_m$ по $d_f(\hat{\phi}(x),\vartheta_{\mathbf{m}{\bm 
+\alpha}}(\mathbf{c}_{\bm{\alpha}},{p}), 
+\hat{\phi}(x)\vartheta_{\mathbf{m}{\bm \alpha}} 
+(\overline{\mathbf{c}}_{\bm{\alpha}}, {p}))$ оценивалась для 
+каждого~$\mathbf{c}_{\bm{\alpha}}$, $d_f$~--- максимальное уклонение. 
+Синтетические признаки~$\Gamma_{k^\prime}(x_i)$ по\-рож\-да\-лись всеми 
+перечисленными выше способами; их отбор проводился В-ал\-го\-рит\-мом 
+с~использованием $1\hm- {P}(d_f, \hat{\zeta}\mathbf{X}, a, 
+     k^\prime, t)$. 
+     
+     В качестве корректоров использовались нейронные сети с~несколькими 
+слоями (от~2 до~10) с~функцией активации softmax, полиномы различных 
+конструкций (более 20~формул, в~том числе квазиполиномные модели 
+с~элементарными функциями) и~<<случайные леса>> решающих деревьев. 
+Оператор семплирования~$\hat{\zeta}$ был реализован как десятикратная  
+кросс-ва\-ли\-да\-ция с~делением каждой выборки объектов на 80\% 
+(обучение) и~20\% (конт\-роль). Результаты экспериментов суммированы 
+в~таблице.
+     
+
+     
+     Наилучший результат применения нового <<топологического>> 
+формализма с~полиномным корректором ($r_c\hm=0{,}90\hm\pm0{,}23$) 
+немного превзошел наилучший результат применения \mbox{метода} опорных 
+функций (композиций вида $f_{\theta_k} \hm= g(f_1(\sum \omega_k^j x_k), 
+\ldots\linebreak \ldots , f_l(\sum \omega_k^j x_k))$, см.~[9]), для которого 
+$r_c\hm=0{,}86\hm\pm0{,}20$. Полиномными формулами, наиболее часто 
+показывавшими наилучший результат, оказались полиномы 1-й или 2-й 
+степеней с~произведениями переменных первой степени, полиномы 5-й 
+степени, квазиполиномы 5-й степени с~сигмоидами и~Фурье-по\-ли\-но\-мы  
+3-й степени.
+     
+     Нейросетевые корректоры всех использованных конфигураций 
+отличались крайне низкими показателями ($r\hm=0{,}45\hm\pm0{,}22$, 
+$r_c\hm=0{,}22\hm\pm0{,}21$), а~<<случайный лес>> приводил 
+к~существенному переобучению (см.\ таб\-ли\-цу). При этом в~290 
+из~2400~выборок данных (12\%) <<случайный лес>> приводил к~улучшению 
+результатов по сравнению с~наилучшими полиномными корректорами, 
+а~в~1670 из 2400~выборок данных (70\%)~--- к~ухудшению.
+     
+     
+     Анализ синтетических признаков $\Gamma_{k^\prime}(x_i)$, 
+вошедших в~наилучшие полиномные модели, показал, что среди более 
+информативных (по оценке $1\hm- P(d_f, \hat{\zeta}\mathbf{X},  
+a, k^\prime, t)$) признаков чаще всего встречались признаки, порождаемые 
+с~использованием э.ф.р.\ на основе опорных цепей (теорема~1 в~1-й части 
+работы~[1]), среди наименее информативных~--- исходные признаки 
+$\Gamma_k(x_i)$ и~признаки на основе отдельных расстояний 
+$\rho_m(\mathbf{c}_{\bm{\alpha}} , \Gamma_k^{-1}(\Gamma_k(x_i))$. 
+Функциями~$\rho_m$, наиболее часто порождающими информативные 
+$\Gamma_{k^\prime}(x_i)$ на пространстве э.ф.р., оказались максимальное 
+уклонение Колмогорова, <<косое>> расстояние, метрики $\mathrm{Lp}$, 
+Реньи, $\chi2$, фон Мизеса, инженерная~\cite{2-tor}. В~среднем по всем 
+выборкам данных эти~7~разновидностей~$\rho_m$ порождали более 50\% 
+самых информативных признаков~$\Gamma_{k^\prime}(x_i)$, отобранных  
+В-ал\-го\-рит\-мом.
+
+\vspace*{-6pt}
+
+\section{Заключение}
+
+\vspace*{-2pt}
+
+    Предлагаемый подход к~порождению информативных синтетических 
+признаков подразумевает последовательные трансформации описаний 
+объекта:\\[-13pt]
+\begin{enumerate}[(1)]
+\item исходное множество значений признаков;\\[-13.5pt]
+\item множество 
+соответствующих элементов решетки;\\[-13.5pt] 
+\item ~множество расстояний 
+(измеряемых посредством~$\rho_m$) между элементами решетки, 
+соответствующими классам и~признакам;\\[-13.5pt]
+\item множество э.ф.р.\ расстояний, 
+измеренных заданными~$\rho_m$;\\[-13.5pt] 
+\item множество синтетических признаков 
+объ-\linebreak екта.
+\end{enumerate}
+
+\noindent
+ Использование многочисленных метрик на стадии порождения 
+признаков позволяет рассматривать развиваемый формализм как вариант 
+развития идеологии АВО (алгоритмы вычисления \mbox{оценок}) научной школы 
+Ю.\,И.~Журавлёва. Экспериментальная апробация предлагаемого подхода на 
+2400~однородных задачах фармакоинформатики позволила повысить 
+аккуратность и~обобщающую способность алгоритмов. 
+
+
+{\small\frenchspacing
+ {\baselineskip=10.6pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+  
+  \bibitem{1-tor}
+\Au{Торшин И.\,Ю.} О~порождении синтетических признаков на основе опорных цепей 
+и~произвольных метрик в~рамках топологического подхода к~анализу данных. Часть~1. 
+Включение в~формализм эмпирических функций расстояния~// Информатика и~её 
+применения, 2024. Т.~18. Вып.~1. С.~71--77. doi: 10.14357/19922264240110. EDN: 
+RIVOXR.
+  \bibitem{2-tor}
+  \Au{Деза Е.\,И., Деза~М.\,М.} Энциклопедический словарь расстояний~/ Пер. с~англ.~--- М.: Наука, 
+2008. 444~с. (\Au{Deza~E.\,I., Deza~M.\,M.} {Dictionary of distances}.~--- North-Holland: 
+Elsevier, 2006. 412~p. doi: 10.1016/B978-0-444-52087-6.X5000-8.)
+  \bibitem{3-tor}
+  \Au{Torshin I.\,Y., Rudakov~K.\,V.} Combinatorial analysis of the solvability properties of 
+the problems of recognition and completeness of algorithmic models. Part~2: Metric approach 
+within the framework of the theory of classification of feature values~// Pattern Recognition Image 
+Analysis, 2017. Vol.~27. No.\,2. P.~184--199. doi: 10.1134/S1054661817020110.
+  \bibitem{4-tor}
+\Au{Торшин И.\,Ю.} О~формировании множеств прецедентов на основе таблиц 
+разнородных признаковых описаний методами топологической теории анализа данных~// 
+Информатика и~её применения, 2023. Т.~17. Вып.~3. С.~2--7. doi: 
+10.14357/19922264230301. EDN: AQEUYO.
+  \bibitem{5-tor}
+  \Au{Torshin I.\,Yu., Rudakov~K.\,V.} On the procedures of generation of numerical features 
+over partitions of sets of objects in the problem of predicting numerical target variables~// 
+Pattern Recognition Image Analysis, 2019. Vol.~29. No.\,4. P.~654--667. doi: 
+10.1134/S1054661819040175. 
+  \bibitem{6-tor}
+  \Au{Torshin I.\,Y., Rudakov~K.\,V.} Combinatorial analysis of the solvability properties of 
+the problems of recognition and completeness of algorithmic models. Part~1: Factorization 
+approach~// Pattern Recognition Image Analysis, 2017. Vol.~27. No.\,1. P.~16--28. doi: 
+10.1134/S1054661817010151.
+  \bibitem{7-tor}
+  \Au{Sosa-Cabrera G., G$\acute{\mbox{o}}$mez-Guerrero~S.,  
+Garc$\acute{\iota}$a-Torres~M., Schaerer~C.\,E.} Feature selection: A~perspective on inter-attribute 
+cooperation~// Int. J. Data Science Analytics, 2024. Vol.~17. P.~139--151. doi:  
+10.1007/s41060-023-00439-z.
+  \bibitem{8-tor}
+  \Au{Torshin I.\,Y.} Optimal dictionaries of the final information on the basis of the solvability 
+criterion and their applications in bioinformatics~// Pattern Recognition Image Analysis, 2013. 
+Vol.~23. No.\,2. P.~319--327. doi: 10.1134/S1054661813020156.
+  \bibitem{9-tor}
+\Au{Торшин И.\,Ю.} О~задачах оптимизации, воз\-ни\-ка\-ющих при применении 
+топологического анализа данных к~поиску алгоритмов прогнозирования 
+с~фиксированными корректорами~// Информатика и~её применения, 2023. Т.~17. Вып.~2. 
+С.~2--10. doi: 10.14357/19922264230201. EDN: IGSPEW.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-8pt}
+
+\hfill{\small\textit{Поступила в~редакцию 09.04.24}}
+
+\vspace*{6pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+
+
+\def\tit{ON THE GENERATION OF~SYNTHETIC FEATURES BASED~ON~SUPPORT~CHAINS 
+AND~ARBITRARY METRICS\\ WITHIN THE~FRAMEWORK OF~A~TOPOLOGICAL 
+APPROACH\\ TO~DATA ANALYSIS. PART~2. EXPERIMENTAL TESTING 
+ON~PHARMACOINFORMATICS PROBLEMS}
+
+
+\def\titkol{On the generation of~synthetic features based on~support chains 
+and~arbitrary metrics} % within the~framework of~a~topological  approach to~data analysis. Part~2. Experimental testing  on~pharmacoinformatics problems}
+
+
+\def\aut{I.\,Yu.~Torshin}
+
+\def\autkol{I.\,Yu.~Torshin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-15pt}
+
+
+\noindent
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+  
+  
+
+
+\Abste{Consideration of precedent relationships between features and a target variable in the 
+form of sets of Boolean lattice elements indicates the possibility of generating synthetic features 
+using metric distance functions. Approaches to ($i$)~assessing the relevance (``informativeness'') 
+of metrics in relation to the problems being solved; ($ii$)~generating; and ($iii$)~selecting synthetic 
+features that are more informative than the original feature descriptions are formulated. The 
+results of topological analysis of~2400~samples of ``molecule--property'' data
+from 
+ProteomicsDB made it possible to obtain fairly effective algorithms for 
+predicting the properties of molecules (rank correlation in cross-validation is~$0.90\pm 0.23$). 
+Using this sample of problems, metrics have been established\linebreak\vspace*{-12pt}}
+
+\Abstend{that most often generate 
+informative synthetic features: maximum Kolmogorov deviation, ``oblique'' distance, and Lp, Renyi, 
+and von Mises metrics. To solve the studied set of problems, the advantage of polynomial 
+correctors compared to neural network and random forest correctors is shown.}
+
+\KWE{topological data analysis; lattice theory; algebraic approach of Yu.\,I.~Zhuravlev; 
+pharmacoinformatics}
+
+
+
+
+\DOI{10.14357/19922264240207}{OTXCUD}
+
+%\vspace*{-12pt}
+
+\Ack
+
+\vspace*{-3pt}
+
+
+\noindent
+The research was funded by the Russian Science Foundation, project No.\,23-21-00154. The 
+research was carried out using the infrastructure of the Shared Research Facilities ``High 
+Performance Computing and Big Data'' (CKP ``Informatics'') of FRC CSC RAS (Moscow).
+ 
+
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9} 
+ 
+ %\vspace*{-3pt}
+  \bibitem{1-tor-1}
+\Aue{Torshin, I.\,Yu.} 2024. O~porozhdenii sinteticheskikh priznakov na osno\-ve opor\-nykh 
+tsepey i~proizvol'nykh metrik v~ram\-kakh topologicheskogo podkhoda k~analizu dannykh. 
+Chast'~1. Vklyuchenie v~formalizm empiricheskikh funktsiy rasstoyaniya [On the generation 
+of synthetic features based on support chains and arbitrary metrics within a~topological approach 
+to data analysis. Part~1. Inclusion of empirical distance functions into the formalism]. 
+\textit{Informatika i~ee Primeneniya~--- Inform Appl.} 18(1):71--77. doi: 
+10.14357/19922264240110. EDN: RIVOXR.
+  \bibitem{2-tor-1}
+\Aue{Deza, E.\,I., and M.\,M.~Deza.} 2006. \textit{Dictionary of distances}. North-Holland: 
+Elsevier. 412~p. doi: 10.1016/B978-0-444-52087-6.X5000-8.
+  \bibitem{3-tor-1}
+\Aue{Torshin, I.\,Yu., and K.\,V.~Rudakov.} 2017. Combinatorial analysis of the solvability 
+properties of the problems of recognition and completeness of algorithmic models. Part~2: 
+Metric approach within the framework of the theory of classification of feature values. 
+\textit{Pattern Recognition Image Analysis} 27(2):184--199. doi: 10.1134/S1054661817020110.
+  \bibitem{4-tor-1}
+\Aue{Torshin, I.\,Yu.} 2023. O~formirovanii mnozhestv pretsedentov na osnove tablits 
+raznorodnykh priznakovykh opisaniy metodami topologicheskoy teorii analiza dannykh [On the 
+formation of sets of precedents based on tables of heterogeneous feature descriptions by methods 
+of topological theory of data analysis]. \textit{Informatika i~ee Primeneniya~--- Inform Appl.} 
+17(3):2--7. doi: 10.14357/19922264230301. EDN: AQEUYO.
+  \bibitem{5-tor-1}
+\Aue{Torshin, I.\,Yu., and K.\,V.~Rudakov.} 2019. On the procedures of generation of 
+numerical features over partitions of sets of objects in the problem of predicting numerical target 
+variables. \textit{Pattern Recognition Image Analysis} 29(4):654--667. doi: 
+10.1134/S1054661819040175.
+  \bibitem{6-tor-1}
+\Aue{Torshin, I.\,Y., and K.\,V.~Rudakov.} 2017. Combinatorial analysis of the solvability of 
+the problems of recognition, completeness of algorithmic models. Part~1: Factorization 
+approach. \textit{Pattern Recognition Image Analysis} 27(1):16--28. doi: 
+10.1134/S1054661817010151.
+  \bibitem{7-tor-1}
+\Aue{Sosa-Cabrera, G., S.~Gуmez-Guerrero, \mbox{M.~Garc$\acute{\!\mbox{{\ptb{\i}}}}$a}-Torres, 
+and C.\,E.~Schaerer.} 2024. Feature selection: A~perspective on inter-attribute cooperation. \textit{Int. J. 
+Data Science Analytics} 17:139--151. doi: 10.1007/s41060-023-00439-z.
+  \bibitem{8-tor-1}
+\Aue{Torshin, I.\,Y.} 2013. Optimal dictionaries of the final information on the basis of the 
+solvability criterion and their applications in bioinformatics. \textit{Pattern Recognition Image 
+Analysis}  23(2):319--327. doi: 10.1134/ S1054661813020156.
+  \bibitem{9-tor-1}
+\Aue{Torshin, I.\,Yu.} 2023. O~zadachakh optimizatsii, voznikayushchikh pri primenenii 
+topologicheskogo analiza dannykh k~poisku algoritmov prognozirovaniya s~fiksirovannymi 
+korrektorami [On optimization problems arising from the application of topological data analysis 
+to the search for forecasting algorithms with fixed correctors]. \textit{Informatika i~ee 
+Primeneniya~--- Inform Appl.} 17(2):2--10. doi: 10.14357/19922264230201. EDN: IGSPEW.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received April 9, 2024}} 
+
+\vspace*{-12pt}
+
+
+\Contrl
+
+\vspace*{-3pt}
+
+\noindent
+\textbf{Torshin Ivan Y.} (b.\ 1972)~--- Candidate of Science (PhD) in physics and mathematics, 
+Candidate of Science (PhD) in chemistry, leading scientist, Federal Research Center ``Computer 
+Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str, Moscow 119333, 
+Russian Federation; \mbox{tiy135@yahoo.com}
+  
+  
+
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

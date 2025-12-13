@@ -1,0 +1,788 @@
+%
+% \input{../preamblw}
+%%
+% \begin{document}
+%
+%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobot}[1]{\raisebox{-6pt}[1pt][2pt]{#1}} 
+
+\renewcommand{\firstpage}{141}
+\renewcommand{\lastpage}{149}
+
+% Номер УДК
+\udk{539.376+539.434}
+\msc{74S60; 74K10, 60H30}
+
+\title{Метод расч\"eта ресурса стержневых конструкций на основе энергетического варианта ползучести и~длительной прочности}% 
+{Метод расчёта ресурса стержневых конструкций\dots}% Заголовок, который идёт в верхний колонтитул
+
+\author{М.\,В.~Шершнева}% Автор(ы) для заголовка, если авторов несколько укать \inst
+{Ш\,е\,р\,ш\,н\,е\,в\,а~М.\,В.}% Автор(ы) для оглавления и колонтитула через \,
+
+\institute{\samgtu.}
+% Если несколько, то так  \institute{ Организация 1 \and Организация 2  \and Организация 3}
+
+\email{E-mail}{mary-sofya@mail.ru} %E-mail's авторов
+
+\otherinf{\fullauthor{Мария Викторовна Шершнева}\position{аспирант}
+\dept{каф. прикладной математики и~информатики}}
+
+\keywords{ползучесть, предел длительной прочности, стохастическая модель, вероятность безотказной работы, деформационный критерий отказа}
+
+\workabstract{Предложен аналитический метод оценки ресурса стержневых элементов конструкций в~условиях ползучести по деформационному критерию отказа. Выполнена линеаризация стохастических реологических уравнений энергетического типа, получены оценки времени безотказной работы при ограничениях на предельные значения деформации ползучести. Выполнена проверка адекватности метода экспериментальным данным по ползучести образцов из стали 12Х18Н10Т при $T=850$\,\textcelsius. Наблюдается соответствие расчётных и экспериментальных данных.}
+
+\engtitle{Calculation method for frame construction life prediction  on the basis of creep and endurance of~energy type }
+
+\engauthor{M.\,V.~Shershneva}{S\,h\,e\,r\,s\,h\,n\,e\,v\,a~M.\,V.}
+
+
+\enginstitute{\engsamgtu.}% Место работы каждого из авторов на англ. языке
+% Если несколько, то так  \enginstitute{ Организация 1 \and Организация 2  \and Организация 3}
+
+\otherenginfm{\fullauthor{Mariya V. Shershneva} \position{Postgraduate Student}  \dept{Dept.~of~Applied Mathematics \& Computer Science}}
+
+\engabstract{The analytical method of estimation of frame construction life prediction  in terms of creep by strain failure criterion is suggested. 
+The linearization of stochastic rheological energy equations, is made, the estimations of uptime under the assumptions on the limit values of creep  are obtained. 
+The checking of accordance of the method with the experimental data for the creep of samples made of  12Kh18N10T steel   under \mbox{$T=850$\,\textcelsius} is implemented. There is agreement between the calculated and experimental data.}
+
+\engkeywords{creep, stress-rupture strength, stochastic model,  probability of no-failure, strain failure criterion}
+
+\date{20/XI/2011} % Дата поступления статьи в редакцию.
+\revisiondate{27/I/2012} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+%Каждый пункт статьи должен начинаться с команды Название пункта
+%после названия точку ставить не нужно. Пункты автоматически нумеруются.
+%Если пункт нумеровать не нужно, то следует использовать в команде
+% \Section необязательный параметр [n]:
+%   \Section[n]{Имя пункта}
+% Введение и заключение обычно не нумеруются.
+
+\Section[n]{Введение} Подходы к оценке надёжности элементов конструкций в условиях ползучести существенно отличаются от аналогичных задач в условиях склерономного деформирования, поскольку приходится считаться не только с процессом разрушения, но и с~предельно допустимыми значениями необратимой реологической деформации, развиваемой во времени. Второй важный факт состоит в~значительном разбросе деформации ползучести, который может составлять 50--70\,\%, и такие данные приходится считать удовлетворительными \cite{rad:bib:1}. Существенное влияние случайных возмущений механических характеристик на поля напряжений и деформаций и необходимость построения соответствующих стохастических моделей для расчётов на прочность отмечались во многих работах (см., например, [\citen{rad:bib:1}--\citen{rad:bib:10}]). Широко используемые для оценки ресурса безопасной эксплуатации элементов конструкции феноменологические теории (в~частности, и~теория ползучести), как правило, носят детерминированный характер и не учитывают явления разброса для тех или иных механических характеристик (деформация ползучести, перемещение, время разрушения и т.~д.). 
+Поэтому детерминированный метод расчёта является первым, и в ряде случаев недостаточным, приближением. Неточности детерминированного расчёта на прочность покрываются, например, назначением коэффициента запаса прочности, который во многих случаях выбирается без достаточных оснований и не является оптимальным. 
+Это приводит либо к появлению неиспользуемых резервов прочности элементов конструкций, либо к преждевременному их разрушению. 
+Особенно остро эта проблема стоит для элементов конструкций, эксплуатирующихся в условиях ползучести. 
+Сдерживающими факторами решения задач надёжности являются, во-первых, слабо развитая теория стохастического реологического деформирования, особенно на стадии ускоренной ползучести, а во-вторых "--- физическая и стохастическая нелинейности определяющих уравнений ползучести и~длительной прочности, что не позволяет в должной мере развивать аналитические методы решения стохастических краевых задач. 
+Здесь имеются решения лишь на стадии установившейся ползучести [\citen{rad:bib:11}--\citen{rad:bib:13}], и~единичные работы посвящены решению краевых задач с учётом третьей  стадии ползучести \cite{rad:bib:14}. Широко используемый  в задачах ползучести метод Монте"--~Карло [\citen{rad:bib:4}, \citen{rad:bib:15}--\citen{rad:bib:19}] требует большой трудоёмкости и представительной выборки экспериментальных данных по ползучести материала, получение которых в необходимом объёме представляет определённые трудности. В отличие от метода Монте"--~Карло аналитические подходы позволяют широко применять разработанный В.\,В.~Болотиным аппарат оценки надёжности через вероятность безотказной работы \cite{rad:bib:2}. Применительно к стержневым системам в \cite{rad:bib:20} предложен метод оценки надёжности конструкций из стохастически неоднородного материала в условиях первой и второй стадий ползучести по деформационному критерию отказа, а в работе \cite{rad:bib:21} сделана попытка обобщения данного подхода для оценки надёжности с учётом третьей стадии на основании кинетических уравнений Ю.\,Н.~Работнова (но без учёта первой стадии ползучести). Целью настоящей работы является обобщение указанного подхода оценки надёжности стержневых конструкций на основе энергетического варианта реологического деформирования и разрушения материалов \cite{rad:bib:22, rad:bib:23} на примере стохастически неоднородного стержня, работающего на растяжение (сжатие).
+
+\smallskip
+
+\Section{Построение и линеаризация стохастической модели} Для описания случайных свойств растягиваемого стержня рассматривается стохастическая модель ползучести \cite{rad:bib:22, rad:bib:23}, описывающая вторую и третью стадии, вида
+\begin{gather}
+\dot{p}(t)=c\sigma^n(t),
+\label{rad:1}
+\quad 
+\sigma(t)=\sigma_0(t)\bigl(1+\omega(t)\bigr),
+%\label{rad:2}
+\quad 
+\dot{\omega}(t)=\alpha\sigma(t)\dot{p}(t);
+%\label{rad:3}
+\\
+\omega(0)=0, \quad p(0)=0,
+\label{rad:4}
+\end{gather}
+где $p(t)$ "--- деформация ползучести, $\sigma(t)$ и $\sigma_0(t)$ "--- истинное и номинальное напряжения, $c$ и $\alpha$ "--- случайные величины, $n$ "--- детерминированный параметр, $\omega(t)$ "--- параметр повреждённости.
+
+Решение системы \eqref{rad:1} с условиями \eqref{rad:4} при $\sigma_0(t)=\sigma_0={\rm const}$ имеет вид
+\begin{equation}
+p(t)=-\frac{1}{n\alpha\sigma_0}\ln\left|1-n\sigma_0^{n+1}\alpha ct\right|.
+\label{rad:5}
+\end{equation}
+
+Уравнение \eqref{rad:5} является стохастически нелинейным, следовательно, его нельзя использовать в существующей методике оценки надёжности для стохастических линейных моделей, предложенной в \cite{rad:bib:20}. 
+Поэтому необходимо выполнить линеаризацию \eqref{rad:5}. 
+Формальное разложение в ряд Тейлора неудобно, так как логарифмический ряд сходится крайне медленно и в соответствующем ряде для достижения заданной точности необходимо удерживать большое количество членов с последующей стохастической оценкой каждого члена при степенях $t$. 
+Поэтому в настоящей работе используется метод аппроксимации функции $\ln(1-x)$ степенными полиномами с использованием  интегрального метода наименьших квадратов (ИМНК). При этом рассматривались три варианта аппроксимации:
+\begin{gather}
+\ln(1-t)\cong-x+a_1x^2+a_2x^3+a_3x^4;
+\label{rad:6}
+\\
+\ln(1-x)\cong-x+a_1x^2+a_2x^3;
+\label{rad:7}
+\\
+\ln(1-x)\cong-x+a_1x^2+a_2x^4,
+\label{rad:8}
+\end{gather}
+а критерий минимизации брался в виде
+\begin{equation}
+\delta=\int_{0}^{0,95}\left(\frac{P_{\text{точн}}(x)-P_{\text{апп}}(x)}{P_{\text{точн}}(x)}\right)^2dx\to\min.
+\label{rad:9}
+\end{equation}
+В \eqref{rad:9} верхний предел интегрирования $x=0,95$, так как при $x=1$ имеет место асимптотическое поведение функции $y=\ln(1-x)$; $P_{\text{точн}}$ и $P_{\text{апп}}$ "--- соответственно точные значения функций $y=\ln(1-x)$ и одной из функций, стоящих в правой части \eqref{rad:6}--\eqref{rad:8}.
+
+Для нахождения оптимальных значений коэффициентов $a_i$ вычисляются частные производные по коэффициентам $a_i$ от величины $\delta$ и приравниваются к нулю. Из полученной системы линейных уравнений находятся $a_i$ для заданной модели.
+
+В результате для аппроксимаций \eqref{rad:6}--\eqref{rad:8} соответственно получены следующие значения коэффициентов:
+\begin{gather}
+a_1=-0,91048, \quad a_2=1,90612, \quad a_3=-3,06057;
+\label{rad:10}
+\\
+a_1=-0,0169, \quad a_2=-1,6281;
+\label{rad:11}
+\\
+a_1=-0,1884, \quad a_2=-1,9925.
+\label{rad:12}
+\end{gather}
+
+Проведённые оценки точности аппроксимирующих функций по величине $\delta$ показали, что наибольшая точность достигается  при аппроксимации вида~\eqref{rad:6}. 
+Величина $\delta$ в этом случае равна $0,0005$, тогда как для \eqref{rad:7} она составляет $0,0022$, а для \eqref{rad:8} "--- $0,0021$.
+
+Следует отметить, что при величине $\delta=5\cdot10^{-4}$ количество членов формального разложения в ряд Тейлора для функции $y=\ln(1-x)$ равно двенадцати, в то время как в аппроксимации \eqref{rad:6} "--- всего трём. 
+Таким образом, функцию \eqref{rad:5} в дальнейшем будем аппроксимировать по формуле \eqref{rad:6} с~коэффициентами, задаваемыми \eqref{rad:10}. 
+С~учётом \eqref{rad:5} она будет представлена в следующем виде:
+\begin{multline}
+p(t)=c\sigma_0^nt+0,911c^2\alpha n\sigma_0^{2n+1}t^2- \\ -1,906c^3\alpha^2n^2\sigma_0^{3n+2}t^3
++3,061c^4\alpha^3n^3\sigma_0^{4n+3}t^4.
+\label{rad:13}
+\end{multline}
+
+\smallskip
+
+\Section{Оценка надёжности стержневых конструкций по деформационному критерию отказа} Рассмотрим теперь вероятностные методы оценки прочностной надёжности по деформационным критериям отказов элементов конструкций. Основной количественной характеристикой надёжности является вероятность безотказной работы. Она в данном случае определяет вероятность того, что во всех точках материала элемента конструкции выполняется условие прочности:
+\begin{equation}
+p(t)\leq p^{\ast},
+\label{rad:14}
+\end{equation}
+где  $p^{\ast}$ "--- назначенный ресурс по предельно"=допустимой накопительной деформации.
+
+Функция надёжности $P(t)$, описывающая вероятность безотказной работы на отрезке $[0, t]$, равна вероятности пребывания случайной функции $p(t)$ в допустимой области $(0, p^{\ast})$ на этом отрезке времени \cite{rad:bib:2}:
+\begin{equation}
+P(t)=P\left\{p(\tau)\in(0, p^{\ast}), \ \tau\in[0, t]\right\}.
+\label{rad:15}
+\end{equation}
+
+В связи с тем, что согласно модели \eqref{rad:1}, \eqref{rad:4} деформация ползучести является неубывающей функцией, функция $p(t)$, покинув в некоторый момент времени область $(0, p^{\ast})$, затем в эту область возвратиться не может. Поэтому для вероятности безотказной работы $P(t)$ на отрезке времени $[0, t]$ имеет место более простая формула \cite{rad:bib:2}:
+\begin{equation}
+P(t)=P\left\{p(t)\in(0, p^{\ast})\right\}.
+\label{rad:16}
+\end{equation}
+
+В отличие от общего случая \eqref{rad:15}, когда вычисление случайной функции требует рассмотрения выбросов случайного процесса, здесь достаточно вычислить вероятность  нахождения случайной функции $p(t)$ в заданной области в рассматриваемый момент времени.
+
+Применим изложенную выше методику к оценке надёжности единичного стержня при $\sigma_0(t)=\sigma_0={\rm const}$, деформация которого описывается моделью \eqref{rad:1}, \eqref{rad:4} и задаётся соотношением \eqref{rad:13}. 
+Для оценки надёжности необходимо знать математическое ожидание и дисперсию величины $p=p(t)$, которые находятся с использованием разложения \eqref{rad:13}. Тогда для математического ожидания имеем
+$$
+{\tt M}[p]=A_1 {\tt M}[c]+A_2 {\tt M}[c^2\alpha]- A_3 {\tt M}[c^3\alpha^2]+
+A_4 {\tt M}[c^4\alpha^3],
+$$
+а дисперсия деформации $p(t)$ определяется по классической формуле
+\begin{multline}
+{\tt S}_p^2=A_1^2{\tt S}_c^2+A_2^2{\tt S}_{c^2\alpha}^2+A_3^2{\tt S}_{c^3\alpha^2}^2+A_4^2{\tt S}_{c^4\alpha^3}^2+ A_1A_4 {
+\tt K}_{c,c^4\alpha^3}+ \\ 
++
+2\bigl[A_1A_2{\tt K}_{c,c^2\alpha}+ A_1A_3{\tt K}_{c,c^3\alpha^2}+ A_2A_3 {\tt K}_{c^2\alpha,c^3\alpha^2}+ \\ 
++A_2A_4{\tt K}_{c^2\alpha,c^4\alpha^3}+A_3A_4{\tt K}_{c^3\alpha^2,c^4\alpha^3}\bigr].
+\label{rad:18}
+\end{multline}
+Здесь   ${\tt M}[{}\cdot{}]$ "--- оператор математического ожидания;
+${\tt S}_p^2$, ${\tt S}_c^2$, ${\tt S}_{c^2\alpha}^2$, ${\tt S}_{c^3\alpha^2}^2$, ${\tt S}_{c^4\alpha^3}^2$ "--- дисперсии соответствующих параметров;  
+${\tt K}_{c,c^2\alpha}$, ${\tt K}_{c,c^3\alpha^2}$, ${\tt K}_{c^2\alpha,c^3\alpha^2}$, ${\tt K}_{c^2\alpha,c^4\alpha^3}$,\linebreak ${\tt K}_{c^3\alpha^2,c^4\alpha^3}$ "--- корреляционные моменты;
+$A_1=\sigma_0^nt$, $A_2=0,911n\sigma_0^{2n+1}t^2$, $A_3={-1,906n^2\sigma_0^{3n+2}t^3}$, $A_4=3,061n^3\sigma_0^{4n+3}t^4$.
+
+Для реализации методики необходимо <<наполнение>> соответствующих \linebreak формул реальными экспериментальными данными. 
+Для апробации методики использовались экспериментальные данные \cite{rad:bib:24} по ползучести при чистом растяжении для 21 образца из одной плавки нержавеющей стали 12Х18Н10Т при $T=85$\,\textcelsius.
+Образцы испытывались на ползучесть при чистом растяжении вплоть до разрушения. 
+Номинальные напряжения  $\sigma_0$ принимали значения $39,24$, $49,05$, $58,86$ и $78,48$~МПа. 
+Результаты экспериментов представлены в~табл.~1. Здесь $\dot{p}_0=\dot{p}(0+0)$ "--- начальная скорость установившейся ползучести, $t_1$ и $p_1$ "--- экспериментальные значения времени и деформации в~момент разрушения.
+
+\begin{table}[t!]
+\centering
+\small 
+\caption{\bf Результаты эксперимента и результаты расчёта случайных величин $\boldsymbol c$ и $\boldsymbol \alpha$ }\vspace{-3mm}
+\begin{tabular}{c|c|c|c|c|c|c|c}
+\hline 
+\footnotesize № п/п & 
+\footnotesize № обр. & 
+\footnotesize $\sigma_0$, МПа & 
+\footnotesize $\dot{p}_0$, час${}^{-1}$ & 
+\footnotesize $t_1$, час & 
+\footnotesize $p_1$ & 
+\footnotesize $c\cdot10^9$ & 
+\footnotesize$\alpha$ \\
+\hline
+\rule{0mm}{12pt}%
+1 & 5 &  & 0,00080 & 35,0 & 0,048 & 6,365 & 0,198\\ %\cline{1-2} \cline{4-8}
+%\hhline{-|-|~|-|-|-|-|-}
+2 & 11 &  & 0,00081 & 40,0 & 0,085 & 6,435 & 0,223\\ 
+%\cline{1-2} \cline{4-8}
+3 & 16 & \tobot{39,24} & 0,00080 & 47,0 & 0,152 & 6,365 & 0,208\\ 
+%\cline{1-2} \cline{4-8}
+4 & 13 &  & 0,00084 & 66,0 & 0,234 & 6,673 & 0,142\\ 
+%\cline{1-2} \cline{4-8}
+5 & 30 &  & 0,00084 & 67,0 & 0,110 & 6,673 & 0,111\\ 
+%\cline{1-2} \cline{4-8}
+6 & 32 &  & 0,00081 & 68,0 & 0,125 & 6,435 & 0,124\\ \hline
+\rule{0mm}{12pt}%
+7 & 24 &  & 0,0023 & 18,0 & 0,080 & 8,947 & 0,119\\ 
+%\cline{1-2} \cline{4-8}
+8 & 22 &  & 0,0019 & 20,5 & 0,090 & 7,391 & 0,141\\ 
+%\cline{1-2} \cline{4-8}
+9 & 23 &  & 0,0019 & 21,5 & 0,110 & 7,391 & 0,143\\ 
+%\cline{1-2} \cline{4-8}
+10 & 27 & 49,05 & 0,0019 & 22,5 & 0,093 & 7,391 & 0,125\\ 
+%\cline{1-2} \cline{4-8}
+11 & 26 &  & 0,0021 & 24,0 & 0,130 & 8,169 & 0,114\\ 
+%\cline{1-2} \cline{4-8}
+12 & 29 &  & 0,0017 & 28,0 & 0,120 & 6,613 & 0,120\\ 
+%\cline{1-2} \cline{4-8}
+13 & 28 &  & 0,0014 & 30,0 & 0,080 & 5,446 & 0,117\\ \hline
+\rule{0mm}{12pt}%
+14 & 15 &  & 0,0037 & \phantom{1}6,7 & 0,065 & 8,031 & 0,194\\ 
+%\cline{1-2} \cline{4-8}
+15 & 31 &  & 0,0027 & 14,0 & 0,047 & 5,861 & 0,051\\ 
+%\cline{1-2} \cline{4-8}
+16 & 17 & 58,86 & 0,0023 & 15,0 & 0,073 & 4,992 & 0,127\\ 
+%\cline{1-2} \cline{4-8}
+17 & 7 &  & 0,0023 & 16,0 & 0,050 & 4,992 & 0,069\\ 
+%\cline{1-2} \cline{4-8}
+18 & 14 &  & 0,0033 & 20,0 & 0,170 & 7,163 & 0,073\\ 
+%\cline{1-2} \cline{4-8}
+19 & 21 &  & 0,0023 & 20,5 & 0,090 & 4,992 & 0,087\\ \hline
+\rule{0mm}{12pt}%
+20 & 39 & \tobot{78,48} & 0,0110 & \phantom{1}6,0 & 0,130 & 9,510 & 0,048\\ 
+%\cline{1-2} \cline{4-8}
+21 & 37 &  & 0,0045 & \phantom{1}6,0 & 0,118 & 3,890 & 0,146\\
+\hline
+\end{tabular} 
+
+\end{table}
+
+Значения $c$ и $\alpha$ находятся по результатам экспериментов для каждого образца (каждой реализации) при $n=3,2$ (определено в~\cite{rad:bib:24}), при этом величина $c$ определяется из соотношения
+\begin{equation}
+c={\dot{p}_0}/{\sigma_0^n}.
+\label{rad:19}
+\end{equation}
+После определения величины $c$ значение $\alpha$ для каждой кривой ползучести определяется из условия прохождения графика через точку разрушения $(p_1, t_1)$, т.~е. решения уравнения \eqref{rad:5} относительно $\alpha$ при известных $p(t_1)=p_1$, $t=t_1$, $c$, $\sigma_0$, $n$.
+Результаты расчётов $c$ и $\alpha$ представлены в~табл.~1.
+
+Поскольку выборки случайных величин $c$ и $\alpha$ известны, не  составляет труда найти выборки случайных величин $c^2\alpha$, $c^3\alpha^2$, $c^4\alpha^3$, а затем математические ожидания, дисперсии и коэффициент корреляции случайных величин $c$, $\alpha$, $c^2\alpha$, $c^3\alpha^2$, $c^4\alpha^3$. Результаты вычислений представлены в табл.~2 и~3. 
+Далее с~использованием полученных данных конкретизируются функции для математического ожидания и~дисперсии (формулы \eqref{rad:13} и \eqref{rad:18} соответственно).
+
+\begin{table}[b!]
+%\centering \vspace{-3mm}
+\small \setlength{\tabcolsep}{2.5pt}
+\caption{\bf Математические ожидания и дисперсии случайных величин}\vspace{-3mm}
+\begin{tabular}{l|c|c|c|c|c}
+\hline Случайная величина & $c$ & $\alpha$ & $c^2\alpha$ & $c^3\alpha^2$ & $c^4\alpha^3$ \\ 
+\hline
+Математическое ожидание & $6,65\cdot 10^{-9}$ & 0,128 & $5,80\cdot 10^{-18}$ & $5,86\cdot 10^{-27}$ & $6,58\cdot 10^{-36}$ \\
+\hline
+Дисперсия & $1,80\cdot 10^{-18}$ & 0,002 & $8,28\cdot 10^{-36}$ & $2,32\cdot 10^{-53}$ & $5,52\cdot 10^{-71}$\\
+\hline
+\end{tabular} 
+\end{table}
+
+
+
+При известных математическом ожидании и дисперсии вычисляется вероятность безотказной работы $P(t)$, при этом величина критической (допустимой) деформации $p^\ast$ в модельных расчётах полагалась $0,05$:
+\begin{equation}
+P(t)=\frac{1}{\sqrt{2\pi}{\tt S}_{p(t)}}\int_{0}^{0,05}\exp \Bigl({\frac{-(x-{\tt M}[p(t)])^2}{2{\tt S}^2_{p(t)}}} \Bigr)dx.
+\label{rad:20}
+\end{equation}
+
+\begin{wraptable}{O}{.48\textwidth}
+\centering  \vspace{-3mm}
+\small 
+\caption{\bf Корреляционная матрица случайных величин $\boldsymbol c$, $\boldsymbol {c^2 \alpha}$, $\boldsymbol {c^3 \alpha^2}$, $\boldsymbol {c^4 \alpha^3}$}\vspace{-3mm}
+\begin{tabular}{c|c|c|c|c|}
+\cline{2-5}  
+& ~~~$c$~~~ & $c^2\alpha$ & $c^3\alpha^2$ & $c^4\alpha^3$ \\ 
+\hline
+\multicolumn{1}{|c|}{$c$} & 1 & 0,618 & 0,455 & 0,367 \\
+\hline
+\multicolumn{1}{|c|}{$c^2\alpha$} &  & 1 & 0,966 & 0,908\\
+\hline
+\multicolumn{1}{|c|}{$c^3\alpha^2$} &  &  & 1 & 0,984\\
+\hline
+\multicolumn{1}{|c|}{$c^4\alpha^3$} &  &  &  & 1\\
+\hline
+\end{tabular} 
+
+\bigskip
+
+\includegraphics[scale=0.7]{./00PIC/shersh1}
+
+\smallskip
+
+\footnotesize 
+Вероятность безотказной работы $P(t)$
+
+
+
+\end{wraptable}
+
+На рисунке в качестве примера приведена функция $P(t)$, полученная при $\sigma_0=39,24$~МПа.
+В~табл.~4  приведены расчётные $t_{\text{расч}}$ и экспериментальные  $t_{\text{эксп}}$ значения  времени отказа с~вероятностями $0,9$, $0,95$ и $0,99$ для каждой реализации. 
+При этом значения $t_{\text{эксп}}$ определялись из графиков, приведённых в~\cite{rad:bib:24}.
+
+
+
+
+Как следует из анализа данных табл.~4, при уровне вероятности $0,99$ все экспериментальные значения (правый столбец таблицы) лежат правее времени безотказной работы, вычисленного по формуле \eqref{rad:20}. 
+При значениях вероятности $0,95$ и $0,9$ имеются экспериментальные значения времени безотказной работы, которые лежат левее расчётного значения, т.~е. имеются <<выбросы>> из расчётного значения ресурса. 
+Поэтому в прикладных расчётах рекомендуется использовать величину вероятности $0,99$.
+
+\begin{table}[h!]
+\centering
+\begin{minipage}{8.8cm}
+
+\centering \small
+\setlength{\tabcolsep}{11pt}
+\caption{\bf Примеры расчёта вероятности безотказной работы }\vspace{-3mm}
+\begin{tabular}{c|c|c|c}
+\hline 
+\footnotesize $\sigma_0$, МПа & 
+\footnotesize $P(t)$ & 
+\footnotesize $t_{\text{расч}}$, час & 
+\footnotesize $t_{\text{эксп}}$, час \\ 
+\hline
+\rule{0mm}{12pt}%
+ & 0,99 & 32 & 32,25; 32,90 \\
+%\cline{2-3}
+39,24 & 0,95 & 35 & 33,5; 34,84 \\
+%\cline{2-3}
+ & 0,9\phantom{5} & 37 & 36,13; 39,03 \\
+\hline
+\rule{0mm}{12pt}%
+ & 0,99 & 12,5 & 14,35; 16,12 \\
+%\cline{2-3}
+49,05 & 0,95 & 13,8 & 16,3; 16,45 \\
+%\cline{2-3}
+ & 0,9\phantom{5} & 14,5 & 17,42; 22,9 \\
+\hline
+\rule{0mm}{12pt}%
+ & 0,99 & 1,8 &  \\
+%\cline{2-3}
+78,48 & 0,95 & 1,9 & 3,67; 4,54 \\
+%\cline{2-3}
+ & 0,9\phantom{5} & 2 &  \\
+\hline
+\end{tabular} 
+\end{minipage}
+\end{table}
+
+
+Таким образом, разработанный подход позволяет аналитическими методами прогнозировать величину назначенного ресурса для стержня по деформационному критерию отказа.
+
+
+
+%% Благодарности, гранты и прочее
+
+\begin{thebibliography}{99}
+
+\RBibitem{rad:bib:1}
+\by Работнов~Ю.\,Н.
+\book Ползучесть элементов конструкций
+\publaddr М.
+\publ Физматгиз
+\yr 1966
+\totalpages 752
+\misctransl 
+\by Rabotnov~Yu.\,N.
+\book Creep of Structural Elements 
+\publ Fizmatgiz
+\publaddr Moscow 
+\yr 1966
+\totalpages 752
+
+\RBibitem{rad:bib:2}
+\by Болотин~В.\,В.
+\book Прогнозирование ресурса машин и конструкций
+\publaddr М.
+\publ Машиностроение
+\yr 1984
+\totalpages 312
+\transl англ. пер.:~
+\book Prediction of service life for machines and structures
+\by Bolotin~V.\,V.
+\publ ASME Press
+\publaddr New York
+\yr 1989 
+\totalpages 395
+
+
+\RBibitem{rad:bib:3}
+\by Ломакин~В.\,А.
+\book Статистические задачи механики твердых деформируемых тел
+\publaddr М.
+\publ Наука
+\yr 1970
+\totalpages 139
+\misctransl
+\by Lomakin~V.\,A.
+\book Statistical Problems of the Mechanics of Solid Deformable Bodies 
+\publ Nauka
+\publaddr Moscow 
+\yr 1970
+\totalpages 139
+
+\RBibitem{rad:bib:4}
+\paper О применении стохастических уравнений в теории ползучести материалов
+\by Самарин~Ю.\,П.
+\jour Изв. АН СССР. МТТ
+\yr 1974
+\issue 1
+\pages 88--94
+\misctransl
+\by Samarin~Yu.\,P.
+\paper Use of stochastic equations in the theory of creep of materials
+\jour Izv. AN. SSSR. MTT
+\yr 1974
+\issue 1
+\pages 88--94
+
+
+
+\RBibitem{rad:bib:5}
+\eds И.~А.~Биргер, Б.~Ф.~Шорр
+\book Термопрочность деталей машин
+\publaddr М.
+\publ Машиностроение
+\yr 1975
+\totalpages 456
+\misctransl
+\eds I.~A.~Birger, B.~F.~Shorr 
+\book Thermal Resistance of Machine Parts 
+\publ Mashinostroenie
+\publaddr Moscow 
+\yr 1975
+\totalpages 456
+
+\RBibitem{rad:bib:6}
+\paper К вопросу об определении функции распределения параметров уравнения состояния ползучести
+\by Бадаев~А.\,Н.
+\jour Пробл. прочности
+\yr 1984
+\issue 12
+\pages 22--26
+\transl англ. пер.: {}
+\vol 16
+\issue 12 
+\yr 1984
+\pages 1668--1673
+%DOI: 10.1007/BF01537996
+\paper  Determination of the distribution function of the parameters of a creep equation of state
+\by Badaev~A.\,N.
+\jour Strength of Materials
+
+\RBibitem{rad:bib:7}
+\paper Методика описания ползучести и длительной прочности при чистом растяжении
+\by Локощенко~А.\,М., Шестериков~С.\,А.
+\jour Ж. прикл. механики и технич. физики
+\yr 1980
+\issue 3
+\pages 155--159
+\transl англ. пер.:~
+\jour J. Appl. Mech. Tech. Phys. 
+\vol 21
+\issue 3 
+\yr 1980
+\pages 414--417
+% DOI: 10.1007/BF00920784
+\paper Method for description of creep and long-term strength with pure elongation
+\by Lokoshchenko~A.\,M.,  Shesterikov~S.\,A.
+
+
+\RBibitem{rad:bib:8}
+\by Вильдеман~В.\,Э., Соколкин~Ю.\,В., Ташкинов~А.\,А.
+\book Механика неупругого деформирования и разрушения композиционных материалов
+\publaddr М.
+\publ Наука
+\yr 1997
+\totalpages 228
+\misctransl
+\by Vil'deman~V.\,\'E., Sokolkin~Yu.\,V., Tashkinov~A.\,A. 
+\book Mechanics of inelastic deformation and fracture of composite materials
+\publ Nauka
+\publaddr Moscow
+\yr 1997
+\totalpages 228
+
+
+\RBibitem{rad:bib:9}
+\by Сараев~Л.\,А.
+\book Моделирование макроскопических пластических свойств многокомпонентных композиционных материалов
+\publaddr Самара
+\publ Самарский университет
+\yr 2000
+\totalpages 181
+\misctransl
+\by Saraev~L.\,A.
+\book  Modelling of macroscopic plastic properties of multicomponent composite materials
+\publaddr Samara
+\publ Samarskiy Universitet
+\yr 2000
+\totalpages 181
+
+\RBibitem{rad:bib:10}
+\paper Стохастические механические характеристики и надежность конструкций с реологическими свойствами
+\by Самарин~Ю.\,П.
+\inbook Ползучесть и длительная прочность конструкций
+\publaddr Куйбышев
+\publ КПтИ
+\yr 1986
+\pages 8--17
+\misctransl
+\by Samarin~Yu.\,P.
+\paper Stochastic Mechanical Properties and Reliability of Structures with Rheological Properties
+\inbook Creep and Long-Term Strength of Structures
+\publaddr Kuibyshev
+\publ KPtI
+\yr 1986
+\pages 8--17
+
+\RBibitem{rad:bib:11}
+\paper Стохастические характеристики полей напряжений и деформаций при установившейся ползучести стохастически неоднородной плоскости
+\by Радченко~В.\,П., Попов~Н.\,Н.
+\jour Изв. вузов. Машиностроение
+\yr 2006
+\issue 2
+\pages 3--11
+\misctransl
+\by Radchenko~V.\,P., Popov~N.\,N.
+\paper Stochastic characteristics of stress and strain fields in steady-state creep of stochastically inhomogeneous plane
+\jour Izv. Vuzov. Mashinostroenie
+\yr 2006
+\issue 2
+\pages 3--11
+
+\RBibitem{rad:bib:12}
+\paper Решение плоской стохастической краевой задачи ползучести
+\by Коваленко~Л.\,В., Попов~Н.\,Н., Радченко~В.\,П. 
+\jour ПММ
+\yr 2009
+\vol 73
+\issue 6
+\pages 1009--1016
+\transl англ. пер.:~
+\jour J.~Appl. Math. Mech.
+\vol 73
+\issue 6
+\yr 2009
+\pages 727–733
+\paper Solution of the plane stochastic creep boundary value problem
+\by Kovalenko~L.\,V.,  Popov~N.\,N., Radchenko~V.\,P.
+
+\RBibitem{rad:bib:13}
+\by Исуткина~В.\,Н.
+\thesis Разработка аналитических методов решения стохастических краевых задач установившейся ползучести для плоского деформированного состояния
+\thesisinfo Автореф. дисс. \dots\ канд. физ.-мат. наук
+\publaddr Самара
+\yr 2007
+\totalpages 18
+\misctransl
+\thesis Development of analytical methods for solving stochastic boundary value problems of  steady-state creep for  a flat strain state
+\by Isutkina~V.\,N.
+\thesisinfo Abstract of Ph.\,D.~Thesis (Phys. \& Math.)
+\publaddr Samara
+\yr 2007
+\totalpages 18
+
+\RBibitem{rad:bib:14}
+\paper Нелинейная стохастическая задача ползучести неоднородной плоскости с учётом повреждённости материала
+\by Попов~Н.\,Н., Радченко~В.\,П. 
+\jour ПМТФ
+\yr 2007
+\vol 48
+\issue 2
+\pages 140--146
+\transl англ. пер.:~
+\jour J. Appl. Mech. Tech. Phys. 
+\vol 48
+\issue 2 
+\yr 2007
+\pages 265--270
+%DOI: 10.1007/s10808-007-0034-7
+\paper Nonlinear stochastic creep problem for an inhomogeneous plane with the damage to the material taken into account
+\by Popov~N.\,N., Radchenko~V.\,P.
+
+
+\RBibitem{rad:bib:15}
+\paper О статистическом моделировании характеристик ползучести конструкционных материалов
+\by Бадаев~А.\,Н., Голубовкий~Е.\,Р., Баумштейн~М.\,В., Булыгин~И.\,П.
+\jour Пробл. прочности
+\yr 1982
+\issue 5
+\pages 16--20
+\transl англ. пер.:~
+\jour Strength of Materials
+\vol 14
+\issue 5 
+\yr 1982
+\pages 584--589
+%, DOI: 10.1007/BF00767591
+\paper Statistical modeling of the creep characteristics of structural materials
+\by Badaev~A.\,N., Gelubovskii~E.\,R., Baumshtein~M.\,V., Bulygin~I.\,P.
+
+
+\RBibitem{rad:bib:16}
+\paper К вопросу об определении функции распределения параметров уравнения состояния ползучести
+\by Бадаев~А.\,Н. 
+\jour Пробл. прочности
+\yr 1984
+\issue 12
+\pages 22--26
+\transl англ. пер.:~
+\jour Strength of Materials
+\vol 16
+\issue 12 
+\yr 1984
+\pages 1668--1673
+%DOI: 10.1007/BF01537996
+\paper Determination of the distribution function of the parameters of a creep equation of state
+\by Badaev~A.\,N.
+
+
+\RBibitem{rad:bib:17}
+\paper Унифицированный подход к прогнозированию ползучести. Вопросы жаропрочных материалов в статистическом аспекте
+\by Ковпак~В.\,И., Бадаев~А.\,Н. 
+\inbook Унифицированные методы определения ползучести и длительной прочности
+\publaddr М.
+\publ Изд-во стандартов
+\yr 1986
+\pages 51--62
+\misctransl
+\by Kovpak~V.\,I.,  Badaev~A.\,N.
+\paper A Unified Approach to the Prediction of Creep. Issues of Heat-Resistant Materials in the Statistical Aspect
+\inbook Unified Methods of Determining Creep and Creep-Rupture Strength
+\publaddr Moscow
+\publ Izd-vo Standartov
+\yr 1986
+\pages 51--62
+
+\RBibitem{rad:bib:18}
+\paper Прогнозирование ползучести и длительной прочности материалов на основе энергетического подхода в стохастической постановке
+\by Радченко~В.\,П. 
+\jour Пробл. прочности
+\yr 1992
+\issue 2
+\pages 34--40
+\transl англ. пер.:~
+\jour Strength of Materials
+\vol 24
+\issue 2 
+\yr 1992
+\pages 153--161
+%DOI: 10.1007/BF00779253
+\paper  Prediction of creep and creep-rupture strength of materials on the basis of an energy approach in a stochastic formulation
+\by  Radchenko~V.\,P.
+
+
+\RBibitem{rad:bib:19}
+\by Исуткина~В.\,Н., Маргаритов~А.\,Ю.
+\paper Сравнительный анализ решений стохастической краевой задачи установившейся ползучести для толстостенной трубы на основе методов малого параметра и Монте--Карло
+\jour  Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\yr 2006
+\issue 43
+\pages 116--123
+\misctransl
+\by Isutkina~V.\,N., Margaritov~A.\,Yu.
+\paper A comparative analysis of solutions for stochastic boundary-value problem of the steady-state creep for thick-walled pipes on the basis of the small-parameter method and Monte Carlo simulation
+\jour Vestn. Samar. Gos. Tekhn. Univ. Ser. Fiz.-Mat. Nauki
+\yr 2006
+\issue 43
+\pages 116--123
+
+\RBibitem{rad:bib:20}
+\paper Оценка надёжности стержневых конструкций по критерию деформационного типа
+\by Самарин~Ю.\,П., Павлова~Г.\,А., Попов~Н.\,Н.
+\jour Пробл. машиностр. и надёжн. машин
+\yr 1990
+\issue 4
+\pages 53--60
+\misctransl
+\paper Reliability estimation  of   beam structures by  criterion of deformation  type
+\by Samarin~Yu.P., Pavlova~G.\,A., Popov~N.\,N.
+\jour Probl. Mashinostr. Nadezhn. Mash. 
+\yr 1990
+\issue 4
+\pages 53--60
+
+\RBibitem{rad:bib:21}
+\by Попов~Н.\,Н., Павлова~Г.\,А., Шершнёва~М.\,В.
+\paper Оценка надёжности стержневых элементов конструкций из стохастически неоднородного разупрочнённого материала в~условиях ползучести на~основе параметрического критерия~отказа
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\yr 2010
+\issue 5(21)
+\pages 117--124
+\misctransl
+\by Popov~N.\,N., Pavlova~G.\,A., Shershneva~M.\,V.
+\paper Reliability estimation of stochastic heterogeneous rod constructional elements by the use of parametric failure criterion
+\jour Vestn. Samar. Gos. Tekhn. Univ. Ser. Fiz.-Mat. Nauki
+\yr 2010
+\issue 5(21)
+\pages 117--124
+
+\RBibitem{rad:bib:22}
+\by Радченко~В.\,П., Ерёмин~Ю.\,А.
+\book Реологическое деформирование и разрушение материалов и элементов конструкций
+\publaddr М.
+\publ Машиностроение-1
+\yr 2004
+\totalpages 264
+\misctransl
+\by Radchenko~V.\,P.,  Eremin~Yu.\,A.
+\book Rheological Deformation and Fracture of Materials and Structural Members
+\publ Mashinostroenie-1
+\publaddr Moscow 
+\yr 2004
+\totalpages 264
+
+\RBibitem{rad:bib:23}
+\by Радченко~В.\,П., Кичаев~П.\,Е.
+\book Энергетическая концепция ползучести и виброползучести металлов
+\publaddr Самара
+\publ СамГТУ
+\yr 2011
+\totalpages 157
+\misctransl
+\by Radchenko~V.\,P., Kichaev~P.\,E.
+\book Energetic concept of creep and cyclic strain-induced creep of metals
+\publaddr Samara
+\publ SamGTU
+\yr 2011
+\totalpages 157
+
+\RBibitem{rad:bib:24}
+\by Соснин~О.\,В., Никитенко~А.\,Ф., Горев~Б.\,В. 
+\paper Определение параметров кривых ползучести при наличии всех стадий процесса ползучести 
+\inbook Расчёты и испытания на прочность. Расчетные методы определения несущей способности и долговечности элементов машин и конструкций. Метод определения параметров кривых ползучести и накопления повреждений при одноосном нагружении
+\bookinfo Метод. рекомендации
+\publaddr М.
+\publ ВНИИНМАШ
+\yr 1982
+\pages 49--54
+\misctransl
+\by Sosnin~O.\,V., Nikitenko~A.\,F., Gorev~B.\,V.
+\paper Definition of creep curves parameters  by the presence of all stages of creep process
+\inbook  Calculations and tests of strength. Calculated methods for determining the bearing capacity and durability of machine elements and structures. The method of creep curves parameters determination   and the accumulation of damage under uniaxial loading
+\bookinfo Methodological Specifications
+\publaddr Moscow
+\publ VNIINMASh 
+\yr 1982
+\pages 49--54
+
+\end{thebibliography}
+
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+
+
+
+%\chead[\fancyplain{}{\scriptsize \sl R\,a\,d\,c\,h\,e\,n\,k\,o~V.\,P.,\ S\,h\,e\,r\,s\,h\,n\,e\,v\,a~M.\,V.}]{\fancyplain{}{\scriptsize \sl   \dots}}
+
+\makeengtitlem
+
+
+
+ \newpage
+%
+% \tableofengcontents
+%
+%\end{document}

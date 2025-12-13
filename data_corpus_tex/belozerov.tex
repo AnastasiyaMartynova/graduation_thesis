@@ -1,0 +1,680 @@
+\def\stat{belozerov}
+
+\def\tit{МАШИННОЕ ОБУЧЕНИЕ ДЛЯ ЗАДАЧ ЭКСТРАПОЛЯЦИИ С~МАЛЫМ ОБЪЕМОМ 
+ДАННЫХ$^*$}
+
+\def\titkol{Машинное обучение для задач экстраполяции с~малым объемом 
+данных}
+
+\def\aut{А.\,О.~Белозеров$^1$, А.\,И.~Мазур$^2$}
+
+\def\autkol{А.\,О.~Белозеров, А.\,И.~Мазур}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Белозеров А.\,О.}
+\index{Мазур А.\,И.}
+\index{Belozerov A.\,O.}
+\index{Mazur A.\,I.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Статья публикуется по представлению программного комитета VI Международной на\-уч\-но-прак\-ти\-че\-ской 
+конференции <<Информационные технологии и~высокопроизводительные вы\-чис\-ле\-ния>> (ITHPC-2021). 
+Работа выполнена 
+при поддержке Министерства науки и~высшего образования РФ в~рамках проекта №\,0818-2020-0005 и~гранта РФФИ  
+№\,20-02-00357 (частично).}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Тихоокеанский государственный университет, aobelozerov@gmail.com}
+\footnotetext[2]{Тихоокеанский государственный университет, mazur@khb.ru}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt} 
+ 
+  
+  
+\Abst{Предложен новый метод экстраполяции вариационных расчетов, в~основе которого 
+лежит обуче\-ние большого чис\-ла искусственных нейронных сетей (ИНС) с~по\-сле\-ду\-ющей 
+фильт\-ра\-ци\-ей для отбора сетей, обучен\-ных наилучшим образом. Метод апробирован на 
+модельной задаче с~точ\-ным решением и~применен к~оценке энергии связи ядра ${}^4$He 
+на основе расчетов в~модели оболочек без инертного кора (МОБИК) с~реалистическим потенциалом 
+\mbox{Daejeon16}. Изучена сходимость результатов при увеличении объема входных данных. 
+Показано, что метод обеспечивает достаточно высокую точ\-ность прогноза даже в~случае 
+небольших модельных пространств. Предложенный метод можно применять как 
+для на\-хож\-де\-ния других характеристик ядер, так и~для решения иных задач, не связанных с~ядер\-ной физикой.}
+
+\KW{машинное обучение; методы экстраполяции; энергия основного состояния; модель 
+ядерных оболочек}
+
+\DOI{10.14357\!/\!08696527220202} 
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ %\vspace*{-20pt}
+
+
+
+\section{Введение}
+
+  В настоящее время методы машинного обуче\-ния широко используются для 
+решения различных задач. Однако у~этих методов есть два основных 
+ограничения для реализации. Во-пер\-вых, как и~большинство других 
+статистических методов, машинное обуче\-ние требует для корректной работы 
+большого объема данных. Обычно хорошие наборы данных со\-сто\-ят минимум 
+из 1000~примеров. Второе ограничение относится к~типу проб\-ле\-мы. Обычно 
+машинное обуче\-ние используется в~задачах интерполяции, в~то время как его 
+использование в~задачах экстраполяции изучено недостаточно.
+  
+  Модель оболочек без инертного кора~[1] в~на\-сто\-ящее время 
+является одним из основных методов описания атом\-ных ядер. Этот подход 
+называется \textit{ab initio}, поскольку в~качестве вход\-ной информации 
+используется только реалистичное нук\-лон-нук\-лон\-ное взаимодействие 
+(различные типы реалистичных потенциалов пред\-став\-ле\-ны в~[2--5]). 
+  
+  Результаты расчетов в~оболочечных моделях, вклю\-чая \mbox{МОБИК}, зависят от 
+двух па\-ра\-мет\-ров: размера базисного пространства модели, опре\-де\-ля\-емо\-го 
+максимальным чис\-лом осцилляторных квантов $N_{\max}$, и~величины 
+осцилляторной энергии $\hbar \Omega$.
+  
+  
+  Основная проблема \mbox{МОБИК}~--- резкое увеличение объема тре\-бу\-емых 
+вы\-чис\-ли\-тель\-ных ресурсов с~увеличением $N_{\max}$, что связано 
+с~экспоненциальным рос\-том чис\-ла базисных функций. Как следствие, 
+современные суперкомпьютеры поз\-во\-ля\-ют проводить рас\-че\-ты в~\mbox{МОБИК} 
+с~$N_{\max}\hm\leq 20$ только для самых лег\-ких ядер. 
+  
+  Более точные результаты могут быть получены с~использованием прос\-тых 
+методов экстраполяции результатов \mbox{МОБИК} на бесконечно большие 
+модельные пространства, таких как экстраполяция~B~[6, 7]. Было разработано 
+множество методов для экстраполяции вы\-чис\-ле\-ний в~более слож\-ных ядерных 
+сис\-те\-мах~[8--13]. Однако все они не имеют строгого обоснования, а~потому 
+вопрос поиска новых методов экстраполяции остается актуальным.
+  
+  Цель данной работы~--- разработка нового метода экстраполяции 
+результатов вариационных вы\-чис\-ле\-ний на бесконечные модельные 
+пространства с~использованием методов машинного обуче\-ния, способного 
+работать с~малыми наборами данных. Полученный алгоритм протестирован на 
+модельной задаче с~известным точ\-ным решением и~применен к~задаче 
+экстраполяции энергии основного со\-сто\-яния~${}^4$He на случай бесконечно 
+больших модельных пространств.
+  
+\section{Модельная задача}
+
+  Рассмотрим движение квантовой частицы с~приведенной массой $\mu 
+c^2\hm= 751$~МэВ в~поле сфе\-ри\-чески-сим\-мет\-рич\-но\-го потенциала 
+в~парциальной волне $l\hm=1$ с~пол\-ным угловым моментом $j\hm=1/2$. 
+Радиальное урав\-не\-ние Шредингера имеет вид:
+  \begin{equation}
+  H u_l(k,r)=E u_l(k,r)\,.
+  \label{e1-b}
+  \end{equation}
+Здесь гамильтониан $H\hm= T\hm+ V$, где $T$~--- оператор кинетической энергии. 
+В~качестве модельного потенциала~$V$ используется потенциал  
+Вуд\-са--Сак\-со\-на с~поверхностными спин-ор\-би\-таль\-ны\-ми силами:
+\begin{equation*}
+V(r)=  \fr{V_0}{1+\exp ((r-R)/a)} + \fr{2(\mathbf{l}\cdot 
+\mathbf{s})V_{ls}}{ra}\,\fr{\exp ((r-R)/a)}{(1+\exp ((r-R)/a))^2}\,,
+%\label{e2-b}
+\end{equation*}
+где $V_0=-30$~МэВ; $V_{ls}\hm= -10$~МэВ$\cdot$фм$^2$; $R\hm= 
+3{,}08$~фм; $a\hm= 0{,}53$~фм.
+  
+  В осцилляторном базисе уравнение~(1) эквивалентно бесконечной сис\-те\-ме 
+линейных ал\-геб\-ра\-и\-че\-ских уравнений на волновые функ\-ции в~осцилляторном 
+пред\-став\-ле\-нии~$a_{Nl}(k)$:
+  \begin{equation}
+  \sum\limits_{N^\prime =N_0, N_0+2, \ldots , \infty} \hspace*{-8mm}a_{N^\prime l}(k) \left( 
+H_{NN^\prime}-\delta_{NN^\prime}E\right) =0\,,\enskip N=N_0, N_0+2, \ldots , 
+\infty\,.
+  \label{e3-b}
+  \end{equation}
+Здесь $H_{NN^\prime}$~--- 
+мат\-рич\-ные элементы гамильтониана:
+$$
+H_{NN^\prime} = \int\limits_0^\infty R_{Nl} HR_{N^\prime l}\, dr\,,
+$$ 
+
+  \vspace*{-3pt}
+  
+  \noindent
+где $R_{Nl}$~--- радиальная осцилляторная 
+функция; $N\hm= 2n\hm+l$~--- пол\-ное (энергетическое) чис\-ло осцилляторных 
+кван\-тов, где $n$~--- глав\-ное кван\-то\-вое чис\-ло; $N_0$~--- минимальное чис\-ло 
+осцилляторных кван\-тов рас\-смат\-ри\-ва\-емой сис\-те\-мы (в~данном случае  
+$N_0\hm=l$).
+
+  
+  Для короткодействующих потенциалов уравнение~(\ref{e3-b}) сводится 
+к~конечной сис\-те\-ме уравнений:
+
+\vspace*{-8pt}
+
+\noindent
+  \begin{multline}
+  \sum\limits_{N^\prime =N_0, N_0+2, \ldots , N_0+N_{\max}} \hspace*{-10mm} a_{N^\prime l}(k) 
+\left( H_{NN^\prime} -\delta_{NN^\prime} E\right)=0\,,\\ 
+  N=N_0, N_0+2, \ldots , N_0+N_{\max}\,,
+  \label{e4-b}
+  \end{multline}
+  
+  \vspace*{-6pt}
+  
+  \noindent
+где $N_{\max}$~--- число квантов воз\-буж\-де\-ния, за\-да\-ющее модельное 
+пространство.
+
+ \begin{figure}[b] %fig1
+  \vspace*{-6pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=73.376mm 
+\epsfbox{bel-1.eps}
+ }
+\end{center}
+\vspace*{-10pt}
+  \Caption{Вариационные расчеты в~модельной задаче: \textit{1}~--- $N_{\max}\hm=4$; 
+\textit{2}~--- 8; \textit{3}~--- 12; \textit{4}~--- 24; \textit{5}~--- 30; \textit{6}~--- $N_{\max}\hm=38$}
+  \end{figure}
+
+  После диагонализации гамильтониана~$H$ в~(\ref{e4-b}) получаем спектр 
+собственных энергий~$E_\lambda$.  Минимальное значение функции~$E_{gs}(\hbar\Omega)$ 
+для данного модельного пространства ас\-со\-ци\-иру\-ет\-ся 
+с~энергией основного со\-сто\-яния яд\-ра~$E_{gs}$. Отметим, что для модельной 
+задачи размер мат\-ри\-цы гамильтониана с~рос\-том $N_{\max}$ увеличивается 
+линейно.
+  
+  Метод имеет два параметра: значение осцилляторной энергии $\hbar \Omega$ 
+и~максимальное чис\-ло кван\-тов воз\-буж\-де\-ния $N_{\max}$. Были проведены 
+оболочечные расчеты $E_{gs}(\hbar \Omega)$ в~различных модельных 
+пространствах $N_{\max}\hm= 4\ldots40$ с~шагом в~1~МэВ по $\hbar \Omega$. 
+На рис.~1 показаны данные, полученные в~отдельных модельных 
+пространствах.
+  
+ 
+  
+  
+  Горизонтальная сплош\-ная линия обозначает точ\-ное значение 
+$E_{gs}^{\mathrm{exp}}\hm= -3{,}5814$~МэВ энергии основного со\-сто\-яния сис\-те\-мы, 
+полученное прямым интегрированием уравнения Шредингера. Как показано 
+в~\cite{14-b}, некоторые методы экстраполяции работают лучше, когда 
+используются только данные, лежащие правее минимумов кривых 
+$E_{gs}(\hbar\Omega)$ (вертикальная штриховая линия). Предыду\-щие работы 
+авторов статьи под\-тверж\-да\-ют это утверж\-де\-ние, дополняя его фактом 
+улучшения про\-из\-во\-ди\-тель\-ности после использования данных только с~$E_{gs} 
+\hm < 0$~МэВ (горизонтальная штрихпунктирная линия).
+
+\vspace*{-2pt}
+
+\section{Задача нахождения энергии основного состояния ядра ${}^4$He}
+
+\vspace*{-2pt}
+
+
+  В МОБИК волновая функция разложена по мно\-го\-час\-тич\-но\-му 
+осцилляторному базису. Как и~в~случае описанной выше модельной задачи, 
+энергия основного со\-сто\-яния~$E_{gs}$ является функцией максимального 
+чис\-ла осцилляторных кван\-тов $N_{\max}$ и~па\-ра\-мет\-ра осцилляторной 
+функ\-ции $\hbar \Omega$. Но, в~отличие от модельной задачи, раз\-мер 
+мно\-го\-час\-тич\-но\-го базиса с~увеличением $N_{\max}$ увеличивается не линейно, 
+а~экспоненциально.
+
+\begin{figure}[b] %fig2
+\vspace*{-6pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=75.092mm 
+\epsfbox{bel-2.eps}
+ }
+\end{center}
+\vspace*{-10pt}
+\Caption{Энергия основного со\-сто\-яния ядра ${}^4$He $E_{gs}$, вы\-чис\-лен\-ная в~\mbox{МОБИК} 
+с~реалистическим взаимодействием Daejeon16: \textit{1}~--- $N_{\max}\hm= 2$; \textit{2}~--- 4; 
+\textit{3}~--- 8; \textit{4}~--- 14; \textit{5}~--- $N_{\max}\hm=18$}
+\end{figure}
+  
+  На рис.~2 показаны результаты расчетов энергии $E_{gs}$ основного 
+со\-сто\-яния ядра атома гелия ${}^4$He в~\mbox{МОБИК} с~ре\-а\-ли\-сти\-че\-ским 
+взаимодействием Daejeon16~\cite{5-b} для некоторых значений $N_{\max}$. 
+Расчеты проводились в~модельных пространствах $N_{\max}\hm= 2\ldots18$ при 
+$\hbar\Omega\hm= 8$, 9 и~10~МэВ и~далее с~шагом 2,5~МэВ до 50~МэВ. Как 
+и~в~модельной задаче, данные, лежащие слева от минимумов $E(\hbar\Omega)$ 
+(вертикальная штриховая линия), не использовались в~процессе обуче\-ния 
+ИНС.
+  
+
+
+
+  Точное значение энергии основного состояния может быть получено 
+в~пределе $N_{\max}\hm\to \infty$. Однако из-за экспоненциального рос\-та 
+чис\-ла базисных функций вы\-чис\-ле\-ние собственных значений мат\-ри\-цы 
+гамильтониана для больших $N_{\max}$ становится не\-воз\-мож\-ным даже на 
+суперкомпьютерах. Поэтому актуальна проб\-ле\-ма экстраполяции результатов, 
+полученных в~конечных модельных пространствах, на случай $N_{\max}\hm\to 
+\infty$.
+  
+  Оценка энергии основного состояния, полученная в~\cite{5-b} путем 
+экстраполяции результатов \mbox{МОБИК} на случай бесконечно больших модельных 
+пространств, со\-став\-ля\-ет $-28{,}372$~МэВ; экспериментальное значение 
+энергии связанного со\-сто\-яния~--- $-28{,}296$~МэВ.
+
+\vspace*{-2pt}
+  
+\section{Метод экстраполяции}
+
+\vspace*{-2pt}
+
+
+
+
+  Как уже упоминалось ранее, методы машинного обуче\-ния обычно не 
+используются для задач экстраполяции с~малым объемом данных. Тем не менее 
+на их основе может быть построен алгоритм для их решения. Оказывается, для 
+таких задач подходит одновременное обуче\-ние множества ИНС.
+  
+  Предсказания, полученные с~помощью методов машинного обуче\-ния, 
+включают некоторую слу\-чай\-ность, связанную с~начальными значениями 
+весовых коэффициентов. Чтобы избежать этой слу\-чай\-ности, обуча\-ет\-ся большое 
+чис\-ло ИНС с~одинаковыми ги\-пер\-па\-ра\-мет\-ра\-ми, но с~разными начальными 
+значениями весовых коэффициентов. 
+
+
+  
+  Очевидно, что не все обученные ИНС будут давать правильные прогнозы, 
+поэтому важ\-но иметь критерии, поз\-во\-ля\-ющие от\-фильт\-ро\-вы\-вать заведомо 
+неправильно обучен\-ные ИНС.
+  
+  В модели ядерных оболочек роль такого критерия играет вариационный 
+принцип для энергий связанных со\-сто\-яний, со\-глас\-но которому энергия 
+основного\linebreak\vspace*{-12pt}
+
+\begin{floatingfigure}{70mm} %fig3
+  \vspace*{6pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=62.058mm 
+\epsfbox{bel-3.eps}
+ }
+\end{center}
+\vspace*{-10pt}
+  \Caption{Гистограмма зависимости числа ИНС, пред\-ска\-зы\-ва\-ющих энергию в~каж\-дом 
+интервале, от пред\-ска\-зы\-ва\-емых ими энергий основного со\-сто\-яния~$E_{{gs}}$:
+\textit{1}~--- $E_{{gs}}^{\mathrm{pr}}\hm= -3{,}564$~МэВ; $\sigma\hm= 0{,}0029$~МэВ}
+\vspace*{-24pt}
+\end{floatingfigure}
+
+\noindent
+ со\-сто\-яния~$E_{gs}$ долж\-на уменьшаться с~рос\-том~$N_{\max}$ при 
+каж\-дом фиксированном значении~$\hbar\Omega$. 
+  
+  Для дальнейшей фильтрации, аналогично работе~\cite{13-b}, выбираются 
+50~ИНС с~наименьшим сред\-не\-квад\-ра\-тич\-ным отклонением предсказанных 
+значений от истинных.
+
+
+  
+  Эмпирически было показано, что за\-ви\-си\-мость чис\-ла ИНС, пред\-ска\-зы\-ва\-ющих 
+энергию в~каждом интервале, от пред\-ска\-зы\-ва\-емых ими энергий основного 
+со\-сто\-яния~$E_{\mathrm{gs}}$ в~большинстве случаев пред\-став\-ля\-ет собой нормальное 
+распределение. Аппроксимируя их кривой Гаусса, мож\-но получить\hspace*{74.5mm}\linebreak
+ прогноз 
+метода и~его по\-греш-\hspace*{74.5mm}\linebreak
+ность. Среднее значение этого распределения используется 
+как значение, пред\-ска\-зы\-ва\-емое методом,~--- $E_{gs}^{\mathrm{pr}}$, а~стан\-дарт\-ное 
+отклонение распределения~$\sigma$ принимается за по\-греш\-ность~$\Delta E$ 
+пред\-ска\-за\-ния метода.
+  %
+  На рис.~3 приведена такая гис\-то\-грам\-ма. Гаус\-со\-и\-да для данного 
+распределения показана кривой. 
+%Прогнозируемое значение 
+%энергии~$E_{gs}^{pr}$ и~стан\-дарт\-ное отклонение~$\sigma$ показаны в~правом 
+%верх\-нем углу рисунка.
+  
+
+  
+  
+
+  Вышеупомянутый алгоритм был разработан с~использованием биб\-лио\-те\-ки 
+с~открытым исходным кодом Keras~\cite{15-b} для языка Python. 
+
+\vspace*{-2pt}
+  
+\section{Результаты}
+
+\vspace*{-2pt}
+
+  С помощью поиска по сетке были получены оптимальные па\-ра\-мет\-ры 
+машинного обуче\-ния для обеих задач. К~этим па\-ра\-мет\-рам относятся: ско\-рость 
+обуче\-ния $\gamma\hm= 0{,}1$, размер пакета $B_S\hm=64$ и~16 для модельной 
+задачи и~задачи на\-хож\-де\-ния энергии основного со\-сто\-яния ядра ${}^4$He 
+соответственно. Оптимальная архитектура ИНС в~обоих случаях~--- 5~скрытых 
+слоев по~10~нейронов в~каж\-дом. Ак\-ти\-ви\-ру\-ющей функцией каж\-до\-го из слоев, 
+за исключением по\-след\-не\-го, является сиг\-мо\-и\-даль\-ная функция.
+
+\begin{figure}[b] %fig4
+\vspace*{-6pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=126.9mm 
+\epsfbox{bel-4.eps}
+ }
+\end{center}
+\vspace*{-10pt}
+\Caption{Результаты работы алгоритма с~разным объемом входных данных для модельной 
+задачи~(\textit{а}) и~для задачи 
+на\-хож\-де\-ния энергии основного со\-сто\-яния ${}^4$He~(\textit{б}); $\gamma\hm=0{,}1$}
+\end{figure}
+
+  Зависимость предсказаний метода от объема данных для модельной задачи 
+показана на рис.~4,\,\textit{а}. Точки пред\-став\-ля\-ют собой пред\-ска\-зан\-ное значение энергии 
+основного со\-сто\-яния $E_{gs}$, вертикальные линии~--- по\-греш\-ность 
+предсказания~$\sigma$. Горизонтальная линия соответствует истинному 
+значению энергии $E_{gs}^{\mathrm{exp}}\hm= -3{,}581$~МэВ. Процесс обучения 
+проводился на данных вплоть до $N_{\max}\hm= 10$, 12, 14 и~так далее. Как 
+видно из рис.~4,\,\textit{а}, истинное значение лежит в~пред\-ска\-зы\-ва\-емых интервалах для 
+всех размеров набора данных. При увеличении максимального значения 
+$N_{\max}$ пред\-ска\-за\-ния метода изменяются с~$-3{,}585\hm\pm 0{,}030$ 
+до $-3{,}579\hm\pm 0{,}006$~МэВ для $N_{\max}\hm=10$ и~40 соответственно.
+  
+  
+
+
+  На рис.~4,\,\textit{б} показана аналогичная за\-ви\-си\-мость для задачи на\-хож\-де\-ния энергии 
+основного со\-сто\-яния ${}^4$He. Горизонтальная линия~--- результаты 
+экстраполяции, полученные в~\cite{5-b}. Все предсказанные диапазоны так\-же 
+содержат это значение. Пред\-ска\-за\-ния для $N_{\max}\hm=10$ 
+и~$18$ со\-став\-ля\-ют $-28{,}368\hm\pm 0{,}043$  
+и~$-28{,}366 \hm\pm 0{,}015$~МэВ соответственно.
+  
+   
+  
+  Разработанный алгоритм хорошо работает даже с~небольшими наборами 
+данных. Так, задача на\-хож\-де\-ния энергии основного со\-сто\-яния~${}^4$He 
+с~$N_{\max}\hm=10$ содержит около~50~примеров, что является 
+недостаточным объемом данных для корректной работы большинства других 
+алгоритмов на основе машинного обуче\-ния.
+  
+\section{Заключение}
+
+  Предложен новый метод экстраполяции результатов вариационных расчетов 
+  в~модели ядерных оболочек с~осцилляторным базисом на случай бесконечно 
+больших модельных пространств. Метод основан на машинном обуче\-нии 
+и~поз\-во\-ля\-ет пред\-ска\-зы\-вать значения энергии основного со\-сто\-яния на основе 
+результатов вариационных расчетов, полученных в~ограниченном чис\-ле 
+модельных пространств $N_{\max}$ с~различными значениями осцилляторного 
+па\-ра\-мет\-ра~$\hbar\Omega$. В~разработанном алгоритме используется только 
+программное обеспечение с~открытым исходным кодом.
+  
+  В рамках модельной задачи с~известным точ\-ным решением исследовалась 
+схо\-ди\-мость результатов при увеличении объема входных данных. Показано, 
+что метод поз\-во\-ля\-ет до\-стичь достаточно высокой точ\-ности прогноза даже 
+в~случае малых пространств моделей $N_{\max}\sim 10$, что особенно важ\-но 
+с~точ\-ки зрения его применения для анализа результатов, полученных 
+в~современных оболочечных подходах. То же утверж\-де\-ние справедливо и~для 
+оцен\-ки энергии основного со\-сто\-яния ядра ${}^4$He.
+  
+  Метод позволяет не только получить ин\-те\-ре\-су\-ющее значение, но и~оценить 
+точ\-ность прогнозов. К~достоинствам метода мож\-но так\-же отнести 
+уни\-вер\-саль\-ность: его можно использовать не только для анализа энергий 
+основного со\-сто\-яния, но и~для других характеристик ядер.
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-b}
+\Au{Barrett B.\,R., Navr\'{a}til~P., Vary~J.\,P.} Ab initio no core shell model~/\!\!/ 
+Prog. Part. Nucl. Phys., 2013. Vol.~69. Iss.~1. P.~131--181. doi: 10.1016\!/\!j.ppnp. 2012.10.003.
+
+\bibitem{4-b} %2
+\Au{Stoks V.\,G.\,J., Klomp R.\,A.\,M., Terheggen~C.\,P.\,F., de Swart~J.\,J.} Construction of high-quality 
+NN potential models~/\!\!/ Phys. Rev.~C, 1994. Vol.~49. P.~2950--2962. doi: 
+10.1103\!/\!PhysRevC.49.2950.
+
+
+
+\bibitem{3-b} %3
+\Au{Wiringa R.\,B., Stoks~V.\,G.\,J., Schiavilla~R.} Accurate nucleon--nucleon potential with  
+charge-independence breaking~/\!\!/ Phys. Rev.~C,  1995. Vol.~51. P.~38--51. doi: 
+10.1103\!/\!PhysRevC.51.38.
+
+\bibitem{2-b} %4
+\Au{Machleidt R.} High-precision, charge-dependent Bonn nucleon--nucleon potential~/\!\!/ Phys. Rev.~C, 
+2001.  Vol.~63. Iss.~2. Art.~024001. 32~p. doi: 10.1103\!/\!PhysRevC.63. 024001.
+
+
+\bibitem{5-b}
+\Au{Shirokov A.\,M., Shin I.\,J., Kim~Y., Sosonkina~M., Maris~P., Vary~J.\,P.} N3LO NN interaction 
+adjusted to light nuclei in ab exitu approach~/\!\!/ Phys. Lett.~B, 2016. Vol.~761. P.~87--91. doi: 
+10.1016\!/\!j.physletb.2016.08.006.
+\bibitem{6-b}
+\Au{Maris~P., Vary~J.\,P., Shirokov~A.\,M.} Ab initio no-core full configuration calculations of light 
+nuclei~/\!\!/ Phys. Rev.~C, 2009. Vol.~79. Art.~014308. 15~p. doi: 10.1103\!/\!PhysRevC. 79.014308. 
+\bibitem{7-b}
+\Au{Maris P., Vary J.\,P.} Ab initio nuclear structure calculations of p-shell nuclei with JISP16~/\!\!/ Int. 
+J.~Mod. Phys.~E, 2013. Vol.~22. Iss.~7. Art. 1330016. 17~p. doi: 10.1142\!/\!S0218301313300166.
+
+
+
+
+\bibitem{10-b} %8
+\Au{Zhan H., Nogga~A., Barrett B.\,R., Vary~J.\,P., Navr\'{a}til~P.} Extrapolation method for the no-core 
+shell model~/\!\!/ Phys. Rev.~C, 2004. Vol.~69. Art. 034302. 8~p. doi: 10.1103\!/ PhysRevC.69.034302. 
+
+\bibitem{8-b} %9
+\Au{Coon S.\,A., Avetian M.\,I., Kruse M.\,K.\,G., van Kolck~U., Maris~P., Vary~J.\,P.} Convergence 
+properties of ab initio calculations of light nuclei in a harmonic oscillator basis~/\!\!/ Phys. Rev.~C, 2012. 
+Vol.~86. Art. 054002. doi: 10.1103\!/\!PhysRevC.86.054002.
+
+
+\bibitem{12-b} %10
+\Au{Kruse M.\,K.\,G., Jurgenson~E.\,D., Navr\'{a}til~P., Barrett~B.\,R., Ormand~W.\,E.} Extrapolation 
+uncertainties in the importance-truncated no-core shell model~/\!\!/ Phys. Rev.~C, 2013. Vol.~87. 
+Art. 044301. 15~p. doi: 10.1103\!/\!PhysRevC.87.044301.
+
+\bibitem{11-b}
+\Au{More S.\,N., Ekstr\"{o}m~A., Furnstahl R.\,J., Hagen~G., Papenbrock~T.} Universal properties of 
+infrared oscillator basis extrapolations~/\!\!/ Phys. Rev.~C, 2013. Vol.~87. Art. 044326. 14~p. doi: 
+10.1103\!/\!PhysRevC.87.044326.
+
+\bibitem{9-b} %12
+\Au{Furnstahl R.\,J., More~S.\,N., Papenbrock~T.} Systematic expansion for infrared oscillator basis 
+extrapolations~/\!\!/ Phys. Rev.~C, 2014.  Vol.~89. Art. 044301. 12~p. doi: 10.1103\!/ PhysRevC.89.044301. 
+
+\bibitem{13-b}
+\Au{Negoita G.\,A., Vary~J.\,P., Luecke~G.\,R., Maris~P., Shirokov~A.\,M., Shin~I.\,J., Kim~Y., Ng~E.\,G.,  
+Yang~C., Lockner~M., Prabhu~G.\,M.} Deep learning: Extrapolation tool for ab initio nuclear theory~/\!\!/ 
+Phys. Rev.~C, 2019. Vol.~99. Art. 054308. 11~p. doi: 10.1103\!/\!PhysRevC.99.054308. 
+\bibitem{14-b}
+\Au{Shirokov A.\,M., Mazur A.\,I., Kulikov~V.\,A.} On the convergence of oscillator basis calculations~/\!\!/ 
+Phys. Atom. Nucl., 2021. Vol.~84. Iss.~2. P.~131--143. doi: 10.1134\!/ S1063778821020149.
+\bibitem{15-b}
+Keras: The Python Deep Learning library. {\sf https://keras.io}.
+       \end{thebibliography}
+} }
+
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 06.12.21}}
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+%\vspace*{8pt}
+
+\def\tit{MACHINE LEARNING FOR~EXTRAPOLATION PROBLEMS WITH~SMALL DATASET}
+
+
+
+\def\titkol{Machine learning for~extrapolation problems with~small dataset}
+
+\def\aut{A.\,O.~Belozerov and~A.\,I.~Mazur}
+
+\def\autkol{A.\,O.~Belozerov and~A.\,I.~Mazur}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+Pacific National University, 136~Tikhookeanskaya Str., Khabarovsk 680035, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2022 vol~32 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2022 vol~32 no\,2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+\Abste{A new method of extrapolation of variational calculations which is based on 
+training a~large number of artificial neural networks with subsequent
+filtering to select the best 
+networks  is proposed. This method is used to evaluate\linebreak\vspace*{-12pt}}
+
+\Abstend{ground state energy for model problem and to calculate 
+the ground state energy of a~${}^{4}$He nucleus based on calculations in no-core shell model with 
+realistic potential Daejeon16. The results convergence with increasing number of input data was 
+studied. It is shown that the method allows one to achieve a~sufficiently high prediction accuracy 
+even in the case of small model spaces. The method can be applied both in finding various 
+characteristics of nuclei and in solving other problems not related to nuclear physics.}
+
+\KWE{machine learning; extrapolation methods; ground state energy; nuclear shell model }
+
+
+
+
+\DOI{10.14357\!/\!08696527220202} 
+
+%\vspace*{-16pt}
+
+
+ \Ack
+\noindent
+The paper is published on the proposal of the Program Committee of the 6th International Scientific and 
+Practical Conference ``Information Technologies and High Performance Computing'' (ITHPC-2021). The 
+work was partially supported by the Russian Foundation for Basic Research (project No.\,20-02-00357) and by 
+the Ministry of Science and Higher Education of the Russian Federation (project No.\,0818-2020-0005).
+ 
+
+
+%\vspace*{-6pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-b-1}
+\Aue{Barrett, B.\,R., P.~Navr\'{a}til, and J.\,P.~Vary.} 2013. Ab initio no core shell model. \textit{Prog. 
+Part. Nucl. Phys.} 69(1):131--181. doi: 10.1016\!/\!j.ppnp.2012.10.003.
+
+\bibitem{4-b-1} %2
+\Aue{Stoks, V.\,G.\,J., R.\,A.\,M.~Klomp, C.\,P.\,F.~Terheggen, and J.\,J.~de Swart.} 1994. Construction of  
+high-quality NN potential models. \textit{Phys. Rev.~C} 49:2950--2962. doi: 
+10.1103\!/\!PhysRevC.49.2950.
+
+
+
+\bibitem{3-b-1}
+\Aue{Wiringa, R.\,B., V.\,G.\,J.~Stoks, and R.~Schiavilla.} 1995. Accurate nucleon--nucleon potential with 
+charge-independence breaking. \textit{Phys. Rev.~C} 51:38--51. doi: 10.1103\!/ PhysRevC.51.38.
+
+
+\bibitem{2-b-1} %4
+\Aue{Machleidt, R.} 2001. High-precision, charge-dependent Bonn nucleon--nucleon potential. \textit{Phys. 
+Rev.~C} 63(2):024001. 32~p. doi: 10.1103\!/\!PhysRevC.63.024001.
+
+\bibitem{5-b-1} %5
+\Aue{Shirokov, A.\,M., I.\,J.~Shin, Y.~Kim, M.~Sosonkina, P.~Maris, and J.\,P.~Vary.} 2016. N3LO  
+NN interaction adjusted to light nuclei in ab exitu approach. \textit{Phys. Lett.~B} 761:87--91. doi: 
+10.1016\!/\!j.physletb.2016.08.006.
+\bibitem{6-b-1}
+\Aue{Maris, P., J.\,P.~Vary, and A.\,M.~Shirokov.} 2009. Ab initio no-core full configuration calculations 
+of light nuclei. \textit{Phys. Rev.~C} 79:014308. 15~p. doi: 10.1103\!/ PhysRevC.79.014308.
+\bibitem{7-b-1}
+\Aue{Maris, P., and J.\,P.~Vary.} 2013. Ab initio nuclear structure calculations of \mbox{p-shell} nuclei with 
+JISP16. \textit{Int. J.~Mod. Phys.~E} 22(7):1330016. 17~p. doi: 10.1142\!/ S0218301313300166.
+
+
+\bibitem{10-b-1} %8
+\Aue{Zhan, H., A.~Nogga, B.\,R.~Barrett, J.\,P.~Vary, and P.~Navr\'{a}til.} 2004. Extrapolation method for 
+the no-core shell model. \textit{Phys. Rev.~C} 69:034302. 8~p. doi: 10.1103\!/ PhysRevC.69.034302.
+
+\bibitem{8-b-1} %9
+\Aue{Coon, S.\,A., M.\,I.~Avetian, M.\,K.\,G.~Kruse, U.~van Kolck, P.~Maris, and J.\,P.~Vary.} 2012. 
+Convergence properties of ab initio calculations of light nuclei in a~harmonic oscillator basis. \textit{Phys. 
+Rev.~C} 86:054002. 15~p. doi: 10.1103\!/\!PhysRevC.86.054002.
+
+\bibitem{12-b-1} %10
+\Aue{Kruse, M.\,K.\,G., E.\,D.~Jurgenson, P.~Navr\'{a}til, B.\,R.~Barrett, and W.\,E.~Ormand.} 2013. 
+Extrapolation uncertainties in the importance-truncated no-core shell model. \textit{Phys. Rev.~C} 
+87:044301. 15~p. doi: 10.1103\!/\!PhysRevC.87.044301.
+
+\bibitem{11-b-1}
+\Aue{More, S.\,N., A.~Ekstr\"{o}m, R.\,J.~Furnstahl, G.~Hagen, and T.~Papenbrock.} 2013. Universal 
+properties of infrared oscillator basis extrapolations. \textit{Phys. Rev.~C} 87:044326. 14~p. doi: 
+10.1103\!/\!PhysRevC.87.044326.
+
+\bibitem{9-b-1} %12
+\Aue{Furnstahl, R.\,J., S.\,N.~More, and T.~Papenbrock.} 2014. Systematic expansion for infrared oscillator 
+basis extrapolations. \textit{Phys. Rev.~C} 89:044301. 12~p. doi: 10.1103\!/ PhysRevC.89.044301.
+
+
+\bibitem{13-b-1}
+\Aue{Negoita, G.\,A., J.\,P.~Vary, G.\,R.~Luecke, P.~Maris, A.\,M.~Shirokov, I.\,J.~Shin, Y.~Kim, 
+E.\,G.~Ng, C.~Yang, M.~Lockner, and G.\,M.~Prabhu.} 2019. Deep learning: Extrapolation tool for ab 
+initio nuclear theory. \textit{Phys. Rev.~C} 99:054308. 11~p. doi: 10.1103\!/\!PhysRevC.99.054308.
+\bibitem{14-b-1}
+\Aue{Shirokov, A.\,M., A.\,I.~Mazur, and V.\,A.~Kulikov.} 2021. On the convergence of oscillator basis 
+calculations. \textit{Phys. Atom. Nucl.} 84(2):131--143. doi: 10.1134\!/ S1063778821020149.
+\bibitem{15-b-1}
+Keras: The Python deep learning library. Available at: {\sf https://keras.io/} (accessed March~28, 2022).
+\end{thebibliography}
+} }
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received December 6, 2021}} 
+
+%\vspace*{-14pt} 
+
+\Contr
+
+\noindent
+\textbf{Belozerov Alexander O.} (b.\ 2000)~--- laboratory assistant, Research Laboratory for Modeling 
+Quantum Processes, Pacific National University, 136~Tikhookeanskaya Str., Khabarovsk 680035, Russian 
+Federation; \mbox{aobelozerov@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Mazur Alexander I.} (b.\ 1959)~--- leading scientist, Research Laboratory for Modeling Quantum 
+Processes, Pacific National University, 136~Tikhookeanskaya Str., Khabarovsk 680035, Russian Federation; 
+\mbox{mazur@khb.ru}
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

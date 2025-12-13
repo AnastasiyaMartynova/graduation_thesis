@@ -1,0 +1,674 @@
+  \def\stat{kriv-lin}
+
+\def\tit{СТАТИЧЕСКИЙ СПОСОБ СТЕГАНОГРАФИЧЕСКОГО 
+ВСТРАИВАНИЯ ИНФОРМАЦИИ НА~ОСНОВЕ LSB}
+
+\def\titkol{Статический способ стеганографического 
+встраивания информации на~основе LSB}
+
+
+\def\aut{И.\,А.~Кривошеев$^1$, М.\,А.~Линник$^2$}
+
+\def\autkol{И.\,А.~Кривошеев, М.\,А.~Линник}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Кривошеев И.\,А.}
+\index{Линник М.\,А.}
+\index{Krivosheev I.\,A.}
+\index{Linnik M.\,A.}
+
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Исследование выполнено за счет гранта Минобрнауки РФ по заявке №\,2020-1902-01-016.}} 
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт горного дела Дальневосточного отделения Российской академии наук; Хабаровский Федеральный 
+исследовательский центр Дальневосточного отделения Российской академии наук, \mbox{igork@as.khb.ru}}
+\footnotetext[2]{Вычислительный центр Дальневосточного отделения Российской академии наук, 
+\mbox{linnik.max1995@mail.ru}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}
+  
+  
+  
+      
+   
+   \Abst{Предлагается новый подход к~сокрытию информации на основе метода LSB (least significant 
+bit). Предложен статический способ встраивания информации в~цветное изображение, основанный на 
+матричном представлении отдельных блоков и~оценке модуля их детерминанта. Численным 
+моделированием была оценена возможность предложенного способа противостоять различным 
+методам стегоанализа. Показано его преимущество как в~степени защищенности, так и~в объеме 
+встраиваемой информации. Данный алгоритм может быть использован для встраивания информации в~изображения форматов без сжатия информации.}
+   
+   \KW{стеганография; стегоконтейнер; стегоанализ; детерминант; LSB; RS-сте\-го\-ана\-лиз; 
+анализ с~использованием критерия хи-квад\-рат; анализ битовых слоев}
+
+\DOI{10.14357\!/\!08696527200306}
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}
+   
+  \section{Введение}
+  
+  Стеганографическое встраивание~[1] стало перспективной областью 
+информационной безопасности и~может использоваться для решения многих 
+задач, например защиты авторского права, путем встраивания цифровой 
+подписи, незаметной человеческому глазу. Помимо этого стеганографию 
+можно использовать для передачи информации. 
+  
+  Одна из главных проблем стеганографии~--- поиск наиболее универсального 
+и~при этом эффективного метода стеганографического встраивания, которое 
+будет защищено от атак~[2].
+  
+  Максимальный объем данных, который можно встроить в~объект 
+(стегоконтейнер) при условии, что его изменения не будут критическими, 
+называется пропускной способностью в~контексте стеганографии.
+  
+  В настоящее время совершенно очевидно, что компьютерная стеганография 
+стала одним из самых мощных инструментов скрытого встраивания 
+защищаемых данных, которые могут храниться и~передаваться в~открытом 
+незащищенном виде~\cite{3-lin, 4-lin, 5-lin}. Поэтому наибольший интерес для 
+исследователей и~пользователей представляет совершенствование методов 
+стеганографического встраивания скрываемой информации.
+  
+  На сегодняшний день при встраивании информации в~цветное изображение 
+широко распространен метод на основе подмены наименее значащего бита 
+(LSB)~[6, 7]. Основа данного метода заключается в~том, 
+что при встраивании информации в~цветное изображение проводится замена от 
+одного до четырех младших битов в~байтах пикселей изображения, что для 
+человеческого глаза практически незаметно.
+  
+  У метода есть огромные преимущества в~объеме встраиваемой информации 
+  и~быстродействии из-за его простоты~\cite{8-lin}. Однако простота метода не 
+позволяет использовать его в~полной мере из-за его слабости к~отдельным 
+методам стегоанализа
+  
+  \section{Постановка задачи}
+  
+  Если в~стеганографии в~качестве контейнера используется цветное 
+изображение, то одним из вариантов отдельного элемента является пиксель. 
+Рассмотрим цветовое пространство RGB. Каждый пиксель в~нем 
+подразделяется на три цветовых области: красную (R~--- red), зеленую (G~--- green) и~синюю 
+(B~--- blue), каждая из которых характеризуется отдельным числом от~0 до~255. 
+  
+  Эти числа можно представить в~двоичном коде с~использованием восьми 
+знаков из нулей и~единиц. При замене последнего (младшего) бита разница при 
+изменении цвета будет незаметна человеческому глазу. Благодаря этому 
+обстоятельству можно добавлять информацию в~данные биты и~таким образом 
+передавать ее~\cite{7-lin}.
+  
+  Метод при своей простоте и~эффективности имеет и~значительные минусы. 
+На передачу информации при использовании алгоритма LSB могут повлиять 
+самые незначительные искажения контейнера. При искажении контейнера 
+меняется значение цвета, а~оно служит ключевой единицей при извлечении 
+встроенной информации~\cite{9-lin}. По этой причине для данного метода 
+подходят только изображения без сжатия информации. 
+  
+  Кроме того, он хорошо обнаруживается большинством стеганографических 
+методов.
+  
+  Один из распространенных методов стегонализа~--- анализ битовых срезов. 
+В~данном способе рассматриваются изображения, построенные с~по\-мощью 
+значений отдельных битовых слоев~\cite{3-lin}.
+  
+  В ряде изображений четко различимы контуры объектов, поэтому 
+дополнительная встроенная информация может быть заметна невооруженным 
+глазом. На рис.~1 показан пример такого встраивания.
+  
+  
+        \begin{figure} %fig1
+        \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{lin-1.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+  \Caption{Иллюстрация встроенной информации при использовании анализа битовых 
+слоев: (\textit{а})~контейнер, в~который встроена информация методом LSB; 
+(\textit{б})~битовый слой данного изображения (встроено 10\% информации от общего 
+объема)}
+  \end{figure}
+  
+  Как видно из данного примера, даже при анализе такими простыми методами 
+информация уже становится заметна. В~более сложных случаях эффективные 
+результаты дают статистические методы стегоанализа, такие как стегоанализ на 
+основе критерия хи-квад\-рат и~RS-сте\-го\-ана\-лиз~\cite{4-lin, 5-lin}.
+  %
+  Поэтому при разработке нового способа необходимо учесть приведенные 
+особенности и~недостатки, а~также обратить внимание на контейнер, который 
+при использовании цветных изображений может иметь существенно разные 
+исходные данные, влияющие на результат сокрытия информации.
+  
+  Отдельные попытки усовершенствования метода LSB делались  
+в~\cite{11-lin, 12-lin}. Выбранное направление оказалось интересным, однако 
+полученные результаты не давали полной уверенности в~надежности сокрытия 
+информации. Поэтому у~исследователей остался вопрос относительно 
+возможности усовершенствования метода по части повышения степени 
+защищенности.
+  
+  \section{Алгоритм разработанного способа  }
+  
+  Следует напомнить, что разработанный способ берет за основу  
+LSB-ал\-го\-ритм. Суть данного предложения заключается в~следующем.
+  
+  Выбранный контейнер цветного изображения делится на квадратные блоки 
+одинакового размера. Для более детальной обработки лучше выбирать блоки 
+минимального размера, например $2\times2$ или $3\times3$~пикселя. 
+Определяется значение пикселя в~каждом блоке. При этом удобно использовать 
+известный подход, описанный в~\cite{10-lin}, с~принятыми обозначениями. 
+Можно задаться и~собственным представлением с~возможностью применения 
+ко всем пикселям каждого блока. Далее в~каждом блоке вычисляется значение 
+модуля детерминанта, которое связано с~координатами этого блока 
+в~используемом контейнере. Затем выполняется ранжирование получившихся 
+значений модуля детерминанта с~сохранением координат их расположения.
+  
+  Встраивание, в~свою очередь, выполняется в~те блоки, в~которых значение 
+модуля детерминанта максимально. Значение модуля детерминанта 
+используется для того, чтобы встраивание в~самые яркие или самые темные 
+области проводилось в~последнюю очередь либо вообще не проводилось. 
+Использование такого подхода маскирует контейнер. Этим ограничивается 
+объем встраиваемой информации.
+  
+  Пошаговый алгоритм можно представить следующим образом.
+  
+  \smallskip
+  
+  \textit{Встраивание}:
+  
+  \smallskip
+  
+ \textbf{Шаг~1.} Разбиение пикселей изображения контейнера на блоки~$A$ 
+определенного размера (например, $2\times2$). 
+  
+  Число зон для случая разбиения на блоки $2\times2$ пикселей вычисляется 
+по следующей формуле:
+  \begin{equation}
+  n=\left\lfloor \fr{w}{2}\right\rfloor \cdot \left\lfloor \fr{h}{2}\right\rfloor\,,
+  \end{equation}
+гдe $w$ и~$h$~--- ширина и~высота изображения в~пикселях; $\lfloor\,\rfloor$~--- 
+округление до ближайшего целого.
+  
+  \textbf{Шаг~2.} Значение пикселя в~зоне вычисляется, например, по формуле, 
+приведенной в~\cite{10-lin}:
+  \begin{equation}
+  a_{i,j}=0{,}299 {R}+0{,}587 {G}+0{,}114 {B}\,,
+  \end{equation}
+где $i\in 0\ldots1$, $j\in 0\ldots 1$~--- координаты пикселя в~блоке;
+${R}\hm\in 0\ldots 255$, ${G}\hm\in 0\ldots 255$ и~${B}\hm\in 
+0\ldots 255$~--- цветовые компоненты пикселя.
+  
+  \textbf{Шаг~3.} Для каждой зоны вычисляется значение детерминанта
+  \begin{equation*}
+  \mathrm{det}\left\vert  D_k\right\vert\,,
+  \end{equation*}
+где $k\in 0\ldots n$.
+
+  \textbf{Шаг~4.} Далее проводится ранжирование значений $D_k$ по убыванию 
+с~сохранением координат.
+  
+  \textbf{Шаг~5.} Встраивание конфиденциальной информации происходит 
+в~отсортированные блоки~$A$, которые имеют максимальное значение~$D_k$ 
+в~три компоненты цвета: в~красную, синюю и~зеленую, т.\,е.\ на каждый 
+пиксель приходится~3~бита информации. В~блок размера $2\times2$~пикселя 
+встраивается~12~бит информации. 
+  
+  \smallskip
+  
+  
+  Таким образом, максимальная информация, которую можно встроить 
+в~изоб\-ра\-же\-ние для блока размером $2\times2$ пикселя, вычисляется 
+следующим образом: 
+  \begin{equation*}
+  V=\left( \left\lfloor \fr{w}{2}\right\rfloor \cdot \left\lfloor \fr{h}{2}\right\rfloor 
+\cdot 3\right) \cdot 2^2\,.
+  \end{equation*}
+  
+  Исходя из полученного объема возможного встраивания информации, можно 
+скорректировать его или выбрать необходимый, чтобы получить бо$\acute{\mbox{о}}$льшую 
+защищенность при стегоанализе. 
+  
+  \smallskip
+  
+  
+  \textit{Извлечение} происходит в~обратном порядке.
+  
+  \smallskip
+  
+  
+  \textbf{Шаг~1.} Разбиение пикселей изображения на блоки~$A$ размером $2\times2$. 
+Число блоков вычисляется по формуле~(1).
+  
+ \textbf{Шаг~2.} Значение пикселя в~зоне вычисляется по формуле~(2).
+  
+ \textbf{Шаг~3.} Для каждой зоны вычисляется значение дискриминанта по 
+выбранной формуле.
+  
+ \textbf{Шаг~4.} Сортировка значений~$D_k$ по убыванию. 
+  
+ \textbf{Шаг~5.} Последовательно из блока~$D_k$ извлекается встроенное число 
+битов информации.
+  
+  \section{Численное моделирование}
+  
+    \begin{floatingfigure}{60mm}
+  {\small
+  \begin{center}
+  \begin{tabular}{|c|c|}
+  \multicolumn{2}{c}{Ранжирование группы изображений}\\
+  \multicolumn{2}{c}{\ }\\[-1pt]
+  \hline
+\tabcolsep=0pt\begin{tabular}{c}№\\ изображения\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}Сумма площадей\\ пикселей области/\\
+общую сумму\\ площадей пикселей 
+\end{tabular}\\
+\hline
+1&0\hphantom{,}\\
+2&\hphantom{,}$0{,}5\cdot 10^{-5}$\\
+3&\hphantom{9}$33\cdot 10^{-5}$\\
+4&$318\cdot 10^{-5}$\\
+5&$334\cdot 10^{-5}$\\
+6&$334\cdot 10^{-5}$\\
+7&$557\cdot 10^{-5}$\\
+8&$810\cdot 10^{-5}$\\
+9&$989\cdot 10^{-5}$\\
+10\hphantom{9}&$999\cdot 10^{-5}$\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{14pt}
+}
+\end{floatingfigure}
+  
+  Для проведения численного моделирования был выбран идентификационный 
+параметр, указывающий отличие одного цветного изображения от другого. На 
+сегодняшний день существует множество подобных  
+параметров~\cite{1-lin, 11-lin}, однако каждый исследователь вправе выбрать 
+такой, который может удовлетворять его требованиям. По этому параметру 
+в~таб\-ли\-це приведено ранжирование выбранных цветных изображений. 
+  
+ 
+
+  
+  Выбрана группа из десяти различных цветных изображений, каждое 
+размером $1024\times1280$~пикселей (рис.~2). Встраивание различного объема 
+информации проводилось в~каждое цветное изображение. Затем оценивались 
+параметры различных способов стегоанализа.
+  
+ 
+  
+  Рассмотрим использование стегоатаки на основе анализа битовых срезов. На 
+рис.~3 показаны битовые срезы контейнеров оригинального LSB-ме\-то\-да 
+и~разработанного способа при условии, что в~них встроен одинаковый объем 
+информации. 
+    
+    
+  
+  На рис.~3 видно, что разработанная модификация позволяет скрыть 
+информацию при использовании данного метода стегоанализа. 
+  
+  Рассмотрим результаты других широко используемых методов стегоанализа.
+  
+  RS-стегоанализ относится к~статистическим методам стегоанализа. 
+Изображение разбивается на группы пикселей. Деление на группы происходит 
+после применения флип\-пинг-про\-це\-ду\-ры с~применением введенной маски  
+и~дис\-кри\-ми\-нант-функ\-ции. После проведения расчетов анализируются 
+значения дис\-кри\-ми\-нант-функ\-ции до и~после применения процедуры 
+флиппинга. 
+
+ \setcounter{figure}{1}
+  \begin{figure} %fig2
+   \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{lin-2.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+  \Caption{Группа изображений}
+  \end{figure}
+  
+ 
+  
+  Работа этого алгоритма строится на предположении равенства регулярных 
+и~сингулярных групп в~пустом изображении после применения процедуры 
+флиппинга. Иначе считается, что в~изображение встроена информация.
+
+ \begin{figure} %fig3
+   \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{lin-3.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+  \Caption{Битовый срез контейнеров с~10\% внедренной информации: 
+(\textit{a})~стандартный метод LSB; (\textit{б})~модифицированный метод LSB}
+  \end{figure}
+  
+  На рис.~4 показаны графики значений RS-сте\-го\-ана\-ли\-за 
+для~10~изображений. Значение RS в~данном способе коррелирует с~процентом 
+измененной информации~[2].
+
+\begin{figure} %fig4
+ \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{lin-4.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\begin{minipage}[t]{64mm}
+\Caption{Результаты RS-стегоанализа для стандартного LSB~(\textit{1}) и~для разработанной 
+модификации~(\textit{2}): (\textit{а})~при заполнении 10\% объема контейнера; (\textit{б})~при 
+заполнении 30\% объема контейнера; (\textit{в})~при заполнении 50\% объема контейнера}
+\end{minipage}
+%\end{figure}
+\hfill
+% \begin{figure} %fig5
+\begin{minipage}[t]{64mm}
+  \Caption{Результаты стегоанализа с~использованием критерия хи-квадрат для 
+стандартного LSB~(\textit{1}) и~разработанной модификации~(\textit{2}): (\textit{а})~при заполнении 10\% объема 
+контейнера; (\textit{б})~при заполнении 30\% объема контейнера; (\textit{в})~при 
+заполнении 50\% объема контейнера}
+\end{minipage}
+\end{figure}
+  
+ 
+  
+  Как видно из графиков, встраивание малого объема информации имеет 
+практически нулевые значения RS, что, в~свою очередь, может 
+свидетельствовать о защите от использования данного метода, так как 
+атакующим полученные результаты могут быть восприняты как отсутствие 
+встроенной информации или как шум.
+  
+  Следующий способ стегоанализа основан на применении критерия  
+хи-квад\-рат~[5]. Он также относится к~статистическим видам стегоанализа 
+и~оценивает предположение о том, что в~пустом контейнере распределение цвета 
+происходит таким образом, что вероятность одновременного появления 
+соседних цветов, т.\,е.\ тех, которые различаются на один младший бит, 
+незначительна. В~противном случае делается вывод о том, что в~контейнере 
+находятся посторонние данные. 
+  
+  На рис.~5 представлены графики, показывающие значения распределения  
+хи-квад\-рат на изображениях, полученных при использовании стандартного 
+встраивания методом LSB и~с применением разработанного алгоритма, для 
+случаев встраивания разного объема информации.
+  
+ 
+  
+  Из графиков, приведенных на рис.~5, видно, что значение вероятности для 
+предложенного способа равно нулю на всем промежутке. Таким образом, 
+можно сделать вывод о том, что способ является защищенным к~применению 
+атак на основе критерия хи-квад\-рат.
+  
+  \section{Обсуждение результатов и~выводы}
+  
+  По приведенным результатам численного моделирования можно сделать 
+предварительный вывод о том, что предложенный статический способ 
+сокрытия информации достаточно хорошо справляется с~защитой от 
+стеганографических атак с~использованием широко известных способов 
+стегоанализа. 
+  
+  Эксперименты показали, что предложенный способ полностью защищен от 
+метода анализа битовых срезов и~от анализа с~использованием критерия  
+хи-квад\-рат, RS-сте\-го\-ана\-ли\-за, анализа отношения цветов при условии, 
+что происходит встраивание небольших объемов информации.
+  
+  В отличие от других модификаций метода LSB предложенный способ более 
+универсален и~позволяет учесть особенности конкретного контейнера.
+  %
+  Кроме того, предложенный способ позволяет встраивать б$\acute{\mbox{о}}$льшие объемы 
+информации, чем классический LSB.
+  
+  Необходимо отметить, что эффективность работы алгоритма зависит от 
+особенностей конкретного цветного изображения. Если в~изображении есть 
+большие области слишком ярких либо слишком темных цветов, то существует 
+опасность возникновения такой ситуации, при которой информация будет 
+записываться подряд, что понизит стеганостойкость.
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-lin}
+\Au{Коханович Г.\,Ф., Пузыренко~А.\,Ю.} Компьютерная стеганография. Теория 
+и~практика.~--- Киев: МК-Пресс, 2006. 288~с.
+\bibitem{2-lin}
+\Au{Абазина Е.\,С., Ерунов А.\,А.} Цифровая стеганография: состояние и~перспективы~/\!\!/ Сис\-те\-мы 
+управ\-ле\-ния, связи и~безопас\-ности, 2016. №\,2. С.~182--201.
+
+\bibitem{5-lin} %3
+\Au{Westfield A., Pfitzmann~A.} Attacks on steganographic systems: Breaking the steganographic 
+utilities EzStego, Jsteg, Steganos, and S-Tools~--- and some lessons learned~/\!\!/ 
+  Information hiding~/ Ed. A.~Pfitzmann.~--- Lecture notes in 
+computer Science ser.~--- Springer, 1999. Vol.~1768. P.~61--76.
+
+\bibitem{4-lin} %4
+\Au{Fridrich J., Goljan~M., Du~R.} Reliable detection of LSB steganography in color and 
+grayscale images~/\!\!/ Workshop on Multimedia and Security: New Challenges 
+Proceedings.~--- Binghamton, NY, USA: State University of New York, 2001. P.~27--30. doi: 
+10.1145/1232454.1232466.
+
+\bibitem{3-lin} %5
+\Au{Грибунин В.\,Г., Оков~И.\,Н., Туринцев~И.\,В.} Цифровая стеганография.~---  
+М.: Солон-Пресс, 2002. 272~с.
+
+
+\bibitem{6-lin}
+\Au{Fridrich J., Du~R., Meng~L.} Steganalysis of LSB encoding in color images~/\!\!/ IEEE  
+Conference (International) on Multimedia and Expo.~--- IEEE Computer Society Press, 2000. 
+Vol.~3. P.~1279--1282.
+\bibitem{7-lin}
+\Au{Шмаев В.\,Б.} Современная стеганография. Принципы, основные носители и~методы 
+противодействия, 2005. {\sf  
+https://docplayer.ru/29953095-Sovremennaya-steganografiya-principy-osnovnye-nositeli-i-metody-protivodeystviya.html.} 
+\bibitem{8-lin}
+\Au{Urbanovich N., Plaskovitsky~V.} The use of steganographic techniques for protection of 
+intellectual property rights~/\!\!/ New Electrical and Electronic Technologies and Their Industrial 
+Implementation: 7th  Conference (International).~--- Zakopane, Poland, 2011. P.~147--148.
+\bibitem{9-lin} %9
+\Au{Журавель И.\,М.} Краткий курс теории обработки изображений, 2019. {\sf 
+http://matlab.exponenta.ru/imageprocess/book2/index.php}.
+
+\bibitem{11-lin} %10
+\Au{Кривошеев И.\,А., Линник~М.\,А.} К~вопросу об оценке устойчивости 
+стеганографической системы~/\!\!/ Ученые заметки ТОГУ, 2017. Т.~8. №\,2. С.~433--437.
+\bibitem{12-lin} %11
+\Au{Кривошеев И.\,А., Линник~М.\,А.} К~вопросу об оценке пропускной способности 
+стенографической системы~/\!\!/ Информационные технологии и~высокопроизводительные 
+вычисления: Мат-лы IV Всеросс. научн.-практич. конф.~--- Хабаровск: ТОГУ, 2017.  
+С.~94--97.
+
+\bibitem{10-lin} %12
+\Au{Гонсалес Р., Вудс~Р.} Цифровая обработка изображений.~--- М.: Техносфера, 2005. 
+1072~с.
+
+    \end{thebibliography}
+} }
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 21.04.20}}
+
+
+
+
+\vspace*{6pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{8pt}
+
+\def\tit{STATIC METHOD FOR~STEGANOGRAPHIC EMBEDDING\\ BASED ON~LEAST SIGNIFICANT BIT}
+
+\def\titkol{Static method for~steganographic embedding based on~least significant bit}
+
+\def\aut{I.\,A.~Krivosheev$^1$ and~M.\,A.~Linnik$^2$}
+
+\def\autkol{I.\,A.~Krivosheev and~M.\,A.~Linnik}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-15pt}
+
+
+ \noindent
+$^1$Mining Institute of the Far Eastern Branch of the Russian Academy of Sciences,\linebreak
+$\hphantom{^1}$Khabarovsk Federal 
+Research Center of the Far Eastern Branch of the Russian\linebreak
+$\hphantom{^1}$Academy of Sciences, 51~Turgenev Str., 
+Khabarovsk 680000,Russian Federation
+
+\noindent
+$^2$Computing Center, Far Eastern Branch of the Russian Academy of Sciences,\linebreak
+$\hphantom{^1}$65~Kim Yu Chen 
+Str., Khabarovsk 680000, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2020 vol~30 no\,3}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2020 vol~30 no\,3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+\Abste{A new approach to information hiding based on the LSB (least significant bit)
+method is proposed. A static method for 
+embedding information\linebreak\vspace*{-12pt}}
+
+\Abstend{in a color image based on the matrix representation of individual blocks and 
+estimating their determinant modulus is proposed. Numerical modeling evaluated the possibility of the 
+proposed method to withstand various methods of steganalysis. Its advantage is shown both in the degree of 
+security and in the amount of embedded information. This algorithm can be used for embedding in image by 
+formats without compressing information.}
+
+
+\KWE{steganography; stego container; steganalysis; determinant; LSB; RS-steganalysis; chi-squared test 
+steganalysis; visual analysis of bit slices}
+
+\DOI{10.14357\!/\!08696527200306}
+
+%\vspace*{-24pt}
+
+% \Ack
+ % \noindent
+ 
+
+\vspace*{-12pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-lin-1}
+\Aue{Kokhanovich, G.\,F., and A.\,Yu.~Puzyrenko.} 2006. \textit{Komp'yuternaya steganografiya. Teoriya 
+i~praktika} [Computer steganography. Theory and practice]. Kiev: MK-Press. 288~p.
+\bibitem{2-lin-1}
+\Aue{Abazina, E.\,S., and A.\,A.~Erunov.} 2016. Tsifrovaya steganografiya: sostoyanie i~perspektivy [Digital steganography: 
+Status and development outlook]. \textit{Sistemy uprav\-le\-niya, svyazi i~bezopasnosti} [Systems of
+Control, Communication and Security] 2:182--201.
+
+\bibitem{5-lin-1} %3
+\Aue{Westfield, A., and A.~Pfitzmann.} 1999. Attacks on steganographic systems: Breaking the 
+steganographic utilities EzStego, Jsteg, Steganos and S-Tools~--- and some lessons learned. \textit{Information 
+hiding}. Ed.\ A.~Pfitzmann. Lecture notes in computer science  ser.  Springer. 1768:61--76. 
+
+
+\bibitem{4-lin-1} %4
+\Aue{Fridrich, J., M.~Goljan, and R.~Du.} 2001. Reliable detection of LSB steganography in color and 
+grayscale images. \textit{Workshop on Multimedia and Security: New Challenges Proceedings}. 
+Binghamton, NY: State Unoversity of New York. 27--30. doi: 10.1145\!/\!1232454.1232466.
+
+\bibitem{3-lin-1} %5
+\Aue{Gribunin, V.\,G., I.\,N.~Okov, and I.\,V.~Turintsev.} 2002. \textit{Tsifrovaya steganografiya} [Digital 
+steganography]. Moscow: Solon-Press. 272~p.
+
+\bibitem{6-lin-1}
+\Aue{Fridrich, J., R.~Du, and L.~Meng.} 2000. Steganalysis of LSB encoding in color images. 
+\textit{Conference (International) on Multimedia and Expo}. IEEE Computer Society Press. 3:1279--1282.
+\bibitem{7-lin-1}
+\Aue{Shmaev, V.\,B.} 2005. Sovremennaya steganografiya. Printsipy, osnovnye nositeli i~metody 
+protivodeystviya [Modern steganography. Principles, main carriers and methods of counteraction]. Available 
+at: {\sf 
+ https://docplayer.ru/29953095-Sovremennaya-steganografiya-principy-osnovnye-nositeli-i-metody-protivodeystviya.html} 
+(accessed April~22, 2020).
+\bibitem{8-lin-1}
+\Aue{Urbanovich, N., and V.~Plaskovitsky.} 2011. The use of steganographic techniques for protection of 
+intellectual property rights. \textit{New Electrical and Electronic Technologies and Their Industrial 
+Implementation: 7th  Conference (International)}. Zakopane, Poland. 147--148.
+\bibitem{9-lin-1}
+\Aue{Zhuravel', I.\,M.} 2019. Kratkiy kurs teorii obrabotki izobrazheniy [Image processing toolbox]. 
+Available at: {\sf  
+http://matlab.exponenta.ru/imageprocess/book2/index.php} (accessed April~22, 2020).
+
+\bibitem{11-lin-1} %10
+\Aue{Krivosheev, I.\,A., and M.\,A.~Linnik.} 2017. K voprosu ob otsenke ustoychivosti 
+steganograficheskoy sistemy [On the issue of assessing the stability of a steganographic system]. 
+\textit{Uchenye zametki TOGU} [TOGU Science Notes] 8(2):433--437. 
+\bibitem{12-lin-1} %11
+\Aue{Krivosheev, I.\,A., and M.\,A.~Linnik.} 2017. K~voprosu ob otsenke propusknoy sposobnosti 
+stenograficheskoy sistemy [On the issue of assessing the bandwidth of a shorthand system]. 
+\textit{Informatsionnyye tekhnologii i~vysokoproizvoditel'nye vychisleniya: mat-ly IV Vseross.  
+nauchn.-praktich. konf.} [Information Technology and High Performance Computing: Materials of the 4th 
+All-Russian Scientific and Practical Conference]. Khabarosk: TOGU. 94--97.
+\bibitem{10-lin-1} %12
+\Aue{Gonsales, R., and R.~Vuds.} 2005. \textit{Tsifrovaya obrabotka izobrazheniy} [Digital image 
+processing]. Moscow: Tekhnosfera. 1072~p.
+\end{thebibliography}
+} }
+
+%\vspace*{-3pt}
+
+\hfill{\small\textit{Received April 21, 2020}} 
+
+%\vspace*{-16pt} 
+
+\Contr
+
+\noindent
+\textbf{Krivosheev Igor A.} (b.\ 1949)~--- Doctor of Science in technology, leading scientist, Mining 
+Institute of the Far Eastern Branch of the Russian Academy of Sciences, Khabarovsk Federal Research 
+Center of the Far Eastern Branch of the Russian Academy of Sciences, 51~Turgenev Str., Khabarovsk 
+680000,Russian Federation; \mbox{igork@as.khb.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Linnik Maxim A.} (b.\ 1995)~--- junior scientist, Computing Center, Far Eastern Branch of the 
+Russian Academy of Sciences, 65~Kim Yu Chen Str..Khabarovsk 680000, Russian Federation; 
+\mbox{linnik.max1995@mail.ru}
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

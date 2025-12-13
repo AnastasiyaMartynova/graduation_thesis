@@ -1,0 +1,832 @@
+
+%\usepackage{algorithm}
+%\floatname{algorithm}{Алгоритм}
+
+
+\def\stat{gorshenin-kor}
+
+\def\tit{АППРОКСИМАЦИЯ РАСПРЕДЕЛЕНИЙ РАЗМЕРОВ ЧАСТИЦ ЛУННОГО РЕГОЛИТА 
+НА~ОСНОВЕ МЕТОДА СТАТИСТИЧЕСКОЙ СИМУЛЯЦИИ ВЫБОРОК$^*$}
+
+\def\titkol{Аппроксимация распределений размеров частиц лунного реголита 
+на~основе метода статистической симуляции} % выборок}
+
+\def\aut{А.\,К.~Горшенин$^1$, В.\,Ю.~Королев$^2$}
+
+\def\autkol{А.\,К.~Горшенин, В.\,Ю.~Королев}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Горшенин А.\,К.}
+\index{Королев В.\,Ю.}
+\index{Gorshenin A.\,K.}
+\index{Korolev V.\,Yu.}
+ 
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке Российского научного фонда 
+(проект 18-11-00155). Для обработки данных использовался гибридный 
+высокопроизводительный вычислительный комплекс ЦКП <<Информатика>> ФИЦ ИУ 
+РАН: {\sf http://ckp.frccsc.ru}.}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика 
+и~управление>> Российской академии наук; факультет вычислительной 
+математики и~кибернетики Московского государственного университета имени 
+М.\,В.~Ломоносова,
+\mbox{agorshenin@frccsc.ru}}
+\footnotetext[2]{Факультет вычислительной математики и~кибернетики
+Московского государственного университета имени М.\,В.~Ломоносова;
+Федеральный исследовательский центр <<Информатика и~управление>> 
+Российской академии наук,
+\mbox{vkorolev@cs.msu.ru}}
+
+\vspace*{2pt}
+
+
+\Abst{Рассмотрена задача моделирования распределения размеров пылевых 
+частиц лунного реголита. В~качестве теоретической модели использованы 
+конечные смеси логнормальных законов. Они позволяют учесть стохастический 
+характер интенсивностей процессов  
+дроб\-ле\-ния/спе\-ка\-ния при формировании ансамблей пылевых частиц 
+в~результате различных воздействий (бомбардировка метеоритами, 
+излучение). Разработан метод статистической аппроксимации неизвестных 
+распределений на основе симуляции выборок, который демонстрирует высокое 
+согласие с~реальными данными,
+содержащимися в~каталоге {\sf NASA} (все 317~проб, 
+доставленные миссиями <<Луна-24>> и~<<Аполлон-11, 12, 14--17>>).}
+
+\KW{конечные логнормальные смеси; бутстреп; EM-алгоритм; статистические 
+методы}
+
+\DOI{10.14357/19922264200207} 
+ 
+\vspace*{9pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+
+\section{Введение}
+
+\vspace*{-3pt}
+
+В статье рассмотрена задача моделирования распределений размеров пылевых 
+частиц лунного ре\-го\-лита, возникающих в~результате различных воздействий, 
+например при бомбардировках \mbox{поверхности} Луны метеоритами. При таких 
+воз\-действиях развиваются как взрывные процессы разлета час\-тиц с~их 
+дроблением, так и~спекание\linebreak час\-тиц в~экзотермических плазмохимических 
+реакциях синтеза~\cite{Popel2018}.
+
+Изучение закономерностей, определяющих размеры частиц, образующих лунные 
+и~другие планетарные реголиты, имеет очень большое значение при 
+планировании автоматических и~пи\-ло\-ти\-ру\-емых миссий для изучения 
+космических тел (Луны, астероидов, планет и~их спутников). В~условиях 
+малой гравитации и~отсутствия плотной атмосферы пылевые структуры 
+приобретают качества, не типичные для земных условий, представляя собой 
+облака заряженных частиц, обладающих высокими абразивными свойствами. Они 
+осаждаются на элементах аппаратуры (например, солнечных батареях) 
+и~скафандрах, что быстро выводит их из строя. 
+
+Таким образом, решение 
+рассматриваемой задачи может оказаться весьма полезным при подготовке 
+новых космических миссий для повышения уровня безопасности и~общей 
+успешности подобных проектов.
+
+Изначально в~исследованиях на эту тему рассматривались процессы чистого 
+дробления частиц. В~работе~\cite{Razumovskii1940} указано много случаев, 
+в~которых логарифмы размеров частиц (золотин в~золотоносных россыпях, 
+частиц горных пород при их дроблении и~т.\,п.)\ имеют примерно нормальное 
+распределение. На эту работу обратил внимание А.\,Н.~Колмогоров,\linebreak который 
+предложил математическую модель процесса дробления частиц, аналитически 
+объяс\-ня\-ющую возникновение логнормального распределения размеров частиц 
+при дроблении, а~также \mbox{содержания} минералов в~отдельных 
+пробах~\cite{Kolmogorov1941}. Данная модель базируется на изучении 
+изменения во времени числа частиц, размер которых не превосходит заданный 
+порог.
+
+ Результат Колмогорова справедлив при довольно сильных 
+предположениях, в~част\-ности для логнормальности распределения час\-тиц при 
+дроблении необходимо, чтобы ско\-рость дроб\-ле\-ния была постоянной, т.\,е.\ 
+не зависела от размеров самих\linebreak час\-тиц. Однако необходимо учитывать тот 
+факт, что с~уменьшением размеров час\-ти\-цы интенсивность ее соударений 
+с~другими частицами может изменяться, например уменьшаться в~силу того, 
+что вероятность столкновения в~определенном смыс\-ле пропорциональна 
+размерам час\-тицы. 
+{\looseness=1
+
+}
+
+Известны эмпирические свидетельства того, что 
+в~некоторых случаях и~логнормальная модель для распределения размера 
+частиц при дроблении не адекватна. Так, в~книге~\cite{Bagnold1954} 
+отмечено, что логарифм функции плот\-ности распределения для логарифма 
+размера частицы в~естественных запасах песка больше похож на гиперболу, 
+чем на параболу. Это означает, что распределение размера не логнормально, 
+а~скорее имеет экспоненциально уменьшающиеся хвосты.
+
+Последнее обстоятельство побудило некоторых исследователей обратить 
+внимание на модели типа  
+лог-не\-сим\-мет\-рич\-но\-го распределения Лапласа, так называемого 
+двойного (двустороннего)  
+Па\-ре\-то-лог\-нор\-маль\-но\-го распределения, а~также 
+лог-гаус\-сов\-ско\-го/\!/об\-рат\-но\-го гауссовского распределения. В~част\-ности, 
+в~работах~\cite{ReedJorgensen2003,Sorensen2006} рассмотрены модели 
+формирования распределения размера дробящихся частиц, в~основе которых 
+лежит предположение о~том, что час\-ти\-ца при перемещении из одного места 
+в~другое может разделиться на несколько меньших частиц вследствие 
+соударения или другого воздействия, что обусловливает случайность масс 
+частиц после разделения. Не все частицы одновременно добираются до места 
+назначения. Некоторые могут поменять направление и~застрять надолго, 
+тогда как другие могут, не задев других, пройти весь путь намного 
+быстрее. Очевидно, состояние частицы зависит от того, на каком расстоянии 
+от конечного пункта она находится. Это учитывается в~упомянутых моделях 
+Ри\-да--Йор\-ген\-се\-на и~Соренсена за счет случайности времени, 
+в~течение которого наблюдается частица. По сути, 
+в~работах~\cite{ReedJorgensen2003,Sorensen2006} в~модель Колмогорова 
+введена рандомизация.
+
+Данные модели демонстрируют хорошее согласие с~экспериментальными 
+данными, отражающими размеры частиц в~природных залежах. Однако они не 
+учитывают отмеченное Колмогоровым\linebreak обстоятельство: интенсивность процесса 
+дробления остается постоянной. В~работе~\cite{Korolev2009} рас\-смот\-рена 
+более общая модель, в~которой данная интенсивность может быть переменной 
+и~даже\linebreak случайной. Показано, что случайность интенсивности процесса 
+дробления может привести к~тому, что распределение размеров частиц будет 
+иметь вид произвольной смеси логнормальных рас\-пре\-де\-ле\-ний.
+{ %\looseness=1
+
+}
+
+В докладе~\cite{SK2019} была отмечена возможность распространения выводов 
+работы~\cite{Korolev2009} на процессы  
+дроб\-ле\-ния/спе\-ка\-ния. Эти результаты используются в~данной статье 
+в~качестве теоретической базы для создания метода статистической 
+обработки всех образцов лунного реголита, доставленных миссиями 
+<<Аполлон-11, 12, 14--17>> и~<<Луна 24>>. Данные 317~проб взяты из 
+каталога \verb"NASA"~\cite{Graf1993}, в~котором размеры частиц 
+представлены в~так называемой $\phi$-шка\-ле~\cite{Donoghue2016}, а~для 
+характеризации эмпирического распределения размеров частиц использованы 
+величины долей частиц того или иного размера в~образце, полученные при 
+просеивании. Для всех\linebreak представленных данных будет продемонстрировано 
+высокое соответствие модели типа смеси конечных логнормальных законов 
+с~представленными в~каталоге \verb"NASA" распределениями размеров 
+ансамб\-лей пылевых частиц, возникающих в~лунном реголите.
+
+
+\section{Конечные логнормальные смеси как~аппроксимации для~эмпирических 
+распределений размеров частиц лунного реголита}
+
+В соответствии с~результатами работ~\cite{Korolev2009, SK2019} в~качестве 
+модели распределения логарифма размера частиц следует рассматривать 
+асимптотическую аппроксимацию вида, вообще говоря, произвольной смеси 
+логнормальных законов. 
+
+На практике разумно использовать дискрет\-ную 
+аппроксимацию для смешивающего закона, т.\,е.\ изначально предполагать, 
+что распределение логарифмов размеров частиц является конечной смесью 
+нормальных законов, что позволяет искать оценки параметров смеси (веса 
+нормальных компонент, их математические ожидания и~дисперсии) с~помощью 
+хорошо известных статистических процедур, традиционно используемых для 
+этих целей, например с~использованием ЕМ (expectation-maximization)\linebreak алгоритма или его модификаций. 
+Подобные модели допускают удобную интерпретацию, связанную с~описанием 
+типичных видов частиц (породы или конкреций) и/или типов плазмохимических\linebreak 
+реакций, влияющих на формирование ре\-го\-лита.
+{ %\looseness=1
+
+}
+
+\renewcommand{\tablename}{\protect\bf Алгоритм}
+\begin{table*}[b]\small %[!h]
+\vspace*{9pt}
+\begin{center}
+%\hline
+%\small
+%\%label{AlgGeneratingSamples}
+%\begin{algorithmic}
+\begin{tabular}{l}
+\hline
+\\[-8pt]
+\multicolumn{1}{c}{{\tablename\ 1}\ \  Имитационное моделирование выборок для аппроксимации 
+и~статистического теста}\\[3pt]
+\hline
+\\[-8pt]
+\textbf{function} [{\normalsize{S}}AMPLE, 
+{\normalsize{T}}EST{\normalsize{S}}AMPLE]$\gets$
+{\normalsize{G}}ENERATING{\normalsize{S}}AMPLES ({\normalsize{ECDF}})\\
+\hspace*{5mm}// \textit{SampleSize~--- объем выборки для оценивания 
+параметров}\\
+\hspace*{5mm}// \textit{TestSampleSize~--- объем выборки для критерия 
+Колмогорова}\\
+\hspace*{5mm}// \textit{Случайные векторы для метода обратных функций}\\
+\hspace*{5mm}r$\gets${\normalsize{R}}AND(SampleSize);\\
+\hspace*{5mm}rTest$\gets${\normalsize{R}}AND(TestSampleSize);\\
+\textit{//~Имитационное 
+моделирование}\\
+\hspace*{5mm}\textbf{for} i\;=\;1:SampleSize \textbf{do}\\
+\hspace*{10mm}Sample(i)$\gets$ {FSOLVE} ({\normalsize{ECDF}, r(i)}); // 
+\textit{Метод обратных функций}\\
+\hspace*{10mm}\textbf{if}\ i$\leqslant$TestSampleSize\ \textbf{then}\\
+\hspace*{15mm}TestSample(i) $\gets$ {{FSOLVE}} ({\normalsize{ECDF}}, rTest(i));\\
+\hline
+\end{tabular}
+%%\EndFor
+%%\EndFunction
+%%\end{algorithmic}
+%%\end{algorithm}
+\end{center}
+\end{table*}
+
+
+\renewcommand{\tablename}{\protect\bf Таблица}
+
+Итак, в~качестве модели распределения размеров частиц в~$\phi$-шка\-ле 
+(т.\,е., фактически, логарифмов исходных размеров) будем использовать 
+конечную смесь нормальных законов вида ($k\hm\in\mathbb{N}$, 
+$a_i\hm\in\mathbb{R}$, $\sigma_i\hm>0$, $p_i\hm\geqslant 0$,
+$i\hm=1,\ldots,k$, $p_1+\cdots+p_k\hm=1$):
+\begin{equation}
+\label{LogPhi}
+{\mathbb P}(Z<x)=\sum\limits_{i=1}^k p_i\Phi\left(\fr{\log
+x-a_i}{\sigma_i}\right).
+\end{equation}
+
+
+\section{Метод на~основе статистической симуляции~выборок}
+
+В каталогах \verb"NASA"~\cite{Graf1993} данные представлены в~таб\-лич\-ной 
+форме в~виде пар <<размер  
+час\-ти\-цы\,--\,до\-ля (в~процентах) частиц такого размера 
+в~про\-сеи\-ва\-емых образцах>>. Доступны сведения только о~нескольких (как 
+правило, не более десяти) точках роста (выбранных, вообще говоря, 
+бессистемно) эмпирической функции распределения, но не о~ее поведении 
+между ними. В~работе~\cite{Graf1993} описано применение 
+интерполяции Стайнемана~\cite{Stineman1980} для их соединения, благодаря которому
+с~использованием макросов пакета \verb"Excel" возможно построение
+ соответствующих  гистограмм.
+
+В данной статье в~аналогичных целях применяются кусочные кубические 
+полиномы Эрмита (см., например,~\cite{Fritsch1980})~--- они позволили 
+получить наиболее близкие кривые по сравнению с~пред\-став\-лен\-ны\-ми 
+в~каталоге \verb"NASA". Для симуляции выборок была апробирована 
+и~кусочно-линейная интерполяция. Итоговые результаты в~этом случае 
+получаются похожими, но менее наглядными, поэтому для сравнения в~данной 
+статье не при\-во\-дятся.
+{ %\looseness=1
+
+}
+
+Предложенная аппроксимация полиномами Эрмита позволила получить 
+непрерывную эмпирическую функцию распределения (ECDF,
+empirical cumulative distribution function), а~значит, стало 
+возможным использовать метод обратных функций для генерации тестовых 
+выборок. Объем выборки для оценивания параметров составлял $10\,000$ 
+наблюдений; кроме того, для проверки соответствия приближающей смеси 
+и~исходной эмпирической функции распределения генерировалась еще одна 
+независимая выборка объемом 2500~наблюдения (для проверки гипотез 
+с~помощью критерия согласия Колмогорова). 
+%
+Данная процедура в~целом близка 
+к~такому статистическому подходу, как бутстреп. Ее описание в~виде 
+псевдокода приведено в~алгоритме~1.
+
+
+
+
+Полученные тестовые выборки используются для получения оценок 
+максимального правдоподобия параметров аппроксимирующего смешанного 
+распределения~\eqref{LogPhi} c помощью EM-алгоритма для нормальных 
+законов~\cite{Korolev2011}. Примеры применения данной 
+бут\-стреп-про\-це\-ду\-ры к~реальным пробам лунного реголита представлены на 
+рис.~\ref{FigSoil12042} и~2.
+
+
+
+
+На графиках слева представлены исходные данные из таблиц каталога 
+\verb"NASA" (\textit{1}), полученные в~процессе 
+просеивания, их интерполяция с~по\-мощью полиномов Эрмита~(\textit{2}) 
+и~аппроксимиру\-ющая смесь~(\textit{3}). 
+Дополнительная вставка на рис.~\ref{FigSoil12042} демонстрирует 
+увеличенную область $[5,10]$. Видно, что обе кривые практически всюду 
+совпадают. Такая ситуация повторяется для абсолютного большинства 
+анализируемых проб. Отметим, что для числа компонент~$k$ 
+в~формуле~\eqref{LogPhi} проверялись разные значения. Эмпирически было 
+установлено, что необходимый баланс между качеством аппроксимации 
+и~вычислительной сложностью достигается при значении $k\hm=4$, которое 
+и~использовано в~данной статье при обработке всех 317~выборок.
+
+
+
+
+На графиках справа на рис.~\ref{FigSoil12042} и~2 
+приведены гистограммы для имитационных выборок и~просеянных данных, 
+построенных по ECDF, для конкретной пробы, а~также их приближение 
+плотностью смешанного распределения. Необходимо отметить, что точность 
+аппроксимации определялась именно по сравнению с~эмпирической функцией 
+распределения, а~данные графики служат лишь для более подробной 
+иллюстрации работы метода.
+
+Очевидно, что как функции распределения, так и~гистограммы приближаются 
+визуально очень хорошо, даже с~учетом различных особенностей в~них. Ясно, 
+что форма распределений в~каждом из случаев далека от стандартного 
+гауссовского вида.
+
+На рис.~3 приведены результаты проверки\linebreak с~помощью критерия 
+однородности Колмогоро-\linebreak\vspace*{-10pt}
+
+\pagebreak
+
+\end{multicols}
+
+\begin{figure*} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=160.683mm 
+ \epsfbox{gor-1.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Пробы лунного грунта 12042{,}24 (миссия <<Апполон-12>>)~(\textit{а})
+и~14156{,}22 (миссия <<Апполон-14>>)~(\textit{б}):
+\textit{1}~--- исходные данные из таблиц каталога NASA;
+\textit{2}~--- интерполяция с~помощью полиномов Эрмита;
+\textit{3}~---  аппроксимирующая смесь; 
+\textit{4}~--- гистограммы для имитационных выборок;
+\textit{5}~--- гистограммы для просеянных данных по ECDF;
+\textit{6}~--- приближение плотностью смешанного распределения}
+\label{FigSoil12042}
+\vspace{12pt}
+\end{figure*}
+
+
+
+\begin{multicols}{2}
+
+\noindent
+ва и~дополнительно симулированных выборок. Для 
+большей наглядности на графиках обозначены стандартные критические уровни 
+0{,}01 и~0{,}05. Первый из них превышен $P$-зна\-че\-ни\-ями для 84{,}5\% 
+выборок (268 из 317), а~ второй~--- для 70{,}7\% наборов (224 из 317), т.\,е.\
+ для абсолютного большинства проб с~помощью бут\-стреп-ме\-то\-да 
+получены достаточно хорошие результаты аппроксимации.
+
+
+
+Отметим, что описанная процедура обработки данных была реализована на 
+языке про\-грам\-ми\-ро\-ва\-ния \verb"MATLAB". Для расчетов использовались\linebreak ресурсы 
+гибридного высокопроизводительного вычислительного кластера архитектуры 
+\verb"Intel x86_64": сервер \verb"Huawei XH 622 V3" (два процессора 
+\verb"Intel Xeon E5-2683V4" с~тактовой частотой 2{,}1~ГГц (16~ядер), 
+512~ГБ оперативной памяти и~2~видеокарты \verb"NVIDIA Tesla K80". Это 
+позволило повысить скорость вычислений в~среднем в~3{,}8~раза по 
+сравнению со стандартными настольными решениями.
+
+
+\section{Кластеризация параметров аппроксимирующих смесей}
+
+\vspace*{-12pt}
+
+В данном разделе приводятся результаты анализа параметров сразу всех 
+аппроксимирующих конечных нормальных смесей. Кроме того, используется 
+тривиальное обратное преобразование для перехода от $\phi$-шкалы для 
+размеров к~метрической (в~микрометрах). На рис.~4 иллюстрируется взаимозависимость 
+математического ожидания и~среднего квадратического отклонения для 
+$\phi$-шкалы и~стандартных единиц измерения. Верхние графики на рис.~4,\,\textit{а} 
+и~4,\,\textit{б} демонстрируют вид этой за\-ви\-си\-мости, при этом размер 
+и~интенсивность цвета точек соответствуют их весам (см.\ 
+формулу~\eqref{LogPhi} и~цветовую
+шкалу вверху). Эти рисунки существенно уточняют предложенную 
+в~статье~\cite{Slyuta2014} линейную аппроксимацию для данной за\-ви\-си\-мости, 
+которая, как видно из рис.~4, оказывается чрезмерным загрублением.
+
+\pagebreak
+
+\end{multicols}
+
+\begin{figure*} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=160.683mm 
+ \epsfbox{gor-3.eps}
+ }
+ \end{center}
+\vspace*{-15pt}
+\Caption{Пробы лунного грунта 72141{,}15~(\textit{а}) и~74221,82~(\textit{б})
+ (миссия <<Апполон-17>>): \textit{1}~--- исходные данные из таблиц каталога NASA;
+\textit{2}~--- интерполяция с~помощью полиномов Эрмита;
+\textit{3}~---  аппроксимирующая смесь; 
+\textit{4}~---  гистограммы для имитационных выборок;
+\textit{5}~--- гистограммы для просеянных данных по ECDF;
+\textit{6}~--- приближение плотностью смешанного распределения}
+\label{FigSoil72141}
+\end{figure*}
+
+\begin{figure*} %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=160.077mm 
+ \epsfbox{gor-5.eps}
+ }
+ \end{center}
+\vspace*{-15pt}
+\Caption{Ошибки аппроксимации (критерий Колмогорова): \textit{1}~--- 
+$P$-значения; \textit{2} и~\textit{3}~--- критические уровни
+ $\alpha\hm= 0{,}05$ и~$0{,}01$ соответственно}
+\label{FigKSTests}
+\vspace*{-6pt}
+\end{figure*}
+
+\begin{multicols}{2}
+
+
+
+\begin{figure*} %fig4
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=154.153mm 
+ \epsfbox{gor-6.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Кластеризация параметров аппроксимирующих смесей:
+(\textit{а})~$\phi$-шкала;
+(\textit{б})~метрическая шкала (мкм);
+\textit{1}--\textit{5}~--- клас\-те\-ры;
+\textit{6}~--- медоиды кластеров; 
+\textit{7}~--- центры клас\-те\-ров по методу $c$-сред\-них}
+\label{FigClustersHermite}
+\end{figure*}
+
+Два нижних графика на каждом из рис.~4,\,\textit{а}
+и~4,\,\textit{б} демонстрируют разбиение параметрического 
+пространства на $5$ групп методами $k$-медоид 
+(см.\ рис.~4,\,\textit{а}) и~нечеткой кластеризации 
+$c$-сред\-них (см. рис.~4,\,\textit{б}) 
+(в~этом случае в~качестве окончательного решения выбирается 
+кластер, для которого достигается максимальное значение величины 
+вероятности членства 
+для данного элемента среди всех возможных. Очевидно, что решения обоих 
+методов в~каждом из случаев оказываются достаточно близкими. 
+Представленные на рис.~4 данные позволяют выделить некоторые 
+типичные кластеры, которые могут быть использованы, например, для 
+соотнесения с~химическим составом проб или иными характеристиками 
+реголита. На рис.~4 нумерация клас\-те\-ров произведена в~произвольном порядке и~не
+связана с~ка\-ки\-ми-ли\-бо их характеристиками, например весом.
+
+\vspace*{-6pt}
+
+
+\section{Заключение}
+
+\vspace*{-2pt}
+
+В работе рассмотрена методология аппрок\-си\-мации распределений размеров 
+частиц лунного ре\-голита с~помощью логнормальных смешанных мо\-делей. 
+Продемонстрировано высокое согласие получа\-емых таким образом 
+вероятностных распределений и~данных просеивания образцов лунного 
+реголита. Дальнейшие исследования будут ориентированы на отказ от 
+необходимости интерполяции точек~--- исходных данных 
+в~каталоге~\verb"NASA". При этом их приближение также возможно функциями, 
+имеющими вид конечной смеси логнормальных законов, однако подобная 
+процедура не требует статистической симуляции выборок. Это может повысить 
+точность аппроксимации, а~также уменьшить затрачиваемое на расчеты время.
+
+
+\vspace*{-6pt}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+
+\vspace*{-2pt}
+
+\bibitem{Popel2018} 
+\Au{Попель~С.\,И., Голубь~А.\,П., Захаров~А.\,В. и~др.}
+Формирование плазменно-пылевых облаков при ударе метеороида о~поверхность 
+Луны~// Письма в~Журнал экспериментальной и~теоретической физики, 2018. 
+Т.~108. Вып.~6. С.~379--387.
+
+\bibitem{Razumovskii1940} 
+\Au{Разумовский~Н.\,К.} Характер распределения содержания металлов 
+в~рудных месторождениях~// Докл. Акад. наук СССР, 1940. Т.~28. Вып.~9. 
+С.~815--817.
+
+\bibitem{Kolmogorov1941} 
+\Au{Колмогоров~А.\,Н.} О~логарифмически нормальном законе распределения 
+размеров частиц при дроблении~// Докл. Акад. наук СССР, 1941. Т.~31. 
+Вып.~2. С.~99--101.
+
+%\bibitem{Florenskii1975} 
+%\Au{Флоренский~К.\,П., Базилевский~А.\,Т., Николаева~О.\,В.} Лунный 
+%грунт: свойства и~аналоги.~--- М.: Наука, 1975.
+
+\bibitem{Bagnold1954} 
+\Au{Bagnold~R.\,A.} The physics of blown sand and desert dunes.~--- 
+London: Methuen, 1954. 265~p.
+
+\bibitem{ReedJorgensen2003}  %5
+\Au{Reed~W.\,J., Jorgensen~M.} The double Pareto-Lognormal distribution~--- 
+a~new parametric model for size distribution~//
+Commun. Stat. Theor.~M., 2004. Vol.~33. 
+Iss.~8. P.~1733--1753.
+
+\bibitem{Sorensen2006}  %6
+\Au{\mbox{S{\!\!\ptb{{\o}}}\,rensen M.}} On the size distribution of sand.~--- 
+Copenhagen: Department of Applied Mathematics and Statistics, 
+University of Copenhagen, 2006.  Working 
+paper. 11~p.
+
+\bibitem{Korolev2009}
+\Au{Королев~В.\,Ю.} О~распределении размеров частиц при дроблении~// 
+Информатика и~её применения, 2009. Т.~3. Вып.~3. С.~60--68.
+
+\bibitem{SK2019} 
+\Au{Korolev~V.\,Yu., Skvortsova~N.\,N.} Size distribution of dust grains 
+created in plasma-chemical reactions initiated by the microwave radiation 
+of a~gyrotron in regolith~// Complex Systems of Charged Particles and 
+Their Interactions with Electromagnetic Radiation: 17th Workshop 
+(International) Proceedings.~--- Мoscow: Prokhorov General Physics Institute 
+of the Russian Academy of Sciences, 2019. P.~25.
+
+\bibitem{Graf1993} 
+\Au{Graf~J.\,C.} Lunar soils grain size catalog.~--- NASA, 1993. 
+NASA Reference 
+Publication 1265. 484~p.
+{\sf  
+https://ntrs.nasa.gov/search.jsp?R=19930012474/}.
+
+\bibitem{Donoghue2016} 
+\Au{Donoghue~J.\,F.} Phi scale~// Encyclopedia of estuaries~/ 
+Ed. M.\,J. Kennish.~--- Encyclopedia of Earth sciences ser.~---
+Dordrecht: Springer, 2016. 789~p. doi: 10.1007/978-94-017-8801-4.
+
+\bibitem{Stineman1980} 
+\Au{Stineman~R.\,W.} A~consistently well behaved method of 
+interpolation~// Creative Comput., 1980. Vol.~6. Iss.~7. P.~54--57.
+
+\bibitem{Fritsch1980} 
+\Au{Fritsch~F.\,N., Carlson~R.\,E.} Monotone piecewise cubic 
+interpolation~// SIAM J.~Numer. Anal., 1980. Vol.~17. P.~238--246.
+
+\bibitem{Korolev2011} 
+\Au{Королев~В.\,Ю.} Ве\-ро\-ят\-ност\-но-ста\-ти\-сти\-че\-ские методы 
+декомпозиции волатильности хаотических процессов.~--- М.:  
+Изд-во Московского ун-та, 2011. 512~c.
+
+\bibitem{Slyuta2014} 
+\Au{Слюта~Е.\,Н.} Фи\-зи\-ко-ме\-ха\-ни\-че\-ские свойства лунного грунта 
+(обзор)~// Астрономический вестник, 2014. Т.~48. Вып.~5. С.~358--382.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.04.20}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{APPROXIMATION OF PARTICLE SIZE DISTRIBUTIONS\\ OF~LUNAR REGOLITH 
+BASED ON~THE~RESAMPLING}
+
+
+\def\titkol{Approximation of particle size distributions of lunar 
+regolith based on the
+resampling}
+
+\def\aut{A.\,K.~Gorshenin$^{1,2}$ and~V.\,Yu.~Korolev$^{1,2}$}
+
+\def\autkol{A.\,K.~Gorshenin and~V.\,Yu.~Korolev}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Federal Research Center ``Computer Science and Control'' of the 
+Russian Academy of Sciences, 44-2 Vavilov\linebreak
+$\hphantom{^1}$Str., Moscow 119333, Russian 
+Federation
+
+\noindent
+$^2$Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov Moscow
+State University, GSP-1,\linebreak
+$\hphantom{^1}$Leninskie Gory, Moscow 119991, Russian 
+Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+\Abste{The paper considers the problem of modeling the size distribution 
+of dust particles of lunar regolith based on approximating with finite 
+lognormal mixtures. These models make it possible to take into account 
+the stochastic nature of the intensities of splitting/baking processes 
+during the formation of ensembles of dust particles as a~result\linebreak\vspace*{-12pt}}
+
+\Abstend{of 
+various influences (bombardment by meteorites, radiation). A~method for 
+statistical approximation of unknown distributions based on simulation of 
+samples was developed. It is demonstrated that the model distributions 
+fit very well to the real observations of lunar regolith gathered by 
+missions ``Apollo 11, 12, 14--17'' and ``Luna-24'' that had been presented 
+in the {\sf NASA}'s grain size catalog (317~samples).}
+
+
+
+\KWE{finite lognormal mixtures; bootstrap; EM algorithm; statistical 
+methods}
+
+
+\DOI{10.14357/19922264200207} 
+
+%\vspace*{-20pt}
+
+\Ack
+\noindent
+The research is supported by the Russian Science Foundation 
+(project~18-11-00155). The calculations were performed using Hybrid high-performance 
+computing cluster of FRC CSC RAS ({\sf http://ckp.frccsc.ru/}).
+
+%\vspace*{6pt}
+
+ \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+
+\bibitem{1-gor}
+\Aue{Popel,~S.\,I., A.\,P.~Golub, A.\,V.~Zakharov, \textit{et al.}} 2018.
+Formation of dusty plasma clouds at meteoroid impact on the surface of 
+the Moon. \textit{JETP Lett.} 108(6):356--
+363.
+
+\bibitem{2-gor}
+\Aue{Razumovskii,~N.\,K.} 1940. Kharakter raspredeleniya soderzhaniya 
+metallov v~rudnykh mestorozhdeniyakh [The nature of the distribution of 
+metal content in ore deposits]. \textit{Dokl. Akad. Nauk SSSR}  28(9):815--817. 
+
+\bibitem{3-gor}
+\Aue{Kolmogorov,~A.\,N.} 1941. O logarifmicheski normal'nom zakone 
+raspredeleniya razmerov chastits pri droblenii [On the log-normal law of 
+particle size distribution during fracturing]. \textit{Dokl. Akad. Nauk 
+SSSR} 31(2):99--101.
+
+%\bibitem{4-gor}
+%\Aue{Florenskii,~K.\,P., A.\,T.~Bazilevskii, and O.\,V.~Nikolaeva.} 1975. 
+%\textit{Lunnyy grunt: svoystva i~analogi} [Lunar soil: Properties and 
+%analogues]. Moscow: Nauka.
+
+\bibitem{5-gor}
+\Aue{Bagnold,~R.\,A.} 1954. \textit{The physics of blown sand and desert 
+dunes}. London: Methuen. 265~p.
+
+\bibitem{6-gor}
+\Aue{Reed,~W.\,J., and M.~Jorgensen.} 2004. The double Pareto-Lognormal 
+distribution~--- a~new parametric model for size distribution. 
+\textit{Commun. Stat. Theor.~M.} 33(8):1733--1753.
+
+\bibitem{7-gor}
+\Aue{\mbox{S\!{\ptb{\o}}\,rensen, M.}} 2006. {On the size distribution of 
+sand}. Copenhagen: Department of Applied Mathematics and Statistics,
+University of Copenhagen. Working paper. 11~p.
+\bibitem{8-gor}
+\Aue{Korolev,~V.\,Yu.} 2009. O raspredelenii razmerov chastits pri 
+droblenii [On the distribution of particle size under fracturing]. 
+\textit{Informatika i ee Primeneniya~--- Inform. Appl.} 3(3):60--68. 
+
+\bibitem{9-gor}
+\Aue{Korolev,~V.\,Yu., and N.\,N.~Skvortsova.} 2019. Size distribution of 
+dust grains created in plasma-chemical reactions initiated by the 
+microwave radiation of a~gyrotron in regolith. \textit{17th Workshop 
+(International) ``Complex Systems of Charged Particles and Their 
+Interactions with Electromagnetic Radiation'' Proceedings}. Moscow:
+Prokhorov General Physics Institute 
+of the Russian Academy of Sciences. 25.
+
+\bibitem{10-gor}
+\Aue{Graf,~J.\,C.} 1993. Lunar soils grain size catalog. 
+NASA Reference 
+Publication 1265. Available at: 
+{\sf  
+https://ntrs.nasa.gov/search.jsp?R=19930012474/} (accessed May~25, 2020).
+
+\bibitem{11-gor}
+\Aue{Donoghue,~J.\,F.} 2016. Phi scale. \textit{Encyclopedia of 
+estuaries}. Ed. M.\,J.~Kennish. 
+Encyclopedia of Earth sciences ser.
+Dordrecht: Springer. 789~p. doi: 10.1007/978-94-017-8801-4.
+
+\bibitem{12-gor}
+\Aue{Stineman,~R.\,W.} 1980. A~consistently well behaved method of 
+interpolation. \textit{Creative Comput.}  
+6(7):54--57.
+
+\bibitem{13-gor}
+\Aue{Fritsch,~F.\,N., and R.\,E.~Carlson.} 1980. Monotone piecewise cubic 
+interpolation. \textit{SIAM J.~Numer. Anal.} 17:238--246.
+
+\bibitem{14-gor}
+\Aue{Korolev,~V.\,Yu.} 2011. \textit{Veroyatnostno-statisticheskie metody 
+dekompozitsii 
+volatil'nosti khaoticheskikh protsessov} [Probabilistic and statistical 
+methods of decomposition of volatility of chaotic processes]. Moscow: 
+Izd-vo Moskovskogo un-ta. 512~p.
+
+\bibitem{15-gor}
+\Aue{Slyuta,~E.\,N.} 2014. Physical and mechanical properties of the 
+lunar soil (a~review). \textit{Solar Syst. Res.} 48(5):330--353.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-9pt}
+
+\hfill{\small\textit{Received April 15, 2020}}
+
+%\pagebreak
+
+%\vspace*{-24pt}
+
+
+
+\Contr
+
+\noindent
+\textbf{Gorshenin Andrey K.} (b.\ 1986)~--- Candidate of Science (PhD) in 
+physics and
+mathematics, associate professor, leading scientist, Federal Research 
+Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; leading 
+scientist, Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov Moscow State University, GSP-1, Leninskie Gory, Moscow 
+119991, Russian Federation; \mbox{agorshenin@frccsc.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Korolev Victor Yu.} (b.\ 1954)~--- Doctor of Science in 
+physics and
+mathematics, professor, head of department, Faculty of Computational 
+Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University, 
+GSP-1, Leninskie Gory, Moscow 119991, Russian Federation; leading 
+scientist, Federal Research Center ``Computer Science and Control'' of 
+the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, 
+Russian Federation; \mbox{vkorolev@cs.msu.ru}
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

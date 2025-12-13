@@ -1,0 +1,776 @@
+\SetKwInput{KwData}{Исходные параметры}
+\SetKwInput{KwResult}{Результат}
+\SetKwInput{KwIn}{Входные данные}
+\SetKwInput{KwOut}{Выходные данные}
+\SetKwIF{If}{ElseIf}{Else}{если}{тогда}{иначе\ если}{иначе}{конец\ условия}
+\SetKwFor{While}{до\ тех\ пор,\ пока}{выполнять}{конец\ цикла}
+\SetKw{KwTo}{от}
+\SetKw{KwRet}{возвратить}
+\SetKw{Return}{возвратить}
+\SetKwBlock{Begin}{начало\ блока}{конец\ блока}
+\SetKwFor{For}{цикл}{выполнять}{конец\ цикла}
+\SetKwFor{ForEach}{для\ каждого}{выполнять}{конец\ цикла}
+\SetKwFor{eForEach}{для\ каждой}{выполнять}{конец\ цикла}
+\SetKwRepeat{Repeat}{повторять}{до\ тех\ пор,\ пока}
+\SetAlgorithmName{Алгоритм}{алгоритм}{Список алгоритмов}
+
+
+\def\stat{kosolapov}
+
+\def\tit{ОБ ОДНОМ СПОСОБЕ ОБНАРУЖЕНИЯ ЭКСПЛУАТАЦИИ УЯЗВИМОСТЕЙ И~ЕГО ПАРАМЕТРАХ}
+
+\def\titkol{Об одном способе обнаружения эксплуатации уязвимостей и~его параметрах}
+
+\def\aut{Ю.\,В.~Косолапов$^1$}
+
+\def\autkol{Ю.\,В.~Косолапов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Косолапов Ю.\,В.}
+\index{Kosolapov Yu.\,V.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Работа частично поддержана РФФИ (проект 18-29-03124-мк).}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт математики, механики и~компьютерных наук им.\ И.\,И.~Воровича, 
+Южный федеральный университет, \mbox{itaim@mail.ru}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt} 
+
+
+
+
+\Abst{При успешной эксплуатации уязвимости, приводящей к~запуску вредоносного кода, 
+обычно запускаемый код вызывает некоторую системную функцию. В~качестве способа 
+обнаружения эксплуатации уязвимости программы~$P$ предлагается алгоритм на основе проверки на 
+нетипичность расстояния между вызовом с~номером~$i$ и~вызовом с~номером~$i\hm-j$, где $j\hm\in \{1,\ldots ,T\}$, 
+$T\hm\in \mathbb{N}$. Под расстоянием понимается разность виртуальных адресов вызова 
+этих функций, а~ти\-пич\-ность определяется путем проверки принадлежности вычисленного расстояния 
+профилю расстояний, построенному ранее для защищаемой программы~$P$. Кроме параметра~$T$ 
+алгоритм обнаружения использует параметр $W(\in \mathbb{N})$~--- количество профилей, 
+по которым проверяется типичность вызова. При  этом для $j\hm\in \{1,\ldots,W\}$ профиль с~номером~$j$ 
+строится по парам вызовов, разность индексов вызовов которых в~легитимной последовательности равна~$j$. 
+Чем больше~$T$ и~$W$, тем меньше вероятность ложного обнаружения нелегитимного исполнения кода,
+ однако с~ростом этих параметров растет и~время проверки типичности. 
+ В~ходе экспериментального исследования выяснено, что достаточные значения параметров $(W,T)$ 
+ зависят от набора отслеживаемых функций. Поэтому для каждого набора отслеживаемых функций 
+ (и~каждой защищаемой программы~$P$) эти параметры алгоритма должны находиться отдельно. 
+ Установлено, что при $W\hm>1$ существенно снижается вероятность ложного обнаружения.}
+
+
+\KW{уязвимости программного обеспечения; расстояние между вызовами функций; защита программ}
+
+\DOI{10.14357\!/\!08696527210405} 
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ %\vspace*{-20pt}
+
+
+\section{Введение и~постановка задачи}
+
+Наличие уязвимостей в~системном или прикладном программном обеспечении 
+(ПО) снижает защищенность информационных систем (ИС), использующих это ПО. 
+Автоматизированный поиск уязвимостей с~использованием таких технологий, как 
+символьное исполнение и~фаззинг, не гарантирует отсутствия уязвимостей в~коде~\cite{Roh2011}. 
+Повысить защищенность ИС можно путем обновления ПО и~за счет использования систем обнаружения 
+вторжений (СОВ). При таком подходе уязвимость кода должна быть \textit{известна} разработчикам 
+ПО и~разработчикам СОВ, чтобы первые могли разработать обновление, а вторые~--- 
+правило обнаружения. Для \textit{неизвестных} уязвимостей обнаружение их эксплуатации 
+считается более сложной задачей, так как в~этом случае СОВ должна быть способна 
+различать легитимное и~нелегитимное выполнение кода. Источником данных для принятия решения 
+о~легитимности выполнения кода часто рассматривается последовательность вызовов функций (ПВФ) 
+системного и\!/\!или прикладного ПО~\cite{Forrest2008,Gupta2018,Singh2017}. Это обосновывается 
+тем, что целью разработчиков эксплоитов (программного кода, эксплуатирующего уязвимость) 
+обычно ставится получение контроля над уязвимой системой путем запуска специального 
+кода (шеллкода), из которого осуществляется вызов системной и\!/\!или прикладной функции~\cite{Sno2013}. 
+Считалось, что появление вызовов функций из шеллкода в~легитимной последовательности вызовов может быть 
+обнаружено~\cite{Forrest2008}. Однако в~\cite{Wag2002} показано, что шеллкод может быть 
+эффективно построен так, чтобы его выполнение не отличалось от легитимного.
+ Другим возможным способом защиты от эксплуатации уязвимостей является использование 
+ технологии рандомизации адресного пространства процесса. Использование мелкогранулярной 
+ рандомизации адресного пространства программы, как это предложено, например, в~\cite{Nur2017}, 
+ хотя существенно и~затрудняет эксплуатацию уязвимостей, но, как показано в~\cite{Sno2013}, 
+ не делает такую эксплуатацию невозможной. К~тому же для мелкогранулярной рандомизации может 
+ потребоваться доступ к~исходному коду защищаемой программы, а~также внесение изменений в~статический
+  компоновщик и~динамический загрузчик~\cite{Nur2017}. 
+
+Цель работы~--- построение способа (без модификации программы и~компонентов сбор\-ки\!/\!за\-пус\-ка 
+программ) для выявления нелегитимного выполнения кода, противодействующего атакам (см.~\cite{Sno2013, Wag2002}), 
+а~также оценка значений па\-ра\-мет\-ров, обеспечивающих низкую вероятность ложного обнаружения. 
+Идея способа приведена в~работе автора~\cite{Kos2020}.
+
+\section{Способ  обнаружения эксплуатации уязвимости}
+
+Под отслеживаемыми функциями будем понимать набор функций, по последовательности вызовов 
+которых может быть определено аномальное выполнение программы. 
+Такой набор может быть определен на основе результатов исследования 
+образцов деструктивного кода, как это сделано в~\cite{Gupta2018}. Пусть~$\mathcal{L}(P)$~--- 
+множество \textit{отслеживаемых} имен функций, используемых программой~$P$, $\mathrm{Path}_t(P(I))$~--- 
+ПВФ \textit{в рамках одного потока} программы~$P$, запущенной в~момент времени~$t$ с~входными данными~$I$:
+\begin{equation}
+\label{path}
+\mathrm{Path}_t(P(I))=\left(f^{t,I}_1,\ldots,f^{t,I}_{N_{t,I}}\right).
+\end{equation}
+Вызов $f^{t,I}_k$ в~трассе~\eqref{path} с~порядковым номером~$k$ представ\'{и}м в~виде тройки
+\begin{equation*}
+%\label{troika}
+f^{t,I}_k=\left({\sf ba}^{t,I}_k, {\sf ca}^{t,I}_k, n^{t,I}_k\right),
+\end{equation*}
+где ${\sf ba}^{t,I}_k\hm=\mathcal{B}(f^{t,I}_k)$~--- 
+адрес в~виртуальной памяти процесса, по которому загружен исполнимый модуль, содержащий по адресу 
+${\sf ca}^{t,I}_k\hm=\mathcal{C}(f^{t,I}_k)$ вызов функции с~именем $n^{t,I}_k\hm=
+\mathcal{N}(f^{t,I}_k)$, $n^{t,I}_k\hm\in \mathcal{L}(P)$. Двойной верхний индекс 
+в~обозначениях используется для указания на то, что эти значения в~общем случае зависят 
+от времени запуска программы и~входных данных. Для $t_1\hm\neq t_2$ адреса загрузки программы и~модулей 
+в~адресное пространство процесса могут быть разными (из-за применения рандомизации 
+адресного пространства), поэтому ПВФ $\mathrm{Path}_{t_1}(P(I))$ и~$\mathrm{Path}_{t_2}(P(I))$ 
+(при одних и~тех же входных данных программы) в~общем случае отличаются адресами~${\sf ba}$ и~${\sf ca}$ 
+вызываемых функций. При этом порядок вызова функций не меняется: $N_{t_1,I}\hm=
+N_{t_2,I}$, $n^{t_1,I}_{i}\hm=n^{t_2,I}_{i}$, $i\hm=1,\ldots,N_{t_1,I}$. Имеет место равенство
+\begin{equation}
+\label{back_to_t1}
+{\sf ca}^{t_2,I}_k={\sf ca}^{t_1,I}_k +\left({\sf ba}^{t_2,I}_k-{\sf ba}^{t_1,I}_k\right)=
+\mathcal{T}_{t_1,t_2}\left({\sf ca}^{t_1,I}_k\right), 
+\end{equation}
+позволяющее перейти от наблюдаемых адресов в~момент~$t_2$ к~адресам в~момент~$t_1$. 
+
+
+\smallskip
+
+\noindent
+\textbf{Замечание~2.1.}\
+Адреса размещения модулей (или иначе~--- карта размещения) в~любой момент времени известны. 
+Поэтому при использовании обозначения $\mathcal{T}_{t_1,t_2}(A)$ подразумевается, что 
+\begin{enumerate}[(1)]
+\item используя карту размещения в~момент~$t_1$, на основе~$A$ определяется начальный адрес~$b^{t_1}$  
+модуля, адресному пространству которого принадлежит~$A$; 
+\item в~карте размещения для момента~$t_2$ определяется начальный адрес~$b^{t_2}$ того же модуля; 
+\item к~$A$ прибавляется $b^{t_2}\hm-b^{t_1}$: $\mathcal{T}_{t_1,t_2}(A)\hm=A\hm+b^{t_2}\hm-b^{t_1}$. 
+Очевидно, что $\mathcal{T}^{-1}_{t_1,t_2}(A)\hm=A\hm+b^{t_1}\hm-b^{t_2}$. 
+\end{enumerate}
+
+
+
+Для натурального $s$ число
+\begin{equation*}
+%\label{distance}
+\rho\left(f^{t,I}_{k-s},f^{t,I}_{k}\right)=\rho^{t,I}_{k-s,k}={\sf ca}^{t,I}_{k}-{\sf ca}^{t,I}_{k-s}
+\end{equation*}
+назовем $s$-\textit{расстоянием} между $f^{t,I}_{k-s}$ и~$f^{t,I}_{k}$ для программы~$P$. 
+С~учетом~\eqref{back_to_t1} получаем выражение перехода от расстояний в~момент~$t_1$ к~расстояниям в~момент~$t_2$ 
+и~наоборот:
+\begin{equation}
+\label{anti_ASLR}
+\rho^{t_2,I}_{k-s,k}=\mathcal{T}_{t_1,t_2}\left({\sf ca}^{t_1,I}_{k}\right)-
+\mathcal{T}_{t_1,t_2}\left({\sf ca}^{t_1,I}_{k-s}\right).
+\end{equation}
+Очевидно, что $\rho^{t_2,I}_{k-s,k}\hm=0$ тогда и~только тогда, когда $\rho^{t_1,I}_{k-s,k}\hm=0$.
+
+\smallskip
+
+\noindent
+\textbf{Замечание~2.2.}\
+Будем предполагать, что если в~$P$ успешно эксплуатируется уязвимость на входных данных~$I'$, то 
+запускаемый шеллкод содержит вызовы некоторых функций из списка~$\mathcal{L}(P)$. Вызовы из шеллкода
+ будем называть нелегитимными, а остальные~--- легитимными. Последовательность вызовов 
+ функций~\eqref{path} в~этом 
+ случае может быть представлена в~виде:
+\begin{equation*}
+%\label{path_shell}
+\mathrm{Path}_t(P(I'))=\left(\underbrace{f^{t,I'}_1,\ldots,f^{t,I'}_{i}}_{\mathrm{легитимные}},
+\underbrace{f^{t,I'}_{i+1},\ldots,f^{t,I'}_{i+k}}_{\mathrm{нелегитимные}},
+\underbrace{f^{t,I'}_{i+k+1},\ldots}_{\mathrm{легитимные}}\right),\enskip k\geqslant 1\,.
+\end{equation*}
+Также будем предполагать, что шеллкод не может быть записан в~те 
+области памяти процесса, в~которых уже размещен код программы. 
+Поэтому $\rho(f^{t,I'}_{i},f^{t,I'}_{i+1})\hm\neq 0$.
+
+
+\smallskip
+
+\noindent
+\textbf{Замечание~2.3.}\
+Так как выражение~\eqref{back_to_t1} позволяет переходить между адресами в~разные
+ моменты времени и~из контекста обычно известны входные данные программы~$P$, то в~обозначении
+  вызовов иногда будем опускать верхний двойной индекс. 
+
+
+\smallskip
+
+Для выявления нелегитимных вызовов необходимо иметь набор данных (профиль), 
+характеризующий легитимное исполнение~$P$. Пусть $\mathcal{I}(P)$~--- 
+множество значений \textit{легитимных} входных данных~$P$. 
+В~силу~\eqref{back_to_t1} профиль может формироваться путем многократного запуска~$P$ 
+на входных данных из~$\mathcal{I}(P)$. Отметим, что для всех возможных данных из~$\mathcal{I}(P)$ 
+построение профиля представляет сложную задачу, так как~$\mathcal{I}(P)$ может быть потенциально 
+бесконечным. При использовании конечного~$\mathcal{I}(P)$, с~одной стороны, мощ\-ность этого 
+множества должна быть приемлемой для обучения, а~с~другой стороны, набор~$\mathcal{I}(P)$ 
+должен обладать свойством репрезентативности. Последнее означает, что входящие в~набор данные должны 
+быть <<похожи>> на те данные, для обнаружения аномалий на которых будет использоваться профиль. 
+Например, если~$P$~--- это браузер, то в~$\mathcal{I}(P)$ следует включать сайты тех типов, 
+которые обычно посещает этот пользователь этого браузера. 
+
+Для $(n,m)\in \mathcal{L}(P)\times \mathcal{L}(P)$ будем писать 
+\begin{equation}
+\label{pair_in_path}
+(n,m,\rho)\propto_{s} \mathrm{Path}_t(P(I)),
+\end{equation}
+если найдется такое $k$, что $m\hm=\mathcal{N}(f_k)$, $n\hm=\mathcal{N}(f_{k-s})$ 
+и~$\rho\hm=\mathcal{C}(f_{k})\hm-\mathcal{C}(f_{k-s})$. Запись~\eqref{pair_in_path} 
+означает, что в~$\mathrm{Path}_t(P(I))$ найдется пара вызовов, первым из 
+которых будет вызов функции с~именем~$n$, а~сле\-ду\-ющим, $s$-м от него,~--- 
+вызов функции с~именем~$m$, при этом $s$-рас\-сто\-яние между ними равно~$\rho$. 
+Для каждой пары $(n,m)\hm\in \mathcal{L}(P)\times \mathcal{L}(P)$ рассмотрим  
+ множество возможных $s$-рас\-сто\-яний между функ\-циями~$n$ и~$m$:
+$$
+D_{(n,m),s}=\left\{\rho\in\mathbb{Z}|\exists I\in\mathcal{I}(P): (n,m,\rho)\propto_s 
+\mathrm{Path}_t(P(I))\right\}.
+$$
+  В~общем случае $D_{(n,m),s}\hm\neq D_{(m,n),s}$. \textit{Профилем $s$-рас\-сто\-яний} программы~$P$ 
+ назовем множество 
+\begin{equation}
+\label{profile}
+\mathcal{D}_{s}(P)=\left\{D_{(n,m),s}:(n,m)\in \mathcal{L}(P)\times \mathcal{L}(P)\right\},
+\end{equation}
+построенное \textit{по всем потокам}~$P$. Будем говорить, что тройка $(n,m,\rho)$\linebreak 
+$(\in \mathcal{L}(P)\times\mathcal{L}(P)\times \mathbb{Z})$ \textit{принадлежит} 
+профилю $\mathcal{D}_s(P)$ и~писать $(n,m,\rho)\sim\mathcal{D}_s(P)$, 
+если  $\rho\hm\in D_{(n,m),s}$. (Иногда будем говорить, что число~$\rho$ для пары~$(n,m)$ 
+принадлежит профилю $\mathcal{D}_s(P)$.)  Если $\mathcal{D}_s(P)$ построен в~момент~$t_1$, 
+а~тройка $(n,m,\rho)$ получена по последовательности вида~\eqref{path} в~момент $t\hm=t_2$ 
+на входных данных~$I'$, то будем говорить, что тройка $(n,m,\rho)$ \textit{соответствует} 
+$\mathcal{D}_s(P)$, если в~$\mathrm{Path}_{t_2}(P(I'))$ найдется такая пара вызовов~$f_{k-s}$ и~$f_{k}$, 
+что $n\hm=\mathcal{N}(f_{k-s})$, $m\hm=\mathcal{N}(f_{k})$, $\mathcal{C}(f_{k})\hm-\mathcal{C}(f_{k-s})
+\hm=\rho$, при этом (см.~\eqref{anti_ASLR})
+\begin{equation}
+\label{triple_in_DB}
+\left(n,m,\mathcal{T}^{-1}_{t_1,t_2}\left(\mathcal{C}(f_{k})\right)-\mathcal{T}^{-1}_{t_1,t_2}
+\left(\mathcal{C}\left(f_{k-s}\right)\right)\right)
+\sim \mathcal{D}_{s}(P).
+\end{equation}
+Соответствие тройки $(n,m,\rho)$ профилю~$\mathcal{D}_s(P)$ обозначим $(n,m,\rho)\sim_{t_2}\mathcal{D}_s(P),$
+тем самым подчеркивая, что тройка $(n,m,\rho)$ получена в~момент~$t_2$, 
+отличный от момента формирования профиля~$\mathcal{D}_s(P)$. (Когда будет ясно, 
+о~какой паре функций $(n,m)$ идет речь, будем просто говорить о соответствии числа~$\rho$ 
+профилю~$\mathcal{D}_s(P)$.)
+
+\begin{figure}[b] %fig1
+\vspace*{1pt}
+\begin{center}
+\mbox{%
+\epsfxsize=128mm
+\epsfbox{kos-1.eps}
+}
+\end{center}
+\vspace*{-9pt}
+\Caption{Последовательности вызовов для разных входных данных}
+%\label{example_pic3}
+\end{figure}
+
+\smallskip
+
+\noindent
+\textbf{Замечание~2.4.}\
+Так как с~помощью~\eqref{back_to_t1} и~\eqref{triple_in_DB} 
+можно перейти от адресации в~момент~$t_1$ к~адресации в~момент~$t_2$ и~наоборот, 
+то далее будем предполагать, что базовые адреса загрузки модулей не меняются от запуска к~запуску. 
+
+
+\smallskip
+
+Для натурального $W$ рассмотрим набор
+\begin{equation}
+\label{profiles}
+\mathcal{D}_1(P), \ldots,\mathcal{D}_W(P).
+\end{equation} 
+В простейшем варианте предлагаемый метод обнаружения аномалий заключается 
+в~нахождении в~последовательности вида~\eqref{path} таких пар \textit{соседних} вызовов, 
+$1$-рас\-сто\-яние между которыми  \textit{не соответствует} ни одному профилю вида~\eqref{profile} из 
+набора~\eqref{profiles}. Целесообразность использования $W\hm>1$ поясним на примере. Рассмотрим 
+рис.~1,\,\textit{а}, где представлены два \textit{возможных} пути выполнения~$P$ в~момент~$t$ 
+в~зависимости от входных данных: $\mathrm{Path}_t(P(I))\hm=(a,b,c,d)$ и~$\mathrm{Path}_t(P(I'))\hm=(a,d).$ 
+Предположим, что при формировании $\mathcal{D}_{1}(P)$ последовательность $(a,b,c,d)$ 
+реализовалась на некоторых входных данных этапа обучения, а~последовательность $(a,d)$ 
+не реализовывалась для всех входных данных этого этапа, причем $(\mathcal{N}(a),\mathcal{N}(d), 
+\rho\hm=\rho(a,d))\not \sim_{t} \mathcal{D}_{1}(P)$. 
+Тогда появление цепочки $(a,d)$ в~пути выполнения~$P$ приведет к~тому, что легитимное 
+выполнение~$P$ при проверке только по профилю $\mathcal{D}_{1}(P)$ будет расценено как 
+нелегитимное (ложное обнаружение). Однако $(\mathcal{N}(a),\mathcal{N}(d), \rho)\sim \mathcal{D}_{3}(P)$,
+ так как, по предположению, цепочка $(a,b,c,d)$ реализовалась на этапе формирования профиля. 
+ Таким образом, при конечном $\mathcal{I}(P)$ чем больше~$W$, тем меньше вероятность ложного 
+ обнаружения нелегитимного вызова. 
+
+При конечном $\mathcal{I}(P)$ наличие в~последовательности вида~\eqref{path} такой пары 
+$(f_{i-1},f_{i})$, что тройка $(\mathcal{N}(f_{i-1}),\mathcal{N}(f_{i}),\mathcal{C}(f_{i})\hm-\mathcal{C}
+(f_{k-1}))$ не принадлежит ни одному профилю из набора~\eqref{profiles}, может соответствовать двум случаям.
+ Во-пер\-вых, это может свидетельствовать о~нелегитимности входных данных, 
+ и~в~этом случае аномалия будет правильно расценена как эксплуатация уязвимости в~$P$. Во-вто\-рых, 
+ входные данные могут быть легитимными, однако при их обработке в~$P$ задействуется ПВФ, 
+ которая не задействовалась при формировании набора~\eqref{profiles}. 
+ В~этом случае вызов будет ложно расценен как нелегитимный. 
+ Для снижения вероятности ложного обнаружения предлагается подход на основе проверки 
+ легитимности расстояний до $T(\in\mathbb{N})$ предыдущих вызовов. Опишем этот способ.
+
+Пусть $T,W,k\in \mathbb{N}$, $k\hm\geqslant T+1$. Для вызова~$f_{k}$  из трассы вида~\eqref{path} 
+рассмотрим вектор 
+\begin{equation}
+\label{vector_v}
+\mathbf{v}_{k}=\left(v_1,\ldots,v_T\right),
+\end{equation}
+где
+
+\vspace*{-2pt}
+
+\noindent
+\begin{multline*}
+v_i={}\\
+{}=\begin{cases}
+\min\limits_{1,\ldots,W}\left\{s:\left(\mathcal{N}(f_{k-i}),\mathcal{N}\left(f_{k}\right), 
+\mathcal{C}\left(f_{k}\right)-\mathcal{C}\left(f_{k-i}\right) \right)\sim \mathcal{D}_s(P)\right\}-1;\\
+W,\mbox{если }\forall s\in \{1,\ldots,W\}: \left(\mathcal{N}(f_{k-i}),\mathcal{N}(f_{k}), 
+\mathcal{C}\left(f_{k}\right)-\mathcal{C}\left(f_{k-i}\right) \right)\not\sim \mathcal{D}_s(P), 
+\end{cases}\\
+ i=1,\ldots,T.
+\end{multline*}
+Вес вектора~\eqref{vector_v} определим по формуле $\mathcal{W}(\mathbf{v}_{k})
+\hm=({2\sum\nolimits_{i=1}^{T}i v_i})({T(T+1)W})^{-1}$,
+причем 
+$$
+\mathcal{W}(\mathbf{v}_k)=
+\begin{cases}
+1, & \mbox{если}\ \rho(f_{k-{j}}, f_{k})\ \mbox{не\ 
+содержится\ ни\ в~одном\ профиле\ из}~\eqref{profiles};\\
+0, &\mbox{если}\ \rho(f_{k-{j}}, f_{k})\ \mbox{содержится\
+в~профиле}\ \mathcal{D}_{1}(P)
+\end{cases}
+$$
+ для всех $j\hm\in\{1,\ldots,T\}$.
+%и~$\mathcal{W}(\mathbf{v}_k)\hm=0$, если $\rho(f_{k-{j}}, f_{k})$ содержится
+%в~профиле $\mathcal{D}_{1}(P)$ для всех $j\hm\in\{1,\ldots,T\}$. 
+%
+Через $\tau(T,W)$ обозначим такое пороговое значение из отрезка $[0,1]_{\mathbb{R}}$, что при 
+\begin{equation}
+\label{second_chance}
+\mathcal{W}(\mathbf{v}_{k})< \tau(T,W)
+\end{equation} 
+вызов $f^{t,I}_{k}$ принимается за легитимный, а~при $\mathcal{W}(\mathbf{v}_{k})\hm\geqslant \tau(T,W)$~--- 
+за нелегитимный. Алгоритм \textsf{CheckTraceBack} (см.\ алгоритм) 
+реализует способ обнаружения аномального выполнения по предыдущим~$T$~вызовам. Для предлагаемого
+ способа задачей является подбор таких~$T$, $W$, $\tau(T,W)$ и~$\mathcal{I}(P)$, 
+ что вероятности ложного обнаружения и~ложного пропуска не превышают заданных значений. 
+ В~настоящей работе задача подбора $\tau(T,W)$ и~$\mathcal{I}(P)$ не решается ($\tau(T,W)\hm=1$, 
+ а~набор~$\mathcal{I}(P)$ формируется с~учетом результатов~\cite{Gupta2018}).
+
+\begin{algorithm}[t] %[!ht]
+\begin{center}
+\textbf{Алгоритм} {\small  {\textsf CheckTraceBack}}
+\end{center}
+\SetAlgoLined
+\KwData{1) ПВФ $\mathrm{Path}_{t_2}(P(I))$ вида~\eqref{path} длины $n_I$ ($I\not\hm \in \mathcal{I}(P)$), 2) 
+$T$, $W$, $\tau(T,W)$, 3) набор~\eqref{profiles}; 4) $L$~--- признак самообучения}
+\KwResult{Сообщение о нетипичной ({\sf not typical})/типичной ({\sf typical}) ПВФ}
+$\mathrm{result}={\sf typical}$\\
+\For{$k=T+1,\ldots,n_I-1$}{
+Вычислить вектор $\mathbf{v}_{k}$ вида~\eqref{vector_v}\\
+\If{не выполняется неравенство~\eqref{second_chance}}
+{
+%// Считать вызов нетипичным\\
+$\mathrm{result}={\sf not typical}$\\
+Выйти из цикла\\
+}\Else{
+%// Считать вызов типичным\\
+%$result=\texttt{typical}$\\
+\If{$L=1$}
+{
+Добавить в~$\mathcal{D}_1(P)$  расстояние $\rho$ для пары $(n,m)$
+}
+}
+}
+\KwRet{$\mathrm{result}$}
+
+%\Caption{\textsf{CheckTraceBack}}
+%\label{alg_2}
+\vspace*{-12pt}
+\end{algorithm}
+
+\section{Подбор параметров}
+
+
+
+Рассмотрим трассу вызовов~\eqref{path}. Заметим, что из условия
+\begin{equation}
+\label{maybe_false}
+\left(\mathcal{N}\left(f_{k-j}\right),\mathcal{N}\left(f_{k}\right), \mathcal{C}\left(f_{k}\right)-
+\mathcal{C}\left(f_{k-j}\right) \right)\sim_t \mathcal{D}_{j}(P)
+\end{equation}
+не вытекает, что между вызовами функций с~именами $\mathcal{N}(f_{k-j})$ 
+и~$\mathcal{N}(f_{k})$, расположенными по адресам соответственно $\mathcal{C}(f_{k-j})$ 
+и~$\mathcal{C}(f_{k})$, существует путь через $j\hm-1$ от\-сле\-жи\-ва\-емых функций. 
+Запись~\eqref{maybe_false} означает лишь, что найдутся два таких адреса $\mathcal{C}_1$ 
+и~$\mathcal{C}_2$, что вызов функции с~именем $\mathcal{N}(f_{k-j})$ расположен по 
+адресу $\mathcal{C}_1$, а~вызов функции с~именем $\mathcal{N}(f_{k})$~--- по адресу 
+$\mathcal{C}_2$, при этом между вызовами этих функций происходит $j\hm-1$ вызовов отслеживаемых 
+функций и~$\mathcal{C}_2\hm-\mathcal{C}_1\hm=\mathcal{C}(f_{k})\hm-\mathcal{C}(f_{k-j})$. 
+Рассмотрим пример, изображенный на рис.~1,\,\textit{б} и~1,\,\textit{в}. 
+На этих рисунках пред\-став\-ле\-ны возможные пути выполнения двух разных участков кода 
+одной программы. Назовем их условно \textit{участок~1} (рис.~1,\,\textit{б}) и~\textit{участок~2} 
+(рис.~1,\,\textit{в}). Пусть легитимные данные~$I$ используются в~момент формирования профиля, 
+а~легитимные данные~$I'$ и~нелегитимные данные~$I''$~--- 
+в~момент тестирования, $\mathcal{N}(b)\hm=\mathcal{N}(e)$, $\mathcal{N}(d)\hm=\mathcal{N}(f)
+\hm=\mathcal{N}(h)$, $\mathcal{C}(d)\hm-\mathcal{C}(b)\hm=\mathcal{C}(f)\hm-\mathcal{C}(e)$. 
+На нелегитимных данных~$I''$ эксплуатируется уязвимость на \textit{участке~2}, 
+где из шелл\-ко\-да осуществляется вызов~$g$. (Успех в~определении вызова~$g$ 
+как нетипичного зависит от того, насколько нетипичны рас\-сто\-яния от~$T$ предыду\-щих вызовов до вызова~$g$; 
+нахождение значений па\-ра\-мет\-ров алгоритма для успешного вы\-яв\-ле\-ния нетипичного выполнения требует 
+отдельного исследования, в~част\-ности необходим набор известных эксплоитов для программы.)
+В~момент формирования профиля на входных данных~$I$ в~$\mathcal{D}_2(P)$ будет добавлено 
+расстояние $\mathcal{C}(d)\hm-\mathcal{C}(b)$ для пары $(\mathcal{N}(b),\mathcal{N}(d))$, 
+а~в~$\mathcal{D}_3(P)$ будет добавлено рас\-сто\-яние $\mathcal{C}(d)\hm-\mathcal{C}(a)$ для пары
+ $(\mathcal{N}(a),\mathcal{N}(d))$. Поэтому на входных данных~$I'$ и~$I''$ при $W\hm\geqslant 3$ вызов~$d$ 
+ после вызова~$a$ будет расценен алгоритмом \textsf{CheckTraceBack} как 
+ типичный при $\tau(W,T)\hm=1$. Заметим, что алгоритмом  \textsf{CheckTraceBack} при $W\hm\geqslant 2$ 
+ вызов~$f$ также будет расценен как типичный, поскольку
+$$
+\left(\mathcal{N}(e),\mathcal{N}(f),\mathcal{C}(f)-\mathcal{C}(e)\right)=
+\left(\mathcal{N}(b),\mathcal{N}(d),\mathcal{C}(d)-\mathcal{C}(b)\right)\sim_t \mathcal{D}_2(P),
+$$
+где $t$~--- момент запуска~$P$. Однако при этом от~$e$ до~$f$, как следует из рис.~1,\,\textit{в}, 
+не существует цепочки из трех вызовов, начинающейся~$e$ и~за\-кан\-чи\-ва\-ющей\-ся~$f$. Другими словами, 
+решение о~ле\-ги\-тим\-ности~$f$ принимается на основе рас\-сто\-яния, которое \textit{не связано} с~$f$. 
+С~одной стороны, это снижает ве\-ро\-ят\-ность лож\-но\-го обнаружения аномального исполнения, а~с~другой~--- 
+может привести к~росту вероятности лож\-но\-го пропуска. 
+
+Подбор $T$ и~$W$ для алгоритма $\textsf{CheckTraceBack}$ выполняется экспериментально. 
+В~работе в~качестве~$P$ рассмотрен браузер ${\sf FireFox}$, а~в~качестве~$\mathcal{L}(P)$~--- 
+набор функций $\mathcal{L}_{MW}(P)$, типичный для вредоносного ПО~\cite{Gupta2018}. На основе данных 
+{\sf www.similarweb.com} выбрано~15~различных тематик сайтов, и~для каждой тематики выбраны 
+первые десять наиболее посещаемых сайтов~--- сформировано~15~множеств сайтов, которые обозначим 
+$S_1$,\ldots,$S_{15}$. Сайты выбирались так, чтобы $S_i\cap S_j\hm=\varnothing$ для $i\hm\neq j$. 
+Используя эти множества, было составлено~15~наборов профилей вида~\eqref{profiles}, где $W\hm=10$: 
+первый набор был получен по $\mathcal{S}_1\hm=S_1$, второй~--- по $\mathcal{S}_2\hm=S_1\cup S_2$ и~т.\,д.\
+ до пятнадцатого набора, который был построен по $\mathcal{S}_{15}\hm=\cup_{i=1}^{15}S_i$. 
+ В~каждом наборе~\eqref{profiles} для формирования отдельного профиля использовалось от~300 до~600~тыс.\
+  вызовов отслеживаемых функций. Также сформирована выборка из~450~сай\-тов (по~30~сайтов для каждой 
+  из~15~тематик), из которой случайным образом выбрано четыре непересекающихся тестовых выборки по~25~сайтов 
+  каждая. Для каждой тес\-то\-вой выборки построена трас\-са вида~\eqref{path}, состоящая из порядка 700~тыс.\
+   вызовов. 
+   
+   
+
+Обозначим через $A_{0,i}$ число таких соседних пар $(f_{k-1},f_{k})$ вызовов в~трассе, 
+что $(\mathcal{N}(f_{k-1}),\mathcal{N}(f_{k}), \mathcal{C}(f_{k})\hm-\mathcal{C}(f_{k-1}))\not\sim 
+\mathcal{D}_1(P)$, где $\mathcal{D}_1(P)$ принадлежит набору вида~\eqref{profiles}, 
+построенному по~$\mathcal{S}_i$.
+Через~$A_{1,i}(W,T)$ обозначим число вызовов~$f_{k}$, для которых $\mathcal{W}(\mathbf{v}_{k})\hm=1$ 
+(для $\tau(W,T)\hm=1$) при вычислении веса по набору, построенному по множеству~$\mathcal{S}_i$. 
+Для каждой пары $(W,T)$, где $W\hm \in\{1,\ldots,10\}$, $T\hm\in \{5,10,15,\ldots,100\}$, 
+по трассе вызовов программы ${\sf FireFox}$, полученной на основе тестовой выборки, вычислялись 
+два числа: $A_{0}\hm=\sum\nolimits_{i=1}^{15}A_{0,i}$ (не зависит от~$W$ и~$T$) 
+и~$A_1(W,T)\hm=\sum\nolimits_{i=1}^{15}A_{1,i}(W,T)$. 
+Величина $\Delta(W,T)\hm={A_1(W,T)} A^{-1}_0$ характеризует долю выявленных аномалий
+ алгоритмом ${\sf CheckTraceBack}$ по отношению к~числу аномалий, выявленных при проверке 
+ расстояний между соседними вызовами по профилю~$\mathcal{D}_1(P)$. Чем меньше~$\Delta(W,T)$, 
+ тем меньше в~сред\-нем алгоритмом ${\sf CheckTraceBack}$ 
+ обнаруживается лож\-ных аномалий. Так как~$A_0$ не зависит от~$W$ и~$T$, то для $\tau(W,T)\hm=1$ 
+ из определения координат вектора~\eqref{vector_v} и~определения веса этого вектора получаем, 
+ что последовательности $\Delta(1,T),\ldots ,\Delta(i,T),\ldots $ и~$\Delta(W,1),\ldots,\Delta(W,j),\ldots$ 
+ не возрастают.
+ 
+  Другими словами, при $\tau(W,T)\hm=1$ чем больше параметры~$W$ и~$T$, 
+ тем ожидается меньше лож\-но положительных срабатываний алгоритма. Анализ значений~$\Delta(W,T)$ 
+ может позволить выбрать~$T$ и~$W$ для алгоритма ${\sf CheckTraceBack}$ так, 
+ чтобы обеспечивались приемлемые вероятность ложного обнаружения и~ско\-рость обработки данных. 
+ 
+
+
+Для трех из четырех тестовых выборок (второй, третьей и~четвертой) 
+результаты близкие, поэтому на рис.~2,\,\textit{а} и~2,\,\textit{б} 
+в~случае $\mathcal{L}(P)\hm=\mathcal{L}_{MW}(P)$ изображены результаты только для первой 
+и~четвертой выборок. 
+На рис.~2,\,\textit{а} графики сближаются при $T\hm\geqslant 40$ для $W\hm\geqslant 3$. 
+При этом на рис.~2,\,\textit{б} графики очень близ\-ки для $T\hm\geqslant 20$ при $W\hm\geqslant 4$. 
+Выше отмечалось, что с~ростом~$W$ и~$T$ увеличивается время вычисления веса~\eqref{second_chance}. 
+Поэтому в~качестве рекомендуемых значений пары~$(W,T)$ в~этом случае можно взять пару~$(4,30)$. 
+В~работе также проведены эксперименты по влиянию самообучения (параметр~$L$ в~алгоритме ${\sf CheckTraceBack}$). 
+Результаты экспериментов на наборе, по\-стро\-ен\-ном по~$\mathcal{S}_{15}$, показали, что самообучение 
+практически не влияет на снижение чис\-ла лож\-ных обнаружений.
+{ %\looseness=1
+
+}
+
+
+
+С целью оценки зависимости значений $(W,T)$ от набора~$\mathcal{L}(P)$ были проведены
+ эксперименты на тех же наборах обуча\-ющих и~тес\-то\-вых выборок для набора от\-сле\-жи\-ва\-емых 
+ функций $\mathcal{L}_{DA}(P)$, в~который вклю\-че\-ны сис\-тем\-ные функции из модулей ${\sf kernel32.dll}$ 
+ и~${\sf txfw32.dll}$, связанные с~до\-сту\-пом к~локальной фай\-ло\-вой сис\-те\-ме. 
+ Зависимость~$\Delta(W,T)$ от значений~$(W,T)$ в~этом случае показана на рис.~2,\,\textit{в} и~2,\,\textit{г}. 
+ По рис.~2,\,\textit{г} можно заключить, что при $W\hm\geqslant 5$ и~$T\hm\geqslant 35$ 
+ графики близки друг к~другу, в~то время как по рис.~2,\,\textit{в} 
+ видно, что близость графиков наступает при $T\hm\geqslant 50$ для $W\hm\geqslant 5$. 
+ Снова, из соображений ско\-рости обработки, в~качестве пары~$(W,T)$ может быть выбрано значение~$(5,40)$. 
+
+ Эксперименты так\-же показали, что для $W\hm\geqslant 5$ режим обучения практически не влияет 
+ на чис\-ло об\-на\-ру\-жи\-ва\-емых лож\-ных срабатываний, за исключением первой выборки, где чис\-ло 
+ выявленных ложных срабатываний снижается не более чем на~2. 
+ Важ\-но отметить, что на наборе функций~$\mathcal{L}_{DA}(P)$ чис\-ло лож\-но обнаруживаемых 
+ алгоритмом ${\sf CheckTraceBack}$ нелегитимных вызовов в~сред\-нем меньше, чем на наборе 
+ функций~$\mathcal{L}_{MW}(P)$. Это подчеркивает ак\-ту\-аль\-ность задачи поиска оптимального набора
+  от\-сле\-жи\-ва\-емых функ\-ций~$\mathcal{L}(P)$.
+  {\looseness=1
+
+}
+
+\section{Заключение}
+
+Нахождение параметров алгоритма ${\sf CheckTraceBack}$, при которых обеспечиваются приемлемые 
+вероятности лож\-но\-го обнаружения и~лож\-но\-го пропуска, является актуальной задачей. 
+ \begin{figure} %fig2[!ht]
+ \vspace*{1pt}
+\begin{center}
+\mbox{%
+\epsfxsize=128mm
+\epsfbox{kos-2.eps}
+}
+\end{center}
+\vspace*{-9pt}
+\Caption{Зависимость $\Delta(W,T)$ от $(W,T)$ для $P\hm={\sf FireFox}$, 
+$\mathcal{L}(P)\hm=\mathcal{L}_{MW}(P)$ (\textit{а}, \textit{б}) и~$\mathcal{L}(P)
+\hm=\mathcal{L}_{DA}(P)$~(\textit{в}, \textit{г}): \textit{1}~--- $W\hm=1$; \textit{2}~--- 2; 
+\textit{3}~--- 3; \textit{4}~--- 4;
+\textit{5}~--- 5; \textit{6}~--- 6; \textit{7}~--- 7;
+\textit{8}~--- 8; \textit{9}~--- 9; \textit{10}~--- $W\hm=10$}
+%\label{Koso_wt_est}
+\end{figure}
+Эксперименты показывают, что, с~одной стороны, па\-ра\-мет\-ры алгоритма зависят от набора 
+от\-сле\-жи\-ва\-емых вызовов, а~с~другой стороны, режим самообучения практически не влияет на 
+чис\-ло обна\-ру\-жи\-ва\-емых ложных срабатываний. Отметим, что в~работе не оценивается ве\-ро\-ят\-ность 
+лож\-но\-го про\-пус\-ка алгоритмом эксплуатации уяз\-ви\-мости, так как для такой оцен\-ки 
+необходимо иметь набор известных эксплоитов для фиксированной программы, 
+нацеленных на запуск кода путем эксплуатации уязвимостей в~этой программе. Для 
+исследуемой программы {\sf FireFox} при найденных значениях па\-ра\-мет\-ров~$(W,T)$ 
+запуск эксплоита, рассмотренного в~\cite{Kos2020}, обнаруживается всегда. Однако одного 
+эксплоита, даже с~разными вы\-зы\-ва\-емы\-ми из него функциями (из от\-сле\-жи\-ва\-емо\-го набора), 
+полагаем, недостаточно. Поэтому первым на\-прав\-ле\-ни\-ем дальнейшего исследования 
+пред\-став\-ля\-ет\-ся проверка спо\-соб\-ности алгоритма ${\sf CheckTraceBack}$ к~вы\-яв\-ле\-нию других известных 
+эксплоитов. Вторым направлением исследования, которое тес\-но связано с~пер\-вым, должно 
+стать нахождение оптимального набора отслеживаемых функций~$\mathcal{L}(P)$. Наконец, 
+третьим на\-прав\-ле\-ни\-ем является разработка способа защиты конфиденциальности профилей~\eqref{profile}, 
+так как эти профили хранятся на стороне пользователя за\-щи\-ща\-емой программы~$P$ 
+и~могут быть использованы им для построения эксплоита, обходящего защиту.
+
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+\bibitem{Roh2011}
+\Au{Rohlf~C., Ivnitskiy~Y.} Attacking clientside JIT compilers~/\!\!/ 
+Black Hat USA, 2011. {\sf https://www.nccgroup.trust/globalassets/resources/us/presentations/documents/\linebreak attacking\_clientside\_jit\_compilers\_paper.pdf}.
+
+
+\bibitem{Forrest2008}  %2
+\Au{Forrest~S., Hofmeyr~S., Somayaji A.} The evolution of system-call monitoring~/\!\!/ 
+Annual Computer Security Applications Conference Proceedings.~--- Piscataway, NJ, USA: IEEE, 2008. 
+P.~418--430. doi: 10.1109\!/\!ACSAC.2008.54.
+
+
+
+\bibitem{Singh2017} %3
+\Au{Singh~A., Arora~R., Pareek~H.} Malware analysis using multiple API sequence mining CFG. 
+arXiv.org, 2017. 12~p. arXiv:1707.02691 [cs.CR].
+
+\bibitem{Gupta2018}  %4
+\Au{Gupta~S., Sharma~H., Kaur~S.} Malware characterization using Windows API call sequences~/\!\!/ 
+J.~Cyber Security Mobility, 2018. Vol.~7. No.\,4. P.~363--378. doi: 10.1007\!/\!978-3-319-49445-6\_15.
+
+\bibitem{Sno2013} 
+\Au{Snow~K.\,Z., Monrose~F., Davi~L., Dmitrienko~A., Liebchen~C., Sadeghi~A.-R.} 
+Just-in-time code reuse: On the effectiveness of fine-grained address space layout randomization~/\!\!/ 
+Symposium on Security and Privacy Proceedings.~--- Piscataway, NJ, USA: IEEE, 2013. P.~574--588. 
+doi: 10.1109\!/\!SP.2013.45.
+
+\bibitem{Wag2002} 
+\Au{Wagner~D., Soto~P.} Mimicry attacks on host-based intrusion detection systems~/\!\!/ 
+9th Conference on Computer and Communications Security Proceedings.~--- New York, NY, USA: ACM,
+ 2002. P.~255--264. doi: 10.1145/586110.586145.
+
+\bibitem{Nur2017} 
+\Au{Нурмухаметов~А.\,Р., Жаботинский~Е.\,А., Курмангалеев~Ш.\,Ф., Гайсарян~С.\,С., Вишняков~А.\,В.} 
+Мелкогранулярная рандомизация адресного пространства программы при запуске~/\!\!/ Труды ИСП РАН, 2017. 
+Т.~29. Вып.~6. С.~163--182. doi: 10.15514\!/\!ISPRAS-2017-29(6)-9.
+
+\bibitem{Kos2020} 
+\Au{Косолапов~Ю.\,В.} Об обнаружении эксплуатации уязвимостей, приводящей к~запуску вредоносного кода~/\!\!/ 
+Моделирование и~анализ информационных сис\-тем, 2020. Т.~27. Вып.~2. С.~138--151. doi: 10.18255\!/\!1818-1015-2020-2-138-151.
+    \end{thebibliography}
+} }
+
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 20.08.20}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{8pt}
+
+\def\tit{ON ONE METHOD FOR DETECTING EXPLOITATION OF~VULNERABILITIES AND~ITS~PARAMETERS}
+
+
+\def\titkol{On one method for detecting exploitation of~vulnerabilities and~its~parameters}
+
+\def\aut{Yu.\,V.~Kosolapov}
+
+\def\autkol{Yu.\,V.~Kosolapov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-15pt}
+
+
+\noindent
+Institute for Mathematics, Mechanics, and Computer Science named after I.\,I.~Vorovich, 
+Southern Federal University, 8a~Milchakova Str., Rostov-on-Don 344090, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2021 vol~31 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2021 vol~31 no\,4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+\Abste{When a program vulnerability is successfully exploited, the 
+exploit often calls some system function. Therefore, one of the possible ways 
+to detect exploitation of a~vulnerability of a~specific program is to check for atypical 
+distance between the call with the number~$i$ and the call with the number $i-j$ where 
+$j \in \{1, \ldots, T \}$, $T \in \mathbb {N} $. Distance is understood as the difference 
+between the addresses of the call of these functions and the typicality is 
+determined by checking whether it belongs to the distance profile. 
+In addition to the~$T$ parameter, the detection algorithm uses the parameter $W (\in \mathbb {N})$: 
+it is the number of profiles against which the call is checked. In this case, for $j \in \{1, \ldots, W \}$, 
+the profile with the number~$j$ is constructed from pairs of calls from a legitimate sequence, 
+the difference of call indices in which is equal to~$j$. The aim of this work is, on the one hand, 
+to describe the detection algorithm and, on the other, to provide an experimental 
+estimate of the sufficient values of the parameters~$W$ and~$T$. As a~result, in particular, it was
+ found that the values of these parameters depend on the set of monitored functions; 
+ therefore, for each set of functions
+ (and each protected program), these parameters must be found separately.}
+
+\KWE{software vulnerabilities; distance between function calls; program protection}
+
+
+
+\DOI{10.14357\!/\!08696527210405} 
+
+%\vspace*{-16pt}
+
+%\Ack
+%\noindent
+
+
+%\vspace*{-6pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{9}
+\bibitem{1-kos}
+\Aue{Rohlf,~C., and Y.~Ivnitskiy}. 2011.
+Attacking clientside JIT compilers. \textit{Black Hat USA}. Available at: 
+{\sf https://www.nccgroup.trust/globalassets/resources/us/\linebreak presentations/documents/attacking\_clientside\_jit\_compilers.pdf} (accessed September 22, 2021).
+
+
+\bibitem{2-kos}
+\Aue{Forrest,~S., S.~Hofmeyr, and A.~Somayaji.} 2008. The evolution of system-call monitoring. 
+\textit{Annual Computer Security Applications Conference Proceedings.} Piscataway, NJ: IEEE. 418--430. 
+doi: 10.1109\!/\!ACSAC.2008.54.
+
+
+
+
+\bibitem{4-kos}
+\Aue{Singh,~A., R. Arora, and H.~Pareek.} 2017. Malware analysis using multiple API sequence mining CFG. 
+{arXiv.org}. 12~p. Available at: 
+{\sf https://arxiv.org/abs/1707.02691} (accessed September~18, 2021).
+
+\bibitem{3-kos}
+\Aue{Gupta,~S., H. Sharma, and S.~Kaur.} 2018. Malware characterization using Windows API call sequences. 
+\textit{J.~Cyber Security Mobility} 7(4):363--378. 
+doi: 10.1007\!/\!978-3-319-49445-6\_15.
+
+\bibitem{5-kos}
+\Aue{Snow,~K.\,Z., F.~Monrose, L.~Davi, A.~Dmitrienko, C.~Liebchen, and A.-R.~Sadeghi}. 
+2013. Just-in-time code reuse: On the effectiveness of fine-grained address space layout randomization.
+ \textit{Symposium on Security and Privacy Proceedings}. Piscataway, NJ: IEEE. 574--588. 
+ doi: 10.1109\!/\!SP.2013.45.
+ 
+\bibitem{6-kos}
+\Aue{Wagner,~D., and P.~Soto.} 2002. Mimicry attacks on host-based intrusion detection systems. 
+\textit{9th Conference on Computer and Communications Security Proceedings}. New York, NY: ACM. 255--264.
+ doi: 10.1145/586110.586145.
+
+\bibitem{7-kos}
+\Aue{Nurmuhametov,~A.\,R., E.\,A.~Zhabotinskij, Sh.\,F.~Kurmangaleev, S.\,S.~Gajsarjan, and  A.\,V.~Vishnjakov.} 
+2017. Melkogranulyarnaya randomizatsiya adresnogo prostranstva programmy pri zapuske 
+[Fine-grained address space layout randomization on program load]. 
+\textit{Trudy ISP RAN} [ISP RAS Proceedings] 29(6):163--182. 
+doi: 10.15514\!/ ISPRAS-2017-29(6)-9.
+
+\bibitem{8-kos}
+\Aue{Kosolapov,~Y.\,V.} 2020.
+On detecting code reuse attacks. \textit{Autom. Control Comp.~S.} 54:573--583. 
+ doi: 10.3103\!/\!S0146411620070111.
+\end{thebibliography}
+} }
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received August 20, 2020}} 
+
+%\vspace*{-14pt}  
+
+
+\Contrl
+
+\noindent
+\textbf{Kosolapov Yury V.} (b.\ 1982)~---  
+Candidate of Science (PhD) in technology, associate professor, Institute for Mathematics, 
+Mechanics, and Computer Science named after I.\,I.~Vorovich, Southern Federal University, 
+8a~Milchakova Str., Rostov-on-Don 344090, Russian Federation; \mbox{itaim@mail.ru}
+
+
+ 
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

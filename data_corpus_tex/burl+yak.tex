@@ -1,0 +1,567 @@
+\def\stat{burl+yak}
+
+\def\tit{РАЗРАБОТКА МЕТОДА ФОРМИРОВАНИЯ ПРИЗНАКОВОГО ПРОСТРАНСТВА 
+И~МОДЕЛИ ДЛЯ~ОЦЕНКИ И~ПРОГНОЗИРОВАНИЯ АНТРОПОГЕННОГО ВЛИЯНИЯ 
+НА~ОКРУЖАЮЩУЮ СРЕДУ (НА~ПРИМЕРЕ ЛЕСНОГО ФОНДА 
+НЕФТЕДОБЫВАЮЩЕГО РЕГИОНА)$^*$}
+
+\def\titkol{Разработка метода формирования признакового пространства 
+и~модели для~оценки и~прогнозирования}
+% антропогенного влияния 
+%на~окружающую среду (на~примере лесного фонда 
+%нефтедобывающего региона)}
+
+\def\aut{В.\,В.~Бурлуцкий$^1$, А.\,В.~Якимчук$^2$, А.\,В.~Мельников$^3$, 
+  А.\,Л.~Царегородцев$^4$,\\  С.\,В.~Волошин$^5$}
+
+\def\autkol{В.\,В.~Бурлуцкий, А.\,В.~Якимчук, А.\,В.~Мельников и~др.} 
+%  А.\,Л.~Царегородцев$^4$,  С.\,В.~Волошин$^5$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Бурлуцкий В.\,В.}
+\index{Якимчук А.\,В.}
+\index{Мельников А.\,В.} 
+\index{Царегородцев А.\,Л.}
+\index{Волошин С.\,В.}
+\index{Burlutskiy V.\,V.}
+\index{Yakimchuk A.\,V.}
+\index{Melnikov A.\,V.} 
+\index{Tsaregorodtsev A.\,L.}
+\index{Voloshin S.\,V.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке Научного фонда ЮГУ (проект 13-01-20/25).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Югорский НИИ информационных технологий, г.~Хан\-ты-Ман\-сийск, BurlutskyVV@uriit.ru}
+\footnotetext[2]{Югорский государственный университет, г.~Хан\-ты-Ман\-сийск, YakimchukAV@uriit.ru}
+\footnotetext[3]{Югорский НИИ информационных технологий, г.~Хан\-ты-Мансийск, andmelnikov1956@yandex.ru}
+\footnotetext[4]{Югорский НИИ информационных технологий, г.~Хан\-ты-Ман\-сийск, TsaregorodtsevAL@uriit.ru}
+\footnotetext[5]{Югорский государственный университет, г.~Хан\-ты-Ман\-сийск, Voloshinsv@uriit.ru}
+
+\vspace*{-18pt}
+
+    
+        
+  
+  
+  \Abst{Работа посвящена разработке системного метода оценки и~прогнозирования 
+влияния природных и~антропогенных воздействий на окружающую среду, включающего 
+процедуры преобразования исходных информационных массивов, формирования 
+нейросетевой модели, ее обучения и~тестирования. Метод применен для анализа последствий 
+антропогенных воздействий на окружающую среду в~Хан\-ты-Ман\-сий\-ском автономном 
+округе~--- Югре.}
+  
+  \KW{анализ данных; машинное обучение; нейронные сети; пространственный анализ; 
+географические информационные системы; риск-ори\-ен\-ти\-ро\-ван\-ный подход}
+
+\DOI{10.14357/19922264190318} 
+  
+\vspace*{-3pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+  
+\section{Введение}
+
+\vspace*{-6pt}
+
+  Проблема формирования признакового пространства, математической 
+модели и~подходящих алгоритмов машинного обучения для оценки 
+и~прогнозирования влияния природных и~антропогенных факторов на 
+окружающую среду весьма актуальна как с~теоретической, так и~с~прикладной 
+точки зрения. В~особенности решение этой проб\-ле\-мы важно для 
+нефтедобывающих регионов, так как производственные технологии в~них 
+сопряжены с~загрязнением окружающей среды. 
+  
+  Первая часть исходной проблемы~--- фор\-ми\-рование признакового 
+пространства~--- связана\linebreak с~доступными количественными показателями 
+техногенных аварий~[1--3]. Здесь важной является трансформация исходных 
+информационных массивов в~цифровые характеристики риска влияния 
+антропогенных факторов.
+  
+  Вторая и~третья части исходной проблемы~--- модель и~алгоритм  
+обучения~--- связаны друг с~другом и~сводятся к~задачам классификации, 
+в~которых\linebreak используется какая-либо нейросетевая модель\linebreak в~сочетании 
+с~подходящим алгоритмом обучения. В~настоящее время разработано большое 
+число различных алгоритмов классификации: метод~$k$~ближайших 
+соседей~[4], случайный лес~[5], стохастический градиентный спуск~[6], метод 
+опорных векторов~[7]. 
+  
+  В данной работе для решения поставленной проблемы предлагается метод 
+трансформации исходных разнородных динамически организованных 
+информационных массивов, полученных путем дис\-тан\-ци\-он\-но\-го зондирования 
+земной поверхности с~использованием средств 
+географических информационных сис\-тем (ГИС).
+  
+  На основе преобразованных информационных массивов формируется 
+трехслойная нейронная сеть и~проводится ее обучение и~тестирование. 
+Обученная сеть используется для прогнозирования последствий природных 
+и~антропогенных воздействий на окружающую среду. 
+  
+  Разработанные методы были применены для оценивания и~прогнозирования 
+антропогенных рисков на территории Хан\-ты-Ман\-сий\-ско\-го автономного 
+округа.
+
+\begin{figure*}[b] %fig1
+%\vspace*{8pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=165.986mm 
+ \epsfbox{bur-1.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Распределение аварий по районам}
+\end{figure*}
+  
+
+\vspace*{-12pt}
+  
+\section{Структуризация и~предварительная обработка разнородных 
+данных}
+
+\vspace*{-4pt}
+
+  Все единицы информационных массивов привязаны к~ячейкам 
+поверхностной сетки. Для каждого признака набора данных была определена 
+шкала измерения с~учетом метода обработки: текстовые признаки были 
+заменены на числовые, непрерывные значения были нормализованы по 
+максимальному значению.
+  
+  Ключевым атрибутом набора данных служат поверхностные координаты 
+соответствующего информационного объекта.
+  
+  Для проверки корректности заполнения базы использовались методы 
+визуального анализа: гистограммы и~картографический анализ.
+  
+  Для визуального анализа использовался boxplot, компактно изображающий 
+распределение. Такой вид диаграммы в~удобной форме показывает медиану 
+(или, если нужно, среднее), нижний и~верхний квартили, минимальное 
+и~максимальное значение выборки и~выбросы.
+
+\vspace*{-6pt}
+  
+\section{Модель оценки рисков}
+
+\vspace*{-4pt}
+
+  В результате проведенного анализа была по\-строена 4-слой\-ная нейросетевая 
+модель оценки рисков~[8]. В~качестве данных для входного слоя 
+использовалась векторизация признаков, что позволило существенно сократить 
+число входных нейронов.
+  
+  Число нейронов во втором слое составило~166, в~третьем~--- 83, в~четвертом~--- 40, 
+и~выходной слой был с~двумя нейронами, которые фиксировали 
+положительную и~отрицательную реакцию модели.
+  
+  Информационные массивы были разделены на три части, которые 
+использовались для обучения модели, тестирования и~прогнозирования.
+  
+\section{Применение разработанного метода для оценки 
+и~прогнозирования рисков антропогенных факторов 
+в~нефтедобывающем регионе}
+
+\vspace*{-14pt}
+
+  В качестве подходящего полигона был избран Хан\-ты-Ман\-cий\-ский 
+автономный округ~--- Югра, который лидирует среди нефтедобывающих 
+регионов по добыче нефти и~газа. При этом более~95\% территории 
+автономного округа представляют собой земли лесного фонда, которые 
+находятся под постоянным негативным воздействием предприятий 
+нефтегазового комплекса. 
+
+\begin{figure*} %fig2
+\vspace*{1pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=163mm 
+ \epsfbox{bur-2.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Визуализация исходного набора данных}
+%\vspace*{-6pt}
+\end{figure*}
+
+
+
+
+  
+  Для построения модели прогнозирования рисков загрязнения 
+использовались данные об авариях и~инцидентах, транспортной 
+инфраструктуре, населенных пунктах~[9]. Вся информация привязывалась  
+к~5-ки\-ло\-мет\-ро\-вой поверхностной сетке, и~процесс интеграции данных 
+заключался в~унификации географических координат различных объектов, 
+построении общих классификаторов, удалении дублирующей информации 
+и~приведении к~единому виду текстовых признаков.
+  
+  В~результате был получен первичный массив данных о загрязнениях 
+окружающей среды за период~2012--2017~гг. Объем данной информативной 
+выборки составил 26\,015~записей. Общее число элементарных участков 
+составило~22\,054. 
+  
+  Рисунок~1 изображает распределение аварий по районам, а также показывает 
+медиану (или, если нужно, среднее), нижний и~верхний квартили, минимальное и~максимальное значение выборки и~выбросы.
+
+
+  Объекты, привязанные к~элементарным участкам, представлены на рис.~2. 
+  
+
+  
+  На следующем этапе набор данных был проанализирован на наличие 
+неинформативных признаков, для этого использовался метод главных 
+компонент.
+  
+  В результате проведенного анализа и~предобработки данных был получен 
+базовый набор данных, объем которого составил~22\,054.
+  
+  Для тестирования модели использовался метод кросс-ва\-ли\-да\-ции 
+по~$k$~блокам~[10]. Исходный набор данных разбивался на~10~одинаковых 
+по размеру блоков. Из~10~блоков один оставлялся для тестирования модели, 
+а~оставшиеся~9~блоков использовались как тренировочный набор. Процесс 
+повторялся~10~раз, и~каждый из блоков один раз использовался как тестовый 
+набор. В~итоге получилось~10~результатов, по одному на каждый блок, они 
+усреднялись или комбинировались ка\-ким-либо другим способом и~дали одну 
+оценку. Результаты представлены в~таблице.
+  
+  
+  
+  Средняя оценка составила~90,68.
+  
+  Преимущество такого способа перед случайным сэмплированием в~том, что 
+все наблюдения используются и~для тренировки, и~для тестирования\linebreak\vspace*{-12pt}
+  
+  %\begin{table*}
+{\small
+  \begin{center}
+  \begin{tabular}{|c|c|}
+  \multicolumn{2}{p{35mm}}{Оценка методом кросс-валидации}\\
+  \multicolumn{2}{c}{\ }\\[-6pt]
+  \hline
+\tabcolsep=0pt\begin{tabular}{c}Номер\\ модели\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Полученная\\ оценка\end{tabular}\\
+\hline
+1&91,5\\
+2& 90,3\\
+3&90,8\\
+4&91,2\\
+5&89,9\\
+6&90,6\\
+7&91,4\\
+8&89,5\\
+9&91,2\\
+10\hphantom{9}&90,4\\
+\hline
+\end{tabular}
+\end{center}
+}
+%\end{table*}
+
+\vspace*{12pt}
+  
+  \noindent
+     модели, 
+при этом каждое наблюдение используется для тестирования только один раз.
+  
+  Получившаяся карта с~прогнозированными авариями представлена на рис.~3.
+  
+  
+\begin{figure*} %fig3
+  \vspace*{1pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=163mm 
+ \epsfbox{bur-3.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+  \Caption{Визуализация прогноза аварий}
+  \end{figure*} 
+  
+\vspace*{-6pt} 
+
+\section{Заключение}
+
+\vspace*{-4pt}
+
+  Разработан системный метод оценки и~прогнозирования природных 
+и~антропогенных воздействий на окружающую среду, включающий процедуры 
+преобразования исходных информационных массивов, формирования 
+нейросетевой прогнозирующей модели, ее обучения и~тестирования. Метод 
+применен для прогнозирования техногенных аварий в~нефтедобывающем 
+регионе~--- Югре. 
+  
+ {\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{2-bur} %1
+\Au{Guikema S.\,D.} Natural disaster risk analysis for critical infrastructure systems: 
+An approach based on statistical learning theory~// Reliab. Eng. 
+Syst. Safe., 2009. Vol.~94. Iss.~4. P.~855--860. doi: 10.1016/j.ress.2008.09.003.
+\bibitem{3-bur} %2
+\Au{Шокин Ю.\,И., Москвичев~В.\,В., Ничепорчук~В.\,В.} Методика оценки 
+антропогенных рисков территорий и~построения картограмм рисков 
+с~использованием геоинформационных сис\-тем~// Вычислительные 
+технологии, 2010. Т.~15. №\,1. С.~120--131. 
+\bibitem{1-bur} %3
+\Au{Гуменюк В.\,И., Кармишин~А.\,М., Киреев~В.\,А.} О~количественных 
+показателях опасности техногенных аварий~// На\-уч\-но-тех\-ни\-че\-ские 
+ведомости СПбГПУ, 2013. №\,2(171). С.~281--288.
+\bibitem{4-bur}
+\Au{Колесенков А.\,Н., Костров~Б.\,В., Ручкин~В.\,Н.} Нейронные сети 
+мониторинга чрезвычайных ситуаций по данным ДЗЗ~// Известия Тульского 
+государственного университета. Технические науки, 2014. №\,5. С.~220--225.
+\bibitem{5-bur}
+\Au{Stone C.\,J.} Consistent nonparametric regression~// Ann. Stat., 1977. 
+Vol.~5. Iss.~4. P.~595--620.
+\bibitem{6-bur}
+\Au{Breiman L.} Random forests~// Mach. Learn., 2001. Vol.~45. Iss.~1. 
+P.~5--32.
+\bibitem{7-bur}
+\Au{Robbins H., Siegmund~D.} A~convergence theorem for non negative almost 
+supermartingales and some applications~// Optimizing methods in statistics~/
+Ed. J.\,S.~Rustagi.~--- New 
+York, NY, USA: Academic Press, 1971. P.~233--257.
+\bibitem{8-bur}
+\Au{Cortes C., Vapnik~V.} Support-vector networks~// Mach. Learn., 1995. 
+Vol.~20. Iss.~3. P.~273--297.
+\bibitem{9-bur}
+\Au{Hong H., Pradhan~B., Jebur~M.\,N.} Spatial prediction of landslide hazard at 
+the Luxi area (China) using support vector machines~// Environ. Earth 
+Sci., 2016. Vol.~75. Iss.~1. P.~40.
+\bibitem{10-bur}
+\Au{Kohavi R.} A~study of cross-validation and bootstrap for accuracy estimation 
+and model selection~// 14th Joint Conference (International) on Artificial Intelligence 
+Proceedings.~--- Montr$\acute{\mbox{e}}$al, 
+Qu$\acute{\mbox{e}}$bec, Canada, 1995. Vol.~2. P.~1137--1143.
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 02.10.18}}
+
+%\vspace*{8pt}
+
+%\pagebreak
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{DEVELOPMENT OF~A~METHOD FOR~THE~FORMATION OF~ATTRIBUTE SPACE 
+AND~A~MODEL FOR~THE~ASSESSMENT AND~PREDICTION OF~ANTHROPOGENIC INFLUENCE 
+ON~THE~ENVIRONMENT (ON~THE~EXAMPLE OF~THE~FOREST FUND OF~THE~OIL-PRODUCING 
+REGION)}
+
+
+\def\titkol{Development of~a~method for~the~formation of attribute space 
+and~a~model for~the~assessment and~prediction of %~anthropogenic 
+influence} 
+%on~the~environment (on~the~example of~the~forest Fund of~the~oil-producing  region)}
+
+\def\aut{V.\,V.~Burlutskiy$^1$, A.\,V.~Yakimchuk$^2$, A.\,V.~Melnikov$^1$, 
+A.\,L.~Tsaregorodtsev$^1$, and~S.\,V.~Voloshin$^2$}
+
+\def\autkol{V.\,V.~Burlutskiy, A.\,V.~Yakimchuk, A.\,V.~Melnikov, et al.} 
+%A.\,L.~Tsaregorodtsev$^1$, and~S.\,V.~Voloshin$^2$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+\noindent
+  $^1$Yugra Research Institute of Information Technologies, 151~Mira Str., 
+Khanty-Mansiysk 628011, Russian\linebreak
+$\hphantom{^1}$Federation 
+  
+  \noindent
+  $^2$Yugra State University, 16~Chekhova Str., Khanty-Mansiysk 628012, 
+Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}  
+  
+  
+   
+  
+\Abste{The work is devoted to the development of a systematic method for assessing 
+and predicting the influence of natural and anthropogenic impacts on the 
+environment, including the procedures for the transformation of initial data store, the 
+formation of the neural network model, its training, and testing. The method is used to 
+analyze the consequences of anthropogenic impacts on the environment in the 
+Khanty-Mansiysk Autonomous Okrug~--- Yugra.}
+  
+  \KWE{data analysis; machine learning; neural networks; spatial analysis; 
+geographic information systems; risk-based approach; control and supervision}
+  
+  
+ 
+  
+  
+\DOI{10.14357/19922264190318} 
+
+%\vspace*{-14pt}
+
+ \Ack
+  \noindent
+  This work was supported by the Science  Foundation of Yugra State 
+University  under grant No.\,13-01-20/25.
+
+
+%\vspace*{-6pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+  
+
+\bibitem{2-bur-1} %1
+\Aue{Guikema, S.\,D.} 2009. Natural disaster risk analysis for critical infrastructure 
+systems: An approach based on statistical learning theory. \textit{Reliab.
+Eng. Syst. Safe.} 94(4):855--860. doi: 10.1016/j.ress.2008.09.003.
+\bibitem{3-bur-1} %2
+\Aue{Shokin, Y.\,I., V.\,V.~Moskvichev, and V.\,V.~Nicheporchuk.} 2010.Metodika otsenki 
+antropogennykh riskov territoriy i~postroeniya kartogramm riskov s~ispol'zovaniem 
+geoinformatsionnykh system [Technique for estimation of anthropogenous risks for 
+territories and construction of risks cartograms using geoinformation systems]. 
+\textit{Computational Technologies} 15(1):120--131.
+
+\bibitem{1-bur-1} %3
+\Aue{Gumenyuk, V.\,I., A.\,M.~Karmishin, and V.\,A.~Kireev.} 2013. 
+O~kolichestvennykh pokazatelyakh opasnosti tekhnogennykh avariy [About 
+quantitative indicators of danger man-made accidents]. 
+\textit{Nauchno-tekhnicheskie vedomosti SPbPU} [St.\ Petersburg State
+Polytechnic University 
+J.~Engineering Science Technology] 2(171):281--288. 
+
+\bibitem{4-bur-1}
+\Aue{Kolesenkov, A.\,N., B.\,V.~Kostrov, and V.\,N.~Ruchkin.} 2014. Neyronnye 
+seti monitoringa chrezvychaynykh situatsiy po dannym DZZ  [Neural network 
+monitoring for emergencies according ERS]. \textit{Izvestiya 
+Tul'skogo gosudarstvennogo universiteta. Tekhnicheskie nauki} [Transactions of 
+Tula State University. Technical Sciences] 5:220--225.
+\bibitem{5-bur-1}
+\Aue{Stone, C.\,J.} 1977. Consistent nonparametric regression. \textit{Ann.
+Stat.} 5(4):595--620.
+\bibitem{6-bur-1}
+\Aue{Breiman, L.} 2001. Random forests. \textit{Mach. Learn.} 45(1):5--32.
+\bibitem{7-bur-1}
+\Aue{Robbins, H., and D.~Siegmund.} 1971. A~convergence theorem for non 
+negative almost supermartingales and some applications. \textit{Optimizing methods 
+statistics}. Ed.\ J.\,S.~Rustagi.
+New York, NY: Academic Press. 233--257.
+\bibitem{8-bur-1}
+\Aue{Cortes, C., and V.~Vapnik.} 1995. Support-vector networks. \textit{Mach. 
+Learn.} 20(3):273--297.
+\bibitem{9-bur-1}
+\Aue{Hong, H., B.~Pradhan, and M.\,N.~Jebur.} 2016. Spatial prediction of 
+landslide hazard at the Luxi area (China) using support vector machines. 
+\textit{Environ. Earth Sci.} 75(1):40.
+\bibitem{10-bur-1}
+\Aue{Kohavi, R.} 1995. A~study of cross-validation and bootstrap for accuracy 
+estimation and model selection. \textit{14th  Joint Conference (International) on 
+Artificial Intelligence Proceedings}. Montr$\acute{\mbox{e}}$al, 
+Qu$\acute{\mbox{e}}$bec, Canada.  2:1137--1143. 
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+%\vspace*{-7pt}
+
+\hfill{\small\textit{Received October 2, 2018}}
+
+%\pagebreak
+
+%\vspace*{-22pt} 
+  
+  
+  \Contr
+  
+  
+  \noindent
+  \textbf{Burlutskiy Vladimir V.} (b.\ 1975)~--- Candidate of Science (PhD) in 
+physics and mathematics, Head of the Center of Information and Analytical Systems, 
+Yugra Research Institute of Information Technologies, 151~Mira Str.,  
+Khanty-Mansiysk 628011, Russian Federation; \mbox{BurlutskyVV@uriit.ru}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Yakimchuk Aleksandr V.} (b.\ 1994)~--- PhD student, Yugra State 
+University, 16~Chekhova Str., Khanty-Mansiysk 628012, Russian Federation; 
+\mbox{YakimchukAV@uriit.ru }
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Melnikov Andrey V.} (b.\ 1956)~--- Doctor of Science in technology, 
+professor, Director, Yugra Research Institute of Information Technologies, 151~Mira 
+Str., Khanty-Mansiysk 628011, Russian Federation; 
+\mbox{andmelnikov1956@yandex.ru} 
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Tsaregorodtsev Aleksandr L.} (b.\ 1979)~--- Candidate of Science (PhD) 
+in technology, First Deputy Director, Yugra Research Institute of Information 
+Technologies, 151~Mira Str., Khanty-Mansiysk 628011, Russian Federation; 
+\mbox{TsaregorodtsevAL@uriit.ru} 
+  
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Voloshin Semen V.} (b.\ 1991)~--- PhD student, Yugra State University, 
+16~Chekhova Str., Khanty-Mansiysk 628012, Russian Federation; 
+\mbox{voloshinsv@uriit.ru}
+  
+       
+   
+   
+   
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}  

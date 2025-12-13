@@ -1,0 +1,822 @@
+\def\stat{sopin}
+
+\def\tit{МОДЕЛИРОВАНИЕ НАСТОЙЧИВОГО ПОВЕДЕНИЯ ПОЛЬЗОВАТЕЛЕЙ В~СЕТЯХ 5G NR С~АДАПТАЦИЕЙ~СКОРОСТИ~И~БЛОКИРОВКАМИ$^*$}
+
+\def\titkol{Моделирование настойчивого поведения пользователей в~сетях 5G NR с~адаптацией скорости и~блокировками}
+
+\def\aut{Э.\,С.~Сопин$^1$, А.\,Р.~Маслов$^2$, В.\,С.~Шоргин$^3$, В.\,О.~Бегишев$^4$}
+
+\def\autkol{Э.\,С.~Сопин, А.\,Р.~Маслов, В.\,С.~Шоргин, В.\,О.~Бегишев}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Сопин Э.\,С.}
+\index{Маслов А.\,Р.}
+\index{Шоргин В.\,С.}
+\index{Бегишев В.\,О.}
+\index{Sopin E.\,S.}
+\index{Maslov A.\,R.}
+\index{Shorgin V.\,S.}
+\index{Begishev V.\,O.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Исследование выполнено за счет гранта 
+Российского научного фонда №\,22-79-10128.}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов им.\ 
+Патриса Лумумбы; Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, \mbox{sopin-es@rudn.ru}}
+\footnotetext[2]{Российский университет дружбы народов им.\ 
+Патриса Лумумбы,\mbox{maslov-ar@rudn.ru}}
+\footnotetext[3]{Федеральный исследовательский центр 
+<<Информатика и~управление>> Российской академии наук, \mbox{vshorgin@ipiran.ru}}
+\footnotetext[4]{Российский университет дружбы народов им.\ 
+Патриса Лумумбы, \mbox{begishev-vo@rudn.ru}}
+
+\vspace*{-8pt}
+
+
+
+\Abst{Технология радиодоступа 5G NR (New Radio), работающая в~диапазоне 
+мил\-ли\-мет\-ро\-вых волн, и~будущие терагерцевые сис\-те\-мы~6G предназначены для 
+приложений, чувствительных к~ско\-рости. Такие приложения характеризуются 
+адап\-тив\-ностью, поз\-во\-ля\-ющей снизить ско\-рость передачи в~соответствии с~текущими 
+условиями сети. Не\-на\-деж\-ный характер сетей~5G/6G может вызывать повторные попытки 
+продолжить обслуживание. Предложена модель обслуживания абонентов 
+с~нетерпеливым поведением на основе ре\-сурс\-ной сис\-те\-мы массового обслуживания (РеСМО)
+с~орбитой. В~качестве характеристик обслуживания рас\-смат\-ри\-ва\-ют\-ся вероятности 
+блокировки до\-сту\-па на обслуживание и~прерывания за\-яв\-ки, а~так\-же коэффициент 
+использования ресурсов сис\-те\-мы. Показано, что на\-стой\-чи\-вость пользователей 
+поз\-во\-ля\-ет понизить рас\-смат\-ри\-ва\-емые вероятности: выполнение в~сред\-нем двух 
+по\-втор\-ных попыток снижает оба показателя на 20\%--70\%. На\-стой\-чи\-вость увеличивает 
+использование сис\-тем\-ных ресурсов на 20\%--40$\%$ и~снижает долю по\-тра\-чен\-ных 
+впус\-тую ресурсов в~2--3~\mbox{раза}.}
+
+
+\KW{5G; NR (New Radio); ресурсная СМО; повторные 
+вызовы; блокировки распространения; прерывание об\-слу\-жи\-вания}
+
+\DOI{10.14357/19922264230304}{ENSHKV}
+  
+\vspace*{-2pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+    
+\section{Введение}
+%\label{sect:00}
+
+%\vspace*{-4pt}
+
+
+Технология 5G NR, ра\-бо\-та\-ющая в~диапазоне мил\-ли\-мет\-ро\-вых 
+волн (28--100 ГГц), разработана для удовле\-тво\-ре\-ния потребностей мультимедийных 
+приложений. В~будущих сис\-те\-мах~6G эти сис\-те\-мы будут дополнены технологиями 
+радиодоступа, ра\-бо\-та\-ющи\-ми в~диапазоне час\-тот~100--300~ГГц и~об\-ла\-да\-ющи\-ми схожими 
+характеристиками распространения ра\-дио\-волн.
+
+Мультимедийные приложения требуют услуги поддержания по\-сто\-ян\-ной ско\-рости 
+передачи данных на радиоинтерфейсе. Однако даже эти приложения час\-то снабжены 
+возможностями адап\-та\-ции\linebreak ско\-рости. Приложение может отслеживать со\-сто\-яние 
+со\-еди\-не\-ния и~реагировать на снижение пропускной спо\-соб\-ности сети и/или временную 
+потерю соединения путем снижения тре\-бу\-емой \mbox{ско\-рости}. В~сис\-те\-мах связи 
+с~прерываниями активного со\-еди\-не\-ния, таких как 5G/6G сети, пользователи будут 
+воспринимать услугу с~пониженным качеством.
+
+Принципиальное различие между микроволновыми технологиями, такими как LTE (long-term evolution), 
+и~сис\-те\-ма\-ми мил\-ли\-мет\-ро\-вых волн и~терагерцевого диапазона час\-тот заключается 
+в~не\-на\-деж\-ном характере беспроводного канала вследствие блокировки путей 
+рас\-про\-стра\-не\-ния радиоволн, что приводит к~потерям соединения~\cite{begishev2021joint}. 
+На ранних этапах развертывания потери со\-еди\-не\-ния будут 
+приводить к~<<нетерпеливому>> поведению пользователей~--- попыткам вос\-ста\-нов\-ле\-ния 
+активной сессии передачи данных. 
+
+\begin{figure*}[b] %fig1
+ \vspace*{1pt}
+\begin{center}
+   \mbox{%
+\epsfxsize=163mm 
+\epsfbox{sop-1.eps}
+}
+\end{center}
+\vspace*{-9pt}
+\Caption{Рассматриваемый сценарий развертывания}
+\label{fig:deployment}
+\end{figure*}
+
+Цель работы состоит в~анализе эффектов влияния нетерпеливого поведения 
+пользователей в~случае потери связи на характеристики обслуживания абонентов 
+в~сетях радиодоступа 5G/6G в~условиях динамической адап\-та\-ции ско\-рости передачи 
+и~динамической блокировки. Предложена математическая модель процесса обслуживания 
+абонентов на основе РеСМО с~орбитой 
+и~по\-втор\-ны\-ми вызовами. 
+
+В~отличие от похожей модели с~неоднородными заявками 
+и~орбитой~\cite{vlaskina2022}, в~данной работе модель учитывает специфику 
+мил\-ли\-мет\-ро\-вых волн\,/\,те\-ра\-гер\-це\-вых час\-тот, вклю\-чая модели распространения,
+ антенны и~блокировки пря\-мой ви\-ди\-мости. В~качестве характеристик обслуживания 
+рассматриваются ве\-ро\-ят\-ность блокировки до\-сту\-па на обслуживание, ве\-ро\-ят\-ность 
+прерывания сессии, а~так\-же коэффициент использования ресурсов сис\-темы.
+
+\section{Системная модель}
+%\label{sys}
+
+
+Рассматривается базовая станция (БС) мил\-ли\-мет\-ро\-во\-го/те\-ра\-гер\-це\-во\-го диапазона 
+с~радиусом по\-кры\-тия~$R_M$ (рис.~\ref{fig:deployment}). Зона покрытия соты рав\-на~$d_E$, 
+зависит от ис\-поль\-зу\-емой схемы модуляции и~кодирования и~рас\-счи\-ты\-ва\-ет\-ся 
+с~использованием модели рас\-про\-стра\-не\-ния 3GPP (3rd Generation Partnership Project)~\cite{kovalchukov2019accurate}. 
+До\-ступ\-ная полоса про\-пус\-ка\-ния~--- $B$ МГц. В~зоне обслуживания БС находятся 
+пешеходы с~плот\-ностью~$\lambda_B$~пе\-ше\-ход/км$^2$, дви\-жу\-щи\-еся согласно модели 
+случайных на\-прав\-ле\-ний (RDM~--- random direction model)~\cite{nain2005properties}. Базовая станция обслуживает 
+абонентские устройства (АУ), ас\-со\-ци\-иро\-ван\-ные с~пешеходами. Высоты БС и~АУ равны~$h_A$ и~$h_U$ 
+соответственно. Высота пешеходов рав\-на~$h_P$, $h_P\hm>h_U$.
+
+
+Пусть $\lambda_{U}$~--- интенсивность по\-ступ\-ле\-ния заявок от одного АУ. 
+Предполагая, что АУ генерируют запросы на уста\-нов\-ле\-ние сессий независимо, 
+процесс по\-ступ\-ле\-ния мож\-но считать пуассоновским с~ин\-тен\-сив\-ностью
+$\lambda_A\hm=\lambda_{U}\pi{}d_{E}^2$. Пред\-по\-ла\-га\-ет\-ся рав\-но\-мер\-ное рас\-пре\-де\-ле\-ние 
+положения пешеходов в~радиусе обслуживания \mbox{соты}.
+
+
+Рассматриваются услуги с~высокой ско\-ростью передачи данных, соз\-да\-ющие 
+неэластичный, но адап\-ти\-ру\-ющий\-ся к~до\-ступ\-ной ско\-рости трафик.\linebreak Каж\-дая за\-яв\-ка 
+запрашивает по\-сто\-ян\-ную ско\-рость~$C_{\max}$. В~случае прерывания обслуживания, 
+вызванного блокировкой, механизм адап\-та\-ции снижает ско\-рость до~$C_{\min}$, 
+$C_{\min}\hm<C_{\max}$. \mbox{Вследствие} случайного расположения АУ в~зоне обслуживания 
+фактический объем ресурса, тре\-бу\-емый для достижения скоростей~$C_{\min}$ и~$C_{\max}$, считается случайным. Предполагается, что время обслуживания запроса 
+на уста\-нов\-ле\-ние сес\-сии подчиняется экспоненциальному распределению с~па\-ра\-мет\-ром~$\mu$.
+
+В работе учитывается специфика мил\-ли\-мет\-ро\-во\-го/те\-ра\-гер\-це\-во\-го диапазонов, включая 
+модели распространения, антенны и~блокировки, аналогичные рас\-смот\-рен\-ным в~\cite{petrov2017interference, gapeyenko2017temporal, begishev2019estimate}.
+
+\section{Анализ математической модели}
+
+
+\subsection{Описание модели}
+%\label{sect:rsmo_model}
+
+
+Рассматривается РеСМО с~$N$ приборами, $R$ единицами ресурса и~орбитой ем\-костью 
+$M$ заявок. По\-сту\-па\-ющий поток заявок пуассоновский с~ин\-тен\-сив\-ностью~$\lambda$, 
+время их обслуживания распределено экспоненциально с~па\-ра\-мет\-ром~$\mu$. Для 
+каж\-дой по\-сту\-па\-ющей в~сис\-те\-му заявки требуется прибор и~случайный объем ресурса, 
+опре\-де\-ля\-емый в~соответствии с~распределением $\{p_{1,j}\}$, $j\hm=1,2,\dots, R$. 
+По\-сту\-па\-ющая заявка принимается на обслуживание, если в~сис\-те\-ме есть свободный 
+прибор и~достаточный объем ресурса. Если хотя бы одно из условий не выполняется, 
+то заявка либо уходит на орбиту с~вероятностью $\theta$, либо покидает сис\-те\-му с~ве\-ро\-ят\-ностью $1\hm-\theta$. Заявки проводят на орбите экспоненциально 
+распределенное время с~ин\-тен\-сив\-ностью~$\alpha$ и~затем пытаются повторно 
+по\-сту\-пить на обслуживание с~новыми требованиями к~ресурсу в~соответствии с~распределением $\{p_{2,j}\}$,\linebreak
+\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+ $j\hm=1,2,\ldots, R$, что отражает снижение ско\-рости 
+переда\-чи при неудачной попытке продолжения сес\-сии. Далее вновь поступающие 
+заявки будем называть первичными, а~по\-сту\-па\-ющие с~орбиты~--- по\-втор\-ны\-ми за\-яв\-ками.
+
+
+Каждая обслуживаемая заявка порождает пуассоновский поток сигналов 
+ин\-тен\-сив\-ностью~$\gamma$, при по\-ступ\-ле\-нии которых заявка освобождает ранее 
+занятый объем ресурса, формирует новые требования согласно тому же распределению и~пытается занять новый объем. Если свободного ресурса достаточно, то 
+продолжается ее обслуживание. В~противном случае она либо уходит на орбиту с~ве\-ро\-ят\-ностью~$\theta$, 
+либо покидает сис\-те\-му с~дополнительной ве\-ро\-ят\-ностью $1\hm-\theta$.
+
+Поведение системы описывается трехмерным случайным процессом $X(t)\hm=\left( 
+\xi(t), \delta(t), \varphi(t) \right)$, где $\xi (t)$~--- чис\-ло заявок на 
+обслуживании; $\delta(t)$~--- общее чис\-ло занятых ими единиц ресурса; 
+$\varphi(t)$~--- чис\-ло заявок на орбите. В~этом случае нельзя точ\-но определить 
+объем высвободившегося ресурса в~момент ухода заявки, но его можно 
+аппроксимировать условным вероятностным распределением~\cite{resmo, tutorial2022}.
+
+Пространство со\-сто\-яний случайного процесса~$X(t)$ име\-ет~вид:
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+*\label{eqn:stateSpace}
+     S=\mathop{\bigcup}\limits_{n=0}^N S_n, \
+     S_n=\Bigg\{ (n,r,m): m=0,1,\ldots\\
+     \ldots ,M, \sum\limits_{i=0}^n 
+\sum\limits_{j=0}^r p_{1,j}^{(i )} p_{2,r-j}^{(n-i)}>0 \Bigg\},
+\end{multline*}
+
+\vspace*{-3pt}
+
+\noindent
+где распределение $\{ p_{s,j}^{(i)} \}$, $j\hm=0,1,\ldots ,R$, $s\hm=\{1,2\}$, есть $i$-крат\-ная 
+сверт\-ка распределения $\{p_{s,j}\}$, $j\hm=1,2,\ldots ,R$, а~$p_{s,j}^{(i)}$ 
+обозначает ве\-ро\-ят\-ность того, что~$i$~заявок типа~$s$ суммарно занимают~$j$ 
+единиц ре\-сурса.
+
+Предполагается, что требования заявок к~ресурсу определяются согласно 
+распределению $\{p_{3,j}\}$, $j\hm=1,2,\ldots ,R$, пред\-став\-ля\-юще\-му собой смесь 
+распределений~$\{p_ {1,j}\}$ и~$\{p_{2,j}\}$:
+\begin{equation*} 
+%\label{eqn:mix}
+    p_{3,j}=\bar{N_1} p_{1,j} + \bar{N_2} p_{2,j},
+\end{equation*}
+
+
+
+\noindent
+где $\bar{N_1}$ и~$\bar{N_2}$~--- доли первичных и~по\-втор\-ных заявок на 
+обслуживании.
+
+
+Пусть $q(n,r,m)$~--- стационарная ве\-ро\-ят\-ность со\-сто\-яния $(n,r,m)$ процесса~$X(t)$. 
+Для рассматриваемой РеСМО мож\-но вывести сис\-те\-му уравнений рав\-но\-ве\-сия:
+\begin{multline}
+ (\lambda + m\alpha)q(0,0,m)=\mu \!\!\!\! \sum\limits_{j: (1,j,m) \in S_1} \!\!\!\!\!\! q\left(1,j,m\right), \\
+  0  \leq m \leq M; 
+  \label{eqn:sur}
+\end{multline}
+
+\vspace*{-15pt}
+\columnbreak
+\
+
+\vspace*{-18pt}
+
+\noindent
+\begin{multline}
+q(n,r,m) \Bigg[ \lambda \Bigg( \sum\limits_{j=0}^{R-r} p_{1,j} + u(M-m) \theta 
+\!\! \!\sum\limits_{j=R-r+1}^R \!\!\!\! p_{1,j} \Bigg) +{}\\
+{}+n\mu  + n\gamma + 
+m\alpha \Bigg( \sum\limits_{j=1}^{R-r} p_{2,j} +(1-\theta) \!\! \sum\limits_{j=R-
+r+1}^R \!\!\! p_{2,j} \Bigg) \Bigg] = {} \\
+{}  = \lambda \!\! \!\!\! \sum\limits_{j<r, (n-1,j,m) \in S_{n-1}} \!\!\!\!\!\!\!\!\!\!\!\!\! q(n-
+1,j,m)p_{1,r-j} + {}\\
+{}+u(m) \lambda\, \theta\, q(n,r,m-1) \!\! \sum\limits_{j=R-r+1}^R \!\!
+p_{1,j} +{} \\
+{}+ (n+1)\mu \!\!\!\!\! \sum\limits_{j>r, (n+1,j,m) \in S_{n+1}} \!\!\!\!\!\!\!\!\!\!\!\!\!\!
+q(n+1,j,m) \fr{p_{3,j-r} p_{3,r}^{(n)}}{ p_{3,j}^{(n+1)} } +{}\\
+{}+  n\gamma \!\!\!\!\!\!
+ \sum\limits_{(n,j,m) \in S_n} \!\!\!\!\!\! q(n,j,m) \!\!\! \sum\limits_{s=\max(0,j-r)}^j\!\! 
+ \fr{p_{3,s} p_{3,j-s}^{(n-1)} }{ p_{3,j}^{(n)} }\,\! p_{3,r-j+s} + {} \\
+{}+ (n+1)\gamma \Bigg( \sum\limits_{j>r, (n+1,j,m) \in S_{n+1}} \!\!\!\!\!\!\!\!\!\!\!\!\! \left( 
+u(m)\,\theta \,q(n+1,j,m-1) +{}\right.\\
+\left.{}+(1-\theta)q(n+1,j,m) \right) \fr{ p_{3,j-r}p_{3,r}^{(n)} }{ p_{3,j}^{(n+1)} } 
+\sum\limits_{s=R-r+1}^R p_{3,s}  \Bigg) + {} \\
+{}+ u(M-m)(m+1)\alpha \Bigg( (1-\theta)q(n,r,m+1) \!\!\!\sum\limits_{j=R-r+1}^R \!\! p_{2,j} + {}\\
+{}+ \!\! \sum\limits_{j<r, (n-1,j,m+1) \in S_{n-1}} \!\! \!\!\!\!\!\!\!\!\!\! \!\! \!\! \!\!q(n-1,j,m+1)p_{2,r-j} \Bigg) ,  \\
+0<n<N, \enskip 0 \leq m \leq M, \enskip (n,r,m) \in S; 
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+ q(N,r,m) \left[ u(M-m)\theta\lambda +N\mu + N\gamma +{}\right.\\
+ \left.{}+ m\alpha(1-\theta) 
+\right] = \lambda \!\!\!\!\!\! \sum\limits_{j<r, (N-1,j,m) \in S_{N-1}} \!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!
+q(N-1,j,m)p_{1,r-j} + {} \\
+{}+u(m) \lambda \theta q(N,r,m-1) + {}\\
+{}+ N\gamma \!\!\!\!\!\! \sum\limits_{(N,j,m) \in S_N} 
+\!\!\!\!\!\!\!\! q(N,j,m) \!\!\!\sum\limits_{s=\max(0,j-r)}^j \! \!\!\!\!\fr{ p_{3,s} p_{3,j-s}^{(N-1)} }{ 
+p_{3,j}^{(N)} } \!p_{3,r-j+s} + {}\\
+u(M-m)(m+1)\alpha
+\Bigg( (1-\theta)q(N,r,m+1) + {}\\
+{}+\!\!\! \sum\limits_{j<r, (N-1,j,m+1) \in 
+S_{N-1}} \!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\! q(N-1,j,m+1)p_{2,r-j} \Bigg),\\
+ 0 \leq m \leq M, \enskip (N,r,m) \in S_N,
+\end{multline}
+
+
+\noindent
+где $u(\cdot)$~--- 
+функ\-ция Хевисайда. Для вы\-чис\-ле\-ния 
+стационарного распределения сис\-те\-ма уравнений~(1)--(3) решается чис\-лен\-но 
+с~использованием условия нормировки. При этом для весов смешанного распределения 
+требований к~ресурсу $\{ p_{3 ,j}\}$, $j\hm=1,2,\ldots ,R$, предлагается использовать 
+метод\linebreak
+\vspace*{-12pt}
+
+\pagebreak
+\noindent
+прос\-тых итераций с~начальными значениями \mbox{$\bar{N}_1\hm=1$}g, $\bar{N}_2\hm=0$.
+
+
+\subsection{Вероятностные характеристики} %\label{sect:metrics}
+
+Время пребывания заявки в~сис\-те\-ме может включать множество периодов обслуживания
+ и~ожидания. Под периодом обслуживания понимается интервал времени, в~течение 
+которого за\-яв\-ка непрерывно обслуживается и~по окончании либо покидает сис\-те\-му, 
+либо уходит на орбиту. Аналогично период ожидания~--- это временной интервал, 
+который за\-яв\-ка непрерывно проводит на орбите, в~конце которого она либо покидает 
+сис\-те\-му, либо вновь принимается на обслуживание.
+
+
+Начнем с~ве\-ро\-ят\-ности блокировки доступа на обслуживание~$\pi_N$, которая 
+пред\-став\-ля\-ет собой ве\-ро\-ят\-ность того, что за\-яв\-ка ни разу не попала на 
+обслуживание и~в конечном итоге покинула сис\-те\-му. Для этого заявка либо 
+сбрасывается сразу в~момент пер\-во\-го поступления с~ве\-ро\-ят\-ностью~$\pi_1$, либо 
+сначала переходит на орбиту c~ве\-ро\-ят\-ностью~$\pi_2$, а~в~конце периода ожидания 
+сбрасывается. Вероятности~$\pi_1$ и~$\pi_2$ име\-ют~вид:
+\begin{align*} 
+%\label{eqn:pi1}
+   \pi_1 &= \sum\limits_{r=1}^R \left( q(N,r,M)+ (1-\theta) \sum\limits_{m=0}^{M-1} q(N,r,m) 
+\right) + {}\\
+   & {}+ \sum\limits_{n=1}^{N-1} \sum\limits_{r=1}^R \left(q(n,r,M)+ (1-\theta) \!\! \sum\limits_{m=0}^{M-1} q(n,r,m) \right) \times{}\\
+   &\hspace*{45mm}{}\times \sum\limits_{j=R-r+1}^R p_{1,j}; \\
+   \pi_2 &= \theta \sum\limits_{n=1}^{N-1}\sum\limits_{r=1}^R  \sum\limits_{m=0}^{M-1} q(n,r,m) 
+\sum\limits_{j=R-r+1}^R p_{1,j} +{}\\
+&\hspace*{35mm}{}+
+   \theta \sum\limits_{r=1}^R \sum\limits_{m=0}^{M-1} q(N,r,m).
+\end{align*}
+Отметим, что дополнительная ве\-ро\-ят\-ность $1\hm-\pi_ 1\hm-\pi_ 2$ имеет смысл 
+ве\-ро\-ят\-ности того, что первичная заявка принимается на об\-слу\-жи\-ва\-ние.
+
+При попытке попасть на обслуживание с~орбиты (по\-ступ\-ле\-ние повторной заявки) 
+заявка может быть сброшена с~ве\-ро\-ят\-ностью~$\pi_3$, может вернуться на орбиту 
+с~ве\-ро\-ят\-ностью $\pi_4$ либо быть принята на обслуживание с~ве\-ро\-ят\-ностью $1\hm-\pi_3\hm-\pi_4$. Эти вероятности будем определять как отношения 
+со\-от\-вет\-ст\-ву\-ющих 
+интенсивностей. Так, сред\-няя ин\-тен\-сив\-ность по\-ступ\-ле\-ния по\-втор\-ных заявок равна 
+$\alpha \bar{M}$, где $\bar{M}$~--- сред\-нее чис\-ло заявок на орбите:
+$$ 
+\bar{M}=\sum\limits_{n=0}^N \sum\limits_{r=0}^R \sum\limits_{m=1}^M m q(n,r,m).
+$$
+
+
+Тогда вероятность $\pi_3$ есть отношение сред\-ней ин\-тен\-сив\-ности~$\nu_3$ сброса 
+повторных заявок к~сред\-ней ин\-тен\-сив\-ности их по\-ступ\-ле\-ния: 
+$$
+\pi_3=\fr{{\nu_3}}{\alpha \bar{M}}\,,
+$$ где
+\begin{multline*} 
+%\label{eqn:pi3}
+   \nu_3=(1-\theta) \alpha  \Bigg(  \sum\limits_{n=1}^{N-1}\sum\limits_{r=1}^R \sum\limits_{m=1}^M m q(n,r,m) \!\!\!\!\sum\limits_{j=R-r+1}^R 
+\!\!\! \!p_{2,j} +{}\\
+   {}+\!\! \sum\limits_{r=1}^R \sum\limits_{m=1}^M\! mq(N,r,m)  \Bigg).
+\end{multline*}
+
+Аналогично вероятность~$\pi_4$ рав\-на отношению сред\-ней ин\-тен\-сив\-ности~$\nu_4$ 
+возвратов на орбиту по\-втор\-ных заявок к~средней ин\-тен\-сив\-ности их по\-ступ\-ле\-ния. 
+Поскольку~$\nu_4$ отличается от~$\nu_3$ только множителем, получаем 
+$$
+\pi_4=\fr{\theta}{1-\theta}\, \pi_3\,.
+$$
+Тогда ве\-ро\-ят\-ность блокировки до\-сту\-па на обслуживание~$\pi_N$ име\-ет~вид:
+\begin{equation*} 
+%\label{eqn:piN}
+    \pi_N=\pi_1 + \pi_2 \left( \sum\limits_{k=0}^{\infty} \pi_4^k \right) 
+\pi_3=\pi_1+\fr{\pi_2 \pi_3}{1-\pi_4}\,.
+\end{equation*}
+
+Перейдем к~анализу ве\-ро\-ят\-ности прерывания~$\pi_O$. По завершении периода 
+обслуживания заявка либо прерывается с~ве\-ро\-ят\-ностью~$\pi_5$, либо переходит на 
+орбиту с~ве\-ро\-ят\-ностью~$\pi_6$, либо успешно завершается ее обслуживание 
+с~ве\-ро\-ят\-ностью $1\hm-\pi_5\hm- \pi_6$.  Ве\-ро\-ят\-ность~$\pi_{5}$ определяется как отношение 
+средней ин\-тен\-сив\-ности~$\nu_5$ прерываний заявок к~сред\-ней ин\-тен\-сив\-ности приема 
+на обслуживание:
+$$
+\pi_5=\fr{\nu_5}{\lambda(1-\pi_1-\pi_2)+ \alpha \bar{M} (1- \pi_3\hm-\pi_4)}\,,
+$$
+ где
+\begin{multline*}
+   \nu_5=\gamma \sum\limits_{n=2}^N \sum\limits_{r=1}^R n \Bigg( q(n,r,M) + {}\\
+   {}+\!
+\sum\limits_{m=0}^{M-1} (1-\theta)q(n,r,m) \! \Bigg)\! \sum\limits_{j<r, r-j+s>R} \!\!\!\!\!\!\! p_{3,s} \fr{p_{3,j} p_{3,r-j}^{(n-1)}}{p_r^{(n)}} \,.
+\end{multline*}
+
+\begin{figure*}[b] %fig2
+ \vspace*{6pt}
+\begin{center}
+   \mbox{%
+\epsfxsize=163mm 
+\epsfbox{sop-2.eps}
+}
+\end{center}
+\vspace*{-9pt}
+\Caption{Основные характеристики обслуживания абонентов:
+(\textit{а})~ве\-ро\-ят\-ность блокировки до\-сту\-па на обслуживание;
+(\textit{б})~ве\-ро\-ят\-ность прерывания заявки: серые кривые~--- $\lambda_B\hm= 0{,}01$~бл./м$^2$;
+черные кривые~--- $\lambda_B\hm= 0{,}1$~бл./м$^2$; \textit{1}~---  $\theta\hm=0$;
+\textit{2}~--- $0{,}5$;
+\textit{3}~---  $\theta\hm= 0{,}9$
+%\textit{4}~---  $0$;
+%\textit{5}~---  $0{,}5$;
+%\textit{6}~---  $\theta\hm= 0{,}9$
+}
+\label{fig:basic}
+\end{figure*}
+
+
+Аналогично $\pi_6$ определяется как отношение сред\-ней ин\-тен\-сив\-ности~$\nu_6$ 
+перехода заявок с~обслуживания на орбиту к~сред\-ней ин\-тен\-сив\-ности приема на 
+обслуживание:
+$$
+\pi_6=\fr{\nu_6}{\lambda(1\hm-\pi_1\hm-\pi_2) \hm+ \alpha \bar{M} (1\hm-
+\pi_3\hm-\pi_4)}\,,
+$$
+ где
+\begin{multline*}
+   \nu_6=\theta \gamma \sum\limits_{n=2}^N \sum\limits_{r=1}^R n \sum\limits_{m=0}^{M-1} q(n,r,m) 
+\sum\limits_{j=1}^r \fr{p_{3,j} p_{3,r-j}^{(n-1)}}{p_r^{(n)}} \times{}\\
+{}\times \sum\limits_{s=R-r+j+1}^R \!\!\!\! 
+p_{3,s}.
+\end{multline*}
+
+
+Период ожидания заявки завершается либо прерыванием с~ве\-ро\-ят\-ностью~$\pi_7$, либо 
+возвратом на обслуживание с~ве\-ро\-ят\-ностью $1\hm-\pi_7$. \mbox{Тогда}
+\begin{equation*}
+ %\label{eqn:pi7}
+\pi_7=\sum\limits_{k=0}^{\infty} \pi_4^k \pi_3 = \fr{\pi_3}{1-\pi_4}\,.
+\end{equation*}
+
+Заявка прерывается, если она получила хотя бы один период обслуживания 
+(с~ве\-ро\-ят\-ностью $1\hm-\pi_N$), затем получает $k \hm\geq 0$ периодов ожидания 
+и~обслуживания, а~затем либо прерывается в~конце по\-след\-не\-го периода обслуживания 
+с~ве\-ро\-ят\-ностью~$\pi_5$, либо уходит на орбиту и~прерывается в~конце периода 
+ожидания с~ве\-ро\-ят\-ностью~$\pi_6 \pi_7$. \mbox{Тогда}
+\begin{multline*} 
+%\label{eqn:piO}
+    \pi_O= (1  - \pi_N) \sum\limits_{k=0}^{\infty} \left( 
+\pi_6 (1-\pi_7)\right)^k (\pi_5 + \pi_6 \pi_7) = {}\\
+{}=(1-\pi_N) \fr{\pi_5 + \pi_6 
+\pi_7}{1-\pi_6(1-\pi_7)}\,.
+\end{multline*}
+
+Средняя доля занятых ресурсов вы\-чис\-ля\-ет\-ся по фор\-муле:
+\begin{equation*} 
+%\label{eqn:u}
+U=\fr{1}{R} \sum\limits_{n=1}^N \sum\limits_{r=1}^R \sum\limits_{m=0}^M r q(n,r,m).
+\end{equation*}
+
+Важным показателем для систем 5G/6G с~ненадежным обслуживанием служит доля 
+ресурсов~$U_W$, пред\-остав\-лен\-ных сессиям, которые в~конечном итоге были прерваны:
+\begin{equation*} 
+%\label{eqn:uw}
+U_W=\fr{\pi_O}{1-\pi_N}\, U.
+\end{equation*}
+
+
+\section{Численные результаты}
+
+
+% Вероятность блокировки поступающей заявки
+
+В качестве численного исследования рас\-смот\-рим основные характеристики 
+обслуживания абонентов~--- ве\-ро\-ят\-ность блокировки до\-сту\-па на обслуживание 
+и~ве\-ро\-ят\-ность прерывания заявки,\linebreak пред\-став\-лен\-ные на рис.~\ref{fig:basic}, где 
+сред\-нее время пребывания на орбите со\-став\-ля\-ет $1/\alpha\hm=1$~с. \mbox{Методы} расчета 
+ин\-тен\-сив\-ности сигналов и~распределения требований первичных и~повторных заявок 
+к~ресурсу пред\-став\-ле\-ны в~\cite{begishev2019estimate}. Анализируя \mbox{ве\-ро\-ят\-ность} 
+блокировки до\-сту\-па на обслуживание, отметим, что она рас\-тет по мере увеличения 
+ин\-тен\-сив\-ности по\-ступ\-ле\-ния заявок. Отметим, что\linebreak увеличение плот\-ности блокеров 
+приводит к~уменьшению ве\-ро\-ят\-ности блокировки до\-сту\-па на обслуживание для всех 
+значений коэффициента на\-стой\-чи\-вости пользователей. Примечательно, что 
+\mbox{на\-стой\-чи\-вость} пользователя поз\-во\-ля\-ет значительно уменьшить ис\-сле\-ду\-емую 
+ве\-ро\-ят\-ность. В~част\-ности, при $\lambda_B\hm=0{,}01$~бл./м$^2$ и~$\theta\hm=0$ 
+ве\-ро\-ят\-ность блокировки до\-сту\-па на обслуживание рав\-на~0,17 и~уменьшается до~0,1 при 
+совершении двух повторных попыток в~сред\-нем.
+
+
+Рассмотрим теперь ве\-ро\-ят\-ность прерывания сессий (см.\ рис.~\ref{fig:basic},\,\textit{б}). 
+Здесь наблюдается рез\-кое\linebreak\vspace*{-12pt}
+
+{ \begin{center}  %fig3
+ \vspace*{-4pt}
+    \mbox{%
+\epsfxsize=78.875mm 
+\epsfbox{sop-3.eps}
+}
+
+\end{center}
+
+\vspace*{-3pt}
+
+\noindent
+{{\figurename~3}\ \ \small{Коэффициент использования ресурса сис\-те\-мы: серые кривые~--- $\lambda_B\hm= 0{,}01$~бл./м$^2$;
+черные кривые~--- $\lambda_B\hm= 0{,}1$~бл./м$^2$;
+\textit{1}~--- использование ресурсов сис\-те\-мы;
+\textit{2}~--- доля потраченного впус\-тую ресурса}}}
+
+\vspace*{12pt}
+
+\noindent
+ различие меж\-ду кривыми, со\-от\-вет\-ст\-ву\-ющи\-ми 
+$\lambda_B\hm=0{,}1$ и~$0{,}01$~бл./м$^2$, до\-сти\-га\-ющее~0,2--0,3. 
+Увеличение плот\-ности блокеров приводит к~рос\-ту ис\-сле\-ду\-емой ве\-ро\-ят\-ности 
+и~снижению ве\-ро\-ят\-ности\linebreak блокировки до\-сту\-па на обслуживание (см.\ рис.~\ref{fig:basic},\,\textit{а}). 
+В~целом при рас\-смат\-ри\-ва\-емых значениях ин\-тен\-сив\-ности 
+по\-ступ\-ле\-ния большая часть заявок, принятых к~обслуживанию, в~итоге теряется. 
+На\-стой\-чи\-вость пользователя значительно повышает ве\-ро\-ят\-ность успеш\-но\-го 
+обслуживания. В~част\-ности, при $\lambda\hm=0{,}1$~з./с, $\lambda_B\hm=0{,}1$~бл./м$^2$ 
+на\-стой\-чи\-вость снижает ве\-ро\-ят\-ность прерывания с~0,4 до~0,1. 
+{\looseness=1
+
+}
+
+% Коэффициент использования ресурсов системы
+
+Наконец, рассмотрим коэффициент использования ресурса сис\-те\-мы и~долю ресурса, 
+по\-тра\-чен\-но\-го сис\-те\-мой впус\-тую, пред\-став\-лен\-ные на рис.~3.\linebreak Анализируя 
+пред\-став\-лен\-ные данные,  мож\-но заметить, что на\-стой\-чи\-вость пользователей 
+положительно влияет на обе мет\-ри\-ки, поз\-во\-ляя использовать больше сис\-тем\-но\-го 
+ресурса и~делать это\linebreak более эффективно. В~част\-ности, при $\lambda\hm=0{,}1$~бл./м$^2$ 
+и~$\theta\hm=0$ около~40\% ресурса из занятых $55$\% тратится впустую. При 
+$\theta\hm=0{,}9$ сис\-те\-ма не только использует~80\% ресурса, но и~только~15\% из 
+этого чис\-ла тратится на заявки, которые не будут успеш\-но об\-слу\-жены. 
+
+
+
+
+
+\section{Заключение}
+%\label{conclus}
+
+В статье предложена модель процесса обслуживания пользователей на БС с~учетом 
+не\-на\-деж\-но\-го характера мил\-ли\-мет\-ро\-вых и~субтерагерцевых сред передачи сис\-тем 
+5G/6G, которые подвержены прерываниям со\-еди\-не\-ния, вызванным блокировкой, и~настойчивому поведению абонентов. Предложенная модель описана в~виде РеСМО 
+с~орбитой и~поз\-во\-ля\-ет получить основные характеристики обслуживания абонентов 
+и~про\-из\-во\-ди\-тель\-ности сис\-те\-мы~--- вероятности блокировки до\-сту\-па на обслуживание 
+и~прерывания, а~так\-же коэффициент использования ресурса сис\-темы.
+{\looseness=1
+
+}
+
+
+
+
+{\small\frenchspacing
+ {\baselineskip=12pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9}
+\bibitem{begishev2021joint} %1
+\Au{Begishev V., Sopin~E., Moltchanov~D., Kovalchukov~R.,
+  Samuylov~A., Andreev~S., Koucheryavy~Y., Samouylov~K.} Joint use of guard 
+capacity and multiconnectivity for improved session continuity in millimeter-wave 5G NR systems~// 
+IEEE T. Veh. Technol., 2021. Vol.~70. 
+Iss.~3. P.~2657--2672. doi: 10.1109/TVT.2021.3061906.
+
+\bibitem{vlaskina2022} %2
+\Au{Власкина А.\,С., Бурцева~С.\,А., Ко\-чет\-ко\-ва~И.\,А., Шор\-гин~С.\,Я.}
+Управляемая сис\-те\-ма массового обслуживания с~элас\-тич\-ным трафиком и~сигналами для 
+анализа нарезки ресурсов в~сети радиодоступа~// Информатика и~её применения, 
+2022. Т.~16. Вып.~3. С.~90--96. doi: 10.14357/19922264220312.
+
+\bibitem{kovalchukov2019accurate} %3
+\Au{Kovalchukov R., Moltchanov~D., Gai\-da\-ma\-ka~Y., Bob\-ri\-ko\-va~E.} An accurate 
+approximation of resource request distributions in millimeter wave 3GPP new 
+radio systems~// Internet of things, smart spaces, and next generation networks 
+and systems~/ Eds. O.~Galinina, S.~Andreev, S.~Balandin, Y.~Koucheryavy.~--- 
+Lecture notes in computer science ser.~--- Cham: Springer, 2019. Vol.~11660. 
+P.~572--585. doi: 10.1007/978-3-030-30859-9\_50.
+
+\bibitem{nain2005properties} %4
+\Au{Nain P., Towsley~D., Liu~B., Liu~Z.} Properties of random direction 
+models~//  24th Annual Joint Conference of the IEEE Computer and 
+Communications Societies Proceedings.~--- Piscataway, NJ, USA: IEEE, 2005. Vol.~3. P.~1897--1907. 
+doi: 10.1109/INFCOM.2005.1498468. 
+
+\bibitem{petrov2017interference} %5
+\Au{Petrov V., Komarov~M., Mol\-tcha\-nov~D., Jornet~J., Kou\-che\-rya\-vy~Y.}
+\newblock Interference and SINR in millimeter wave and terahertz communication 
+systems with blocking and directional antennas~// IEEE T. Wirel. 
+Commun., 2017. Vol.~16. Iss.~3. P.~1791--1808. doi: 
+10.1109/TWC. 2017.2654351.
+
+\bibitem{gapeyenko2017temporal} %6
+\Au{Gapeyenko M., Samuylov~A., Ge\-ra\-si\-men\-ko~M., Mol\-tcha\-nov~D., Singh~S., 
+Akdeniz~M., Aryafar~E., Himayat~N., And\-re\-ev~S., Kou\-che\-rya\-vy~E.} On the temporal 
+effects of mobile blockers in urban millimeter-wave cellular scenarios~// IEEE 
+T. Veh. Technol., 2017. Vol.~66. Iss.~11. P.~10124--10138. 
+doi: 10.1109/TVT.2017.2754543.
+
+\bibitem{begishev2019estimate} %7
+\Au{Бегишев В.\,О., Сопин~Э.\,С., Мол\-ча\-нов~Д.\,А., Са\-муй\-лов~А.\,К., 
+Гай\-да\-ма\-ка~Ю.\,В.,  Са\-муй\-лов~К. Е.} Оценка эф\-фек\-тив\-ности механизма резервирования 
+полосы про\-пус\-ка\-ния для технологии mmWave в~сетях связи пятого поколения~// 
+Ин\-фор\-ма\-ци\-он\-но-управ\-ля\-ющие сис\-те\-мы, 2019. №\,5(102). C.~51--63. doi: 
+10.31799/1684-8853-2019-5-51-63.
+
+\pagebreak
+
+\bibitem{resmo} %8
+\Au{Горбунова А.\,В., Наумов В.\,А., Гай\-да\-ма\-ка Ю.\,В., Са\-муй\-лов К.\,Е.} 
+Ресурсные
+сис\-те\-мы массового обслуживания как модели беспроводных сис\-тем связи~// 
+Информатика и~её применения, 2018. Т.~12. Вып.~3. С.~48--55. doi: 
+10.14357/19922264180307.
+
+\bibitem{tutorial2022} %9
+\Au{Moltchanov D., Sopin E., Be\-gi\-shev~V., Sa\-muy\-lov~A., Kou\-che\-rya\-vy~Y., 
+Sa\-mouy\-lov~K.} A~tutorial on mathematical modeling of 5G/6G millimeter wave and 
+terahertz cellular systems~// IEEE Commun. Surv. Tut., 2022. 
+Vol.~24. Iss.~2. P.~1072--1116. doi: 10.1109/ COMST.2022.3156207.
+
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 08.02.23}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{MODELING INSISTENT USER BEHAVIOR IN~5G NEW RADIO NETWORKS WITH~RATE ADAPTATION AND~BLOCKAGE\\[-4pt]}
+
+
+\def\titkol{Modeling insistent user behavior in~5G New Radio networks with~rate adaptation and~blockage}
+
+
+\def\aut{E.\,S.~Sopin$^{1,2}$, A.\,R.~Maslov$^1$, V.\,S.~Shorgin$^2$, and~V.\,O.~Begishev$^1$}
+
+\def\autkol{E.\,S.~Sopin, A.\,R.~Maslov, V.\,S.~Shorgin, and~V.\,O.~Begishev}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-13pt}
+
+
+\noindent 
+$^{1}$RUDN University, 6 Miklukho-Maklaya Str., Moscow 117198, Russian Federation
+
+\noindent
+$^{2}$Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov\linebreak
+$\hphantom{^1}$Str., Moscow 119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{2pt}
+
+
+
+
+\Abste{Millimeter wave 5G New Radio access technology and future 6G terahertz systems are designed for rate-demanding 
+multimedia applications. Such applications are adaptive to the network transmission rate. The unreliable nature of 5G/6G communications networks, subject 
+to loss of connection due to dynamic blockage of radio propagation paths, can cause impatient user behavior leading to retries to continue service.
+ For such systems, the authors propose a~service model with impatient behavior and service interruption based on 
+ a~resource queuing system with an orbit. The authors derive the new and ongoing session loss probabilities as well as 
+ characterize the efficiency of resource usage. Numerical results show that user persistence reduces the probabilities under 
+ consideration: performing an average of two retries reduces both indicators by 20\%--70\% while with an average of~10~attempts, the gain can reach 200\%--300\%. 
+ Persistence not only increases the use of system resources 
+by~20\%--40\% but also allows them to be used efficiently reducing the percentage of wasted resources by two to three times.}
+
+\KWE{5G; New Radio; resource queuing system; callbacks; propagation blocking; service interruption}
+
+
+
+
+\DOI{10.14357/19922264230304}{ENSHKV}
+
+\vspace*{-12pt}
+
+\Ack
+
+\vspace*{-4pt}
+
+\noindent
+The research was funded by the Russian Science Foundation, project No.\,22-79-10128.
+
+\vspace*{2pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9} 
+\bibitem{begishev2021joint-1}
+\Aue{Begishev, V., E.~Sopin, D.~Moltchanov, R.~Ko\-val\-chu\-kov, A.~Sa\-muy\-lov, S.~And\-re\-ev, Y.~Kou\-che\-ry\-avy, and K.~Sa\-mouy\-lov.}
+ 2021. Joint use of guard capacity and multiconnectivity for improved session continuity in millimeter-wave 5G NR systems. \textit{IEEE T.~Veh. Technol.}
+  70(3):~2657--2672. doi: 10.1109/TVT.2021.3061906.
+
+\bibitem{vlaskina2022-1}
+\Aue{Vlaskina, A.\,S., S.\,A.~Burtseva, I.\,A.~Ko\-chet\-ko\-va, and S.\,Ya.~Shor\-gin.} 2022. 
+Up\-rav\-lya\-emaya sis\-te\-ma mas\-so\-vo\-go ob\-slu\-zhi\-va\-niya s~elas\-tich\-nym tra\-fi\-kom 
+i~sig\-na\-la\-mi dlya ana\-li\-za na\-rez\-ki re\-sur\-sov v~se\-ti ra\-dio\-do\-stu\-pa 
+[Controllable queuing system with elastic traffic and signals for analyzing network slicing]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 
+16(3):~90--96. doi: 10.14357/19922264220312.
+
+\bibitem{kovalchukov2019accurate-1}
+\Aue{Kovalchukov, R., D.~Moltchanov, Y.~Gai\-da\-ma\-ka, and E.~Bob\-ri\-ko\-va.}
+ 2019. An accurate approximation of resource request distributions in millimeter wave 3GPP new radio systems. 
+ \textit{Internet of things, smart spaces, and next generation networks and systems}. Eds. O.~Galinina, S.~Andreev, S.~Balandin, and Y.~Koucheryavy. 
+Lecture notes in computer science ser. Cham: Springer. 11660:572--585. doi: 10.1007/978-3-030-30859-9\_50.
+
+\bibitem{nain2005properties-1} %4
+\Aue{Nain, P., D.~Towsley, B.~Liu, and Z.~Liu.}
+ 2005. Properties of random direction models. \textit{24th Annual Joint Conference of the IEEE Computer and Communications Societies Proceedings}. 
+ Piscataway, NJ: IEEE. 3:1897--1907. doi: 10.1109/\linebreak INFCOM.2005.1498468.
+ 
+ 
+
+\bibitem{petrov2017interference-1} %5
+\Aue{Petrov, V., M.~Komarov, D.~Mol\-tcha\-nov, J.~Jornet, and Y.~Kou\-che\-rya\-vy.}
+ 2017. Interference and SINR in millimeter wave and terahertz communication systems with blocking and directional antennas. 
+ \textit{IEEE T. Wirel. Commun.} 16:1791--1808. doi: 10.1109/TWC.2017.2654351.
+
+\bibitem{gapeyenko2017temporal-1} %6
+\Aue{Gapeyenko, M., A.~Samuylov, M.~Gerasimenko, D.~Mol\-tcha\-nov, S.~Singh, M.~Riza, E.~Aryafar, N.~Himayat, S.~And\-re\-ev, and Y.~Kou\-che\-rya\-vy.}
+ 2017. On the temporal effects of mobile blockers in urban millimeter-wave cellular scenarios. \textit{IEEE T. Veh. Technol.} 66(11):10124--10138. 
+ doi: 10.1109/TVT.2017.2754543.
+ 
+ \bibitem{begishev2019estimate-1} %7
+\Aue{Begishev, V.\,O., E.\,S.~Sopin, D.\,A.~Moltchanov, A.\,K.~Sa\-muy\-lov, Yu.\,V.~Gaydamaka, and K.\,E.~Sa\-mouy\-lov.}
+ 2019. Otsen\-ka ef\-fek\-tiv\-nosti me\-kha\-niz\-ma re\-zer\-vi\-ro\-va\-niya po\-lo\-sy 
+ pro\-pus\-ka\-niya dlya tekh\-no\-lo\-gii mmWave v~se\-tyakh svya\-zi pya\-to\-go po\-ko\-le\-niya 
+ [Performance evaluation of bandwidth reservation for mmWave in 5G NR systems]. \textit{Informatsionno-upravlyayushchie sis\-te\-my} 
+ [Information and Control Systems] 5(102):51--63. doi: 10.31799/1684-8853-2019-5-\mbox{51-63}.
+
+\bibitem{resmo-1} %8
+\Aue{Gorbunova, A.\,V., V.\,A.~Naumov, Yu.\,V.~Gay\-da\-ma\-ka, and K.\,E.~Sa\-muy\-lov.} 2018. 
+Re\-surs\-nye sis\-te\-my mas\-so\-vo\-go ob\-slu\-zhi\-va\-niya kak mo\-de\-li bes\-pro\-vod\-nykh sis\-tem svya\-zi 
+[Resource queuing systems as models of wireless communication systems]. 
+ \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 12(3):48--55. doi: 10.14357/19922264180307.
+
+\bibitem{tutorial2022-1} %9
+\Aue{Moltchanov, D., E.~Sopin, V.~Begishev, A.~Samuylov, Y.~Kou\-che\-rya\-vy, and K.~Samouylov.}
+ 2022. A~tutorial on mathematical modeling of 5G/6G millimeter wave and terahertz cellular systems. \textit{IEEE Commun. Surv. Tut.} 24(2):1072--1116. 
+ doi: 10.1109/COMST.2022.3156207.
+
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-9pt}
+
+\hfill{\small\textit{Received February 8, 2023}} 
+
+\Contr
+
+
+\noindent
+\textbf{Sopin Eduard S.} (b.\ 1987)~--- 
+Candidate of Science (PhD) in physics and mathematics, associate professor, Department of Applied Probability and Informatics, 
+RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; senior scientist, Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{sopin-es@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Maslov Alexander R.} (b.\ 1998)~--- PhD student, Department of Applied Probability and Informatics, 
+RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{maslov-ar@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Shorgin Vsevolod S.} (b.\ 1978)~--- Candidate of Science (PhD) in technology, senior scientist, Institute of Informatics Problems,
+ Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+ \mbox{vshorgin@ipiran.ru}
+ 
+ \vspace*{3pt}
+
+\noindent
+\textbf{Begishev Vyacheslav O.} (b.\ 1988)~--- 
+Candidate of Science (PhD) in physics and mathematics, associate professor, Department of Applied Probability and Informatics, 
+RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; \mbox{begishevu-vo@rudn.ru}
+
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

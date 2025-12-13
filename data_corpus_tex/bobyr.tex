@@ -1,0 +1,911 @@
+\def\stat{bobyr}
+
+\def\tit{МЕТОД РАСЧЕТА КАРТЫ ГЛУБИН\\
+ НА ОСНОВЕ МЯГКИХ ОПЕРАТОРОВ$^*$}
+
+\def\titkol{Метод расчета карты глубин на основе мягких операторов}
+
+
+\def\aut{М.\,В.~Бобырь$^1$, А.\,Е.~Архипов$^2$, Н.\,А.~Милостная$^3$}
+
+\def\autkol{М.\,В.~Бобырь, А.\,Е.~Архипов, Н.\,А.~Милостная}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Бобырь М.\,В.}
+\index{Архипов А.\,Е.}
+\index{Милостная Н.\,А.}
+\index{Bobyr M.\,V.}
+\index{Arkhipov A.\,E.}
+\index{Milostnaya N.\,A.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при поддержке гранта Президента РФ (МД-707.2017.8) 
+и~Госзадания (соглашение  №\,2.3440.2017/4.6).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Юго-Западный государственный университет, Курск, fregat\_mn@rambler.ru}
+\footnotetext[2]{Юго-Западный государственный университет, Курск, alex.76\_09@mail.ru}
+\footnotetext[3]{Юго-Западный государственный университет, Курск, nat\_mil@mail.ru}
+
+
+ \label{st\stat}
+
+                  \thispagestyle{headings}
+                  
+  \vspace*{-12pt}
+  
+
+
+  \Abst{Рассмотрен нечеткий метод построения карты глубин по стереоизображениям на 
+основе композиции алгоритма SAD  (Sum of Absolute Differences)
+и~не\-чет\-ко-ло\-ги\-че\-ско\-го вывода. Особенность данного 
+метода состоит в~использовании мягких арифметических операторов при нечеткой 
+импликации. Точность метода определялась на основе количественной оценки показателя 
+RMSE
+(root mean square error). Наилучшим признавался тот мягкий оператор, у~которого показатель RMSE 
+стремится к~минимуму. Предложенный метод показал, что при использовании мягких 
+операторов нахождения минимума точ\-ность алгоритма SAD увеличивается на~20\%. Данный 
+вывод подтвержден результатами имитационного моделирования, пред\-став\-лен\-но\-го 
+в~статье.}
+  
+  \KW{стереозрение; карта глубин; мягкие вычисления; SAD; нечеткая логика}
+  
+ \DOI{10.14357\!/\!08696527190207} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+      \vspace*{-18pt} 
+  
+\section{Введение}
+
+  При разработке систем навигации мобильными роботами возникает задача, 
+связанная с~определением местоположения подвижных и\!/\!или неподвижных 
+препятствий, возникающих на пути его следования~[1, 2]. Одним из 
+эффективных средств определения взаимного расположения объектов служит 
+анализ данных о~глубине сцены и~препятствий, расположенных на пути 
+следования робота. Для построения подобных сцен используются различные 
+методы, например получение данных от сканирующих лазерных дальномеров 
+или использование систем стереозрения~[3]. При разработке систем 
+стереозрения необходимо решить ряд проблем, связанных с~нахождением 
+объектов, располагающихся на стереоизображениях~[4]. Под картой глубин 
+понимается чер\-но-бе\-лое изображение с~градациями серого цвета, на котором 
+яркость отдельных предметов указывает пропорциональное расстояние до них. 
+Основными алгоритмами построения карт глубин являются алгоритмы SGM (Semi-Global 
+Matching)~[5] и~SAD. Для 
+расчета карты глубины с~по\-мощью SGM-ал\-го\-рит\-ма требуется несколько 
+проходов, в~то время как второй алгоритм использует только один проход 
+вдоль изображения, что снижает время, необходимое для расчета величины 
+смещения~$d$ (disparity). Следует заметить, что~1~кадр стереоинформации 
+в~формате HD (720~p~--- разрешение $1280\times720$~пикселей) должен 
+обрабатываться за~1/30~с т.\,е.\ за~33~мс. Следовательно, на 
+обработку~1~пикселя требуется около~50~нс. Поэтому время принятия 
+решений выступает одним из главных факторов, которые необходимо 
+учитывать при разработке стереосистем управления мобильными роботами. 
+Одним из путей повышения точности модели стереозрения является 
+использование нечеткой логики~[6]. Нечеткие модели имеют ряд системных 
+ошибок, снижающих их точность~[7]. Для устранения этих ошибок 
+рекомендуется использовать при импликации мягкие арифметические 
+операторы.
+
+  \begin{table}[b]\small %tabl1
+  \vspace*{-12pt}
+  \begin{center}
+  \Caption{Непараметризованные $t$-нормы}
+  \vspace*{2ex}
+  
+  \begin{tabular}{|l|cc|}
+  \hline
+\multicolumn{1}{|c|}{Название оператора}&\multicolumn{2}{c|}{Формула для импликации}\\
+\hline
+&\multicolumn{2}{c}{\ }\\[-9pt]
+MIN&$I = \min (a, b)$&(2)\\
+&\multicolumn{2}{c|}{\ }\\[-9pt]
+PROD&$I=a b$&(3)\\
+MEAN&$\displaystyle
+I=\fr{a+b}{2}$&(4)\\
+Soft-min I&$\displaystyle
+\fr{a+b+\delta^2-\sqrt{(a-b)^2+\delta^2}}{2}$&(5)\\
+Soft-min II&$\displaystyle
+I\fr{\sum\nolimits_{i=1}^n a_i e^{-ka_i}} {\sum\nolimits^n_{i=1} e^{-ka_i}}$, где $k=-
+100$&(6)\\[-6pt]
+&\multicolumn{2}{c|}{\ }\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Постановка задачи}
+
+  Поставим задачу повышения точности системы стереозрения для построения 
+карт глубин на основе оценки показателя RMSE: 
+  \begin{equation}
+  \mathrm{RMSE}=\sqrt{\fr{q}{w h}\sum\limits_{i=1}^{h-1}\sum\limits_{j=1}^{w-1} 
+\left( I_{i,j}^\prime-I_{i,j}\right)^2}\,\to \min\,,
+  \label{e1-bob}
+  \end{equation}
+где $w$ и~$h$~--- ширина и~высота изображения; $I_{i,j}^\prime$~--- уровень 
+яркости на эталонном изображении; $I_{i,j}$~--- уровень яркости на выходном 
+изображении.
+
+  Исследуемые мягкие операторы задаются формулами, представленными 
+в~табл.~1, где $a$ и~$b$~--- операнды, для которых осуществляется поиск 
+минимального значения; $\delta$~--- коэффициент мягкости поиска минимума 
+($\delta\hm=0{,}05$); $n$~--- число операндов, для которых осуществляется 
+поиск минимума.
+  
+
+
+  Наиболее точным признается тот метод, при реализации которого RMSE 
+минимален.
+  
+\section{Нечеткий метод построения карты глубин по 
+стереоизображениям}
+
+  Для построения карты глубин используется композиция алгоритма SAD 
+с~мягкой не\-чет\-ко-ло\-ги\-че\-ской сис\-те\-мой принятия управляющих 
+решений. На основе алгоритма SAD необходимо для каждого пикселя 
+рассчитать величину смещения~$d$. Расчет выполняется в~несколько 
+действий.
+  
+  \textbf{Шаг~1.}\ Сначала для каждого пикселя с~координатами $(x_l, y_l)$ левого 
+стереоизображения рассчитывается разность уровней интенсивности в~окне 
+(например, размером $3\times4$~пикселя) левого и~правого стереоизображений. 
+После этого на правом изображении окно смещается на один пиксель и~снова 
+рассчитывается разность уровней интенсивностей левого и~правого 
+стереоизображений. Сдвиг пикселей на правом изображении и~расчет разности 
+уровней интенсивности продолжается до порогового значения $d\hm= 0\ldots 
+d_{\max}$:
+  \setcounter{equation}{6}
+  \begin{multline}
+  \mathrm{SAD}\left(x,y,s\right)=\sum
+  \limits_{\substack{{m=-b;}\\ {n=-b}}}^{\substack{{m=b;}\\ {n=b}}} \!\! R
+  \sum\limits^{\substack{{m=b;}\\ {n=b}}}_{\substack{{m=-b;}\\ {n=-b}}} \!\!G 
+  \sum\limits_{\substack{{m=-b;}\\ {n=-b}}}^{\substack{{m=b;}\\ {n=b}}}\!\!
+  B\left\vert I_l(x+m, y+n)-{}\right.\\
+ \left. {}-I_r(x+m+d, y+n)\right\vert,\!\!
+  \label{e7-bob}
+  \end{multline}
+где $I_l$ и~$I_r$~--- интенсивность цвета на левом и~правом стереоизображениях; 
+$x$ и~$y$~--- 
+координаты на стереоизображениях; $b$~--- размер окна, определяемый по 
+формуле $2b\hm+1$, при $b\hm=1$ размер окна $3\times3$~пикселя; $R$, $G$, 
+$B$~--- компоненты трехканальной цветовой модели (если используется  
+YUV-мо\-дель, преобразования осуществляются по формуле 
+$Y\hm=0{,}299R\hm+0{,}587G\hm+0{,}114B$).
+  
+  После расчета абсолютной разности уровней интенсивности для массива 
+значений от~0 до порогового значения~$d_{\max}$ в~алгоритме SAD находится 
+минимальное значение $D(x, y)_{\mathrm{SAD}}$. Это значение служит величиной 
+смещения, которое формирует карту глубин для пикселя  
+с~координатами $(x, y)$:
+  \begin{equation*}
+  D(x,y)_{\mathrm{SAD}}=\argmin\limits_{d\in [0\ldots d_{\max}]} \mathrm{SAD}\,(x,y,d)\,.
+%  \label{e8-bob}
+  \end{equation*}
+  
+  В графическом виде алгоритм SAD представлен на рис.~1.
+
+\begin{figure} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=125.708mm 
+ \epsfbox{bob-1.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Графическая интерпретация расчета алгоритма SAD}
+\end{figure}
+
+  Одна из основных проблем при реализации модели SAD заключается 
+в~поиске и~соотнесении одинаковых точек на левом и~правом 
+стереоизображениях. Вследствие наличия на изображениях одинаковых 
+участков большой площади, например фона, при сопоставлении появляются 
+артефакты белого цвета. Введение трех входных переменных позволяет более 
+точно определять соответствие одинаковых точек на левом и~правом 
+стереоизображениях. Входными переменными нечеткого метода построения 
+карты глубин (НМПКГ) по стереоизображениям  служат три уровня 
+интенсивности, рассчитанные по формуле~(\ref{e7-bob}): в~исходной точке 
+с~координатами $(x, y)$~--- $\mathrm{SAD}\,(x, y, d)$; в~точке, смещенной относительно 
+исходной на~3~пикселя влево,~--- $\mathrm{SAD}\,(x-3, y, d)$; в~точке, смещенной 
+относительно исходной на~3~пикселя вправо,~--- $\mathrm{SAD}\,(x+3, y, d)$. В~качестве 
+выходной величины используется величина смещения $D(x, y)$, вычисляемая 
+по формуле~(\ref{e11-bob}) (см.\ с.~\pageref{e11-bob}). При этом для каждого пикселя карты глубин 
+нечеткий вывод рассчитывается для массива значений в~диапазоне от~0 
+до~$d_{\max}$. Величине смещения $D(x, y)$ присваивается минимальная 
+величина из этого диапазона значений.
+  
+  \textbf{Шаг~2.}\ Расчет степеней входных функций принадлежности (ФП). С~целью 
+повышения быстродействия НМПКГ и~реализации его на базе 
+программируемых логических интегральных схем (ПЛИС) для управления 
+мобильными роботами рекомендуется использовать тот вид ФП, для расчета 
+степеней истинности которого понадобится меньшее число арифметических 
+операций. Например, для расчета треугольных ФП необходимо выполнение 
+только операций вычитания и~деления. Операция вычитания в~ПЛИС 
+реализуется просто. Для реализации операции деления рекомендуется 
+подбирать разность между метками ФП, кратную степени числа~2. Тогда 
+операция деления заменяется на операцию сдвига вправо. Входные ФП 
+в~НМПКГ представлены на рис.~2,\,\textit{а}. С~целью повышения 
+быстродействия предлагаемого метода все входные переменные имеют 
+одинаковые~ФП.
+
+\begin{figure} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+ \epsfbox{bob-2.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Функции принадлежности входных~(\textit{а}) и~выходной~(\textit{б}) переменных}
+\end{figure}
+
+  Расчет степеней функций принадлежности входных переменных 
+осуществляется по следующим формулам:
+  \begin{equation*}
+    A_{1i}=\begin{cases}
+  \fr{5000-\mathrm{SAD}\,(x,y,d)}{5000}\,, & \mbox{если } \mathrm{SAD}\,(x,y,d)<5000\,;\\[6pt]
+  0 & \mbox{иначе}\,;
+  \end{cases}
+  \end{equation*}
+    \begin{align*}
+  A_{2i}& =\begin{cases}
+  \fr{\mathrm{SAD}\, (x,y,d)}{5000}\,, &\mbox{если } \mathrm{SAD}\,(x,y,d)<5000\,;\\[6pt]
+  \fr{10\,000-  \mathrm{SAD}\,(x,y,d)}{500} &\mbox{иначе}\,;
+  %  \mathrm{SAD}\,(x,y,d)\geq 5000\,;
+ % 0 &\mbox{иначе}\,;
+  \end{cases}
+  \\
+  A_{3i} &=\begin{cases}
+  \fr{\mathrm{SAD}\,(x,y,d)-5000}{5000}\,, &\mbox{ если } \mathrm{SAD}\,(x,y,d)>5000\,;\\[6pt]
+  0 &\mbox{ иначе}\,,
+  \end{cases}
+%  \label{e9-bob}
+  \end{align*}
+где $i$~--- номер входной переменной ($i\hm=1$, 2, 3).
+
+  Выбор такого числа входных переменных объясняется требованием 
+повышения быстродействия обработки нечеткой информации в~ПЛИС для 
+построения карты глубин в~режиме реального времени. Так как с~ростом числа 
+входных переменных увеличивается число нечетких правил, а~следовательно 
+и~число арифметических операций, используемых в~нечетком выводе, то при 
+разработке нечеткой модели необходимо задавать разумные границы уровня ее 
+слож\-ности. Следует заметить, что число нечетких правил растет 
+экспоненциально в~зависимости от увеличения числа входных переменных.
+  
+ \textbf{Шаг~3.}\ Расчет степени выполнения предпосылок нечетких правил. Число 
+нечетких правил, использующихся для расчета величины смещения, 
+составляет~27. В общем виде нечеткое правило имеет вид~\cite{9-bob, 10-bob}:
+  \begin{multline*}
+R_i: \mbox{IF } \mathrm{SAD}\,(x,y,d)\ \mbox{Is}\  A_{11}, 
+\mathrm{SAD}\,(x-3,y,d)\ \mbox{Is}\ A_{21}, 
+\mathrm{SAD}\,(x+3,y,d)\ \mbox{Is}\ A_{31}\\
+ \mbox{THEN}\ D(x,y)\ \mbox{Is}\ Y_k\,,
+\end{multline*}
+где $Y_k$~--- степень выполнения заключений нечетких правил ($k\hm = 
+1\ldots11$).
+  
+  Нечеткие правила сведены в~табл.~2.
+  
+  \begin{table}\small %tabl2
+  \begin{center}
+  \Caption{Степени выполнения предпосылок нечетких правил}
+  \vspace*{2ex}
+  
+  \begin{tabular}{|c|c|c|}
+  \hline
+  \multicolumn{3}{c|}{\ }\\[-9pt]
+\multicolumn{3}{|c|}{Предпосылки нечеткого вывода}\\
+\hline
+&&\\[-9pt]
+$N_1=\Theta ( A_{11}, A_{12}, 
+A_{13})$ &
+$N_{10} =\Theta ( A_{21}, 
+A_{12}, A_{13})$     &
+$N_{19} =\Theta ( A_{31}, 
+A_{12}, A_{13})$\\
+$N_2 =\Theta ( A_{11}, 
+A_{12}, A_{23})$      &
+$N_{11}=\Theta ( A_{21}, 
+A_{12}, A_{23})$&
+$N_{20} =\Theta ( A_{31}, 
+A_{12}, A_{23})$\\
+$N_3 =\Theta ( A_{11}, 
+A_{12}, A_{33})$&
+$N_{12}=\Theta ( A_{21}, 
+A_{12}, A_{33})$&
+$N_{21}=\Theta ( A_{31}, 
+A_{12}, A_{33})$\\
+$N_4 =\Theta ( A_{11}, 
+A_{22}, A_{13})$ &
+$N_{13}=\Theta ( A_{21}, 
+A_{22}, A_{13})$ &
+$N_{22}=\Theta ( A_{31}, 
+A_{22}, A_{13})$\\
+$N_5 =\Theta ( A_{11}, 
+A_{22}, A_{23})$ &
+$N_{14}=\Theta ( A_{21}, 
+A_{22}, A_{23})$ &
+$N_{23}=\Theta ( A_{31}, 
+A_{22}, A_{23})$\\
+$N_6 =\Theta ( A_{11}, 
+A_{22}, A_{33})$ &
+$N_{15}=\Theta ( A_{21}, 
+A_{22}, A_{33})$ &
+$N_{24}=\Theta ( A_{31}, 
+A_{22}, A_{33})$\\
+$N_7 =\Theta ( A_{11}, 
+A_{32}, A_{13})$ &
+$N_{16}=\Theta ( A_{21}, 
+A_{32}, A_{13})$ &
+$N_{25}=\Theta ( A_{31}, 
+A_{32}, A_{13})$\\
+$N_8 =\Theta ( A_{11}, 
+A_{32}, A_{23})$ &
+$N_{17}=\Theta ( A_{21}, 
+A_{32}, A_{23})$ &
+$N_{26}=\Theta ( A_{31}, 
+A_{32}, A_{23})$\\
+$N_9 =\Theta ( A_{11}, 
+A_{32}, A_{33})$ &
+$N_{18}=\Theta ( A_{21}, 
+A_{32}, A_{33})$ &
+$N_{27}=\Theta ( A_{31}, 
+A_{32}, A_{33})$\\
+\hline
+  \multicolumn{3}{p{118mm}}{\footnotesize \hspace*{3mm}\textbf{Примечание.} Знак~$\Theta$ означает  
+не\-чет\-ко-ло\-ги\-че\-скую операцию нахождения жесткого или мягкого минимума по 
+формулам~(2)--(6).}
+  \end{tabular}
+  \end{center}
+  \end{table}
+  
+  \textbf{Шаг~4.}\ Расчет степени выполнения заключений нечетких правил. Число ФП 
+выходной переменной составляет~11 (рис.~2,\,\textit{б}). С~учетом этого степени выполнения 
+заключений будут рассчитываться по формулам, сведенным в~табл.~3.
+  
+\begin{table}\small %tabl3
+\begin{center}
+\Caption{Степени выполнения заключений нечетких правил}
+\vspace*{2ex}
+
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{3}{|c|}{Заключения нечеткого вывода}\\
+\hline
+&&\\[-9pt]
+$Y_1 = N_{27}$&
+$Y_2 = \max(N_{26}, N_{24})$&
+$Y_3 = \max(N_{25}, N_{23}, N_{21})$\\
+$Y_4 = \max(N_{22}, N_{20}, N_{18})$&
+$Y_5 = \max(N_{19}, N_{17}, N_{15})$&
+$Y_6 = \max(N_{16}, N_{14}, N_{15})$\\
+$Y_7 = \max(N_{13}, N_{11}, N_9)$ &
+$Y_8 = \max(N_{10}, N_8, N_6)$&
+$Y_9 = \max(N_7, N_5, N_3)$\\
+$Y_{10} = \max(N_4,  N_2)$&
+$Y_{11}= N_1$ &\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+  
+  \textbf{Шаг~5.}\ Дефаззификация. Осуществляется для массива значений в~диапазоне 
+от исходного пикселя на карте глубин до~$d_{\max}$ по формуле упрощенного 
+нечеткого вывода:
+  \begin{equation*}
+  D(x,y)_{d=1}^{d_{\max}}\_\mathrm{defuz}=\fr{\sum\nolimits^{11}_{k=1} Y_k 
+M_k}{\sum\nolimits^{11}_{k=1} Y_k}\,.
+ % \label{e10-bob}
+  \end{equation*}
+  
+  Использование упрощенного нечеткого вывода обоснованно тем, что для его 
+реализации требуется в~4~раза меньше времени, чем при использовании 
+метода центра тяжести.
+  
+  \textbf{Шаг~6.}\ Расчет величины смещения на карте глубин. Величина смещения 
+определяется минимальным значением в~массиве значений величин 
+дефаззификации в~диапазоне от~0 до~$d_{\max}$ и~рассчитывается по формуле:
+  \begin{equation}
+  D(x,y) =\argmin\limits_{d\in [0\ldots d_{\max}]} \left( 
+D(x,y)_{d=1}^{d_{\max}} \_\mathrm{defuz}\right)\,.
+  \label{e11-bob}
+  \end{equation}
+  
+  \begin{figure}[b] %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+ \epsfbox{bob-3.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Стереоизображения: (\textit{а})~Teddy; (\textit{б})~Cones; (\textit{в})~Venus. 
+Представлены левое и~правое стереоизображения и~эталонная карта глубин}
+\end{figure}
+
+\section{Моделирование процесса построения карты глубин}
+
+
+Для моделирования процесса построения карты глубин использовались 
+стереоизображения размером $450\times375$~пикселей~\cite{11-bob} (рис.~3), 
+позволяющие оценить визуально и~количественно эффективность НМПКГ. 
+Нечеткая система вывода была сформирована на основе ФП, представленных 
+на рис.~2. Максимальная величина глубины $d_{\max}\hm=64$. Для 
+преобразования в~выходное значение рассчитанные значения величин 
+смещения по формуле~(\ref{e11-bob}) умножались на~4, чтобы 
+соответствовать~256~градациям уровня серого. Для проведения эксперимента 
+в~среде MS~Visual Studio 2013 на языке программирования~С\# была 
+разработана программная модель, позволяющая строить карты глубин и~по 
+формуле~(\ref{e1-bob}) осуществлять оценку их точности. Исследования 
+проводились для метода SAD, нечетких операторов~(2)--(6) по методике, 
+представленной в~работе~\cite{8-bob}, и~с~по\-мощью НМПКГ 
+по стереоизображениям. В~табл.~4 сведены значения 
+показателя RMSE.
+
+
+
+  Следует отметить, что в~методике~\cite{8-bob} для построения карты глубин 
+в~композиционном правиле использовался только жесткий оператор.
+  
+  \begin{table}\small %tabl4
+  \begin{center}
+  \Caption{Значение показателя RMSE}
+  \vspace*{2ex}
+  
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+  \hline
+Картинка&Метод&MIN&PROD&MEAN&Soft-MIN I&Soft-MIN II\\
+\hline
+&SAD&\multicolumn{5}{c|}{47,77}\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+Teddy&\cite{8-bob}&44,91&46,74&\textbf{40,98}&41,09&38,42\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+&НМПКГ&38,65&38,86&38,09&\textbf{37,76}&38,32\\
+\hline
+&SAD&\multicolumn{5}{c|}{51,79}\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+Cones&\cite{8-bob}&50,81&52,76&47,12&39,77&\textbf{39,7}\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+&НМПКГ&32,43&32,83&31,89&\textbf{31,64}&32,45\\
+\hline
+&SAD&\multicolumn{5}{c|}{50,07}\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+Venus&\cite{8-bob}&46,64&46,64&46,05&\textbf{45,92}&46,16\\
+\cline{2-7}
+&&&&&&\\[-9pt]
+&НМПКГ&41,44&44,94&\textbf{38,8}&39,75&39,63\\
+\hline
+  \multicolumn{7}{p{118mm}}{\footnotesize \hspace*{3mm}\textbf{Примечание.} Полужирным шрифтом 
+выделены минимальные значения показателя RMSE.}
+  \end{tabular}
+  \end{center}
+  \vspace*{-12pt}
+  \end{table}
+  
+  Как показали данные, представленные в~табл.~4, при использовании мягких 
+операторов точность метода~\cite{8-bob} повышается. В~табл.~5 представлены 
+ви\-део\-изоб\-ра\-же\-ния карт глубин, полученных с~помощью предложенного 
+в~статье метода. Также показана визуализация карты глубин с~использованием 
+мягких операторов~(2)--(6).
+
+  \begin{table}\small %tabl5
+  \begin{center}
+  \Caption{Сравнительный анализ выходных изображений}
+  \vspace*{2ex}
+  
+  \begin{tabular}{|c|c|c|}
+  \hline
+  Оператор& Методика~\cite{8-bob} & НМПКГ\\
+  \hline
+  &&\\[-6pt]
+ \multicolumn{1}{|c|}{\raisebox{36pt}[0pt][0pt]{MIN}}&\hspace*{-1pt}{
+\epsfxsize=33.099mm 
+ \epsfbox{bob-t-1.eps}
+ } &\hspace*{-1pt}{
+\epsfxsize=33.581mm 
+ \epsfbox{bob-t-6.eps}
+ }\\[3pt]
+ \hline
+   &&\\[-6pt]
+   \multicolumn{1}{|c|}{\raisebox{36pt}[0pt][0pt]{PROD}}&\hspace*{-1pt}{
+\epsfxsize=33.099mm 
+ \epsfbox{bob-t-2.eps}
+ } &
+ \hspace*{-1pt}{
+\epsfxsize=33.485mm 
+ \epsfbox{bob-t-7.eps}
+ }\\[3pt]
+ \hline
+   &&\\[-6pt]
+    \multicolumn{1}{|c|}{\raisebox{36pt}[0pt][0pt]{MEAN}}&\hspace*{-1pt}{
+\epsfxsize=33.099mm 
+ \epsfbox{bob-t-3.eps}
+ } &
+ \hspace*{-1pt}{
+\epsfxsize=33.485mm 
+ \epsfbox{bob-t-8.eps}
+ }\\[3pt]
+ \hline
+   &&\\[-6pt]
+      \multicolumn{1}{|c|}{\raisebox{36pt}[0pt][0pt]{Soft-MIN I}}& \hspace*{-1pt}{
+\epsfxsize=33.099mm 
+ \epsfbox{bob-t-4.eps}
+ }&
+ \hspace*{-1pt}{
+\epsfxsize=33.485mm 
+ \epsfbox{bob-t-9.eps}
+ }\\[3pt]
+ \hline
+   &&\\[-6pt]
+     \multicolumn{1}{|c|}{\raisebox{36pt}[0pt][0pt]{Soft-MIN II}}&\hspace*{-1pt}{
+\epsfxsize=33.099mm 
+ \epsfbox{bob-t-5.eps}
+ } &
+ \hspace*{-1pt}{
+\epsfxsize=33.581mm 
+ \epsfbox{bob-t-10.eps}
+ }\\[3pt]
+\hline
+  \end{tabular}
+  \end{center}
+  %\vspace*{36pt}
+  \end{table}
+  
+
+  
+  Анализ табл.~5 показал, что на всех изображениях присутствуют артефакты 
+в~виде белых точек. На карте глубин белыми точками отображаются предметы, 
+наиболее близко расположенные к~видеокамерам, с~помощью которых были 
+получены стереоизображения. Например, при объезде препятствий мобильным 
+роботом белые точки будут давать ложные объекты, находящиеся впереди 
+траектории его движения.
+  
+  Для компенсации артефактов предлагается использовать следующий способ. 
+Во-пер\-вых, необходимо оценить данные, которые поступают на вход 
+нечеткой системы в~зонах, имеющих артефакты. На рис.~4,\,\textit{а} артефакт 
+имеет координаты $x \hm= 254$, $y \hm= - 68$. Величина смещения в~данной 
+точке равняется~62. Данная величина прогнозируется путем анализа входных 
+данных, представленных на рис.~4,\,\textit{б}. С~учетом  
+формулы~(\ref{e11-bob}) смещение равняется значению четвертого локального 
+минимума. При масштабировании $62\times4\hm=248$ получается светлый тон.
+
+
+  
+  Во-вторых, оценить реальное значение величины смещения на карте глубин. 
+Визуальная оценка (см.\ рис.~4,\,\textit{б}) показывает, что правильное значение 
+смещения на карте глубин должно соответствовать первому минимуму 
+и~равняться~16.
+
+
+  
+  В-третьих, исключить из расчета ложные зоны срабатывания нечеткого 
+вывода. Для решения этой задачи необходимо ввести дополнительное условие 
+расчета величины смещения. С~учетом данных, представленных на 
+рис.~4,\,\textit{б}, таким условием может служить правило:
+
+\vspace*{2pt}
+
+\noindent
+  $$
+  \mathrm{ЕСЛИ}\ (\,\mathrm{SAD}\,(x, y, d)>1200)\ \mathrm{И}\ (D(x, y)\geq32),\ 
+\mathrm{ТО}\ A_i = 1000\,.
+  $$
+  
+  \vspace*{-2pt}
+  
+  Данное компенсирующее правило позволяет сократить появление 
+максимальных значений величины $D(x,y)$, определенной по 
+формуле~(\ref{e11-bob}) (рис.~4,\,\textit{в}). С~использованием предложенного 
+правила на выходе нечеткой системы формируется значение, равное~16.
+  
+  \begin{figure} %fig4
+  \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=126.165mm 
+ \epsfbox{bob-4.eps}
+ }
+ \end{center}
+\vspace*{-11pt}
+  \Caption{Карта глубин: (\textit{а})~Teddy; (\textit{б})~до коррекции $D(x, y)$; 
+(\textit{в})~после коррекции $D(x, y)$}
+  \end{figure}
+  
+  
+  Визуализация карты глубин с~использованием компенсирующего правила 
+представлена на рис.~5. Анализ рис.~5,\,\textit{в} показывает, что белые точки 
+отсутствуют на результирующем изображении.
+  
+  \begin{figure} %fig5
+  \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+ \epsfbox{bob-5.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+  \Caption{Коррекция: (\textit{а})~алгоритм SAD; (\textit{б})~оператор Soft-min~I без 
+коррекционного правила; (\textit{в})~оператор Soft-min~I с~коррекционным правилом}
+  \end{figure}
+
+\section{Обсуждение результатов моделирования и~заключение}
+
+  Анализ моделирования процесса построения карты глубин с~использованием 
+предложенного метода показал:
+  \begin{enumerate}[(1)]
+  \item использование мягких операторов на основе анализа показателя RMSE 
+увеличивает точность НМПКГ. Так, 
+предложенный в~статье НМПКГ для трех 
+анализируемых изображений имеет преимущество по сравнению с~алгоритмом 
+SAD на~24\%, по сравнению с~методом-прототипом~--- на~11\%;
+  \item при использовании в~композиционном правиле мягких операторов 
+точность нечеткой модели повышается. Лучшие значения коэффициента RMSE 
+были получены при использовании следующих мягких операторов: MEAN, 
+Soft-min~I и~Soft-min~II;
+  \item для устранения артефактов необходимо в~структуре нечеткого вывода 
+ввес\-ти компенсирующее правило, которое ограничивает возможное значение 
+входных величин нечеткой модели при наступлении пороговых значений 
+величины интенсивности и~максимума величины смещения;
+  \item наименьшее время работы нечеткой системы вывода было получено 
+при использовании мягкого оператора MEAN.
+  \end{enumerate}
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-bob}
+\Au{Algabri M., Mathkour H., Ramdane~H., Alsulaiman~M.} Comparative study of 
+soft computing techniques for mobile robot navigation in an unknown 
+environment~/\!\!/ Comput. Hum. Behav., 2015. Vol.~50. P.~42--56. doi: 
+10.1016/j.chb.2015.03.062.
+
+\bibitem{2-bob}
+\Au{Бобырь М.\,В.} Адаптация системы управления мобильным роботом на 
+основе нечеткой логики~/\!\!/ Мехатроника, автоматизация, управление, 2015. 
+Т.~16. №\,7. С.~449--455. doi: 10.17587/mau.16.449-455.
+
+\bibitem{3-bob}
+\Au{Delmerico J.\,A., David~P., Corso~J.\,J.} Building facade detection, 
+segmentation, and parameter estimation for mobile robot stereo vision~/\!\!/ Image 
+Vision Comput., 2013. Vol.~31. Iss.~11. P.~841--852. doi: 
+10.1016/j.imavis.2013.08.006.
+
+\bibitem{4-bob}
+\Au{Ланге М.\,М., Ганебных~С.\,Н., Ланге~А.\,М.} Об эффективности 
+иерархического алгоритма поиска приближенного ближайшего соседа 
+в~заданном наборе изображений~/\!\!/ Информатика и~её применения, 2017. 
+Т.~11. Вып.~3. С.~51--59. doi: 10.14357/19922264170306.
+\bibitem{5-bob}
+\Au{Zha D., Jin X., Xiang~T.} A~real-time global stereo-matching on \mbox{FPGA}~/\!\!/ 
+Microprocess. Microsy., 2016. Vol.~47. P.~419--428. doi: 
+10.1016/j.micpro.2016.08.005.
+
+\bibitem{6-bob}
+\Au{P$\acute{\mbox{e}}$rez-Patricio~M., Aguilar-Gonz$\acute{\mbox{a}}$lez~A., 
+Arias-Estrada~M., Hern$\acute{\mbox{a}}$ndez-De~Le$\acute{\mbox{e}}$n~H.\,R., 
+Camas-Anzueto~J.\,L., de~Jes$\acute{\mbox{u}}$s 
+Osuna-Couti$\tilde{\mbox{n}}$o~J.\,A.} An FPGA stereo matching unit based on fuzzy 
+logic~/\!\!/ Microprocess. Microsy., 2016. Vol.~42. P.~87--99. doi: 
+10.1016/j.micpro.2015.10.011.
+
+\bibitem{7-bob}
+\Au{Bobyr M.\,V., Milostnaya~N.\,A., Kulabuhov~S.\,A.} A~method of 
+defuzzification based on the approach of areas' ratio~/\!\!/ Appl. Soft 
+Comput., 2017. Vol.~59. Iss.~10. P.~19--32. doi: 10.1016/j.asoc.2017.05.040.
+
+
+\bibitem{9-bob} %8
+\Au{Бобырь М.\,В., Кулабухов~С.\,А., Милостная~Н.\,А.} Обучение  
+ней\-ро-не\-чет\-кой системы на основе метода разности площадей~/\!\!/ 
+Искусственный интеллект и~принятие решений, 2016. №\,4. С.~15--26.
+\bibitem{10-bob} %9
+\Au{Бобырь М.\,В.} Метод нелинейного обучения ней\-ро-не\-чет\-кой  
+сис\-те\-мы вывода~/\!\!/ Искусственный интеллект и~принятие решений, 2018. 
+№\,1. С.~67--75.
+\bibitem{11-bob} %10
+Middlebury Stereo Datasets. {\sf http://vision.middlebury.edu/stereo/data}.
+
+\bibitem{8-bob} %11
+\Au{Georgoulas C., Andreadis~I.} A~real-time fuzzy hardware structure for 
+disparity map computation~/\!\!/ J.~Real-Time Image Pr., 2011. Vol.~6. 
+Iss.~4. P.~257--273. doi: 10.1007/s11554-010-0157-6.
+
+        \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 19.09.18}}
+
+
+
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{THE METHOD OF~DEPTH MAP CALCULATION\\ BASED ON~SOFT OPERATORS}
+
+\def\titkol{The method of~depth map calculation based on~soft operators}
+
+
+\def\aut{M.\,V.~Bobyr,  A.\,E.~Arkhipov, and~N.\,A.~Milostnaya}
+\def\autkol{M.\,V.~Bobyr,  A.\,E.~Arkhipov, and~N.\,A.~Milostnaya}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+Southwest State University, 94~50~Let Oktyabrya Str., Kursk 305040, Russian 
+Federation
+
+
+
+ \noindent
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2019 vol~29 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2019   vol~29   no\,2
+\hfill \textbf{\thepage}}}
+
+
+ 
+
+\Abste{The fuzzy method of depth map calculation using stereo images based on 
+SAD (Sum of Absolute Differences)
+algorithm composition and fuzzy inference is considered. The feature of this 
+method is soft arithmetic operators with fuzzy implication usage. The accuracy of the 
+method of depth map construction is estimated by RMSE
+(root mean square error). The best soft operator has 
+minimum RMSE. The method of depth map calculation which has 7 steps is 
+presented. The proposed method showed that the accuracy of the SAD algorithm 
+increases by~20\% when soft operators are used. This conclusion is confirmed by the 
+simulation results presented in the article.}
+
+\KWE{stereo vision; depth map; soft computing; SAD; fuzzy logic}
+
+ \DOI{10.14357\!/\!08696527190207} 
+
+%\vspace*{-24pt}
+
+\Ack
+\noindent
+The work was supported by the grant of the President of Russian Federation
+(MD-707.2017.8) 
+and State Task (agreement  No.\,2.3440.2017/4.6).
+ 
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-bob-1}
+\Aue{Algabri, M., H.~Mathkour, H.~Ramdane, and M.~Alsulaiman.} 2015. 
+Comparative study of soft computing techniques for mobile robot navigation in an 
+unknown environment. \textit{Comput. Hum. Behav.} 50:42--56. doi: 
+10.1016/j.chb.2015.03.062.
+\bibitem{2-bob-1}
+\Aue{Bobyr, M.\,V.} 2015. Adaptatsiya sistemy upravleniya mobil'nym robotom na 
+osnove nechetkoy logiki [Adaptation of the mobile robot control system based on 
+fuzzy logic]. \textit{Mekhatronika, avtomatizatsiya, upravlenie} [Mechatronics 
+Automation Control] 16(7):449--455. doi: 10.17587/mau.16.449-455.
+\bibitem{3-bob-1}
+\Aue{Delmerico, J.\,A., P.~David, and J.\,J.~Corso.} 2013. Building facade detection, 
+segmentation, and parameter estimation for mobile robot stereo vision. \textit{Image  
+Vision Comput.} 31(11):841--852. doi: 10.1016/j.imavis.2013.08.006.
+\bibitem{4-bob-1}
+\Aue{Lange, M.\,M., S.\,N.~Ganebnyh, and A.\,M.~Lange.} 2017. Ob effektivnosti 
+ie\-rar\-khi\-che\-sko\-go algoritma poiska priblizhennogo blizhayshego soseda v~zadannom 
+na\-bo\-re izobrazheniy [On efficiency of the hierarchical algorithm for searching 
+approximate nearest neighbor in a given set of images]. \textit{Informatika i~ee 
+Primeneniya~--- Inform. Appl.} 11(3):51--59. doi: 10.14357/19922264170306.
+\bibitem{5-bob-1}
+\Aue{Zha, D., X. Jin, and T.~Xiang.} 2016. A~real-time global stereo-matching on 
+FPGA. \textit{Microprocess. Microsy.} 47:419--428. doi: 
+10.1016/j.micpro.2016.08.005.
+\bibitem{6-bob-1}
+\Aue{P$\acute{\mbox{e}}$rez-Patricio, M.,  
+A.~Aguilar-Gonz$\acute{\mbox{a}}$lez, M.~Arias-Estrada, 
+H.\,R.~Hern$\acute{\mbox{a}}$ndez-De Le$\acute{\mbox{o}}$n,  
+J.\,L.~Camas-Anzueto, and J.\,A.~de~Jes$\acute{\mbox{u}}$s  
+Osuna-Couti$\tilde{\mbox{n}}$o.} 2016. An FPGA stereo matching unit based on 
+fuzzy logic. \textit{Microprocess. Microsy.} 42:87--99. doi: 
+10.1016/j.micpro.2015.10.011.
+\bibitem{7-bob-1}
+\Aue{Bobyr, M.\,V., N.\,A.~Milostnaya, and S.\,A.~Kulabuhov.} 2017. A~method of 
+defuzzification based on the approach of areas' ratio. \textit{Appl. Soft 
+Comput.} 59(10):19--32. doi: 10.1016/j.asoc.2017.05.040.
+
+\bibitem{9-bob-1}
+\Aue{Bobyr, M.\,V., S.\,A.~Kulabuchov, and N.\,A.~Milostnaya}. 2016. 
+Obuchenie neyro-nechetkoy sistemy na osnove metoda raznosti ploshchadey 
+[Teaching of neuro-fuzzy system on the basis of the method of difference areas]. 
+\textit{Artificial Intelligence Decision 
+Making} 4:15--26.
+\bibitem{10-bob-1}
+\Aue{Bobyr, M.\,V.} 2018. Metod nelineynogo obucheniya neyro-nechetkoy sistemy 
+vyvoda [The method of non-linear learning the neuro-fuzzy inference system]. 
+\textit{Artificial Intelligence Decision 
+Making} 1:67--75.
+\bibitem{11-bob-1}
+Middlebury Stereo Datasets. Available at: {\sf 
+http://vision.middlebury.edu/stereo/data} (accessed April~2, 2019).
+\bibitem{8-bob-1} %11
+\Aue{Georgoulas, C., and I.~Andreadis.} 2011. A~real-time fuzzy hardware structure 
+for disparity map computation. \textit{J.~Real-Time Image Pr.}  
+6(4):257--273. doi: 10.1007/s11554-010-0157-6.
+
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received September 19, 2018}} 
+
+\Contr
+
+\noindent
+\textbf{Bobyr Maxim V.} (b.\ 1978)~--- Doctor of Science in technology, professor, 
+Southwest State University, 94~50~Let Oktyabrya Str., Kursk 305040, Russian 
+Federation; \mbox{fregat\_mn@rambler.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Arkhipov Alexander E.} (b.\ 1976)~--- Candidate of Science (PhD) in 
+technology, senior scientist, Research Institute of Radio-electronic Systems, 
+Southwest State University, 94~50~Let Oktyabrya Str., Kursk 305040, Russian 
+Federation; \mbox{alex.76\_09@mail.ru} 
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Milostnaya Natalya A.} (b.\ 1975)~--- Candidate of Science (PhD) in 
+technology, senior scientist, Southwest State University, 94~50~Let Oktyabrya Str., 
+Kursk 305040, Russian Federation; \mbox{nat\_mil@mail.ru}
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

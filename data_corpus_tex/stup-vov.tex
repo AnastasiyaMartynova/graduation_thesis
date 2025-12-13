@@ -1,0 +1,971 @@
+         \def\stat{stup-vov}
+
+\def\tit{МЕТОДЫ ПОСТРОЕНИЯ ОТОБРАЖЕНИЙ
+КОЛЛЕКЦИЙ, ПРЕДСТАВЛЕННЫХ В~НЕТРАДИЦИОННЫХ
+МОДЕЛЯХ ДАННЫХ, В~ИНТЕГРИРОВАННОЕ
+ПРЕДСТАВЛЕНИЕ$^*$}
+
+\def\titkol{Методы построения отображений
+коллекций %, представленных в~нетрадиционных моделях данных,
+в~интегрированное представление}
+
+\def\autkol{С.\,А. Ступников, А.\,Е.~Вовченко}
+
+\def\aut{С.\,А. Ступников$^1$, А.\,Е.~Вовченко$^2$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при поддержке РФФИ (гранты 13-07-00579 и~14-07-00548), Президиума РАН (программа
+фундаментальных исследований Президиума РАН №\,16 <<Фундаментальные проблемы системного
+программирования>>), ИПИ РАН (тема~38.25 <<Спецификация и~решение задач анализа данных в концептуальных
+терминах предметных областей с~интенсивным использованием данных>> государственного задания ИПИ РАН).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Российской академии наук, ssa@ipi.ac.ru}
+\footnotetext[2]{Институт проблем информатики Российской академии наук, alexey.vovchenko@gmail.com}
+
+
+\label{st\stat}
+
+                  \thispagestyle{headings}
+
+
+\Abst{Рассмотрены вопросы преобразования коллекций, представленных
+в~нетрадиционных моделях данных, таких как графовые, триплетные, модели
+<<ключ--зна\-че\-ние>>, в~их интегрированное представление в~реляционной
+модели данных. Общим контекстом, в~котором находится работа, является
+создание комбинированной вир\-ту\-аль\-но-ма\-те\-ри\-а\-ли\-зо\-ван\-ной
+архитектуры среды интеграции неоднородных коллекций
+разноструктурированных данных. Рассмотренные подходы к преобразованию
+коллекций являются основой для материализованной интеграции
+информационных ресурсов в реляционных хранилищах данных над Hadoop.}
+
+\KW{интеграция баз данных; графовые модели данных; RDF; NoSQL;
+трансформация коллекций данных}
+
+\DOI{10.14357\!/\!08696527140402}
+
+\vspace*{-12pt}
+
+
+
+\vskip 12pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+
+
+
+\section{Введение}
+
+      Растущее разнообразие моделей данных в информационных
+технологиях, наблюдаемое в~настоящее время, требует создания подходов
+к~интеграции моделей и~коллекций данных, представленных в~этих моделях.
+Методы создания унифицированного представления различных видов
+нетрадиционных моделей в~канонической информационной модели (общем
+языке, унифицирующем языки разнообразных моделей данных) в~последнее
+время активно исследовались в~ИПИ РАН. Были рассмотрены подходы
+к~унификации моделей данных различных классов: семантических (OWL (Web Ontology Language),
+RDF (Resource Description Framework)~[1]), графовых~[2], многомерных массивов,
+NoSQL (Not only SQL~--- structured query language) мо\-де\-лей~[3]. Была
+предложена также архитектура комбинированной
+      вир\-ту\-аль\-но-ма\-те\-ри\-а\-ли\-зо\-ван\-ной архитектуры среды
+интеграции неоднородных коллекций данных различного вида
+(структурированных, слабоструктурированных и~неструктурированных)~[4].
+Основные черты архитектуры рассмотрены на рис.~1. Среда поддерживает как
+виртуальную, так и~материализованную интеграцию коллекций данных,
+представленных как в~традиционных (реляционных), так и~в~нетрадиционных
+моделях данных.
+
+\begin{figure} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=127.66mm
+ \epsfbox{stu-1.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Архитектура среды виртуально-материализованной интеграции}
+\end{figure}
+
+    Виртуальная интеграция осуществляется с использованием технологии
+предметных посредников~[5], образующих промежуточный слой между
+пользователем (приложением) и~неоднородными информационными
+ресурсами. При этом данные из ресурсов не материализуются в~посреднике.
+При материализованной интеграции предполагается создание хранилища
+данных (warehouse), в~которое загружаются коллекции данных, подлежащие
+интеграции. В~процессе загрузки происходит преобразование данных из схемы
+коллекции в~общую схему хранилища. Материализованную интеграцию
+предлагается реализовывать с~использованием свободно распространяемой
+платформы распределенного хранения и~обработки данных Hadoop~[6];
+    а~так\-же системы организации реляционных хранилищ данных над
+Hadoop
+    (WR-Hadoop для краткости), в~качестве которой могут использоваться,
+например, платформы Big SQL~[7] или Hive~[8] (cистема Hive является
+свободно распространяемым решением, а~Big SQL~--- про\-при\-етар\-ным,
+распространяемым в~со\-ста\-ве продукта IBM InfoSphere BigInsights~[9]).
+Основные принципы построения среды интеграции неоднородных коллекций
+данных и~подходы к~ее реализации рассмотрены в~работе~[4]. Данная же
+работа сосредоточена на более узком вопросе преобразования коллекций,
+представленных в~нетрадиционных моделях данных, в~их интегрированное
+представление в~реляционной модели данных системы WR-Hadoop. Этот
+вопрос является актуальным, поскольку известные системы организации
+реляционных хранилищ над Hadoop, такие как Hive и~Big SQL, не в~полной
+мере реализуют функции хранилищ данных. В~частности, напрямую не
+поддерживается процесс из\-вле\-че\-ния--пре\-об\-ра\-зо\-ва\-ния--за\-груз\-ки
+(ETL~--- extract--transform--load).
+Для реализации недостающих функций в~среде интеграции~[4]
+предлагается использование декла\-ра\-тив\-но-им\-пе\-ра\-тив\-ных языков
+высокого уровня над Hadoop.
+
+    Материализация в среде осуществляется путем помещения
+    в~Hadoop-клас\-тер файлов, экспортированных из информационных
+ресурсов. Файлы могут быть экспортированы в~различных открытых
+форматах: JSON (JavaScript Object Notation),
+XML (eXtensible Markup Language), CSV (Comma Separated Values), в~виде текстовых файлов и~т.\,д. Для
+определенности в~данной статье в~качестве основного формата
+рассматривается JSON~[10]. Преобразование
+данных к~реляционному виду для последующей интеграции производится при
+помощи программ на языке Jaql~[11] (язык запросов и~сценариев,
+разработанный IBM и~использующий формат JSON; поставляется в~составе
+IBM InfoSphere \mbox{BigInsights}~[9]~--- про\-грам\-мной платформы обработки
+больших данных, основанной на Hadoop). Конструирование преобразований
+коллекций в~настоящий момент производится вручную, на формальной базе
+унификации нетрадиционных моделей~[1--3]. При унификации осуществляется
+конструирование сохраняющих семантику отображений схем исходных
+моделей в~каноническую модель, а~так\-же отображений операций
+манипулирования данными. На основании этих отображений и~происходит
+конструирование преобразований коллекций. Автоматизация генерации
+преобразований является предметом дальнейшей работы.
+
+    В данной статье рассматриваются и иллюстрируются на примерах подходы
+к~преобразованию в~реляционное представление коллекций данных трех
+нетрадиционных моделей: графовой модели Neo4J~[12] (разд.~2),
+семантической модели RDF~[13] (разд.~3) и~NoSQL-мо\-де\-ли системы
+управления базами данных (СУБД) HBase~[14] (разд.~4).
+
+\section{Преобразование коллекций данных графовых моделей}
+
+      Рассмотрим пример коллекции данных, представленной в~модели
+данных графовой СУБД Neo4j~[12]. Небольшой подграф базы данных (БД)
+о~фильме <<Матрица>>, включающий основные виды вершин, ребер
+и~атрибутов, изображен на рис.~2.
+
+      Вершины графа соответствуют людям (PERSON) и~программам
+(PROGRAM), ребра графа соответствуют знакомству людей и программ друг
+с~другом (KNOWS) и~созданию программы человеком (CODED\_BY). Люди
+характеризуются именем (\textit{name}), фамилией (\textit{lastName}),
+возрастом (\textit{age}), родом занятий (\textit{occupation}), званием
+(\textit{rank}); программы~--- названием (\textit{name}), языком
+программирования (\textit{language}), версией (\textit{version}); знакомство
+людей и~программ~--- длительностью (\textit{age}), степенью публичности
+(\textit{disclosure}). Вершины и~ребра графа обладают уникальными
+идентификаторами.
+
+\begin{figure} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=125.843mm
+ \epsfbox{stu-2.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Пример графа в модели данных Neo4j}
+\end{figure}
+
+      Графовая БД системы Neo4j может быть сериализована в формате JSON.
+Представление для вышеприведенного графа в JSON выглядит следующим
+образом:
+      \begin{verbatim}
+[{ "id": 1, "type": "node", "labels": ["PERSON"],
+"properties": {"name": "Thomas", "lastName": "Anderson",
+               "age": 29} },
+{ "id": 2, "type": "node", "labels": ["PERSON"],
+"properties": {"name": "Trinity"} },
+{ "id": 3, "type": "node", "labels": ["PERSON"],
+"properties": {"name": "Morpheus", "occupation": "Total badass",
+"rank": "Captain"} },
+{ "id": 4, "type": "node", "labels": ["PERSON"],
+"properties": {"name": "Cypher", "lastName": "Reagan"} },
+{ "id": 5, "type": "node", "labels": ["PERSON"],
+"properties": {"name": "The Architect"} },
+{ "id": 6, "type": "node", "labels": ["PROGRAM"],
+"properties": {"name": "Agent Smith", "language": "C++",
+               "version": "1.0b"} },
+{ "id": 7, "type": "relationship", "relationship_type": "KNOWS",
+"start_node": 1, "end_node": 2,
+"properties": {"age": "3 days"} },
+{ "id": 8, "type": "relationship", "relationship_type": "KNOWS",
+"start_node": 1, "end_node": 3 },
+{ "id": 9, "type": "relationship", "relationship_type": "KNOWS",
+"start_node": 3, "end_node": 2,
+"properties": {"age": "12 years"} },
+{ "id": 10, "type": "relationship",
+"relationship_type": "KNOWS",
+"start_node": 3, "end_node": 4,
+"properties": {"disclosure": "public"} },
+{ "id": 10, "type": "relationship",
+"relationship_type": "KNOWS",
+"start_node": 4, "end_node": 6,
+"properties": {"age": "6 months", "disclosure": "secret"} },
+{ "id": 10, "type": "relationship",
+"relationship_type": "CODED_BY"
+"start_node": 6, "end_node": 5
+}]
+\end{verbatim}
+      Здесь \verb"start_node" и \verb"end_node" обозначают исходящую и
+входящую вершины ребра соответственно; \verb"labels" обозначает множество
+меток, присвоенных вершине; \verb"properties" означает атрибуты (свойства)
+вершин и ребер.
+
+      Реляционное представление данной графовой БД может выглядеть
+следующим образом. Схема реляционной БД состоит из двух отношений, одно
+из которых соответствует вершинам графа (\textit{Nodes}, табл.~1), другое~---
+ребрам (\textit{Relationships}, табл.~2).
+
+
+
+ \begin{table}
+ {\footnotesize %tabl1
+       \begin{center}
+       \Caption{Отношение \textit{Nodes}}
+       \vspace*{2ex}
+
+\tabcolsep=1.4pt
+       \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+       \hline
+id&labels&age&name&lastName&occupation&rank&language&version\\
+\hline
+1&[``PERSON'']&29&``Thomas''&``Anderson''&null&null&null&null\\
+2&[``PERSON'']&null&``Trinity''&null&null&null&null&null\\
+3&[``PERSON'']&null&``Morpheus''&null&``Total badass''&``Captain''&null&null\\
+4&[``PERSON'']&null&``Cypher''&``Reagan''&null&null&null&null\\
+5&[``PERSON'']&null&``The Architect''&null&null&null&null&null\\
+6&[``PROGRAM'']&null&``Agent Smith''&null&null&null&``C++''&``1.0b''\\
+\hline
+\end{tabular}
+\end{center}}
+%\end{table}
+%       \begin{table}\small %tabl2
+{\small       \begin{center}
+       \Caption{Отношение \textit{Relationships}}
+       \vspace*{2ex}
+
+       \begin{tabular}{|c|c|c|c|c|c|}
+       \hline
+id&start\_node&end\_node&relationship\_type&age&disclosure\\
+\hline
+\hphantom{9}7&1&2&``KNOWS''&``3 days''&null\\
+\hphantom{9}8&1&3&``KNOWS''&null&null\\
+\hphantom{9}9&3&2&``KNOWS''&``12 years''&null\\
+10&3&4&``KNOWS''&null&``public''\\
+11&4&6&``KNOWS''&``6 months''&``secret''\\
+12&6&5&``CODED\_BY''&null&null\\
+\hline
+\end{tabular}
+\end{center}}
+       \vspace*{-12pt}
+\end{table}
+
+      Преобразование графовой БД в реляционное представление может быть
+осуществлено при помощи следующих двух функций, определенных на языке
+Jaql:
+      \begin{verbatim}
+createNodesRelation = fn(matrix_graph_db)(
+  matrix_graph_db->filter $.type == "node"->
+       transform { id: $.id, labels: $.labels,
+        age: $.properties.age,
+        name: $.properties.name,
+        lastName: $.properties.lastName,
+        rank: $.properties.rank,
+        occupation: $.properties.occupation,
+        version: $.properties.version,
+        language: $.properties.language }  );
+
+createRelationshipRelation = fn(matrix_graph_db)(
+  matrix_graph_db->filter $.type == "relationship"->
+       transform { id: $.id,
+        start_node: $.start_node, end_node: $.end_node,
+        relationship_type: $.relationship_type,
+        age: $.properties.age,
+        disclosure: $.properties.disclosure, }  );
+\end{verbatim}
+
+      Функции принимают на вход представление графовой БД в формате
+JSON. Первая из функций возвращает отношение \textit{Nodes} в формате
+JSON, пригодное для загрузки в~соответствующую реляционную таблицу,
+вторая~--- отношение \textit{Relationships}. При определении функций
+используются выражения фильтрации массивов (\textit{filter}) и преобразования
+элементов массивов (\textit{transform}), связанные оператором организации
+потоков данных (\verb"->").
+
+
+\vspace*{-6pt}
+
+\section{Преобразование коллекций данных модели RDF}
+
+\vspace*{-2pt}
+
+      В качестве примера коллекции данных модели RDF~[13] рассмотрим
+базу знаний \textit{DBpedia} ({\sf http://dbpedia.org}). Коллекция содержит
+структурированную информацию, извлеченную из свободной энциклопедии
+Википедия. В~качестве примеров данных рассмотрим RDF-спе\-ци\-фи\-ка\-ции
+города \textit{Кембридж} (Великобритания) и~его представителей
+в~Парламенте \textit{Эндрю Лэнсли} (от партии консерваторов) и~\textit{Джулиана
+Хапперта} (от партии либералов). Спецификации представлены в~формате
+JSON:
+      \begin{verbatim}
+{ "http://dbpedia.org/resource/Cambridge": {
+"http://dbpedia.org/property/officialName": [ {
+  "type": "literal", "lang" : "en",
+  "value" : "City of Cambridge" } ],
+"http://dbpedia.org/ontology/areaTotal": [ {
+  "type": "literal", "value": 115650000,
+  "datatype": "http://www.w3.org/XMLSchema#double"}],
+"http://dbpedia.org/ontology/isPartOf": [
+ { "type": "uri",
+ "value": "http://dbpedia.org/resource/East_of_England" },
+ { "type": "uri",
+ "value": "http://dbpedia.org/resource/Cambridgeshire" } ],
+"http://dbpedia.org/ontology/leaderName": [
+ { "type" : "uri",
+ "value" : "http://dbpedia.org/resource/Julian_Huppert" } ,
+ { "type": "uri",
+ "value": "http://dbpedia.org/resource/Andrew_Lansley"},  ]
+}  }
+
+{ "http://dbpedia.org/resource/Andrew_Lansley": {
+"http://dbpedia.org/property/name": [ {
+  "type" : "literal", "lang" : "en",
+  "value" : "Andrew Lansley" } ],
+"http://dbpedia.org/ontology/birthDate": [ {
+  "type": "literal", "value": "1956-12-10+02:00",
+  "datatype": http://www.w3.org/XMLSchema#date } ],
+"http://dbpedia.org/ontology/party": [ {
+  "type": "uri",
+ "value": "http://dbpedia.org/resource/Conservative_
+    Party_(UK)" } ] ,
+"http://dbpedia.org/ontology/electionMajority": [ {
+  "type": "literal", "value": 7838,
+ "datatype" : "http://www.w3.org/XMLSchema#integer"}]
+}  }
+\end{verbatim}
+
+      Свойства Кембриджа как объекта включают, в частности, название
+(\textit{officialName}), площадь (\textit{areaTotal}), вышестоящие
+территориальные образования (\textit{isPartOf}), лидера (\textit{leaderName}).
+Свойства парламентариев как объектов включают имя (\textit{name}), дату
+рождения (\textit{birthDate}), партию (\textit{party}), количество голосов на
+выборах (\textit{electionMajority}).
+
+      Реляционное представление объектов такого рода может выглядеть
+следующим образом. Схема реляционной БД состоит из двух отношений, одно
+из которых соответствует городам (\textit{Cities}, табл.~3), другое~--- персонам
+(\textit{Persons}, табл.~4). Атрибутам отношений соответствуют свойства
+объектов. В~RDF-хра\-ни\-ли\-щах подобные отношения, группирующие
+свойства однородных объектов, называются таблицами свойств (\textit{property
+tables})~[15].
+
+\begin{table}\footnotesize %tabl3
+\begin{center}
+\Caption{Отношение \textit{Cities}}
+\vspace*{2ex}
+
+%\tabcolsep=2pt
+\begin{tabular}{|l|c|c|l|l|}
+\hline
+\multicolumn{1}{|c|}{subject}&officialName&areaTotal&
+\multicolumn{1}{c|}{isPartOf}&\multicolumn{1}{c|}{leaderName}\\
+\hline
+\tabcolsep=0pt\begin{tabular}{l}``{\sf http://}\\ {\sf dbpedia.org/}\\
+{\sf resource/}\\ {\sf Cambridge}''\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l}[``City of\\ Cambridge'']\end{tabular}&[115650000]&
+\tabcolsep=0pt\begin{tabular}{l}[``{\sf http://}\\ {\sf dbpedia.org/}\\
+{\sf resource/}\\ {\sf East\_of\_England}'',\\
+``{\sf http://dbpedia.org/}\\
+{\sf resource/}\\ {\sf Cambridgeshire}'']\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l}[``{\sf http://}\\
+{\sf dbpedia.org/}\\
+{\sf resource/}\\
+{\sf Julian\_Huppert}'',\\
+``{\sf http://}\\ {\sf dbpedia.org/}\\
+{\sf resource/}\\
+{\sf Andrew\_Lansley}'']\end{tabular}\\
+\hline
+\end{tabular}
+\end{center}
+       \vspace*{-9pt}
+\end{table}
+
+\begin{table}\footnotesize %tabl4
+\begin{center}
+\Caption{Отношение \textit{Persons}}
+\vspace*{2ex}
+
+\tabcolsep=1pt
+\begin{tabular}{|l|c|c|l|c|}
+\hline
+\multicolumn{1}{|c|}{subject}&name&birthdate&
+\multicolumn{1}{c|}{party}&\multicolumn{1}{c|}{electionMajority}\\
+\hline
+\tabcolsep=0pt\begin{tabular}{l}``{\sf http://}\\ {\sf dbpedia.org/}\\
+{\sf resource/}\\ {\sf Andrew\_Lansley}''\end{tabular}&[``Andrew Lansley'']&
+        [``1956-12-10+02:00'']&
+        \tabcolsep=0pt\begin{tabular}{l}[``{\sf http://}\\ {\sf dbpedia.org/}\\
+        {\sf resource/}\\ {\sf Conservative\_}\\
+        {\sf Party\_(UK)}'']\end{tabular}&[7838]\\
+        \hline
+\tabcolsep=0pt\begin{tabular}{l}``{\sf http://}\\ {\sf dbpedia.org/}\\
+{\sf resource/}\\
+{\sf Julian\_Huppert}''\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l}[``Huppert, Julian'',\\
+        ``Dr Julian Huppert'']\end{tabular}&
+        [``1978-07-21+02:00'']&
+        \tabcolsep=0pt\begin{tabular}{l}``{\sf http://}\\ {\sf dbpedia.org/}\\
+        {\sf resource/Liberal\_}\\
+        {\sf Democrats}''\end{tabular}&[6792]\\
+        \hline
+        \end{tabular}
+        \end{center}
+               \vspace*{-9pt}
+        \end{table}
+
+      Преобразование RDF-объектов персон в~кортежи отношения
+\textit{Cities} может быть осуществлено при помощи функции
+\textit{createCityTuple}, определенной на языке Jaql:
+      \begin{verbatim}
+createCityTuple = fn(city_rdf) (
+  pa = ["http://dbpedia.org/property/officialName",
+        "http://dbpedia.org/ontology/areaTotal",
+        "http://dbpedia.org/ontology/isPartOf",
+        "http://dbpedia.org/ontology/leaderName"],
+  properties_record = index(values(city_rdf), 0),
+  if( not containedIn( "false",
+    for($pa in pa)
+     if(containedIn($pa, names(record(values(city_rdf)))))
+      ["true"]
+     else ["false"]) )
+  if( arity(city_rdf) == 1 )
+  { subject: index(names(city_rdf), 0),
+   officialName: for( $name in
+    proper-
+ties_record."http://dbpedia.org/property/officialName")
+    [$name.value],
+   areaTotal: for( $area in
+    properties_record."http://dbpedia.org/ontology/areaTotal")
+    [$area.value],
+   isPartOf: for( $partOf in
+    properties_record."http://dbpedia.org/ontology/isPartOf")
+    [$partOf.value],
+   leaderName: for( $leader in
+    properties_record."http://dbpedia.org/ontology/leaderName")
+    [$leader.value]
+  }
+);
+\end{verbatim}
+
+      Функция принимает на вход RDF-спе\-ци\-фи\-ка\-цию города
+в~формате JSON и~возвращает кортеж, пригодный для загрузки
+в~соответствующую реляционную таблицу. При определении функции
+используются условное выражение \verb"if", выражение цикла \verb"for",
+встроенные функции манипулирования массивами и~записями {\sf names},
+{\sf values}, {\sf record}, {\sf index}~[9] и~вспомогательная функция\linebreak
+\mbox{{\sf containedIn(elm, arr)}}, возвращающая значение {\sf true}, если
+значение \verb"elm" является элементом мас\-си\-ва~\verb"arr":
+      \begin{verbatim}
+containedIn = fn(elm, arr)(
+  exists(for( $iter in arr ) if($iter == elm) [true]) );
+\end{verbatim}
+
+      Преобразование RDF-объек\-тов персон в кортежи отношения
+\textit{Persons} может быть осуществлено при помощи функции
+\verb"createPersonTuple", определенной на языке Jaql:
+      \begin{verbatim}
+createPersonTuple = fn(person_rdf) (
+  pa = ["http://dbpedia.org/property/name",
+        "http://dbpedia.org/ontology/birthDate",
+        "http://dbpedia.org/ontology/party",
+        "http://dbpedia.org/ontology/electionMajority"],
+  properties_record = index(values(person_rdf), 0),
+  if( not containedIn( "false",
+       for($pa in pa)	
+        if(containedIn($pa, names(record(values(person_rdf)))))
+         ["true"]
+        else ["false"]) )
+  if( arity(person_rdf) == 1 )
+  { subject: index(names(person_rdf), 0),
+   name: for( $name in
+    properties_record."http://dbpedia.org/property/name")
+    [$name.value],
+   birthday: for( $birthday in
+    properties_record."http://dbpedia.org/ontology/birthDate")
+    [$birthday.value],
+   party: for( $party in
+    properties_record."http://dbpedia.org/ontology/party")
+    [$party.value],
+   electionMajority: for( $em in
+    properties_record."http://dbpedia.org/ontology/
+      electionMajority")
+    [$em.value]
+  }
+);
+\end{verbatim}
+
+\vspace*{4pt}
+
+\section{Преобразование коллекций данных модели HBase}
+
+
+
+      В качестве примера коллекции данных модели <<ключ--зна\-че\-ние>>
+рассмотрим фрагмент БД о~книгах по информационным технологиям
+в~СУБД HBase~[14].
+
+      База данных HBase в общем виде представляет собой множество пар
+\textit{ключ}\;$\to$\;\textit{значение}, где \textit{ключ}~--- это четверка
+(\textit{ключ строки}, \textit{семейство столбца}, \textit{идентификатор
+столбца}, \textit{временн$\acute{\mbox{а}}$я метка}), а~значение~--- обычное значение
+некоторого встроенного типа (\textit{boolean}, \textit{int}, \textit{float} и~т.\,д.).
+Фрагмент БД о~книгах в~общем виде выглядит следующим образом:
+      \begin{verbatim}
+(01, language, natural, t1) -> "English"
+(01, language, programming, t1) -> "Java"
+(01, description, edition, t1) -> "second"
+(01, description, edition, t2) -> "third"
+(01, description, author, t1) -> "Herbert Schildt"
+(07, language, natural, t1) -> "Russian"
+(07, language, programming, t1) -> "C++"
+(07, description, edition, t1) -> "second"
+(07, description, author, t1) -> "E.Balagurusamy"
+\end{verbatim}
+
+\noindent
+Здесь \verb"t1", \verb"t2"~--- временн$\acute{\mbox{ы}}$е метки. В~формате JSON эти
+данные могут быть представлены следующим образом:
+      \begin{verbatim}
+[ { "key":"01",
+    "language": { "natural": {t1:"English"},
+                  "programming": {t1:"Java"} },
+    "description": { "edition": [{t1:"second"}, {t2:"third"}],
+      "author": {t1:"Herbert Schildt"}}   },
+   {"key":"07",
+    "language": { "natural": {t1:"Russian"},
+										"programming": {t1:"C++"} },
+    "description": { "edition": {t1:"second"},
+      "author": {t1:"E.Balagurusamy"}}    }
+]
+\end{verbatim}
+
+\vspace*{-1pt}
+
+      Возможны различные способы представления данных модели HBase
+в~реляционном виде. В~данном разделе будут рассмотрены два из них.
+
+      При \textit{первом способе} используется фиксированная реляционная
+схема (для произвольной БД), состоящая из одного отношения
+\textit{HBaseData(String key, String column\_family, String column\_qualifier,
+String timestamp, String value)}. Первичным ключом отношения
+\textit{HBaseData} является совокупность атрибутов $\langle$\textit{key,
+column\_family, column\_qualifier, timestamp}$\rangle$. Количество кортежей
+в~отношении соответствует количеству пар ключ--зна\-че\-ние в~БД
+HBase. Реляционное представление рассмотренного выше фрагмента БД о~книгах при этом способе приведено в~табл.~5.
+
+\begin{table}\small %tabl5
+\begin{center}
+\Caption{Отношение \textit{HBaseData}}
+\vspace*{2ex}
+
+\begin{tabular}{|c|l|l|c|l|}
+\hline
+key&\multicolumn{1}{c|}{column family}&\multicolumn{1}{c|}{column
+qualifier}&timestamp&\multicolumn{1}{c|}{value}\\
+\hline
+01 &language &natural &t1 &``English''\\
+01 &language &programming &t1 &``Java''\\
+01 &description &edition &t1 &``second''\\
+01 &description &edition &t2 &``third''\\
+01 &description &author &t1 &``Herbert''\\
+07 &language &natural &t1 &``Russian''\\
+07 &language &programming &t1 &``C++''\\
+07 &description &edition &t1 &``second''\\
+07 &description &author &t1 &``E.Balagurusamy''\\
+\hline
+\end{tabular}
+\end{center}
+       \vspace*{-12pt}
+\end{table}
+
+      Преобразование исходных данных в реляционное представление может
+быть осуществлено при помощи функции \verb"createNativeRelation" на языке
+Jaql:
+
+\vspace*{-1pt}
+
+\noindent
+      \begin{verbatim}
+createNativeRelation(hbasedata) (
+ for ($obj in hbasedata) (
+  for ($f in names($obj)) (
+    if ($f != 'key') (
+      for ($q in names($obj.($f))) (
+        for ($t in names($obj.($f).($q))) (
+         [{ key: $obj.key, column_family: $f,
+            column_qualifier: $q, timestamp: $t,
+             value: $obj.($f).($q).($t) }]
+))))) );
+\end{verbatim}
+
+\vspace*{-1pt}
+
+
+      \textit{Второй способ} предполагает использование реляционной схемы,
+зависящей от БД HBase. При этом для каждой группы однородных
+объектов (имеющих значения для одного набор колонок) создается свое
+отношение в~реляционной схеме. Так, в~рассматриваемом примере
+присутствует одна группа однородных объектов~--- книги, имеющих
+значения для набора колонок (\textit{natura}l, \textit{programming},
+\textit{edition}, \textit{author}). Идея подхода в~том, чтобы собрать все данные
+об одном объекте (из пар \textit{ключ}\;$\to$\;\textit{зна\-че\-ние} с~одним
+значением ключа) в~одном кортеже. Реляционное представление фрагмента
+БД о~книгах при этом способе приведено в~табл.~6.
+
+\begin{table}\footnotesize  %tabl6
+\begin{center}
+\Caption{Отношение \textit{Books}}
+\vspace*{2ex}
+
+\tabcolsep=4.3pt
+\begin{tabular}{|c|l|l|l|l|}
+\hline
+key&\multicolumn{1}{c|}{language\_natural}&\multicolumn{1}{c|}{language\_programming}&
+\multicolumn{1}{c|}{description\_edition}&\multicolumn{1}{c|}{description\_author}\\
+\hline
+01&t1:``English''&t1:``Java''&t1:``second'';t2:``third"&t1:``Herbert Schildt''\\
+07&t1:``Russian''&t1:``C++''&t1:``second''&t1:``E.Balagurusamy''\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-12pt}
+\end{table}
+
+      Преобразование исходных данных в реляционное представление может
+быть осуществлено при помощи функции \verb"createBooksRelation" на языке
+Jaql:
+      \begin{verbatim}
+createBooksRelation(hbasedata) (
+  hbasedata -> transform {
+    "key": $.key,
+    "language_natural": $.language.natural,
+    "language_programming": $.language.programming,
+    "description_edition": $.description.edition,
+    "description_author": $.description.author  }
+);
+\end{verbatim}
+
+\vspace*{-4pt}
+
+\section{Заключение}
+
+      В статье рассмотрены вопросы преобразования коллекций,
+представленных в~нетрадиционных моделях данных, таких как графовые,
+триплетные, модели <<ключ--зна\-че\-ние>>, в~их интегрированное
+представление в~реляционной модели данных. Общим контекстом, в~котором
+находится работа, является создание комбинированной
+      вир\-ту\-аль\-но-ма\-те\-ри\-а\-ли\-зо\-ван\-ной архитектуры среды
+интеграции неоднородных коллекций данных различного вида
+(структурированных, слабоструктурированных и~неструктурированных).
+Рассмотренные подходы к~преобразованию коллекций служат основой для
+материализованной интеграции информационных ресурсов в~реляционных
+хранилищах данных над Hadoop. Целью дальнейшей работы является создание
+методов автоматической генерации функций преобразования коллекций и~их
+применение при решении конкретных задач интеграции коллекций.
+
+\vspace*{-4pt}
+
+{\small\frenchspacing
+{ %\baselineskip=10.6pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+\vspace*{-2pt}
+
+\bibitem{1-stup}
+\Au{Скворцов Н.\,А.} Отображение модели данных RDF в каноническую модель предметных
+посредников~/\!\!/ Электронные библиотеки: перспективные методы и технологии,
+электронные коллекции (RCDL'2013): Тр. 15-й Всеросс. науч. конф.~--- Ярославль:
+ЯрГУ им. П.\,Г.~Демидова, 2013. С.~202--209.
+\bibitem{2-stup}
+\Au{Ступников С.\,А.} Отображение графовой модели данных в каноническую
+объект\-но-фрей\-мо\-вую информационную модель при создании систем интеграции
+неоднородных информационных ресурсов~/\!\!/ Электронные библиотеки: перспективные
+методы и~технологии, электронные коллекции (RCDL'2013): Тр. 15-й Всеросс. науч.
+конф.~--- Ярославль: ЯрГУ им. П.\,Г.~Демидова, 2013. С.~193--202.
+\bibitem{3-stup}
+\Au{Скворцов Н.\,А.} Отображение моделей данных NoSQL в объектные спецификации~/\!\!/
+Электронные библиотеки: перспективные методы и технологии, электронные коллекции
+(RCDL'2012): Тр. 14-й Всеросс. науч. конф.~--- Пе\-ре\-славль-За\-лес\-ский: Ун-т
+города Переславля, 2012. С.~78--87.
+\bibitem{4-stup}
+\Au{Ступников С.\,А., Вовченко А.\,Е.} Комбинированная виртуально-материализованная
+среда интеграции неоднородных коллекций данных~/\!\!/ Электронные библиотеки:
+перспективные методы и технологии, электронные коллекции (RCDL'2014): Тр. 16-й
+Всеросс. науч. конф.~--- Дубна: ОИЯИ, 2014 (в печати).
+\bibitem{5-stup}
+\Au{Брюхов Д.\,О., Вовченко А.\,Е., Захаров В.\,Н., Желенкова~О.\,П., Калиниченко~Л.\,А.,
+Мартынов~Д.\,О., Скворцов~Н.\,А., Ступников~С.\,А.} Архитектура промежуточного слоя
+предметных посредников для решения задач над множеством интегрируемых
+неоднородных распределенных информационных ресурсов в~гибридной
+грид-инфраструктуре виртуальных обсерваторий~/\!\!/ Информатика и её применения, 2008.
+Т.~2. Вып.~1. С.~2--34.
+\bibitem{6-stup}
+ Apache Hadoop Project. 2014. {\sf http://hadoop.apache.org}.
+\bibitem{7-stup}
+\Au{Saracco C.\,M., Uttam J.} What's the big deal about Big SQL? Introducing relational DBMS
+users to IBM's SQL technology for Hadoop.~--- IBM DeveloperWorks, 2013. {\sf
+http://www.ibm.com/developerworks/library/bd-bigsql/bd-bigsql-pdf.pdf}.
+\bibitem{8-stup}
+\Au{Capriolo E., Wampler D., Rutherglen~J.} Programming Hive Data Warehouse and Query
+Language for Hadoop.~--- O'Reilly Media, 2012.
+\bibitem{9-stup}
+IBM InfoSphere BigInsights Information Center. 2014. {\sf
+http://pic.dhe.ibm.com/\linebreak infocenter/bigins/v2r1/index.jsp}.
+\bibitem{10-stup}
+Introducing JSON. 2014. {\sf http://www.json.org}.
+\bibitem{11-stup}
+\Au{Beyer K.\,S., Ercegovac V., Gemulla R., Balmin~A., Eltabakh~M., Kanne~C.-Ch., Ozcan~F.,
+Shekita~E.\,J.} Jaql: A~scripting language for large scale semistructured data analysis.~---
+VLDB, 2011.
+\bibitem{12-stup}
+The Neo4j Manual, 2014. {\sf http://goo.gl/cHiOGF}.
+\bibitem{13-stup}
+RDF~1.1 concepts and abstract syntax. W3C Recommendation 25 February 2014~/
+R.~Cyganiak, D.~Wood, M.~Lanthaler. {\sf
+http://www.w3.org/TR/2014/REC-rdf11-concepts-20140225}.
+\bibitem{14-stup}
+\Au{Lars G.} HBase: The definitive guide.~--- O'Reilly Media, 2011. 556~p.
+\bibitem{15-stup}
+\Au{Wilkinson K., Sayers C., Kuno~H., Reynolds~D.} Efficient RDF storage and retrieval in
+Jena2~/\!\!/ SWDB'03: 1st Workshop (International) on Semantic Web and Databases
+Proceedings. Berlin, Germany, 2003. P.~131--150.
+{\sf http://www.cs.\linebreak uic.edu/$\sim$ifc/SWDB/proceedings.pdf}.
+
+
+      \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в редакцию 22.09.14}}
+
+\newpage
+
+
+%\vspace*{9pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+%\vspace*{9pt}
+
+
+\def\tit{METHODS FOR MAPPING OF~COLLECTIONS PRESENTED
+IN~NONTRADITIONAL DATA MODELS
+INTO~THE~INTEGRATED REPRESENTATION}
+
+\def\titkol{Methods for mapping of~collections %presented in~nontraditional data models
+into the integrated representation}
+
+\def\aut{S.\,A. Stupnikov, A.\,E.~Vovchenko}
+\def\autkol{S.\,A. Stupnikov, A.\,E.~Vovchenko}
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-12pt}
+
+\noindent
+Institute of Informatics Problems, Russian Academy of Sciences,
+44-2 Vavilov Str., Moscow 119333, Russian
+Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2014 vol~24 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2014   vol~24   no\,4
+\hfill \textbf{\thepage}}}
+
+\Abste{The paper considers transformations of collections presented
+in nontraditional data models, such as graph, triplet, and key-value
+models, into the integrated representation in the relational data model.
+The context of the paper is the development of the combined virtual and
+materialized environment for integration of heterogeneous collections
+of (un-, semi-)structured data. The proposed techniques constitute the
+basis for materialized integration of information resources in relational
+data warehouses over Hadoop.}
+
+\KWE{database integration; graph data models; RDF; NoSQL; data collections
+transformation}
+
+\DOI{10.14357\!/\!08696527140402}
+
+%\vspace*{-24pt}
+
+\Ack
+\noindent
+The work was supported by the Russian Foundation for Basic Research
+(Grants Nos.\,13-07-00579 and~14-07-00548), by the Presidium
+of the Russian Academy of Sciences (Program of Basic Research of the
+Presidium of RAS No.\,16
+``Fundamental Problems of System Programming''),
+and by IPI RAN (theme 38.25 ``Specification and solving of the
+problems of data analysis in conceptual terms of subject areas with intense data utilization''
+of state task of IPI RAN).
+
+
+\vspace*{-2pt}
+
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+      \bibitem{1-stup-1}
+      \Aue{Skvortsov, N.\,A.} 2013. Otobrazhenie modeli dannykh RDF v
+kanonicheskuyu model' predmetnykh posrednikov [Mapping of RDF data model into
+the canonical model of subject mediators]. \textit{Tr. 15-y Vseross. nauch. konf.
+``Elektronnye Biblioteki: Perspektivnye Metody i~Tekhnologii, Elektronnye
+Kollektsii'' RCDL'2013} [15th Russian Conference on Digital Libraries RCDL'2013
+Proceedings]. 1108:95--101.
+
+      \bibitem{2-stup-1}
+      \Aue{Stupnikov, S.\,A.} 2013. Otobrazhenie grafovoy modeli dannykh v
+kanonicheskuyu ob'ektno-freymovuyu informatsionnuyu model' pri sozdanii sistem
+integratsii neodnorodnykh informatsionnykh resursov [Mapping of a graph data
+model into an object-frame canonical information model for the development of
+heterogeneous information resources integration systems]. \textit{Tr. 15-y Vseross.
+nauch. konf. ``Elektronnye Biblioteki: Perspektivnye Metody i~Tekhnologii,
+Elektronnye Kollektsii'' RCDL'2013} [15th Russian Conference on Digital Libraries
+RCDL'2013 Proceedings]. 1108:85--94.
+
+      \bibitem{3-stup-1}
+      \Aue{Skvortsov, N.\,A.} 2012. Otobrazhenie modeley dannykh NoSQL
+v~ob''ektnye spetsi\-fi\-ka\-tsii [Mapping of NoSQL data models to object specifications].
+\textit{Tr. 14-y Vseross. nauch. konf. ``Elektronnye Biblioteki: Perspektivnye
+Metody i~Tekhnologii, Elektronnye Kollektsii'' RCDL'2012} [14th Russian
+Conference on Digital Libraries RCDL'2012 Proceedings].  934:53--62.
+
+      \bibitem{4-stup-1}
+      \Aue{Stupnikov, S.\,A, and A.\,E.~Vovchenko}. 2014  (in press).
+Kombinirovannaya virtual'no-materializovannaya sreda integratsii neodnorodnykh
+kollektsiy dannykh [Combined virtual and materialized environment for integration
+of large heterogeneous data collections]. \textit{Tr. 16-y Vseross. nauch. konf.
+``Elektronnye Biblioteki: Perspektivnye Metody i~Tekhnologii, Elektronnye
+Kollektsii'' RCDL'2014} [16th Russian Conference on Digital Libraries RCDL 2014'
+Proceedings].
+
+      \bibitem{5-stup-1}
+      \Aue{Briukhov, D.\,O., A.\,E. Vovchenko, V.\,N.~Zakharov,
+O.\,P.~Zhelenkova, L.\,A.~Kalinichenko, D.\,O.~Martynov, N.\,A.~Skvortsov, and
+S.\,A.~Stupnikov}. 2008. Arkhitektura promezhutochnogo sloya predmetnykh
+posrednikov dlya resheniya zadach nad mnozhestvom integriruemykh
+neodnorodnykh raspredelennykh informatsionnykh resursov v~gibridnoy
+      grid-infrastrukture virtual'nykh observatoriy [The middleware architecture of
+the subject mediators for problem solving over a~set of integrated heterogeneous
+distributed information resources in the hybrid grid-infrastucture of virtual
+observatories]. \textit{Informatika i ee Primeneniya}~---
+\textit{Inform. Appl.} 2(1):2--34.
+
+      \bibitem{6-stup-1}
+      Apache Hadoop Project. Available at: {\sf http://hadoop.apache.org}
+(accessed October~02, 2014).
+
+      \bibitem{7-stup-1}
+      \Aue{Saracco, C.\,M., and J.~Uttam}. 2013. \textit{What's the big deal about
+Big SQL? Introducing relational DBMS users to IBM's SQL technology for
+Hadoop}. IBM DeveloperWorks. Available at: {\sf
+http://www.ibm.com/developerworks/library/bd-bigsql/bd-bigsql-pdf.pdf} (accessed
+October~02, 2014)
+
+      \bibitem{8-stup-1}
+      \Aue{Capriolo, E., D.~Wampler, and J.~Rutherglen}. 2012.
+\textit{Programming Hive data warehouse and query language for Hadoop}. O'Reilly
+Media. 329~p.
+
+      \bibitem{9-stup-1}
+      IBM InfoSphere BigInsights Information Center. Available at: {\sf
+http://pic.dhe.ibm.\linebreak  com/infocenter/bigins/v2r1/index.jsp}
+(accessed October~02, 2014).
+
+      \bibitem{10-stup-1}
+      Introducing JSON. Available at: {\sf http://www.json.org} (accessed
+October~02, 2014).
+
+      \bibitem{11-stup-1}
+      \Aue{Beyer, K.\,S., V.~Ercegovac, R.~Gemulla, A.~Balmin, M.~Eltabakh,
+C.-Ch.~Kanne, F.~Ozcan, and E.\,J.~Shekita}. 2011. Jaql: A~scripting language for
+large scale semistructured data analysis.
+      \textit{Proceedings of the VLDB Endowment} 4(12):1272--1283.
+
+      \bibitem{12-stup-1}
+      \textit{The Neo4j manual}. Available at: {\sf http://goo.gl/cHiOGF}
+(accessed October~02, 2014).
+
+      \bibitem{13-stup-1}
+      Cyganiak, R., D.~Wood, and M.~Lanthaler, eds. \textit{RDF~1.1 concepts
+and abstract syntax. W3C Recommendation 25~February 2014}. Available at: {\sf
+http://www. w3.org/TR/ 2014/REC-rdf11-concepts-20140225} (accessed October~02, 2014).
+
+      \bibitem{14-stup-1}
+      \Aue{Lars, G.} 2011. \textit{HBase: The definitive guide}. O'Reilly Media.
+556~p.
+
+      \bibitem{15-stup-1}
+      \Aue{Wilkinson, K., C.~Sayers, H.~Kuno, and D.~Reynolds}. 2003.
+Efficient RDF storage and retrieval in Jena2. \textit{1st Workshop (International) on
+Semantic Web and Databases Proceedings}. 131--150. Available at: {\sf
+http://www.cs.uic.edu/$\sim$ifc/SWDB/proceedings.pdf} (accessed October~02, 2014).
+\end{thebibliography}
+} }
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received September 22, 2014}}
+
+
+\Contr
+
+\noindent
+\textbf{Stupnikov Sergey A.} (b.\ 1978)~---
+       Candidate of Science (PhD) in technology, senior scientist, Institute of Informatics
+Problems, Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333,
+Russian Federation; ssa@ipi.ac.ru
+
+\vspace*{6pt}
+
+\noindent
+\textbf{Vovchenko Alexey E.} (b.\ 1984)~---
+       Candidate of Science (PhD) in technology, senior scientist, Institute of Informatics
+Problems, Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333,
+Russian Federation; alexey.vovchenko@gmail.com
+
+ \label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}

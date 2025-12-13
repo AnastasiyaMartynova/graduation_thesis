@@ -1,0 +1,575 @@
+\def\stat{gaidamaka}
+
+\def\tit{АНАЛИТИЧЕСКАЯ МОДЕЛЬ ПРОТОКОЛА МНОЖЕСТВЕННОГО ДОСТУПА 
+С~ПРОСЛУШИВАНИЕМ КАНАЛА ДЛЯ~ПРИЛОЖЕНИЙ ИНДУСТРИАЛЬНОГО 
+ИНТЕРНЕТА ВЕЩЕЙ$^*$}
+
+\def\titkol{Аналитическая модель протокола множественного доступа 
+с~прослушиванием канала} % для~приложений индустриального  интернета вещей}
+
+
+  \def\aut{А.\,С.~Царев$^1$, Э.\,М.~Хайров$^2$, Ю.\,В.~Гайдамака$^3$, 
+С.\,Я.~Шоргин$^4$}
+
+  \def\autkol{А.\,С.~Царев, Э.\,М.~Хайров, Ю.\,В.~Гайдамака, 
+С.\,Я.~Шоргин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Царев А.\,С.}
+\index{Хайров Э.\,М.}
+\index{Гайдамака Ю.\,В.}
+\index{Шоргин С.\,Я.}
+\index{Tsarev A.\,S.}
+\index{Khayrov E.\,M.}
+\index{Gaidamaka Yu.\,V.}
+\index{Shorgin S.\,Ya.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Публикация выполнена при поддержке Программы стратегического академического лидерства РУДН и~при 
+финансовой поддержке РФФИ (проекты 19-07-00933 и~20-07-01064).}} 
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов, atsarev@sci.pfu.edu.ru}
+\footnotetext[2]{Российский университет дружбы народов, emil.khayrov@gmail.com}
+\footnotetext[3]{Российский университет дружбы народов; Институт проблем информатики Федерального исследовательского 
+центра <<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{gaydamaka-yuv@rudn.ru}}
+\footnotetext[4]{Институт проблем информатики Федерального исследовательского цент\-ра <<Информатика  
+и~управ\-ле\-ние>> Российской академии наук, \mbox{sshorgin@ipiran.ru}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt} 
+
+
+
+
+\Abst{Индустриальный интернет вещей стал одной из ключевых концепций четвертой 
+промышленной революции~--- нового подхода к~построению промышленных процессов 
+с~использованием новейших технологий. Однако для планирования и~выстраивания 
+новых автоматизированных процессов необходимо понимать характеристики 
+и~ограничения, возникающие из-за технических особенностей системы. Для решения 
+этой задачи в~одном из сценариев использования промышленного интернета вещей 
+предлагается математическая модель протокола многостанционного доступа с~контролем 
+несущей и~предотвращением конфликтов. Такая модель позволяет оценить среднее время 
+цикла передачи данных с~датчика, вероятность успешной передачи данных, вероятность 
+коллизии при передаче данных. Получены аналитические выражения для вычисления 
+ключевых метрик производительности на уровне управления доступом к~среде.}
+
+\KW{индустриальный интернет вещей; управление доступом к~среде; прослушивание 
+канала; множественный доступ; цепь Маркова; вероятность коллизии}
+
+  \DOI{10.14357\!/\!08696527210202} 
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}
+
+\section{Введение}
+
+   Достижения технологического прогресса, такие как интернет вещей, 
+расширяют возможности для улучшения производственных процессов. 
+Индустриальный интернет вещей характеризуется миниатюризацией  
+прие\-мо\-пе\-ре\-да\-ющих устройств, увеличенной плотностью устройств 
+и~более строгими ограничениями, предъявляемыми к~задержкам~[1]. 
+Перечисленные требования могут быть удовле\-тво\-ре\-ны в~существующих 
+беспроводных сетях при условии передачи данных  
+в~мил\-ли\-мет\-ро\-вом/те\-ра\-гер\-це\-вом диапазоне волн. Высокий уровень 
+потерь при распространении волн может быть компенсирован использованием 
+направленных антенн~\cite{2-gai, 3-gai}.
+
+Рассмотрим сценарий использования промышленного интернета вещей, 
+представленный на рис.~1. 
+
+
+\begin{figure} %fig1
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=106.015mm 
+\epsfbox{gai-1.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Системная модель приложения индустриального интернета вещей: \textit{1}~--- 
+шлюз; \textit{2}~--- передающий узел; \textit{3}~--- узел в~секторе покрытия антенны; 
+\textit{4}~--- узел вне сектора покрытия антенны}
+\end{figure}
+
+    
+Некоторое предприятие оборудовано промышленными станками, каждый из 
+которых имеет некоторое число сенсоров, оснащенных передатчиками. 
+Сенсоры считывают показания и~передают их шлюзу по беспроводному каналу 
+связи согласно протоколу управления доступом к~среде~\cite{2-gai}. Шлюз 
+оснащен набором направленных антенн, меняющих направление сектора 
+покрытия~$\theta$ согласно расписанию. Каждый передатчик оснащен одной 
+всенаправленной антенной, используемой для передачи данных через шлюз. 
+Передача накопленных сенсорами показаний начинается в~случайный момент 
+времени в~течение периода покрытия антенной шлюза соответствующего 
+сектора пространства, что может привести к~потере информации на шлюзе 
+вследствие коллизий, возникающих при одновременных попытках передачи 
+показаний от нескольких сенсоров. Описанная ситуация деградации 
+пропускной способности системы актуальна и~для миллиметрового диапазона 
+волн~\cite{4-gai}.
+
+\begin{figure}[b] %fig2
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=115.751mm 
+\epsfbox{gai-2.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Временная диаграмма, описывающая успешную передачу 
+данных с~помощью RTS\!/\!CTS-про\-це\-ду\-ры: \textit{1}~--- отсрочка передачи;
+\textit{2}~--- передача сообщения;
+\textit{3}~--- прием сообщения;
+\textit{4}~--- период <<канал занят>>;
+$\tau_{\mathrm{р}}$~--- задержка распространения}
+\end{figure}
+
+\section{Процедура множественного доступа с~прослушиванием канала 
+и~предотвращением коллизий}
+
+Для предотвращения деградации производительности системы предлагается 
+использовать модификацию протокола многостанционного доступа 
+с~контролем несущей и~предотвращением конфликтов (Carrier Sense Multiple 
+Access With Collision Avoidance, CSMA\!/\!CA)~\cite{5-gai} при помощи 
+инициализации сессии передачи данных через RTS\!/\@CTS-про\-це\-ду\-ру
+(RTS\!/\!CTS~--- Request To Send\,/\,Clear To Send,
+запрос на от\-прав\-ку/раз\-ре\-ше\-ние отправки). 
+В~таком случае подразумевается, что возможны коллизии между сигнальными 
+сообщениями, а~коллизии между данными будут сведены к~нулю. Учитывая, 
+что в~реальных приложениях размер пакета данных на порядок больше размера 
+сигнального сообщения, такое улучшение позволит более эффективно 
+использовать имеющийся канал. 
+
+    На рис.~2 представлена временн$\acute{\mbox{а}}$я диаграмма 
+предлагаемого протокола для шлюза и~двух узлов (передатчиков). При наличии 
+данных перед их передачей разыгрывается равномерно распределенная 
+отсрочка передачи. После этого узел отправляет RTS-со\-об\-ще\-ние. В~случае 
+его приема без коллизий шлюз проводит широковещательную рассылку  
+CTS-со\-об\-ще\-ния, содержащего информацию об узле, который займет 
+канал своими данными в~следующий временной интервал. Узел, не 
+получивший от шлюза разрешения на передачу данных до окончания заданного 
+тайм-аута, что возможно вследствие коллизии RTS-со\-об\-ще\-ний на шлюзе, 
+начинает новую попытку передачи с~увеличенной отсрочкой перед отправкой 
+нового RTS-со\-об\-ще\-ния.
+
+\section{Математическая модель процедуры установления соединения 
+передатчиком}
+
+Функционирование передатчика согласно процедуре множественного доступа 
+с~прослушиванием канала и~предотвращением коллизий моделируется  
+с~по\-мощью цепи Маркова в~дискретном времени.
+
+
+
+    Пусть множество~$\mathrm{X}$ описывает конечное пространство 
+состояний передатчика:
+\begin{equation*}
+\mathrm{X}=\left\{ \mathrm{idle, backoff_1^1},\ldots , 
+\mathrm{backoff^1}_{1\,T_{\max}}, \mathrm{wait}^1, 
+\mathrm{rts}^1, \mathrm{out}^1, \ldots , \mathrm{cts}, \mathrm{data}, \mathrm{ack}\right\}.
+%\label{e1-gai}\!
+\end{equation*}
+Согласно~\cite{6-gai}, в~каждый момент времени передатчик может быть 
+в~одном из перечисленных состояний. Состояние $\mathrm{idle}$ отвечает за слот 
+времени, когда у~сенсора нет данных для передачи, где вероятность передачи 
+данных равна~$p_a$. Отсрочка $\mathrm{backoff}$ перед отправкой поделена на 
+соответствующее число состояний $\mathrm{backoff}_j^i$, $1\hm\leq i\hm\leq N\hm+1$, 
+$1\hm\leq j\hm\leq i T_{\max}$, где $N$~--- максимальное число допустимых 
+попыток передачи RTS-со\-об\-ще\-ния; $T_{\max}$~--- максимальная 
+длительность отсрочки для первой попытки. Из $\mathrm{backoff}_j^i$ передатчик может 
+перейти в~состояние $\mathrm{backoff}^i_{j-1}$ с~вероятностью~$p_f$ или в~$\mathrm{wait}^i$, 
+$1\hm\leq i\hm\leq N\hm+1$, с~вероятностью $1\hm- p_f$, где~$p_f$~--- 
+вероятность того, что в~канале отсутствует CTS-со\-об\-ще\-ние. При передаче 
+RTS-со\-об\-ще\-ния с~вероятностью~$p$ может возникнуть коллизия между  
+RTS-со\-об\-ще\-ни\-ями. Также~$p$ учитывает случай, когда поступившее 
+RTS-со\-об\-ще\-ние игнорируется шлюзом в~связи с~исходящей передачей 
+CTS-сообщения.
+
+    Решив систему уравнений, соответствующую цепи Маркова на рис.~3, 
+получим следующее распределение вероятностей:
+\begin{equation*}
+\begin{array}{c}
+p_{\mathrm{idle}} +\displaystyle \sum\limits_{i=1}^{N+1} \left( p^i_{\mathrm{rts}} +p^i_{\mathrm{out}} 
++p^i_{\mathrm{backoff}}+p^i_{\mathrm{wait}}\right) +
+p_{\mathrm{cts}} +p_{\mathrm{data}}+p_{\mathrm{ack}}=1\,;\\[6pt]
+p^i_{\mathrm{rts}} = p_a p^{i-1} p_{\mathrm{idle}}\,;\\[6pt]
+p^i_{\mathrm{out}} = p_a p^i p_{\mathrm{idle}}\,;\\[6pt]
+\hspace*{-35mm}p^i_{\mathrm{backoff}} = 
+\displaystyle \sum\limits_{j=1}^{i T_{\max}} p^i_{\mathrm{backoff}(j)} = {}\hspace*{35mm}\\[6pt]
+\hspace*{18mm}{}=
+p_a p^{i-1} p_{\mathrm{idle}} \fr{ iT_{\max}+1}{ iT_{\max}}\, \fr{p_f(p_f^{iT_{\max}}-
+iT_{\max}-1)+iT_{\max}}{(1-p_f^{iT_{\max}+1})(1-p_f)}\,;
+\end{array}
+%\label{e2-gai}
+\end{equation*}
+
+\begin{equation*}
+\begin{array}{c}
+p^i_{\mathrm{wait}} =p_a p^{i-1} p_{\mathrm{idle}} \fr{ iT_{\max}+1}{iT_{\max}}\, 
+\fr{p_f(p_f^{iT_{\max}} -iT_{\max}-1)+iT_{\max}} {1-
+p_f^{iT_{\max}+1}}\,;\\[6pt]
+p_{\mathrm{cts}} =p_{\mathrm{data}}=p_{\mathrm{ack}}=\displaystyle \sum\limits_{i=1}^{N+1} p_a p^{i-1} 
+(1-p) p_{\mathrm{idle}}\,.
+\end{array}
+%\label{e2-gai}
+\end{equation*}
+
+\begin{figure} %fig3
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{gai-3.eps}
+ }
+ \end{center}
+\vspace*{-13pt}
+\Caption{Цепь Маркова с~возможными состояниями передатчика}
+\vspace*{-14pt}
+\end{figure}
+
+\vspace*{-2pt}
+    
+Пусть $\chi(t)$~--- длительность цикла передачи данных (независимо от того, 
+закончился ли он успешной передачей данных), притом~$T_s$, $s\hm\in \{ \mathrm{idle, 
+rts, out, backoff, wait, cts, data, ack}\}$,~--- длительность нахождения 
+в~соответствующем состоянии. Тогда среднюю длительность цикла передачи 
+данных можно выразить следующим образом:
+
+\vspace*{-6pt}
+
+\noindent
+\begin{multline*}
+M[\chi]p_{\mathrm{idle}}=\sum\limits_{i=1}^{N+1} T_s p_s^i ={}\\[-2pt]
+{}=p_{\mathrm{idle}}T_{\mathrm{idle}} +\sum\limits_{i=1}^{N+1} 
+p_a p^{i-1}p_{\mathrm{idle}} \left(\!
+\vphantom{\fr{p_f(p_f^{iT_{\max}+1} -iT_{\max} -1)+iT_{\max}} {1-p_f^{T_{\max}+1}}}
+ T_{\mathrm{rts}} +pT_{\mathrm{out}} +(1-p) (T_{\mathrm{cts}}+T_{\mathrm{data}}+T_{\mathrm{ack}}) +{}\right.\\[-2pt]
+\left.{}+\left( 
+T_{\mathrm{wait}}+\fr{T_{\mathrm{backoff}}}{1-p_f}\right) \left( \fr{iT_{\max}+1}{iT_{\max}}\right) 
+\,\fr{p_f(p_f^{iT_{\max}} -iT_{\max} -1)+iT_{\max}} {1-p_f^{iT_{\max}+1}} 
+\right)\,.
+\end{multline*}
+%
+В таком случае стационарное распределение вероятностей с~учетом средней 
+продолжительности передачи данных будет иметь вид:
+\begin{align*}
+p_{\mathrm{RTS}} &= \fr{\sum\nolimits_{i=1}^{N+1} p_a p^{i-1}T_{\mathrm{rts}}}{M[\chi]}\,;\\
+p_{\mathrm{OUT}} &= \fr{\sum\nolimits_{i=1}^{N+1} p_a p^i T_{\mathrm{out}}}{M[\chi]}\,;\\[3pt]
+P_{\mathrm{BACKOFF}} &={}\\
+&\hspace*{-12pt}{}= \fr{1}{{M[\chi]}}\,
+\sum\limits_{i=1}^{N+1} p_a p^{i-1} 
+\fr{iT_{\max}+1}{iT_{\max}}\,\fr{p_f(p_f^{iT_{\max}}-iT_{\max}-1)+iT_{\max}}{\left(1-
+p_f^{iT_{\max}+1}\right)(1-p_f)} T_{\mathrm{backoff}}\,;\\[3pt]
+p_{\mathrm{WAIT}} &= \fr{1}{{M[\chi]}}\!
+\sum\limits_{i=1}^{N+1} \!p_a p^{i-1} 
+\fr{iT_{\max}+1}{iT_{\max}}\,\fr{p_f\left(p_f^{iT_{\max}}-iT_{\max}-1\right)+iT_{\max}}{1-
+p_f^{iT_{\max}+1}}\, T_{\mathrm{wait}};\\[3pt]
+p_{\mathrm{CTS}} &= \fr{\sum\nolimits_{i=1}^{N+1}  p_a p^{i-1} (1-p) 
+T_{\mathrm{cts}}}{M[\chi]}\,;\\[3pt]
+p_{\mathrm{DATA}} &= \fr{\sum\nolimits_{i=1}^{N+1}  p_a p^{i-1} (1-p) 
+T_{\mathrm{data}}}{M[\chi]}\,;\\[3pt]
+p_{\mathrm{ACK}} &= \fr{\sum\nolimits_{i=1}^{N+1} p_1 p^{i-1} (1-p)T_{\mathrm{ack}} 
+}{M[\chi]}\,.
+\end{align*}
+
+
+Сформулируем вероятностно-вре\-мен\-н$\acute{\mbox{ы}}$е характеристики, 
+позволяющие оценить производительность системы, функционирующей 
+в~режиме множественного доступа. Основную роль будут играть вероятность 
+коллизии~$p$, вероятность успешной передачи данных~$p_{\mathrm{success}}$ 
+и~вероятность неуспешной передачи данных после~$p_{\mathrm{failure}}$. Кроме того, 
+интерес представляет изучение средней длительности цикла передачи 
+данных~$M[\chi]$~\cite{7-gai}.
+
+Определим $p_{\mathrm{success}}$ в~следующем виде:
+$$
+p_{\mathrm{success}}=\sum\limits_{i=1}^{N+1} p_a p^{i-1} (1-p)\,.
+$$
+Тогда $p_{\mathrm{failure}}$ примет вид:
+$$
+p_{\mathrm{failure}}= p_a p^{N+1} =1-p_{\mathrm{success}}\,.
+$$
+Вероятность~$p$ вычисляется как решение трансцендентного 
+уравнения~\cite{8-gai}
+\begin{align*}
+p&=1-\left( 1-p_{\mathrm{RTS}}\right)^{n_\theta -1} +1- \left( 1-p_{\mathrm{CTS}}  
+\right)^{n_\theta-1}\,;\\
+p_f&= \left(1-p_{\mathrm{CTS}}\right)^{n_\theta-1}\,.
+\end{align*}
+
+\section{Заключение}
+
+    В статье представлена математическая модель протокола множественного 
+доступа с~прослушиванием канала, учитывающая особенность приложений 
+ин\-дуст\-ри\-аль\-но\-го интернета вещей. Предложены метрики для оценки 
+производительности системы на уровне доступа к~среде, а также 
+сформулированы аналитические выражения для нахождения  
+ве\-ро\-ят\-ност\-но-вре\-мен\-н\'{ы}х характеристик, влияющих на пропускную 
+способность. 
+    
+В дальнейшем планируется провести комплексный анализ про\-из\-во\-ди\-тель\-ности 
+системы, учитывая потери как на уровне доступа к~среде (MAC layer), так и~на 
+физическом уровне (PHY layer) модели взаимодействия открытых систем.
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+\bibitem{1-gai}
+\Au{Aceto G., Persico~V., Pescap$\acute{\mbox{e}}$~A.} A~survey on information and 
+communication technologies for industry~4.0: State-of-the-art, taxonomies, perspectives, and 
+challenges~/\!\!/ IEEE Commun. Surv. Tut., 2019. Vol.~21. Iss.~4. P.~3467--3501. 
+doi: 10.1109\!/\!COMST.2019.2938259.
+
+\bibitem{3-gai}
+\Au{Elayan H., Amin~O., Shubair~R., Alouini~M.} Terahertz communication: The opportunities of 
+wireless technology beyond~5G~/\!\!/ Conference (International) on Advanced 
+Communication Technologies and Networking Proceedings.~--- Piscataway, NJ, USA: IEEE, 2018. 
+Art ID: 8360286. 5~p. doi: 10.1109\!/\!COMMNET.2018.8360286.
+
+\bibitem{2-gai}
+\Au{Buratti C., Mesini L., Verdone R}. Comparing MAC protocols for industrial IoT using 
+Terahertz communications~/\!\!/ 31st Annual  Symposium (International) on Personal, 
+Indoor and Mobile Radio Communications Proceedings.~--- Piscataway, NJ, USA: IEEE, 2020. Art ID: 
+9217308. 7~p. doi: 10.1109\!/\!pimrc48278.2020.9217308.
+
+\bibitem{4-gai}
+\Au{Чухно Н.\,В., Чухно О.\,В., Гайдамака~Ю.\,В., Самуйлов~К.\,Е.} Об условиях взаимного 
+обнаружения устройств при передаче в~миллиметровом диапазоне длин волн~/\!\!/ 
+Ин\-фор\-ма\-ци\-он\-но-те\-ле\-ком\-му\-ни\-ка\-ци\-он\-ные технологии и~математическое 
+моделирование высокотехнологичных систем: Сб. мат-лов VIII~Всеросс. конф. 
+(с~международным участием) в~рамках 54-й Всеросс. конф. по проб\-ле\-мам математики, 
+информатики, физики и~химии.~--- М.: РУДН, 2018. C.~187--190.
+\bibitem{5-gai}
+Characteristics of broadband radio local area networks: Recommendation ITU-R M.1450-5, 2014.
+\bibitem{6-gai}
+\Au{Samouylov K.\,E., Gaidamaka~Yu.\,V., Gudkova~I.\,A., Zaripova~E.\,R., Shorgin~S.\,Ya.} 
+Baseline analytical model for machine-type communications over 3GPP RACH in LTE-advanced 
+networks~/\!\!/ Computer and 
+information sciences~/ Eds. 
+T.~Czach$\acute{\mbox{o}}$rski, E.~Gelembe, K.~Grochla, R.~~Lent.~--- Communications in computer and 
+information science book ser.~--- Springer, 2016. Vol.~659. P.~203--213. doi:  
+10.1007\!/\!978-3-319-47217-1\_22.
+\bibitem{7-gai}
+\Au{Tsarev A., Khayrov~E., Medvedeva~E., Gaidamaka~Y., Buratti~C.} Analytical model for 
+CSMA-based MAC protocol for industrial IoT applications~/\!\!/  Internet of Things, smart spaces, and
+next generation networks and systems~/ Eds. O.~Galinina, S.~Andreev, S.~Balandin, 
+Y.~Koucheryavy.~--- Lecture notes in computer science.~--- Springer, 2020. Vol.~12526.  
+P.~240--258. 
+doi: 10.1007\!/\!978-3-030-65729-1\_21.
+\bibitem{8-gai}
+\Au{Bianchi G.} IEEE 802.11-saturation throughput analysis~/\!\!/ IEEE Commun. Lett., 
+1998. Vol.~2. Iss.~12. P.~318--320. doi: 10.1109\!/\!4234.736171.
+
+      \end{thebibliography}
+} }
+
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.03.21}}
+
+
+
+
+\vspace*{6pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{8pt}
+
+\def\tit{ANALYTICAL MODEL\\ OF~CARRIER SENSE MULTIPLE ACCESS PROTOCOL\\ 
+FOR~INDUSTRIAL INTERNET OF~THINGS APPLICATIONS}
+
+\def\titkol{Analytical model of~carrier sense multiple access protocol 
+for~IIoT applications}
+
+
+
+\def\aut{A.\,S.~Tsarev$^1$, E.\,M.~Khayrov$^1$, Yu.\,V.~Gaidamaka$^{1,2}$, and~S.\,Ya.~Shorgin$^2$}
+
+\def\autkol{A.\,S.~Tsarev, E.\,M.~Khayrov, Yu.\,V.~Gaidamaka, and~S.\,Ya.~Shorgin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+
+\noindent
+$^1$Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-\linebreak
+\hphantom{$^1$}Maklaya Str., Moscow 117198, Russian Federation
+
+\noindent
+$^2$Institute of Informatics Problems, Federal Research Center ``Computer Science\linebreak
+\hphantom{$^1$}and Control'' of 
+the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow\linebreak
+\hphantom{$^1$}119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2021 vol~31 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2021 vol~31 no\,2
+\hfill \textbf{\thepage}}}
+  
+  
+\vspace*{3pt}
+
+
+
+
+\Abste{Industrial Internet of Things (IIoT) is one of the key features of Industry~4.0 that stands for a new 
+approach to design industrial processes using the latest technological advances. However, before 
+implementing new processes, it is necessary to understand the characteristics and limitations that 
+arise due to technical complexity of the system. To solve this problem for some generalized IIoT 
+use case, a~mathematical model of the multiple access protocol with channel sensing is proposed. 
+This model allows one to estimate the average sensor's data transmission cycle time, successful 
+data transmission probability, and probability of a collision during data transmission. Analytical 
+expressions for calculating key performance metrics at the access layer are proposed.}
+
+\KWE{Industrial Internet of Things (IIoT); MAC layer; channel sensing; multiple access; Markov 
+chain; collision probability }
+ 
+
+
+  \DOI{10.14357\!/\!08696527210202} 
+
+%\vspace*{-24pt}
+
+\Ack
+\noindent
+The paper has been supported by the RUDN University Strategic Academic Leadership Program 
+and funded by the Russian Foundation for Basic Research according to the research projects 
+No.\,19-07-00933 and No.\,20-07-01064.
+
+%\vspace*{-12pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{9}
+\bibitem{1-gai-1}
+\Aue{Aceto, G., V.~Persico, and A.~Pescap$\acute{\mbox{e}}$.} 2019. A~survey on information 
+and communication technologies for industry~4.0: State-of-the-art, taxonomies, perspectives, and 
+challenges. \textit{IEEE Commun. Surv. Tut.} 21(4):3467--3501.
+doi: 10.1109\!/\!COMST.2019.2938259.
+
+\bibitem{3-gai-1}
+\Aue{Elayan, H., O.~Amin, R.~Shubair, and M.~Alouini.} 2018. Terahertz communication: The 
+opportunities of wireless technology beyond 5G. \textit{Conference (International) on Advanced 
+Communication Technologies and Networking Proceedings}. 
+Piscataway, NJ: IEEE. Art ID: 8360286. 5~p.
+doi: 10.1109\!/\!COMMNET.2018.8360286.
+
+\bibitem{2-gai-1}
+\Aue{Buratti, C., L. Mesini, and R.~Verdone.} 2020. Comparing MAC protocols for industrial IoT 
+using terahertz communications. \textit{31st Annual  Symposium (International) on Personal, Indoor 
+and Mobile Radio Communications Proceedings}. Piscataway, NJ: IEEE. Art ID: 9217308. 7~p. 
+doi: 10.1109\!/\!pimrc48278.2020.9217308.
+
+\bibitem{4-gai-1}
+\Aue{Chukhno, N.\,V., O.\,V.~Chukhno, Yu.\,V.~Gaydamaka, and K.\,E.~Samuylov.} 2018. Ob 
+usloviyakh vzaimnogo obnaruzheniya ustroystv pri peredache v~millimetrovom dia\-pa\-zo\-ne dlin voln 
+[MMWAVE channel access and devices' detection during data transmission in unlicensed bands]. 
+\textit{Informatsionno-telekommunikatsionnye tekhnologii i~ma\-te\-ma\-ti\-che\-skoe modelirovanie 
+vysokotekhnologichnykh system: Sb. mat-ov VIII Vseross. konf. (s~mezhdunarodnym uchastiyem) v~ramkakh 54-y Vseross. 
+konf. po problemam ma\-te\-ma\-ti\-ki, informatiki, fiziki i~khimii} [8th All-Russian Conference (International) in the framework of 
+the 54th All-Russian Conference on Mathematics, Informatics, Physics and Chemistry 
+``Information and telecommunication technologies and mathematical modeling of high-tech 
+systems'' Proceedings]. Moscow: RUDN. 187--190.
+\bibitem{5-gai-1}
+Recommendation ITU-R M.1450-5. 2014. Characteristics of broadband radio local area networks. 
+Available at: {\sf https://www.itu.int/rec/R-REC-M.1450-5-201404-I} (accessed April~7, 2021).
+\bibitem{6-gai-1}
+\Aue{Samouylov, K.\,E., Y.\,V.~Gaidamaka, I.\,A.~Gudkova, E.\,R.~Zaripova, and 
+S.\,Y.~Shorgin.} 2016. Baseline analytical model for machine-type communications over 3GPP 
+RACH in LTE-advanced networks. \textit{Computer and 
+information sciences}. Eds. T.~Czach$\acute{\mbox{o}}$rski, E.~Gelenbe, K.~Grochla, and R.~Lent.
+Communications in 
+computer and information science book ser. Springer. 659:203--213.
+10.1007\!/\!978-3-319-47217-1\_22.
+\bibitem{7-gai-1}
+\Aue{Tsarev, A., E.~Khayrov, E.~Medvedeva, Y.~Gaidamaka, and C.~Buratti.} 2020. Analytical 
+model for CSMA-based MAC protocol for industrial IoT applications. \textit{Internet of Things, smart spaces, and
+next generation networks and systems}. Eds. O.~Galinina, S.~Andreev, 
+S.~Balandin, and Y.~Koucheryavy. Lecture notes in computer science ser. Springer. 12526:240--258.
+doi: 10.1007\!/\!978-3-030-65729-1\_21.
+\bibitem{8-gai-1}
+\Aue{Bianchi, G.} 1998. IEEE 802.11-saturation throughput analysis. \textit{IEEE Commun. 
+Lett.} 2(12):318--320. doi: 10.1109\!/\!4234.736171.
+ \end{thebibliography}
+} }
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received March 15, 2021}} 
+
+\vspace*{-16pt} 
+
+\Contr
+
+\noindent
+\textbf{Tsarev Alexey S.} (b.\ 1994)~--- PhD student, Department of Applied Probability and 
+Informatics, Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya 
+Str., Moscow 117198, Russian Federation; \mbox{atsarev@sci.pfu.edu.ru}
+
+\pagebreak
+
+%\vspace*{3pt}
+
+\noindent
+\textbf{Khayrov Emil M.} (b.\ 1997)~--- master student, Department of Applied Probability and 
+Informatics, Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya 
+Str., Moscow 117198, Russian Federation; \mbox{emil.khayrov@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Doctor of Science in physics and mathematics, 
+professor, Department of Applied Probability and Informatics, Peoples' Friendship University of 
+Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+senior scientist, Institute of Informatics Problems, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian 
+Federation; \mbox{gaydamaka-yuv@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Shorgin Sergey Ya.} (b.\ 1952)~--- Doctor of Science in physics and mathematics, 
+professor, principal scientist, Institute of Informatics Problems, Federal Research Center 
+``Computer Sciences and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
+Moscow 119133, Russian Federation; \mbox{sshorgin@ipiran.ru}
+
+   
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 
+     

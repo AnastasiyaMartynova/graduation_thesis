@@ -1,0 +1,780 @@
+\def\stat{krasnov}
+
+\def\tit{ИСПОЛЬЗОВАНИЕ ТЕМАТИЧЕСКИХ МОДЕЛЕЙ ДЛЯ~ПАРНОГО СРАВНЕНИЯ КОЛЛЕКЦИЙ 
+НАУЧНЫХ СТАТЕЙ}
+
+\def\titkol{Использование тематических моделей для~парного сравнения коллекций 
+научных статей}
+
+\def\aut{Ф.\,В.~Краснов$^1$, А.\,В.~Диментов$^2$, М.\,Е.~Шварцман$^3$}
+
+\def\autkol{Ф.\,В.~Краснов, А.\,В.~Диментов, М.\,Е.~Шварцман}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Краснов Ф.\,В.}
+\index{Диментов А.\,В.}
+\index{Шварцман М.\,Е.}
+\index{Krasnov F.\,V.}
+\index{Dimentov A.\,V.}
+\index{Shvartsman M.\,E.}
+ 
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа частично поддержана РФФИ (проект 18-29-03081).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Компания НАУМЕН, \mbox{fkrasnov@naumen.ru}}
+%На\-уч\-но-тех\-ни\-че\-ский центр Газпромнефть}
+\footnotetext[2]{Национальный электронно-информационный консорциум 
+(NEICON), \mbox{dimentov@neicon.ru}}
+\footnotetext[3]{Национальный электронно-информационный консорциум 
+(NEICON); Российская государственная библиотека, \mbox{shvar@neicon.ru}}
+
+%\vspace*{-6pt}
+
+ 
+    
+\Abst{Авторами предложена новая методика для парного 
+сравнения коллекций научных статей с~помощью тематической модели.
+    Разработанная методика получила название \textit{сравнительного 
+тематического анализа} (СТА).
+    Сравнительный тематический анализ
+     позволяет получать не только количественную оценку похожести 
+коллекций, но и~структурные различия сравниваемых коллекций как в~количественном 
+виде, так и~с~по\-мощью средств визуализации, разработанных авторами.
+    В~данном исследовании проведено сравнение существующих подходов 
+    к~тематическому моделирования применительно к~рассматриваемой задаче сравнения 
+коллекций научных статей.
+    Рассмотрены вероятностные и~генеративные тематические модели.
+    Проведен анализ требований к~текстовым коллекциям для корректного 
+применения СТА.
+    Методика СТА показала высокую эффективность на выделении структурных 
+различий близких по тематике коллекций.
+        Авторами разработана интегральная метрика, позволяющая сравнивать 
+коллекции между собой: коэффициент контентной аутентичности.
+    По результатам цифрового эксперимента наиболее информативной показала себя 
+тематическая модель с~аддитивной регуляризацией (ARTM,
+additive regularization of topic model).}
+    
+\KW{сравнительный тематический анализ; анализ текстов; метрики тематической 
+модели}
+    
+\DOI{10.14357/19922264200318} 
+ 
+%\vspace*{-6pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+    
+    \section{Введение}
+    
+    Научные статьи представляют передовые идеи человечества 
+    в~структурированной форме исследований и~результатов.
+    Но объемы производства научных текстов в~мире растут экспоненциально~\cite{verstak2014shoulders}.
+    Выбор оптимального набора журналов для наблюдения за развитием даже узкой 
+области исследований стал сложной задачей для исследователей из-за большого 
+потока журналов и~для библиотекарей из-за постоянного роста стоимости подписки.
+    
+    Анализ значительных объемов научных работ успешно выполняется средствами 
+интеллектуального анализа текста (ИАТ, Text Mining).
+    Роль тематического моделирования как инструмента для выделения латентных 
+смыслов становится все более значительной~\cite{jelodar2018latent} в~ИАТ.
+    
+    Тематическое моделирование в~силу своих родовых особенностей обладает 
+тремя недостатками.
+        \begin{enumerate}[1.]
+               \item Заранее не известно, какое число тематик задать модели, так 
+как число тематик является свободным параметром.
+        \item В изначальной идее тематического моделирования нет механизмов 
+настройки обучения на проблемный домен.
+        \item Полученные тематики нуждаются в~интерпретации.
+    \end{enumerate}
+    
+    Интуитивная логика, которая стоит за подходом авторов, состоит 
+    в~следующем: зачастую затраты на изучение коллекции научных журналов могут быть 
+предприняты один раз, чтобы многократно получать дополнительную информацию, 
+сравнивая уже известную коллекцию с~новой.
+    
+    Для реализации такого подхода необходимо иметь общий базис, в~котором 
+можно сравнивать коллекции.
+    По гипотезе авторов, таким базисом может быть тематическая модель, 
+обученная\linebreak особым способом.
+    Метаалгоритм для сравнения коллекций, включающий подготовку коллекций, 
+создание и~обучение тематической модели и~\mbox{визуализацию} результатов сравнения, 
+назван авторами методикой \textit{сравнительного тематического анализа}. 
+
+
+    
+    \section{Методика парного сравнения коллекций научных статей}
+    
+    Авторы рассматривают задачу парного сравнения коллекций документов в~следующей 
+    постановке.
+    Под коллекцией~$j$, состоящей из~$M$~документов, будем понимать 
+упорядоченную последовательность научных статей $j \hm= \left(p_0, \dots , p_M 
+\right)$.
+    Научная статья~$p$ в~дальнейшем изложении~--- это документ, например 
+    в~формате дублинского ядра, состоящий из текста ($d$) и~метаинформации (авторов 
+($a$), даты выпуска ($y$), названия статьи ($s$), названия журнала~(jo)).
+    
+    Так как коллекции обычно бывают разных размеров, как минимум содержат 
+различное число документов, но могут иметь и~разную структуру метаинформации, то 
+возникает задача выравнивания коллекций для сравнения.
+    
+    Для коллекций $j_0$ и~$j_1$,  состоящих из~$M_0$ и~$M_1$ документов, введем 
+пространство $\mathbb{R}^{N \times M}$,
+где $M$~--- это число документов для объединенной коллекции $J \hm= j_0 \cup 
+j_1 $.
+    Коллекция~$J$ будет содержать $M \hm= \mathrm{dim}\left( D_0 \cap D_1 \right)
+    \hm \le  M_0 \hm+ M_1 $ 
+документов, где $D_i\hm = (d_0, \dots , d_{M_i})$, $i \hm\in (0,1)$.
+    Словарь $V$ для объединенной коллекции будет обладать раз\-мер\-ностью~$N$.
+    {\looseness=1
+    
+    }
+    
+    Основной недостаток такого подхода заключается в~том, что в~реальных 
+коллекциях почти не встречаются одинаковые документы,
+поэтому мат\-ри\-цы~$j_i^{N \times M}$ будут иметь высокую степень 
+разреженности.
+        Устранить данный недостаток может более компактное представление 
+документов в~пространстве меньшей размерности.
+    Например, с~помощью выделения групп похожих документов можно выделить 
+подпространство~$\mathbb{R}^C$ такое, что $C \hm\ll M$, где~$C$  будет числом 
+групп, на которые разбиты документы~$D$.
+    
+    \subsection{Мягкая кластеризация текстов}
+    
+    Двумя основными неконтролируемыми методами обучения для группировки 
+текстов служат клас\-те\-ри\-за\-ция и~тематическое моделирование.
+    Задача кластеризации заключается в~том, чтобы отнести каждый документ 
+    к~одному определенному тематическому кластеру.
+    
+    В тематическом моделировании  используется вероятностная модель для 
+определения мягкой клас\-те\-ри\-за\-ции, в~которой каждый документ имеет вероятность 
+членства в~кластере.
+    Тематические модели можно рассматривать как процесс кластеризации 
+    с~генеративной вероятностной моделью.
+    Каж\-дую тему можно рассматривать как распределение вероятностей по словам 
+(матрица $\varphi(t,V) \hm\in \mathbb{R}^{C \times N}$), причем наиболее 
+характерные слова имеют наибольшую вероятность.
+    Каждый документ может быть выражен как вероятностная комбинация этих 
+различных тем~--- матрица $\theta (d,t) \hm\in \mathbb{R}^{M \times C} $.
+    Таким образом, тема может рассматриваться как аналог кластера, а 
+принадлежность документа к~кластеру носит вероятностный характер.
+    Это также приводит к~более элегантному представлению членства в~кластере 
+    в~тех случаях, когда известно, что документ содержит различные темы.
+    В~случае жесткой кластеризации иногда бывает сложно присвоить документ 
+одному кластеру.
+    Кроме того, тематическое моделирование элегантно связано с~проб\-ле\-мой 
+сокращения измерений, где каждая тема обеспечивает концептуальное измерение 
+и~документы могут\linebreak быть представлены в~виде линейной вероятностной комбинации этих 
+различных тем.
+    Таким образом, тематическое моделирование обеспечивает чрезвычайно общую 
+структуру, которая относится как к~проблемам кластеризации~\cite{kumar2017lda}, 
+так и~к~уменьшению размерности~\cite{onan2017improved}.
+    
+    Развитие тематического моделирования начиная 
+    с~исследования~\cite{hofmann1999probabilistic} сосредоточено на повышении информативности 
+тематик.
+    В~работе~\cite{roder2015exploring} показано, что человеческая оценка 
+интерпретируемости тематик хорошо коррелирует с~автоматизированной мерой 
+качества, называемой ко\-ге\-рент\-ностью тематики. 
+    В~научной литературе используются следующие подходы к~вычислению 
+когерентности: $C_{\mathrm{UCI}}$~\cite{Newman2010} 
+и~$C_{\mathrm{UMass}}$~\cite{mimno2011optimizing}. 
+    Наиболее универсальным с~методической точки зрения представляется~$C_{\mathrm{UCI}}$. 
+
+    \subsection{Методика сравнительного тематического анализа}
+    
+  
+    Суть методики СТА, предложенной авторами, состоит в~том, чтобы для 
+группировки текстов использовать мягкую кластеризацию текстов (тематическую 
+модель), обучение тематической модели производить на общем словаре 
+и~объединенной коллекции документов, а продуктивность сравнения измерять с~помощью 
+метрики \textit{коэффициент контентной аутентичности} ($\kappa$).
+
+  
+    Для вычисления коэффициента контентной аутентичности авторы предложили 
+использовать сумму модулей отклонений от равномерного распределения тематик, 
+деленную на число тематик:
+    \begin{multline*}
+    \kappa (j_0,j_1) = \fr{1}{C} \sum\limits_{t \in C} \mathrm{abs} 
+    \left[ \fr{\sum\nolimits_{d \in 
+j_0} \theta(d,t)}{\sum\nolimits_{\hat{d} \in j_0}\sum\nolimits_{\hat{t} \in C} 
+\theta(\hat{d},\hat{t})} -{}\right.\\
+\left.{}- \fr{\sum\nolimits_{d \in j_1} \theta(d,t)}{\sum\nolimits_{\hat{d} \in 
+j_1}\sum\nolimits_{\hat{t} \in C} \theta(\hat{d},\hat{t})} \right].
+    \end{multline*}
+    Максимальное значение~$\kappa$ равно единице, когда каждая из выявленных 
+тематик относится только к~одной из сравниваемых коллекций.
+    
+    \section{Эксперимент}
+    
+    \subsection{Подготовка данных}\label{sec:data}
+    Для эксперимента было выбрано три коллекции научных журналов на русском 
+языке --- <<\mbox{Ме\-ди\-ци\-на-0}>> ($j_0$, 702 статьи), <<Медицина-1>> ($j_1$, 2599 
+статьи) и~<<Науки о Земле>> ($j_2$, 1123 статьи). 
+
+    В исходном виде коллекции находились в~формате дублинского ядра (Dublin 
+Core).
+    Затем коллекции были приведены к~формату Vowpal 
+Wabbit\footnote{{\sf https://github.com/JohnLangford/vowpal\_wabbit/wiki.}}.
+    По сути, это файл, в~котором одна строка соответствует одному документу.
+    Для объединенной коллекции число документов равно $M = \dim(D) = 4424$.
+    Каждый документ был дополнен биграммами входящих в~него слов.
+       Такой подход к~построению корпуса документов называется <<Мешок слов>>  
+(Bag of Words, BoF \cite{harris1954distributional}).
+    На следующем шаге подготовки коллекции к~анализу был создан словарь~$V$ 
+объединенной коллекции,  размерность которого составила 
+$N = \mathrm{dim}(V) \hm= 2\, 572\, 622 $.
+       Для очистки от шума к~словарю были применены два фильтра: отброшены слова с~частотой употребления меньше~40 и~слова, которые встречались более чем в~60\% 
+документов.
+    В очищенном словаре объединенной коллекции получилось $N = \mathrm{dim} (V) = 
+37\,910$ слов (униграмм и~биграмм).
+    Полученный набор данных доступен в~Mendeley Data.
+    
+    \subsection{Выбор числа тематик}
+    
+    В исследовании~\cite{krasnov2019number} предложена методика для оценки 
+числа тематик на основе качества полученных кластеров.
+    Разработанная авторами~\cite{krasnov2019number} метрика качества~$\mathrm{cDBI}$ 
+имеет максимум при оптимальном значении~$C$.
+    На рис.~1 приведена зависимость 
+    мет\-ри\-ки~$\mathrm{cDBI}$ 
+    от~$C$ для объединенной коллекции~$J$, из\linebreak\vspace*{-12pt}
+    
+    
+
+  
+    { \begin{center}  %fig1
+ \vspace*{12pt}
+    \mbox{%
+ \epsfxsize=79mm 
+ \epsfbox{kra-1.eps}
+ }
+
+\vspace*{5pt}
+
+\noindent
+{{\figurename~1}\ \ \small{
+Зависимость метрики $\mathrm{cDBI}$ от числа тематик~$C$
+}}
+%\vspace*{-6pt}
+\end{center}}
+
+%\vspace*{6pt}
+
+\columnbreak
+
+\noindent
+     которой видно, что максимум качества 
+выделяемых кластеров достигается при значении $C \hm= 60$.
+
+    \subsection{Выбор методики тематической модели}
+    
+    Для выбора методики тематической модели были рассмотрены методики 
+    ARTM~\cite{vorontsov2015additive}, LDA
+    (latent Dirichlet allocation)~\cite{blei2003latent}, 
+    BTM (biterm topic model)~\cite{cheng2014btm} и~PLSA
+    (probabilistic latent semantic analysis)~\cite{hofmann1999probabilistic}.
+    Критерием для выбора методики модели стала метрика ко\-ге\-рент\-ности.
+    Ко\-ге\-рент\-ность была вы\-чис\-ле\-на для каждой из рас\-смат\-ри\-ва\-емых моделей в~виде 
+зависимости от числа итераций обучения.
+    Так как когерентность зависит от порядка документов, то для каждой 
+итерации обучения было вычислено десять значений когерентности для коллекций 
+с~различным случайным порядком документов.
+    
+    { \begin{center}  %fig2
+ \vspace*{12pt}
+    \mbox{%
+ \epsfxsize=79mm 
+ \epsfbox{kra-2.eps}
+ }
+
+\end{center}
+
+\noindent
+{{\figurename~2}\ \ \small{
+Зависимость когерентности~$C_{\mathrm{UCI}}$ от числа    итераций 
+обучения модели: \textit{1}~--- LDA; \textit{2}~--- BTM; \textit{3}~--- ARTM; \textit{4}~---
+PLSA
+}}}
+
+\vspace*{12pt}
+    
+
+    
+    На рис.~2 
+    приведены зависимости~$C_{\mathrm{UCI}}$  для 
+рассматриваемых методик тематического моделирования.
+    Сравнение зависимостей позволяет сделать вывод о том, что наиболее 
+когерентные\linebreak тематики могут быть получены с~помощью методики ARTM.
+{ %\looseness=1
+
+}
+
+   
+
+\setcounter{figure}{2}
+    \begin{figure*}[b] %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=163mm 
+ \epsfbox{kra-3.eps}
+ }
+ \end{center}
+   \vspace*{-9pt}
+\Caption{Профили тематик для коллекций  <<Медицина-1>>~(\textit{1}) и~<<Науки о~Земле>>~(\textit{2})} 
+\label{fig:shorj2sfigTMProrus}
+    %\end{figure*}
+    %\begin{figure*} %fig4
+\vspace*{12pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=163mm 
+ \epsfbox{kra-4.eps}
+ }
+ \end{center}
+   \vspace*{-9pt}
+\Caption{Профили тематик для коллекций  <<Медицина-0>>~(\textit{1}) 
+и~<<Медицина-1>>~(\textit{2})} 
+\label{fig:shorj2sfigTM2Pro2rus}
+    \end{figure*}
+
+    
+   
+    \section{Сравнительный анализ}
+    
+    Теперь, когда выбраны методика тематической модели и~число тематик, можно 
+приступить к~испытанию методики сравнительного тематического анализа.
+    Для этого обучим модель для объединенной коллекции $J$.
+    В~результате получатся матрицы $\varphi (t,V)$ и~$\theta (d,t)$.
+    
+    \pagebreak
+  
+    \subsection{Различные коллекции}
+    
+    
+    Рассмотрим для сравнения две коллекции: <<Медицина-1>> ($j_1$)  и~<<Науки 
+о~Земле>> ($j_2$).
+    При таких начальных условиях ожидается, что СТМ выделит разные наборы 
+тематик.
+Это различие можно увидеть на гистограмме, изоб\-ра\-жен\-ной на 
+рис.~\ref{fig:shorj2sfigTMProrus}, отоб\-ра\-жа\-ющей суммарный вес для каждой тематики по 
+каждой из коллекций.
+    
+   
+
+    
+    
+    Из гистограммы, представленной на рис.~\ref{fig:shorj2sfigTMProrus}, 
+видно, что большинство столбиков имеют одинаковую штриховку~--- принадлежат 
+к~одной коллекции.
+    Например, тематика~$\mathrm{sbj9}$ полностью связана с~<<Науками о Земле>>.
+    Слова с~наибольшим весом в~этой тематике следующие:  <<комплекс, порода, 
+Урал, зона, массив, состав, базальт>>.
+    С~другой стороны, в~тематике~$\mathrm{sbj20}$  с~наибольшими вероятностями будут 
+только слова, относящиеся к~<<Медицине>>: <<препарат, эффективность, эффект, 
+доза, вес, боль, применение>>.
+    Но будут и~смешанные тематики, в~которых с~большими значениями вероятности 
+будут присутствовать слова, относящиеся к~обеим коллекциям.
+    Количественной мерой расстояния (отличия) коллекций служит коэффициент 
+контентной аутентичности.
+    Для рассматриваемого случая различных по тематике коллекций $\kappa 
+(j_0,j_1) \hm= 0{,}95$.
+
+
+    
+    \subsection{Похожие коллекции}
+    
+    Результат, полученный в~предыдущем разделе для заведомо различных 
+коллекций, интересен как предельный случай.
+    Но важно также понимать границы применимости CTM (comparative text model)
+    и~чувствительности 
+    к~изменениям в~коллекциях.
+    Поэтому для следующего эксперимента были взяты две коллекции журналов по 
+направлению <<Медицина>> с~близкими тематиками~--- <<Медицина-0>> ($j_0$) 
+и~<<Медицина-1>> ($j_1$).
+    При таких начальных условиях ожидается, что СТМ выделит схожие наборы 
+тематик.
+       Это можно увидеть на гистограмме, изоб\-ра\-жен\-ной на 
+       рис.~\ref{fig:shorj2sfigTM2Pro2rus}, отображающей суммарный вес для каждой тематики 
+по каждой коллекции.
+    
+
+    
+    Из гистограммы, представленной на рис.~\ref{fig:shorj2sfigTM2Pro2rus}, 
+видно, что большинство столбиков имеют оди\-на\-ковую штриховку примерно 
+в~одинаковой про\-порции, другими словами, принадлежат к~обеим\linebreak коллекциям.
+    Для рассматриваемого случая близких по тематике коллекций значение 
+коэффициента контентной аутентичности   $\kappa (j_0,j_1) \hm= 0{,}32$.
+    Так как коэффициент контентной аутентичности отражает дистанцию (разницу) 
+между коллекциями, то чем ближе~$\kappa$  к~нулю, тем более похожи коллекции.
+    
+    \section{Заключение}
+    
+    В данном исследовании авторы предложили методику для сравнения коллекций 
+научных журналов (СТМ).
+    Предложенная методика показала свою наглядность и~количественную точность в~ходе проведенного авторами эксперимента.
+    В~качестве мет\-ри\-ки расстояния между коллекциями авторами предложен 
+коэффициент контентной аутен\-тич\-ности.
+    В~таблице собраны значения коэффициента контентной аутентичности 
+для трех исследуемых коллекций.
+        Результаты, отображенные 
+        в~таблице, пол\-ностью согласуются с~тео\-рией.
+        
+        \vspace*{3pt}
+        
+       % \begin{table*}[b]
+{\small    
+\begin{center}
+
+\tabcolsep=4pt
+\begin{tabular}{|l|c|c|c|}
+\multicolumn{4}{c}{Коэффициент контентной аутентичности, $\kappa$} \\
+\multicolumn{4}{c}{\ }\\[-6pt]
+\hline
+\multicolumn{1}{|c|}{$\kappa$} & Медицина-0 & Медицина-1 & 
+\tabcolsep=0pt\begin{tabular}{c}Науки\\ о Земле\end{tabular} \\
+\hline
+Медицина-0    &  0\hphantom{,99}         & 0,32       & 0,94          \\
+Медицина-1    &  0,32      & 0\hphantom{,99}          & 0,95          \\
+Науки о Земле &  0,94      & 0,95       & 0\hphantom{,99}             \\
+\hline
+\end{tabular}
+\end{center}
+}
+\vspace*{9pt}
+%\end{table*} 
+    
+    Авторы рассмотрели четыре наиболее популярных методики тематического 
+моделирования: ARTM, BTM, PLSA и~LDA.
+    Проведенный эксперимент по выбору методики тематического моделирования 
+показал, что по метрике когерентности~$C_{\mathrm{UCI}}$ наиболее высокое значение 
+когерентности у методики ARTM.
+    
+    В~процессе методического обзора авторами\linebreak было обнаружено, что на основании 
+имеющихся мет\-рик когерентности тематических моделей не представляется возможным 
+определить наиболее значимый параметр тематической модели~--- число\linebreak тематик.
+    Авторы подтвердили эту находку экспериментально.
+    Действительно, метрика когерентности не имеет глобальных экстремумов.
+    Важно отметить следующее: ни одна из рассмотренных метрик не учитывает, 
+что порядок документов влияет на тематики и~на их когерентность.
+    Авторы показали в~ходе эксперимента, что метрики тематической модели 
+необходимо считать для различного порядка документов и~усреднять полученные 
+значения.
+    Эта методическая находка позволяет оперировать средними значениями метрик 
+и~учитывать возникающую статистическую ошибку.
+    Также важно, что ни одна из рассмотренных метрик когерентности  не 
+учитывает вероятности тематик ($\varphi$), а~только выбирает топ-N  тематик.
+    Поэтому для определения числа тематик авторами была использована 
+    мет\-ри\-ка~$\mathrm{cDBI}$, учитывающая качество получаемых кластеров, порядок документов и~полные 
+векторы тематик из мат\-ри\-цы~$\varphi$.
+    
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{verstak2014shoulders}  
+\Au{Verstak A., Acharya~A., Suzuki~H., \textit{et 
+al.}} On the shoulders of giants: The growing impact of older articles. 
+arXiv.org, 2014. arxiv:1411.0275.
+
+\bibitem{jelodar2018latent} 
+\Au{Jelodar H., Wang~Y., Yuan~C., \textit{et al.}} Latent 
+Dirichlet Allocation (LDA) and topic modeling: Models, applications, a~survey~// 
+Multimed. Tools  Appl., 2019. Vol.~78. Iss.~11. P.~15169--15211. doi: 
+10.1007/s11042-018-6894-4.
+
+\bibitem{kumar2017lda}  
+\Au{Shravan K.\,B., Vadlamani~R.} LDA based feature 
+selection for document clustering~// 10th Annual ACM India 
+Compute Conference Proceedings.~--- Bhopal, India: ACM, 2017. P.~125--130.
+
+\bibitem{onan2017improved}  
+\Au{Onan A., Bulut~H., Korukoglu~S.} An improved 
+ant algorithm with LDA-based representation for text document clustering~// 
+J.~Inform. Sci., 2017. Vol.~43. Iss.~2. P.~275--292.
+
+\bibitem{hofmann1999probabilistic}  
+\Au{Hofmann T.}  Probabilistic latent 
+semantic analysis~// 15th Conference on Uncertainty in 
+Artificial Intelligence Proceedings.~--- 
+Stockholm, Sweden: Morgan Kaufmann Publishers Inc.,  1999. P.~289--296.
+
+\bibitem{roder2015exploring}    
+\Au{R$\ddot{\mbox{o}}$der M., Both~A., Hinneburg~A.} 
+Exploring the space of topic coherence measures~// 8th ACM 
+ Conference (International) on Web Search and Data Mining Proceedings.~--- 
+Shanghai: ACM, 2015.  P.~399--408.
+
+\bibitem{Newman2010}    
+\Au{Newman D., Lau~J.\,H., Grieser~K., Baldwin~T.} 
+Automatic evaluation of topic coherence~// Human 
+Language Technologies:  
+Annual Conference of the North American Chapter of the Association for 
+Computational Linguistics.~--- Stroudsburg, PA, USA: Association for Computational 
+Linguistics, 2010. P.~100--108.
+
+\bibitem{mimno2011optimizing}   
+\Au{Mimno D., Wallach~H.\,M., Talley~E., \textit{et al.}} 
+Optimizing semantic coherence in topic models~// Conference 
+on Empirical Methods in Natural Language Processing
+Proceedings.~--- Edinburgh, Scotland: 
+Association for Computational Linguistics, 2011. P.~262--272.
+
+\bibitem{harris1954distributional}  
+\Au{Zellig~S.\,H.}  Distributional 
+structure~// Word, 1954. Vol.~10. Iss.~2-3. P.~146--162.
+
+\bibitem{krasnov2019number} 
+\Au{Krasnov F., Sen~A.} The number of topics 
+optimization: Clustering approach~// Machine Learning Knowledge Extraction, 
+2019. Vol.~1. Iss.~1. P.~416--426.
+
+\bibitem{vorontsov2015additive} 
+\Au{Vorontsov~K., Potapenko~A.} Additive 
+regularization of topic models~// Mach. Learn., 2015. Vol.~101. Iss.~1-3. 
+P.~303--323.
+
+\bibitem{blei2003latent}    
+\Au{Blei D.\,M., Ng~A.\,Y., Jordan~M.\,I.} 
+Latent Dirichlet allocation~// J.~Mach. Learn. Res., 2003. 
+Vol.~3. No.\,1. P.~993--1022.
+
+\bibitem{cheng2014btm}  
+\Au{Cheng X., Yan~X., Lan~Y., Guo~I.} BTM: Topic 
+modeling over short texts~// IEEE~T. Knowl. Data 
+En., 2014. Vol.~26. Iss.~12. P.~2928--2941.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 27.06.19}}
+
+\vspace*{10pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\def\tit{USING TOPIC MODELS FOR~PAIRWISE COMPARISON OF~COLLECTIONS 
+OF~SCIENTIFIC PAPERS}
+
+\def\titkol{Using topic models for~pairwise comparison of~collections 
+of~scientific papers}
+
+\def\aut{F.\,V.~Krasnov$^1$, A.\,V.~Dimentov$^{2}$, and~M.\,E.~Shvartsman$^{2,3}$}
+
+\def\autkol{F.\,V.~Krasnov, A.\,V.~Dimentov, and~M.\,E.~Shvartsman}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$NAUMEN R\&D, 49A~Tatishcheva Str., Ekaterinburg 620028, Russian Federation
+
+\noindent
+$^2$National Electronic Information Consortium, 5~Letnikovskaya Str., 
+Moscow 115114, Russian Federation
+
+\noindent
+$^3$Russian State Library, 3/5~Vozdvigenka Str., 
+Moscow 119019, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{5pt}
+
+\Abste{The authors propose a~new technique for pairwise comparison 
+of collections of scientific articles via a~topic model. The developed 
+methodology is called Comparative Topic Analysis (CTA). 
+Comparative topic analysis
+ allows getting not only quantitative assessment of similarity of 
+collections but also structural differences of the compared text collections. 
+The authors developed transparent visualization for text collections 
+distance. This study compares existing approaches to topic modeling 
+concerning the task of comparing collections of scientific papers. 
+ The authors consider probabilistic and generative topic models. 
+ The analysis of the requirements for text collections for the correct 
+application of CTA was carried out. The CTA methodology has shown high 
+efficiency in identifying structural differences in related collections. 
+The authors developed an integral metric ``Content Uniqueness Ratio'' 
+which allows comparing text collections with each other. As a~result of 
+the digital experiment, the thematic model with additive regularization 
+(ARTM) proved to be the most informative.} 
+
+\KWE{comparative topic analysis; comparative text model; deep text analysis; 
+topic models metrics}
+    
+\DOI{10.14357/19922264200318} 
+
+%\vspace*{-20pt}
+
+%\Ack
+%\noindent
+
+\vspace*{8pt}
+
+ \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-kra}
+\Aue{Verstak, A., A.~Acharya, H.~Suzuki, \textit{et al.}}
+ 2014. On the shoulders of giants: The growing impact of older articles. 
+ arXiv.org. Available at: 
+ {\sf http://arxiv.org/abs/1411.0275} (accessed July~1, 2019).
+\bibitem{2-kra}
+\Aue{Jelodar, H., Y.~Wang, C.~Yuan, \textit{et al.}}
+2019. Latent Dirichlet Allocation (LDA) and topic modeling: 
+Models, applications, a~survey. 
+\textit{Multimed. Tools  Appl.} 78(11):15169--15211. 
+doi: 10.1007/s11042-018-6894-4.
+\bibitem{3-kra}
+\Aue{Shravan, K.\,B., and R.~Vadlamani.}
+ 2017. LDA based feature selection for document clustering. 
+ \textit{10th Annual ACM India Compute Conference Proceedings}. ACM. 125--130.
+\bibitem{4-kra}
+\Aue{Onan, A., H.~Bulut, and S.~Korukoglu.}
+ 2017. An improved ant algorithm with LDA-based representation for
+  text document clustering. \textit{J.~Inform. Sci.} 43(2):275--292.
+\bibitem{5-kra}
+\Aue{Hofmann, T.}
+ 1999. Probabilistic latent semantic analysis. 
+ \textit{15th Conference on Uncertainty in Artificial Intelligence
+ Proceedings}. Stockholm, Sweden: Morgan Kaufmann Publishers Inc. 289--296.
+\bibitem{6-kra}
+\Aue{R$\ddot{\mbox{o}}$der, M., A.~Both, and A.~Hinneburg.}
+ 2015. Exploring the space of topic coherence measures. 
+ \textit{8th ACM Conference (International) on Web Search and Data 
+ Mining Proceedings.} Shanghai: ACM. 399--408.
+\bibitem{7-kra}
+\Aue{Newman, D., J.\,H.~Lau, K.~Grieser, and T.~Baldwin.}
+ 2010. Automatic evaluation of topic coherence. 
+ \textit{Human Language Technologies: Annual Conference 
+ of the North American Chapter of the Association for Computational 
+ Linguistics}. Stroudsburg, PA:
+ Association for Computational Linguistics. 100--108.
+\bibitem{8-kra}
+\Aue{Mimno, D., H.\,M.~Wallach, E.~Talley, \textit{et al.}} 2011.
+ Optimizing semantic coherence in topic models. 
+ \textit{Conference on Empirical Methods in Natural Language Processing
+ Proceedings}. Edinburgh, Scotland: 
+ Association for Computational Linguistics. 262--272.
+ 
+ 
+ 
+ 
+\bibitem{9-kra}
+\Aue{Zellig, H.\,S.}
+ 1954. Distributional structure. \textit{Word} 10(2-3):146--162.
+ 
+
+\bibitem{10-kra}
+\Aue{Krasnov, F., and A.~Sen.} 2019. 
+The number of topics optimization: Clustering approach. 
+\textit{Machine Learning Knowledge Extraction} 1(1):416--426.
+\bibitem{11-kra}
+\Aue{Vorontsov, K., and A.~Potapenko.} 2015. 
+Additive regularization of topic models. 
+\textit{Mach. Learn.} 101(1-3):303--323.
+{\looseness=1
+
+}
+
+\bibitem{12-kra}
+\Aue{Blei, D.\,M., A.\,Y.~Ng, and M.\,I.~Jordan.} 2003. 
+Latent Dirichlet allocation. \textit{J.~Mach. Learn. Res.}
+ 3(1):993--1022.
+ {\looseness=1
+ 
+ }
+ 
+\bibitem{13-kra}
+\Aue{Cheng, X., X.~Yan, Y.~Lan, and I.~Guo.}
+ 2014. Btm: Topic modeling over short texts. 
+ \textit{IEEE~T. Knowl. Data En.} 26(12):2928--2941.
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received June 27, 2019}}
+
+%\pagebreak
+
+%\vspace*{-24pt}
+
+\Contr
+
+\noindent
+\textbf{Krasnov Fedor V.} (b.\ 1969)~--- 
+Candidate of Science (PhD) in technology,
+Director,  Department of Information Management Systems,
+NAUMEN R\&D, 49A~Tatishcheva Str.,
+Ekaterinburg 620028, Russian Federation; 
+\mbox{fkrasnov@naumen.ru}
+
+\vspace*{6pt}
+
+\noindent
+\textbf{Dimentov Alexander V.} (b.\ 1975)~--- 
+Head of Department, National Electronic Information Consortium, 
+5~Letnikovskaya Str., Moscow 115114, Russian Federation; 
+\mbox{dimentov@neicon.ru}
+
+
+\vspace*{6pt}
+
+\noindent
+\textbf{Shvartsman Mikhail E.} (b.\ 1954)~--- 
+Deputy Director, National Electronic Information Consortium, 
+5~Letnikovskaya Str., Moscow 115114, Russian Federation; 
+Head of Department, Russian State Library, 3/5~Vozdvigenka Str., 
+Moscow 119019, Russian Federation; \mbox{shvar@neicon.ru}
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

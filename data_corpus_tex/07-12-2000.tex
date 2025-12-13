@@ -1,0 +1,542 @@
+\documentstyle[%
+righttag%
+,11pt%
+,amssymb%
+,russian%               remove in Eng.
+,izvru%                 Set izven% in Eng.
+]{amsart}
+
+% 
+\newcommand{\arginf}{\operatorname{arg\,inf}}
+\newcommand{\diam}{\operatorname{diam}}
+\newcommand{\Int}{\operatorname{int}}
+\newcommand{\tts}[1]{}
+
+\theoremstyle{definition}
+\theorembodyfont{\rm}
+\newtheorem{cornonum}{\hskip\parindent Следствие}
+\newtheorem{algor}{\hskip\parindent Алгоритм}
+\renewcommand{\thecornonum}{}
+
+%\hoffset=-15mm%                  For Eng.
+\setcounter{page}{49}
+\god{2000}
+\nomer{12~(463)} %                        Remove in Eng.
+%\nomer{Vol.\,44, No.\,12}%               Set in Eng.
+%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
+\udk{519.68}
+
+\author{\it Я.И.\,Заботин, И.А.\,Фукин}
+% NB:   ^^ remove in Eng.
+\title{Об одной модификации метода сдвига штрафов\\ для 
+задач нелинейного программирования}
+
+\date{}
+%\pagestyle{myheadings}%         Set in Eng.
+\pagestyle{plain} %              Remove in Eng.
+\begin{document}
+%\thispagestyle{plain}%          Set in Eng.
+\maketitle
+\label{begin}
+
+Метод сдвига штрафов был предложен независимо и почти одновременно в целом 
+ряде работ. Четкая формулировка метода для задачи с ограничениями в форме 
+равенств появилась в \cite{Pow}--\cite{Haar}. Близкая идея высказывалась 
+для задачи выпуклого программирования в \cite{Gor}. На основе модифицированной 
+функции Лагранжа \cite{Err} независимо была предложена иная форма метода 
+сдвига штрафных функций \cite{Hest}--\cite{Wier}, названная 
+впоследствии методом штрафных оценок \cite{PolTr}. В указанных методах в
+отличиe от известного метода штрафов \cite{Fiacco} нет необходимости 
+неограниченно увеличивать штрафной коэффициент. Для этого на каждой итерации 
+вычисляется новое приближение множителей Лагранжа и ограничения сдвигаются
+на их величину.
+
+В данной статье предлагается два новых подхода, в которых сдвиг штрафа
+фиксирован изначально.
+В первом случае он фиксируется с тем расчетом, чтобы попадание 
+итерационной точки в допустимую область обеспечивало отыскание решения задачи
+выпуклого программирования с заданной точностью. Фактически решается иная 
+задача, у которой та же функция цели, но допустимое множество погружено в
+исходное на величину сдвига. Оценивается штрафной коэффициент, при котором 
+решение вспомогательной задачи оказывается в исходном множестве. Построен
+принципиальный алгоритм решения задачи выпуклого программирования с заданной 
+точностью.
+Во втором случае сдвиг выбирается произвольно. После попадания итерационной 
+точки в исходное множество начинается двустороннее приближение к решению.
+Приводится алгоритм, сходящийся при определенных функциях штрафа.
+
+Пусть функции $f(x)$, $f_i(x)$, $i\in I=\{1,2\dotsc m\}$, 
+определены и непрерывны в $R_n$, $D=\{x\in R_n:f_i(x)\leq 0$, $i\in I\}=
+\{x\in R_n:g(x)\leq0\}$, где $g(x)=\max\{f_i(x)$, $i\in I\}$,
+$f^*=\inf\{f(x)$, $x\in D\}$, 
+$D^*=\{x\in R_n: f(x)=f^*\},$
+$x^*\in D^*,$ $\varepsilon\geq0$, 
+$D'=\{x\in R_n: g(x)+\varepsilon'\leq0$, $\varepsilon'\geq0\}$, 
+$x'=\arginf\{f(x),x\in D'\},$ 
+$Q=\{x\in D: f(x)\leq f(x')\}$, 
+$F(C,x)=f(x)+V(C,x)$, $C>0,$ где 
+$$
+\lim_{C\to\infty}V(C,x)=\begin{cases}
+0, & x\in D';\\
+\infty, & x\notin D',
+\end{cases} 
+$$
+$x(C)=\arginf\{F(C,x)$, $x\in R_n\}$. 
+Предполагается, что множество $D$ регулярно по Слейтеру, т.\,е. существует
+такой элемент $y\in D$, что $f_i(y)<0$ для всех $i\in I$.
+Требуется найти
+\begin{equation}\label{Zad1}
+\inf\{f(x), x\in D\}.
+\end{equation}
+
+При использовании символа inf считается, что точная нижняя грань функции на 
+указанном множестве достигается. Предполагается, что
+\begin{equation}\label{Predp} 
+\exists x\in R_n,\ \; f(x)<f^*.
+\end{equation}
+Для отыскания приближенного значения (\ref{Zad1}) будем решать задачу
+\begin{equation}\label{Zad2} 
+\inf\{f(x),\ x\in D'\}.
+\end{equation}
+Легко доказывается
+
+\begin{lem}
+Для того чтобы существовало $\varepsilon'>0$ такое, что $D'\ne\emptyset$,
+необходимо и достаточно, чтобы множество $D$ удовлетворяло условию Слейтера.
+\end{lem}
+
+\begin{lem}
+Пусть для любого $C>0$ точка 
+$x(C)$ такова, что $f(x(C))\leq f(x')$, $\varepsilon'>0$. Тогда для 
+каждого $\varepsilon>0$ найдется такое $\varepsilon'>0$, что
+$$
+x(C)\in D\setminus D' \Longrightarrow |f(x(C))-f(x^*)|\leq\varepsilon.
+$$
+\end{lem}
+
+\begin{pf}
+По условию леммы $f^*\leq f(x(C))\leq f(x')$.
+В (\cite{Vas}, c.\,390) показано, что
+$\lim\limits_{\varepsilon'\to 0}f(x')=f^*$.
+Тогда $\lim\limits_{\varepsilon'\to 0}
+(f(x(C))-f^*)=0$.
+\end{pf}
+
+Очевидно, для оценки $\varepsilon'$ по $\varepsilon$ требуется дополнительная
+информация о задаче. Используем 
+
+\begin{defn}[{\series{m}\shape{n}\selectfont напр., \cite{Vas}, c.\,218}]
+Функцию $f(x)$ называют равномерно выпуклой на выпуклом множестве $P$,
+если существует 
+неотрицательная функция $\delta(t)$, определенная при всех 
+$t$ ($0\leq t\leq \diam P=\sup\limits_{x_0,x_1\in P}|x_0-x_1|$), 
+$\delta(0)=0$, $\delta(t_0)>0$
+при некотором $t_0$ ($0<t_0<\diam P$) и такая, что
+$$
+f(\alpha x_0+(1-\alpha)x_1)\leq\alpha f(x_0)+(1-\alpha)f(x_1)-
+\alpha(1-\alpha)\delta(|x_0-x_1|)
+$$
+при всех $x_0,x_1\in P$, $\alpha\in[0,1]$. Функцию $\delta(t)$ называют
+модулем выпуклости $f(x)$ на $P$.
+\end{defn}
+
+\begin{lem}\label{vip}
+Пусть функции $f_i(x)$ равномерно выпуклые на $P$
+с модулями выпуклости $\delta_i(t)$.
+Тогда $g(x)$ равномерно выпуклая с
+$\delta(t)=\min\limits_{i\in I}\delta_i(t)$.
+\end{lem}
+
+Доказательство вытекает из соотношений
+\begin{multline*}
+g(\alpha x_0+(1-\alpha) x_1)=
+\max_{i\in I}\{f_i(\alpha x_1+(1-\alpha) x_2)\}\leq\\
+\leq\max_{i\in I}\{\alpha f_i(x_0)+(1-\alpha)
+f_i(x_1)-\alpha(1-\alpha)\delta_i(\|x_0-x_1\|)\}\leq\\
+\leq\alpha\max_{i\in I}\{f_i(x_0)+(1-\alpha)
+\max_{i\in I}f_i(x_1)-\alpha(1-\alpha)
+\min_{i\in I}\delta_i(\|x_0-x_1\|)\}=\\
+=\alpha g(x_0)+(1-\alpha)g(x_1)-\alpha(1-\alpha)\delta(\|x_0-x_1\|).
+\quad\square
+\end{multline*}
+
+\begin{thm}\label{ogr}
+Пусть функция $f(x)$ выпукла, удовлетворяет на $D$
+условию Липшица с константой $M$, $f_i(x)$ 
+равномерно выпуклые на $D$ с неубывающими модулями выпуклости $\delta_i(t)$ 
+и $\varepsilon'\leq\min{\delta_i(\varepsilon/M)}.$ Тогда
+$|f(\ov x)-f^*|\leq \varepsilon$ для любой точки $\ov x\in Q.$
+\end{thm}
+
+\begin{pf}
+Так как $f(x^*)\leq f(\ov x)\leq f(x')$, то
+\begin{equation}\label{lip}
+|f(\ov x)-f(x^*)|\leq |f(x')-f(x^*)|\leq M\|x'-x^*\|.
+\end{equation}
+По лемме \ref{vip} функция $g(x)$ равномерно выпукла с $\delta(t)=
+\min\limits_{i\in I}\delta_i(t)$. Для равномерно выпуклых функций 
+выполняется (\cite{Vas}, с.\,221)
+\begin{equation} \label{st}
+g(x^*)\geq g(x')+\langle c(x'),x^* -x' \rangle 
++\delta (\|x^* -x'\|)\quad \forall c(x')\in \partial g(x').
+\end{equation}
+Известно (напр., \cite{Psh}, с.\,45), что
+\begin{equation*}
+\frac{\partial g(x')}{\partial (x^* -x')}=
+\max \langle c(x'),x^*-x'\rangle \quad \forall c(x')\in\partial g(x').
+\end{equation*}
+Покажем, что 
+\begin{equation}\label{Ge}
+g(x)\geq g(x')\ \; \forall x=\alpha x^*+(1-\alpha)x', \ \;\alpha\in[0,1].
+\end{equation}
+Действительно, если бы существовало 
+$\wh x=\wh\alpha x^*+(1-\wh\alpha)x'$,
+$\wh\alpha\in[0,1]$, такое, что $g(\wh x)<g(x'),$ то $\wh x\in \Int D'$. 
+По предположению (\ref{Predp}) точка $x'\notin\Int D'$ 
+и $f(\wh x)>f(x')$. Следовательно, $\wh x\notin Q$.
+Но $x^*\in Q$, $x'\in Q$, $Q$ выпуклое как пересечение выпуклых множеств, 
+тогда $\wh x\in\ Q.$ 
+Полученное противоречие доказывает справедливость (\ref{Ge}).
+
+По определению 
+$$
+\frac{\partial g(x')}{\partial (x^*-x')}=
+\lim_{t \to +0}\frac{g(x'+t(x^*-x'))-g(x')}{t}.
+$$
+При любом $t\in(0,1]$ выполняется $\frac{g(x'+t(x^*-x'))-g(x')}{t}\geq 0,$
+т.\,е. $\frac{\partial g(x')}{\partial(x^*-x')}\geq 0$.
+Тогда $\max\langle c(x'),x^*-x'\rangle\geq 0$, $c(x')\in\partial g(\ov x)$. 
+Следовательно, для некоторого $c(x')$ из (\ref{st}) следует
+$g(x^*)\geq g(x')+\delta(\|x^*-x'\|)$. В силу (\ref{Predp}) имеем 
+$g(x^*)=0$, $g(x')=-\varepsilon'$ и $\delta(\|x^*-x'\|)\leq g(x^*)-g(x')=
+\varepsilon'\leq\delta(\varepsilon/M).$
+Из неубывания $\delta(t)$ следует $\|x^*-x'\|\leq\varepsilon/M.$
+Подставляя в (\ref{lip}), получим $|f(\ov x)-f(x^*)|\leq\varepsilon$. 
+\end{pf}
+
+\begin{cornonum}
+Пусть функция штрафа имеет вид $V(C,x)=C V(x)$. 
+Тогда, если для некоторого $C>0$ выполняется $x(C)\in D$, то 
+$|f(x(C))-f^*|\leq\varepsilon$.
+\end{cornonum}
+
+\begin{pf}
+Так как $f(x(C))$ --- монотонно неубывающая по $C$ функция
+(\cite{Fed}, с.\,38), то $f(x(C))\leq f'$. Тогда $x(C)\in Q,$
+а для такой точки требуемое неравенство выполняется. 
+\end{pf}
+
+Примечательно, что в теореме оценка решения не зависит от способа нахождения
+$\ov x\in Q$. Так как в методе внешних штрафов
+$\lim\limits_{n\to\infty}x(C_n)=x'$,
+то существует такое $\ov C>0$, что $x(\ov C)\in D$. 
+
+\begin{defn}[{\series{m}\shape{n}\selectfont напр., \cite{Such}, c.\,245}]
+Функциональные ограничения, задающие множество $D$, называются
+$\rho$-регулярными с параметрами $\beta, \delta>0$, если для всех
+$x\in U_\delta(D)\setminus D$ справедливо неравенство
+$$
+g(x)\geq\beta\rho(x,D),
+$$
+где $U_\delta(D)=\{x\in R_n:\rho(x,D)\leq\delta\}$, 
+$\rho(x,D)=\inf\limits_{y\in D}\|x-y\|$.
+\end{defn}
+
+Построим вспомогательные функции вида
+\begin{alignat}{2}\label{stf1}
+F(C,x)&=f(x)+C\sum_{i\in I}(\max\{f_i(x)+\varepsilon',0\})^q,
+&\quad &q>1, \\
+%
+\label{stf2}
+F(C,x)&=f(x)+C(\max\{g(x)+\varepsilon',0\})^q, &\quad &q>1.
+\end{alignat}
+Оценим штрафной параметр $C>0$, для которого $x(C)\in D$.
+
+\begin{thm}
+Пусть система ограничений задачи $(\ref{Zad2})$ $\rho$-регулярна с
+параметрами $\beta,\delta>0,$ функция
+$f(x)$ удовлетворяет на $D$ условию Липшица с константой $M$, $f_{i}(x)$ ---
+с константой $L_i$. Тогда при
+\begin{equation}\label{eq9}
+C\geq \frac{M L^{\frac{q-1}{q}}} {\beta^q {\varepsilon'\,}^{q-1} },
+\end{equation}
+где $L=\sum\limits_{i\in I}L_i^q$ в случае $(\ref{stf1})$,
+$L=(\max\limits_{i\in I}L_i)^q$ в случае $(\ref{stf2})$,
+выполняется $x(C)\in D$.
+\end{thm}
+
+\begin{pf}
+Докажем теорему для функции $F(C,x)$ вида (\ref{stf1}). Пусть $x\in D'$. 
+Так как $f_i(x)+\varepsilon'\leq0$ для всех $i\in I$, то
+$$
+V(x(C))=\sum_{i=1}^{m}(\max\{f_{i}(x(C))+\varepsilon',0\})^q=
+\sum_{i\in I}(\max\{f_{i}(x(C))+\varepsilon',0\}-
+\max\{f_{i}(x)+\varepsilon',0\})^q.
+$$
+Пусть $I_1=\{i\in I: f_i(x(C))+\varepsilon'>0\}.$ 
+Тогда
+\begin{multline*}
+V(x(C))=\sum_{i\in I_{1}}(\max\{f_{i}(x(C))+\varepsilon',0\}-
+\max\{f_{i}(x)+\varepsilon',0\})^q
+\leq\sum_{i\in I_{1}}(f_{i}(x(C))+\varepsilon'-f_{i}(x)-\varepsilon')^q=\\
+%
+=\sum_{i\in I_{1}}(f_{i}(x(C))-f_{i}(x))^q
+\leq \sum_{i\in I_1}L_i^q\|x(C)-x\|^q
+\leq \sum_{i\in I_1}L_i^q\|x(C)-x\|^q\leq L\|x(C)-x\|^q.
+\end{multline*}
+Таким образом, $V(x(C))\leq L\|x(C)-x\|^q$ для любого $x\in D'$. 
+В частности, это неравенство справедливо для того $x\in D'$, для которого
+достигается $\inf\limits_{x\in D'}\|x(C)-x\|=\rho(x(C),D')$, т.\,е.
+\begin{equation}\label{rro}
+V(C,x)\leq L\rho(x(C),D')^q.
+\end{equation}
+
+Известно (\cite{Fed}, c.\,51), что 
+$\rho(x(C),D')\leq(\frac{M}{\beta^q C})^{\frac{1}{q-1}}.$ Отсюда, из
+(\ref{eq9}) и (\ref{rro}) вытекаeт неравенствo
+\begin{equation*}
+V(x(C))\leq L\frac{M^{\frac{q}{q-1}}}
+{\beta^{\frac{q^2}{q-1}}C^{\frac{q}{q-1}}}
+={\varepsilon'\,}^q.
+\end{equation*}
+Следовательно,
+$$
+\sum_{i=1}^{m}[\max\{f_{i}(x(C))+\varepsilon',0\}]^q\leq {\varepsilon'\,}^q.
+$$
+Тогда $[\max\{f_{i}(x(C))+\varepsilon',0\}]^q\leq {\varepsilon'\,}^q$ 
+$\forall i\in I.$
+Отсюда $f_{i}(x(C))\leq 0$ $\forall i\in I$, т.\,е. $x(C)\in D.$
+
+Для штрафных функций вида (\ref{stf2}) теорема доказывается аналогично.
+\end{pf}
+
+Для решения задачи выпуклого программирования с заданной точностью
+предлагается следующий принципиальный
+
+\begin{algor}
+Задается точность решения $\varepsilon>0$. Выбирается $\varepsilon'\leq
+\delta(\frac{\varepsilon}{M})$, 
+$\ov C\geq \frac{M L^{\frac{q-1}{q}}} {\beta^q {\varepsilon'}^{q-1} }$,
+число
+итераций $N>0$, за которое желаем отыскать приближенное решение с точностью
+$\varepsilon$. Задаем $x_0\in R_n$ и возрастающую функцию $\varphi(t)$ 
+такую, что $\varphi(N)\geq\ov C$, $\varphi(1)\geq 0$. Функция $F(C,x)$ 
+выбирается вида (\ref{stf1}) или (\ref{stf2}). Полагаем $k=1$.
+\begin{itemize}
+\item[1.] Вычисляется $C_k=\varphi(k)$.
+\item[2.] Выбирается метод $A_k$ безусловной минимизации, обеспечивающий
+нахождение точной нижнeй грани функции $F(C_k,x)$.
+\item[3.] Методом $A_k$ отыскиваем $x(C_k)=\arginf\{F(C_k,x),\ x\in R_n\}$.
+\item[4.] Если $x(C_k)\in D$, то процесс окончен и $x(C_k)$ является 
+$\varepsilon$-решением задачи (\ref{Zad1}).
+Иначе заменяем $k$ на $k+1$ и переходим к п.\,1.
+\end{itemize}
+\end{algor}
+
+Если в алгоритме 1 выбрать $N=1$, $\varphi(N)=\varphi(1)\geq\ov C$,
+то задача (\ref{Zad1}) решается с требуемой точностью за одну итерацию метода
+штрафов. Численные эксперименты показывают, что, как правило, значение 
+$\varepsilon'$ вычисляется с большим запасом. Тогда, тем более, значение 
+$\ov C$ окажется 
+сильно завышенным, что приводит к плохой обусловленности гессиана функции
+$F(C,x)$ в окрестности решения. Практика показала, что желательно полагать
+$N=4$ или $N=5$. По этим же соображениям на шаге~4 критерием
+останова выбрано условие $x(C_k)\in D$, т.\,к. оно может достигаться 
+и при $k<N$. Можно на шаге~4 останавливаться 
+при условии $k=N$, т.\,к. $\varphi(N)
+\geq \frac{M L^{\frac{q-1}{q}}} {\beta^q {\varepsilon'\,}^{q-1} }$, что
+обеспечивает попадание $x(\varphi(N))$ в множество $D$ и тем самым ---
+решение задачи с требуемой точностью. 
+
+Для функции штрафа специального вида возможен другой подход. 
+
+\begin{lem}\label{not}
+Пусть штрафная функция имеет вид
+$V(C,x)=C(\max\{g(x)+\varepsilon',0\})^q$, $q\geq 1$.
+Если $x(C)\notin D$, то $f(x(C))<f(x^*)$.
+\end{lem}
+
+\begin{pf}
+Так как $f(x^*)-f(x(C))=[F(C,x^*)-F(C,x(C))]+C[V(x(C))-V(x^*)]$ 
+и $F(C,x^*)\geq F(C,x(C))$, тo нужно убедиться, что $\gamma=V(x(C))-V(x^*)>0$.
+По определению 
+$$
+V(x(C))=\begin{cases}
+0,  & x\in D';\\
+(g(x)+\varepsilon')^q, & x\notin D'.
+\end{cases}
+$$
+Возможны 2 варианта:
+\begin{itemize}
+\item[a)] если $x^*\in D'$, то
+$V(x^*)=0$ и $\gamma=(g(x(C))+\varepsilon')^q>0$,
+т.\,к. $g(x(C))>0$;
+\item[б)] если $x^*\notin D'$, то $V(x^*)=(g(x^*)+\varepsilon')^q$ и 
+$\gamma=(g(x(C))+\varepsilon')^q-(g(x^*)+\varepsilon')^q.$
+Tак как $x(C)\notin D$, $x^*\in D$, то $g(x(C))>0$, а $g(x^*)\leq 0.$
+Отсюда $g(x(C))>g(x^*)$ и $\gamma>0$.
+\end{itemize}
+Из а) и б) получим $\gamma>0$. Тогда $f(x^*)-f(x(C))>0$.
+\end{pf}
+
+\begin{algor}
+Подготовительный шаг. Выбираем $\varepsilon'<-\inf\limits_{x\in R_n}g(x)$, 
+$\ov C_0,\underline C\,_0>0$ такие, что $x(\ov C_0)\in D$, 
+$x(\underline C\,_0)\notin D$,
+$0<\underline\lambda\leq\ov\lambda<1$, $k=0$.
+\begin{itemize}
+\item[1.] Если $|f(x(\ov C_k))-f(x(\underline C\,_k))|\leq\varepsilon$, то
+процесс окончен и $x(\ov C_k)$ является $\varepsilon$-решением
+задачи (\ref{Zad1}).
+\item[2.] Находим $C_k=\lambda_k\ov C_k+(1-\lambda_k)\underline C\,_k$, где 
+$\underline\lambda\leq\lambda_k\leq\ov\lambda$.
+\item[3.] Если $x(C_k)\in D$, то $\ov C_{k+1}=C_k$, 
+$\underline C\,_{k+1}=\underline C_k$. 
+Иначе $\ov C_{k+1}=\ov C_k$, $\underline C\,_{k+1}=C_k$.
+\item[4.] $k=k+1$, переходим к п.\,1. 
+\end{itemize}
+\end{algor}
+
+\begin{thm}\label{sh}
+Пусть всякий локальный минимум функции $f(x)$ является глобальным на $R_n.$
+Тогда для последовательности $\{f(x(C_k))\}$, построенной по алгоритму $2$,
+имеет место предельное соотношение
+$$
+\lim_{k\to\infty}f(x(C_k))=f^*. 
+$$
+\end{thm}
+
+\begin{pf}
+Из неубывания $f(x(C))$ по $C>0$ (\cite{Fed}, c.\,38) следует, что
+$(f(x(\underline C\,_{k+1}))$, $f(x(\ov C_{k+1})) ]\in
+%%%%%%%%% join in eng.      ^^^^
+(f(x(\underline C\,_{k})), f(x(\ov C_{k})) ]$. Так как $f(x(C))$
+непрерывна по $C>0$ (\cite{Dav}, c.\,25), то
+$\lim\limits_{k\to\infty}( f(x(\ov C_{k})) - f(x(\underline C\,_{k})) )=0.$
+По построению $f(x(C_k))\in
+[ f(x(\underline C\,_{k})), f(x(\ov C_{k})) ],$ а по лемме (\ref{not})
+значение $f^*\in
+( f(x(\underline C\,_{k})), f(x(\ov C_{k})) ].$
+Тогда $\lim\limits_{k\to\infty}f(x(C_k))=f^*.$
+\end{pf}
+
+При реализации подготовительного шага алгоритма 2 необходимо решать задачу
+(\ref{Zad2}) методом штрафов, выбрав в качестве 
+штрафных функций $V(C,x)=C(\max\{g(x)+\varepsilon',0\})^q$, $q\geq1$. 
+Для этого произвольно выбираем $C_0$. Если $x(C_0)\notin D$,
+то строим возрастающую последовательность $\{C_k\}$
+и решаем задачу (\ref{Zad2}),
+используя на $k$-й итерации параметр $C_k$. В качестве $\ov C_0$ выбираем
+$C_k$, при котором точка $x(C_k)$ впервые
+попадает в $D$. За $\underline C\,_0$ 
+принимаем $C_{k-1}$, т.\,к. $x(C_{k-1})\notin D$.
+Если $x(C_0)\in D$, то, наоборот, строим убывающую
+последовательность $\{C_k\}$, $C_k>0$.
+За $\underline C\,_0$ принимаем $C_k$, при 
+котором $x(C_k)$ впервые выходит из $D$, $\ov C_0=C_{k-1}$.
+
+Имеется некоторая свобода выбора $\varepsilon'$.
+Если $\inf\limits_{x\in R_n}g(x)=
+-\infty$, то $\varepsilon'$ можно выбирать сколько угодно большим. Как 
+показывает практика, большое $\varepsilon'$ приводит к увеличению количества 
+вычислений в пп.\,1--4 и к их уменьшению на подготовительном шаге. При
+малых $\varepsilon'$ объем вычислений на подготовительном этапе резко 
+увеличивается, т.\,к. $\ov C_0$ оказывается достаточно большим, что
+приводит к плохой обусловленности вспомогательных задач. При этом объем 
+вычислений в пп.\,1--4 незначительно сокращается. Численные эксперименты 
+показывают, что при некотором промежуточном $\varepsilon'$ суммарные 
+вычислительные затраты меньше, чем при очень больших или малых
+$\varepsilon'$.
+
+В методах сдвига штрафов и штрафных оценок решение отыскивается за счет 
+подбора сдвига $\varepsilon'$.
+Штрафной коэффициент $C$ фиксируется на определенном значении, при котором 
+достигается требуемая скорость сходимости. В алгоритме 2 ситуация обратная.
+Интуитивно задается сдвиг штрафа, который влияет на скорость сходимости 
+алгоритма 2 и на величину $C^*$, при которой $f(x(C^*))=f^*$. Очевидно, чем 
+больше $\varepsilon'$, тем меньше $C^*$ и, как следствие, обусловленность
+$F(C,x)$ при $C$, близких к $C^*$. 
+
+Основная сложность такого подхода заключается в недифференцируемости 
+вспомогательных функций. Но при $q=1$
+\begin{equation}\label{to}
+F(C,x)=f(x)+C\max\{g(x),0\}=\max\{Cg(x)+f(x),f(x)\},
+\end{equation}
+и для отыскания $\inf\limits_{x\in R_n}F(C,x)$ можно воспользоваться
+методом из \cite{Zab}. Более того, функция (\ref{to}) построена
+на основе точной штрафной функции \cite{Erem}, свойства которых
+достаточно хорошо исследованы в литературе
+(см., напр., библиографию в \cite{toch}).
+
+\begin{thebibliography}{99}
+
+\bibitem{Pow}
+Powell M.J.D. {\it A method for nonlinear constraints in minimization
+problems} // Optimization -- New~York: Acad. Press, 1969. --
+P.\,283--298.
+\bibitem{Haar}
+Haarhoff P.C., Buys J.D. {\it A new method for the optimization of a 
+nonlinear function subject to nonlinear constraints} // Computer J. -- 1970.
+-- V.\,13. -- \No\,2. -- P.\,178--181.
+\bibitem{Gor}
+Горский А.А. {\it Модификация метода штрафных функций для решения задач 
+выпуклого программирования} // Изв. АН СССР. Сер. техн. кибернет. -- 1971. --
+\No\,6. -- С.\,25--29. 
+\bibitem{Err}
+Эрроу K. Дж., Гурвиц Л., Удзава Х. {\it Исследования по линейному и 
+нелинейному программированию}. -- М.: Ин. лит., 1962. -- 334 с.
+\bibitem{Hest}
+Hestenes M.R. {\it Multiplier and gradient methods} // J. Opt. Theory and
+Appl. -- 1969. -- V.\,4. -- \No\,5. -- P.\,303--320.
+\bibitem{Miel}
+Miele A., Gragg E.E., Iyer R.R., Levy A.V. {\it Use of the augmented penalty
+function in mathematical programming problems.} I // J. Opt. Theory and Appl.
+-- 1971. -- V.\,8. -- \No\,2. -- P.\,115--130.
+\bibitem{Wier}
+Wierzbicki A.P. {\it A penalty function shifting method in constrained
+static optimization and its convergence properties} // Arch. Autom. i 
+Telemech. -- 1971. -- V.\,16. -- \No\,4. -- P.\,395--416.
+\bibitem{PolTr}
+Поляк Б.Т., Третьяков Н.В. {\it Метод штрафных оценок для задач на 
+условный экстремум} // Журн. вычисл. матем. и матем. физ. --
+1973. -- Т.\,13. -- \No\,1. -- С.\,34--46.
+\bibitem{Fiacco}
+Фиакко А., Мак-Кормик Г. {\it Нелинейное программирование на основе
+последовательной безусловной минимизации}. -- М.: Мир, 1972. -- 240 c.
+\bibitem{Vas}
+Васильев Ф.П. {\it Численные методы решения экстремальных задач.} -- М.:
+Наука, 1988. -- 552~с.
+\bibitem{Psh}
+Пшеничный Б.Н. {\it Необходимые условия экстремума}. --
+М.: Наука, 1982. -- 143 с. 
+\bibitem{Fed}
+Федоров В.В. {\it Численные методы максимина}. -- М.: Наука, 1979. -- 280 с.
+\bibitem{Such}
+Сухарев А.Г., Тимохов А.В., Федоров В.В. {\it Курс методов оптимизации}. --
+М.: Наука, 1986. -- 326 с.
+\bibitem{Dav}
+Давыдов Э.Г. {\it Исследование операций}. -- М.: Высш. школа, 1990.
+-- 383 с. 
+\bibitem{Zab}
+Заботин Я.И., Крейнин М.И. {\it К сходимости методов отыскания минимакса} //
+Изв. вузов. Математика. -- 1977. -- \No\,10. -- С.\,56--64. 
+\bibitem{Erem}
+Еремин И.И. {\it О методе ``штрафов'' в выпуклом программировании} //
+Кибернетика. -- 1967. -- \No\,4. -- С.\,63--67.
+\bibitem{toch}
+Жадан В.Г. {\it О некоторых оценках коэффициента штрафа в методах точных
+штрафных функций} // Журн. вычисл. матем. и матем. физ. --
+1984. -- Т.\,24. -- \No\,8. -- С.\,1164--1171.
+
+\end{thebibliography}
+
+\vskip 2cm
+
+\post{\it Казанский государственный университет}{\it Поступила}
+\post{}{14.09.2000}
+
+\label{end}
+\end{document}
+
+
+

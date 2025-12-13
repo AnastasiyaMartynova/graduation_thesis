@@ -1,0 +1,825 @@
+\def\stat{zmeev}
+
+\def\tit{ПОТОКОВАЯ МОДЕЛЬ ВЫЧИСЛЕНИЙ КАК~ПАРАДИГМА 
+ПРОГРАММИРОВАНИЯ БУДУЩЕГО}
+
+\def\titkol{Потоковая модель вычислений как парадигма 
+программирования будущего}
+
+\def\aut{Д.\,Н.~Змеев$^1$, А.\,В.~Климов$^2$, Н.\,Н.~Левченко$^3$, 
+А.\,С.~Окунев$^4$, А.\,Л.~Стемпковский$^5$}
+
+\def\autkol{Д.\,Н.~Змеев, А.\,В.~Климов, Н.\,Н.~Левченко и др.} 
+%А.\,С.~Окунев, А.\,Л.~Стемпковский}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа выполнена при частичной финансовой поддержке РФФИ (проект 13-01-00215).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем проектирования в~микроэлектронике Российской академии наук, 
+zmejevdn@ippm.ru}
+\footnotetext[2]{Институт проблем проектирования в~микроэлектронике Российской академии наук, 
+klimov@ippm.ru}
+\footnotetext[3]{Институт проблем проектирования в~микроэлектронике Российской академии наук, 
+nick@ippm.ru}
+\footnotetext[4]{Институт проблем проектирования в~микроэлектронике Российской академии наук, 
+oku@ippm.ru}
+\footnotetext[5]{Институт проблем проектирования в~микроэлектронике Российской академии наук, 
+ippm@ippm.ru}
+
+
+  
+  \Abst{Описана потоковая модель вычислений с~динамически формируемым 
+контекстом, а~также особенности ее архитектурной реализации. Потоковая модель 
+вычислений позволяет решать проблемы, возникающие при создании и~применении 
+суперкомпьютеров. Одной из таких проблем является то, что с~ростом возможности 
+максимального распараллеливания, предоставляемой пользователям создателями 
+современной аппаратуры, все сложнее становится загрузить постоянно увеличивающееся число 
+функциональных устройств вычислительных ядер, оставаясь в~рамках традиционного 
+программирования. Описаны преимущества предлагаемой модели вычислений. 
+Сравниваются парадигма <<раздачи>>, в~которой работает потоковая модель вычислений, 
+и~традиционная парадигма <<сбора>>. Приведены основные особенности архитектуры 
+параллельной потоковой вычислительной системы (ППВС) <<Буран>> и~ее отличия от классических 
+потоковых вычислительных систем. Проведенные исследования позволяют надеяться, что 
+предложенная модель вычислений станет в~будущем основной парадигмой 
+программирования для масштабных параллельных вычислений.}
+  
+  \KW{потоковая модель вычислений; парадигма раздачи; ассоциативная память; 
+локализация вычислений}
+
+\DOI{10.14357/19922264150403}
+
+
+
+
+\vskip 14pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+  
+\section{Введение}
+
+  В области высокопроизводительных вычислений существует проблема, 
+которая заключается в~том, что с~ростом возможности максимального 
+распараллеливания, предоставляемой пользователям создателями современной 
+аппаратуры, все сложнее становится загрузить постоянно увеличивающееся число 
+функциональных устройств вы\-чис\-ли\-тельных ядер, оставаясь в~рамках 
+традиционного программирования по фон Нейману. Можно выделить две 
+основные причины этой проблемы:
+ \begin{enumerate}[(1)] 
+\item это представление об алгоритме как о линейной 
+последовательности действий~--- нити управления. Нить при работе имеет 
+всегда ровно одну точку управления, поэтому будем называть ее 
+\textit{одноточечной}.
+  \item представление о~взаимодействии по линии  
+<<про\-цес\-сор--па\-мять>> как о~состоящем, по сути, только из двух 
+операций: чтения и~записи по адресу. При этом есть только одна возможность 
+гарантированно прочитать то, что записано,~--- выполнить чтение позже 
+записи.
+\end{enumerate}
+
+ Когда нить одна, проблем нет, не считая необходимости в~поддержке 
+механизма кэширования. Ситуация кардинально меняется, когда таких нитей 
+становится много.
+  
+  Данные представления восходят еще к Тьюрингу. Только там вместо 
+программной нити~--- конечный автомат, а~вместо памяти~--- бесконечная в~две 
+стороны лента. Работа выполняется пошагово, т.\,е.\ последовательно.
+  
+  Посмотрим, к чему это ведет в~связи с~задачей загрузить работой систему из 
+большого числа элементов, способных работать параллельно.
+
+\begin{figure*} %fig1
+         \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=140.218mm
+ \epsfbox{zme-1.eps}
+ }
+ \end{center}
+ \vspace*{-11pt}
+\Caption{Потоковая модель вычислений с~динамически формируемым контекстом}
+%\vspace*{5pt}
+\end{figure*}
+  
+  По первому пункту можно представить параллельный алгоритм в~виде 
+семейства одноточечных нитей, которые <<взаимодействуют>> друг с~
+другом~--- одни передают сообщения, другие ждут и~принимают. Таким 
+образом возникает модель SPMD с~MPI\footnote[6]{SPMD~--- модель вычислений (Single-Program, 
+Multiple-Data~--- одна программа, множество потоков данных) с~протоколом передачи MPI (Message Passing 
+Interface~--- интерфейс передачи сообщений).}. 
+В~модели GPGPU\footnote[7]{GPGPU~--- 
+модель вычислений (general-purpose computation on graphics processing units~--- универсальные вычисления на 
+графических процессорах).}~--- та же нить, только выполняемая над длинным 
+вектором, или иногда много нитей, по одной для каждого элемента, но уже не 
+взаимодействующих. И~как развитие возникает представление о~вложенном 
+параллелизме: одна нить распадается на многие, причем все они должны быть 
+завершены, прежде чем родительская нить продолжит работу. Последнее 
+означает наличие барьера, который может приводить к~простоям.
+{ \looseness=1
+
+}
+
+
+  
+  Второй пункт в~этом случае ставит следующие вопросы: как обеспечить 
+прочтение другой нитью записанные данные и~как узнать в~другой нити, что 
+данные записаны и~их можно читать?
+  
+  Авторы видят альтернативу в~том, чтобы алгоритм сразу представлять как 
+многоточечный, содержа\-щий много точек управ\-ле\-ния. Одна активная операция 
+(команда) может <<передать управ\-ле\-ние>> нескольким операциям, тогда как 
+новая операция для начала своей работы может требовать нескольких передач 
+управления ей. Вместе\linebreak с~<<передачей управления>> логично всегда передавать 
+некоторый объем требуемых данных. Так возникает модель программирования 
+dataflow со специфическим механизмом управления~--- по готовности входных 
+данных. Для обеспечения многократности повторения однотипных действий, на 
+чем стоит всякое программирование, вводим для всякой команды (или 
+программы узла) \textit{контекст}, он же адрес, или набор индексов. Передача 
+управления на начало узла должна содержать кроме имени (номера) узла еще 
+и~необходимый набор индексов, опре\-де\-ля\-ющих конкретный экземпляр  
+уз\-ла-по\-лу\-ча\-теля.
+{ %\looseness=-1
+
+}
+
+
+  
+\section{Потоковая модель вычислений}
+
+\vspace*{-16pt}
+
+
+  Такая модель существует, это предлагаемая авторами потоковая модель 
+вычислений с~динамически формируемым контекстом (рис.~1), воплощенная 
+в~языке программирования DFL (dynamic fuzzy
+logic)~\cite{1-zm, 2-zm}. Программа на этом языке 
+представляет собой набор описаний узлов, состоящих из заголовка узла 
+и~программного кода. Заголовок содержит имя программного узла, список 
+входов и~список атрибутов программы узла~--- \textit{контекст}. 
+
+\begin{figure*} %fig2
+  \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=137.625mm
+ \epsfbox{zme-2.eps}
+ }
+ \end{center}
+ \vspace*{-11pt}
+  \Caption{Парадигмы <<сбора>>~(\textit{а}) и~<<раздачи>>~(\textit{б})}
+  \end{figure*}
+  
+Активация 
+узла происходит тогда и~только тогда, когда на все входы одного узла 
+с~определенным именем и~контекстом придут все требуемые элементы 
+данных~--- токены\footnote{Токен~--- это структура данных, в~состав которой входит предаваемый 
+операнд (данное), ключ с~контекстом и~адресом программного узла, маска и~ряд других специальных 
+признаков.}. Это является главным принципом управ\-ле\-ния потоком данных. 
+При 
+активации выполняется код программы узла, в~котором вычисляются новые 
+данные (исключительно на основе значений входов и~атрибутов ключа) 
+и~посылаются специальными операторами на другие узлы, причем атрибуты 
+ключа адресата вычисляются непосредственно в~этом же коде. Это означает, 
+что работа производится в~парадигме <<раздачи>>~\cite{3-zm}. 
+
+
+  
+  Как видится авторам, корень проблемы фон-ней\-ма\-нов\-ско\-го 
+программирования заключается в~том, что в~ней реализуется \textit{парадигма 
+<<сбора>>}: для нее характерно, что только потребитель данных знает, какие 
+данные ему нужны и~где их взять, и~сам их запрашивает, указывая имя 
+переменной (рис.~2,\,\textit{а}). В~этих условиях аппаратуре трудно 
+предвидеть, какие данные будут нужны. Для более качественной стратегии 
+перемещения данных была бы более продуктивной противоположная 
+традиционной \textit{парадигма <<раздачи>>}, когда производитель каждого 
+нового значения знает, кому оно потребуется, и~самостоятельно обеспечивает 
+рассылку по нужным адресам. А~получателю тогда остается прос\-то 
+<<пассивно дожидаться>> прихода данных, ничего не зная об их источнике 
+(рис.~2,\,\textit{б}).
+  
+  
+  Парадигма <<раздачи>> является более экономной в~плане числа обменов 
+сообщениями: одно сообщение на каждое использование,~--- тогда как в~парадигме 
+<<сбора>> одно сообщение на запись и~еще по два на каждое использование 
+(запрос и~ответ).
+  
+  Наиболее эффективным образом это реализуется через ассоциативную 
+память\footnote{Ассоциативная память~--- память с~выборкой по содержимому.}. Заметим, что в~
+этом случае обычная память не нужна. Всякое значение, необходимое для 
+совершения операции узла, просто должно быть отправлено ему на один из 
+входов другим ка\-ким-то узлом. С~другой стороны, когда на одни входы 
+данные уже пришли, то до прихода остальных они должны где-то находиться в~
+ожидании. Это и~есть память, только теперь~--- ассоциативная, в~ней 
+<<адресом>> является имя/но\-мер узла с~набором его индексов. Этот 
+<<адрес>> называется \textit{ключом}.
+  
+  Кроме хранения, в~памяти также происходит сопоставление (сравнение) 
+ключей токенов, необходимое для формирования групп токенов, на\-прав\-лен\-ных 
+на один и~тот же узел (с одинаковыми именем и~атрибутами  
+ключа)~\cite{4-zm}.
+
+ 
+  Теперь интерфейс между процессором~--- исполнителем (многих) готовых 
+активностей~--- и~этой <<памятью>> выглядит сложнее: процессор посылает 
+в~память данные с~указанием ключа и~но\-ме\-ра-име\-ни входа, а~<<память>> 
+добавляет их к накапливаемым на входах узлов и, если возникает полный 
+комплект, отправляет в~исполнительное устройство задание на выполнение 
+операции узла. Эта операция может представлять собой небольшую программу 
+в обычной парадигме, которая с~переданными ей данными отработает от начала 
+до конца, без ка\-ких-ли\-бо ожиданий, и,~возможно, породит посылки новых 
+данных в~другие узлы, одновременно стирая (по умолчанию) использованные 
+данные со своих входов.
+  
+  Таким образом решается много проблем: программа узла всегда имеет 
+нужные ей данные локально, при этом программа не прерывается на подкачку 
+дополнительных данных: активность возникает только тогда, когда все нужные 
+для выполнения программы узла данные имеются в~наличии. Затем активность 
+исчезает, передав потенциалы активностей в~виде результирующих данных 
+другим узлам, причем ответа ждать не надо: все такие сообщения (передачи 
+токенов) односторонние.
+
+\begin{table*}\small
+\begin{center}
+\begin{tabular}{|p{67mm}|p{90mm}|}
+\multicolumn{2}{c}{Отличия ППВС<<Буран>> от классических dataflow-систем}\\
+\multicolumn{2}{c}{\ }\\[-6pt]
+\hline
+\multicolumn{1}{|c|}{\textbf{Классические dataflow-системы}}&\multicolumn{1}{c|}
+{\textbf{Модель вычислений ППВС <<Буран>>}}\\
+\hline
+Языки высокого уровня Sisal, Id, VAL и~др. <<работают>> в~парадигме <<сбора>>&Новая 
+парадигма программирования~--- парадигма <<раздачи>>, выраженная в~языке DFL\\
+\hline
+Заранее (статически) создается граф выполнения программы&Граф выполнения программы 
+создается (разворачивается) в~процессе вычислений\\
+\hline
+Процессора сопоставления не было (примитивные команды)&Имеется процессор 
+сопоставления с~развитой системой команд\\
+\hline
+Не были решены проблемы управления локализацией и~планирования 
+вычислений&Развитые (удобные) средства управления локализацией и~планированием 
+вычислений\\
+\hline
+Были трудности с~реализацией ассоциативной памяти ключей и~токенов большого 
+объема&Благодаря реализации функций управления локализацией и~планированием 
+вычислений удалось избежать построения физической памяти большого объема (иерархия 
+памяти)\\
+\hline
+Не была реализована поддержка динамического формирования контекста&Реализована 
+аппаратная поддержка динамического формирования контекста и~функций взаимодействия 
+(формирование токенов и~пакетов)\\
+\hline
+Целевые узлы определялись в~основном статически (были только элементы 
+динамики)&Динамический выбор целевых узлов  
+в~уз\-лах-ис\-точ\-никах\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{6pt}
+\end{table*}
+  
+\section{Сравнение параллельной потоковой вычислительной системы 
+<<Буран>> с~классическими   dataflow-системами}
+
+  Классические потоковые системы (dataflow)~\cite{5-zm}, которые 
+разрабатывались в~1980-х~гг.\ с~целью преодоления проблем  
+фон-ней\-ма\-нов\-ской модели вычислений, представляли собой по большей 
+части вычислительные системы для выполнения традиционных (обычных) 
+программ, но в~новой модели вычислений. С~этой же позиции создавались 
+и~новые высокоуровневые языки программирования с~однократным 
+присваиванием. Работы в~этой области были свернуты потому, что в~те времена 
+еще не стояли так остро проблемы распараллеливания и~был недостаточно 
+высок технологический уровень развития вычислительной техники. 
+В~настоящее время проблема создания параллельных программ с~высокой 
+степенью масштабируемости выходит на первый план при наличии 
+многоядерных (многопроцессорных) систем огромной мощности и~интеграции 
+вычислительной аппаратуры.
+  
+  В основе системы, которая разрабатывается в~ИППМ РАН (ППВС 
+  <<Буран>>) лежит, прежде всего, 
+совершенно новая модель вычислений, для которой создаются новые 
+алгоритмы в~рамках нового языка DFL и~новой парадигмы программирования.
+  
+
+
+  Еще одним ключевым отличием от классических dataflow-сис\-тем (см.\  
+таб\-ли\-цу) является аппаратно поддержанная работа с~динамически 
+формируемым контекстом, что дает возможность программи\-сту реализовывать 
+новые принципы организации параллельных вычислительных процессов, 
+повысить эффективность программирования, использовать контекст для 
+распределения вы\-чис\-ле\-ний, а~также использовать все поля контекста для 
+программирования. В~классических потоковых сис\-те\-мах работа с~контекстом 
+была ограничена и~не давала нужной степени свободы. 
+В~ППВС~[6--8] контекст 
+полностью доступен программисту.
+  
+  Существенной проблемой классических dataflow-сис\-тем была локализация 
+вычислений. В~ППВС она решается при помощи созданных функций 
+распределения вычислений, которые в~динамике обеспечивают равномерность 
+распределения вычислений по физическим вычислительным ядрам системы, а~
+также минимизацию обменов между вычислительными ядрами и~тем самым 
+повышают масштабируемость вычислительной сис\-те\-мы и~рост ее 
+производительности~\cite{9-zm}.
+  
+  Планирование вычислений, которое тесно связано с~построением иерархии 
+памяти сопоставления, являлось еще одной проблемой классических потоковых 
+систем. В~ППВС она решается благодаря применению функций распределения 
+для этапов\footnote{Этапом называется группа токенов, которая необходима для выполнения 
+определенного интервала вычислений. Обычно этап связан с~более или менее независимым действием, 
+например итерация в~программе.} (локализация во времени), которые в~динамике 
+разбивают вычислительный процесс на час\-ти с~по\-мощью небольшой настройки 
+программистом~\cite{10-zm}.
+  
+  Кроме этого удалось избежать построения сопоставляющей памяти большого 
+объема для хранения ключей и~выстроена глобальная иерархия памяти.
+  
+  В отличие от предыдущих классических потоковых систем в~ППВС 
+реализуется развитая сис\-те\-ма команд процессора 
+сопоставления\footnote{Процессор сопоставления~--- основной узел вычислительного ядра ППВС 
+<<Буран>>, обеспечивающий эффективную работу ассоциативной памяти ключей, синхронизацию 
+вычислительных процессов и~ряд других функций.}, который аппаратно поддерживает 
+функции языка высокого уровня. 
+  
+\section{Особенности архитектуры параллельной потоковой вычислительной системы 
+<<Буран>>}
+
+  Можно отметить, что в~архитектуре исполня\-ющей системы ППВС 
+<<Буран>> отчетливо проявляются следующие современные тенденции 
+развития в~области высокопроизводительных вычислений:
+ \begin{description} 
+\item[\,]  \textit{Многопоточность.} Каждый узел~--- это отдельный поток, и~связь 
+между узлами осуществляется только через передачу входных данных, причем 
+потоки не приостанавливаются, а~только завершаются. На одном 
+многопоточном исполнительном устройстве могут одновременно выполняться 
+несколько активаций узлов, которые никак не взаимодействуют между собой.
+\item[\,]  
+  \textit{Мелкозернистость.} Обычно в~современных вычислительных 
+системах стремятся увеличить размер гранулы, поскольку накладные расходы 
+на запуск треда (потока), прием сообщения, приостановку треда и~т.\,п.\ 
+высоки. В~предлагаемой системе эти накладные расходы минимизируются 
+(перекладываются на аппаратуру).
+\item[\,]  
+  \textit{Активные сообщения.} Когда значения на других входах узла уже есть, 
+токен, несущий входное значение, активирует вычисление. Поскольку любой 
+токен может оказаться последним, каждый токен в~предлагаемой системе 
+может считаться активным сообщением.
+\item[\,]  
+  \textit{Процессор в~памяти.} Токен несет адрес и~данные, и~он может 
+рассматриваться как обращение к~памяти, сопровождаемое запросом на 
+обработку:
+  \begin{itemize}
+  \item при поступлении последнего значения на входы узла с~одним и~тем же 
+контекстом (адресом) происходит активация нужной программы \mbox{узла};
+  \item отсутствует проблема ожидания завершения записи данных в~память;
+  \item один из входов может принять адрес получателя результата;
+  \item возможна непосредственная обработка на входе типа редукции.
+  \end{itemize}
+  \item[\,]
+  \textit{Память сопоставления (ассоциативная).} Обеспечивается 
+функциональность, аналогичная механизму работы памяти с~использованием 
+full-empty bits.
+  \item[\,]
+  \textit{Разделение доступа к данным и~обработки данных}  
+(decoupled access-execute). В~предлагаемой сис\-те\-ме такая работа заложена 
+непосредственно в~самой модели вычислений.
+\end{description}
+  
+\section{Заключение}
+
+  Решение проблем, которые возникают при созда\-нии суперкомпьютеров 
+с~огромными возможностями по распараллеливанию вычислений, но 
+работающих в~рамках традиционного фон-ней\-ма\-нов\-ско\-го 
+программирования, безусловно, необходимо. В~статье в~общих чертах показана 
+альтернатива современным тенденциям развития вычислительной техники, 
+а~именно: реализация высокопроизводительных систем на базе нетрадиционной 
+потоковой модели вычислений с~динамически формируемым контекстом. 
+Описаны ключевые отличия разрабатываемой ППВС
+<<Буран>> от традиционных вычислительных систем 
+и классических потоковых (dataflow) систем.
+  
+  Показано, как проявляются в~предложенной модели вычислений 
+современные тенденции развития в~области высокопроизводительных 
+вычислений.
+  
+  Проведенные эксперименты~[11--15] на 
+программных моделях ППВС <<Буран>> (разной степени  
+абстракции)~[16--18] позволяют надеяться на то, что 
+предлагаемая модель вычислений с~ее уникальными особенностями 
+и~преимуществами действительно станет в~будущем основной реализуемой 
+парадигмой программирования в~области масштабных параллельных 
+вычислений, а~разрабатываемая аппаратура ППВС <<Буран>> для этой модели 
+вычислений позволит в~дальнейшем создавать отечественные вычислительные 
+системы общего и~специального назначения на базе перспективных архитектур.
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+  \bibitem{1-zm}
+  \Au{Климов А.\,В., Левченко Н.\,Н., Окунев~А.\,С.} Преимущества потоковой 
+модели вычислений в~условиях неоднородных сетей~// Информационные 
+технологии и~вычислительные системы, 2012. №\,2. С.~36--45.
+  \bibitem{2-zm}
+  \Au{Левченко Н.\,Н., Окунев А.\,С., Стемпковский~А.\,Л.} Использование 
+модели вычислений с~управлением потоком данных и~реализующей ее 
+архитектуры для сис\-тем эксафлопсного уровня производительности~// 
+Проблемы разработки перспективных микро- и~наноэлектронных сис\-тем 
+(МЭС-2012): Сб. тр. V Всеросс. научн.-технич. конф.~--- М.: ИППМ РАН, 
+2012. С.~459--462.
+  \bibitem{3-zm}
+  \Au{Климов А.\,В., Левченко~Н.\,Н., Окунев~А.\,С., Стемпковский~А.\,Л.} 
+Суперкомпьютеры, иерархия памяти и~потоковая модель вычислений~// 
+Программные системы: теория и~приложения. Электронный научный журнал, 
+2014. T.~5. №\,1(19). С.~15--36. {\sf http://psta.psiras.ru/read/psta2014\_1\_15-36.pdf}.
+  \bibitem{4-zm}
+  \Au{Стемпковский А.\,Л., Левченко~Н.\,Н., Окунев~А.\,С., Цветков~В.\,В.} 
+Параллельная потоковая вычислительная система~--- дальнейшее развитие 
+архитектуры и~структурной организации вычислительной системы 
+с~автоматическим распределением ресурсов~// Информационные технологии, 
+2008. №\,10. С.~2--7.
+  \bibitem{5-zm}
+  \Au{Silc J., Robic B., Ungerer T.} Asynchrony in parallel computing: From 
+dataflow to multithreading~// Parallel Distributed Computing Practices, 1998. 
+Vol.~1. No.\,1. P.~3--30.
+  \bibitem{6-zm}
+  \Au{Стемпковский А.\,Л., Климов~А.\,В., Левченко~Н.\,Н., Окунев~А.\,С.} 
+Методы адаптации параллельной потоковой вычислительной системы под 
+задачи отдельных классов~// Информационные технологии и~вычислительные 
+системы, 2009. №\,3. С.~12--21.
+
+  \bibitem{8-zm} %7
+  \Au{Стемпковский А.\,Л., Левченко~Н.\,Н., Окунев~А.\,С.} Архитектура 
+сверхпетафлопной вычислительной системы с~высокой реальной 
+производительностью, бази\-ру\-ющей\-ся на нетрадиционной модели 
+вычислений~// Результаты целевых ориентированных фундаментальных 
+исследований и~их использование в~российской промышленности: Мат-лы 
+научн. конф.~--- Таганрог: ТТИ ЮФУ, 2010. С.~68--72.
+
+  \bibitem{7-zm} %8
+  \Au{Климов А.\,В., Левченко~Н.\,Н., Окунев~А.\,С., Стемпковский~А.\,Л.} 
+Автоматическое распараллеливание для\linebreak гибридной системы с~потоковым 
+ускорителем~// Информационные технологии и~вычислительные системы, 
+2011. №\,2. С.~3--11.
+  \bibitem{9-zm}
+  \Au{Змеев Д.\,Н., Левченко~Н.\,Н., Окунев~А.\,С., Климов~А.\,В.} Способы 
+регулирования вычислений в~параллельной потоковой вычислительной 
+системе~// Проблемы разработки перспективных микро- и~наноэлектронных 
+систем-2014: Сб. тр.~/ Под общ. ред.\linebreak академика РАН 
+А.\,Л.~Стемпковского.~--- М.: ИППМ РАН, 2014. Ч.~IV. С.~79--82.
+\bibitem{10-zm}
+  \Au{Змеев Д.\,Н., Левченко~Н.\,Н., Окунев~А.\,С., Климов~А.\,В.} 
+Архитектура планировщика процессора сопоставления ППВС <<Буран>>~// 
+Проблемы разработки перспективных микро- и~наноэлектронных сис\-тем-2014: 
+Сб. тр.~/ Под общ. ред. академика РАН А.\,Л.~Стемпковского.~--- М.: 
+ИППМ РАН, 2014. Ч.~IV. С.~75--78.
+ \bibitem{13-zm} %11
+  \Au{Левченко Н.\,Н., Окунев~А.\,С., Климов~А.\,В.} Реализация задачи 
+<<Повышение контрастности изображения>> на параллельной потоковой 
+вычислительной системе~// Многопроцессорные вычислительные 
+и~управ\-ля\-ющие системы (МВУС-2009): Мат-лы Междунар. научн.-технич. 
+конф.~--- Дивноморское: ТТИ ЮФУ, 2009. Т.~1. С.~197--200.
+  \bibitem{14-zm} %12
+  \Au{Левченко Н.\,Н., Окунев~А.\,С.} Анализ прохождения задачи 
+<<обнаружение дефектов>> на параллельной потоковой вычислительной 
+системе~// Методы и~средства обработки информации: Тр. III~Всеросс. научн. 
+конф.~--- М: МАКС Пресс, 2009. С.~346--350.
+
+  \bibitem{12-zm} %13
+  \Au{Левченко Н.\,Н., Окунев~А.\,С.} Специализация архитектуры 
+многоядерной параллельной потоковой\linebreak вы\-чис\-ли\-тель\-ной сис\-те\-мы для 
+решения задачи быст\-ро\-го преобразования Фурье~// Проб\-ле\-мы разработки 
+перспективных микро- и~наноэлектронных\linebreak сис\-тем (МЭС-2010): Сб. 
+научн. тр. IV Всеросс. научн.-технич. конф.~--- М.: ИППМ РАН, 2010.  
+С.~458--461.
+
+  \bibitem{11-zm} %14
+  \Au{Климов А.\,В., Левченко~Н.\,Н., Окунев~А.\,С., Змеев~Д.\,Н., 
+Стемпковский~А.\,Л.} Исследование возможности асинхронной реализации 
+задачи молекулярной динамики на ППВС <<Буран>>~// Качество. Инновации. 
+Образование, 2014. №\,10. С.~46--51.
+ 
+  \bibitem{15-zm} %15
+  \Au{Змеев Д.\,Н., Климов~А.\,В., Левченко~Н.\,Н., Окунев~А.\,С.} Применение 
+параллельной потоковой вы\-чис\-лительной сис\-те\-мы <<Буран>> для задач 
+молекулярной динами\-ки~// Суперкомпьютерные технологии\linebreak (СКТ-2014):  
+Мат-лы III~Всеросс. научн.-технич. конф.~--- Ростов-на-Дону: ЮФУ, 2014. 
+Т.~2. С.~222--224.
+  \bibitem{16-zm}
+  \Au{Левченко Н.\,Н., Окунев~А.\,С., Змеев~Д.\,Н.} Рас\-ши\-ре\-ние возможностей 
+поведенческой блоч\-но-ре\-гист\-ро\-вой модели параллельной потоковой 
+вы\-чис\-ли\-тель\-ной системы~// Высокопроизводительные\linebreak {вычислительные} 
+системы (ВПВС-2008): Мат-лы V~Междунар. молодежной научн.-технич. 
+конф.~--- Таганрог: ТТИ ЮФУ, 2008. С.~371--374.
+  \bibitem{17-zm}
+  \Au{Змеев Д.\,Н., Окунев~А.\,С., Левченко~Н.\,Н., Климов~А.\,В.} Реализация 
+параллельной модели вычислений с~управлением потоком данных на 
+кластерных суперкомпьютерах~// Научный сервис в~сети Интернет: все грани 
+параллелизма: Тр. Междунар. суперкомпьютерной конф.~--- М.: МГУ, 2013. 
+С.~375--377.
+  \bibitem{18-zm}
+  \Au{Змеев Д.\,Н., Левченко~Н.\,Н., Окунев~А.\,С.} Исследование принципов 
+работы параллельной потоковой вы\-чис\-ли\-тель\-ной системы на кластерных 
+вычислительных системах~// Суперкомпьютерные технологии (СКТ-2014): 
+Мат-лы III~Всеросс. научн.-технич. конф.~--- Рос\-тов-на-До\-ну: ЮФУ, 2014. 
+Т.~1. С.~45--48.
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 21.08.15}}
+
+\vspace*{8pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{8pt}
+
+\def\tit{DATAFLOW COMPUTING MODEL AS~A~PARADIGM OF~FUTURE 
+MAINSTREAM OF~SOFTWARE DEVELOPMENT}
+
+\def\titkol{Dataflow computing model as~a~paradigm of~future 
+mainstream of~software development}
+
+\def\aut{D.\,N.~Zmejev, A.\,V.~Klimov, N.\,N.~Levchenko, A.\,S.~Okunev, 
+and~A.\,L.~Stempkovsky}
+
+\def\autkol{D.\,N.~Zmejev, A.\,V.~Klimov, N.\,N.~Levchenko, A.\,S.~Okunev, 
+and~A.\,L.~Stempkovsky}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+Institute for Design Problems in Microelectronics, Russian Academy of Sciences, 
+3~Sovetskaya Str., Moscow 124365, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+  
+ 
+\Abste{The article describes the parallel dataflow computing system with dynamic 
+forming of context and the architectural features of its implementation. The dataflow 
+computing model allows to solve the problems that arise when creating and using 
+supercomputers. One of these problems is the difficulty of loading the rising number
+of functional units of cores, while remaining in the borders of traditional 
+programming. The article describes\linebreak\vspace*{-12pt}}
+
+\Abstend{the advantages of the proposed computing model. 
+The article compares the paradigm of ``distribution'' with the traditional paradigm of 
+``collection.'' The dataflow computing model works in the paradigm of 
+``distribution.'' The description of basic features of the architecture of the ``Buran'' 
+parallel dataflow computing system and its differences from the classical flow 
+computing systems are given. The studies give hope that the proposed computing 
+model will become in the future the main programming paradigm for large-scale 
+parallel computing.}
+
+\KWE{dataflow computing system; paradigm of distribution; content-addressable 
+memory; localization of computation}
+  
+  
+    
+\DOI{10.14357/19922264150403}
+
+%\Ack
+%    \noindent
+
+
+
+
+%\vspace*{3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+  \bibitem{1-zm-1}
+  \Aue{Klimov, A.\,V., N.\,N.~Levchenko, and A.\,S.~Okunev}. 2012.  
+Preimushchestva potokovoy modeli vychisleniy v~usloviyakh neodnorodnykh setey 
+[The advantages of dataflow calculation model in heterogeneous networks 
+conditions]. \textit{Zh. Informatsionnye Tekhnologii i~Vychislitel'nye Sistemy} 
+[J.~Information Technologies Computing Systems] 2:36--45.
+  \bibitem{2-zm-1}
+  \Aue{Levchenko, N.\,N., A.\,S.~Okunev, and A.\,L.~Stempkovskiy}. 2012. 
+Ispol'zovanie modeli vychisleniy s~upravleniem potokom dannykh 
+i~realizuyushchey ee arkhitektury dlya sistem eksaflopsnogo urovnya 
+proizvoditel'nosti [Dataflow calculation model and its architecture usage for 
+exa\-flop's 
+computing systems]. \textit{Vseross. nauch.-tekhnich. konf. ``Problemy Razrabotki 
+Perspektivnykh Mikro- i~Nanoelektronnykh Sistem'' (MES-2012): Sb. tr.} 
+[5th All-Russia Scientific and Technical Conference ``Problems of Advanced  
+Micro- and Nanoelectronic Systems Development'' (MES-2012) 
+Proceedings]. Moscow. 459--462.
+  \bibitem{3-zm-1}
+  \Aue{Klimov, A.\,V., N.\,N.~Levchenko, A.\,S.~Okunev, and 
+A.\,L.~Stempkovskiy}. 2014. Superkomp'yutery, ierarkhiya\linebreak pamyati i~potokovaya 
+model' vychisleniy [Supercomputers, memory hierarchy, and the dataflow computing 
+system]. \textit{Programmnye Sistemy: Teoriya i~Prilozheniya.\linebreak Elektron. Nauchn. 
+Zh.} [Program Systems: Theory and Applications. Electron. Sci.~J.]  5:1(19):15--36.
+  \bibitem{4-zm-1}
+  \Aue{Stempkovskiy, A.\,L., N.\,N.~Levchenko, A.\,S.~Okunev, and 
+V.\,V.~Tsvetkov}. 2008. Parallel'naya potokovaya vychislitel'naya sistema~--- 
+dal'neyshee razvitie arkhitektury i~strukturnoy organizatsii vychislitel'noy sistemy 
+s~avtomaticheskim raspredeleniem resursov [Parallel dataflow computing system: 
+Further development of architecture and structural organization of the computing 
+system with automatic distribution of resources]. \textit{Zh. Informatsionnye 
+Tekhnologii} [J.~Inform. Technol.] 10:2--7.
+  \bibitem{5-zm-1}
+  \Aue{Silc, J., B.~Robic, and T.~Ungerer}. 1998. Asynchrony in parallel 
+computing: From dataflow to multithreading. \textit{Parallel Distributed Computing 
+Practices} 1(1):3--30.
+  \bibitem{6-zm-1}
+  \Aue{Stempkovskiy, A.\,L., A.\,V.~Klimov, N.\,N.~Levchenko, and 
+A.\,S.~Okunev}. 2009. Metody adaptatsii parallel'noy potokovoy vychislitel'noy 
+sistemy pod zadachi otdel'nykh klassov [Methods of parallel dataflow computing 
+system adaptation for problems of individual classes]. \textit{Zh. Informatsionnye 
+Tekhnologii i~Vychislitel'nye Sistemy} [J.~Inform. Technol. Comput. 
+Syst.] 3:12--21.
+
+
+  \bibitem{8-zm-1} %7
+  \Aue{Stempkovskiy, A.\,L., N.\,N.~Levchenko, and A.\,S.~Okunev}. 2010. 
+Arkhitektura sverkhpetaflopnoy vychislitel'noy sistemy s~vysokoy real'noy 
+proizvoditel'nost'yu, ba\-zi\-ru\-yushchey\-sya na netraditsionnoy modeli vychisleniy 
+[Abovepetaflop's computer systems architecture with high real performance, based 
+on nontraditional computing model]. \textit{Mat-ly nauchn. konf. ``Rezul'taty 
+Tselevykh Orientirovannykh Fundamental'nykh Issledovaniy i~Ikh Ispol'zovanie 
+v~Rossiyskoy Promyshlennosti''} [Annual Scientific Conference ``Results of the 
+Target-Oriented Fundamental Researches and Their Usage in Russian Industry'' 
+Proceedings]. Taganrog, Russia. 68--72.
+  \bibitem{7-zm-1} %8
+  \Aue{Klimov, A.\,V., N.\,N.~Levchenko, A.\,S.~Okunev, and 
+A.\,L.~Stempkovskiy}. 2011. Avtomaticheskoe raspa\-ral\-le\-li\-va\-nie dlya gibridnoy 
+sistemy s potokovym uskoritelem [Automatic parallelization of sequential programs 
+for hybrid systems with accelerator-based dataflow].  \textit{Zh. Informatsionnye 
+Tekhnologii i~Vychislitel'nye Sistemy} [J.~Inform. Technol. Comput. 
+Syst.]  2:3--11.
+
+  \bibitem{9-zm-1}
+  \Aue{Zmeev, D.\,N., N.\,N.~Levchenko, A.\,S.~Okunev, and A.\,V.~Klimov}. 
+2014. Sposoby regulirovaniya vychisleniy v~parallel'noy potokovoy vychislitel'noy 
+sisteme [Methods of control of computations in the parallel dataflow computing 
+system]. \textit{Problemy Razrabotki Perspektivnykh Mikro- i~Nanoelektronnykh 
+Sistem-2014: Sb. tr.} [All-Russia Scientific and Technical Conference ``Problems 
+of Advanced Micro- and Nanoelectronic Systems Development-2014'' 
+Proceedings]. Ed.\  A.\,L.~Stempkovskiy. Moscow. IV:79--82.
+  \bibitem{10-zm-1}
+  \Aue{Zmeev, D.\,N., N.\,N.~Levchenko, A.\,S.~Okunev, and A.\,V.~Klimov}. 
+2014. Arkhitektura planirovshchika pro\-tses\-so\-ra sopostavleniya PPVS ``Buran'' 
+[Architecture of the scheduler of mapping processor of PDCS ``Buran'']. 
+\textit{Problemy Razrabotki Perspektivnykh Mikro- i~Nanoelektronnykh Sistem-2014. 
+Sb. tr.} [All-Russia Scientific and Technical Conference ``Problems of 
+Advanced Micro- and Nanoelectronic Systems Development-2014'' Proceedings]. 
+Ed.\  A.\,L.~Stempkovskiy. Moscow. IV:75--78.
+  \bibitem{13-zm-1} %11
+  \Aue{Levchenko, N.\,N., A.\,S.~Okunev, and A.\,V.~Klimov}. 2009. Realizatsiya 
+zadachi ``Povyshenie kontrastnosti izob\-ra\-zhe\-niya'' na parallel'noy potokovoy 
+vychislitel'noy sisteme [Realization of the task of ``Improving the contrast of the 
+image'' on the parallel dataflow computing system]. \textit{Scientific and Technical Conference (International) 
+``Multiprocessor Computing and Control Systems (MCCS-2009)'' Proceedings}. 
+Divnomorskoe, Russia. 1:197--200.
+  \bibitem{14-zm-1} %12
+  \Aue{Levchenko, N.\,N., and A.\,S.~Okunev}. 2009. Analiz prokhozhdeniya 
+zadachi ``obnaruzhenie defektov'' na pa\-ral\-lel'\-noy potokovoy vychislitel'noy sisteme 
+[Analysis of the running of defects detection tasks on the parallel dataflow computing 
+system]. \textit{Tr. III Vseross. nauchn. konf. Metody i~Sredstva Obrabotki 
+Informatsii} [3rd All-Russia Scientific Conference ``Methods and Tools of 
+Information Processing'' Proceedings]. Moscow. 346--350.
+
+  \bibitem{12-zm-1} %13
+  \Aue{Levchenko, N.\,N., and A.\,S.~Okunev}. 2010. Spetsia\-li\-za\-tsiya arkhitektury 
+mnogoyadernoy parallel'noy potokovoy vychislitel'noy sistemy dlya resheniya 
+zadachi bystrogo preobrazovaniya Fur'e [Specialization of the architecture of 
+multicore parallel dataflow computing system to compute the task of Fast Fourier 
+Transform]. \textit{Sb. nauch. tr. IV~Vseross. nauchn.-tekhnich. konf. ``Problemy 
+Razrabotki Perspektivnykh Mikro- i~Nanoelektronnykh Sistem-2010} [4th  
+All-Russia Scientific and Technical Conference ``Problems of Advanced Micro- and 
+Nanoelectronic Systems Development-2010'' Proceedings]. Moscow. 458--461.
+
+  \bibitem{11-zm-1} %14
+  \Aue{Klimov, A.\,V., N.\,N.~Levchenko, A.\,S.~Okunev, D.\,N.~Zmeev, and  
+A.\,L.~Stempkovskiy}. 2014. Issledovanie vozmozhnosti asinkhronnoy realizatsii 
+zadachi mo\-le\-ku\-lyar\-noy dinamiki na PPVS ``Buran'' [The research of the 
+asynchronous implementation of molecular dynamics on PDCS ``Buran'']. \textit{Zh. 
+Kachestvo. Innovatsii. Obrazovanie} [J.~Quality. Innovation. Education] 10:46--51.
+  \bibitem{15-zm-1} %15
+  \Aue{Zmeev, D.\,N., A.\,V.~Klimov, N.\,N.~Levchenko, and A.\,S.~Okunev}. 
+2014. Primenenie parallel'noy potokovoy vychislitel'noy sistemy ``Buran'' dlya 
+zadach moleku\-lyar\-noy dinamiki [Application of the parallel dataflow computing 
+system ``Buran'' for molecular dynamics]. \textit{Mat-ly 3-y Vseross.  
+nauchn.-tekhnich. konf. ``Superkomp'yuternye Tekhnologii'' (SKT-2014)} [3rd All-Russia
+Scientific and Technical Conference  ``Supercomputer Technologies''  
+(SCT-2014) Proceedings] 2:222--224.
+  \bibitem{16-zm-1}
+  \Aue{Levchenko, N.\,N., A.\,S.~Okunev, and D.\,N.~Zmeev}. 2008. Rasshirenie 
+vozmozhnostey povedencheskoy blochno-registrovoy modeli parallel'noy potokovoy 
+vychislitel'noy sistemy [Enhancement of capability of the behavioral block-rated 
+model of the parallel dataflow computing system]. \textit{5th 
+Youth Research and Technical Conference 
+(International) ``High-Performance Computing Systems (HPCS 2008)'' 
+Proceedings}. Taganrog, Russia. 371--374.
+  \bibitem{17-zm-1}
+  \Aue{Zmeev, D.\,N., A.\,S.~Okunev, N.\,N.~Levchenko, and A.\,V.~Klimov}. 
+2013. Realizatsiya pa\-ral\-lel'\-noy modeli vychisleniy s~upravleniem potokom dannykh 
+na klasternykh superkomp'yuterakh [The implementation of parallel computing 
+model with dataflow control management on cluster supercomputers]. 
+\textit{Supercomuter 
+Conference (International) ``Scientific Service in the Internet: All Sides of Parallelism'' 
+Proceedings}. Moscow: MSU. 375--377.
+  \bibitem{18-zm-1}
+  \Aue{Zmeev, D.\,N., N.\,N.~Levchenko, and A.\,S.~Okunev}. 2014. Is\-sle\-do\-va\-nie 
+prin\-tsi\-pov raboty pa\-ral\-lel'\-noy potokovoy vy\-chis\-li\-tel'\-noy sistemy 
+na klas\-ter\-nykh 
+vy\-chis\-li\-tel'\-nykh sis\-te\-makh [Study of the principles of parallel dataflow computing 
+system on the cluster computing systems]. \textit{Mat-ly 3-y Vseross.  
+nauchn.-tekhnich. konf. ``Superkomp'yuternye Tekhnologii'' (SKT-2014)} [3rd All-Russia
+Scientific and Technical Conference  ``Supercomputer Technologies'' 
+(SCT-2014) Proceedings]. 1:45--48.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received August 21, 2015}}
+  
+  \Contr
+  
+  \noindent
+\textbf{Zmejev Dmitry N.}\ (b.\ 1978)~--- scientist, Institute for Design Problems in 
+Microelectronics, Russian Academy of Sciences, 3~Sovetskaya Str., Moscow 
+124365, Russian Federation; zmejevdn@ippm.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Klimov Arkady V.}\ (b.\ 1953)~--- senior scientist, Institute for Design 
+Problems in Microelectronics, Russian Academy of Sciences, 3~Sovetskaya Str., 
+Moscow 124365, Russian Federation; klimov@ippm.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Levchenko Nikolay N.}\ (b.\ 1978)~--- Candidate of Science (PhD) in 
+technology, Head of Department, Institute for Design Problems in Microelectronics, 
+Russian Academy of Sciences, 3~Sovetskaya Str., Moscow 124365, Russian 
+Federation; nick@ippm.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Okunev Anatoly S.}\ (b.\ 1951)~--- Candidate of Science (PhD) in 
+technology, leading scientist, Institute for Design Problems in Microelectronics, 
+Russian Academy of Sciences, 3~Sovetskaya Str., Moscow 124365, Russian 
+Federation; oku@ippm.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Stempkovsky Alexander L.}\ (b.\ 1950)~--- 
+Doctor of Science in technology, professor, Academician of the Russian Academy of 
+Sciences, Director, Institute for Design Problems in Microelectronics, Russian 
+Academy of Sciences, 3~Sovetskaya Str., Moscow 124365, Russian Federation; 
+ippm@ippm.ru
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}  

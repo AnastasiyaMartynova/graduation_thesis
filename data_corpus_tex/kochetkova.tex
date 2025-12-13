@@ -1,0 +1,674 @@
+\newcommand{\Cb}{\lfloor C/b \rfloor}
+
+
+\def\stat{kochetkova}
+
+\def\tit{ЗАДАЧА РАЗДЕЛЕНИЯ РЕСУРСА БЕСПРОВОДНОЙ СЕТИ ПО~ЗАДЕРЖКЕ ПЕРЕДАЧИ ЭЛАСТИЧНОГО 
+ТРАФИКА$^*$}
+
+\def\titkol{Задача разделения ресурса беспроводной сети по задержке передачи эластичного 
+трафика}
+
+\def\aut{И.\,А.~Кочеткова$^1$, А.\,С.~Власкина$^2$,
+ П.\,Л.\,Э.~Эсенг Манге$^3$, В.\,С.~Шоргин$^4$}
+
+\def\autkol{И.\,А.~Кочеткова, А.\,С.~Власкина,
+ П.\,Л.\,Э.~Эсенг Манге, В.\,С.~Шоргин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Кочеткова И.\,А.}
+\index{Власкина А.\,С.}
+\index{Эсенг Манге П.\,Л.\,Э.}
+\index{Шоргин В.\,С.}
+\index{Kochetkova I.\,A.}
+\index{Vlaskina A.\,S.}
+\index{Eseng Mangue P.\,L.\,E.}
+\index{Shorgin V.\,S.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Публикация выполнена в~рамках проекта №\,025319-2-000 Сис\-те\-мы 
+грантовой поддержки научных проектов РУДН.}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов имени Патриса Лумумбы; 
+Федеральный исследовательский центр <<Информатика и~управление>> Российской 
+академии наук, \mbox{kochetkova-ia@rudn.ru}}
+\footnotetext[2]{Российский университет дружбы народов имени Патриса Лумумбы, 
+\mbox{vlaskina-as@rudn.ru}}
+\footnotetext[3]{Российский университет дружбы народов имени Патриса Лумумбы,\\ 
+\mbox{pedroluis\_eyamaeseng@yahoo.es}}
+\footnotetext[4]{Федеральный исследовательский центр <<Информатика 
+и~управление>> Российской академии наук, \mbox{vshorgin@ipiran.ru}}
+
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+\vspace*{-12pt}
+
+
+
+\Abst{Ожидается, что в~будущих сетях шестого поколения (6G), или се\-тях-2030, получит 
+распространение эластичное управление ресурсами. Оно подразумевает не только 
+адаптивное занятие ресурса, но и~учет в~настройке меняющихся потребностей 
+в~услугах и~поведения пользователей и~непрерывно изменяемого состояния канала 
+связи. Один из вариантов разделения ресурса между сегментами сети~--- 
+справедливое не относительно требуемой скорости передачи данных, а~относительно задержки передачи данных. В~статье формализована задача разделения 
+ресурса по задержке передачи данных в~виде сис\-те\-мы массового обслуживания 
+с~дисциплиной дискриминаторного разделения процессора между классами эластичного 
+трафика. Параметры дисциплины~--- веса каждого класса~--- предлагается выбирать, 
+ориентируясь на остаточное время передачи данных, а~справедливость разделения 
+ресурса оценивать по индексу Джейна по среднему времени передачи.}
+
+\KW{беспроводная сеть; сеть-2030; 6G; разделение ресурсов; справедливость по 
+задержке передачи; эластичный трафик; сис\-те\-ма массового обслуживания; разделение 
+процессора}
+
+\DOI{10.14357\!/\!08696527240102}{WXYPQV}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}
+
+\section{Введение}
+
+\vspace*{-4pt}
+
+
+В настоящее время разрабатывается новое, шестое, поколение сетей, или сетей-2030~\cite{ITU,3GPP23501}. 
+Ключевым аспектом в~построении сети~6G становится 
+обеспечение требуемого качества обслуживания пользователей для новых услуг, 
+например голографической коммуникации, цифровых двойников, и~при нарезке 
+сети~\cite{Kochetkova2021a,Vlaskina2022}. Требования к~качеству такие, что 
+существующие технологические и~системные решения сетей предыдущих поколений не 
+могут его обеспечить, поэтому прорабатывается архитектура будущих сетей, 
+решения, характеристики~\cite{Moltchanov2022}. Среди подходов выделяется так 
+называемое эластичное управление ресурсами~--- не только адаптивное занятие 
+ресурса, но и~учет в~настройке гибко меняющихся потребностей в~услугах 
+и~поведения пользователей и~непрерывно изменяемого состояния канала связи 
+миллиметрового диапазона длин волн и~терагерцевого диапазона радиочастот. Один 
+из вариантов разделения ресурса~--- обеспечивать справедливость относительно 
+задержки передачи данных~\cite{LopezSanchez2023,Kwon2023}.
+
+Структура работы следующая. В~разд.~2 представлены основные
+особенности и~задачи будущих се\-тей-2030, включая эластичное управление 
+радиоресурсами. В~разд.~3 описан ресурс сети, а~в~разд.~4 
+формализована задача разделения ресурса по задержке передачи эластичного трафика 
+в~виде системы массового обслуживания.
+
+
+\section{Сети-2030 и~эластичное управление ресурсами} \label{sec2}
+
+Сети связи стремительно и~динамично развиваются, появляются новые проводные 
+и~беспроводные технологии, благодаря которым скорости передачи данных измеряются 
+уже не в~мегабитах и~гигабитах в~секунду, а~стремятся к~значениям в~терабитах в~секунду, приложения требуют 
+не только все более высокую пропускную спо\-соб\-ность, но и~низкие задержки 
+передачи данных и~высокий уровень надежности. Ожидается, что число подключенных 
+устройств вырастет с~28,5~млрд (2020~г.)\ до~100~млрд в~2025~г., а~трафик 
+увеличится с~33~ЗБайт (2018~г.)\ до~175~ЗБайт к~2025~г. Спектр 
+предоставляемых пользователям услуг расширяется, растет уровень использования 
+методов искусственного интеллекта и~машинного обучения. Все перечисленные 
+тенденции приводят к~необходимости разработки нового поколения сетей, которые бы 
+соответствовали будущим услугам и~приложениям~--- сетей шестого поколения 
+(6G)~\cite{ITU}, или се\-тей-2030 (Network 2030)~\cite{3GPP23501}.
+
+Сеть 6G представляет собой систему, компоненты системы и~связанные с~ними 
+аспекты, которые позволяют организовать интегрированное, с~высокой степенью 
+автоматизации, с~использованием интеллектуальных методов разделение 
+инфраструктуры~--- разнородные коммуникации, вычислительные ресурсы, ресурсы для 
+хранения данных, ресурсы для развертывания сетевых услуг и~приложений~--- по всем 
+сегментам сети: проводная и~беспроводная связь, ядро сети, сеть граничных 
+вычислений, спутниковая связь, комбинация перечисленных сегментов,~--- к~которой 
+пользователь может получить доступ из одного или нескольких 
+местоположений~\cite{Moltchanov2022}.
+
+Ключевой аспект в~построении сети 6G~--- обеспечение требуемого качества 
+обслуживания (Quality of Service, QoS) пользователей, включая сверхнизкую 
+задержку передачи данных, сверхбольшой объем данных и~т.\,д., причем по большей 
+части данные требования должны быть выполнены для каждого <<деления>> 
+<<нарезанной>> инфраструктуры. Концепция такого деления~--- нарезка сети (Network 
+Slicing)~--- охватывает все сетевые и~облачные сегменты: сеть радиодоступа, 
+ядро сети, транспортную сеть, сеть граничных вычислений~--- и~позволяет 
+одновременно развертывать несколько логических, автономных и~независимых 
+разделенных сетевых ресурсов и~группы сетевых и~сервисных функций на единой 
+инфраструктурной платформе~\cite{Kochetkova2021a,Vlaskina2022}.
+
+Новые сценарии использования сетей 6G~--- голографическая коммуникация, 
+тактильный интернет для удаленных операций, цифровые двойники и~др.~--- выдвигают 
+такие требования к~ско\-рости передачи данных, задержке, безопасности, поддержке 
+алгоритмов на базе искусственного интеллекта, гетерогенности сети, что 
+существующие технологические и~системные решения сетей предыдущих поколений не 
+могут обеспечить необходимое качество обслуживания. В настоящее время 
+международные организации по стандартизации МСЭ (Международный союз 
+электросвязи), 3GPP (3rd Generation Partnership Project), мировое на\-уч\-но-ис\-сле\-до\-ва\-тель\-ское 
+сообщество, включая исследовательские центры компаний, 
+прорабатывают детально архитектуру будущих сетей, их сценарии использования, 
+требования, характеристики, технологические решения и~пр.
+
+Одной из важных характеристик сетей 6G выступает так называемая эластичность 
+ресурса и~эластичное управ\-ле\-ние ресурсами (Elastic Resource Management)~--- новое 
+понятие, вобравшее в~себя принципы динамического управления радиоресурсами 
+(Dynamic Radio Resource Management) в~беспроводных сетях и~эластичных облачных 
+вычислений (Elastic Cloud Computing) и~масштабировавшее их на всю инфраструктуру~--- 
+сетевые ресурсы сети, включая принцип нарезки ресурсов~\cite{ITU}. Так, 
+динамическое управление радиоресурсами направлено на гибкую настройку параметров 
+сети радиодоступа под текущие нагрузку трафика, местоположение и~мобильность 
+пользователей, требования к~качеству обслуживания, плотность базовых станций 
+и~т.\,п.\ для увеличения спектральной эффективности. Эластичность облачных 
+вычислений выражается в~спо\-соб\-ности адаптироваться к~изменениям нагрузки за счет 
+подключения и~отключения вычислительных ресурсов для максимального соответствия 
+запрашиваемых и~выделяемых ресурсов в~каждый момент времени.
+
+Ресурс в~эластичном управлении ресурсами~--- это не только ресурс сети 
+радиодоступа и~вычислительный ресурс, а~все его перечисленные выше виды. 
+Эластичность в~управлении ресурсами~--- это не только адаптивное занятие ресурса, 
+но и~учет при этом в~настройке гибко меняющихся потребностей в~услугах 
+и~поведения пользователей и~непрерывно изменяемого состояния канала связи, 
+например миллиметрового диапазона длин волн и~терагерцевого диапазона 
+радиочастот.
+
+
+
+\section{Описание ресурса в~беспроводной сети} \label{sec3}
+
+
+Рассмотрим соту беспроводной сети радиуса $R$~[м] c базовой станцией с~мощностью 
+сигнала $P_t$~[Вт] и~шириной полосы пропускания $B$~[Гц]. Для вычисления 
+максимальной пропускной способности канала связи с~учетом шума используется 
+формула Шен\-но\-на--Харт\-ли~\cite{Moltchanov2022}. Пусть мощность шума составляет 
+$N_0$~[Вт], тогда пиковая пропускная спо\-соб\-ность соты
+
+\noindent
+\begin{equation*}
+C= B  \log_2\left(1+\fr{P_t}{N_0}\right),
+\end{equation*}
+что фактически соответствует максимальной ско\-рости передачи данных для 
+единственного в~соте пользователя, находящегося максимально близ\-ко к~базовой 
+станции, в~отсутствие затухания мощ\-ности сигнала.
+
+Учитывая большее число пользователей в~соте и~их разноудаленность от базовой 
+станции, из формулы Шен\-но\-на--Харт\-ли запишем максимальную скорость передачи 
+данных для одного пользователя в~виде
+\begin{equation*}
+c = y_t  y_f  \log_2\left(1+\fr{y_p'}{N_0}\right),
+\end{equation*}
+где $y_f$ соответствует выделенной для пользователя ширине полосы пропускания, 
+$y_p'$~--- мощности полученного сигнала, а~$y_t$ отражает долю слота времени, 
+который также выделен для данного пользователя.
+
+Мощность $y_p'$ полученного сигнала отличается от мощ\-ности~$y_p$ передаваемого 
+сигнала, а~тройка $(y_f,y_t,y_p)$ фактически представляет собой ресурс базовой 
+станции, который выделяется для обеспечения необходимой скорости передачи 
+данных. Связь между~$y_p'$ и~$y_p$ задается по формуле передачи сигнала 
+Фрииса~\cite{Moltchanov2022} и~модели затухания сигнала:
+\begin{equation*}
+y_p' = y_p  \fr{G_t G_r}{y_L} \,,
+\end{equation*}
+где $G_t$ и~$G_r$~--- коэффициенты усиления передающей и~приемной 
+антенн соответственно; $y_L$~--- коэффициент затухания сигнала.
+
+В качестве моделей затухания сигнала можно использовать, например, те, которые 
+представлены в~спецификации~\cite{3GPP38901}. Предположим случайное положение 
+пользователей в~соте, тогда случайная величина~$\xi_L$ затухания сигнала будет 
+функцией от случайной величины~$\xi_d$ расстояния от пользователя до базовой 
+станции. В~данном случае искомой
+характеристикой выступает распределение~$p(n)$ вероятностей того, что в~соте 
+достаточно ресурсов для обслуживания~$n$~пользователей~\cite{Moltchanov2022}, 
+как это сделано в~статье~\cite{Kochetkova2021b}.
+
+
+
+\section{Формализация задачи разделения ресурса по~задержке~передачи~эластичного~трафика} 
+\label{sec4}
+
+
+Перейдем к~постановке задачи разделения ресурса по задержке передачи эластичного 
+трафика.
+Рассмотрим систему массового обслуживания с~двумя классами эластичного трафика.
+Пусть потоки запросов на передачу блоков данных~--- пуассоновские с~параметрами~$\lambda_1$ и~$\lambda_2$~[с$^{-1}$], а~объемы блоков данных распределены по 
+экспоненциальному закону со средними~$\mu_1^{-1}$ и~$\mu_1^{-2}$~[бит] 
+соответственно. При передаче блока данных должна обеспечиваться минимальная 
+ско\-рость~$b$~[бит\!/\!с]~\cite{Vlaskina2022}.
+
+Для того чтобы ориентироваться на справедливое (равное) с~точки зрения задержки 
+передачи блоков данных (Lantency Fairness) разделение 
+ресурса~\cite{LopezSanchez2023,Kwon2023}, воспользуемся дисциплиной 
+дискриминаторного разделения процессора (Discriminatory Processor Sharing, DPS) 
+или дисциплиной взвешенного циклического обслуживания (Weighted Round Robin, 
+WRR)~\cite{Yashkov1990}. В~отличие от дисциплины справедливого разделения 
+процессора (Egalitarian Processor Sharing, EPS) или карусельной дисциплины 
+диспетчеризации (Round Robin, RR), при которой ресурс делится поровну между 
+всеми~$n$~пользователями 
+${1}/{n}$~\cite{Samouylov2010,Shorgin2015,Kochetkova2023,Kochetkova2021a}, 
+дисциплина DPS позволяет более гибко настроить разделение ресурса по весам~$w$.
+Опишем функционирование системы при помощи случайного процесса $(N_1(t),N_2(t))$ 
+с~состояниями вида $(n_1,n_2)$, где~$n_1$ и~$n_2$~--- чис\-ло передаваемых блоков 
+данных 1-го и~2-го класса соответственно в~некоторый момент времени. По 
+дисциплине DPS доля объема ресурса, которую занимает $i$-блок, составляет
+${w_i}/({w_1n_1+w_2n_2})$, $i\hm=1,2$.
+Обозначим долю объема ресурса, занимаемого всеми $i$-бло\-ка\-ми данных в~состоянии 
+$(n_1,n_2)$, как
+\begin{equation*}
+\alpha_i(n_1,n_2) = \fr{w_i n_i}{w_1n_1+w_2n_2}, \quad i=1,2, \quad 
+\alpha_1(n_1,n_2)+\alpha_2(n_1,n_2)=1\,.
+\end{equation*}
+
+Пространство состояний случайного процесса $(N_1(t),N_2(t))$ имеет вид:
+\begin{equation*}
+\mathcal{X} = \left\{ (n_1,n_2): \ n_1 \geq 0, \enskip n_2 \geq 0, \enskip 
+b(n_1+n_2) \geq C \right\},
+\end{equation*}
+а элементы матрицы интенсивностей переходов определяются соотношениями
+\begin{align*}
+& q[(n_1,n_2),(n_1+1,n_2)] = \lambda_1  p(n_1,n_2), \quad n_1+n_2<N; \\
+& q[(n_1,n_2),(n_1,n_2+1)] = \lambda_2  p(n_1,n_2), \quad n_1+n_2<N; \\
+& q[(n_1,n_2),(n_1-1,n_2)] = \fr{C}{\mu_1 \alpha_1(n_1,n_2)}, \quad n_1>0; \\
+& q[(n_1,n_2),(n_1,n_2-1)] = \fr{C}{\mu_2 \alpha_2(n_1,n_2)}, \quad n_2>0,
+\end{align*}
+где $p(n_1,n_2)$~--- вероятность того, что в~соте достаточно ресурсов для 
+обеспечения минимальной ско\-рости~$b$ передачи $n_1\hm+n_2$ блоков данных.
+
+Один из возможных вариантов задания весов~$w_i$, чтобы в~разделении ресурса 
+учесть задержку передачи данных,~--- ориентироваться на остаточное время передачи 
+блоков данных. В~состоянии $(n_1,n_2)$ это время для $i$-бло\-ка при условии, что 
+состояние не будет изменяться, равно
+\begin{equation*}
+T_i(n_1,n_2) = \fr{\mu_1^{-1}}{\alpha_i(n_1,n_2) C / n_i} = 
+\fr{w_1n_1+w_2n_2}{w_i\mu_i}, \quad i=1,2\,.
+\end{equation*}
+
+Таким образом, из того, что остаточное время передачи должно быть одинаковым для 
+всех блоков данных $T_1(n_1,n_2) \hm= T_2(n_1,n_2)$, следует, что веса можно взять 
+равными $w_1\hm=\mu_2$ и~$w_2\hm=\mu_1$:
+\begin{equation*}
+\alpha_1(n_1,n_2) = \fr{\mu_2 n_1}{\mu_2 n_1+\mu_1 n_2}\,; \quad
+\alpha_2(n_1,n_2) = \fr{\mu_1 n_2}{\mu_2 n_1+\mu_1 n_2}\,.
+\end{equation*}
+
+В качестве показателя эффективности разделения ресурса по задержке передачи 
+данных можно воспользоваться индексом Джейна (Jain's Fairness 
+Index)~\cite{Jain1984} относительно среднего времени~$W_i$ передачи блока 
+данных:
+\begin{equation*}
+ J(W_1,W_2) = \fr{1}{2} \, \fr{(W_1+W_2)^2}{W_1^2+W_2^2}.
+\end{equation*}
+Здесь
+\begin{align*}
+ W_1 &= \fr{1}{\lambda_1(1-B)} \sum\limits_{n_1=1}^{\Cb}{\sum\limits_{n_2=0}^{\lfloor 
+(C-bn_1)/b \rfloor}\!\!{\pi(n_1,n_2)}}; \\
+ W_2 &= \fr{1}{\lambda_2(1-B)}  \sum\limits_{n_2=1}^{\Cb}{\sum_{n_1=0}^{\lfloor 
+(C-bn_2)/b \rfloor}\!\!{\pi(n_1,n_2)}},
+\end{align*}
+где $B$~--- вероятность 
+блокировки запроса на передачу блока данных:
+\begin{align*}
+& B=\sum_{n_1=0}^{\Cb}{\sum_{n_2=0}^{\lfloor (C-bn_1)/b \rfloor}{\left[1-p\left(n_1,n_2\right)\right] 
+ \pi\left(n_1,n_2\right)}};
+\end{align*}
+$\pi(n_1,n_2)$~--- стационарное распределение.
+
+
+
+\section{Заключение}
+
+
+Разделение ресурса беспроводной сети на базе задержки передачи данных~--- один из 
+подходов к~эластичному управлению радиоресурсами. В~данной работе построена 
+модель обслуживания двух классов эластичного трафика в~виде сис\-те\-мы массового 
+обслуживания с~дисциплиной дискриминаторного разделения процессора в~рамках 
+решения задачи разделения ресурса. Для обеспечения справедливости относительно 
+задержки передачи данных учитывается остаточное время передачи блоков данных, 
+а~в~качестве показателя эффективности разделения ресурса предложено использовать 
+индекса Джейна по среднему времени передачи блока. В~дальнейшем планируется 
+проведение численного анализа показателей эффективности и~расширение модели на 
+произвольное число классов.
+
+
+{\small\frenchspacing
+{\baselineskip=10.55pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{ITU}
+ITU TS. Network 2030 architecture framework, 2020.
+
+\bibitem{3GPP23501}
+3GPP TS 23.501. System architecture for the 5G system (5GS).  Release  18.4.0, 2023.
+
+\bibitem{Kochetkova2021a}
+\Au{Кочеткова~И.\,А., Власкина~А.\,С., Ву~Н.\,Н., Шоргин~В.\,С.}
+Система массового обслуживания с~управ\-ля\-емым по сигналам перераспределением 
+приборов для анализа нарезки ресурсов сети 5G~/\!\!/
+Информатика и~её применения, 2021. Т.~15. Вып.~3. С.~91--97.
+doi: 10.14357\!/\!19922264210312.
+
+\bibitem{Vlaskina2022}
+\Au{Власкина~А.\,С., Бурцева~С.\,А., Кочеткова~И.\,А., Шоргин~С.\,Я.}
+Управляемая сис\-те\-ма массового обслуживания с~эластичным трафиком и~сигналами для 
+анализа нарезки ресурсов в~сети радиодоступа~/\!\!/
+Информатика и~её применения, 2022. Т.~16. Вып.~3. С.~90--96.
+doi: 10.14357\!/\!19922264220312.
+
+\bibitem{Moltchanov2022}
+\Au{Молчанов~Д.\,А., Бегишев~В.\,О., Самуйлов~К.\,Е., Кучерявый~Е.\,А.}
+Сети 5G\!/\!6G: архитектура, технологии, методы анализа и~расчета.~--- 
+М.: РУДН, 2022. 516~с.
+
+\bibitem{LopezSanchez2023}
+\Au{Lopez-Sanchez~M., Villena-Rodriguez~A., Gomez~G., Martin-Vega~F.\,J., 
+Aguayo-Torres~M.\,C.}
+Latency fairness optimization on wireless networks through deep reinforcement 
+learning~/\!\!/
+IEEE T. Veh. Technol., 2023. Vol.~72. No.\,4. P.~5407--5412.
+doi: 10.1109\!/\!TVT.2022.3224368.
+
+\bibitem{Kwon2023}
+\Au{Kwon~J., Ryu~J., Lee~J.\,H., Joung~J.}
+Improving end-to-end latency fairness using a~reinforcement-learning-based 
+network scheduler~/\!\!/
+Appl. Sci.~--- Basel, 2023. Vol.~13. No.\,6. Art.~3397.
+doi: 10.3390\!/\!app13063397.
+
+\bibitem{3GPP38901}
+3GPP TR 38.901. Study on channel model for frequencies from~0.5 to~100~GHz. 
+ Release 17.1.0, 2023.
+
+\bibitem{Kochetkova2021b}
+\Au{Кочеткова~И.\,А., Кущазли~А.\,И., Харин~П.\,А., Шоргин~С.\,Я.}
+Модель схемы приоритетного доступа трафика URLLC и~eMBB в~сети пятого поколения в~виде ресурсной системы массового обслуживания~/\!\!/
+Информатика и~её применения, 2021. Т.~15. Вып.~4. С.~87--92.
+doi: 10.14357\!/\!19922264210412.
+
+\bibitem{Yashkov1990}
+\Au{Яшков~С.\,Ф.}
+Математические вопросы теории систем обслуживания с~разделением процессора~/\!\!/
+Итоги науки и~техники. Сер.: Теория вероятностей. Математическая статистика. 
+Теоретическая кибернетика, 1990. Т.~29. С.~3--82.
+
+\bibitem{Samouylov2010}
+\Au{Samouylov~K.\,E., Gudkova~I.\,A.}
+Recursive computation for a multi-rate model with elastic traffic and minimum 
+rate guarantees~/\!\!/
+Congress (International) on Ultra Modern Telecommunications and Control Systems 
+and Workshops Proceedings.~--- Piscataway, NJ, USA: IEEE, 2010. P. 1065--1072.
+doi: 10.1109\!/\!ICUMT.2010.5676509.
+
+\bibitem{Shorgin2015}
+\Au{Shorgin~S.\,Y., Samouylov~K.\,E., Gudkova~I.\,A., Markova~E.\,V., 
+Sopin~E.\,S.}
+Approximating performance measures of radio admission control model for non 
+real-time services with maximum bit rates in LTE~/\!\!/
+AIP Conf. Proc., 2015. Vol.~1648. Art.~250004.
+doi: 10.1063\!/\!1.4912508.
+
+\bibitem{Kochetkova2023}
+\Au{Kochetkova~I., Leonteva~K., Ghebrial~I., Vlaskina~A., Burtseva~S., 
+Kushchazli~A., Samouylov~K.}
+Controllable queuing system with elastic traffic and signals for resource 
+capacity planning in 5G network slicing~/\!\!/
+Future Internet, 2024. Vol.~16. No.\,1. Art.~18. 23~p.
+doi: 10.3390\!/\!fi16010018.
+
+\bibitem{Jain1984}
+\Au{Jain~R., Chiu~D.\,M., Hawe~W.\,R.}
+A quantitative measure of fairness and discrimination for resource allocation in 
+shared computer systems:
+DEC Research Report TR-301.~--- Hudson, MA, USA: Eastern Research Laboratory, 
+Digital Equipment Corp., 1984. 37~p.
+   \end{thebibliography}
+} }
+
+
+
+\vspace*{-10pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.01.24}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+
+%\hrule
+
+%\vspace*{8pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+\def\tit{RADIO RESOURCE ALLOCATION\\ FOR~ELASTIC~TRAFFIC~TRANSMISSION\\ WITH~LATENCY~FAIRNESS~IN~WIRELESS~NETWORKS}
+
+
+
+\def\titkol{Radio resource allocation for~elastic traffic transmission with~latency fairness in %~wireless 
+networks}
+
+\def\aut{I.\,A.~Kochetkova$^{1,2}$, A.\,S.~Vlaskina$^{1}$, P.\,L.\,E.~Eseng Mangue$^{1}$, and~V.\,S.~Shorgin$^{2}$}
+
+\def\autkol{I.\,A.~Kochetkova, A.\,S.~Vlaskina, P.\,L.\,E.~Eseng Mangue, and~V.\,S.~Shorgin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+$^1$RUDN University, 6 Miklukho-Maklaya Str., Moscow 117198, Russian Federa-\linebreak
+$\hphantom{^1}$tion
+
+\noindent
+$^2$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
+$\hphantom{^1}$of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2024 vol~34 no\,1}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2024 vol~34 no\,1
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+
+
+
+
+\Abste{Elastic resource management is anticipated to be prevalent in the forthcoming 6G, or 2030, networks. 
+This approach entails not only adaptive allocation of resources but also the consideration of evolving service requirements, 
+user behavior, and the dynamic state of the radio channel. One of the methods for distributing resources among network slices may not 
+be equitable in terms of the required data transfer rates but aims for fairness concerning the data transmission delays. 
+The paper formalizes the issue of resource allocation based on data transmission latency as a queuing system with 
+a~discriminatory processor-sharing discipline for classes of elastic traffic. The authors propose determining the discipline parameters~--- 
+the weights for each class~--- according to the residual data transmission time. The fairness of resource allocation is evaluated using the 
+Jain's fairness index which is based on average transmission times.}
+
+
+\KWE{wireless network; network 2030; 6G; resource allocation; latency fairness; elastic traffic; queuing system; processor sharing}
+
+\DOI{10.14357\!/\!08696527240102}{WXYPQV}  
+
+\vspace*{-10pt}
+
+
+\Ack
+
+\vspace*{-3pt}
+
+
+\noindent
+ The publication has been supported by the RUDN University Scientific Projects Grant System, project No.\,025319-2-000.
+
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+\bibitem{ITU-1}
+ITU TS. Network 2030 architecture framework, 2020.
+
+\bibitem{3GPP23501-1} 
+3GPP TS 23.501. 2023. System architecture for the 5G system (5GS). Release 
+18.4.0.
+
+\bibitem{Kochetkova2021a-1}
+\Aue{Kochetkova,~I.\,A., A.\,S.~Vlaskina, N.\,N.~Vu, and S.\,Ya.~Shorgin.}
+2021. Queuing system with signals for dynamic resource allocation for analyzing 
+network slicing in 5G networks.
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.}
+15(3):91--97.
+doi: 10.14357\!\!/19922264220312.
+
+\bibitem{Vlaskina2022-1}
+\Aue{Vlaskina,~A.\,S., S.\,A.~Burtseva, I.\,A.~Kochetkova, and S.\,Ya.~Shorgin.}
+2022.
+Controllable queuing system with elastic traffic and signals for analyzing 
+network slicing.
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.}
+16(3):90--96.
+doi: 10.14357\!/ 19922264220312.
+
+\bibitem{Moltchanov2022-1}
+\Aue{Moltchanov,~D.\,A., V.\,O.~Begishev, K.\,E.~Samouylov, and Y.\,A.~Koucheryavy.}
+2022.
+\textit{Seti 5G/6G: arkhitektura, tekhnologii, metody analiza i~rascheta}
+[5G\!/\!6G networks: Architecture, technologies, analysis methods, and 
+calculations].
+Moscow: RUDN University. 516~p.
+
+\bibitem{LopezSanchez2023-1}
+\Aue{Lopez-Sanchez,~M., A.~Villena-Rodriguez, G.~Gomez, F.J.~Martin-Vega, and 
+M.\,C.~Aguayo-Torres.}
+2023.
+Latency fairness optimization on wireless networks through deep reinforcement 
+learning.
+\textit{IEEE T. Veh. Technol.} 72(4):5407--5412.
+doi: 10.1109\!/\!TVT.2022.3224368.
+
+\bibitem{Kwon2023-1}
+\Aue{Kwon,~J., J.~Ryu, J\,H.~Lee, and J.~Joung.}
+2023.
+Improving end-to-end latency fairness using a reinforcement-learning-based 
+network scheduler.
+\textit{Appl. Sci.~--- Basel} 13(6):3397.
+doi: 10.3390\!/\!app13063397.
+
+\bibitem{3GPP38901-1} %8
+3GPP TR 38.901. 2023. Study on channel model for frequencies from~0.5 to~100~GHz. Release~17.1.0.
+
+\bibitem{Kochetkova2021b-1} %9
+\Aue{Kochetkova~I.\,A., A.\,I.~Kushchazli, P.\,A.~Kharin, and S.\,Ya.~Shorgin.}
+2021. Model' skhemy prioritetnogo dostupa trafika URLLC i~eMBB 
+v~seti pyatogo pokoleniya v~vide resursnoy sistemy massovogo obsluzhivaniya
+[Model for analyzing priority admission control of URLLC and eMBB communications 
+in 5G networks as a resource queuing system].
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.}
+15(4):87--92.
+doi: 10.14357\!/\!19922264210412.
+
+\bibitem{Yashkov1990-1}
+\Aue{Yashkov,~S.\,F.} 1992.
+Mathematical problems in the theory of shared-processor systems.
+\textit{J. Soviet Mathematics} 58(2):101--147.
+doi: 10.1007\!/\!BF01097426.
+
+\bibitem{Samouylov2010-1} %11
+\Aue{Samouylov,~K.\,E. and I.\,A.~Gudkova.}
+2010.
+Recursive computation for a multi-rate model with elastic traffic and minimum 
+rate guarantees.
+\textit{Congress (International) on Ultra Modern Telecommunications and Control 
+Systems and Workshops Proceedings}. Piscataway, NJ: IEEE. 1065--1072.
+doi: 10.1109\!/\!ICUMT.2010.5676509.
+
+\bibitem{Shorgin2015-1} %12
+\Aue{Shorgin,~S.\,Y., K.\,E.~Samouylov, I.\,A.~Gudkova, E.\,V.~Markova, and 
+E.\,S.~Sopin.}
+2015.
+Approximating performance measures of radio admission control model for non 
+real-time services with maximum bit rates in LTE.
+\textit{AIP Conf. Proc.} 1648:250004.
+doi: 10.1063\!/\!1.4912508.
+
+\bibitem{Kochetkova2023-1}
+\Aue{Kochetkova,~I., K.~Leonteva, I.~Ghebrial, A.~Vlaskina, S.~Burtseva, 
+A.~Kushchazli, and K.~Samouylov.}
+2024. Controllable queuing system with elastic traffic and signals for resource 
+capacity planning in 5G network slicing.
+\textit{Future Internet} 16(1):18. 23~p.
+doi: 10.3390\!/\!fi16010018.
+
+
+\bibitem{Jain1984-1}
+\Aue{Jain~R., D.\,M.~Chiu, W.\,R.~Hawe.}
+1984.
+A quantitative measure of fairness and discrimination for resource allocation in 
+shared computer systems.
+ Hudson, MA: Eastern Research Laboratory, 
+Digital Equipment Corp. DEC Research Report\linebreak TR-301. 37~p.
+
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received January 15, 2024}} 
+
+\vspace*{-14pt} 
+
+\Contr
+
+\vspace*{-3pt}
+
+\noindent
+\textbf{Kochetkova Irina A.} (b.\ 1985)~--- Candidate of Science (PhD) in physics 
+and mathematics, associate professor, Department of Probability Theory and Cyber 
+Security, RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian 
+Federation; senior scientist, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, 
+Russian Federation; \mbox{kochetkova-ia@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Vlaskina Anastasiya S.} (b.\ 1995)~--- Candidate of Science (PhD) in physics 
+and mathematics, teaching assistant, Department of Probability Theory and Cyber 
+Security, RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian 
+Federation; \mbox{vlaskina-as@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Eseng Mangue Pedro Luis Eyama} (b.\ 1992)~--- PhD student, Department of 
+Probability Theory and Cyber Security, RUDN University, 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian Federation; \mbox{pedroluis\_eyamaeseng@yahoo.es}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Shorgin Vsevolod S.} (b.\ 1978)~--- Candidate of Science (PhD) in 
+technology, senior scientist, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, 
+Russian Federation; \mbox{vshorgin@ipiran.ru}
+
+
+
+  
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

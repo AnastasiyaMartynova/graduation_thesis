@@ -1,0 +1,1169 @@
+\documentstyle[%
+righttag%
+,11pt%
+,amssymb%
+,subeqn% 
+,russian%               remove in Eng.
+,izvru%                 Set izven% in Eng.
+]{amsart}
+
+\def\alph{\asbuk}
+%% \def\thefootnote{\fnsymbol{footnote}}
+
+%% \renewcommand{\baselinestretch}{1.03}
+\newcommand{\G}{\Gamma}
+\newcommand{\og}{\ov{\G}{}}
+\newcommand{\oga}{\ov{G}{}}
+\newcommand{\os}{\ov{S}{}}
+\newcommand{\od}{\ov{D}{}}
+\newcommand{\g}{\gamma}
+\newcommand{\eq}{\equiv}
+\newcommand{\vt}{\vartheta}
+\newcommand{\La}{\Lambda}
+\newcommand{\la}{\lambda}
+\newcommand{\al}{\alpha}
+\newcommand{\xt}{(\xi, \tau)}
+\newcommand{\tx}{\xi \tau}
+\newcommand{\om}{\omega}
+\newcommand{\Om}{\Omega}
+\newcommand{\up}{\upsilon}
+\newcommand{\ovo}{\ov{\omega}{}}
+\newcommand{\Oh}[1]{{\cal O} (#1)}
+\newcommand{\si}{\sigma}
+\newcommand{\di}{\displaystyle}
+\newcommand{\no}{\nonumber}
+\newcommand{\pa}{\partial}
+\newcommand{\pad}{\displaystyle \pa}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\de}{\delta}
+\newcommand{\vp}{\varphi}
+\newcommand{\ow}[1]{\ov{\wh{#1}}{}}
+\newcommand{\owt}[1]{\ov{\wt{#1}}{}}
+\newcommand{\wo}[1]{\wt{\ov{#1}}{}}
+
+\theoremstyle{plain}
+\theorembodyfont{\it}
+\newtheorem{thms}{\hskip\parindent Теорема}[section]
+\newtheorem{lems}{\hskip\parindent Лемма}[section]
+
+\theoremstyle{definition}
+\theorembodyfont{\rm}
+\newtheorem{notes}{\hskip\parindent Замечание}[section]
+
+
+\numberwithin{equation}{section}
+
+\newcommand{\tts}[1]{}
+
+%\hoffset=-15mm%                  For Eng.
+\setcounter{page}{62}
+\god{2005}
+\nomer{2~(513)} %                        Remove in Eng.
+%\nomer{Vol.\,49, No.\,2}%               Set in Eng.
+%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
+\udk{519.632}
+
+\author{\it Г.И.\,Шишкин}
+% NB:   ^^ remove in Eng.
+\title{Метод декомпозиции области в случае неперекрывающихся подобластей
+для сингулярно возмущенного уравнения конвекции-диффузии}
+\thanks{Работа выполнена при финансовой
+поддержке Российского фонда фундаментальных исследований
+(проект \No\,01-01-01022).}
+
+\date{}
+%\pagestyle{myheadings}%         Set in Eng.
+\pagestyle{plain} %              Remove in Eng.
+\begin{document}
+%\thispagestyle{plain}%          Set in Eng.
+\maketitle
+\label{begin}
+
+
+
+\section{Введение}\label{section.1}
+
+Для достаточно представительных классов сингулярно возмущенных
+краевых задач разработаны $\eps$-равномерно сходящиеся 
+методы, для которых ошибки решений
+не зависят от возмущающего параметра~$\eps$ (напр.,
+\cite{5}--\cite{CRC} и библиография там же). В случае регулярных краевых
+задач хорошо известны эффективные численные методы на основе
+декомпозиции области (см., напр., \cite{1}, \cite{18} и библиографию там же).
+Такие методы позволяют свести решение достаточно сложных задач к
+задачам на более простых областях и, в частности, проводить
+распараллеливание вычислений. Среди этих методов особенно
+привлекательными являются методы декомпозиции на неперекрывающихся
+подобластях, позволяющие использовать на подобластях равномерные
+сетки при решении промежуточных задач.
+
+В этой связи представляется актуальной разработка методов
+декомпозиции области для сингулярно возмущенных краевых задач и,
+в частности, методов, для которых ошибки решений и число итераций,
+требуемых для отыскания приближенного решения, не~зависят от параметра~$\eps$.
+
+В данной работе рассматривается краевая задача для сингулярно
+возмущенного эллиптического уравнения типа конвекции-диффузии на
+полосе. Для такой задачи известна специальная разностная схема
+на кусочно-равномерных сетках, сходящаяся $\eps$-равномерно
+(напр., \cite{6}--\cite{8}, \cite{CRC}).
+На основе этой схемы строятся разностные
+схемы метода декомпозиции области в случае неперекрывающихся подобластей.
+На границах подобластей рассматриваются обменные условия Робина.
+Ошибки приближенных решений и число итераций,
+требуемых для решения задачи, существенно зависят от 
+параметра $\eps$ (при малых значениях $\eps$ ошибки
+решений становятся конечными, причем требуемое для решения число
+итераций неограниченно растет при $\eps \to 0$).
+
+Исследуются параметры обменных условий и разностных схем, обеспечивающие
+$\eps$-рав\-но\-мер\-ную сходимость сеточных решений со скоростью
+$O(N_1^{-1}\ln N_1 + N_2^{-1} + q^n)$, где $N_s$ задает 
+число сеточных узлов вдоль оси $x_s$, $s=1,2$, $n$ --- число
+итераций, причем $q < 1$ равномерно по $\eps$.
+
+Заметим, что $\eps$-равномерные численные методы на основе декомпозиции
+области рассматривались, например, в
+\cite{6}, \cite{7}, \cite{17}--\cite{21}.
+В этих работах использовались обменные условия Дирихле.
+Методы на неперекрывающихся
+подобластях с обменными условиями Робина, сходящиеся \linebreak
+$\eps$-равномерно
+с ростом числа узлов сеток и числа итераций, не~рассматривались.
+
+
+\section{Постановка задачи}\label{section.2}
+
+
+На вертикальной полосе $\od$, где
+\begin{equation}\label{eq.2.1}
+D=\{x: x_1 \in (0, d), \ x_2 \in R \},
+\end{equation}
+рассмотрим краевую задачу для эллиптического уравнения
+\begin{equation} \label{eq.2.2}
+\begin{array}{c}
+L u(x) \eq \displaystyle\bigg\{ \eps \sum_{s=1,2} a_{s}(x)
+\displaystyle\frac{\pad^2}{\pad x_s^2}+ \sum_{s=1,2} b_{s}(x)
+\dfrac{\pad}{\pad x_s}-c(x) \bigg\} u(x)
+= f(x), \quad x\in D,\\[3mm]
+u(x) = \vp(x), \quad x\in \G.
+\end{array}
+\end{equation}
+Здесь $\G=\od\setminus D$, функции $a_s(x)$, $b_s(x)$, $c(x)$, $f(x)$ и
+$\vp(x)$ предполагаются достаточно гладкими на $\od$ и $\G$
+соответственно, причем\footnote{Здесь и ниже через $M$, $M_i$ ($m$, $m_i$)
+обозначаем достаточно большие (малые) положительные постоянные,
+не~зависящие от $\eps$ и от параметров разностных схем.
+Запись $m_{(j.k)}$ ($\od_{h(j.k)}$, $L_{(j.k)}$) будет означать,
+что эта постоянная (сетка, оператор и т.\,п.) введена в формуле $(j.k)$.}
+\begin{equation} \label{eq.2.3}
+\begin{array}{c}
+a_0 \le a_s(x) \le a^0, \ \ b_0 \le b_1(x) \le b^0, \ \
+|b_2(x)| \le b^0, \ \ 0 \le c(x) \le c^0, \\ [2mm]
+|f(x)| \le M, \ \ x \in \od; \ \ |\vp(x)| \le M, \ \
+x \in \G; \ \ s=1, 2, \ \ a_0, b_0 >0; 
+\end{array}
+\end{equation}
+параметр $\eps$ принимает произвольные значения
+из полуинтервала $(0,1]$. Для простоты предполагаем выполненным
+одно из условий $b_2(x) \geq 0$, $x \in \od$,
+либо $b_2(x) \leq 0$, $x \in \od$.
+
+В том случае, когда параметр $\eps$ стремится к нулю, в окрестности
+границы $\G_1$ появляется регулярный пограничный слой. Здесь
+$\G=\G_1\cup \G_2$, $\G_1=\G_L$, $\G_2=\G_R$ ---
+левая и правая границы.
+
+Для краевой задачи (\ref{eq.2.2}), (\ref{eq.2.1}) требуется построить
+специальную разностную схему метода декомпозиции области
+в случае неперекрывающихся подобластей, решение которой сходится
+$\eps$-равномерно с ростом числа узлов сеточной области и числа
+итераций итерационного процесса.\\
+
+
+\section{Базовая схема для задачи (\ref{eq.2.2}), (\ref{eq.2.1})}
+\label{section.3}
+
+
+Приведем $\eps$-равномерно сходящуюся разностную схему.
+На множестве $\od$ введем прямоугольную сетку
+\begin{equation} \label{eq.3.1}
+\od_h=\ovo_1 \times \om_2,
+\end{equation}
+где $\ovo_1$ и $\om_2$ --- произвольные, вообще говоря, неравномерные
+сетки на отрезке $[0,d]$ и на оси $x_2$.
+Пусть $h^i_s=x_s^{i+1}-x_s^i$, $x^i_s,x_s^{i+1} \in \ovo_1$ при $s=1$,
+$x_s^i, x_s^{i+1} \in \om_2$ при $s=2$; пусть
+$h_s=\max\limits_i h_s^i$, $h=\max\limits_s h_s$. Предполагаем выполненным
+условие
+$h \leq M N^{-1}$, где $ N=\min [N_1, N_2]$, $N_1+1$ и $N_2+1$ --- число
+узлов сетки $\ovo_1$ и минимальное число узлов сетки $\om_2$ на
+отрезке единичной длины.
+
+Задачу (\ref{eq.2.2}), (\ref{eq.2.1}) аппроксимируем монотонной
+разностной схемой \cite{2}
+\begin{equation} \label{eq.3.2}
+\begin{array}{c}
+\La z(x) \eq\displaystyle \bigg\{ \eps \sum_{s=1,2} a_s(x)
+\de_{\ov{xs}\,\wh{xs}}+\sum_{s=1,2} [b^+_s(x)\de_{xs}+
+b^-_s(x)\de_{\ov{xs}}]- c(x) \bigg\} z(x) = f(x),
+\quad x\in D_h,\\[3mm]
+%
+z(x) = \vp(x), \quad x \in \G_h.
+\end{array}
+\end{equation}
+Здесь $D_h=D \cap \od_h$, $\G_h=\G \cap \od_h$,
+$\de_{\ov{xs}\,\wh{xs}}z(x)$ и $\de_{xs}z(x)$,
+$\de_{\ov{xs}}z(x)$~-- вторая и первые (вперед и назад) разностные
+производные, например,
+\begin{gather*}
+\de_{\ov{x1}\,\wh{x1}}z(x)=2(h_1^i+h_1^{i-1} )^{-1}
+[\de_{x1}z(x)-\de_{\ov{x1}}z(x)], \ \ x=(x_1^i,x_2)\in D_h; \\
+v^+(x)=2^{-1}(v(x)+|v(x)|), \ \ v^-(x)=2^{-1}(v(x)-|v(x)|).
+\end{gather*}
+Схема (\ref{eq.3.2}), (\ref{eq.3.1}) монотонна \cite{2} \ $\eps$-равномерно.
+Для решений схемы справедлива оценка
+\begin{equation} \label{eq.3.3}
+|u(x)-z(x)|\leq M[(\eps^2+N_1^{-1})^{-1}
+N_1^{-1} + N_2^{-1}], \ \ x \in \od_h.
+\end{equation}
+В случае сеток
+\begin{equation} \label{eq.3.4}
+\od_h=\ovo_1 \times \om_2,
+\end{equation}
+равномерных по обеим переменным, имеем
+\begin{equation} \label{eq.3.5}
+|u(x)-z(x)| \leq M [(\eps+N_1^{-1})^{-1}
+N_1^{-1} + N_2^{-1}], \ \ x\in \od_h.
+\end{equation}
+Схема (\ref{eq.3.2}), (\ref{eq.3.4}) сходится при условии
+$(N^{-1}_1\ll \eps)$
+\begin{equation} \label{eq.3.51}
+\eps^{-1}= o(N_1).
+\end{equation}
+Построим кусочно-равномерную сетку, на которой схема (\ref{eq.3.2})
+сходится $\eps$-равномерно \cite{6}, \cite{7}, \cite{CRC}.
+На множестве $\od$ введем сетку
+\begin{subequations} \label{eq.3.6} %%%%%%
+\begin{equation} \label{eq.3.6a}
+\od_h=\ovo^*_1 \times \om_2,
+\end{equation}
+где $\om_2=\om_{2(\ref{eq.3.4})}$,
+$\ovo^*_1$ --- кусочно-равномерная сетка, строящаяся следующим
+образом. Отрезок $[0,d]$ разбивается на 2 интервала $[0,\si]$,
+$[\si,d]$. Шаги сетки на интервалах постоянны
+и равны $h^{(1)}_1=2 \si N_1^{-1}$ и
+$h^{(2)}_1=2(d-\si)N_1^{-1}$ на интервалах $[0,\si]$,
+$[\si,d]$ соответственно. Параметр $\si$ определяется соотношением
+\begin{equation} \label{eq.3.6b}
+\si=\si(\eps,N_1)=\min[2^{-1}d, m^{-1}\eps
+\ln N_1],
+\end{equation}
+\end{subequations}
+где $m=m_{(\ref{eq.7.2})}$. Сетки $\ovo^*_1$ и
+$\od_{h (\ref{eq.3.6})}$ построены.
+
+Для решений разностной схемы (\ref{eq.3.2}), (\ref{eq.3.6})
+получается оценка
+\begin{equation} \label{eq.3.7}
+|u(x)-z(x)|\leq M \{ N_1^{-1} \min [\eps^{-1}, \ln N_1]
++ N_2^{-1}\}, \ \ x \in \od_h,
+\end{equation}
+а также $\eps$-равномерная оценка
+\begin{equation} \label{eq.3.8}
+|u(x)-z(x)|\leq M [N_1^{-1} \ln N_1 + N_2^{-1}],\ \ x\in \od_h.
+\end{equation}
+
+Введем определение. Пусть для функции $z(x)$, $x \in \od_h$, --- решения
+некоторой разностной схемы --- выполняется оценка
+\begin{equation} \label{eq.3.9}
+|u(x)-z(x)|\leq \mu_1 \beta_1 + \mu_2 \beta_2, \ \ \ x\in \od_h,
+\end{equation}
+где $\mu_s =\mu_s (N^{-1}_s,\eps)$, $\beta_s =\beta_s (N^{-1}_s,\eps)$,
+причем $\mu_s (N_s^{-1},\eps) \rightarrow 0$ при
+$N_s \rightarrow \infty$, $\eps \rightarrow 0$,
+a
+$\beta_s (N_s^{-1}, \eps) \rightarrow \infty$ при
+$N_s \rightarrow \infty$, $\eps \rightarrow 0$; $s=1,2$.
+Будем говорить, что оценка (\ref{eq.3.9}) неулучшаема по вхождению величин
+$N_1$, $N_2$, $\eps$, если оценка
+$$
+|u(x)-z(x)| \leq \mu^0_1 \beta^0_1 + \mu^0_2 \beta^0_2, \ \ 
+x\in \od_h,
+$$
+вообще говоря, неверна при условии $\mu^0_1\beta^0_1+\mu^0_2\beta^0_2=
+o(\mu_1 \beta_1 + \mu_2 \beta_2)$;
+$\mu^0_s=\mu^0_s(N^{-1}_s, \eps)$, $\beta^0_s=\beta^0_s(N^{-1}_s, \eps)$,
+$s=1,2$.
+
+Оценки (\ref{eq.3.5}), (\ref{eq.3.7}) --- $\eps$-зависимые оценки
+погрешности сеточных решений --- неулучшаемы по вхождению величин
+$N_1$, $N_2$, $\eps$, a $\eps$-равномерная оценка
+(\ref{eq.3.8}) --- по вхождению $N_1$, $N_2$.
+
+
+\begin{thms} \label{t.3.1}
+Пусть для решения $u(x)$ краевой задачи $(\ref{eq.2.2})$, $(\ref{eq.2.1})$
+выполняются априорные оценки теоремы $\ref{t.7.1}$,
+где $K=4$. Тогда разностная схема $(\ref{eq.3.2})$, $(\ref{eq.3.6})$
+$($схемы $(\ref{eq.3.2})$, $(\ref{eq.3.1})$ и $(\ref{eq.3.2})$,
+$(\ref{eq.3.4}))$ сходится $\eps$-равномерно $($сходятся при
+фиксированных значениях параметра $\eps)$. Для сеточных решений справедливы
+оценки $(\ref{eq.3.3})$, $(\ref{eq.3.5})$, $(\ref{eq.3.7})$,
+$(\ref{eq.3.8});$ оценки $(\ref{eq.3.5})$, $(\ref{eq.3.7})$ и
+$(\ref{eq.3.8})$ неулучшаемы соответственно по вхождению величин
+$N_1$, $N_2$, $\eps$, и $N_1$, $N_2$.
+\end{thms}
+
+
+\section{Континуальные схемы c обменными условиями Робина}
+\label{section.4}
+
+
+Приведем континуальный метод Шварца при декомпозиции области на
+перекрывающиеся и неперекрывающиеся подобласти
+в случае условия обмена Робина на границах подобластей.
+\medskip
+
+1. На множестве $\od$ введем покрывающие множества $D^{(k)}$
+\begin{equation} \label{eq.4.1}
+\od=\od^{(1)} \cup \od^{(2)},\ \ D^{(1)}=(0,d_1) \times R,\ \ D^{(2)}=
+(d_2,d) \times R, \ \ 0 < d_2 \leq d_1 < d,
+\end{equation}
+имеющие перекрытие ширины $\de = d_1 - d_2 \geq 0$; полагаем
+$\G^{(k)}=\od^{(k)} \setminus D^{(k)}$, $k=1,2$; $\G^{(k)}=
+\G^{(k)}_L \cup \G^{(k)}_R$, $\G^{(k)}_L$
+и
+$\G^{(k)}_R$ --- левая и правая части границы $\G^{(k)}$.
+
+Пусть на $\od$ задана произвольная достаточно гладкая ограниченная функция
+$u^0(x)$, $x \in \od$, причем $u^0(x)=\vp(x)$, $x \in \G$, и пусть уже
+известны функции $u^1(x), \dotsc, u^{n-1}(x)$, $x \in \od$. Построим
+функцию $u^n(x)$, $x \in \od$.
+
+В отличие от функций $u^i(x)$, $i=1,\dotsc, n$, кусочно-гладких, но
+непрерывных на $\od$ в случае обменных условий Дирихле (напр.,
+\cite{6}, \cite{7}, \cite{17}--\cite{20}),
+функции $u^i(x)$ в этом методе декомпозиции достаточно
+гладкие на $\od^{(1)}$ и $\od^{[2]}$, где
+$\od^{[k]}=\od^{(k)}\setminus D^{(3-k)}$, и терпят разрыв I~рода на множестве
+$\G^{(1)}_R$. Полагаем $\od^{\{k\}}=\od^{(1)}$ при $k=1$,
+$\od^{\{k\}}=\od^{[2]}$ при $k=2$. На множествах $\od^{(k)}$ находим
+функции $u^{n(k)}(x)$, решая задачи
+\begin{subequations} \label{eq.4.2} %%%%%
+\begin{equation} \label{eq.4.2a}
+\begin{array}{c}
+L u^{n(2)}(x) = f(x),\ \ x \in D^{(2)}, \quad
+u^{n(2)}(x) = \vp(x), \ \ x \in \G^{(2)}\cap \G, \\[2mm]
+l_L u^{n(2)}(x)=l_L u^{(n-1)}(x_1-0, x_2),
+\ \ x\in \G^{(2)}\setminus \G;\\[2mm]
+L u^{n(1)}(x) = f(x),\ \ x \in D^{(1)}, \quad
+u^{n(1)}(x) = \vp(x), \ \ x \in \G^{(1)}\cap \G, \\[2mm]
+l_R u^{n(1)}(x)=l_R u^{n(2)}(x_1+0, x_2), \ \ x\in \G^{(1)}\setminus \G.
+\end{array}
+\end{equation}
+Здесь
+\begin{alignat*}{2}
+l_R v(x)&\eq \bigg(\eps \alpha_R(x)\frac{\pad}{\pad x_1}+\beta_R(x)
+\bigg)v(x), &\quad x&\in \G^{(1)}\setminus \G, \\
+l_L v(x)&\eq \bigg(-\eps \alpha_L(x)\frac{\pad}{\pad x_1}+\beta_L(x)
+\bigg)v(x),&\quad x&\in \G^{(2)}\setminus \G,
+\end{alignat*}
+$\alpha_R(x), \beta_R(x)\geq 0$, $x\in \G^{(1)}_R$,
+$\alpha_L(x), \beta_L(x)\geq 0$, $x\in \G^{(2)}_L $, --- достаточно
+гладкие функции на множестве $\G^{(12)}\eq \{\G^{(1)}\cup
+\G^{(2)}\}\setminus \G$,
+причем $\alpha_R(x)+\beta_R(x)> 0$, $x\in \G^{(1)}_R$, 
+$\alpha_L(x)+\beta_L(x)> 0$, $x\in \G^{(2)}_L$.
+Функция
+\begin{equation} \label{eq.4.2b}
+u^n(x)=\begin{cases}
+u^{n(1)}(x), & x \in \od^{(1)}; \\
+u^{n(2)}(x), & x \in \od^{(2)} \setminus D^{(1)},
+\end{cases}
+\qquad x \in \od^{\{k\}}, \ \ k=1,2;\ \ n=1,2,\dotsc,
+\end{equation}
+\end{subequations}
+на множестве $\G^{(1)}_R$ терпит разрыв I рода.
+Функцию $u^n(x)$, $x \in \od$, $n=1,2,\dotsc$, назовем решением
+задачи (\ref{eq.4.2}), (\ref{eq.4.1}) --- континуального метода Шварца с
+обменными условиями Робина.
+Заметим, что схема (\ref{eq.4.2}), (\ref{eq.4.1}) определена при $\de\geq 0$.
+
+Для простоты будем считать выполненным условие
+\begin{equation} \label{eq.4.3}
+\beta(x)=1-\alpha(x), \ \ x\in \G^{(12)},
+\end{equation}
+где $\alpha(x)$, $\beta(x)$ равны $\alpha_R(x)$, $\beta_R(x)$
+при $x\in \G^{(1)}_R$
+и $\alpha_L(x)$, $\beta_L(x)$ при $x\in\G^{(2)}_L$.
+При $\alpha(x)\eq 1$, $x\in \G^{(12)}$, обменные условия --- условия Неймана,
+а при $\alpha(x)\eq 0$, $x\in \G^{(12)}$, --- условия Дирихле.
+
+Для схемы (\ref{eq.4.2}), (\ref{eq.4.1}) справедлив принцип
+максимума. Приведем одну из его формулировок.
+
+
+\begin{lems} \label{l.4.1}
+Пусть $\de\geq 0$, $c(x)\geq c_0>0$, $x\in\od$, и пусть для
+достаточно гладких функций $u^{n(k)}(x)$, $x \in \od^{(k)}$,
+а также функций $u^n(x)$, $x\in\od$, определяемых $(\ref{eq.4.2b})$,
+$k=1,2$, $n=0,1,2,\dotsc$, выполняются условия
+\begin{gather*}
+l_L u^{0(1)}(x) \geq 0,\ \ x \in \G^{(2)}_L, \\
+%
+(-1)^k L u^{n(k)}(x) \leq 0 ,\ \
+x\in D^{(k)}, \ \ u^{n(k)}(x) = 0, \ \ x \in \G^{(k)}\cap\G,\\
+%
+l_L u^{n(2)}(x) \geq l_L u^{n-1}(x_1-0, x_2) ,\ \ x \in
+\G^{(2)}_L, \\
+%
+l_R u^{n(1)}(x) \leq l_R u^{n(2)}(x_1+0,
+x_2) ,\ \ x \in \G^{(1)}_R, \ \ k=1,2,
+\end{gather*}
+причем
+\begin{align*}
+l_R u^{i(2)}(x_1+0, x_2)&\leq 0, \ \ x\in\G^{(1)}_R, \\
+l_L u^{i(1)}(x_1-0, x_2)&\geq 0, \ \ x\in\G^{(2)}_L,
+\ \ i=1,2,\dotsc,n, \ \ n=1,2,\dotsc,
+\end{align*}
+где $u^{n-1}(x) = u^{0(1)}(x)$, $x\in \G^{(2)}_L$, при $n=1$. Тогда
+$$
+(-1)^k u^{n}(x)\geq 0, \ \ x \in \od^{\{k\}}, \ \ k=1,2,
+\ \ n=1,2,\dotsc,
+$$
+для всех $\eps\in (0,1]$.
+\end{lems}
+
+Заметим, что схема (\ref{eq.4.2}), (\ref{eq.4.1}), вообще говоря,
+не~сходится в случае условия
+\begin{equation} \label{eq.4.4}
+\de=0,
+\end{equation}
+например, когда $\beta(x)\eq 1$ 
+либо $\beta(x)\eq 0$, $x\in \gamma$,
+где $\gamma=\G^{(12)}$ при $\de=0$.
+\medskip
+
+2. Приведем условия, достаточные для сходимости схемы (\ref{eq.4.2}),
+(\ref{eq.4.1}),~(\ref{eq.4.4}).
+
+Пусть $u^{(k)}(x)$, $x\in\od^{(k)}$, $k=1,2$, --- решения краевых задач,
+подобных (\ref{eq.7.3}),~(\ref{eq.2.1}),
+\begin{subequations} \label{eq.4.5} %%%%%%
+\begin{equation} \label{eq.4.5a}
+\begin{array}{c}
+L u^{(k)}(x)=0, \ \ x\in D^{(k)}, \ \ u^{(k)}(x)=0,
+\ \ x\in\G^{(k)}\cap\G, \\[2mm]
+l_R u^{(1)}(x)=1, \ \ x\in\G^{(1)}\setminus\G, \ \
+l_L u^{(2)}(x)=1, \ \ x\in\G^{(2)}\setminus\G, \ \ k=1,2.
+\end{array}
+\end{equation}
+Для функций $u^{(k)}(x)$, $x\in\od^{(k)}$, справедливы оценки
+(см. (\ref{eq.7.4}), (\ref{eq.7.6}))
+\begin{equation} \label{eq.4.5b}
+\begin{split}
+|l_R(u^{(2)}(x)-u_0^{(2)}(x))|&\leq M_1 \eps
+\exp(-m_1 r(x,\G^{(2)}_L)), \ \ x\in\od^{(2)};\\
+%
+|l_L(u^{(1)}(x)-u_0^{(1)}(x))|&\leq M_2 \eps, \ \ x\in\od^{(1)},
+\end{split}
+\end{equation}
+где $r(x,\G^{(2)}_L)$ --- расстояние от точки $x$ до множества $\G^{(2)}_L$,
+$m_1=m_{(\ref{eq.7.2})}$. Здесь
+\begin{gather}
+u_0^{(2)}(x)=[m^0(x^*)\alpha_L(x^*)+\beta_L(x^*)]^{-1}
+\exp(-\eps^{-1}m^0(x^*)r(x,\G^{(2)}_L)),\notag\\
+%
+\label{eq.4.5c}
+x\in\od^{(2)}, \quad x^*\in\G^{(2)}_L,
+\end{gather}
+$m^0(x)=a^{-1}_1(x)b_1(x)$, $x^*=x^*_{(\ref{eq.7.51})}(x)$;
+функция $u^{(1)}_0(x)$ представляется в виде суммы функций
+$$
+u^{(1)}_0(x)=U^{(1)}_0(x)+V^{(1)}_0(x), \quad x\in\od^{(1)}.
+$$
+Компоненты $U^{(1)}_0(x)$, $V^{(1)}_0(x)$ --- решения задач
+\begin{align*}
+& L^{1}_{(\ref{eq.7.51})} U^{(1)}_0(x)=0, \quad
+x\in\od^{(1)}\setminus\gamma, \\
+& l_R U_0^{(1)}(x)\eq \bigg\{ \eps \alpha_R(x)\frac{\pa}{\pa x_1}
++\beta_R(x)\bigg\} U^{(1)}_0(x)=1, \quad x \in \gamma, \\
+& L^{2}_{(\ref{eq.7.51})} V^{(1)}_0(x)=0, \quad x\in D^{(1)}, \\
+& V^{(1)}_0(x)=-U^{(1)}_0(x), \quad x\in \G_1, \quad 
+l_R V_0^{(1)}(x)= 0, \quad x \in \gamma.
+\end{align*}
+Функции $u_0^{(k)}(x)$ --- главные члены асимптотики по $\eps$
+для функций $u^{(k)}(x)$, $x\in\od^{(k)}$, $k=1,2$.
+
+Полагаем
+\begin{equation*} %%\label{eq.4.5d}
+q^0=q^0(\eps)\eq\sup\limits_{x\in\gamma}\{|l_R u^{(2)}(x)|\,
+|l_L u^{(2)}(x)|^{-1}|l_L u^{(1)}(x)|\, |l_R u^{(1)}(x)|^{-1}\}.
+\end{equation*}
+\end{subequations}
+С учетом (\ref{eq.4.5b}) находим оценку
+\begin{multline*}
+q^0\leq\sup\limits_{x\in\gamma_h}
+\{[|l_R u_0^{(2)}(x)|+M_1\eps]
+[|l_L u_0^{(2)}(x)|-M_1\eps]^{-1}\times \\ \times
+[|l_L u_0^{(1)}(x)|+M_2\eps] 
+[|l_R u_0^{(1)}(x)|-M_2\eps]^{-1}\},
+\ \ M_i=M_{i(\ref{eq.4.5b})}.
+\end{multline*}
+Для величины $q^0$ с учетом явного вида функций $u_0^{(k)}$
+при условии (\ref{eq.4.3}) устанавливаем оценку
+\begin{multline} \label{eq.4.6}
+q^0\leq\sup\limits_{x\in\gamma}
+\{|-m^0(x)\alpha_R(x)+(1-\alpha_R(x))|
+(1-\alpha_L(x))[m^0(x)\alpha_L(x)+ \\ +
+(1-\alpha_L(x))]^{-1}(1-\alpha_R(x))^{-1}\}+
+M\eps\eq q^0_{1(\ref{eq.4.6})}. 
+\end{multline}
+Для схемы (\ref{eq.4.2}), (\ref{eq.4.1}), (\ref{eq.4.3}) в силу оценки
+(\ref{eq.4.6}) имеем
+\begin{equation} \label{eq.4.7}
+|u(x)-u^n(x)|\leq Mq^n, \ \ x\in\od, \ \ q\leq q^0_{1(\ref{eq.4.6})}.
+\end{equation}
+
+Будем предполагать, что выполняется условие
+\begin{equation} \label{eq.4.8}
+|1-(1+m^0(x))\alpha_R(x)|\leq m_1, \ \ x\in\gamma, \ \ \eps\in (0,\eps_0],
+\end{equation}
+где постоянные $m_1$ и $\eps_0$ достаточно малы, и для них выполняется
+$q^0_{1(\ref{eq.4.6})}\le 1-m$.
+При условии (\ref{eq.4.8}) схема (\ref{eq.4.2}),
+(\ref{eq.4.1}), (\ref{eq.4.3}), (\ref{eq.4.4}) сходится $\eps$-равномерно
+при $n\ra\infty$.
+
+\begin{thms} \label{t.4.1}
+Условие $(\ref{eq.4.8})$ является достаточным для $\eps$-равномерной
+сходимости схемы $(\ref{eq.4.2})$, $(\ref{eq.4.1})$, $(\ref{eq.4.3})$,
+$(\ref{eq.4.4})$. Для решений схемы $($при условии $(\ref{eq.4.8}))$
+справедлива оценка $(\ref{eq.4.7})$, где $q\leq 1-m$.
+\end{thms}
+
+
+\section{Разностные схемы c обменными условиями Робина}
+\label{section.5}
+
+
+1. Построим разностные схемы метода декомпозиции области в случае
+обменных условий Робина. Считаем выполненным условие (\ref{eq.4.4}).
+Таким образом, $\G^{(1)}_R=\G^{(2)}_L=\gamma$.
+
+На множествах $\od^{(k)}$ строим сетки
+\begin{equation} \label{eq.5.1}
+\od^{(k)}_h=\od^{(k)}\cap \od_h, \ \ k=1,2,
+\end{equation}
+где $\od_h=\od_{h(\ref{eq.3.1})}$; считаем, что границы множеств
+$\od^{(k)}$ проходят через узлы сетки $\od_h$.
+
+Пусть на $\od_h$ задана функция $z^0(x)=u^0(x)$, $x \in \od_h$,
+где $u^0(x)$ --- произвольная достаточно гладкая функция,
+и пусть уже известны функции $z^1(x), \dotsc , z^{n-1}(x)$,
+$x \in \od_h$, причем $z^i(x)=\vp(x)$, $x \in \G_h$, $i=1,\dotsc, n-1$.
+Найдем функцию $z^n(x)$.
+Заметим, что функции $z^i(x)$, $x\in \od_h$, $i=1, \dotsc, n-1$
+(как и функции $u^i(x)$, $x \in \od$, --- решения задачи (\ref{eq.4.2}))
+терпят ``разрыв'' на множестве $\G^{(1)}_{Rh}$.
+
+Находим функции $z^{n(k)}$, $\, x \in \od^{(k)}_h$, $k=1,2$, решая задачи
+\begin{subequations} \label{eq.5.2} %%%%%
+\begin{equation} \label{eq.5.2a}
+\begin{split}
+\La z^{n(2)}(x) = f(x),\ \ x \in & D_h^{(2)},\quad
+z^{n(2)}(x) = \vp(x), \ \ x \in \G_h^{(2)} \cap \G, \\
+%
+\La z^{n(1)}(x) = f(x),\ \ x \in & D_h^{(1)},\quad
+z^{n(1)}(x) = \vp(x), \ \ x \in \G_h^{(1)} \cap \G,
+\end{split}
+\end{equation}
+\begin{equation} \label{eq.5.2b}
+\begin{split}
+l_L^{h+}z^{n(2)}(x) &= l_L^{h-}z^{n-1}(x_1-0, x_2),\\
+l_R^{h-}z^{n(1)}(x) &= l_R^{h+}z^{n(2)}(x_1+0, x_2),\ \ x \in \gamma_h.
+\end{split}
+\end{equation}
+Здесь $\od^{(k)}_h=\od^{(k)}_{h(\ref{eq.5.1})}$,
+$\La=\La_{(\ref{eq.3.2})}$,
+\begin{equation} \label{eq.5.2c}
+\begin{split}
+l^{h+}_R v(x) &\eq (\eps \alpha_R (x) \de_{x1}+\beta_R (x)) v(x),\\
+l^{h-}_R v(x) &\eq (\eps \alpha_R (x) \de_{\ov{x1}}+\beta_R (x)) v(x),\\
+l^{h+}_L v(x) &\eq (-\eps \alpha_L (x) \de_{x1}+\beta_L (x)) v(x),\\
+l^{h-}_L v(x) &\eq (-\eps \alpha_L (x) \de_{\ov{x1}}+\beta_L (x)) v(x),
+\ \ x\in\gamma_h.
+\end{split}
+\end{equation}
+
+Функцию
+\begin{equation} \label{eq.5.2d}
+z^n(x) =\begin{cases}
+z^{n(2)}(x), & x\in \od^{(2)}_h; \\
+z^{n(1)}(x), & x\in \od^{(1)}_h,
+\end{cases}
+\qquad x\in\od^{\{k\}}_h, \ \ k=1,2, \ \ n=1,2,\dotsc,
+\end{equation}
+\end{subequations}
+назовем решением разностной схемы (\ref{eq.5.2}), (\ref{eq.5.1}).
+Функция $z^n(x)$ на множестве $\gamma_h=\gamma \cap\od_h$ терпит
+``разрыв'' I~рода. Эта функция на
+множестве $\gamma_h$ принимает двойные значения
+$z^n(x_1-0, x_2)$ и $z^n(x_1+0, x_2)$, являющиеся
+``непрерывными'' продолжениями $z^n(x)$ слева и справа
+(из множеств $D^{(1)}_h$ и $D^{(2)}_h$ соответственно).
+
+Для разностной схемы (\ref{eq.5.2}), (\ref{eq.5.1}), (\ref{eq.4.4})
+справедлив принцип максимума.
+Приведем условия, достаточные для сходимости функции $z^n(x)$ --- решения
+разностной схемы (\ref{eq.5.2}), (\ref{eq.5.1}), (\ref{eq.4.4}) при
+$n\ra\infty$ в случае равномерной и кусочно-равномерной сеток.
+\medskip
+
+2. Рассмотрим функцию $z^*(x)$, $x\in \od_h$, --- решение сеточной задачи
+\begin{equation} \label{eq.5.3}
+\begin{array}{c}
+\La z^*(x) = f(x), \ \ x\in D^{(1)}_h \cup D^{(2)}_h,\\[2mm]
+\de_{x1} z^*(x) = \de_{\ov{x1}}z^*(x), \ \ x\in \gamma_h, \quad
+z^*(x) = \vp(x), \ \ x\in \G_h. 
+\end{array}
+\end{equation}
+Функция $z^*(x)$, $x\in\od_h$, является ``стационарным'' решением 
+задачи (\ref{eq.5.2}), (\ref{eq.5.1}), (\ref{eq.4.4}).
+
+С использованием принципа максимума, учитывая оценки функции $z(x)$,
+$x\in \od_h$, --- решения разностной схемы (\ref{eq.3.2}) в случае
+сетки (\ref{eq.3.4}), получаем оценку
+\begin{equation} \label{eq.5.4}
+|z(x)-z^*(x)|\le M (\eps+N^{-1}_1)^{-1} N_1^{-1}, \quad x\in \od_h,
+\end{equation}
+неулучшаемую по вхождению $N_1$, $\eps$. Функция $z^*(x)$, $x\in\od_h$,
+при $N_1\ra\infty$ сходится к функции $z(x)$, $x\in\od_h$,
+при условии (\ref{eq.3.51}).
+
+В случае сетки (\ref{eq.3.6}) получается оценка
+\begin{equation} \label{eq.5.5}
+|z(x)-z^*(x)|\le M N^{-1}_1 \ln N_1, \quad x\in \od_h;
+\end{equation}
+эта $\eps$-равномерная оценка неулучшаема.
+
+
+\begin{thms} \label{t.5.1}
+Функция $z^*(x)$, $x\in \od_h$, --- решение разностной схемы $(\ref{eq.5.3})$
+на сетке $(\ref{eq.3.6})$ $($на сетке $(\ref{eq.3.4}))$ --- при $N\ra\infty$
+сходится $\eps$-равномерно $($при условии $(\ref{eq.3.51}))$
+к функции $z(x)$, $ x\in\od_h$, --- решению разностной схемы $(\ref{eq.3.2})$.
+Для сеточных решений справедливы оценки $(\ref{eq.5.4})$, $(\ref{eq.5.5})$.
+\end{thms}
+
+\begin{notes}
+Функция $\om(x)=z(x)-z^*(x)$, $ x\in\od_h$, есть ошибка,
+порождаемая декомпозицией разностной задачи (\ref{eq.3.2}). Эта ошибка
+возникает при аппроксимации условия сопряжения потоков
+\begin{equation} \label{eq.5.6}
+\frac{\pad}{\pad x_1} u(x_1+0, x_2) = \frac{\pad}{\pad x_1} u(x_1-0, x_2),
+\quad x\in \gamma.
+\end{equation}
+\end{notes}
+
+3. Исследуем поведение решений разностной схемы
+(\ref{eq.5.2}),
+%% (\ref{eq.5.2a})--(\ref{eq.5.2d}),
+(\ref{eq.5.1}), (\ref{eq.4.4}) при $n\ra\infty$.
+
+Пусть $z^{(n)}(x)$, $x\in\od^{(k)}_h$, $k=1,2$, --- решения краевых задач,
+аппроксимирующих (\ref{eq.4.5a})
+%%% \begin{subequations}\label{eq.5.7} %%%%
+\begin{equation*} \label{eq.5.7a}
+\begin{array}{c}
+\La z^{(k)}(x) = 0, \ \ x\in D^{(k)}_h, \ \ z^{(k)}(x) = 0,
+\ \ x\in\G^{(k)}_h\cap\G,\\[2mm]
+l^{h-}_R z^{(1)}(x_1-0, x_2) = 1, \ \ l^{h+}_L z^{(2)}(x_1+0, x_2) = 1, \ \
+x\in\gamma_h, \ \ k=1,2.
+\end{array}
+\end{equation*}
+
+Для функций $z^{(k)}(x)$, $x\in\od^{(k)}_h$, в случае сетки (\ref{eq.3.4})
+справедливы оценки
+\begin{equation} \label{eq.5.7b}
+\begin{split}
+| l^{h-}_L (z^{(1)}(x)-z_0^{(1)}(x))| &\leq M \eps, \ \ x\in \od^{(1)}_h,\\
+| l^{h+}_R (z^{(2)}(x)-z_0^{(2)}(x))| &\leq M \eps, \ \ x\in \od^{(2)}_h.
+\end{split}
+\end{equation}
+%%%% \end{subequations}    commented out; (5.7a) is repl. for (5.7)
+Здесь
+$$
+z^{(1)}_0(x)=z^{(1)R}_0(x)+z^{(1)S}_0(x), \ \
+x \in \od^{(1)}_h,
+$$
+функции $z^{(2)}_0(x)$ и $z^{(1)R}_0(x)$, $z^{(1)S}_0(x)$
+(регулярная и сингулярная компоненты) --- решения задач
+\begin{align}\label{eq.5.8}
+& \La^1 z^{(2)}_0(x) \eq \{ \eps a_1(x^*)\de_{\ov{x1}\,\wh{x1}} +
+b_1(x^*)\de_{x1}\} z^{(2)}_0(x) = 0, \ \ x\in D^{(2)}_h, \\
+%
+& z^{(2)}_0(x) = 0, \ \ x\in\G^{(2)}_h\cap\G, \quad
+l^{h+}_L z^{(2)}_0(x_1+0, x_2) = 1, \ \ x\in\gamma_h;\notag \\
+%
+& \La^2 z^{(1)R}_0(x) \eq \bigg\{ \sum_{s=1,2} [b_s^{+}(x)\delta_{xs}
++ b_s^{-}(x)\delta_{\ov{xs}}] - c(x) \bigg\} z^{(1)R}_0(x) = 0,
+\ \ x \in D_h^{(1)} \setminus \gamma_h, \notag \\
+%
+& l^{h-}_R z^{(1)R}_0(x_1-0, x_2) = 1, \ \ x\in\gamma_h; \notag \\
+%
+& \La^1 z^{(1)S}_0(x) = 0, \ \ x\in D^{(1)}_h, \notag \\
+%
+& z^{(1)S}_0(x) = - z^{(1)R}_0(x), \ \
+x \in\G^{(1)}_h \setminus \gamma_h,
+\quad l^{h-}_R z^{(1)S}_0(x) = 0, \ \ x\in\gamma_h, \notag
+\end{align}
+где $x^*=x^*_{(\ref{eq.4.5c})}(x)$. Оценки (\ref{eq.5.7b}) устанавливаются
+с использованием асимптотического представления функций $z^{(k)}(x)$ при
+$\eps\ra 0$, где $z^{(k)}_0(x)$ есть главный член асимптотики.
+
+Полагаем
+\begin{multline*} %% \label{eq.5.9}
+q^0_h=q^0_h(\eps;D_h)\eq\sup\limits_{x\in\gamma_h}
+\{[|l^{h-}_L z^{(1)}_0(x_1-0, x_2)|+
+M\eps][|l^{h}_R z^{(1)}_0(x)|-M\eps]^{-1}\times\\
+%
+\times[|l^{h+}_R z^{(2)}_0(x_1+0, x_2)|+M\eps]
+[|l^{h}_L z^{(2)}_0(x)|-M\eps]^{-1}\}.
+\end{multline*}
+Для величины $q^0_h$ справедлива оценка
+\begin{multline} \label{eq.5.10}
+q^0_h\leq \sup\limits_{x\in\gamma_h}
+\{| -\eps \al_R(x) |\de_{x1} z_*^{(2)}(x)| +
+\beta_R(x)|[ \eps \al_L(x)|\de_{x1} z_{*}^{(2)}(x)| +
+\beta_L]^{-1}\times \\
+\times\beta^{-1}_R(x)\beta_L(x)\} + M \eps \eq q^0_{h(\ref{eq.5.10})}(\eps),
+\end{multline}
+где $z^{(k)}_*(x)$ --- решение сеточных уравнений (\ref{eq.5.8})
+c условием на $\gamma_h$
+$$
+z^{(k)}_* = 1, \ \ x\in \gamma_h, \ \ k=1,2.
+$$
+На сетке (\ref{eq.3.4}) в случае условия (\ref{eq.4.3}) для величины
+$q^0_h$ получается оценка
+\begin{multline} \label{eq.5.11}
+q^0_h\leq \sup\limits_{x\in\gamma_h}
+\{| 1-(1+m_h(x))\al_R(x)|
+[ (1-\al_L(x))+ m_h(x)\al_L(x)]^{-1}\times\\
+%
+\times (1-\al_L(x))(1-\al_R(x))^{-1}\} +
+M\eps \eq q^0_{h(\ref{eq.5.11})}(\eps), 
+\end{multline}
+где
+$$
+m_h(x)=m^0(x)\eps (\eps+m^0(x) h_1)^{-1}, \ \
+h_1=h_{1(\ref{eq.3.4})}, \ \
+m^0(x)=m^0_{(\ref{eq.4.5b})}(x).
+$$
+Подобная оценка справедлива и в случае сетки (\ref{eq.3.6}).
+
+С использованием методики мажорантных функций для решений разностной схемы
+(\ref{eq.5.2}), (\ref{eq.5.1}) устанавливается оценка
+\begin{equation} \label{eq.5.12}
+|z^*(x)-z^n(x)|\leq M q^n_h, \ \ x\in\od_h, \ \ q_h\leq q^0_h,
+\end{equation}
+где $\od_h=\od_{h(\ref{eq.3.4})}$ либо $\od_h=\od_{h(\ref{eq.3.6})}$;
+$q^0=q^0_{h(\ref{eq.5.10})}$ при $\od_h=\od_{h(\ref{eq.3.4})}$,
+$q^0_h=q^0_{h(\ref{eq.5.11})}$ при $\od_h=\od_{h(\ref{eq.3.6})}$;
+$z^*(x)$ --- решение разностной схемы (\ref{eq.5.3}) на сетке $\od_h$.
+
+Пусть выполняется условие (\ref{eq.4.3}), а также условие
+\begin{equation}
+\label{eq.5.13}
+|1-(1+m_h(x))\al_R(x)| [(1-\al_L(x))+
+m_h(x)\al_L(x)]^{-1} \leq m_1,\quad
+x\in\gamma_h, \ \ \eps\in (0,\eps_0], 
+\end{equation}
+где $m_h(x)=m^0(x)\eps(\eps+m^0(x)(x^{i+1}-x^i))^{-1}$,
+$x^{i} \in \gamma_h$;
+$m_1$, $\eps_0$ --- достаточно малые числа $(\eps_0\leq m)$,
+при которых $q^0_{h(\ref{eq.5.10})}\leq 1-m$, например, при условии
+$\al_L \leq 1-m$, $\al_R=(1-m_1)(1+m_h(x))^{-1}$, $x \in \gamma_h$.
+В этом случае решение разностной схемы
+(\ref{eq.5.2}), (\ref{eq.5.1}), (\ref{eq.4.3}) на сетках (\ref{eq.3.4}) и
+(\ref{eq.3.6}) при $n\ra\infty$ сходится к решению разностной схемы
+(\ref{eq.5.3}) \ $\eps$-равномерно.
+
+\begin{thms} \label{t.5.2}
+Условие $(\ref{eq.5.13})$ является достаточным для
+$\eps$-равномерной сходимости решений разностной
+схемы $(\ref{eq.5.2})$, $(\ref{eq.5.1})$, $(\ref{eq.4.4})$,
+$(\ref{eq.4.3})$ на сетках $(\ref{eq.3.4})$ и $(\ref{eq.3.6})$
+к решению схемы $(\ref{eq.5.3})$. Для сеточных решений справедлива
+оценка $(\ref{eq.5.12})$, где $q_h\leq 1-m$.
+\end{thms}
+
+4. В силу оценок (\ref{eq.3.5}), (\ref{eq.3.8}), (\ref{eq.5.4}),
+(\ref{eq.5.5}), (\ref{eq.5.12}) при условии (\ref{eq.5.13}) имеем
+\begin{alignat}{2} \label{eq.5.14}
+|u(x)-z^n(x)|&\leq M [\exp (-m n) +
+(\eps+N_1^{-1})^{-1} N_1^{-1} + N_2^{-1}], & \ \
+x&\in\od_{h(\ref{eq.3.4})},\\
+%
+\label{eq.5.15}
+|u(x)-z^n(x)|&\leq M [\exp (-m n) + N_1^{-1}\ln N_1
++ N_2^{-1}], & \ \ x&\in\od_{h(\ref{eq.3.6})}.
+\end{alignat}
+Таким образом, схема (\ref{eq.5.2}), (\ref{eq.5.1}), (\ref{eq.4.4}),
+(\ref{eq.4.3}), аппроксимирующая задачу (\ref{eq.2.2}), (\ref{eq.2.1}),
+сходится на сетке (\ref{eq.3.6}) \ $\eps$-равномерно, а
+на сетке (\ref{eq.3.4}) --- при условии (\ref{eq.3.51}).
+
+\begin{thms} \label{t.5.3}
+Пусть выполняются условия теоремы $\ref{t.3.1}$, а также условие
+$(\ref{eq.5.13})$. Тогда функция $z^n(x)$, $x\in\od_h$, --- решение
+разностной схемы $(\ref{eq.5.2})$, $(\ref{eq.5.1})$, $(\ref{eq.4.4})$,
+$(\ref{eq.4.3})$ --- на сетке $(\ref{eq.3.6})$ $($сетке $(\ref{eq.3.4}))$
+при $N,n\ra \infty$ сходится к решению краевой задачи
+$(\ref{eq.2.2})$, $(\ref{eq.2.1})$ \ $\eps$-равномерно $($при условии
+$(\ref{eq.3.51}))$. Для сеточных решений справедливы оценки
+$(\ref{eq.5.14})$, $(\ref{eq.5.15})$.
+\end{thms}
+
+
+
+\section{Схема декомпозиции с улучшенным условием сопряжения}
+\label{section.6}
+
+В случае схемы (\ref{eq.5.2}), (\ref{eq.5.1}), (\ref{eq.4.4}),
+(\ref{eq.4.3}), (\ref{eq.5.13})
+ошибка $\om^*(x)=z(x)-z^*(x)$, вызванная декомпозицией схемы
+(\ref{eq.3.2}), соизмерима с $\om(x)=u(x)-z(x)$ --- ошибкой
+аппроксимации точного решения решением схемы (\ref{eq.3.2}). Построим
+схему метода декомпозиции области с улучшенной аппроксимацией условия
+сопряжения (\ref{eq.5.6}).
+\medskip
+
+1. Приведем итерационную разностную схему. Производные
+$(\pad /\pad x_1)u(x_1+0, x_2)$, $(\pad /\pad x_1)u(x_1-0, x_2)$,
+$x\in\gamma$, аппроксимируем сеточными выражениями
+\begin{subequations} \label{eq.6.1} %%%%%%
+\begin{equation} \label{eq.6.1a}
+\begin{array}{c}
+\lambda^+ (z(x), f(x)) \eq \Big\{ \de_{x1} + 2^{-1} a^{-1}_1(x)
+\eps^{-1}h^i_1\Big[\eps a_2(x) \de_{\ov{x2}\wh{x2}} + \\ [2mm]
+%
++\displaystyle\sum\limits_{s=1,2} [b^+_s(x) \de_{xs} + b^-_s(x)
+\de_{\ov{xs}}] - c(x) \Big] \Big\}
+z(x_1+0, x_2) - 2^{-1} a^{-1}_1(x)\eps^{-1} h^i_1 f(x),\\ [2mm]
+%
+\lambda^- (z(x), f(x)) \eq \Big\{
+\de_{\ov{x1}}-2^{-1}a^{-1}_1(x) \eps^{-1}h^{i-1}_1 \Big[\eps
+a_2(x)\de_{\ov{x2}\wh{x2}}+ \\[2mm]
+%
++\displaystyle \sum\limits_{s=1,2}
+[b^+_s(x)\de_{xs}+b^-_s(x)\de_{\ov{xs}}]-c(x) \Big] \Big\}
+z(x_1-0, x_2)+2^{-1}a^{-1}_1(x)\eps^{-1}h^{i-1}_1 f(x),\\[2mm]
+%
+x\in\gamma_h, \ \ x=(x^i_1, x_2).
+\end{array}
+\end{equation}
+Функции $z^n(x)$, $x\in\od_h$, $n=1,\dotsc$, находим, решая задачу
+(\ref{eq.5.2}), (\ref{eq.5.1}), где вместо соотношений
+(\ref{eq.5.2b}), (\ref{eq.5.2c}) используются соотношения
+\begin{equation} \label{eq.6.1b}
+\begin{split}
+l^{h+}_L (z^{n(2)}(x_1+0, x_2), f(x)) &=
+l^{h-}_L (z^{n-1}(x_1-0, x_2), f(x)), \\
+l^{h-}_R (z^{n(1)}(x_1-0, x_2), f(x)) &=
+l^{h+}_R (z^{n(2)}(x_1+0, x_2), f(x)), \ \ x\in\gamma_h,
+\end{split}
+\end{equation}
+и
+\begin{equation} \label{6.1c}
+\begin{split}
+l^{h+}_R (z(x), f(x)) &\eq \eps \al_R(x) \lambda^+(z(x), f(x))+
+\beta_R(x)z(x),\\
+l^{h-}_R (z(x), f(x)) &\eq \eps \al_R(x) \lambda^-(z(x), f(x))+
+\beta_R(x)z(x),\\
+l^{h+}_L (z(x), f(x)) &\eq -\eps \al_L(x) \lambda^+(z(x), f(x))+
+\beta_L(x)z(x),\\
+l^{h-}_L (z(x), f(x)) &\eq -\eps \al_L(x) \lambda^-(z(x), f(x))+
+\beta_L(x)z(x),\ \ x\in\gamma_h.
+\end{split}
+\end{equation}
+\end{subequations}
+
+Функцию $z^n(x)$, $x\in\od_h$, назовем решением задачи
+(\ref{eq.5.2a}), (\ref{eq.6.1}), (\ref{eq.5.1}), (\ref{eq.4.4}).
+
+Функция $z^*(x)$, $x\in\od_h$, --- решение сеточной задачи
+%%%%%%% \begin{subequations} \label{eq.6.11} %%%%
+\begin{gather}
+%% \label{eq.6.11a}
+\La z^*(x) = f(x), \ \ x\in D^{(1)}_h\cup D^{(2)}_h,
+\ \ z^*(x)=\vp(x), \ \ x\in \G_h, \notag \\
+\label{eq.6.11b}
+\lambda^+ (z(x), f(x)) = \lambda^- (z^*(x), f(x)), \quad x\in\gamma_h,
+\end{gather}
+%%%%%%%% \end{subequations}
+--- ``стационарное'' решение задачи (\ref{eq.5.2a}), (\ref{eq.6.1}),
+(\ref{eq.5.1}), (\ref{eq.4.4}),
+является решением разностной схемы (\ref{eq.3.2}), (\ref{eq.3.1}):
+$z^*(x)=z(x)$, $x\in\od_h$. Таким образом, аппроксимация (\ref{eq.6.11b})
+условия сопряжения (\ref{eq.5.6}) не вносит ошибок в решение разностной схемы
+(\ref{eq.3.2}), (\ref{eq.3.1}).
+\medskip
+
+2. Подобно выводу оценки (\ref{eq.5.12}) устанавливается оценка
+\begin{equation} \label{eq.6.2}
+|z(x)-z^n(x)|\le M q^n_h, \quad x\in\od_h, \ \ q_h\le q^0_h,
+\end{equation}
+где
+$$
+q^0_h=M_1 \sup\limits_{x\in\gamma_h}
+\{ |1-(1+m_h(x))\al_R(x)|\}+M_2(\eps+N_1^{-1}).
+$$
+Здесь $z(x)$ и $z^n(x)$,  $x\in\od_h$, --- решения разностных
+схем (\ref{eq.3.2}) и (\ref{eq.5.2a}), (\ref{eq.6.1}), (\ref{eq.5.1}),
+(\ref{eq.4.4}), (\ref{eq.4.3})
+соответственно; $\od_h$ --- сетка (\ref{eq.3.4}) либо (\ref{eq.3.6}).
+
+В случае условия
+\begin{equation}
+\label{eq.6.3}
+|1-(1+m_h(x))\al_R(x)|\le m_1, \quad \al_L(x) \leq 1-m,\quad
+x\in\gamma_h, \ \ \eps\in (0, \eps_0], \ \ N_1\geq N_{10}, 
+\end{equation}
+где $m_h(x)=m_{h(\ref{eq.5.13})}(x)$, $m_1$, $\eps_0$ --- достаточно 
+малые числа, а $N_{10}$ --- достаточно большое число ($\eps_0\leq m$,
+$N_{10}\leq M$), при которых $q^0_{h(\ref{eq.6.2})}\leq 1-m$,
+функция $z^n(x)$, $x\in\od_h$, при $n\ra\infty$
+сходится к $z(x)$, $x\in\od_h$, $\eps$-равномерно.
+
+Принимая во внимание оценки (\ref{eq.3.5}), (\ref{eq.3.8}), (\ref{eq.6.2}),
+при условии (\ref{eq.6.3}) находим
+\begin{alignat}{2} \label{eq.6.4}
+|u(x)-z^n(x)| &\leq M \exp (-m n)+M_1 [N_1^{-1} \ln N_1+N_2^{-1}],
+& \ \ x&\in\od_{h(\ref{eq.3.6})}, \\
+\label{eq.6.5}
+|u(x)-z^n(x)|&\leq M \exp (-m n)+M_2 [(\eps + N^{-1}_1)^{-1} N_1^{-1}+
+N_2^{-1}],& \ \ x&\in\!\od_{h(\ref{eq.3.4})},
+\end{alignat}
+где $M_1=M_{(\ref{eq.3.8})}$, $M_2=M_{(\ref{eq.3.5})}$.
+
+
+\begin{thms} \label{t.6.1}
+Пусть выполняются условия теоремы $\ref{t.3.1}$, а также условие
+$(\ref{eq.6.3})$. Тогда функция $z^n(x)$, $x\in\od_h$, --- решение
+разностной схемы $(\ref{eq.5.2a})$, $(\ref{eq.6.1})$,
+$(\ref{eq.5.1})$, $(\ref{eq.4.4})$, $(\ref{eq.4.3})$ ---
+на сетке $(\ref{eq.3.6})$ $($на сетке $(\ref{eq.3.4}))$ при
+$N, n\ra\infty$ сходится к решению краевой задачи $(\ref{eq.2.2})$,
+$(\ref{eq.2.1})$ $\eps$-рав\-но\-мерно $($при условии $(\ref{eq.3.51}))$.
+Для сеточных решений справедливы оценки $(\ref{eq.6.4})$,
+$(\ref{eq.6.5})$.
+\end{thms}
+
+
+\section{Дополнения}
+\label{section.7}
+
+Приведем априорные оценки решений краевой задачи (\ref{eq.2.2}),
+(\ref{eq.2.1}), используемые в построениях (напр., \cite{6}).
+
+Решение задачи представим в виде суммы функций
+\begin{equation} \label{eq.7.1}
+u(x) = U(x) + V(x),\quad x \in \od ,
+\end{equation}
+где $U(x)$ и $V(x)$ --- регулярная и сингулярная части решения задачи.
+Для компонент из (\ref{eq.7.1}) справедливы оценки
+\begin{equation} \label{eq.7.2}
+\begin{split}
+\bigg|\frac{\pad^k}{\pad x^{k_1}_1 \pad
+x^{k_2}_2}U(x)\bigg|&\leq M, \\
+%
+\bigg|\frac{\pad^k}{\pad x^{k_1}_1 \pad x^{k_2}_2}V(x)\bigg|&\leq M
+\eps^{-k_1} \exp\big(-m \eps^{-1} r(x,\G_1)\big),\ \ x \in \od,\ \
+k_1+k_2 \leq K,
+\end{split}
+\end{equation}
+где $r(x,\G_1)$ --- расстояние от точки $x$ до множества $\G_1$,
+$m$ --- произвольное число из интервала $(0,m_0)$, 
+$m_0 = \min\limits_{\od}[a^{-1}_1(x)b_1(x)]$; постоянная $K$
+может быть выбрана достаточно большой при достаточно большой гладкости данных
+задачи.
+
+\begin{thms} \label{t.7.1}
+Пусть для данных краевой задачи $(\ref{eq.2.2})$, $(\ref{eq.2.1})$
+выполняется условие $(\ref{eq.2.3})$, и пусть
+$a_s,b_s,c,f \in C^{3K-2+\al}(\od)$, $\vp \in C^{3K-2+\al}(\G)$,
+$s=1,2$, $K \geq 1$, $\al >0$. Тогда для компонент из представления
+$(\ref{eq.7.1})$ справедливы оценки $(\ref{eq.7.2})$.
+\end{thms}
+
+\begin{notes}
+Пусть $u(x)$, $x \in \od$, --- решение краевой задачи
+\begin{gather} \label{eq.7.3}
+L_{(\ref{eq.2.2})}u(x) = f(x),\quad x \in D, \\
+%
+lu(x)=
+\begin{cases}
+l_L\,u(x),\\
+l_R\,u(x)
+\end{cases}
+\eq \left\{\!\!         %%%%%%%% PUT CASES
+\begin{array}{ll}
+\bigg(-\eps \al(x)\frac{\pad}{\pad x_1} + \beta(x)\bigg)u(x), &
+x_1=0;\\[3mm]
+\bigg(\phantom{-}\eps \al(x)\frac{\pad}{\pad x_1} +\beta(x)\bigg)u(x),&
+x_1=d,
+\end{array}
+\right.=\psi(x),\ \ x\in \G,\notag
+\end{gather}
+где $\al(x)$, $\beta(x)$, $\psi(x)$, $x \in \G$, --- достаточно
+гладкие ограниченные функции;
+$\al(x), \beta(x) \geq 0$, $x \in \G_1$,
+$\al(x) \geq 0$, $\beta(x) \geq m_1$, $x \in \G_2$,
+$m_2 \leq \al(x) + \beta(x) \leq M$,
+$|\psi(x)| \leq M$, $x\in \G$. Справедлива
+\end{notes}
+
+\begin{thms} \label{t.7.2}
+Пусть для данных краевой задачи $(\ref{eq.7.3})$, $(\ref{eq.2.1})$
+выполняется условие $(\ref{eq.2.3})$, и пусть
+$a_s,b_s,c,f \in C^{3K-2+\al_0}(\od)$, $\al,\beta,\psi \in
+C^{3K-2+\al_0}(\G)$, $s=1,2$, $K \geq 1$, $\al_0 >0$. 
+Тогда для компонент из представления $(\ref{eq.7.1})$
+решения краевой задачи $(\ref{eq.7.3})$, $(\ref{eq.2.1})$
+справедливы оценки $(\ref{eq.7.2})$.
+\end{thms}
+
+\begin{notes}
+Главный член разложения сингулярной компоненты из представления
+(\ref{eq.7.1}) решения краевой задачи (\ref{eq.7.3}), (\ref{eq.2.1})
+можно представить в виде
+$$
+V^0(x) = V^0_L(x_2)\exp (-\eps^{-1}m^0_L(x_2)\, x_1),\quad x \in \od,
+$$
+где
+$$
+%% \begin{gather*}
+m_L^0(x_2)=a_1^{-1}(0,x_2) b_1(0,x_2),\quad
+%
+V_L^0(x_2) = [m_L^0(x_2)\al(0, x_2)+\beta(0, x_2)]^{-1}
+[\psi(0,x_2) -l_L U(0,x_2)].
+%% \end{gather*}
+$$
+Для функции $V^0(x)$ в окрестности границы $\G$ справедливы оценки
+\begin{gather}
+|V(x) - V^0(x)|,\ \
+\eps\bigg|\frac{\pad}{\pad x_1}(V(x) - V^0(x))\bigg|
+\leq M \eps \exp(-m \eps^{-1} r(x,\G_1)),\notag\\
+%
+\label{eq.7.4}
+x \in \od,\quad m = m_{(\ref{eq.7.2})}. 
+\end{gather}
+
+В том случае, когда
+\begin{equation} \label{eq.7.5}
+f(x) = 0, \ \ x \in \od, \quad u(x) = 0, \ \ x\in \G_1,
+\end{equation}
+главный член разложения решения краевой задачи (\ref{eq.7.3}),
+(\ref{eq.2.1}) --- функция $u^0(x)$, $x\in \od$, ---
+представляется в виде
+$$
+u^0(x)=U_0(x)+V_0(x), \quad x\in\od.
+$$
+Компоненты $U_0(x)$, $V_0(x)$ --- решения задач
+\begin{equation} \label{eq.7.51}
+\begin{split}
+L^1 U_0(x) &\eq \bigg\{ \sum_{s=1,2}b_s(x)\frac{\pa}{\pa x_s}-
+c(x)\bigg\}U_0(x)=f(x), \ \ x \in \od \setminus \G_2, \\
+%
+l_R U_0(x)&\eq \bigg\{ \eps \al(x) \frac{\pa}{\pa x_1}
++\beta(x)\bigg\} U_0(x)=\psi(x), \ \ x\in \G_2, \\
+%
+L^2 V_0(x) &\eq \bigg\{ \eps a_1(x^*) \frac{d^2}{dx^2_1}+b_1(x^*)
+\frac{d}{dx_1} \bigg\} V_0(x)=0, \ \ x\in D, \\
+V_0(x) &= - U_0(x), \ \ x\in \G_1,\ \
+l_R V_0(x)=0, \ \ x\in \G_2,
+\end{split}
+\end{equation}
+где $x^*=x^*(x)=(x_1^*,x_2) \in \G_1$, $x=(x_1,x_2) \in \od$; 
+$\al(x)=\al_{(\ref{eq.7.3})}(x)$, $\beta(x)=\beta_{(\ref{eq.7.3})}(x)$,
+$x\in\G_2$. Для функции $u^0(x)$ справедливы оценки
+\begin{equation} \label{eq.7.6}
+|u(x)-u^0(x)|, \ \ \eps 
+\bigg|\frac{\pad}{\pad x_1}(u(x)-u^0(x))\bigg|\leq M\eps, \quad x\in \od,
+\end{equation}
+где $u(x)$ --- решение задачи (\ref{eq.7.3}), (\ref{eq.2.1}), (\ref{eq.7.5}).
+\end{notes}
+
+
+\begin{thebibliography}{99}
+
+\bibitem{5} 
+Дулан Э., Миллер Дж., Шилдерс У. {\em Равномерные численные методы решения 
+задач с пограничным слоем}. -- M.: Мир, 1983. -- 199~с.
+\bibitem{6}
+Шишкин Г.И. {\em Сеточные аппроксимации сингулярно возмущенных эллиптических
+и параболических уравнений}. -- Екатеринбург: УрО РАН, 1992. -- 233~с.
+\bibitem{7}
+Miller J.J.H., O'Riordan E., Shishkin G.I. {\em Fitted numerical methods
+for singular perturbation problems}. -- Singapore: World Scientific,
+1996. -- 166~p.
+\bibitem{8}
+Roos H.-G., Stynes M., Tobiska L. {\em Numerical methods for
+singularly perturbed differential equations. Convection-diffusion
+and flow problems}. -- Berlin: Springer-Verlag, 1996. -- 348~p.
+\bibitem{9}
+Багаев Б.М., Шайдуров В.В. {\em Сеточные методы решения задач с
+пограничным слоем}. Ч.\,1. -- Новосибирск: Наука, 1998. -- 199 c.
+\bibitem{CRC}
+Farrell P.A., Hegarty A.F., Miller J.J.H., O'Riordan E.,
+Shishkin G.I. {\em Robust computational techniques for boundary layers}.
+-- Boca Raton: Chapman \& Hall/CRC Press, 2000. -- 254~p.
+\bibitem{1}
+Марчук Г.И. {\em Методы вычислительной математики}. -- М.: Наука,
+1989. -- 608~с.
+\bibitem{18}
+Quarteroni A., Valli A. {\em Domain decomposition methods for
+partial differential equations}. -- Oxford: Oxford Univ. Press, 1999. -- 376 p.
+\bibitem{17}
+Hemker P.W., Shishkin G.I., Shishkina L.P. {\em Distributing
+the numerical solution of parabolic singularly perturbed problems
+with defect-correction over independent processes} // Siberian J.
+Numer. Math. -- 2000. -- V.\,3. -- \No\,3. -- P.\,229--258.
+\bibitem{19}
+Shishkin G.I. {\em Acceleration of the process of the numerical
+solution to singularly perturbed boundary value problems for
+parabolic equations on the basis of parallel computations} // Russ.
+J. Numer. Anal. Math. Modelling. -- 1997. -- V.\,12. -- \No\,3. --
+P.\,271--291.
+\bibitem{20}
+Hemker P.W., Shishkin G.I., Shishkina L.P.
+{\em High-order time-accurate parallel schemes for parabolic singularly
+perturbed problems with convection} // Computing. -- 2001. -- V.\,66. --
+\No\,2. -- P.\,139--161. 
+\bibitem{21}
+Hemker P.W., Shishkin G.I., Shishkina L.P. {\em Acceleration by
+parallel computations of solving high-order time-accuracy difference
+schemes for singularly perturbed convection-diffusion problems} //
+Numer. Anal. and Its Appl.: Second Internat.
+Conf. NAA 2000, Rousse, Bulgaria, June 2000
+%%% Revised Papers, L.Vulkov, J.Wasniewski and P.Yalamov (Eds.)
+/ Lect. Notes in Comput. Sci. Springer, 2001. -- V.\,1988. -- P.\,393--401.
+\bibitem{2}
+Самарский А.А. {\em Теория разностных схем}. -- М.: Наука, 1989. -- 616~с.
+
+\end{thebibliography}
+
+\vskip 2cm
+
+\post{\it Институт математики и механики}{\it Поступила}
+\post{\it Уральского отделения}{16.06.2002}
+\post{\it Российской Академии наук}{}
+
+\label{end}
+\end{document}
+
+
+

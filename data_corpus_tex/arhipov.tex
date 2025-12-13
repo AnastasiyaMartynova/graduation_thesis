@@ -1,0 +1,708 @@
+\def\stat{arhipov}
+
+\def\tit{ИССЛЕДОВАНИЕ МЕТОДОВ ДЕТЕКТИРОВАНИЯ КЛЮЧЕВЫХ ТОЧЕК 
+ПРИ~СОЗДАНИИ ПАНОРАМНЫХ ИЗОБРАЖЕНИЙ}
+
+\def\titkol{Исследование методов детектирования ключевых точек 
+при~создании % панорамных 
+изображений}
+
+\def\aut{П.\,О.~Архипов$^1$, А.\,К.~Трофименков$^2$, М.\,В.~Цуканов$^3$, 
+Н.\,Ю.~Носова$^4$}
+
+\def\autkol{П.\,О.~Архипов, А.\,К.~Трофименков, М.\,В.~Цуканов, 
+Н.\,Ю.~Носова}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Архипов П.\,О.}
+\index{Трофименков А.\,К.}
+\index{Цуканов М.\,В.} 
+\index{Носова Н.\,Ю.}
+\index{Arkhipov P.\,O.}
+\index{Trofimenkov A.\,K.}
+\index{Tsukanov M.\,V.}
+\index{Nosova N.\,Yu.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Статья публикуется по представлению программного комитета VI Международной научно-
+%образовательных и~ведомственных информационных сетей>>.}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Орловский филиал Федерального исследовательского центра <<Информатика и~управление>> Российской 
+академии наук, \mbox{arpaul@mail.ru}}
+\footnotetext[2]{Орловский филиал Федерального исследовательского центра <<Информатика и~управление>> Российской 
+академии наук, \mbox{andretrf@yandex.ru}}
+\footnotetext[3]{Орловский филиал Федерального исследовательского центра <<Информатика и~управление>> Российской 
+академии наук, \mbox{tsukanov.m.v@yandex.ru}}
+\footnotetext[4]{Орловский филиал Федерального исследовательского центра <<Информатика 
+и~управление>> Российской академии наук, \mbox{ofipiran.lab01@yandex.ru}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt} 
+ 
+  
+  
+  
+  \Abst{Статья посвящена проб\-ле\-ме создания панорам в~условиях отличия цветовой 
+па\-лит\-ры и~уров\-ня освещенности сши\-ва\-емых снимков, вызванных как особенностями 
+оптической сис\-те\-мы, так и~погодой или иными факторами. Предложена процедура 
+коррекции яр\-кости и~цвета для минимизации отличий между сши\-ва\-емы\-ми снимками 
+и~уменьшения негативных воздействий. Приведены особенности детектирования ключевых 
+точек различными методами во время сшивания па\-но\-рам\-ных изображений в~условиях 
+раз\-но\-вы\-сот\-ной съем\-ки. Описано влияние дополнительной процедуры коррекции яр\-кости 
+и~цвета на чис\-ло найденных ключевых точек. Оценено качество итоговых па\-но\-рам\-ных 
+изображений и~время их сшивания. В~ходе работы получены статистические данные 
+и~проведен их сравнительный анализ.} 
+  
+  \KW{коррекция яркости; коррекция цвета; детектирование; ключевые точки; па\-но\-рам\-ные 
+изображения; обработка изображений}
+  
+  \DOI{10.14357\!/\!08696527220209} 
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-16pt}
+ 
+  \section{Введение}
+  
+  \vspace*{-4pt}
+  
+  Технология обработки данных аэро\-фо\-то\-съем\-ки беспилотными летательными 
+аппаратами (БПЛА) наземных объектов, вклю\-ча\-ющая по\-стро\-ение фотопланов 
+и~панорам, сег\-мен\-та\-цию, обнаружение аномалий, коррекцию яр\-кости и~цвета 
+при создании бес\-шов\-ных па\-но\-рам\-ных изображений вос\-тре\-бо\-ва\-на для решения 
+многих фундаментальных и~при\-клад\-ных задач. 
+  
+  Одна из основных проб\-лем обработки па\-но\-рам, полученных с~БПЛА, со\-сто\-ит 
+в~повышении достоверности и~правильной интерпретации изображений на 
+основе визуального анализа изображений квалифицированным специалистом, 
+поддержки принятия решений за ограниченное время и~оперативного контроля 
+(мониторинга) территорий. 
+  
+  В~настоящее время дистанционный мониторинг объектов земной 
+по\-верх\-ности необходимо осуществлять с~тре\-бу\-емым качеством 
+(до\-сто\-вер\-ностью, сво\-е\-вре\-мен-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+ностью, точ\-ностью), используя современные 
+методы пред\-став\-ле\-ния и~обработки больших массивов графических 
+па\-но\-рам\-ных изображений.
+  
+  Предлагается автоматизировать процесс создания па\-но\-рам\-ных изображений 
+с~использованием специального программного обеспечения (СПО), 
+предназначенного для оценки влияния процедуры коррекции яр\-кости и~цвета 
+на различные методы детектирования ключевых точек с~фик\-са\-ци\-ей 
+результатов. 
+  
+  Ранее авторами в~рамках научных исследований предлагалась 
+информационная модель технологии коррекции яр\-кости и~цвета при создании 
+па\-но\-рам\-ных изображений~[1]. Для уточнения су\-ще\-ст\-ву\-ющей модели 
+предлагается дополнительно провести оценку влияния процедуры коррекции 
+яр\-кости и~цвета на особенности де\-тек\-ти\-ро\-ва\-ния ключевых точек при создании 
+па\-но\-рам\-ных изображений.
+  
+  Результатом исследования долж\-ны стать статистические данные, полученные 
+в~ходе сшивания па\-но\-рам и~поз\-во\-ля\-ющие про\-вес\-ти их сравнительный анализ, 
+на\-гляд\-но де\-мон\-ст\-ри\-ру\-ющий влияние модели на качество итоговых 
+изоб\-ра\-жений.
+{\looseness=1
+
+}
+  
+  \section{Методы детектирования ключевых точек на~изображениях}
+  
+  Процедура сшивания изображений в~панораму реализуется на осно\-ве работы 
+с~наборами ключевых точек сши\-ва\-емых изображений. Вы\-чис\-ле\-ние ключевых 
+точек наиболее час\-то выполняется путем применения общеизвестных 
+детекторов ключевых точек и~их дескрипторов, таких как SIFT, SURF, 
+FAST, BRIEF, BRISK, AKAZE, MSER, ORB и~др.~[2--13]. Однако 
+часть названных методов являются конвергенцией, модификацией 
+и~объединением других методов либо они защищены авторским правом, что 
+может вызывать за\-труд\-не\-ния в~их использовании на практике. Поэтому 
+предлагается исследование популярных методов, зарекомендовавших себя 
+наилучшим образом и~которые могут быть использованы без ограничений. 
+Так\-же одним из ре\-ша\-ющих факторов является реализация метода в~биб\-лио\-те\-ке 
+компьютерного зрения {OpenCV}, так как это значительно упрощает 
+проведение исследования.
+  
+  Согласно вышеизложенным условиям отбора наиболее подходящими 
+методами в~рамках исследования оказались SIFT, BRISK и~ORB. 
+  
+  \section{Проведение экспериментальных исследований }
+  
+  Для проведения исследования использовались наборы аэро\-фо\-то\-сним\-ков, 
+полученных с~камеры БПЛА {DJI Mavic~2} при высоте полета~150 
+и~250~м в~количестве семи и~четырех изображений соответственно для 
+вы\-бран\-ных участ\-ков территории. Каж\-дый из снимков имеет разрешение 
+$1920\times1080$~пикселей. Также было задействовано СПО~\cite{14-arh}, 
+пред\-на\-зна\-чен\-ное для создания па\-но\-рам\-ных изображений с~воз\-мож\-ностью 
+использования различных методов де\-тек\-ти\-ро\-ва\-ния ключевых точек. 
+Специальное программное обеспечение 
+пред\-став\-ля\-ет собой набор программных модулей, разработанных на языке 
+программирования {Python~3.6} и~функционирующее на компьютере со 
+сле\-ду\-ющей кофигурацией: процессор {AMD FX-8320}, оперативная 
+память~8~ГБ с~час\-то\-той~1600~МГц и~64-раз\-ряд\-ная операционная сис\-те\-ма {Windows~10}.
+  
+  Программа экспериментальных исследований включает в~себя серию 
+сши\-ва\-ний па\-но\-рам\-ных изображений в~различных режимах для каж\-до\-го набора 
+аэро\-фо\-то\-сним\-ков, пред\-став\-лен\-ных в~таб\-лице.
+  
+  \begin{table}\small
+  \begin{center}
+  \begin{tabular}{|c|c|c|c|}
+  \multicolumn{4}{c}{Перечисление шагов алгоритма программы экспериментальных 
+исследований}\\
+  \multicolumn{4}{c}{\ }\\[-6pt]
+  \hline
+№  сшивания&\tabcolsep=0pt\begin{tabular}{c}Метод\\ детектирования\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Применение коррекции\\ яркости и~цвета\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Обрезание краев\\ изображений\end{tabular}\\
+\hline
+\hphantom{9}1&\multicolumn{1}{c|}{\raisebox{-28pt}[0pt][0pt]{SIFT}}&Нет&\raisebox{-6pt}[0pt][0pt]{\hphantom{9}0\%}\\
+\hphantom{9}2&&Да&\\
+\cline{3-4}
+\hphantom{9}3&&Нет&\raisebox{-6pt}[0pt][0pt]{10\%}\\
+\hphantom{9}4&&Да&\\
+\cline{3-4}
+\hphantom{9}5&&Нет&\raisebox{-6pt}[0pt][0pt]{20\%}\\
+\hphantom{9}6&&Да&\\
+\hline
+\hphantom{9}7&\multicolumn{1}{c|}{\raisebox{-28pt}[0pt][0pt]{ORB}}&Нет&\raisebox{-6pt}[0pt][0pt]{\hphantom{9}0\%}\\
+\hphantom{9}8&&Да&\\
+\cline{3-4}
+\hphantom{9}9&&Нет&\raisebox{-6pt}[0pt][0pt]{10\%}\\
+10&&Да&\\
+\cline{3-4}
+11&&Нет&\raisebox{-6pt}[0pt][0pt]{20\%}\\
+12&&Да&\\
+\hline
+13&\multicolumn{1}{c|}{\raisebox{-28pt}[0pt][0pt]{BRISK}}&Нет&\raisebox{-6pt}[0pt][0pt]{\hphantom{9}0\%}\\
+14&&Да&\\
+\cline{3-4}
+15&&Нет&\raisebox{-6pt}[0pt][0pt]{10\%}\\
+16&&Да&\\
+\cline{3-4}
+17&&Нет&\raisebox{-6pt}[0pt][0pt]{20\%}\\
+18&&Да&\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+  
+  Обрезание краев изображений приводит к~исключению искажений, 
+вызванных дис\-тор\-си\-ей оптической сис\-те\-мы камеры БПЛА при разновысотной 
+съемке~\cite{15-arh}.
+  
+  Для оценки влияния процедуры коррекции яр\-кости и~цвета на методы 
+детектирования точек были вы\-бра\-ны сле\-ду\-ющие показатели:
+  \begin{itemize}
+\item общее число ключевых точек $N_{\mathrm{общ}}$;
+\item число совпавших ключевых точек между сши\-ва\-емы\-ми изображениями 
+$N_{\mathrm{совп}}$;
+\item время, затраченное на сши\-ва\-ние па\-но\-рам\-но\-го изоб\-ра\-же\-ния 
+$T_{\mathrm{сш}}$;
+\item точность сшивания $Q_{\mathrm{сш}}$ изображений на итоговой 
+панораме, выраженной в~процентном отношении чис\-ла корректно 
+сформированных объектов на панораме к~общему чис\-лу сши\-ва\-емых объектов.
+\end{itemize}
+  
+  \section{Результаты экспериментальных исследований}
+  
+  
+  \begin{figure}[b] %fig1
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=74.693mm 
+\epsfbox{arh-1.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Число найденных ключевых точек методом SIFT при высоте съемки 150~(\textit{а})
+и~250~м~(\textit{б}): \textit{1}~--- $\overline{N}_{\mathrm{общ}}$;
+\textit{2}~--- $\overline{N}_{\mathrm{совп}}$}
+\end{figure}
+
+  \textbf{Метод SIFT.} Первым методом в~соответствии с~таб\-ли\-цей для исследования 
+был выбран метод SIFT, в~ходе проведения испытаний которого были 
+получены данные, приведенные на рис.~1. Общее число ключевых точек для 
+каж\-до\-го из испытаний метода SIFT рас\-счи\-ты\-ва\-лось как усред\-нен\-ное 
+значение $\overline{N}_{\mathrm{общ}}$. Аналогичный расчет проводился 
+и~с~чис\-лом совпавших ключевых точек, однако здесь вы\-чис\-ля\-лось сред\-нее 
+значение совпавших точек между всеми парами сши\-ва\-емых снимков 
+$\overline{N}_{\mathrm{совп}}$. Исходя из информации, пред\-став\-лен\-ной на 
+графиках, прослеживается за\-ко\-но\-мер\-ность влияния процедуры коррекции 
+яр\-кости и~цвета на результат работы метода SIFT. Применение коррекции 
+значительно снижает общее чис\-ло ключевых точек, найденных на 
+фотоснимках, но чис\-ло совпавших точек между парами сши\-ва\-емых 
+изображений остается практически неизменным. Так\-же закономерным является 
+тот факт, что обрезание краев изображений влияет как на исходное чис\-ло 
+ключевых точек, так и~на чис\-ло совпавших точек.
+  
+
+\begin{figure}[b] %fig2
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=74.693mm 
+\epsfbox{arh-2.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Число найденных ключевых точек методом ORB
+при высоте съемки 150~(\textit{а})
+и~250~м~(\textit{б}):  \textit{1}~--- 
+$\overline{N}_{\mathrm{общ}}$;
+\textit{2}~--- $\overline{N}_{\mathrm{совп}}$}
+\end{figure}
+  
+ \textbf{Метод ORB.} Следующий реализованный метод~--- ORB. Его испытания 
+при тех же условиях пред\-став\-ле\-ны на рис.~2. Заметное отличие, вы\-де\-ля\-ющее 
+его на фоне других методов,~--- это большее чем в~3~раза чис\-ло найденных 
+ключевых точек. Аналогично предыдущему методу процедура коррекции 
+яр\-кости и~цвета заметно уменьшает общее чис\-ло ключевых точек 
+и~незначительно чис\-ло совпавших точек. В~случае обрезания краев 
+изображений результаты также идентичны методу SIFT.
+  
+\begin{figure}[b] %fig3
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=74.693mm 
+\epsfbox{arh-3.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Число найденных ключевых точек методом BRISK
+при высоте съемки 150~(\textit{а})
+и~250~м~(\textit{б}):  \textit{1}~--- 
+$\overline{N}_{\mathrm{общ}}$;
+\textit{2}~--- $\overline{N}_{\mathrm{совп}}$}
+\end{figure}
+  
+
+  
+  \textbf{Метод BRISK.} Испытания метода BRISK при тех же исходных данных 
+показали результаты, приведенные на рис.~3. По результатам испытания 
+метода BRISK тенденция, про\-сле\-жи\-ва\-емая в~предыду\-щих испытаниях, не 
+измени-\linebreak лась. 
+  
+
+
+  \smallskip
+  
+  Далее рассмотрим влияние изменения чис\-ла ключевых точек из-за 
+воздействия коррекции и~обрезания на ско\-рость создания и~точ\-ность сшивания 
+па\-но\-рам\-но\-го изоб\-ра\-же\-ния. В~случае сшивания снимков, полученных с~высоты 
+150~м, за\-мет\-но увеличение ско\-рости получения панорам для методов SIFT 
+и~ORB, при этом точ\-ность сшивания так\-же увеличивается, но уже для всех 
+методов. Описанные результаты пред\-став\-ле\-ны на рис.~4.
+  
+\begin{figure} %fig4
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=81.581mm 
+\epsfbox{arh-4.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Время $T_{\mathrm{сш}}$~(\textit{а}) и~точ\-ность $Q_{\mathrm{сш}}$~(\textit{б})
+ сшивания па\-но\-рам\-ных изображений методами 
+SIFT~(\textit{1}), ORB~(\textit{2}) и~BRISK~(\textit{3}) для высоты 150~м}
+\end{figure}
+
+
+
+  
+  Результаты исследования скорости и~точности сшивания для высоты 250~м 
+показаны на рис.~5. Графики аналогичны зависимостям, пред\-став\-лен\-ным 
+на рис.~4, но в~случае метода ORB заметно небольшое ухуд\-ше\-ние 
+в~точности сшитых панорам. Причина такого результата может быть вызвана 
+большой высотой съемки, так как детализация объектов становится ниже, что 
+влияет на чис\-ло ключевых точек. \begin{figure} %fig5
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=81.58mm 
+\epsfbox{arh-5.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Время $T_{\mathrm{сш}}$~(\textit{а}) и~точность 
+ $Q_{\mathrm{сш}}$~(\textit{б}) сшивания па\-но\-рам\-ных изображений методами 
+SIFT~(\textit{1}), ORB~(\textit{2}) и~BRISK~(\textit{3}) для высоты 250~м}
+\end{figure}
+Ранее отмечалось, что коррекция 
+незначительно уменьшает долю совпавших ключевых точек от общего чис\-ла 
+точек, поэтому это могло повлиять на итоговую панораму. Вдобавок к~этому 
+мож\-но заметить общее ухудшение в~точ\-ности сшивания панорамы для высоты 
+250~м. Вызвано это так\-же уменьшением детализации из-за увеличения высоты 
+съемки.
+  
+
+  
+  \section{Заключение}
+  
+  В результате проведенного исследования был сделан вывод о~том, что для 
+создания па\-но\-рам\-ных изображений важными показателями являются: общее 
+чис\-ло найденных ключевых точек~$N_{\mathrm{общ}}$, чис\-ло совпавших ключевых точек 
+$N_{\mathrm{совп}}$, точ\-ность сшивания изображений $Q_{\mathrm{сш}}$ 
+и~время~$T_{\mathrm{сш}}$, за\-тра\-чен\-ное на сшивание па\-но\-рам\-но\-го 
+изображения. Благодаря применению процедуры коррекции яр\-кости и~цвета 
+уменьшилось общее чис\-ло ключевых точек для каждого из методов 
+детектирования SIFT, ORB и~BRISK, но при этом чис\-ло совпавших точек 
+изменилось незначительно. Примеры полученных па\-но\-рам\-ных изображений 
+для разных высот показаны на рис.~6.
+  
+
+    \begin{figure}[b] %fig6
+    \vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+\epsfbox{arh-6.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Примеры па\-но\-рам\-ных изображений при высоте съемки~150~(\textit{а}) и~250~м~(\textit{б})}
+\end{figure}
+
+ Доля совпавших ключевых точек от общего числа найденных увеличилась 
+  в~среднем на~18\% для указанных методов, при этом время на сшивание 
+панорам уменьшилось в~среднем на~164~с за счет обрезания краев 
+изображений на~20\%.
+  
+  Дополнительно было отмечено, что увеличение высоты съемки оказывает 
+отрицательное воздействие на точ\-ность сшивания итоговой панорамы, 
+вызванное уменьшением чис\-ла совпадающих ключевых точек между парами 
+сши\-ва\-емых снимков. Для использованных методов SIFT, ORB и~BRISK 
+оно со\-ста\-ви\-ло 23\%, 14,9\% и~17,9\% соответственно.
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+  \bibitem{1-arh} %1
+  \Au{Архипов П.\,О., Цуканов М.\,В.} Информационная модель технологии коррекции 
+яр\-кости и~цвета при создании па\-но\-рам\-ных изображений~/\!\!/ Системы высокой 
+до\-ступ\-ности, 2020. Т.~16. №\,3. С.~46--51. doi: 10.18127\!/\!j20729472-202003-04.
+
+\bibitem{13-arh} %2
+  \Au{Harris C., Stephens~M.} A~combined corner and edge detector~/\!\!/ 4th Alvey Vision 
+Conference Proceedings.~--- Manchester, U.K.: Alvey Vision Club, 1988. P.~147--151.
+
+  \bibitem{12-arh} %3
+  \Au{Rublee~E., Rabaud~V., Konolige~K., Bradski~G.} ORB: An efficient alternative to SIFT or 
+SURF~/\!\!/  Conference (International) on Computer Vision.~--- Piscataway, NJ, USA: 
+IEEE, 2011. P.~2564--2571. doi: 10.1109\!/\!ICCV.2011.6126544.
+
+\bibitem{10-arh} %4
+  \Au{Гончаренко М.\,О.} Сравнительный анализ методов формирования дескрипторов 
+изображений в~кон\-текс\-те задачи сег\-мен\-та\-ции видеопотока~/\!\!/ Бионика интеллекта, 2015. 
+№\,2(85). С.~90--94.
+
+  \bibitem{2-arh} %5
+  \Au{Супрун Д.\,Е.} Алгоритм со\-по\-став\-ле\-ния изображений по ключевым точкам при 
+мас\-шта\-би\-ру\-емости и~вращении объектов~/\!\!/ Вестник МГТУ им.\ Н.\,Э.~Баумана. Сер. 
+Приборостроение, 2016. №\,5. C.~86--98. doi: 10.18698\!/\!0236-3933-2016-5-86-98.
+
+\bibitem{6-arh} %6
+  \Au{Прозоров А.\,В.} Детекторы особых точек в~задаче одновременной локализации 
+и~картирования~/\!\!/ DSPA: вопросы применения цифровой обработки сигналов, 2016. Т.~6. 
+№\,4. С.~804--808. 
+
+  \bibitem{3-arh} %7
+  \Au{Залесский Б.\,А.} Детекторы экстремальных особых точек на изображениях~/\!\!/ 
+Докл. НАН Беларуси, 2017. Т.~61. №\,5. С.~37--41.
+  \bibitem{4-arh} %8
+  \Au{Макаров А.\,С., Болсуновская М.\,В.} Сравнительный анализ методов обнаружения 
+особых точек на изображениях при различных уровнях освещения~/\!\!/ 
+ На\-уч\-но-тех\-ни\-че\-ские ведомости Санкт-Пе\-тер\-бург\-ско\-го гос. политехнического ун-та.
+ Информатика. Теллекоммуникации. Управ\-ле\-ние, 2018. Т.~11. №\,2. С.~7--18. doi: 
+10.18721\!/\!JCSTCS.11201.
+  \bibitem{5-arh} %9
+  \Au{Нечаев А.\,П.} Исследование алгоритмов детектирования особых точек для решения 
+задачи сравнения изображений~/\!\!/ Перспективные информационные технологии: Труды 
+Междунар. на\-учн.-тех\-нич. конф.~--- Самара: Самарский научный центр РАН, 
+2018. С.~506--508.
+  
+  \bibitem{7-arh} %10
+  \Au{Сафронова О.\,Р., Трубаков Е.\,О.} Анализ методов детектирования ключевых точек 
+изображения для визуальной одо\-мет\-рии~/\!\!/ Информационные технологии. Проблемы 
+и~решения, 2019. №\,3(8). С.~125--130.
+  \bibitem{8-arh} %11
+  \Au{Бондаренко В.\,А., Каплинский Г.\,Э., Павлова~В.\,А., Тупиков~В.\,А.} Метод поиска 
+и~со\-по\-став\-ле\-ния ключевых особенностей изображений для распознавания образов 
+и~со\-про\-вож\-де\-ния объектов~/\!\!/ Известия ЮФУ. Технические науки, 2019. №\,1(203). 
+С.~281--293. doi: 10.23683\!/\!2311-3103-2019-1-281-293.
+
+\bibitem{11-arh} %12
+  \Au{Краснобаев Е.\,А., Чистобаев Д.\,В., Малышев~А.\,Л.} Сравнение бинарных 
+дескрипторов особых точек изображений в~условиях искажений~/\!\!/ Компьютерная оптика, 
+2019. Т.~43. №\,3. С.~434--445. doi: 10.18287\!/\!2412-6179-2019-43-3-434-445.
+
+  \bibitem{9-arh} %13
+  \Au{Трубаков Е.\,О., Трубаков А.\,О., Трубакова~О.\,Р.} Исследование результатов работы 
+алгоритмов со\-по\-став\-ле\-ния ключевых точек для анализа космоснимков~/\!\!/ 
+Информационные сис\-те\-мы и~технологии: Сб. мат-лов XXVI Междунар. 
+  на\-учн.-тех\-нич. конф.~--- Нижний Новгород: Нижегородский ГТУ им.\ 
+Р.\,Е.~Алексеева, 2020. С.~1066--1073.
+  
+  
+  \bibitem{14-arh}
+  \Au{Архипов О.\,П., Архипов П.\,О., Цуканов~М.\,В.} Программная система 
+автоматизированного создания и~сравнения фотопланов с~функцией диагностирования 
+аномалий (C\_19). Свидетельство о~государственной регистрации программы для ЭВМ 
+№\,2019663720. 
+\bibitem{15-arh}
+  \Au{Архипов П.\,О., Цуканов М.\,В.} Модификация алгоритма минимизации искажений 
+при сшивании аэрофотоснимков в~панораму~/\!\!/ Сис\-те\-мы высокой до\-ступ\-ности, 2020. 
+Т.~16. №\,3. С.~52--57. doi: 10.18127\!/\!j20729472-202003-05.
+       \end{thebibliography}
+} }
+
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 27.08.21}}
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+%\vspace*{8pt}
+
+\def\tit{STUDY OF METHODS FOR DETECTING KEY POINTS\\ WHEN 
+CREATING PANORAMIC IMAGES}
+
+
+
+\def\titkol{Study of methods for detecting key points when 
+creating panoramic images}
+
+\def\aut{P.\,O.~Arkhipov, A.\,K.~Trofimenkov, M.\,V.~Tsukanov, and~N.\,Yu.~Nosova}
+
+\def\autkol{P.\,O.~Arkhipov, A.\,K.~Trofimenkov, M.\,V.~Tsukanov, and~N.\,Yu.~Nosova}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+ \noindent
+      Orel Branch of the Federal Research Center ``Computer Science and Control'' 
+of the Russian Academy of Sciences, 137~Moskovskoe Shosse, Orel 302025, 
+Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2022 vol~32 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2022 vol~32 no\,2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+  
+  
+            
+      
+      \Abste{The article is devoted to the problem of creating panoramas in conditions of 
+differences in the color palette and illumination level of stitched images caused both by the features 
+of the optical system and by the weather and other factors. A~procedure for correcting brightness 
+and color is proposed to minimize differences between stitched images and to reduce negative 
+impacts. The features of detection of key points by various methods during the stitching of 
+panoramic images under conditions of shooting at different heights are presented. The effect of an 
+additional procedure for correcting brightness and color on the number of found key points is 
+described. The quality of the final panoramic images and the time of their stitching were evaluated. 
+In the course of the work, statistical data were obtained and their comparative analysis was carried 
+out.}
+      
+      \KWE{brightness correction; color correction; detection; key points; panoramic images; 
+image processing} 
+      
+\DOI{10.14357\!/\!08696527220209} 
+
+%\vspace*{-16pt}
+
+
+% \Ack
+%\noindent
+
+ 
+
+
+%\vspace*{-6pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+  \bibitem{1-arh-1}
+       \Aue{Arkhipov, P.\,O., and M.\,V.~Tsukanov.} 2020. Informatsionnaya 
+model' tekhnologii korrektsii yarkosti i~tsveta pri sozdanii panoramnykh 
+izobrazheniy [Information model of brightness and color correction technology for
+creating panoramic images]. \textit{Sistemy vysokoy dostupnosti} [Highly 
+Available Systems]  16(3):46--51. doi: 10.18127\!/ j20729472-202003-04.
+\bibitem{13-arh-1} %2
+       \Aue{Harris, C., and M.~Stephens.} 1988. A~combined corner and edge 
+detector. \textit{4th Alvey Vision Conference Proceedings}.
+Manchester, U.K.: Alvey Vision Club. 147--151.
+
+\bibitem{12-arh-1} %3
+       \Aue{Rublee, E., V.~Rabaud, K.~Konolige, and G.~Bradski.} 2011. ORB: An 
+efficient alternative to SIFT or SURF. \textit{Conference (International) on 
+Computer Vision Proceedings}. Piscataway, NJ: IEEE. 2564--2571. doi: 
+10.1109\!/\!ICCV.2011.6126544.
+
+\bibitem{10-arh-1} %4
+       \Aue{Goncharenko, M.\,O.} 2015. Sravnitel'nyy analiz metodov 
+formirovaniya deskriptorov izobrazheniy v~kontekste zadachi segmentatsii 
+videopotoka [Comparative analysis of key points detection
+methods as a~part of video segmentation problem]. \textit{Bionika intellekta} 
+[Bionics of Intelligence] 2(85):90--94.
+
+  \bibitem{2-arh-1} %5
+       \Aue{Suprun, D.\,E.} 2016. Algoritm sopostavleniya izobrazheniy po 
+klyuchevym tochkam pri masshtabiruemosti i~vrashchenii ob''ektov [Image-matching algorithm 
+using key points with scalability and rotation of objects]. \textit{Vestnik 
+MGTU im.\ N.\,E.~Baumana. Ser. Priborostroenie} [Herald of the Bauman Moscow
+State Technical University. Ser. Instrument engineering] 5:86--98. doi: 
+ 10.18698\!/\!0236-3933-2016-5-86-98.
+  \bibitem{6-arh-1} %6
+       \Aue{Prozorov, A.\,V.} 2016. Detektory osobykh tochek v~zadache 
+odnovremennoy lokalizatsii i~kartirovaniya [Special point detectors in the task of 
+simultaneous localization and mapping]. \textit{DSPA: Voprosy primeneniya 
+tsifrovoy obrabotki signalov} [DSPA: Digital Signal Processing Applications] 
+6(4):804--808.
+  \bibitem{3-arh-1} %7
+\Aue{Zalesky, B.\,A.} 2017. Detektory ekstremal'nykh osobykh tochek na 
+izobrazheniyakh [Detectors of extremal key points on images]. \textit{Dokl. 
+NAN Belarusi} [Doklady of the National Academy of 
+Sciences of Belarus] 61(5):37--41.
+  \bibitem{4-arh-1} %8
+       \Aue{Makarov, A.\,S., and M.\,V.~Bolsunovskaya.} 2018. Sravnitel'nyy 
+analiz metodov obnaruzheniya osobykh tochek na izobrazheniyakh pri razlichnykh 
+urovnyakh osve\-shche\-niya [Comparative analysis of methods for detecting special 
+points in images at different levels of illumination]. \textit{Nauchno-tekhnicheskie 
+vedomosti SPbGPU. Informatika. Telekommunikatsii. Upravlenie} [St.\ Petersburg 
+State Polytechnical University J.~Computer Science. Telecommunications and 
+Control Systems] 11(2):7--18. doi: 10.18721\!/ JCSTCS.11201.
+  \bibitem{5-arh-1} %9
+       \Aue{Nechaev, A.\,P.} 2018. Issledovanie algoritmov detektirovaniya osobykh 
+tochek dlya re\-she\-niya zadachi sravneniya izobrazheniy [Investigation of algorithms 
+for detecting singular points for solving the problem of comparing images]. 
+\textit{Scientific and Technical Conference (International) ``Advanced 
+Information Technologies'' Proceedings}. Samara: Samara Scientific Center RAS. 506--508.
+ 
+  \bibitem{7-arh-1} %10
+       \Aue{Safronova, O.\,R., and E.\,O.~Trubakov.} 2019. Analiz metodov 
+detektirovaniya klyu\-che\-vykh tochek izobrazheniya dlya vizual'noy odometrii 
+[Analysis of methods for detecting the key image points for the visual odometry]. 
+\textit{Informatsionnye tekhnologii. Prob\-le\-my i~resheniya} [Information 
+Technology] 3(8):125--130.
+  \bibitem{8-arh-1} %11
+       \Aue{Bondarenko, V.\,A., G.\,E.~Kaplinskiy, V.\,A.~Pavlova, and 
+V.\,A.~Tupikov.} 2019. Metod poiska i~sopostavleniya klyuchevykh osobennostey 
+izobrazheniy dlya ras\-po\-zna\-va\-niya obrazov i~soprovozhdeniya ob''ektov [A~method 
+for detection and matching of image keypoints for object recognition and 
+tracking]. \textit{Izvestiya YuFU. Tekhnicheskie nauki} [Izvestiya SFEDU. Engineering 
+Sciences] 1(203):281--293. doi 10.23683\!/\!2311-3103-2019-1-281-293.
+ \bibitem{11-arh-1} %12
+       \Aue{Krasnobaev, E.\,A., D.\,V.~Chistobaev, and A.\,L.~Malyshev.} 2019. 
+Sravnenie binarnykh deskriptorov osobykh tochek izobrazheniy v~usloviyakh 
+iskazheniy [Comparison of binary feature points descriptors of images 
+under distortion conditions]. \textit{Komp'yuternaya optika} [Computer Optics] 
+43(3):434--445. doi: 10.18287\!/\!2412-6179-2019-43-3-434-445.
+
+  \bibitem{9-arh-1} %13
+       \Aue{Trubakov, E.\,O., A.\,O.~Trubakov, and O.\,R.~Trubakova.} 2020. 
+Issledovanie rezul'tatov raboty algoritmov sopostavleniya klyuchevykh tochek dlya 
+analiza kosmosnimkov [Investigation of the results of the operation of algorithms for 
+matching key points for the analysis of space images]. \textit{26th 
+Scientific and Technical Conference (International)  ``Information Systems 
+and Technologies'' Proceedings}. Nizhniy Novgorod: Nizhegorodskiy GTU im.\ R.\,E.~Alekseeva. 1066--1073.
+  
+ 
+  \bibitem{14-arh-1}
+       \Aue{Arkhipov, O.\,P., P.\,O.~Arkhipov, and M.\,V.~Tsukanov.} 2019. 
+Programmnaya sistema avtomatizirovannogo sozdaniya i~sravneniya fotoplanov 
+s~funktsiey diagnostirovaniya anomaliy (C\_19) [Software system for automated 
+creation and comparison of photographic plans with anomaly diagnostics function 
+(C\_19)]. Certificate of State 
+Registration No.\,2019663720. 
+  \bibitem{15-arh-1}
+       \Aue{Arkhipov, P.\,O., and M.\,V.~Tsukanov.} 2020. Modifikatsiya algoritma 
+mi\-ni\-mi\-za\-tsii iskazheniy pri sshivanii aerofotosnimkov v~panoramu [Modification of 
+the algorithm for minimizing distortion when stitching aerial photographs into 
+a~panorama]. \textit{Sistemy vysokoy dostupnosti} [Highly Available Systems] 
+16(3):52--57. doi: 10.18127\!/ j20729472-202003-05.
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received August 27, 2021}} 
+
+\vspace*{-16pt} 
+      
+      \Contr
+      
+      \vspace*{-4pt}
+      
+\noindent
+\textbf{Arkhipov Pavel O.} (b.\ 1979)~--- Candidate of Science (PhD) in technology, 
+director, Orel Branch of the Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 137~Moskovskoe Shosse, Orel 
+302025, Russian Federation; \mbox{arpaul@mail.ru}
+
+\vspace*{3pt}
+      
+      \noindent
+\textbf{Trofimenkov Andrei K.} (b.\ 1965)~--- Candidate of Science (PhD) in 
+technology, associate professor, senior scientist, Orel Branch of the Federal Research 
+Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
+137~Moskovskoe Shosse, Orel 302025, Russian Federation; 
+\mbox{andretrf@yandex.ru}
+
+\vspace*{3pt}
+      
+      \noindent
+\textbf{Tsukanov Maxim V.} (b.\ 1995)~--- junior scientist, Orel Branch of the Federal 
+Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 137~Moskovskoe Shosse, Orel 302025, Russian Federation; 
+\mbox{tsukanov.m.v@yandex.ru}
+
+\vspace*{3pt}
+      
+      \noindent
+\textbf{Nosova Natalia Yu.} (b.\ 1964)~--- leading engineer, Orel Branch of the Federal 
+Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 137~Moskovskoe Shosse, Orel 302025, Russian Federation; 
+\mbox{ofipiran.lab01@ yandex.ru}
+  
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 
+      

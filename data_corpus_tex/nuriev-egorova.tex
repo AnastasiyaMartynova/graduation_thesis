@@ -1,0 +1,833 @@
+\def\stat{nuriev-egorova}
+
+\def\tit{МЕТОДЫ ОЦЕНКИ КАЧЕСТВА МАШИННОГО ПЕРЕВОДА: СОВРЕМЕННОЕ 
+СОСТОЯНИЕ}
+
+\def\titkol{Методы оценки качества машинного перевода: современное 
+состояние}
+
+\def\aut{В.\,А.~Нуриев$^1$, А.\,Ю.~Егорова$^2$}
+
+\def\autkol{В.\,А.~Нуриев, А.\,Ю.~Егорова}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Нуриев В.\,А.}
+\index{Егорова А.\,Ю.} 
+\index{Nuriev V.\,A.}
+\index{Egorova A.\,Yu.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа выполнена в~Институте проблем информатики Федерального исследовательского центра
+%<<Информатика и~управление>> Российской академии наук.}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Федерального исследовательского центра <<Информатика 
+и~управление>> Российской академии наук, \mbox{nurieff.v@gmail.com}}
+\footnotetext[2]{Институт проблем информатики Федерального исследовательского центра <<Информатика 
+и~управление>> Российской академии наук, \mbox{ann.shurova@gmail.com}}
+
+\vspace*{-10pt}
+  
+    
+  
+  \Abst{Представлен обзор современных методов оценки качества машинного 
+перевода (МП). В~основе этих методов лежат два подхода~--- автоматический и~экспертный. 
+Автоматическая оценка построена на сопоставлении с~референтным  
+(про\-фес\-сио\-наль\-ным/эта\-лон\-ным) переводом (РП). Экспертная (с~привлечением 
+че\-ло\-ве\-ка-экс\-пер\-та) учитывает в~первую очередь функциональность: качество перевода 
+оценивается в~праг\-ма\-ти\-ко-функ\-цио\-наль\-ном аспекте, т.\,е.\ принимается во 
+внимание, насколько полученный перевод справляется со своими задачами. В~первой 
+части статьи рассматривается ряд метрик, исполь\-зу\-емых для автоматической оценки 
+МП, отмечаются их недостатки и~описываются новые направления в~их 
+разработке. Вторая часть статьи сфокусирована на экспертной оценке 
+МП. Здесь приведены несколько основных способов такой оценки: оценивание 
+в~соответствии с~критериями точности и~естественности, ранжирование переводов, 
+прямое оценивание, оценка с~учетом коэффициента редактирования перевода человеком, 
+аннотирование перевода с~применением типологии ошибок.}
+  
+  \KW{машинный перевод; качество перевода; оценка качества машинного перевода; 
+автоматические метрики; прямое оценивание; типология ошибок машинного перевода}
+
+\DOI{10.14357/19922264210215}
+
+\vspace*{-6pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+  
+  \section{Введение}
+  
+  \vspace*{-3pt}
+  
+  Проблема и, следовательно, необходимость оценки качества переводного 
+текста возникает на регулярной основе, причем не только 
+в~профессиональном сообществе, но и~в жизни обычного\linebreak человека. Во 
+многом это связано с~тем, что МП стал неотъемлемой 
+частью повседневной ре\-аль\-ности. Происходит реструктуризация рынка 
+переводческих услуг и,~в~част\-ности, МП, а~бюджет индустрии постоянно 
+наращивает объемы (см.\ об этом~[1, с.~260--263]). Ежедневно с~по\-мощью 
+пуб\-лич\-но доступного веб-сер\-ви\-са нейронного МП Google.Translate 
+обрабатывается около 143~млрд слов в~100~языковых парах~[2]. Человек 
+\mbox{использует} МП для решения задач широкого профиля: для получения 
+информации, связанной с~конкретной и~требующей незамедлительных 
+действий проблемой (перевод технического со\-про\-вож\-де\-ния, инструкции 
+к~лекарствам и~т.\,д.); для покупок на зарубежных сайтах; в~целях 
+оптимизации \mbox{профессиональной} деятельности переводчика с~по\-мощью 
+внедрения в~его рабочий цикл этапа, предполагающего по\-сле\-ду\-ющую 
+редактуру автоматически сгенерированного текста. Не все указанные задачи 
+предполагают обязательный высокий уровень качества МП. Для 
+осуществления ряда из них достаточно общего понимания содержания даже 
+при наличии несущественных ошибок, на\-ру\-ша\-ющих правила целевого языка. 
+Для выполнения других задач требуется высокое качество полученного 
+автоматическим способом перевода, что указывает на необходимость 
+постоянно оценивать динамику этого качества, изучать и~совершенствовать 
+методы его оценки. Этим обусловлено повышенное внимание научного 
+сообщества к~данной проб\-ле\-ме: за последние четыре года были 
+опубликованы несколько авторитетных монографий, 
+фо\-ку\-си\-ру\-ющих\-ся на оценке качества МП~[3--5].
+  
+  Целью статьи, таким образом, ставится обзор современных тенденций 
+в~разработке методов оценки качества МП. В~основе этих методов лежат 
+два подхода~--- автоматический и~экспертный. Автоматическая оценка 
+построена на сопоставлении с~референтным
+(про\-фес\-сио\-наль\-ным/эта\-лон\-ным) переводом (\textit{англ}.\ reference translation). Экспертная 
+(с~привлечением че\-ло\-ве\-ка-экс\-пер\-та) оценка учитывает в~первую 
+очередь функциональность: качество перевода оценивается тем выше, чем 
+успешнее он справляется со своими задачами.
+
+\vspace*{-9pt}
+  
+  \section{Автоматическая оценка качества машинного перевода}
+  
+  Как правило, автоматическая оценка измеряет уровень соответствия МП 
+одному или нескольким РП. Чтобы определить уровень соответствия МП 
+и~РП, применяются критерии точности (доля правильно переведенного) 
+и~полноты (доля переведенных слов, совпадающих с~профессиональным 
+переводом). Ниже представлены некоторые метрики автоматической оценки 
+качества МП.
+  
+  Метрика, к~которой обращаются чаще всего,~--- это разработанная в~IBM 
+метрика BLEU (Bilingual Evaluation Understudy)~\cite{6-nur}. Она вошла 
+в~золотой стандарт автоматической оценки качества МП и~нередко 
+применяется в~качестве эталонной. Сопоставление МП и~РП проводится 
+путем вы\-чис\-ле\-ния $n$-грам\-мной точ\-ности (максимальная длина  
+$n$-грам\-мно\-го блока слов равна~4). Чтобы избежать искажения в~оценке, 
+за слишком короткий перевод назначается штраф (brevity penalty~--- BP),  
+$n$-грам\-мная точ\-ность при этом представляет собой <<отношение 
+последовательностей из~$n$ слов, совпадающих в~МП и~РП, к~общему числу 
+последовательностей из~$n$~слов в~МП>>~\cite[с.~111--112]{7-nur}. 
+<<Оценка$\ldots$ вычисляется как произведение среднего геометрического 
+из полученных модифицированных коэффициентов и~штрафного 
+коэффициента>>~\cite[с.~86]{8-nur}. Полученное значение BLEU изменяется 
+в~пределах от~0 до~1. При процентном представлении значение изменяется 
+в~промежутке от~0\% до~100\%. Вычисляется метрика по следующей 
+формуле:
+  \begin{multline*}
+  \mathrm{BLEU} =\mathrm{BP}\exp \left( \sum\limits^n_{n=1} w_i \log 
+p_i\right) \!,\\
+ \mathrm{BP} =\min\left( 1,\fr{c}{r}\right),
+  \end{multline*}
+  <<где $w_i$~--- положительные веса для каждого используемого параметра  
+$n$-грамм$\ldots$ $n$~--- максимальная длина $n$-грамм, $i$~--- длина 
+блока в~пределах $n$-грам\-мы, $p_i$~--- модифицированная точность  
+$n$-грамм, $c$~--- длина полученного машинного перевода, $r$~--- длина 
+наилучшего совпадающего эталонного текста>>~\cite[с.~86]{8-nur}. Мет\-ри\-ка BLEU 
+использует статистические инструменты, не принимая во внимание 
+лингвистические знания.
+  
+  Другая наиболее востребованная метрика~--- \mbox{METEOR} (Metric for Evaluation 
+of Translation with Explicit Ordering)~--- предусмат\-ри\-ва\-ет интеграцию языковых 
+знаний. Так, наряду с~$n$-грам\-мны\-ми совпадениями в~МП и~РП она 
+учитывает изменения в~словоформах, синонимические ряды  
+и~т.\,д.~\cite{9-nur}. Поэтому для обеспечения ее функционирования 
+необходимо привлечение баз данных, содержащих лингвистическую 
+информацию, нужна морфологическая разметка и~вычислительно затратное 
+пословное выравнивание. Иначе говоря, требуется сложная и~тонкая 
+настройка, куда вовлечено гораздо больше параметров, чем в~BLEU.
+  
+  Еще одной получившей широкое распространение метрикой 
+автоматической оценки качества МП стала TER (Translation Error Rate). Она 
+исходит из расчета ис\-прав\-ле\-ний/транс\-фор\-ма\-ций, необходимых для 
+приведения МП к~эталонному образцу, и~вычисляется по следующей 
+формуле:
+  $$
+  \mathrm{TER} =\fr{\mathrm{Число\ редактирований}}{\mathrm{Средняя\ 
+длина\ эталонных\ переводов}}\,.
+  $$
+    При этом пунктуационные знаки принимаются за отдельные слова, 
+а~трансформациями считаются не только удаление, вставка и~замена, но 
+и~перестановка~--- в~отличие, например, от метрики WER (Word Error Rate), 
+которая эту последнюю трансформацию не учитывает (подробнее о~TER 
+и~WER см.\ в~\cite{8-nur, 10-nur}).
+  
+  Наряду с~рассмотренными метриками автоматической оценки качества МП 
+также имеются: PER (Position-Independent Word Error Rate), chrF  
+(Character F-measure), NIST (название образовано от US National Institute of 
+Standards and Technology) и~др.\ (о~них  
+см.~\cite{7-nur, 8-nur, 11-nur, 12-nur}).
+  
+  Целесообразность использования метрик автоматической оценки качества 
+МП постоянно ставится под вопрос. Действительно, может ли метрика 
+с~простейшим алгоритмом вычисления типа BLEU (как и~другие метрики) 
+адекватно отражать отличия между МП и~РП? Основные критические 
+замечания, высказываемые в~этой связи, заключаются в~следующем.
+  \begin{enumerate}[1.]
+  \item При вычислении не принимается во внимание, что слова несут на 
+себе разную функциональную нагрузку и~имеют неодинаковую 
+релевантность для формирования предложения.
+  \item Сравнение РП и~МП носит локальный характер и~проводится на 
+уровне $n$-грам\-мно\-го соответствия, при этом упускается из виду 
+грамматическая связность в~рамках всего предложения, что искажает 
+результаты в~пользу систем МП, которые лучше переводят отдельные 
+словарные блоки, но не всегда способны грамматически правильно оформить 
+целое предложение.
+  \item Вычисляемые значения не информативны: неизвестно, как 
+интерпретировать значение BLEU, равное, например, 30,7\%, так как при 
+вычислении задействовано множество факторов~--- число РП, языковая пара, 
+терминологическое наполнение текста, схема токенизации, используемая для 
+вычленения слов в~РП и~МП.
+  \item Ненадежность алгоритма оценки. Так, недавние эксперименты 
+показали, что BLEU оценивает выполненные человеком переводы на том же 
+уровне, что и~машинные, хотя последние имеют гораздо худшее качество. 
+В~ходе этих экспериментов с~помощью BLEU выполнялось сравнение между 
+несколькими РП, а~также между РП и~МП.
+  \end{enumerate}
+  
+  Эти недостатки необходимо учитывать в~разработке новых метрик 
+автоматической оценки МП, как необходимо учитывать и~то, что 
+в~идеальном случае оценка, получаемая с~помощью такой мет\-ри\-ки, должна 
+демонстрировать явную корреляцию с~оценкой че\-ло\-ве\-ка-экс\-пер\-та. 
+Обычно эту корреляцию рассчитывают с~помощью коэффициента 
+корреляции Пирсона~\cite[с.~61]{10-nur}. Его значение варьируется от~0 
+до~1, и~чем оно выше в~указанном диапазоне, тем лучше метрика.
+  
+  Автоматические метрики получили всеобщее признание в~качестве 
+эффективного способа для оценки продуктивности систем статистического 
+МП, однако они не совсем приспособлены, чтобы сравнивать 
+производительность систем МП разного типа между собой, и~в этом 
+отношении разработки средств автоматической оценки МП пока не достигли 
+сколь-нибудь значимых результатов. Вместе с~тем такие разработки 
+интенсивно ведутся, и~автоматические метрики постоянно 
+совершенствуются.
+  
+  Так, все большее распространение получает подход, учитывающий при 
+сопоставлении МП и~РП морфологические, синтаксические и~семантические 
+параметры. Это, например, MEANT, где сопоставляются синтаксические 
+древовидные структуры и~принимаются во внимание такие свойства, как 
+семантические роли~\cite{13-nur}. Или RIBES (Rank-based Intuitive Bilingual 
+Evaluation Score)~--- метрика, специально разработанная для языковых пар 
+типа япон\-ский--анг\-лий\-ский, где коренным образом различается 
+синтаксическое устройство.
+  
+  Имеются попытки применять машинное обуче\-ние~--- обучать метрики на 
+данных, полученных по результатам оценки че\-ло\-ве\-ком-экс\-пер\-том (см., 
+например, BEER (BEtter Evaluation as Ranking)~[14, 15] или \mbox{BLEURT} 
+(Bilingual Evaluation Understudy with Representations from Transformers)~--- 
+одну из самых новых мет\-рик, которая использует нейросетевую языковую 
+модель \mbox{BEURT} и~обуча\-ет\-ся на рейтинговых данных~[16]).
+  
+  Наряду с~увеличением степени корреляции между оценкой 
+  человека-эксперта и~автоматической оценкой МП разработчики также стремятся 
+обеспечить большую информативность метрик (см.\ выше замечание 
+о~непрозрачности значения BLEU) и~снижение вычислительной 
+трудоемкости.
+  
+  Важным сейчас становится создание информационных ресурсов, 
+содержащих лингвистические знания разной направленности, 
+предназначенные для обучения современных автоматизированных метрик. 
+Примером таких ресурсов служат надкорпусные базы данных, 
+разрабатываемые в~отделе~54 ФИЦ ИУ РАН~[17].
+  
+  Подробнее о новейших разработках в~области автоматизированных 
+средств оценки качества МП см.~\cite[с.~59--64]{10-nur}.
+  
+  \section{Экспертная оценка качества машинного перевода}
+  
+  Говоря об экспертной оценке качества МП с~привлечением специалистов 
+(лингвистов, переводчиков), можно выделить несколько основных способов: 
+оценивание в~соответствии с~критериями точности и~естественности, 
+ранжирование переводов, прямое оценивание, оценка с~учетом коэффициента 
+редактирования перевода человеком, аннотирование перевода с~применением 
+типологии ошибок.
+  
+  Понятие <<правильности>> перевода недоопределено и, следовательно, 
+плохо применимо. Вот почему для оценки качества МП руководствуются 
+критериями\footnote{Другие возможные критерии оценки описаны в~\cite{18-nur}.} 
+точности (adequacy) и~естественности (fluency), используя в~опросе 
+экспертов 5-балль\-ную шкалу Ликерта~[19]. Такой подход имеет свои 
+недостатки: эксперты не всегда последовательны в~своем выборе из-за 
+неоднозначности определений в~шкале оценки, к~тому же одни специалисты 
+более снисходительны при назначении оценок, чем другие.
+  
+  Чтобы избежать этих трудностей, при оценке двух и~более систем МП 
+применяется ранжирование переводов относительно друг друга. Для 
+измерения меры согласия между экспертами используют коэффициенты 
+каппа Коэна~\cite[с.~48]{10-nur}, каппа Флейса~\cite{20-nur}.
+  
+  Так, в~работе~[21] ранжирование проводилось для оценки качества 
+переводов, реализованных посредством системы статистического фразового 
+МП (СФМП) и~системы нейронного МП
+(НМП). В~ходе эксперимента каждому эксперту были представлены 
+триплеты, состоящие из предложения на исходном языке и~двух его 
+переводов (полученных с~помощью СФМП и~НМП). Экспертам предлагалось 
+оценить триплет и~приписать его к~одному из трех классов, показывающих 
+соотношение качества сравниваемых переводов: 
+$$
+\mathrm{СФМП} = 
+\mathrm{НМП}\,;\  \mathrm{СФМП} <  \mathrm{НМП};\  \mathrm{СФМП}> 
+\mathrm{НМП}\,.
+$$
+ Полученные экспертные оценки были сопоставлены 
+с~результатами автоматических метрик (BLEU, TER, Character F-measure).
+  
+  В эксперименте, описанном в~[22], помимо ранжирования еще 
+задействованы постредактирование переводов, экспертная аннотация ошибок 
+в~МП, а~также оценка точности/естественности. Подобно~[21], для 
+установления корреляции между экспертной и~автоматической оценкой 
+используются автоматические метрики.
+  
+  Одной из последних разработок в~области оценки качества МП является 
+прямое оценивание (direct assessment)~\cite[с.~49--50]{10-nur}. Оно 
+предполагает оценку одного предложения единовременно (в~отличие от 
+ранжирования переводов) с~применением 100-балль\-ной шкалы, которая 
+имеет вид немаркированной прямой с~бегунком. Для экспертов характерны 
+неодинаковые ожидания в~отношении качества МП: одни склонны его 
+оценивать выше, а другие, наоборот, ниже, что может объясняться 
+имеющимися предубеждениями о низком качестве МП. Кроме того, разными 
+экспертами 5-балль\-ная шкала используется неравномерно~--- некоторые 
+никогда не ставят самый низкий и~самый высокий баллы. 100-балль\-ная 
+шкала представляет собой более гибкий оценочный инструмент. Она дает 
+возможность измерить ожидания в~отношении качества МП у~каждого 
+эксперта с~помощью среднего балла всех его оценок, выявляя 
+задействованный интервал шкалы, который отражается в~дисперсии оценок. 
+Оценки разных экспертов нормируются согласно формулам в~\cite[с.~49--50]{10-nur}. 
+Переводы, поступающие эксперту для обработки, генерируются в~разных 
+системах МП и~выбираются случайным образом. После нормирования 
+оценок, полученных от каждого из экспертов, вычисляется средний балл для 
+переводов отдельно взятой системы~МП.
+
+  
+  Прямое оценивание было использовано в~ходе краудсорсинговой кампании 
+по оценке качества МП, организованной ACL (Association for Computational 
+Linguistics) в~2018~г.\ в~рамках Конференции по компьютерной лингвистике 
+(Workshop on Machine Translation, WMT).
+  
+  Оценивать качество перевода можно и~с~точки зрения усилий по его 
+постредактированию. Так, при оценке МП с~учетом 
+HTER\footnote{Аббревиатура совпадает с~названием автоматической метрики HTER  
+(Human-targeted Translation Error Rate) (подробнее см.~\cite[с.~25]{18-nur}).} (Human 
+Translation Edit Rate~--- коэффициент редактирования перевода 
+человеком)~\cite[с.~51--52]{10-nur} эксперты получают подборку переводов, 
+выполненных разными системами МП, которые им предлагается 
+отредактировать. Затем для каждой системы МП проводится сопоставление 
+перевода с~его отредактированной версией и~подсчитывается число 
+изменений, сделанных экспертом.
+  
+  Качество МП может оцениваться и~в процессе аннотирования перевода 
+с~применением типологии ошибок. Обзор классификаций представлен 
+в~работе~[23].
+  
+  Одной из наиболее известных является типология DQF/MQM (Dynamic 
+Quality Framework~--- динамическая модель оценки качества; 
+Multidimensional Quality Metrics~--- многомерные метрики\linebreak \mbox{качества}), 
+разработанная в~TAUS\footnote{Translation Automation User Society~--- Пользовательское 
+сообщество по автоматизации перевода.} и~DFKI\footnote{Deutsches Forschungszentrum 
+f$\ddot{\mbox{u}}$r K$\ddot{\mbox{u}}$nstliche Intelligenz~--- Немецкий центр исследований 
+искусственного интеллекта.} в~2014~г.~[24]. Типология имеет 4~уровня: наиболее 
+специфицированные типы ошибок относятся к~четвертому уровню; при этом 
+при оценке перевода можно выбирать степень спецификации, т.\,е.\ 
+использовать от одного до четырех уровней в~зависимости от задачи. Также 
+в~типологии учитываются четыре степени критичности ошибок. Подробнее 
+о~MQM-метриках см.\ в~работе~\cite{7-nur}.
+  
+  Типология DQF/MQM получила широкое распространение. Так, в~[25] она 
+применяется для проведения количественного анализа работы разных систем 
+МП. При этом классификация претерпевает ряд изменений, обусловленных 
+необходимостью учитывать особенности славянских языков (в данном 
+случае хорватского).
+  
+  Следует отметить, что типологии ошибок могут быть специфицированы 
+в~зависимости от цели исследования. Так, по мнению авторов статьи~[26], 
+категория <<Терминология>> в~классификации MQM не отражает нюансы, 
+которые могут возникать при ошибочном переводе терминов. В~работе 
+предпринята попытка провести анализ ошибок в~переводе терминов, 
+уточнить их классификацию и~сопоставить на этой основе работу систем 
+СФМП и~НМП.
+  
+  Представленная в~[26] типология ошибок включает в~себя 5~классов: 
+\begin{enumerate}[(1)]
+\item <<Ошибка в~словопорядке>> (Reorder error);\\[-10pt] 
+\item <<Ошибка 
+в~формообразовании>> (Inflectional error);\\[-10pt] 
+\item <<Ошибка в~части термина>> 
+(Partial error); \\[-10pt]
+\item <<Лексическая ошибка>> (Incorrect lexical selection); \\[-10pt]
+\item <<Пропуск термина>> (Term drop).
+\end{enumerate}
+ Оставшиеся виды ошибок образуют 
+6-й класс, который подразделяется на три подкласса: 
+\begin{itemize}
+\item <<Копирование 
+исходного термина>> (Source term copied); \\[-10pt]
+\item <<Ошибка, вызванная 
+затруднением при снятии многозначности слова на целевом языке>> 
+(Disambiguation issue in target); 
+\item <<Другие ошибки>> (Other error).
+\end{itemize}
+
+ Переводы 
+исходных терминов, в~которых не было допущено ошибок, объединены 
+в~отдельный класс <<Правильного перевода>> (Correct translation). В~нем 
+авторы исследования выделяют еще~7~подклассов, которые 
+демонстрируют разнообразие моделей перевода и~отображают степень 
+соответствия переводного эквивалента исходному термину.
+  
+  Еще одним примером типологии ошибок может послужить 
+классификация, представленная в~[27]. Она подробно описана в~работе~[28]. 
+Эта типология имеет~5~укрупненных классов ошибок, которые, в~свою 
+очередь, делятся на подклассы.
+  
+  В работе~[29] проводится количественный анализ ошибок 
+мультимодальных систем НМП, способных обрабатывать изображения. За 
+основу взята классификация ошибок~\cite{27-nur} с~некоторыми 
+уточнениями. Изменения в~ней обусловлены интересом авторов 
+исследования к~тому, как мультимодальные системы НМП переводят 
+<<визуальные>> термины (visual terms)~--- термины, обозначающие понятия, 
+прямое соответствие которым можно найти на предъявляемом изображении, 
+причем задействованы только укрупненные классы типологии 
+ошибок~\cite{27-nur} без уточнения их дальнейшего иерархического 
+устройства.
+  
+  С учетом всех преобразований модифицированная классификация~[29] 
+включает в~себя следующие классы ошибок: 
+\begin{enumerate}[(1)]
+\item <<Пропущенные слова>> 
+(Missing words); 
+\item <<Неправильные слова>> (Incorrect words), куда входят 
+подклассы
+\begin{itemize}
+\item  <<Неправильный перевод>> (Mistranslation);
+\item ~<<Неправильная 
+форма, лишние слова, стилистическая ошибка>> (Incorrect form, extra words 
+or style);
+\end{itemize} 
+\item <<Другие ошибки>> (Other), куда входят подклассы 
+\begin{itemize}
+\item <<Словопорядок>> (Word order); 
+\item <<Неизвестные слова>> (Unknown words); 
+\item <<Пунктуационная ошибка>> (Punctuation).
+\end{itemize}
+\end{enumerate}
+  
+  Также был добавлен новый, 4-й класс, получивший название 
+<<Визуальная категория>> (Visual category). В~него входят 
+4~подкласса: 
+\begin{itemize}
+\item <<Правильный перевод>> (Correct); 
+\item <<Неправильный перевод>> 
+(Mistranslation); 
+\item <<Неправильный, но интересный перевод>> (Incorrect but 
+interesting); 
+\item <<Новый термин>> (Novel).
+\end{itemize}
+
+  
+  Разнообразие способов экспертной оценки МП свидетельствует 
+о~неослабевающем интересе профессионального сообщества к~этой области, 
+а также говорит о том, что даже с~учетом существенно меньшей стоимости 
+и~большей быстроты автоматической оценке не доверяют полностью 
+и~стремятся проверить ее с~помощью мнения компетентного человека.
+  
+  \section{Заключение}
+  
+  В статье представлен обзор современных подходов к~оценке качества 
+МП. Выделены два основных направления: 
+автоматизированная оценка и~оценивание с~привлечением че\-ло\-ве\-ка-экс\-пер\-та. 
+С~изменением парадигмы МП и~внед\-ре\-ни\-ем нейросетей в~архитектуру 
+автоматических переводчиков изменяются и~разработки в~области оценки 
+качества МП. Это затрагивает в~первую очередь автоматические метрики, 
+используемые для оценивания переводов: для обеспечения их работы 
+пытаются применять машинное обучение. В~качестве тренировочных 
+привлекаются данные, полученные по результатам оценки человеком. 
+Нововведения имеются и~в~об\-ласти экспертной оценки качества МП. Одна 
+из последних разработок здесь~--- прямое оценивание. Востребованным 
+остается аннотирование МП с~применением типологии ошибок. Оно стало 
+одним из самых продуктивных способов оценивания, поскольку позволяет 
+гибко типологизировать ошибки в~соответствии с~целым рядом параметров, 
+которые легко варьировать в~зависимости от конкретных характеристик 
+текста, поступающего на вход системы МП.
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+%\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-nur}
+\Au{Larsonneur C.} Neural machine translation: From commodity to commons?~//
+ When  translation goes digital: Case studies and critical reflections~/ Eds. R.~Desjardins, 
+C.~Larsonneur, Ph.~Lacour.~--- Cham, Switzerland: Palgrave Macmillan, 2021. P.~257--280.
+\bibitem{2-nur}
+\Au{Davenport C.} Google Translate processes 143~billion words every day~// Android Police, 
+2018. {\sf https://\linebreak www.androidpolice.com/2018/10/09/google-translate- processes-143-billion-words-every-day}.
+\bibitem{3-nur}
+Translation quality assessment: From principles to practice~/ Eds. J.~Moorkens, 
+Sh.~Castilho, F.~Gaspari, S.~Doherty.~--- Machine translation: Technologies and applications ser.~---
+Cham, Switzerland: Springer International Publishing,  2018. 
+Vol.~1. 292~p.
+\bibitem{4-nur}
+\Au{Specia L., Scarton~C., Paetzold~G.\,H.} Quality estimation for machine translation.~--- Synthesis lectures on
+human language technologies ser.~--- London: Morgan \& Claypool, 2018. 162~p.
+\bibitem{5-nur}
+\Au{Bittner H.} Evaluating the evaluator: A~novel perspective on translation quality 
+assessment.~--- New York, NY, USA: Routledge, 2020. 282~p.
+\bibitem{6-nur}
+\Au{Papineni K., Roukos~S., Ward~T., Zhu~W.\,J.} BLEU: A~method for automatic evaluation of 
+machine translation~// 40th Annual Meeting on Association for Computational Linguistics 
+Proceedings.~--- Philadelphia, PA, USA: Association for Computational Linguistics, 2002. 
+P.~311--318.
+\bibitem{7-nur}
+\Au{Рычихин А.\,К.} О~методах оценки качества машинного перевода~// Системы 
+и~средства информатики, 2019. Т.~29. №\,4. С.~106--118.
+\bibitem{8-nur}
+\Au{Козина А.\,В., Черепков~Е.\,А., Белов~Ю.\,С.} Автоматические метрики оценки качества 
+машинного перевода~// Системный администратор, 2019. №\,11. С.~84--87.
+\bibitem{9-nur}
+\Au{Banerjee S., Lavie~A.} METEOR: An automatic metric for MT evaluation with improved 
+correlation with human judgments~// Workshop on Intrinsic and Extrinsic 
+Evaluation Measures for MT and/or Summarization at the 43rd Annual Meeting of the 
+Association of Computational Linguistics Proceedings.~---
+ Ann Arbor, MI, USA: Association of 
+Computational Linguistics, 2005. P.~65--72.
+\bibitem{10-nur}
+\Au{Koehn Ph.} Neural machine translation.~--- New York, NY, USA: Cambridge University 
+Press, 2020. 394~p.
+\bibitem{11-nur}
+\Au{Popovi$\acute{\mbox{c}}$~M.} chrF: Character $n$-gram F-score for automatic MT evaluation~//  
+10th Workshop on Statistical Machine Translation Proceedings.~--- Lisboa, Portugal: Association for 
+Computational Linguistics, 2015. P.~392--395.
+\bibitem{12-nur}
+\Au{Popovi$\acute{\mbox{c}}$~M.} chrF deconstructed: $\beta$ parameters and \mbox{$n$-gram} weights~// 
+1st Conference on Machine Translation Proceedings.~--- Berlin, Germany: Association for Computational 
+Linguistics, 2016. Vol.~2. P.~499--504.
+\bibitem{13-nur}
+\Au{Chi-kiu Lo.} MEANT 2.0: Accurate semantic MT evaluation for any output language // 
+Conference on Machine Translation Proceedings.~---
+ Copenhagen, Denmark: Association for Computational Linguistics, 2017. Vol.~2. P.~589--597.
+\bibitem{14-nur}
+\Au{Stanojevi$\acute{\mbox{c}}$ M., Sima'an~K.} BEER: BEtter evaluation as ranking~//  
+9th Workshop on Statistical Machine Translation Proceedings.~--- Baltimore, MD, USA: Association for 
+Computational Linguistics, 2014. P.~414--419.
+\bibitem{15-nur}
+\Au{Stanojevi$\acute{\mbox{c}}$ M., Sima'an~K.} Evaluating MT systems with BEER~// Prague Bulletin  
+Mathematical Linguistics, 2015. No.\,104. P.~17--26.
+\bibitem{16-nur}
+\Au{Sellam T., Das~D., Parikh~A.\,P.} BLEURT: Learning robust metrics for text generation~// 
+arXiv.org, 9 Apr 2020. arXiv:2004.04696 [cs.CL].
+\bibitem{17-nur}
+\Au{Инькова О.\,Ю.} Надкорпусная база данных как инструмент изучения формальной 
+вариативности коннекторов~// Компьютерная лингвистика и~интеллектуальные 
+технологии: По мат-лам ежегодной \mbox{Международ.} конф. <<Диалог>>.~---
+ М.: РГГУ, 2018. Вып.~17(24). С.~240--253.
+\bibitem{18-nur}
+\Au{Castilho Sh., Doherty~S, Gaspari~F., Moorkens~J.} Approaches to human and machine 
+translation quality assessment~// Translation quality assessment: From principles to practice~/ 
+Eds. J.~Moorkens, Sh.~Castilho, F.~Gaspari, S.~Doherty.~--- Cham, Switzerland: Springer, 2018.  P.~9--38.
+\bibitem{19-nur}
+\Au{Likert R.} A~technique for the measurement of attitudes~// Arch. Psychol., 1932. 
+Vol.~140. P.~1--55
+\bibitem{20-nur}
+\Au{Fleiss J.\,L.} Measuring nominal scale agreement among many raters~// Psychol. Bull., 1971. 
+Vol.~76. No.\,5. P.~378--382.
+\bibitem{21-nur}
+\Au{Shterionov D., Superbo~R., Nagle~P., \textit{et al.}} Human versus automatic quality evaluation of 
+NMT and PBSMT~// Machine Translation, 2018. Vol.~32. P.~217--235.
+\bibitem{22-nur}
+\Au{Castilho S., Moorkens~J., Gaspari~F., \textit{et al.}} Evaluating MT for massive open online 
+courses. A~multifaceted comparison between PBSMT and NMT systems~// Machine Translation, 
+2018. Vol.~32. P.~255--278.
+\bibitem{23-nur}
+\Au{Popovic M.} Error classification and analysis for machine translation quality assessment~// 
+Translation quality assessment: From principles to practice~/ Eds. J.~Moorkens, Sh.~Castilho, 
+F.~Gaspari, S.~Doherty.~--- Cham, Switzerland: Springer, 2018. P.~129--158.
+\bibitem{24-nur}
+\Au{Lommel A.} Metrics for translation quality assessment: A~case for standardizing error 
+typologies~// Translation quality assessment: From principles to practice~/ Eds. J.~Moorkens, 
+Sh.~Castilho, F.~Gaspari, S.~Doherty.~--- Cham, Switzerland: Springer, 2018. P.~109--127.
+\bibitem{25-nur}
+\Au{\mbox{Klubi\!{\!\ptb{\v{c}}}ka} F., Toral~A., S$\acute{\mbox{a}}$nchez-Cartagena~V.\,M.}
+ Quantitative fine-grained human 
+evaluation of machine translation systems: A~case study on English to Croatian~// Machine 
+Translation, 2018. Vol.~32. P.~195--215.
+\bibitem{26-nur}
+\Au{Haque R., Hasanuzzaman~M., Way~A.} Analysing terminology translation errors in 
+statistical and neural machine translation~// Machine Translation, 2020. Vol.~34. P.~149--195.
+\bibitem{27-nur}
+\Au{Vilar D., Xu~J., D'Haro~L., Ney~H.} Error analysis of statistical machine translation output~// 
+5th Conference (International) on Language Resources and Evaluation Proceedings.~--- Genoa, 
+Italy: European Language Resources Association, 2006. P.~697--702.
+%{\sf https://www.researchgate.net/publication/307174612\_Error\_Analysis\_of\_Machine\_Translation\_Output}.
+\bibitem{28-nur}
+\Au{Гончаров А.\,А., Бунтман~Н.\,В., Нуриев~В.\,А.} Ошибки в~машинном переводе: 
+проблемы классификации~// Системы и~средства информатики, 2019. Т.~29. №\,3. С.~92--103.
+\bibitem{29-nur}
+\Au{Calixto I., Liu~Q.} An error analysis for image-based multi-modal neural machine 
+translation~// Machine Translation, 2019. Vol.~33. P.~155--177.
+  \end{thebibliography}
+
+}
+}
+
+\end{multicols}
+
+\vspace*{-7pt}
+
+\hfill{\small\textit{Поступила в~редакцию 14.04.2021}}
+
+%\vspace*{8pt}
+
+%\pagebreak
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{METHODS OF QUALITY ESTIMATION FOR~MACHINE TRANSLATION: STATE-OF-THE-ART}
+
+
+\def\titkol{Methods of quality estimation for~machine translation: State-of-the-art}
+
+\def\aut{V.\,A.~Nuriev and~A.\,Yu.~Egorova}
+
+\def\autkol{V.\,A.~Nuriev and~A.\,Yu.~Egorova}
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+
+
+\noindent
+Institute of Informatics Problems, Federal Research Center ``Computer Science and Control''
+ of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+ 
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 2}
+}%
+\def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}  
+   
+
+
+\Abste{The paper reviews the state-of-the-art methods of quality estimation for machine translation. 
+These methods are grounded in two general approaches: automatic and manual. The automatic 
+assessment builds on the data from comparison of the machine translation system output against the 
+human-generated reference translation. The manual (human) evaluation primarily takes into account 
+pragmatic and functional aspects: the translation quality is assessed bearing in mind how well the system 
+output is suited to fulfill the translation tasks. The first part presents some automatic metrics for 
+evaluation of machine translation quality. Also, it speaks about both  shortcomings of such metrics and 
+new trends in their development. The other part of the paper is focused on human evaluation of machine 
+translation. It describes: ($i$)~evaluation of adequacy and fluency; 
+($ii$)~ranking of translations; ($iii$)~direct 
+assessment; ($i\nu$)~computation of the human translation edit rate, and 
+($\nu$)~translation annotation involving an 
+error typology.}
+
+\KWE{machine translation; translation quality; evaluation of machine translation quality; automatic 
+metrics; direct assessment; typology of machine translation errors}
+
+\DOI{10.14357/19922264210215}
+
+%\vspace*{-15pt}
+
+% \Ack
+%\noindent
+%%The work was performed at the Institute of Informatics Problems, Federal Research Center ``Computer Science and Control''
+% of the Russian Academy of Sciences.
+
+
+%\vspace*{12pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-nur-1}
+\Aue{Larsonneur, C.} 2021. Neural machine translation: From commodity to commons? \textit{When 
+translation goes digital: Case studies and critical reflections.} 
+Eds. R.~Desjardins, C.~Larsonneur, and P.~Lacour. Cham: Palgrave Macmillan. 
+257--280.
+\bibitem{2-nur-1}
+\Aue{Davenport, C.} 2018.
+Google Translate processes 143~billion words every day. \textit{Android Police}. Available at: 
+{\sf https://www.androidpolice.com/2018/10/09/google-translate-processes-143-billion-words-every-day/} 
+(accessed May~5, 2021).
+\bibitem{3-nur-1}
+Moorkens, J., S.~Castilho, F.~Gaspari, and S.~Doherty, eds. 2018. \textit{Translation quality assessment:
+From principles to practice}. 
+Machine translation: Technologies and applications ser. Cham: Springer International Publishing. Vol.~1. 
+299~p.
+\bibitem{4-nur-1}
+\Aue{Specia, L., C.~Scarton, and G.\,H.~Paetzold.} 2018. \textit{Quality estimation for machine translation}. 
+Synthesis lectures on
+human language technologies ser.
+London: Morgan \& Claypool Publs. 162~p.
+\bibitem{5-nur-1}
+\Aue{Bittner, H.} 2020. \textit{Evaluating the evaluator: A~novel perspective on translation quality assessment}. 
+New York, NY: Routledge. 282~p.
+\bibitem{6-nur-1}
+\Aue{Papineni, K., S.~Roukos, T.~Ward, and W.\,J.~Zhu.} 2002. BLEU: A~method for automatic 
+evaluation of machine translation. \textit{40th Annual Meeting on Association for Computational Linguistics 
+Proceedings}. Philadelphia, PA: Association for Computational Linguistics. 311--318.
+\bibitem{7-nur-1}
+\Aue{Rychikhin, A.\,K.} 2019. O~metodakh otsenki kachestva mashinnogo perevoda [On methods of 
+machine translation quality assessment]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of 
+Informatics} 29(4):106--118.
+\bibitem{8-nur-1}
+\Aue{Kozina, A.\,V., E.\,A.~Cherepkov, and Yu.\,S.~Belov.} 2019. Avtomaticheskie metriki otsenki 
+kachestva mashinnogo perevoda [Automatic metrics for machine translation evaluation]. \textit{Sistemnyy 
+administrator} [System Administrator] 11:84--87.
+\bibitem{9-nur-1}
+\Aue{Banerjee, S., and A.~Lavie.} 2005. METEOR: An automatic metric for MT evaluation with 
+improved correlation with human judgments. \textit{Workshop on Intrinsic and Extrinsic 
+Evaluation Measures for MT and/or Summarization at the 
+43rd Annual Meeting of the Association of Computational 
+Linguistics Proceedings}. Ann Arbor, MI: Association of Computational Linguistics. 65--72.
+\bibitem{10-nur-1}
+\Aue{Koehn, Ph.} 2020. \textit{Neural machine translation}. New York, NY: Cambridge University 
+Press. 394~p.
+\bibitem{11-nur-1}
+\Aue{Popovi$\acute{\mbox{c}}$, M.} 2015. chrF: Character $n$-gram F-score for automatic MT evaluation. 
+\textit{10th Workshop 
+on Statistical Machine Translation Proceedings}. Lisboa, Portugal: Association for Computational 
+Linguistics. 392--395.
+\bibitem{12-nur-1}
+\Aue{Popovi$\acute{\mbox{c}}$, M.} 2016. chrF deconstructed: $\beta$ parameters and $n$-gram weights. 
+\textit{1st Conference on 
+Machine Translation Proceedings}. Berlin, Germany: Association for Computational Linguistics. 2:499--504.
+\bibitem{13-nur-1}
+\Aue{Chi-kiu, Lo.} 2017. MEANT~2.0: Accurate semantic MT evaluation for any output language. 
+\textit{Conference on Machine Translation Proceedings}. Copenhagen, Denmark: Association for Computational 
+Linguistics. 2:589--597.
+\bibitem{14-nur-1}
+\Aue{Stanojevi$\acute{\mbox{c}}$, M., and K.~Sima'an.} 2014. BEER: BEtter evaluation as ranking. 
+\textit{9th Workshop on 
+Statistical Machine Translation Proceedings}. Baltimore, MD: Association for Computational 
+Linguistics. 414--419.
+\bibitem{15-nur-1}
+\Aue{Stanojevi$\acute{\mbox{c}}$, M., and K.~Sima'an.} 2015. Evaluating MT systems with BEER. 
+\textit{Prague Bulletin Mathematical Linguistics} 104:17--26.
+\bibitem{16-nur-1}
+\Aue{Sellam, T., D.~Das, and A.\,P.~Parikh.} 2020. BLEURT: Learning robust metrics for text 
+generation. Available at: {\sf https://arxiv.org/pdf/2004.04696.pdf} (accessed May~5, 2021).
+\bibitem{17-nur-1}
+\Aue{Inkova, O.\,Yu.} 2018. Nadkorpusnaya baza dannykh kak instrument formal'noy variativnosti 
+konnektorov [Supracorpora database as an instrument of the study of the formal variability of 
+connectives]. \textit{Komp'yuternaya ling\-vi\-sti\-ka i~intellektual'nye tekhnologii: po mat-lam ezhegodnoy 
+Mezhdunar. konf. ``Dialog''} [Computer Linguistic and Intellectual Technologies: Conference 
+(International) ``Dialog'' Proceedings]. Moscow. 17(24):240--253.
+\bibitem{18-nur-1}
+\Aue{Castilho, Sh., S.~Doherty, F.~Gaspari, and J.~Moorkens}.
+ 2018. Approaches to human and machine 
+translation quality assessment. \textit{Translation quality assessment: From principles to practice}. Eds. 
+J.~Moorkens, Sh.~Castilho, F.~Gaspari, and S.~Doherty. Cham: Springer. 9--38.
+\bibitem{19-nur-1}
+\Aue{Likert, R.} 1932. A~technique for the measurement of attitudes. \textit{Arch. Psychol.} 140:1--55.
+\bibitem{20-nur-1}
+\Aue{Fleiss, J.\,L.} 1971. Measuring nominal scale agreement among many raters. \textit{Psychol. Bull.} 
+76(5):378--382.
+\bibitem{21-nur-1}
+\Aue{Shterionov, D., R.~Superbo, P.~Nagle, \textit{et al.}}
+ 2018. Human versus automatic quality evaluation of 
+NMT and PBSMT. \textit{Machine Translation} 32:217--235.
+\bibitem{22-nur-1}
+\Aue{Castilho, S., J.~Moorkens, F.~Gaspari, \textit{et al.}} 2018. Evaluating MT for massive open online 
+courses. A~multifaceted comparison between PBSMT and NMT systems. \textit{Machine Translation} 32:255--278.
+\bibitem{23-nur-1}
+\Aue{Popovic, M.} 2018. Error classification and analysis for machine translation quality assessment. 
+\textit{Translation quality assessment: From principles to practice}. 
+Eds. J.~Moorkens, Sh.~Castilho, F.~Gaspari, 
+and S.~Doherty. Cham: Springer. 129--158.
+\bibitem{24-nur-1}
+\Aue{Lommel,~A.} 2018. Metrics for translation quality assessment: A~case for standardising error 
+typologies. \textit{Translation quality assessment: From principles to practice}. Eds. J.~Moorkens, 
+Sh.~Castilho, 
+F.~Gaspari, and S.~Doherty. Cham: Springer. 109--127.
+\bibitem{25-nur-1}
+\Aue{\mbox{Klubi\!{\!\ptb{\v{c}}}ka}, F., A.~Toral, and V.\,M.~S$\acute{\mbox{a}}$nchez-Cartagena.}
+ 2018. Quantitative fine-grained human 
+evaluation of machine translation systems: A~case study on English to Croatian. 
+\textit{Machine Translation} 32:195--215.
+\bibitem{26-nur-1}
+\Aue{Haque, R., M.~Hasanuzzaman, and A.~Way.} 2020. Analysing terminology translation errors in 
+statistical and neural machine translation. \textit{Machine Translation} 34:149--195.
+\bibitem{27-nur-1}
+\Aue{Vilar, D., J.~Xu, L.~D'Haro, and H.~Ney.} 2006. Error analysis of statistical machine translation 
+output. \textit{5th Conference (International) on Language Resources and Evaluation Proceedings}. 697--702. 
+\bibitem{28-nur-1}
+\Aue{Goncharov, A.\,A., N.\,V.~Buntman, and V.\,A.~Nuriev.} 2019. Oshibki v~mashinnom perevode: 
+problemy klassifikatsii [Machine translation errors: Problems of classification]. 
+\textit{Sistemy i~Sredstva  Informatiki~--- Systems and Means of Informatics} 29(3):92--103.
+\bibitem{29-nur-1}
+\Aue{Calixto, I., and Q.~Liu.} 2019. An error analysis for image-based multi-modal neural machine 
+translation. \textit{Machine Translation} 33:155--177.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+  \hfill{\small\textit{Received April~14, 2021}}
+
+
+%\pagebreak
+
+%\vspace*{-8pt}  
+
+\Contr
+
+\noindent
+\textbf{Nuriev Vitaly A.} (b.\ 1980)~--- Candidate of Science (PhD) in philology, leading scientist, 
+Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
+Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{nurieff.v@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Egorova Anna Yu.} (b.\ 1991)~--- junior scientist, Institute of Informatics Problems, Federal 
+Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov 
+Str., Moscow 119333, Russian Federation; \mbox{ann.shurova@gmail.com}
+   
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}

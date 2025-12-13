@@ -1,0 +1,581 @@
+\documentstyle[% 
+righttag% 
+,11pt% 
+,amssymb% 
+,russian%               remove in Eng. 
+,izvru%                 Set izven% in Eng. 
+]{amsart} 
+ 
+% NB: НОД
+ 
+\newcommand{\re}{\operatorname{Re}} 
+\newcommand{\diag}{\operatorname{diag}} 
+\newcommand{\tts}[1]{} 
+ 
+%\hoffset=-15mm%                  For Eng. 
+\setcounter{page}{10} 
+\god{2000} 
+\nomer{6~(457)} %                        Remove in Eng. 
+%\nomer{Vol.\,44, No.\,6}%               Set in Eng. 
+%\str{\pageref{begin}--\pageref{end}}%  Set in Eng. 
+\udk{517.984} 
+ 
+\author{\it Ю.А.\,Коняев} 
+% NB:   ^^ remove in Eng. 
+\title{Метод расщепления в 
+теории регулярных и сингулярных возмущений} 
+ 
+\date{} 
+%\pagestyle{myheadings}%         Set in Eng. 
+\pagestyle{plain} %              Remove in Eng. 
+\begin{document} 
+%\thispagestyle{plain}%          Set in Eng. 
+\maketitle 
+\label{begin} 
+ 
+Предлагается нетрадиционный спектральный метод решения 
+(который можно также назвать методом расщепления) некоторых 
+классов задач теории регулярных и сингулярных возмущений и в 
+отличие от известного [1]--[10] более удобный для численной реализации. 
+С его помощью получены новые алгоритмы решения задачи о 
+регулярном возмущении конечномерных операторов простой и 
+произвольной жордановой структуры, некоторых задач теории 
+ветвления [11] (не требующие построения диаграмм Ньютона [4], [5]) 
+сингулярно возмущенных начальных и краевых задач [12], [13] при 
+наличии экспоненциальных и степенных пограничных слоев, а также 
+некоторых спектральных задач для линейных дифференциальных операторов 
+произвольного порядка (напр., для операторов 
+Штурма--Лиувилля и Дирака [10], имеющих приложение в квантовой 
+механике). 
+ 
+\section{Решение некоторых задач теории регулярных возмущений и теории 
+ветвления} 
+ 
+Рассмотрим алгоритм решения классической задачи теории возмущений 
+в $R^n$
+\begin{equation} 
+A(\varepsilon)S_j(\varepsilon)=\lambda_j(\varepsilon) 
+S_j(\varepsilon)\quad\bigg( 
+A(\varepsilon)=\sum_{|k|\ge0}A_k\varepsilon^k, 
+\ \;|\varepsilon|<\varepsilon^0\bigg),\tag{$*$} 
+\end{equation} 
+который в отличие от известного [1]--[3] позволяет находить (без 
+построения диаграмм Ньютона) сразу все собственные значения 
+$\lambda_j(\varepsilon)$ 
+и собственные векторы $S_j(\varepsilon)$ с заданной и равномерной по 
+$\varepsilon$ 
+точностью (включая случай многомерного возмущения $\varepsilon\in 
+R^m$). 
+ 
+Для удобства дальнейшего изложения для произвольной квадратной 
+матрицы $A$ введем следующие обозначения:
+$A=\{a_{jk}\}^n_1=\{A_{jk}\}^p_1$, $\ov 
+A=\diag\{a_{11},\dotsc,a_{nn}\}$, $\ov{\ov A}=A-\ov A$, $\wh 
+A=\diag\{A_{11},\dotsc,A_{pp}\}$, $\Hat{\Hat A}=A-\wh A$ ($2\le p<n$). 
+При наличии у матрицы $A_0$ простого спектра $\{\lambda_{0j}\}^n_1$ 
+соотношение $(*)$ эквивалентно матричному уравнению 
+$A(\varepsilon)S(\varepsilon)=S(\varepsilon)\Lambda(\varepsilon)$, 
+где $\Lambda(\varepsilon)=\diag\{\lambda_1(\varepsilon),\dotsc, 
+\lambda_n(\varepsilon)\}$, а матрица 
+$S(\varepsilon)=\{S_1(\varepsilon),\dotsc, S_n(\varepsilon)\}$ 
+состоит из собственных векторов матрицы $A(\varepsilon)$. Замена 
+$S(\varepsilon)=S_0H(\varepsilon)$, 
+где $S^{-1}_0A_0S_0=\Lambda(0)=\Lambda_0$, позволяет перейти к 
+уравнению 
+\begin{equation} 
+B(\varepsilon)H(\varepsilon)=H(\varepsilon)\Lambda 
+(\varepsilon)\quad \bigg(B(\varepsilon)=S^{-1}_0A(\varepsilon) 
+S_0=\Lambda_0+\sum_{|k|\ge1}B_k\varepsilon^k 
+\bigg),\tag{$**$} 
+\end{equation}  
+решение которого может быть представлено [11] в виде сходящихся 
+степенных рядов $H(\varepsilon)=E+\sum\limits_{|k|\ge1} 
+\ov{\ov H}_k\varepsilon^k$, 
+$\Lambda(\varepsilon)=\sum\limits_{|k|\ge0}\Lambda_k\varepsilon^k$. 
+Действительно, приравнивая коэффициенты в $(**)$ при одинаковых 
+степенях $\varepsilon$, получим набор матричных уравнений 
+\begin{gather*} 
+\Lambda_0\ov{\ov H}_k-\ov{\ov H}_k\Lambda_0= 
+\Lambda_k-P_k\quad(|k|\ge1,\ \; P_k=A_k,\ \; |k|=1),\\ 
+P_k=B_k+\sum_{|j|\ge1}(B_j\ov{\ov H}_{k-j}- 
+\ov{\ov H}_{k-j}\Lambda_j)=\{p_{jmk}\} 
+\quad (|k|\ge2), 
+\end{gather*} 
+откуда последовательно и однозначно все диагональные $\Lambda_k$ 
+и ``бездиагональные'' $\ov{\ov H}_k$ ($|k|\ge1$) матрицы и 
+соответствующие 
+степенные ряды 
+$$ 
+\Lambda_k=\ov P_k,\quad 
+\ov{\ov H}_k=\{h_{jmk}\};\quad 
+h_{jmk}=P_{jmk}(\lambda_{0j}-\lambda_{0m})^{-1}. 
+$$ 
+Oбоснование приводится в [11]. 
+ 
+Если матрица $A_0$ имеет полупростую структуру, т.\,е. существует 
+невырожденная матрица $S_0$ такая, что 
+\begin{gather*} 
+S^{-1}_0A_0S_0=\Lambda_0=\diag\{\Lambda_{01},\dotsc, 
+\Lambda_{0p}\};\quad \Lambda_{0j}=\lambda_{0j}E\\ 
+%
+(\lambda_{0j}\ne\lambda_{0k},\ \; j\ne k, 
+\ \; k=\ov{1,p},\ \; 2\le p\le n-1), 
+\end{gather*} 
+то вводится матрица 
+$$ 
+Q(\varepsilon)=S^{-1}_0A(\varepsilon)S_0=\Lambda_0+ 
+\sum^\infty_1 Q_k\varepsilon^k. 
+$$ 
+Аналогично предыдущему с помощью невырожденного при достаточно 
+малых $|\varepsilon|$ преобразования 
+$H(\varepsilon)=E+\sum\limits^\infty_1\Hat{\Hat H}_k\varepsilon^k$ 
+матрица $Q(\varepsilon)$ 
+может быть приведена к блочно-диагональному виду 
+$$ 
+B(\varepsilon)=H^{-1}(\varepsilon)Q(\varepsilon) 
+H(\varepsilon)=\diag\{F_1(\varepsilon),\dotsc, 
+F_p(\varepsilon)\}=\Lambda_0+ 
+\sum^\infty_1\wh B_k\varepsilon^k. 
+$$ 
+Далее, каждая из матриц $F_j(\varepsilon)=\lambda_{0j}E+ 
+\sum\limits^\infty_1 F_{jk}\varepsilon^k$ ($\varepsilon\in R_t^1$) 
+приводится к диагональному виду, если матрица $F_{j1}$ имеет простой 
+(некратный) спектр. Если же матрица $F_{1j}$ имеет полупростой спектр, 
+тогда необходимо произвести дальнейшее блочное расщепление матрицы 
+$F_j(\varepsilon)$. Случай, когда матрица $F_{1j}$ имеет произвольную 
+жорданову 
+структуру, может быть исследован по следующей схеме. 
+ 
+Пусть матрица $A_0$ имеет жорданову структуру вида 
+$$ 
+S^{-1}_0A_0S_0=J_0=\diag\{J_{01},\dotsc,J_{0p}\}, 
+$$ 
+где $J_{0j}=\lambda_{0j}E+M_j$ ($1\le p\le n-1$), $M_j$ --- известные 
+нильпотентные матрицы ($j=\ov{1,p}$). Тогда, как и выше, можно перейти 
+от матрицы $A(\varepsilon)$ к более простой матрице 
+$$ 
+Q(\varepsilon)=S^{-1}_0A(\varepsilon)S_0=J_0+ 
+\sum^\infty_1 Q_k\varepsilon^k\quad 
+(\varepsilon\in R^1_*). 
+$$ 
+С помощью так называемого ``срезающего преобразования'', определяемого 
+матрицей 
+$$ 
+U(\varepsilon)=\diag\{U_1(\varepsilon_1),\dotsc, 
+U_p(\varepsilon_p)\}\quad 
+(\varepsilon^{m_k}_k=\varepsilon), 
+$$ 
+где 
+$$ 
+U_k(\varepsilon_k)=\diag\{1,\varepsilon_k, 
+\varepsilon^2_k,\dotsc,\varepsilon^{m_k-1}_k\},\quad 
+m_k=\dim J_{0k}\ \; (0<\varepsilon_k<\delta_1, 
+\ \; k=\ov{1,p}),
+$$ 
+матрица $Q(\varepsilon)$ приводится к виду 
+\begin{gather*} 
+B(\varepsilon)=U^{-1}(\varepsilon)Q(\varepsilon) 
+U(\varepsilon)=\Lambda_0+\sum^\infty_1 
+B_k \nu^k\quad (\nu=\underset{k}{\text{НОД}}{}(\varepsilon_k)),\\ 
+%
+\Lambda_0=\diag\{\Lambda_{01},\dotsc,\Lambda_{0p}\}, 
+\quad \Lambda_{0k}=\lambda_{0k}E\quad (k=\ov{1,p}), 
+\end{gather*} 
+когда примен\'им описанный выше алгоритм. 
+ 
+Рассмотрим два характерных примера. 
+ 
+1. Спектр аналитически возмущенной матрицы жордановой структуры 
+\begin{equation} 
+A(\varepsilon)= 
+\begin{pmatrix} 
+0 & 1 & 0 \\ 0 & 0 & 1 \\ 
+-\varepsilon^3 & 3\varepsilon & 0 
+\end{pmatrix} 
+=A_0+\varepsilon A_1+\varepsilon^3 A_3 
+\end{equation} 
+достаточно просто вычисляется с помощью описанного выше алгоритма 
+$$ 
+\lambda_1=\frac{\varepsilon^2}{3}+\ov{\ov O}(\varepsilon^{7/2}), 
+\quad \lambda_{2,3}=\pm\sqrt{3\varepsilon}- 
+\frac{\varepsilon^2}{6}\mp\frac{\varepsilon^{7/2}}{24\sqrt{3}}+ 
+\ov{\ov O}(\varepsilon^{7/2}). 
+$$ 
+ 
+2. Аналогичным образом определяется спектр возмущенной матрицы 
+\begin{equation} 
+\begin{split} 
+A(\varepsilon)&= 
+\begin{pmatrix} 
+0 & \varepsilon & 0 \\ 0 & 0 & \varepsilon \\ 
+\varepsilon-\varepsilon^2 & 
+\varepsilon^2-\varepsilon-1 & 
+1+\varepsilon^2-\varepsilon^3 
+\end{pmatrix} 
+=\sum^3_0 A_k\varepsilon^k,\\ 
+\lambda_1&=\varepsilon^2+\ov{\ov O}(\varepsilon^2),\quad 
+\lambda_2=\varepsilon+\varepsilon^2+ 
+\ov{\ov O}(\varepsilon^2),\quad 
+\lambda_3=1-\varepsilon-\varepsilon^2+\ov{\ov O} 
+(\varepsilon^2). 
+\end{split} 
+\end{equation} 
+ 
+Новый метод оказался весьма эффективным при решении некоторых 
+задач теории ветвления, в частности, при нахождении корней 
+нелинейного уравнения 
+\begin{equation} 
+f(x,\varepsilon)=\sum^n_0 f_k(\varepsilon)x^k=0\quad 
+(\varepsilon,x\in R^1,\ \; f_n=1), 
+\end{equation} 
+причем без использования традиционного метода диаграмм Ньютона [4], 
+[5], что заметно облегчает ее численное решение. Действительно, 
+уравнение (3) после замены $x=\lambda$ может быть сведено к системе 
+\begin{gather*} 
+\lambda=\lambda y_0=y_1,\ \lambda^2=\lambda y_1=y_2,\dotsc, 
+\ \lambda^n=\lambda y_{n-1}=-\sum^{n-1}_0 
+f_k(\varepsilon)y_k, \\ 
+A(\varepsilon)y=\lambda y\quad 
+(y_0=1,\ \; y=(y_0,y_1,\dotsc,y_{n-1})^\top), 
+\end{gather*} 
+где спектр матрицы $A(\varepsilon)$ совпадает с корнями уравнения (3). 
+ 
+Так, например, 
+ 
+1. решение уравнения $\lambda^3-3\varepsilon\lambda+\varepsilon^3=0$ с 
+помощью нового 
+алгоритма сводится к нахождению спектра матрицы (1); 
+ 
+2. корни уравнения 
+$\varepsilon\lambda^3-(1+\varepsilon^2-\varepsilon^3) 
+\lambda^2+(1+\varepsilon-\varepsilon^2)\lambda+ 
+\varepsilon^2-\varepsilon=0$ 
+получаются как собственные значения $\varepsilon\lambda 
+y=A(\varepsilon)y$ 
+матрицы (2) (ср. [6], с.\,435). 
+ 
+Отметим также, что предложенный алгоритм приспособлен и 
+для решения нелинейных спектральных задач [14] вида 
+$A u+\varepsilon B(u)=\lambda u$ ($u\in R^n$), где $A$ --- линейный 
+оператор, 
+$B(u)$ --- достаточно гладкий нелинейный оператор. 
+ 
+\section{Асимптотический анализ некоторых классов сингулярно 
+возмущенных 
+и спектральных задач} 
+ 
+Рассмотрим в $R^n$ сингулярно возмущенную многоточечную 
+краевую задачу 
+\begin{equation} 
+\varepsilon\frac{d y}{d x}=A(x,\varepsilon)y+f(x),\quad 
+\sum^n_1 F_k y(x_k,\varepsilon)=\alpha\quad 
+(a=x_1<\dotsb<x_n=b), 
+\end{equation} 
+где $A(x,\varepsilon)=\sum\limits^\infty_0 A_k(x)\varepsilon^k$ 
+($|\varepsilon|<\varepsilon^0<1$, $A_k(x),f(x)\in C^\infty[a,b]$). 
+Сингулярность задачи (4) означает, что ее решение не может быть 
+в общем случае представлено в виде регулярного по $\varepsilon$ ряда, 
+т.\,к. 
+решение предельной ($\varepsilon=0$) задачи не удовлетворяет, вообще 
+говоря, 
+краевым условиям. В отличие от известного [6], [7] новый алгоритм 
+[11]--[13] позволяет находить асимптотическое разложение решения 
+(без использования аппарата функций Грина) и структуру пограничного 
+слоя для задач указанного класса в замкнутой аналитической 
+форме. 
+ 
+Следует отметить, что в отличие от регулярного случая задача 
+(4) имеет ограниченное (при $\varepsilon\to+0$) решение только при 
+определенной 
+зависимости действительных частей спектра матрицы $A_0(x)$ от 
+расположения точек $x_k$, в которых заданы краевые условия.
+ 
+\begin{thm} 
+Если спектр $\{\lambda_{0j}(x)\}^n_1$ матрицы $A_0(x)$ удовлетворяет 
+условиям 
+\begin{gather*} 
+\lambda_{0j}(x)\ne\lambda_{0k}(x),\quad 
+\lambda_{0j}(x)\ne0\quad (j\ne k,\ \; j,k=\ov{1,n}, 
+\ \; x\in[a,b]),\\ 
+\re\lambda_{0k}(x)\le0,\ \; x\in[x_k,b];\quad 
+\re\lambda_{0k}(x)\ge0,\ \; x\in[a,x_k]\ \; (k=\ov{2,n-1}),\\ 
+\re\lambda_{01}(x)\le0,\ \; \re\lambda_{0n}(x)\ge0, 
+\ \; x\in[a,b],\\ 
+\re\int^x_{x_k}\lambda_{0k}(t)dt<0, 
+\ \; x\in[a,b]\setminus x_k\ \; (k=\ov{1,n}), 
+\end{gather*} 
+и при этом $\det T\ne0$, где постоянная матрица 
+$T=(T_{11},\dotsc,T_{nn})$ 
+определяется столбцами матрицы $T_j=F_j 
+S_0(x_j)=(T_{1j},\dotsc,T_{nj})$ $(j=\ov{1,n})$ 
+$(S^{-1}_0(x)A_0(x)S_0(x)=\Lambda_0(x)= 
+\diag\{\lambda_{01}(x),\dotsc,\linebreak \lambda_{0n}(x)\})$, 
+то при достаточно малых $\varepsilon>0$ существует единственное и 
+ограниченное 
+при $\varepsilon\to+0$ решение $y(x,\varepsilon)$ задачи $(4)$, 
+представимое в виде 
+$$ 
+y(x,\varepsilon)=S_0(x)\bigg(E+\sum^N_1\ov{\ov H}_k 
+(x)\varepsilon^k\bigg)\Phi_{(N)}(x,\varepsilon)C+ 
+\sum^N_0 v_k(x)\varepsilon^k+O(\varepsilon^{N+1}), 
+$$ 
+где 
+\begin{gather*} 
+\Phi_{(N)}(x,\varepsilon)=\diag\{e^{\alpha_1(x,\varepsilon)} 
+,\dotsc,e^{\alpha_n(x,\varepsilon)}\},\\ 
+\alpha_j(x,\varepsilon)=\varepsilon^{-1}\int^x_{x_j} 
+\sum^N_0 \lambda_{kj}(t)\varepsilon^k dt\quad (j=\ov{1,n}),\\ 
+\Lambda_{(N)}(x,\varepsilon)=\sum^N_0 
+\Lambda_k(x)\varepsilon^k,\quad 
+\Lambda_k(x)=\diag\{\lambda_{k1}(x),\dotsc,\lambda_{kn}(x)\}, 
+\end{gather*} 
+матрицы $\ov{\ov H}_k(x)$, $\Lambda_k(x)$ и $v_k(x)$ однозначно 
+определяются 
+в ходе доказательства $[12]$. 
+\end{thm} 
+ 
+Дискретный аналог предложенного метода позволяет (в отличие 
+от известного [10]) достаточно просто проводить асимптотический 
+анализ большого класса спектральных задач для линейных дифференциальных 
+операторов (в том числе и при задании многоточечных краевых условий), 
+например, для оператора Штурма--Лиувилля 
+\begin{equation} 
+-y''+q(x)y=\lambda y,\quad 
+y(0)=y(\pi)=0
+\end{equation} 
+или для оператора Дирака 
+\begin{equation} 
+\begin{array}{c} 
+\Dot y-p(t)x=\lambda x,\quad \Dot x+r(t)y=-\lambda y,\\[2mm] 
+x(0)\sin\alpha+y(0)\cos\alpha=0,\quad 
+x(\pi)\sin\beta+y(\pi)\cos\beta=0 
+\end{array} 
+\end{equation} 
+(имеющих приложение в квантовой механике) путем свед\'ения указанных 
+задач к сингулярно возмущенным однородным краевым задачам вида (4), 
+имеющим нетривиальное решение лишь при дискретных значениях малого 
+параметра $\varepsilon$. Действительно, обозначив 
+$\lambda=\varepsilon^{-2}$, запишем задачу (5) 
+в векторной форме 
+$$ 
+\varepsilon\frac{d z}{d x}=(A_0+\varepsilon^2 A_2(x))z,\quad 
+F_1 z(0,\varepsilon)+F_2 z(\pi,\varepsilon)=0, 
+$$ 
+где $z=(y,\varepsilon\Dot y)^\top$, 
+$$ 
+A_0= 
+\begin{pmatrix} 
+0 & 1 \\ -1 & 0 
+\end{pmatrix} 
+,\quad A_2(x)=q(x) 
+\begin{pmatrix} 
+0 & 0 \\ 1 & 0 
+\end{pmatrix} 
+,\quad F_1= 
+\begin{pmatrix} 
+1 & 0 \\ 0 & 0 
+\end{pmatrix} 
+,\quad F_2= 
+\begin{pmatrix} 
+0 & 0 \\ 1 & 0 
+\end{pmatrix} 
+, 
+$$ 
+решение которой изложенным методом имеет вид 
+$$ 
+z=S_0\bigg(E+\sum^\infty_1\ov{\ov H}_k(x)\varepsilon^k\bigg) 
+\exp\bigg(\varepsilon^{-1}\int^x_0 
+\Lambda(t,\varepsilon)dt\bigg)C\equiv Z(x,\varepsilon)C \quad
+(C\ne0),
+$$ 
+где матрицы $\Lambda_k(x)$ и $\ov{\ov H}_k(x)$ определяются по 
+описанной выше 
+схеме 
+\begin{gather*} 
+\ov{\ov H}_k(x)=-\frac{1}{2}\Lambda^{-1}_0 
+\ov{\ov P}_k(x),\quad P_1=0,\quad 
+P_2=\frac{i}{2}q(x)\begin{pmatrix} 
+1 & 1 \\ -1 & -1 
+\end{pmatrix} 
+,\quad 
+P_3=-\frac{d\ov{\ov H}_2}{d x},\\ 
+P_k=B_2\ov{\ov H}_{k-2}-\frac{d\ov{\ov H}_{k-1}}{d x}- 
+\sum^{k-1}_{j=1}\ov{\ov H}_j\Lambda_{k-j}\quad(k\ge4),\\ 
+\Lambda_0=\begin{pmatrix} 
+-i & 0 \\ 0 & i 
+\end{pmatrix} 
+,\quad \Lambda_k=\ov P_k(x),\quad 
+\Lambda_1=\Lambda_3=0,\quad 
+\Lambda_2=\frac{i}{2}q(x)\begin{pmatrix} 
+1 & 0 \\ 0 & -1 
+\end{pmatrix} 
+,\\ 
+\ov{\ov H}_1=0,\quad \ov{\ov H}_2=\frac{q(x)}{4}\begin{pmatrix} 
+0 & 1 \\ 1 & 0 
+\end{pmatrix} 
+,\quad 
+S_0=\begin{pmatrix} 
+1 & 1 \\ -i & i 
+\end{pmatrix} 
+, 
+\end{gather*} 
+при этом 
+$$ 
+F(\varepsilon)=F_1 Z(0,\varepsilon)+F_2 Z(\pi,\varepsilon)= 
+\frac{1}{4} 
+\begin{pmatrix} 
+4-\varepsilon^2 q(0) & 4-\varepsilon^2 q(0) \\ 
+e^{-i\delta}(4-\varepsilon^2 q(\pi)) & 
+e^{i\delta}(4-\varepsilon^2 q(\pi)) 
+\end{pmatrix} 
++\ov{\ov O}(\varepsilon^2), 
+$$ 
+где 
+$\delta=\frac{\pi}{\varepsilon}-\frac{\varepsilon}{2} 
+\int\limits^\pi_0 q(t)dt$. Уравнение $\det F(\varepsilon)=0$ 
+($\pi-\varepsilon\pi n-\varepsilon^2a+\ov{\ov O}(\varepsilon^2)=0$) 
+позволяет найти дискретные 
+значения малого параметра 
+$$ 
+\varepsilon(n)=\frac{1}{n}-\frac{a}{\pi n^3}+ 
+\ov{\ov O}\bigg(\frac{1}{n^3} \bigg)\quad 
+\bigg(a=\frac{1}{2}\int^\pi_0 q(t)dt \bigg) 
+$$ 
+(при которых существуют нетривиальные решения задачи (4)) 
+и соответствующие собственные значения и собственные функции 
+$$ 
+\lambda(n)=n^2(1+2a\pi^{-1}n^{-2}+\ov{\ov O}(n^{-2})),\quad 
+\varphi(\lambda,x)=\bigg(1+\frac{q(x)}{4\lambda}+ 
+\ov{\ov O}\bigg(\frac{1}{\lambda} \bigg) 
+\bigg)\sin\bigg(\sqrt{\lambda}\,x-\frac{1}{2\sqrt{x}} 
+\int^x_0 q(t)dt\bigg). 
+$$ 
+Аналогичным образом задача (6) после замены $\lambda=\varepsilon^{-1}$ 
+может быть 
+записана в векторной форме 
+$$ 
+\varepsilon\frac{d z}{d t}=(A_0+\varepsilon A_1(t))z,\quad 
+F_1 z(0,\varepsilon)+F_2 z(\pi,\varepsilon)=0, 
+$$ 
+где 
+\begin{gather*} 
+z=\begin{pmatrix} 
+y \\ x 
+\end{pmatrix} 
+,\quad A_0=\begin{pmatrix} 
+0 & 1 \\ -1 & 0 
+\end{pmatrix} 
+,\quad A_1(t)=\begin{pmatrix} 
+0 & p(t) \\ -r(t) & 0 
+\end{pmatrix} 
+,\\ 
+F_1=\begin{pmatrix} 
+\cos\alpha & \sin\alpha \\ 0 & 0 
+\end{pmatrix} 
+,\quad 
+F_2=\begin{pmatrix} 
+0 & 0 \\ \cos\beta & \sin\beta 
+\end{pmatrix} 
+,
+\end{gather*} 
+и дискретные значения малого параметра $\varepsilon=\varepsilon(n)$ 
+определяются 
+далее по уже известной схеме. 
+ 
+С помощью предложенного метода были изучены сингулярно возмущенные 
+начальные и краевые задачи при наличии степенного погранслоя. 
+В частности, имеет место 
+ 
+\begin{thm} 
+Точное решение задачи Коши 
+$$ 
+(x+\varepsilon)\frac{d y}{d x}=A(x)y,\quad 
+y(0,\varepsilon)=\alpha\quad (x\in[0,1],\ \; y\in R^n), 
+$$ 
+где ряд $A(x)=\sum\limits^\infty_0 A_k x^k$ сходится при 
+$|x|<1+2\delta$ $(\delta>0)$
+и спектр $\{\lambda_{0j}(0)\}^n_1$ матрицы $A(0)$ удовлетворяет 
+неравенствам 
+$$ 
+\lambda_{0j}(0)-\lambda_{0k}(0)\ne0,1,2,\dotsc;\quad 
+\re\lambda_{0j}(0)\le0\quad(j\ne k;\ \; j,k=\ov{1,n}), 
+$$ 
+может быть при достаточно малых $\varepsilon>0$ представлено в виде 
+$$ 
+y=S(\varepsilon)P(x+\varepsilon,\varepsilon) 
+\bigg(1+\frac{x}{\varepsilon} \bigg)^{\Lambda_0(\varepsilon)} 
+P^{-1}(\varepsilon,\varepsilon)S^{-1}(\varepsilon)\alpha, 
+$$ 
+где 
+\begin{gather*} 
+P(x+\varepsilon,\varepsilon)=\sum^\infty_0 
+P_k(\varepsilon)(x+\varepsilon)^k,\quad 
+|x+\varepsilon|<1+\delta,\quad |\varepsilon|<\delta,\\ 
+%
+\bigg(1+\frac{x}{\varepsilon} \bigg)^{\Lambda_0(\varepsilon)}= 
+\diag\bigg\{\bigg(1+\frac{x}{\varepsilon}\bigg)^{\lambda_{01}(\varepsilon)} 
+,\dotsc,\bigg(1+\frac{x}{\varepsilon} 
+\bigg)^{\lambda_{0n}(\varepsilon)}\bigg\},\quad 
+\Lambda_0(\varepsilon)=\diag\{\lambda_{01}(\varepsilon),\dotsc, 
+\lambda_{0n}(\varepsilon)\}, 
+\end{gather*} 
+а матрицы $P(x+\varepsilon,\varepsilon)$, $S(\varepsilon)$, 
+$\Lambda_0(\varepsilon)$ и $P(\varepsilon,\varepsilon)$, однозначно 
+определяемые в ходе доказательства, аналитичны при 
+$|x+\varepsilon|<1+\delta$ и $|\varepsilon|<\delta$ соответственно. 
+\end{thm} 
+ 
+\begin{thebibliography}{99} 
+ 
+\bibitem{1} 
+Като Т. {\em Теория возмущений линейных операторов}. -- М.: Мир, 
+1972. -- 740 с. 
+\bibitem{2} 
+Воеводин В.В. {\em Вычислительные основы линейной алгебры}. -- М.: 
+Наука, 1977. -- 303 с. 
+\bibitem{3} 
+Ланкастер П. {\em Теория матриц}. -- М.: Наука, 1978. -- 280 с. 
+\bibitem{4} 
+Вайнберг М.М., Треногин В.А. {\em Теория ветвления решений нелинейных 
+уравнений}. -- М.: Наука, 1969. -- 527 с. 
+\bibitem{5} 
+Треногин В.А. {\em Функциональный анализ}. -- М.: Наука, 1980. -- 496 с. 
+\bibitem{6} 
+Васильева А.Б., Бутузов В.Ф. {\em Асимптотические методы в теории 
+сингулярных возмущений}. -- М.: Высш. школа, 1990. -- 208 с. 
+\bibitem{7} 
+Ломов С.А. {\em Введение в общую теорию сингулярных возмущений}. -- 
+М.: Наука, 1981. -- 398~с. 
+\bibitem{8} 
+Вазов В. {\em Асимптотические разложения решений обыкновенных 
+дифференциальных уравнений}. -- М.: Мир, 1968. -- 464 с. 
+\bibitem{9} 
+Федорюк М.В. {\em Асимптотические методы для линейных обыкновенных 
+дифференциальных уравнений}. -- М.: Наука, 1983. -- 352 с. 
+\bibitem{10} 
+Левитан Б.М., Саргсян И.С. {\em Операторы Штурма--Лиувилля и 
+Дирака}. -- М.: Наука, 1988. -- 432 с. 
+\bibitem{11} 
+Коняев Ю.А. {\em Об одном методе исcледования некоторых задач 
+теории возмущений} // Матем. сб. -- 1993. -- \No\,12. -- С.\,133--144. 
+\bibitem{12} 
+Коняев Ю.А. {\em Конструктивные методы исследования многоточечных 
+краевых задач} // Изв. вузов. Математика. -- 1992. -- \No\,2. 
+-- С.\,57--61. 
+\bibitem{13} 
+Коняев Ю.А. {\em Сингулярно возмущенные задачи с двойной особенностью} 
+// 
+Матем. заметки. -- 1997. -- Т.\,62. -- \No\,4. -- С.\,494--501. 
+\bibitem{14} 
+Коняев К.Ю. {\em Об одной нелинейной спектральной задаче} // Тез. 
+докл. вторых матем. чтений МГСУ. -- 1994. -- С.\,41. 
+ 
+\end{thebibliography} 
+ 
+\vskip 2cm 
+ 
+\postup{\it Московский энергетический}{$\qquad$\it Поступили} 
+\postup{\it институт}{\it первый вариант $24.02.1997$} 
+\postup{}{\it окончательный вариант $27.04.1998$} 
+\label{end} 
+\end{document} 

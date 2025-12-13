@@ -1,0 +1,640 @@
+\def\stat{chernyshev}
+
+\def\tit{МОДЕЛЬ ОПРЕДЕЛЕНИЯ НЕОБХОДИМОГО ЧИСЛА ОПТИЧЕСКИХ ДИСКОВ, ОРГАНИЗОВАННЫХ 
+В~ГИБРИДНЫЕ СТРУКТУРЫ, ДЛЯ~СОЗДАНИЯ И~ПОДДЕРЖАНИЯ ДОЛГОВРЕМЕННЫХ 
+ЭЛЕКТРОННЫХ АРХИВОВ}
+
+\def\titkol{Модель определения необходимого числа оптических дисков %, организованных в~гибридные структуры,
+ для %~создания и~поддержания долговременных 
+электронных архивов}
+
+\def\aut{А.\,В.~Чернышов$^1$}
+
+\def\autkol{А.\,В.~Чернышов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Чернышов А.\,В.}
+\index{Chernyshov A.\,V.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Статья публикуется по представлению программного комитета VI Международной научно-
+%образовательных и~ведомственных информационных сетей>>.}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Мытищинский филиал МГТУ им.\ Н.\,Э.~Баумана, sch-ru@yandex.ru}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt} 
+ 
+  
+  
+   
+  
+  \Abst{Гибридные структуры оптических дисков представляют собой метод архивного 
+хранения информации с~повышенной надежностью, аналогичный RAID-мас\-си\-вам дисков. 
+Но в~отличие от классических массивов RAID в~гибридных структурах одна из копий 
+информации хранится на одиночных дисках, что обеспечивает быстрый и~простой доступ 
+к~информации с~по\-мощью всего одного стандартного привода.
+  При длительном хранении оптические диски с~записью способны деградировать. Знание 
+числа оптических дисков, которое необходимо ежегодно приобретать для создания архива, 
+а~затем для поддержания его целостности, необходимо для планирования жизненного цикла 
+архива и~затрат на его содержание еще на этапе проектирования.
+  В~работе построены аналитические модели, позволяющие определить необходимое 
+ежегодно число оптических дисков для четырех возможных вариантов (стратегий) 
+заполнения архива, а также моменты времени, ха\-рак\-те\-ри\-зу\-ющие процесс заполнения архива 
+и~позволяющие оценить принципиальную достижимость плановой емкости архива. Приведен 
+пример реального расчета.}
+  
+  \KW{долговременное электронное хранилище информации; оптические диски 
+однократной записи (WORM); гибридные структуры оптических дисков; замена отказавших 
+оптических дисков; ежегодно необходимое число оптических дисков}
+
+\DOI{10.14357\!/\!08696527220210} 
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-20pt}
+  
+  
+\section{Введение}
+
+ \vspace*{-4pt}
+ 
+  Современные электронные документы, пройдя естественный цикл своего 
+существования, должны в~конечном итоге быть сохранены в~архиве. Для любых 
+носителей информации существует проблема порчи записанной на них 
+информации. Поэтому в~процессе хранения необходим регулярный контроль 
+целостности носителей и~записанной на них информации~[1, 2].
+  
+  Согласно современным стандартам в~качестве архивных носителей 
+информации должны использоваться устройства типа WORM
+(write once, read many)~[3], что 
+автоматически означает использование только оптических дисков однократной 
+записи (типа CD-R, DVD-R или BD-R). Поэтому далее будем рассматривать только 
+архивы, построенные на таких носителях.
+  
+  Оптические диски с~записью с~течением времени способны 
+деградировать~[4, 5], поэтому в~архиве они могут быть продублированы~[6, 7] 
+либо объединены в~структуры типа RAID (с использованием роботизированных 
+библиотек~[8]). Но наиболее перспективным представляется их организация 
+в~гибридные структуры~[9].
+  
+  В гибридной структуре весь записываемый объем информации делится на 
+блоки, каждый из которых включает $k$ одиночных дисков и~$L(n\hm-1$) 
+массивов RAID, где $n$~--- число запасных копий информации. Каждый массив 
+включает $k^*\hm = k \hm+ m$ дисков, где $k$~--- условное число дисков 
+с~информацией; $m$~--- условное число дисков с~контрольными суммами 
+(например, для RAID6 $k \hm> 1$, $m \hm= 2$), причем ($n-1$) запасных копий 
+массивов RAID при $n \hm> 2$ фактически вместо массивов типа RAID5 или 
+RAID6 образуют массивы типа RAID15 или RAID16. Требуется определить 
+число оптических дисков, приобретаемых ежегодно для заполнения 
+и~поддержания архива, а~также время (в~годах), в~течение которого при 
+заданной интенсивности поступления информации архив будет заполнен до 
+своего планового объема.
+  
+  Опубликовано немало статей, посвященных дисковым массивам типа RAID 
+различных видов. Но практически во всех этих работах рассматриваются 
+массивы RAID, составленные из жестких дисков, где рассматриваемые 
+структуры не применяются. В~связи с~этим необходимо построение новой 
+модели.
+  
+\section{Построение модели}
+
+  Рассмотрим 4~варианта (стратегии) заполнения архива.
+  \begin{enumerate}[1.]
+  \item Архив заполняется в~первый год существования. Все последующие годы 
+требуется только выявлять отказавшие диски и~заменять их новыми.
+  \item Аппаратура архива не накладывает ограничений на интенсивность 
+поступления информации, но сама интенсивность невелика, что приводит 
+к~заполнению архива в~течение нескольких лет.
+  \item Пропускная способность аппаратуры архива ограничена, что приводит 
+к~вынужденному заполнению архива в~течение нескольких лет, причем из-за 
+необходимости тратить пропускную способность аппаратуры на контроль 
+целостности ранее записанных дисков пропускная способность аппаратуры для 
+записи новой информации постепенно снижается.
+  \item Комбинация вариантов~2 и~3.
+  \end{enumerate}
+  
+  Необходимо построить математические модели для каждого варианта.
+  
+  Будем использовать следующие обозначения: $W$~--- максимальная 
+(плановая) емкость архива; $t$~--- время существования архива, год; $T$~--- 
+время, выделяемое в~течение года на технические работы в~архиве; $V$~--- 
+емкость одного оптического диска; $q$~--- вероятность отказа оптического 
+диска с~записью при хранении в~течение года; $q_w$~--- вероятность отказа 
+оптического диска в~момент записи (брак); $n$~--- число запасных копий 
+каждого блока информации (при этом одна запасная копия находится на 
+одиночном диске и~($n\hm-1$) копия~--- на массивах RAID); $l\hm= \lceil 
+W/V\rceil$~--- число одиночных дисков емкости~$V$, на которые может быть 
+записан объем информации~$W$; $L\hm= \lceil l/k\rceil$~--- число массивов 
+RAID с~параметрами~$k$ и~$m$, на которые может быть записан объем 
+информации~$W$; $k^* \hm= k \hm+ m$~--- общее число дисков в~одном RAID; 
+$l^*\hm = Lk^*$~--- общее число дисков в~$L$ массивах RAID; $N(t)$~--- число 
+оптических дисков, которые необходимо приобрести в~год с~номером~$t$ для 
+создания или поддержания архива.
+
+\smallskip
+  
+  \noindent
+  \textbf{Вариант~1.} В~первый год диски расходуются на заполнение архива:
+  $$
+  N(1)=\left \lceil \fr{Lk^*(n-1)+l}{1-q_w}\right\rceil = \left\lceil \fr{l^*(n-1)+l}{1-
+q_w}\right\rceil\,.
+  $$
+  
+  В~любой последующий год требуются только диски для замены вышедших 
+из строя:
+  \begin{equation}
+  N(t)= \left\lceil \fr{\lceil ((n-1)l^*+l)q \rceil}{1-q_w}\right\rceil\,.
+  \label{e1-che}
+  \end{equation}
+    Здесь важно, что $l$ необязательно кратно $l^*$, поскольку в~последнем 
+блоке может быть записано меньше чем $k$ дисков, но массивы RAID все равно 
+должны быть собраны в~полном объеме.
+
+\smallskip
+  
+  \noindent
+  \textbf{Вариант~2.} Введем дополнительные обозначения. Для одиночных 
+дисков: $t_w$~--- время, необходимое для записи с~верификацией одного 
+оптического диска; $t_{r0}$~--- время, необходимое для планового контроля 
+одного диска; $t_r$~--- время, необходимое для считывания копии одного диска. 
+Для дисков, входящих в~массивы RAID, будем использовать обозначения 
+$t_{wL}$, $t_{r0L}$ и~$t_{rL}$, учитывающие возможность увеличения скорости 
+обработки за счет одновременной работы с~дисками массива (если это 
+позволяет аппаратура).
+  
+  В год будет записываться\ \,$W_y\hm = const$\ \,информации; для записи этой 
+информации потребуется $l_y\!=\!\lceil W_y/V\rceil$ одиночных дисков либо 
+$L_y\hm= \lceil l_y/k\rceil$ массивов RAID (без учета запасных копий). Тогда 
+можно записать:
+  \begin{multline}
+  T\geq \left\lceil \fr{l_y}{1-q_w}\right\rceil t_w +\left\lceil \fr{(n-1)L_y k^*}{1-
+q_w}\right\rceil t_{wL} +(t-1)l_y t_{r0} +{}\\
+{}+(t-1) (n-1) L_y k^* t_{r0L}+
+ \left\lceil (t-1) l_y q\right\rceil t_r +\left\lceil (t-1)(n-1) L_y k^* q\right\rceil t_{rL}+{}\\
+ {}+
+  \left\lceil \fr{\lceil (t-1)l_y q\rceil}{1-q_w}\right\rceil t_w + \left\lceil \fr{\lceil (t-
+1)(n-1) L_y k^* q\rceil}{1-q_w}\right\rceil t_{wL}\,.
+  \label{e2-che}
+  \end{multline}
+  
+  Чаще всего для гибридных структур используется всего один привод. При 
+этом $t_r\hm= t_{rL}$, $t_w\hm= t_{wL}$, $t_{r0}\hm= t_{r0L}$ и~выражение 
+сильно упрощается. Однако рассмотрим ситуацию в~общем случае.
+  
+  Оценим максимально возможное число дисков~$l_y$, которые могут быть 
+записаны в~год и~определят максимально допустимое значение~$W_y$. 
+В~действительности функция $L_y(l_y)$ принимает ступенчатые значения, 
+поэтому аналитически для значения~$l_y$ можно лишь получить две 
+граничные оценки, для чего рассмотрим оценки для $L_y\hm= l_y/k$ и~для 
+$L_y\hm= l_y/k+1$.
+  
+  Действуя по методике~\cite{7-che}, получим:
+  $$
+  \left\lfloor \fr{T-K^*(A_L+(t-1)B_L)}{A_G+(t-1)B_G}\right\rfloor\leq l_y \leq 
+\left\lfloor \fr{T}{A_G+(t-1)B_G}\right\rfloor.
+  $$
+  Здесь
+  
+  \noindent
+  \begin{gather*}
+    A_L=\fr{t_{wL}}{1-q_w}\,;\enskip
+  B_L=t_{r0L} +qt_{rL}+\fr{qt_{wL}}{1-q_w}\,;\\
+   K^*=(n-1)k^*\,;\enskip A_G= A+KA_L\,;\enskip 
+B_G=B+KB_L\,,
+  \end{gather*}
+  где
+  \begin{equation*}
+  A=\fr{t_w}{1-q_w}\,;\enskip B=t_{r0}+qt_r+\fr{qt_w}{1-q_w}\,;\enskip
+  K=(n-1)\fr{k^*}{k}\,.
+  \end{equation*}
+  
+  Из-за ограничений объема статьи далее везде будем выполнять оценку только 
+для максимального значения~$l_y$ (наиболее быстрое заполнение).
+  
+  Год заполнения архива $t_{\mathrm{full}}$ вычислим, исходя из соотношения $l_y 
+t_{\mathrm{full}}\hm\geq l$:
+  $$
+  t_{\mathrm{full}} = \left\lceil \fr{l(A+KA_L-(B+KB_L))}{T-l(B+KB_L)}\right\rceil = 
+\left\lceil \fr{l(A_G-B_G)}{T-lB_G}\right\rceil.
+  $$
+  
+  В произвольный год~$t$ ($t<t_{\mathrm{full}}$) необходимо будет приобрести для 
+записи
+  \begin{multline}
+  N(t)= \left\lceil \fr{l_y+(n-1)L_yk^*}{1-q_w}\right\rceil +\left\lceil \fr{\lceil (t-
+1)(l_y+(n-1)L_y k^*)q\rceil}{1-q_w}\right\rceil ={}\\
+{}= \left\lceil \fr{l_y+(n-1)l_y^*}{1-
+q_w}\right\rceil +\left\lceil \fr{\lceil (t-1)(l_y+(n-1)l_y^*)q\rceil}{1-q_w}\right\rceil
+  \label{e3-che}
+    \end{multline}
+  оптических дисков. Здесь $l_y^*=L_yk^*$.
+  
+  Модель варианта~2 построена.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Вариант~3.} В отличие от варианта~2 теперь $l_y\hm= l_f(t)\not= 
+const$, $L_y\hm= L_f(t)\hm= \lceil l_f(t)/k\rceil$. При этом в~рамках RAID будут 
+записываться $l_f^*(t)\hm= L_f(t) k^*$ дисков.
+  
+  В первый год ($t = 1$) можно записать максимальное число дисков:
+  $$
+  \left\lfloor \fr{T-K^*A_L}{A_G}\right\rfloor \leq l_f(1)\leq \left\lfloor 
+\fr{T}{A_G}\right\rfloor.
+  $$
+  
+  Для любого последующего года:
+  
+  \noindent
+  \begin{multline}
+  T\geq \left\lceil \fr{l_f(t)}{1-q_w}\right\rceil t_w +t_{r0} \sum\limits_{i=1}^{t-1} 
+(l_f(i))+\left\lceil q\sum\limits_{i=1}^{t-1} (l_f(i))\right\rceil t_r + \left\lceil \fr{\left\lceil q
+\sum\nolimits_{i=1}^{t-1} (l_f(i))\right\rceil}{1-q_w}\right\rceil t_w+{}\\
+{}+
+  \left\lceil \fr{(n-1)\lceil l_f(t)/k\rceil k^*}{1-q_w}\right\rceil t_{wL}+
+(n-1) t_{r0L} \sum\limits_{i=1}^{t-1} \left( \left\lceil \fr{l_f(i)}{k}\right\rceil 
+k^*\right)+ {}\\
+\!{}+\!\left\lceil\! (n-1) q \sum\limits_{i=1}^{t-1} \left( \left\lceil 
+\fr{l_f(i)}{k}\right\rceil k^*\right) \!\right\rceil\! t_{rL}+ 
+  \left\lceil \!\fr{\left\lceil (n-1)q\sum\nolimits_{i=1}^{t-1} ( \lceil l_f(i)/k\rceil 
+k^*)\right\rceil}{1-q_w}\!\right\rceil\! t_{wL}\,.\!\!\!
+  \label{e4-che}
+  \end{multline}
+    Откуда по той же методике получим:
+  \begin{gather}
+  \left\lfloor \fr{T-K^*(A_L+(t-1)B_L)}{A_G}\,E^{t-1}\right\rfloor \leq l_f(t)\leq 
+\left\lfloor \fr{T}{A_G}\,E^{t-1}\right\rfloor\,,\enskip E=1-\fr{B_G}{A_G}\,;
+\label{e5-che}\\
+  \fr{T-K^*(A_L+(t-1)B_L)}{B_G}\left(1-E^{t-1}\right) 
+\leq \sum\limits_{i=1}^{t-1} (l_f(i))\leq \fr{T}{B_G}\left(1-E^{t-1}\right)\,.
+  \label{e6-che}
+  \end{gather}
+  
+  С учетом восстанавливаемых дисков в~год с~номером~$t$ необходимо будет 
+записывать
+
+\noindent
+\begin{multline*}
+  N(t)= \left\lceil \fr{l_f(t)+(n-1)L_f(t)k^*}{1-q_w}\right\rceil + {}\\
+  {}+\left\lceil
+   \fr{\left\lceil q \left( \sum\nolimits_{i=1}^{t-1} l_f(i)+(n-1)\sum\nolimits_{i=1}^{t-1} 
+   \left(L_f(i)k^*\right)\right)\right\rceil}{1-q_w}\right\rceil.
+\end{multline*}
+  
+  Поскольку $L_f(i)= \lceil l_f(i)/k\rceil$, раскрывая выражение под знаками 
+сумм, проведем оценку~$N(t)$ по верхнему краю, т.\,е.\ $L_f(i)\hm= 
+(l_f(i)/k)+1$, а~при раскрытии значения $L_f(t)$ будем использовать 
+максимальную оценку значения~$l_f(t)$:
+
+\noindent
+ \begin{multline*}
+  N(t)= \left\lceil \fr{1}{1-q_w}\left( \left\lfloor \fr{T}{A_G}\,E^{t-1}\right\rfloor 
++\left\lceil \fr{\lfloor (T/A_G)E^{t-1}}{k}\right\rceil K^*\right) \right\rceil+ {}\\
+{}+
+  \left\lceil \fr{1}{1-q_w}\left\lceil q\left((K+1)\fr{T}{B_G}\left(1-E^{t-1}\right) +(t-1) 
+K^*\right) \right\rceil\right\rceil.
+\end{multline*}
+  
+  Год $t_{\mathrm{full}}$ определим, исходя из соотношения
+  $l\hm\leq \sum\nolimits_{i=1}^{t_{\mathrm{full}}} l_f(i)$. 
+  
+  \pagebreak
+  
+  В итоге для правой части выражения~(\ref{e6-che}) (оценка нижней границы 
+$t_{\mathrm{full}}$ при максимальной скорости заполнения) получим $t_{\mathrm{full}} \hm= \lceil 
+\log_E(1\hm- lB_G/T)\rceil$.
+  
+  При $t>t_{\mathrm{full}}$ для поддержания архива необходимо будет ежегодно 
+приобретать $N(t)$ дисков, где $N(t)$ определяется выражением~(\ref{e1-che}).
+  
+  Определим также номер года~$t_f$, начиная с~которого пропускная 
+способность аппаратуры архива не позволит помещать в~него новую 
+информацию. Оценим его из соотношения $l_f(t_f)\hm<1$.
+  
+  Получим для правой части~(\ref{e5-che}) (нижняя граница оценки~$t_f$): 
+$$
+t_f= \left\lceil \log_E \left(\fr{A_G}{T}\right)\right\rceil.
+$$
+  
+  Для достижения плановой емкости архива $W$ должно выполняться 
+$t_{\mathrm{full}}\hm< t_f$.
+  
+  \noindent
+  \textbf{Вариант~4.} До года $\tilde{t}$ архив будет заполняться по методу 
+варианта~2. Далее до полного заполнения~--- по методу варианта~3.
+  
+  Параметр $\tilde{t}$ оценим, исходя из выражения~(\ref{e2-che}). Получим:
+   
+   $$
+   \tilde{t}=  \left\lfloor \fr{T-(A_G l_y+K^*A_L)} {B_G l_y+K^* 
+B_L}\right\rfloor +1\,.
+   $$
+  
+  В течение этого периода времени в~год потребуется записывать $N(t)$ дисков, 
+где $N(t)$ определяется выражением~(\ref{e3-che}), а~за весь период в~архив 
+будет помещено $\tilde{t}(l_y\hm+ (n-1)l_y^*)$ дисков.
+  
+  Дальнейшее заполнение архива начнется с~года $t\hm= \tilde{t}+1$.
+  
+  Введем новую шкалу времени $\overline{t}\hm= t\hm- \tilde{t}$. 
+Подставив~$\overline{t}$ в~выражение~(\ref{e4-che}) и~выполнив 
+преобразования, получим:
+ \begin{equation*}
+  l_f(\overline{t}) =\left\lfloor D_G^* \left(1-\fr{B_G}{A_G}\right)^{\overline{t}-
+1} \right\rfloor =\left\lfloor D^*_G E^{\overline{t}-1}\right\rfloor\,;\enskip 
+\sum\limits_{i=1}^{\overline{t}-1} l_f(i)=\fr{D_G^*A_G}{B_G}\left(1- 
+E^{\overline{t}-1}\right)\,,
+\end{equation*}
+где
+$$
+  D_G^*= \fr{T}{A_G} -\fr{\tilde{t}}{A_G} \left( Bl_y+(n-1) B_L 
+l_y^*\right).
+$$
+  Необходимое число записываемых дисков в~год с~номером~$t$ ($t\hm= 
+\overline{t}\hm+ \tilde{t}$):
+  \begin{multline*}
+  N(t)= \left\lceil \fr{1}{1-q_w}\left( \left\lfloor D_G^* E^{t-\tilde{t}-1}\right\rfloor 
++(n-1) \left\lceil \fr{\left\lfloor D_G^* E^{t-\tilde{t}-1}\right\rfloor}{k}\right\rceil 
+k^*\right)\right\rceil+{}\\
+  {}+
+  \left\lceil \fr{1}{1-q_w}\left\lceil q\left( \tilde{t}\left( l_y+(n-1)\left\lceil 
+\fr{l_y}{k}\right\rceil k^*\right) +{}\right.\right.\right.\\
+\left.\left.\left.{}+ (K+1) \fr{D_G^*A_G}{B_G}\left( 1-E^{t-
+\tilde{t}-1}\right) +(n-1) \left(t-\tilde{t}-1\right)k^*\right)\right\rceil \right\rceil.
+  \end{multline*}
+  
+  Плановой емкости архив должен достигнуть не позднее года~$t_{\mathrm{full}}$. 
+Исходя из соотношения
+$$
+l\leq \tilde{t} l_y+\sum\limits_{i=1}^{t_{\mathrm{full}}-\tilde{t}} l_f(i),
+$$
+ получим
+  $$
+  t_{\mathrm{full}}= \left\lceil \log_E\left( 1-\fr{B_G}{D_G^*A_G}\left( 1-\tilde{t} 
+l_y\right)\right)\right\rceil +\tilde{t}\,.
+  $$
+   
+  При $t>t_{\mathrm{full}}$ для поддержания архива ежегодно потребуется 
+приобретать~(\ref{e1-che}) дисков.
+  
+  
+  Параметр $t_f$ оценим, исходя из соотношения $l_f(t_f-\tilde{t})\hm<1$. 
+В~результате получим 
+  $$
+  t_f = \left\lceil \log_E \left( \fr{1}{D_G^*}\right)\right\rceil +\tilde{t}+1\,.
+  $$
+  
+  Модель построена.
+
+\section{Пример использования модели}
+
+  Необходимо оценить параметры создаваемого архива с~максимальной 
+ем\-костью $W \hm= 32$~ТБ. Архив будет создаваться на оптических дисках 
+типа BD-R емкостью $V \hm= 25$~ГБ, организованных в~гибридные 
+структуры с~использованием RAID16 ($k\hm = 2$, $m \hm= 2$). Требуемая 
+проектом надежность хранения при $q\hm = 0{,}1$ и~$q_w\hm = 0{,}02$ (значения 
+параметров получены экспериментально) достигается при $n\hm = 3$. 
+Максимальный объем поступающей информации в~год $W_y\hm = 4$~ТБ. 
+Весь архив будет обслуживаться минимальным составом аппаратных средств 
+(один привод BD-R) и~экспериментально получены следующие значения 
+параметров: $t_w\hm = t_{wL}\hm = 33$~мин; $t_r\hm = t_{rL}\hm = 18$~мин; 
+$t_{r0}\hm = t_{r0L}\hm= 15$~мин. На технические работы в~архиве в~год выделено 
+$T\hm = 131\,400$~мин (4~часа в~сутки).
+  
+  
+  Архив будет реализован по варианту~4. Расчеты по модели показывают:
+  $\tilde{t}\hm=7$~лет; $t_{\mathrm{full}}\hm= 10$~лет; $t_f\hm= 14$~лет (т.\,е.\ 
+проектная емкость архива будет достигнута). Весь архив разместится на 
+6400~дисках. В~процессе заполнения архива максимальное число закупаемых 
+дисков придется на год $t \hm= 8$; $N(8)\hm = 2009$. После заполнения архива 
+на поддержание его в~состоянии целостности ежегодно потребуется 
+приобретать $N(t)\hm = 654$~диска.
+
+\section{Заключение}
+
+  В результате исследования построена аналитическая модель 
+функционирования долговременного электронного архива, построенного на 
+оптических дисках, объединенных в~гибридные структуры. Модель 
+рассматривает 4~варианта заполнения архива в~зависимости от пропускной 
+способности аппаратуры и~позволяет определить число ежегодно 
+приобретаемых дисков для создания архива и~поддержания его целостности, 
+а~также основные параметры времени, характеризующие процесс заполнения 
+архива. Построенная модель может быть полезна на практике при анализе 
+эксплуатационных характеристик проектируемых архивов длительного 
+хранения электронной информации.
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+
+ \bibitem{2-che} %1
+  \Au{Corrado E.\,M., Moulaison H.\,L.} Digital preservation for libraries, archives, and 
+museums.~--- Lanham, MD, USA: Rowman \& Littlefield Publs., 2014. 294~p.
+
+  \bibitem{1-che} %2
+  \Au{Залаев Г.\,З., Каленов~Н.\,Е., Цветкова~В.\,А.}
+Некоторые вопросы длительного хранения электронных документов~/\!\!/
+Научно-техническая информация. Серия~1: Организация и~методика информационной работы, 2016.
+№\,12. С.~22--28.
+ 
+ 
+  \bibitem{3-che}
+  ISO/TR 18492:2005 Long-term preservation of electronic document-based information. {\sf 
+http://www.iso.org/iso/catalogue\_detail.htm?csnumber=38716}.
+
+\bibitem{5-che} %4
+  ISO\!/\!IEC 10995:2011(E). Information technology~--- digitally recorded media for information 
+interchange and storage~--- test method for the estimation of the archival lifetime of optical media. 
+2nd ed. June~15, 2011. 28~p.
+
+  \bibitem{4-che} %5
+  \Au{Smith E.} When discs die~/\!\!/ Tedium, February~2, 2017.
+  
+  \bibitem{6-che}
+  \Au{Zheng J., Slattery~O.\,T.} NIST\!/\!Library of Congress (LC) optical disc longevity study. NIST,
+2007.  Final Report. 32~p. {\sf 
+https://www.loc.gov/preservation/resources/\linebreak rt/NIST\_LC\_OpticalDiscLongevity.pdf}.
+  \bibitem{7-che}
+  \Au{Чернышов А.\,В.} Модель планирования количества оптических дисков, необходимых 
+для создания и~поддержания долговременного электронного архива~/\!\!/ Вестник  
+Санкт-Пе\-тер\-бург\-ско\-го университета. Прикладная математика. Информатика. Процессы 
+управления, 2019. Т.~15. Вып.~4. С.~578--591. doi: 10.21638\!/\!11702\!/ \mbox{spbu10}.2019.413.
+  \bibitem{8-che}
+  Data Archiver LB-DH8 series. {\sf http://panasonic.net/avc/archiver/lb-dh8}.
+  \bibitem{9-che}
+  \Au{Чернышов А.\,В.} Модель надежности долговременного хранения информации на 
+оптических дисках, объединенных в~гибридные структуры~/\!\!/ Известия высших учебных 
+заведений. Поволжский регион. Технические науки, 2020. №\,2(54). С.~25--33. doi: 
+10.21685\!/\!2072-3059-2020-2-3.
+       \end{thebibliography}
+} }
+
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 26.08.21}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{8pt}
+
+\def\tit{DETERMINATION OF THE REQUIRED NUMBER OF~OPTICAL~DISKS~ORGANIZED 
+INTO~HYBRID STRUCTURES FOR~THE~PURPOSE OF~DEVELOPMENT 
+AND~MAINTENANCE OF~LONG-TERM~ELECTRONIC~ARCHIVES}
+
+
+
+\def\titkol{Determination of the required number of~optical disks %, organized into~hybrid structures, 
+for %the~purpose of~development and~maintenance of long-term 
+electronic archives}
+
+\def\aut{A.\,V.~Chernyshov}
+
+\def\autkol{A.\,V.~Chernyshov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+ \noindent
+Mytischi Branch of Bauman Moscow State Technical University, 1,~1st Institutskaya Str., Mytischi 
+141005, Moscow Region, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2022 vol~32 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2022 vol~32 no\,2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+  
+  
+
+
+\Abste{Hybrid structures of optical disks are a method of archival storage of information with 
+increased reliability, similar to RAID arrays of disks. Unlike classic RAID arrays in hybrid 
+structures, one of the copies of information is stored on single disks that provides quick and easy 
+access to information using just one standard drive. During long-term storage, optical disks with 
+recording can degrade. Knowing the number of optical disks that will need to be purchased yearly 
+to create an archive and then to maintain its integrity is necessary for planning the life cycle of the 
+archive and the costs of its maintenance at the design stage. The paper presents analytical models 
+that allow one to determine the required number of optical disks yearly for four possible options 
+(strategies) for filling the archive as well as time points that characterize the process of filling the 
+archive and to assess the principal achievability of the planned archive capacity. An 
+example of a real calculation is given.}
+
+\KWE{long-term electronic archives of information; write once optical disks (WORM); hybrid 
+structures of optical disks; replacement of failed optical disks; yearly required number of optical 
+disks}
+
+\DOI{10.14357\!/\!08696527220210} 
+
+%\vspace*{-16pt}
+
+
+% \Ack
+%\noindent
+
+ 
+
+
+%\vspace*{-6pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{9}
+ 
+  \bibitem{2-che-1} %1
+\Aue{Corrado, E.\,M., and H.\,L.~Moulaison.} 2014. \textit{Digital preservation for libraries, 
+archives, and museums}. Lanham, MD: Rowman \& Littlefield Publs. 294~p.
+
+ \bibitem{1-che-1} %2
+\Aue{Zalaev, G.\,Z., N.\,E.~Kalenov, and V.\,A.~Tsvetkova.} 2016. Some issues of long-term 
+storage of electronic documents. \textit{Scientific Technical Information Processing} 43(4):268--274.
+
+  \bibitem{3-che-1}
+ISO\!/\!TR 18492:2005. 2005. Long-term preservation of electronic document-based information. 
+Available at: {\sf https://www.iso.org/standard/38716.html} (accessed March~22, 2022).
+ 
+  \bibitem{5-che-1} %4
+ISO\!/\!IEC 10995:2011(E). June~15, 2011. Information technology~--- digitally recorded media for 
+information interchange and storage~--- test method for the estimation of the archival lifetime of 
+optical media. 2nd ed. Available at: {\sf 
+https://standards.iso.org/ittf/ PubliclyAvailableStandards/c056910\_ISO\_IEC\_10995\_2011(E).zip} 
+(accessed March~22, 2022).
+
+
+ \bibitem{4-che-1} %5
+\Aue{Smith, E.} February~2, 2017. When discs die. \textit{Tedium.} Available at: {\sf  
+https://tedium.co/ 2017/02/02/disc-rot-phenomenon/} (accessed March~22, 2022).
+
+  \bibitem{6-che-1}
+\Aue{Zheng, J., and O.\,T.~Slattery}. 2007. NIST\!/\!Library of Congress (LC) optical disc longevity study.
+NIST. Final Report. 32~p. Available at: 
+{\sf https://www.loc.gov/preservation/ resources/rt/NIST\_LC\_OpticalDiscLongevity.pdf} (accessed 
+March 22, 2022).
+  \bibitem{7-che-1}
+\Aue{Chernyshov, A.\,V.} 2019. Model' planirovaniya kolichestva opticheskikh diskov, 
+neobkhodimykh dlya sozdaniya i~podderzhaniya dolgovremennogo elektronnogo arkhiva [Model 
+for planning the number of optical disks needed to create and maintain a~long-term electronic 
+archive]. \textit{Vestnik of Saint Petersburg University. Applied Mathematics. Computer Science. 
+Control Processes} %[Bulletin of SPbSU. Applied Mathematics. Computer Science. Control Processes] 
+15(4):578--591. doi: 10.21638\!/\!11702\!/ \mbox{spbu10}.2019.413.
+  \bibitem{8-che-1}
+Data Archiver LB-DH8 series. Available at: {\sf http://panasonic.net/avc/archiver/lb-dh8/} 
+(accessed March~22, 2022).
+  \bibitem{9-che-1}
+\Aue{Chernyshov, A.\,V.} 2020. Model' nadezhnosti dolgovremennogo khraneniya informatsii na 
+opticheskikh diskakh, ob''yedinennykh v~gibridnyye struktury [Model of reliability of long-term 
+storage of information on optical disks united in hybrid structures]. \textit{University Proceedings. Volga 
+Region. Technical Sciences} 2(54):25--33. 
+\end{thebibliography}
+} }
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received August 26, 2021}} 
+
+%\vspace*{-14pt} 
+
+
+
+\Contrl
+
+\noindent
+\textbf{Chernyshov Alexandr V.} (b.\ 1970)~--- Candidate of Science (PhD) in technology, 
+associate professor, Department of Applied Mathematics, Computer Science and Engineering, 
+Mytischi Branch of Bauman Moscow State Technical University, 1,~1st Institutskaya Str., Mytischi 
+141005, Moscow Region, Russian Federation; \mbox{sch-ru@yandex.ru}
+  
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

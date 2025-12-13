@@ -1,0 +1,436 @@
+%\input{../preamblw}
+%
+%
+%
+%\begin{document}
+
+\renewcommand{\baselinestretch}{0.92}
+
+\renewcommand{\firstpage}{118}
+\renewcommand{\lastpage}{124}
+
+\udk{517.977.56} \msc{49J20; 49M30}
+
+\title{Решение задачи недифференцируемой  оптимизации для~объекта с~распредел\"eнными параметрами на основе приближенной квазиасимптотической модели}
+{Решение задачи недифференцируемой  оптимизации \dots}
+
+\author{Н.\,В.~Дилигенский, А.\,П.~Ефимов}{Д\,и\,л\,и\,г\,е\,н\,с\,к\,и\,й~Н.\,В.,\  Е\,ф\,и\,м\,о\,в~А.\,П.}
+
+\institute{\samgtu.}
+
+\email{E-mails}{usat@samgtu.ru, a\_efimov@newmail.ru}
+
+\otherinf{\fullauthor{Николай Владимирович Дилигенский} \regalia{д.т.н., проф., засл. деятель науки РФ} \position{зав. кафедрой}
+\dept{каф. управления и~сис\-темного анализа в~теплоэнергетике}
+ \fullauthor{Александр Порфирьевич Ефимов} \regalia{к.т.н., доц.} 
+ \position{доцент}
+\dept{каф. управления и~сис\-темного анализа в~теплоэнергетике}}
+
+\keywords{задача быстродействия, квазиасимптотическая модель нагрева, погрешность модели, задача недифференцируемой оптимизации, метод сплайновой аппроксимации}
+
+\workabstract{Рассмотрена возможность применения приближённых квазиасимптотических моделей при решении задачи быстродействия при
+нагреве. 
+Для решения задачи быстродействия использовался численный алгоритм с применением экстраполирования минимизируемого поля сплайнами на каждой итерации. 
+Показано, что такой подход к~решению задачи быстродействия позволяет обеспечить достаточную точность определения предельно допустимой точности и длительностей интервалов управления для одно-, двух- и трёхинтервального управления.}
+
+\engtitle{Solution of nondifferentiable optimization problem for object with distributed parameters based on quasi-asymptotic approximate model}
+
+\engauthor{N.\,V.~Diligenskiy, A.\,P.~Efimov}{D\,i\,l\,i\,g\,e\,n\,s\,k\,i\,y~N.\,V., E\,f\,i\,m\,o\,v~A.\,P.}
+
+
+\enginstitute{\engsamgtu.}
+
+
+\otherenginfm{\fullauthor{Nikolay V. Diligenskiy} \regalia{Dr. Sci. (Techn.)} \position{Head of Dept.}
+\dept{Dept. of Management and Systems Analysis in Heat Power Industry}
+\fullauthor{Alexander P. Efimov} \regalia{Ph. D. (Techn.)} \position{Associate Professor} 
+\dept{Dept. of Management and Systems Analysis in Heat Power Industry}} 
+
+\engabstract{The possibility of approximate quasi-asymptotic
+models application is considered on an example of the solution of
+a time-optimal heating problem. To solve an optimal control
+problem the numerical algorithm has been used on the basis of
+spline extrapolation of the minimized field at each iteration. It
+is shown that this approach to the time-optimal control problem
+can provide with negligible error the determination of maximum
+admissible accuracy and interval durations for one-, two-, and
+three- stage control. }
+
+\engkeywords{time-optimal problem, quasi-asymptotic model of heating process, error of model, problem of nondifferentiable optimization, spline approximation method }
+
+\date{15/IX/2011}
+\revisiondate{21/XI/2011}
+
+
+\maketitle
+
+
+
+Рассмотрим задачу оптимального по быстродействию управления процессом нагрева стержня ограниченной длины с~заданной точностью приближения к~требуемой температуре, оцениваемой в равномерной метрике.
+
+Уравнение динамики распределённого объекта конечной длины в~канонической форме описывается одномерным параболическим уравнением теплопроводности
+\begin{equation}
+\frac{\partial T}{\partial \tau }=\frac{\partial ^2T}{\partial x^2},
+\quad
+0\le \tau <\infty ,\quad 0\le x \le 1, 
+\label{dilig:eq1}
+\end{equation}
+с граничным управляющим воздействием
+\begin{equation}
+\frac{\partial T}{\partial x} \Bigr|_{x=1} =u(\tau ),
+\label{dilig:eq2}
+\end{equation}
+условием адиабатичности
+\begin{equation}
+\label{dilig:eq3}
+\frac{\partial T}{\partial x} \Bigr|_{x=0} =0
+\end{equation}
+и начальным условием
+\begin{equation}
+\label{dilig:eq4}
+T \bigr|_{\tau =0} =0.
+\end{equation}
+Здесь 
+$x$ "--- безразмерная (нормированная) пространственная координата по длине стержня; 
+$\tau $ "--- безразмерное время (число Фурье); 
+$T(x,\,\tau )$ "--- температурное поле в относительных единицах; 
+$u(\tau )$ "--- управляющее воздействие, представляющее собой относительную величину теплового потока на границе \mbox{$x=1$}.
+
+Ставится задача достижения в момент времени $\tau_{\text{к}} $ заданной температуры $T_{\text{з}} ={\rm const}$ с~требуемой точностью $\varepsilon$:
+\begin{equation}
+\label{dilig:eq5} 
+\max \limits_{x\in [0,1]} | T(\tau_{\text{к}} , x)-T_{\text{з}} |\le \varepsilon
+\end{equation}
+при минимальном значении критерия оптимальности
+\begin{equation}
+\label{dilig:eq6}
+J=\int_0^{\tau_{\text{к}} } dt =\tau_{\text{к}} =\min \limits_{u(\tau)}
+\end{equation}
+в условиях заданных ограничений на величину управляющего теплового потока
+\begin{equation}
+\label{dilig:eq7}
+u_{\min } \le u (\tau )\le u_{\max }.
+\end{equation}
+
+Сформулированная задача \eqref{dilig:eq1}--\eqref{dilig:eq7} относится к~задачам недифференцируемой оптимизации. 
+Она была всесторонне исследована в работах \cite{dilig:bib1, dilig:bib2}, в~которых был установлен ряд универсальных закономерностей алгоритмов управления и поведения оптимальных температурных распределений, приведённых ниже.
+
+\begin{enumerate}
+\item[1.] Установлено, что алгоритм оптимального управления $u^\ast (\tau )$ является кусочно"=постоянной (релейной) функцией времени, попеременно принимающей свои предельно допустимые согласно \eqref{dilig:eq7} значения $u_{\min}$ и $u_{\max}$ с~длительностями постоянства управления $\Delta _i$: $\sum_{i=1}^n {\Delta _i } =\tau_{\text{к}} $.
+
+\item[\textcolor{white}{\eqref{dilig:eq2}}\!\!.] Число $n$ "--- число интервалов постоянства оптимального управления "--- однозначно определяется величиной допустимой требуемой точности $\varepsilon$  из \eqref{dilig:eq5}.
+При ужесточении требований (при уменьшении $\varepsilon $) число $n$ возрастает. Другими словами, $n\to \infty $ при $\varepsilon \to 0$. 
+При этом для каждого оптимального управления с фиксированным числом интервалов $n$ существует предельно достижимая точность нагрева $\varepsilon ^{(n)}$. \phantom{\eqref{dilig:eq2}}
+
+\item[\textcolor{white}{\eqref{dilig:eq3}}\!\!.] Оптимальные конечные температурные распределения $T(\tau_{\text{к}}, x)$ при любом $\varepsilon $ обладают альтернансными свойствами: являются дифференцируемыми по $x$ функциями, принимающими предельно допустимые согласно \eqref{dilig:eq5} значения $T_{\text{з}} \pm \varepsilon $ в~чередующихся на отрезке $[0, 1]$ максимумах и~минимумах в~точках $x_i^\ast \in [0, 1]$.
+Исходная задача недифференцируемой оптимизации эквивалентна задаче решения системы уравнений
+\begin{equation}
+\label{dilig:eq8} 
+T(\tau_{\text{к}}, x) \bigr|_{x= x_i^\ast } =T_{\text{з}} \pm \varepsilon; 
+\quad i=1, 2, \dots, R, \quad  R=
+\begin{cases}
+ n, & \varepsilon >\varepsilon ^{(n)}; \\
+ n+1,&\varepsilon =\varepsilon ^{(n)},  \end{cases}
+\end{equation}
+дополненной условиями
+\begin{equation}
+\label{dilig:eq9}  \frac{\partial T(\tau_{\text{к}}, x)}{\partial x} \Bigl|_{x=x_{i _\nu }^\ast} =0;
+\quad x_{i_\nu }^\ast \in \{x_i^\ast \},\quad \nu =1, 2, \dots, R_1, \quad  R_1 \le R
+\end{equation}
+для внутренних точек $x_i^\ast$ экстремума конечного распределения температуры.
+
+\end{enumerate}
+
+Система \eqref{dilig:eq8}, \eqref{dilig:eq9} является замкнутой относительно неизвестных, к которым
+относятся длительности интервалов $\Delta_i$ и координаты локальных экстремумов $x_i^\ast \in [0,\,1]$.
+
+Разработанный точный аналитический альтернансный метод решения задачи оптимального управления
+(\ref{dilig:eq1})--(\ref{dilig:eq7}) инвариантен по отношению к~способу нахождения температурного состояния распределённого
+объекта $T(\tau_{\text{к}}, x)$. 
+В~работах \cite{dilig:bib1, dilig:bib2} использован точный метод расчёта температуры $T(\tau,\,x)$ в~форме классического разложения по собственным функциям в виде сходящегося бесконечного ряда. 
+При этом в расчётах численные значения параметров оптимального алгоритма $\{ \Delta _i  \}$,
+найденные на основе точных методов, в той или иной степени являются приближенными.
+
+Рассмотрим возможность решения задачи (\ref{dilig:eq1})--(\ref{dilig:eq7}) с~использованием приближённого выражения для температурного поля в~конце нагревания.
+
+Авторами \cite{dilig:bib3, dilig:bib4} для решения задач теплопроводности вида (\ref{dilig:eq1})--\eqref{dilig:eq4} предложен  метод построения аналитических квазиасимптотических решений, удовлетворительно описывающих температурные распределения краевых задач в области $0\leq \tau <\infty$, $ 0\leq x \leq 1$. 
+Квазиасимптотические решения строятся путём сопряжения внутренних и внешних асимптотических представлений решения с~помощью специально конструируемых мультипликаторов.
+Получаемые при таком подходе приближённые решения асимптотически совпадают с~точными решениями задачи при больших и~малых временах, а~в~промежуточной области имеют погрешность, которая может быть уменьшена путём увеличения числа учитываемых в~разложениях членов рядов.
+
+Так, квазиасимптотическое решение для задачи (\ref{dilig:eq1})--(\ref{dilig:eq4}) при $u(\tau )=u_0 ={\rm const}$, построенное путём квазисопряжения первых двух членов внутреннего и~первых двух членов внешнего разложений, имеет следующий вид \cite{dilig:bib3}:
+\begin{multline}
+\label{dilig:eq10}
+\tilde {T}(x,\tau )=u_0 \left\{ 
+2\sqrt {\tau } \left[ i\, {\rm erfc}\Bigl( -\frac{1-x}{2\sqrt \tau } \Bigr)+
+i\,{\rm erfc} \Bigl( -\frac{1+x}{2\sqrt \tau } \Bigr) \right]+ \right.
+\\
+\left. +4\tau i^2 {\rm erfc}\Bigl( \frac{1}{\sqrt \tau }\Bigr)+
+\Bigl(\frac{x^2}{2}-\frac{1}{\textcolor{white}{\!\eqref{dilig:eq6}}\!}\Bigr) {\rm erfc}\Bigl( \frac{1}{\sqrt \tau }
+\Bigr) \right\},
+\end{multline}
+где $i^n {\rm erfc}(z)$ "--- итерированные интегралы дополнительной функции ошибок.
+
+\begin{figure}[b!]
+\centering  \small \sl \vspace{-3mm}
+\includegraphics{./00PIC/dilig2.eps}~~\includegraphics{./00PIC/dilig3.eps}
+
+а \hspace{.48\textwidth} б
+
+\caption{Зависимость максимальной относительной ошибки ({\sl а}\/) и относительной ошибки градиента ({\sl б}\/) приближённого
+решения (\ref{dilig:eq10}) от времени $\tau$} \label{dil:pict:1}
+
+\end{figure}
+
+
+На рис.~\ref{dil:pict:1} представлены относительные погрешности $\delta$
+квазиасимптотического решения \eqref{dilig:eq10} и его градиента.
+Видно, что погрешности асимптотически 
+
+
+
+
+\begin{wrapfigure}{O}{.5\textwidth}
+\centering 
+\includegraphics[width=.42\textwidth]{./00PIC/dilig4.eps}
+\caption{Зависимость длительности временных интервалов управления от требуемой точности нагрева: \scriptsize
+сплошная линия "--- точное решение, штрихпунктирная линия "--- приближённое решение}
+\label{dil:pict:2}
+
+\bigskip
+
+\small \sl
+
+\includegraphics[width=.48\textwidth]{./00PIC/dilig5.eps}
+
+\vspace{-5.4cm}
+
+~~~~~~~а
+
+\vspace{5cm}
+
+~~~~~~~б
+
+\caption{Траектория нагрева ({\sl а}\/) и конечное распределение температур ({\sl б}\/) для случая
+$\varepsilon^{(1)}>\varepsilon >\varepsilon ^{(2)}$}
+\label{dil:pict:3}
+\end{wrapfigure}
+
+\noindent
+уменьшаются при малых и при
+больших временах. Максимальная величина погрешности достигается
+при средних временах и составляет 0,5{\%} для значения температуры
+и менее 1,5{\%} для градиента температуры, что показывает вполне
+удовлетворительную эффективность квазиасимптотического решения~(\ref{dilig:eq10}).
+
+
+Для сопоставления оптимизационных расчётов были решены задачи минимизации суммарного времени нагрева $\tau_{\text{к}} $ при релейном управлении мощностью для одно-, двух- и трёхинтервального управления на основе точного и приближенного (\ref{dilig:eq10}) решений. 
+При этом был использован разработанный в~\cite{dilig:bib5,dilig:bib6} численный итерационный метод, использующий сплайновую
+аппроксимацию оптимизируемого поля на каждой итерации и ориентированный на минимизацию числа обращений к модели. Отметим, что в~этом методе условия альтернанса при решении не использовались. Результаты расчётов приведены в~таблице.
+
+
+
+
+
+
+
+\begin{sidewaystable}\centering \small
+\caption*{\bf Результаты расчётов по точному и приближённому решениям} \vspace{-3mm}
+\begin{tabular}{c|c|c|c|c|c|c|c}
+\hline
+\multicolumn{2}{c|}{\footnotesize $\varepsilon$} & 
+\multicolumn{2}{c|}{\footnotesize $\Delta_1$} & 
+\multicolumn{2}{c|}{\footnotesize $\Delta_2$} & 
+\multicolumn{2}{c}{\footnotesize $\Delta_3 \cdot 10^3$}  \\ \hline
+\footnotesize ~~~~~точное~~~~~ & 
+\footnotesize приближённое & 
+\footnotesize ~~~~~точное~~~~~ & 
+\footnotesize приближённое & 
+\footnotesize ~~~~~точное~~~~~ & 
+\footnotesize приближённое & 
+\footnotesize ~~~~~точное~~~~~ & 
+\footnotesize приближённое \\ \hline
+\rule{0mm}{12pt}%
+0,274\phantom{00}& 0,277\phantom{00}&0,414&0,414&---&---&---&--- \\ 
+0,256\phantom{00}&0,259\phantom{00}&0,434&0,434&---&---&---&--- \\ 
+0,240\phantom{00}&0,242\phantom{00}&0,453&0,453&---&---&---&--- \\ 
+0,233\phantom{00}&0,236\phantom{00}&0,461&0,461&---&---&---&--- \\ 
+0,224\phantom{00}&0,226\phantom{00}&0,472&0,472&---&0,0\phantom{00000}&---&--- \\ 
+0,223\phantom{00}& 0,216\phantom{00}&0,472&0,484&0,0\phantom{00000} &0,000385&---&--- \\ 
+0,210\phantom{00}& 0,213\phantom{00}&0,487&0,486&0,000578&0,000578&---&--- \\
+0,174\phantom{00}& 0,178\phantom{00}&0,519&0,519&0,00788\phantom{0}&0,00788\phantom{0}&---&--- \\ 
+0,109\phantom{00}& 0,113\phantom{00}&0,558&0,558&0,0432\phantom{00} &0,0432\phantom{00}&---&--- \\
+0,0748\phantom{0}& 0,0787\phantom{0}&0,568&0,567&0,0737\phantom{00}&0,0737\phantom{00}&---&--- \\ 
+0,0500\phantom{0}& 0,0500\phantom{0}&0,572&0,573&0,105\phantom{000}&0,110\phantom{000}&---&--- \\ 
+0,0251\phantom{0}& 0,0288\phantom{0}&0,576&0,577&0,151\phantom{000}&0,151\phantom{000}&---&--- \\ 
+0,0172\phantom{0}& 0,0206\phantom{0}&0,578&0,578&0,173\phantom{000}&0,173\phantom{000}&---&--- \\ 
+0,0117\phantom{0}& 0,0149\phantom{0}&0,579&0,580&0,193\phantom{000}&0,193\phantom{000}&---&--- \\ 
+0,00852& 0,0115\phantom{0}&0,580&0,580&0,207\phantom{000}&0,207\phantom{000}&---&--- \\ 
+0,00763& 0,0105\phantom{0}&0,580&0,581&0,212\phantom{000}&0,212\phantom{000}&0,0\phantom{000}&0,0\phantom{000} \\ 
+0,00729& 0,00745&0,580&0,582&0,214\phantom{000}&0,228\phantom{000}&0,0100&0,0\phantom{000} \\ 
+0,00685&0,00666&0,580&0,582&0,216\phantom{000}&0,233\phantom{000}&0,0500&0,0500 \\ 
+0,00648&0,00630&0,580&0,582&0,218\phantom{000}&0,235\phantom{000}&0,110\phantom{0}&0,110\phantom{0} \\ \hline
+\end{tabular}
+\end{sidewaystable}
+
+%В графической форме результаты расчетов приведены на рис. 4--7.
+
+На рис.~\ref{dil:pict:2} приведены зависимости длительности временных интервалов управления от требуемой точности нагрева для одно- и двухинтервального оптимального алгоритма при $T_\text{з}=0,5$, полученные на основе точного и приближённого решений.
+
+
+
+На рис.~\ref{dil:pict:3} приведены оптимальная траектория нагрева и конечное
+распределение температур по $x$ для $\tau =\tau_{\text{к}} $ при точности
+нагрева $\varepsilon^{(1)}>\varepsilon >\varepsilon^{(2)}$ для
+квазиасимптотической модели. На рис.~\ref{dil:pict:4} приведены конечные
+распределения температур по $x$ для $\tau =\tau_{\text{к}} $ при точностях
+нагрева  $\varepsilon =\varepsilon ^{(2)}$ (рис.~\ref{dil:pict:4}, {\sl а}\/) и
+$\varepsilon ^{(2)}>\varepsilon >\varepsilon^{(3)}$ (рис.~\ref{dil:pict:4}, {\sl б}\/).
+
+
+
+
+
+
+Результаты расчётов подтверждают обоснованные в \cite{dilig:bib1, dilig:bib2} альтернансные свойства оптимальных распределений конечных температур. 
+Наблюдается удовлетворительное совпадение результатов определения предельно допустимой точности и~длительностей интервалов управления, полученных с~использованием приближённого квазиасимптотического и точного решения для \linebreak
+\mbox{одно-, двух- и трёхинтервального управления.}
+
+
+
+
+\begin{figure}[t!]
+\centering \small \sl 
+\includegraphics[scale=.9]{./00PIC/dilig6.eps}
+
+{}~~~~~~~~а \hspace{.4\textwidth} ~б
+
+\caption{Конечное распределение температур: \scriptsize {\sl а\/}) случай $\varepsilon =\varepsilon ^{(2)}$; 
+\scriptsize {\sl б\/}) случай 
+$\varepsilon ^{(2)}>\varepsilon >\varepsilon ^{(3)}$
+}
+\label{dil:pict:4}
+%
+%\caption{Конечное распределение температур для случая }
+\end{figure}
+
+\begin{thebibliography}{9}
+
+\RBibitem{dilig:bib1}
+\by Рапопорт~Э.\,Я.
+\book Оптимизация процессов индукционного нагрева металла
+\publaddr М.
+\publ Металлургия
+\yr 1993
+\totalpages 279
+\misctransl
+\by Rapoport~\'E.\,Ya.
+\book Process optimization of induction heating of metal
+\publaddr Moscow
+\publ Metallurgiya
+\yr 1993
+\totalpages 279
+
+\RBibitem{dilig:bib2}
+\by Рапопорт~Э.\,Я. 
+\book Альтернансный метод в прикладных задачах оптимизации
+\publaddr М.
+\publ Наука
+\yr 2000
+\totalpages 336
+\misctransl
+\by Rapoport~\'E.\,Ya.
+\book The alternance method in applied problems of optimization
+\publaddr Moscow
+\publ Nauka
+\yr 2000
+\totalpages 336
+
+
+\RBibitem{dilig:bib3}
+\by Ефимов~А.\,П.
+\paper Метод построения равномерно"=пригодных аппроксимаций решений нестационарных задач теплопроводности в телах конечных размеров
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Техн. науки
+\issue 2(22)
+\yr 2008
+\pages 196--200
+\misctransl 
+\by Efimov~A.\,P.
+\paper A method for constructing a uniformly suitable approximation of  nonstationary heat conduction problems solutions in finite dimensions bodies
+\jour Vestn. Sam. Gos. Tekhn. Un-ta. Ser. Tekhn. Nauki
+\issue 2(22)
+\yr 2008
+\pages 196--200
+
+
+\RBibitem{dilig:bib4}
+\by Дилигенский~Н.\,В., Ефимов~А.\,П.
+\paper Использование принципа дополнительности для конструирования систем математических моделей задач теплопроводности с~требуемыми аппроксимативными свойствами
+\inbook Труды Третьей Российской национальной конференции по теплообмену
+\bookvol 7
+\publaddr М.
+\publ МЭИ
+\yr 2002
+\pages 111--114
+\misctransl
+\by Diligenskiy~N.\,V., Efimov~A.\,P.
+\paper Using the principle of subsidiarity for the design of systems of mathematical models for heat conduction problems with the required approximation properties
+\inbook Proceedings of the Third Russian National Conference on Heat Transfer
+\bookvol 7
+\publaddr Moscow
+\publ M\'EI
+\yr 2002
+\pages 111--114
+
+\RBibitem{dilig:bib5}
+\by Ефимов~А.\,П.
+\paper Алгоритм сплайновой экстраполяции при решении задач полубесконечной оптимизации
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Техн. науки
+\issue 2(24)
+\yr 2009
+\pages 25--32
+\misctransl
+\paper Spline extrapolation algorithm for solving semi-infinite optimization
+\by Efimov~A.\,P.
+\jour Vestn. Sam. Gos. Tekhn. Un-ta. Ser. Tekhn. Nauki
+\issue 2(24)
+\yr 2009
+\pages 25--32
+
+
+\RBibitem{dilig:bib6}
+\by Ефимов~А.\,П.
+\paper Применение алгоритма сплайновой экстраполяции при решении задач полубесконечной оптимизации
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Техн. науки
+\issue 2(26)
+\yr 2010
+\pages 44--51
+\misctransl
+\paper  Application of spline extrapolation algorithm for solving semi-infinite optimization
+\by Efimov~A.\,P.
+\jour Vestn. Sam. Gos. Tekhn. Un-ta. Ser. Tekhn. Nauki
+\issue 2(26)
+\yr 2010
+\pages 44--51
+
+\end{thebibliography}
+
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+
+
+\newpage
+
+\chead[\fancyplain{}{\scriptsize \sl D\,i\,l\,i\,g\,e\,n\,s\,k\,i\,y~N.\,V., E\,f\,i\,m\,o\,v~A.\,P. }]
+{\fancyplain{}{\scriptsize \sl  Solution of nondifferentiable optimization problem \dots}}
+
+\makeengtitlem
+
+\renewcommand{\baselinestretch}{0.9}
+
+\newpage
+%
+% \tableofengcontents
+%
+%\end{document}

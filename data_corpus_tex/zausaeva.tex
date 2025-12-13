@@ -1,0 +1,451 @@
+%%vsgtu722
+%
+% \input{../preamblw}
+%
+%
+%
+% \begin{document}
+% 
+%
+%
+%
+% \tableofcontents
+% \newpage
+%
+%\setcounter{page}{160}
+
+\renewcommand{\firstpage}{154}
+\renewcommand{\lastpage}{161}
+%\Partition{Математическое моделирование}{Celestial mechanics and Astronomy} % Раздел Вестника, в который подаётся статья
+% Названия разделов см. на сайте при подаче заявки
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Информация о статье и об авторах на русском и английском языках
+
+
+\udk{681.5.015}
+\msc{65P40, 34C15, 37M05}
+\title{Определение параметров двумерных динамических процессов на основе разностных схем}% Полный заголовок
+{Определение параметров двумерных динамических процессов\dots}% Заголовок, который идёт в верхний колонтитул
+
+\author{М.\,А.~Заусаева, В.\,Е.~Зотеев}
+{З\,а\,у\,с\,а\,е\,в\,а~М.\,А.,\ З\,о\,т\,е\,е\,в~В.\,Е.}
+
+\institute{\samgtu.}
+
+\email{E-mail}{zausmasha@mail.ru}
+
+\otherinf{
+\fullauthor{Мария Анатольевна Заусаева} \position{аспирант}\dept{каф. прикладной математики и информатики}
+\fullauthor{Владимир Евгеньевич Зотеев}\regalia{к.ф.-м.н., доц.}\position{доцент}\dept{каф. прикладной математики и~информатики}
+}
+
+\keywords{параметрическая идентификация, разностные схемы, среднеквадратичное приближение}
+
+\workabstract{
+Рассматривается построение разностных схем, описывающих результаты наблюдений двумерных пространственно-временных функциональных зависимостей, и численный метод определения параметров таких зависимостей на основе разностных схем. Алгоритм метода включает итерационную процедуру среднеквадратичного оценивания коэффициентов линейно-параметрической дискретной модели в форме стохастических разностных уравнений. Такой подход к решению задачи идентификации двумерных пространственно-временных функциональных зависимостей позволяет обеспечить высокую адекватность построенной модели и, как следствие, добиться высокой точности результатов оценивания параметров модели.
+}
+
+\engtitle{Definition of Parameters of 2D Dynamical Processes on the Basis of Difference Schemes}
+
+\engauthor{M.\,A.~Zausaeva, V.\,E.~Zoteev}{Z\,a\,u\,s\,a\,e\,v\,a~M.\,A., Z\,o\,t\,e\,e\,v~V.\,E.}
+
+\enginstitute{\engsamgtu.}
+
+\otherenginf{
+\fullauthor{Maria A. Zausaeva}\position{Postgraduate Student}\dept{Dept. of Applied Mathematics \& Computer Science}
+\fullauthor{Vladimir E. Zoteev}\regalia{Ph.\,D. (Phys. \& Math.)}\position{Associate Professor}\dept{Dept. of Applied Mathematics \& Computer Science}
+}
+
+\engabstract{The construction of difference schemes, describing the results of observations of 2D spatio-temporal functional dependencies and a numerical method for definition of the parameters of such dependencies on the basis of difference schemes are studied. The algorithm of method including iteration procedure for mean-square estimation of coefficients of linear parametric discrete model in the form of stochastic difference equations. Such an approach to solving the problem of identification of 2D dynamic processes can ensure a high adequacy of a model, and as a consequence, to achieve high accuracy of estimating the parameters of the model.
+}
+
+\engkeywords{parametrical identification, difference scheme, root-mean-square approximation}
+
+\date{26/II/2010} % Дата поступления статьи в редакцию.
+\revisiondate{3/III/2010} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+Проблема достоверной оценки параметров математической модели по экспериментальным данным является важнейшей проблемой для различных областей науки и техники. 
+Одним из эффективных методов параметрической идентификации динамических систем является метод, в основе которого лежат линейно"=параметрические дискретные модели, описывающие в форме разностных уравнений результаты наблюдений~[1]. 
+Однако область применения таких моделей ограничена одномерными динамическими процессами, при описании которых используются нелинейные функциональные зависимости от одной временной переменной. 
+Вместе с тем в практике эксперимента при моделировании объектов и явлений различной физической природы широко используется аппарат математической физики, основу которого составляют дифференциальные уравнения в~частных производных. 
+Решения таких уравнений, как правило, представляют собой пространственно-временные функциональные зависимости, например, двумерные зависимости в задачах теплопроводности, описывающие изменение температуры стержневой конструкции по её длине. 
+Таким образом, становится актуальной задача разработки и исследования новых линейно"=параметрических дискретных моделей, описывающих в~форме разностных схем многомерные динамические процессы. 
+В~данной работе представлены результаты решения этой задачи для двумерного динамического процесса, который может быть описан в виде произведения двух мультипликативных компонент, каждая из которых связана только с одной из двух независимых переменных.
+
+Пусть динамический процесс описывается функцией двух независимых переменных:
+\begin{equation}
+\tilde z(t, x)=y(t)u(x).
+\end{equation}
+определенной и непрерывной в пространственно-временной области $0\leq{x}\leq{l}$, $0\leq{t}\leq{T}$, где $y(t)=c_1(1-e^{-\alpha_1t})+c_2(1-e^{-\alpha_2t})$, $u(x)=e^{\beta{x}}$, $c_1$, $c_2$, $\alpha_1$, $\alpha_2$, $\beta\in \mathbb{R}$.
+
+Рассмотрим задачу оценки параметров функциональной зависимости (1) по экспериментальным данным $z_{k,j}=\tilde{z}({\tau}k, jh)+\varepsilon_{k,j}$, полученным в узлах конечно"=разностной сетки $\omega_{\tau,h}$:
+$$\omega_{\tau,h}=\left\{t_k=k\tau,\; k\equiv 0, 1, \ldots N-1; \;\; x_j=jh, \; j\equiv 0, 1, \ldots, M-1\right\},
+$$
+где $\tau={T}/(N-1)$ "--- период дискретизации по временной координате; 
+$h={l}/({M-1})$ "--- шаг дискретизации по независимой переменной $x$; 
+$\varepsilon_{k,j}$ "--- случайный разброс (случайная помеха) в~результатах наблюдений; 
+$N$ и $M$ "--- число точек по координатам $t$ и $x$ соответственно. 
+Значения $\varepsilon_{k,j}$ некоррелированны (взаимно независимы), имеют нулевое математическое ожидание и одинаковые дисперсии. 
+В~основе решения этой задачи лежит построение и~исследование линейно"=параметрической дискретной модели, описывающей~в форме разностной схемы дискретные значения функциональной зависимости~(1). 
+Для формирования этой модели рассмотрим построение разностных уравнений для каждой мультипликативной составляющей в отдельности.
+
+Временная последовательность дискретных значений функции $y(t)$ описывается выражением вида 
+$$y_k=c_1(1-e^{-{\alpha_1}{\tau}k})+c_2(1-e^{-{\alpha_2}{\tau}k})$$ или
+\begin{equation}
+y_k-c_1-c_2=-c_1e^{-{\alpha_1}{\tau}k}-c_2e^{-{\alpha_2}{\tau}k}.
+\end{equation}
+Отсюда имеем $$y_{k-1}-c_1-c_2=-c_1e^{-\alpha_1\tau{k}}\mu_1-c_2e^{-\alpha_2\tau{k}}\mu_2,$$  $$y_{k-2}-c_1-c_2=-c_1e^{-\alpha_1\tau{k}}\mu_1^2-c_2e^{-\alpha_2\tau{k}}\mu_2^2,$$ где $\mu_1=e^{\alpha_1\tau}$ и $\mu_2=e^{\alpha_2\tau}$. Выделяя из этих двух уравнений выражения \mbox{$-c_1e^{-\alpha_1\tau{k}}$} и $-c_2e^{-\alpha_2\tau{k}}$ и подставляя их в (2), получаем разностное уравнение вида
+\begin{equation}
+y_k=\lambda_1y_{k-1}+\lambda_2y_{k-2}+\lambda_3 \quad (k\equiv 2, 3,\ldots,N-1),
+\end{equation}
+где 
+\begin{equation}
+\lambda_1=\frac{\mu_1+\mu_2}{\mu_1\mu_2}, \quad \lambda_2=-\frac{1}{\mu_1\mu_2}, \quad \lambda_3=(c_1+c_2)(1-\lambda_1-\lambda_2).
+\end{equation}
+
+Последовательность дискретных значений функции $u(x)$ с шагом $h$ описывается выражением вида $u_j=e^{j\beta h}$. Так как $u_{j-1}=e^{j\beta h}e^{-\beta h}$, то очевидно, что $u_j=e^{\beta h}u_{j-1}$ или
+\begin{equation}
+u_j=\lambda_4u_{j-1}, \quad j\equiv 1, 2, \ldots, M-1,
+\end{equation}
+где $\lambda_4=e^{\beta h}$.
+
+Множество дискретных значений функции (1) в узлах сетки $\omega_{\tau,h}$ описывается выражением
+$$\tilde{z}_{k,j}=y_ku_j,\quad  k\equiv 0, 1, 2, \ldots, N-1,\quad j\equiv 0, 1, 2, \ldots, M-1.$$ 
+Тогда разностное уравнение (3) можно
+представить в виде $$\frac{\tilde{z}_{k,j}}{{u}_j}=\lambda_1\frac{\tilde{z}_{k-1}}{{u}_j}+\lambda_2
+\frac{\tilde{z}_{k-2,j}}{{u}_j}+\lambda_3.$$ 
+Отсюда имеем
+ $$\tilde{z}_{k,j}=\lambda_1\tilde{z}_{k-1,j}+\lambda_2\tilde{z}_{k-2,j}+\lambda_3u_j$$ и, следовательно, $$\tilde{z}_{k,j-1}=\lambda_1\tilde{z}_{k-1,j-1}+\lambda_2\tilde{z}_{k-2,j-1}+\lambda_3u_{j-1}.$$ 
+ С учётом равенства (5) первое выражение можно преобразовать к виду $$\tilde{z}_{k,j}=\lambda_1\tilde{z}_{k-1,j}+\lambda_2\tilde{z}_{k-2,j}+\lambda_3\lambda_4u_{j-1}.$$ Если теперь обе части второго выражения умножить на $\lambda_4$, то получим два уравнения, из которых, исключая слагаемое $\lambda_3\lambda_4u_{j-1}$, можно сформировать разностную схему вида
+\begin{gather}
+\tilde{z}_{k,j}=\lambda_1\tilde{z}_{k-1,j}+\lambda_2\tilde{z}_{k-2,j}+\lambda_4\tilde{z}_{k,j-1}+\lambda_5\tilde{z}_{k-1,j-1}+\lambda_6\tilde{z}_{k-2,j-1}
+\\
+\notag
+(k\equiv 2, 3, \ldots,N-1,\;  j\equiv 1, 2, \ldots, M-1),
+\end{gather}
+\noindent где $\lambda_5=-\lambda_1\lambda_4$, $\lambda_6=-\lambda_2\lambda_4$.
+
+
+\begin{figure}[b!]
+\centering  \vspace{-2mm}
+\begin{minipage}{.7\textwidth}
+\centering
+\includegraphics{zausaeva1}
+\caption{Шаблон разностной схемы $\omega_{\tau, h}$ для двумерной пространственно"=временной функциональной зависимости}
+\end{minipage}
+\end{figure}
+
+
+На рис.~1 закрашенными узлами представлена геометрическая интерпретация построенной разностной схемы (6) на конечно"=разностной сетке $\omega_{\tau,h}$ (шаблон разностной схемы). 
+Остальные значения разностной схемы (незакрашенные узлы на шаблоне) описываются уравнениями, 
+которые можно получить непосредственно из функциональной зависимости (1) для узлов, соответствующих $k=0, 1$ и $j=0$:
+\begin{equation}
+\begin{array}{c}
+\tilde{z}_{0,0}=0,\quad \tilde{z}_{1,0}=\lambda_7,\\
+\tilde{z}_{k,0}=\lambda_1\tilde{z}_{k-1,0}+\lambda_2\tilde{z}_{k-2,0}+\lambda_3 \;\;(k\equiv 2, 3, \ldots, N-1),\\
+\tilde{z}_{k,j}=\lambda_4\tilde{z}_{k,j-1} \quad  (k\equiv 0, 1; \; j\equiv1, 2, \ldots, M-1),
+\end{array}
+\end{equation}
+где $\lambda_7=c_1(1-\frac{1}{\mu_1})+c_2(1-\frac{1}{\mu_2})$.
+
+
+
+При обработке экспериментальных данных формируется выборка результатов наблюдений объёма $V=MN$: $$z_{k,j}=\tilde{z}_{k,j}+\varepsilon_{k,j}
+\quad (k\equiv 0, 1, \ldots, N-1,\; j\equiv 0,1, \ldots, M-1),
+$$ которые содержат случайную помеху $\varepsilon_{k,j}$. 
+В~этом случае линейно"=параметрическая дискретная модель (6), (7) принимает вид стохастических разностных уравнений:
+\begin{equation*}
+\begin{array}{c}
+z_{0,0}= \varepsilon_{0,0},\quad  z_{1,0}=\lambda_7+\varepsilon_{1,0},\\
+z_{k,0}= \lambda_1z_{k-1,0}+\lambda_2z_{k-2,0}+\lambda_3 -\lambda_1\varepsilon_{k-1,0}-\lambda_2\varepsilon_{k-2,0}+\varepsilon_{k,0} \; \; (k\equiv 2, 3, \ldots, N-1),\\
+z_{k,j}=\lambda_4z_{k,j-1}-\lambda_4\varepsilon_{k,j-1}+\varepsilon_{k,j} \quad ( k\equiv0, 1; \; j\equiv1, 2, \ldots, M-1),\\
+z_{k,j}= \lambda_1z_{k-1,j}+\lambda_2z_{k-2,j}+\lambda_4z_{k,j-1} +\lambda_5z_{k-1,j-1}+\lambda_6z_{k-2,j-1} - \hfill \\ \hfill -\lambda_1\varepsilon_{k-1,j}-\lambda_2\varepsilon_{k-2,j}-\lambda_4\varepsilon_{k,j-1}
+-\lambda_5\varepsilon_{k-1,j-1}-\lambda_6\varepsilon_{k-2,j-1}+\varepsilon_{k,j} \qquad  {}\\  \hfill (k=2, 3, \ldots, N-1; \quad j=1, 2, \ldots, M-1).
+\end{array}
+\end{equation*}
+
+Для оценки параметров этой модели можно использовать методы прикладного регрессионного анализа. В этом случае совокупность стохастических разностных уравнений следует представить 
+%в виде
+%%\[
+%%\begin{pmatrix}
+%%z_{0,0} & = & \eta_{0,0} &  &  &  &  &  & ;\\
+%%z_{1,0} & = &  &  &  &  &  & \lambda_7 & +\eta_{1,0};\\
+%%z_{2,0} & = & \lambda_1z_{1,0} & +\lambda_2z_{0,0} & +\lambda_3 &  &  &  & +\eta_{2,0};\\
+%%z_{3,0} & = & \lambda_1z_{2,0} & +\lambda_2z_{1,0} & +\lambda_3 &  &  &  & +\eta_{3,0};
+%%\end{pmatrix}.
+%%\]
+%\[ \begin{array}{lllllllll}
+%z_{0,0} & = & \eta_{0,0};& & & & & & \\
+%z_{1,0} & = &  &  &  &  &  & \lambda_7 & +\eta_{1,0};\\
+%z_{2,0} & = & \lambda_1z_{1,0} & +\lambda_2z_{0,0} & +\lambda_3 &  &  &  & +\eta_{2,0};\\
+%z_{3,0} & = & \lambda_1z_{2,0} & +\lambda_2z_{1,0} & +\lambda_3 &  &  &  & +\eta_{3,0};
+%\end{array} \]
+%.............................\\
+%\[ \begin{array}{lllllllll}
+%z_{N-1,0} & = & \lambda_1z_{N-2,0} & +\lambda_2z_{N-3,0} & +\lambda_3 &  &  &  & +\eta_{N-1,0};\\
+%z_{0,1} & = &  &  &  & \lambda_4z_{0,0} &  &  & +\eta_{0,1};\\
+%z_{1,1} & = &  &  &  & \lambda_4z_{1,0} &  &  & +\eta_{1,1};\\
+%z_{2,1} & = & \lambda_1z_{1,1} & +\lambda_2z_{0,1} &  & +\lambda_4z_{2,0} & +\lambda_5z_{1,0} & +\lambda_6z_{0,0} & +\eta_{2,1};\\
+%z_{3,1} & = & \lambda_1z_{2,1} & +\lambda_2z_{1,1} &  & +\lambda_4z_{3,0} & +\lambda_5z_{2,0} & +\lambda_6z_{1,0} & +\eta_{3,1};
+%\end{array} \]
+%.............................\\
+%\[ \begin{array}{lllllllll}
+%z_{N-1,1} & = & \lambda_1z_{N-2,1} & +\lambda_2z_{N-3,1} &  & +\lambda_4z_{N-1,0} & +\lambda_5z_{N-2,0} & +\lambda_6z_{N-3,0} & +\eta_{N-1,1};\\
+%z_{0,2} & = &  &  &  & \lambda_4z_{0,1} &  &  & +\eta_{0,2};\\
+%z_{1,2} & = &  &  &  & \lambda_4z_{1,1} &  &  & +\eta_{1,2};\\
+%z_{2,2} & = & \lambda_1z_{1,2} & +\lambda_2z_{0,2} &  & +\lambda_4z_{2,1} & +\lambda_5z_{1,1} & +\lambda_6z_{0,1} & +\eta_{2,2};\\
+%z_{3,2} & = & \lambda_1z_{2,2} & +\lambda_2z_{1,2} &  & +\lambda_4z_{3,1} & +\lambda_5z_{2,1} & +\lambda_6z_{1,1} & +\eta_{3,2};
+%\end{array} \]
+%.............................\\
+%\[ \begin{array}{lllllllll}
+%z_{N-1,2} & = & \lambda_1z_{N-2,2} & +\lambda_2z_{N-3,2} &  & +\lambda_4z_{N-1,1} & +\lambda_5z_{N-2,1} & +\lambda_6z_{N-3,1} & +\eta_{N-1,2};\\
+%\vdots &  & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+%z_{0,M-1} & = &  &  &  & \lambda_4z_{0,M-2} &  &  & +\eta_{0,M-1};\\
+%z_{1,M-1} & = &  &  &  & \lambda_4z_{1,M-2} &  &  & +\eta_{1,M-1};\\
+%z_{2,M-1} & = & \lambda_1z_{1,M-1} & +\lambda_2z_{0,M-1} &  & +\lambda_4z_{2,M-2} & +\lambda_5z_{1,M-2} & +\lambda_6z_{0,M-2} & +\eta_{2,M-1};\\
+%z_{3,M-1} & = & \lambda_1z_{2,M-1} & +\lambda_2z_{1,M-1} &  & +\lambda_4z_{3,M-2} & +\lambda_5z_{2,M-2} & +\lambda_6z_{1,M-2} & +\eta_{3,M-1};
+%\end{array} \]
+%.............................\\
+%\[ \begin{array}{lllllllll}
+%z_{N-1,M-1} & = & \lambda_1z_{N-2,M-1} & +\lambda_2z_{N-3,M-1} &  & +\lambda_4z_{N-1,M-2} & +\lambda_5z_{N-2,M-2} & +\lambda_6z_{N-3,M-2} & +\eta_{N-1,M-1};
+%\end{array} \]
+%или 
+в форме обобщённой регрессионной модели
+\begin{equation}
+\begin{cases}
+B=F\lambda+H,\\
+H=(\Sigma-\lambda_4\Sigma_1)P_{\lambda}E,
+\end{cases}
+\end{equation}
+элементы которой имеют  блочную структуру: $B=[b_1 \, | \, b_2 \, | \, \cdots \, | \, b_M]^\top$ "--- матрица"=столбец размера $(NM{\times}1)$, где $b_j=[z_{0,j-1}, z_{1,j-1}, \dots, z_{N-1,j-1}]^\top \in \mathbb R^N$ ($j=1, 2,  \dots, M$); 
+$F=[F_1 \, | \, F_2 \, | \, \cdots\, | \, F_M]^\top$ "--- матрица размера $(NM{\times}7)$, где
+\[
+F_1= \begin{bmatrix}
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+z_{1,0} & z_{0,0} & 1 & 0 & 0 & 0 & 0 \\
+z_{2,0} & z_{1,0} & 1 & 0 & 0 & 0 & 0 \\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+z_{N-2,0} & z_{N-3,0} & 1 & 0 & 0 & 0 & 0
+\end{bmatrix} ,
+\]
+\[
+F_j= \begin{bmatrix}
+0 & 0 & 0 & z_{0,j-2} & 0 & 0 & 0 \\
+0 & 0 & 0 & z_{1,j-2} & 0 & 0 & 1 \\
+z_{1,j-1} & z_{0,j-1} & 0 & z_{2,j-2} & z_{1,j-2} & z_{0,j-2} & 0 \\
+z_{2,j-1} & z_{1,j-1} & 0 & z_{3,j-2} & z_{2,j-2} & z_{1,j-2} & 0 \\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+z_{N-2,j-1} & z_{N-3,j-1} & 0 & z_{N-1,j-2} & z_{N-2,j-2} & z_{N-3,j-2} & 0
+\end{bmatrix} 
+\]
+$(j\equiv 2, 3, \ldots, M)$ "--- матрицы размера $(N{\times}7)$; 
+$\lambda=[\lambda_1, \lambda_2, \lambda_3, \lambda_4, \lambda_5, \lambda_6, \lambda_7]^\top$ "--- вектор"=столбец неизвестных коэффициентов регрессионной модели; $H=[H_1 \, | $ $ H_2 \, |\, \cdots \,  | \, H_M]^\top$ "--- матрица"=столбец размера $(NM{\times}1)$, в~котором элементы векторов $H_j=(\eta_{0,j-1},\eta_{1,j-1},\ldots,\eta_{2,j-1})^\top\in \mathbb R^N$ $(j\equiv1, 2,\ldots, M)$ описываются следующими формулами:
+\[ \begin{array}{cccccccc}
+\eta_{0,0} & \hspace{-3mm} =\hspace{-3mm} & \varepsilon_{0,0}; \\
+\eta_{1,0} & \hspace{-3mm}= \hspace{-3mm}& \varepsilon_{1,0}; \\
+\eta_{2,0} & \hspace{-3mm}= \hspace{-3mm}& \varepsilon_{2,0} & \hspace{-3mm}-\hspace{-3mm} &\lambda_2\varepsilon_{0,0}& \hspace{-3mm}-\hspace{-3mm} &\lambda_1\varepsilon_{1,0} ;\\
+\eta_{3,0} & \hspace{-3mm}= \hspace{-3mm}& \varepsilon_{3,0} & \hspace{-3mm}-\hspace{-3mm} &\lambda_2\varepsilon_{1,0}& \hspace{-3mm}-\hspace{-3mm}&\lambda_1\varepsilon_{2,0} ;\\
+& \hspace{-3mm}\vdots \hspace{-3mm}\\
+\eta_{N-1,0} & \hspace{-3mm}= \hspace{-3mm}& \varepsilon_{N-1,0} & \hspace{-3mm}-\hspace{-3mm}&\lambda_2\varepsilon_{N-3,0}& \hspace{-3mm}-\hspace{-3mm}&\lambda_1\varepsilon_{N-2,0} ;
+\end{array} \]
+\[ \begin{array}{ccl}
+\eta_{0,j} &\hspace{-3mm} =\hspace{-1mm} & \varepsilon_{0,j} - \lambda_4\varepsilon_{0,j-1};\\
+\eta_{1,j} & \hspace{-3mm}=\hspace{-1mm} & \varepsilon_{1,j} - \lambda_4\varepsilon_{1,j-1};\\
+\eta_{2,j} & \hspace{-3mm}=\hspace{-1mm} & \varepsilon_{2,j} - \lambda_4(-\lambda_2\varepsilon_{0,j-1} -\lambda_1\varepsilon_{1,j-1} +\varepsilon_{2,j-1}) -\lambda_2\varepsilon_{0,j} - \lambda_1\varepsilon_{1,j};\\
+\eta_{3,j} & \hspace{-3mm}=\hspace{-1mm} & \varepsilon_{3,j} - \lambda_4(-\lambda_2\varepsilon_{1,j-1} -\lambda_1\varepsilon_{2,j-1}  +\varepsilon_{3,j-1}) - \lambda_2\varepsilon_{1,j}  -\lambda_1\varepsilon_{2,j};\\
+& \hspace{-3mm}\vdots \hspace{-1mm}\\
+\eta_{N-1,j} & \hspace{-3mm}=\hspace{-1mm} & \varepsilon_{N-1,j} {-}\lambda_4(-\lambda_2\varepsilon_{N-3,j-1}  {-}\lambda_1\varepsilon_{N-2,j-1}  {+}\varepsilon_{N-1,j-1}) {-}\lambda_2\varepsilon_{N-3,j}  {-}\lambda_1\varepsilon_{N-2,j},
+\end{array} \]
+где $j\equiv 2, 3,\ldots, M-1$;
+\[
+P_\lambda= \begin{bmatrix}
+P_1 & \Theta &  \ldots & \Theta \\
+\Theta & P_1 & \ldots & \Theta \\
+\vdots & \vdots &  \ddots & \vdots\\
+\Theta & \Theta &  \ldots & P_1
+\end{bmatrix}, \
+\Sigma= \begin{bmatrix}
+I & \Theta &  \ldots & \Theta \\
+\Theta & I &  \ldots & \Theta \\
+\vdots & \vdots& \ddots & \vdots\\
+\Theta & \Theta& \ldots & I
+\end{bmatrix},
+\
+\Sigma_1= \begin{bmatrix}
+\Theta & \Theta & \ldots & \Theta &  \Theta \\
+I & \Theta & \ldots &\Theta &  \Theta \\
+\Theta & I &\ldots &  \Theta & \Theta \\
+\vdots & \vdots & \ddots & \vdots & \vdots\\
+\Theta & \Theta &\ldots &  I & \Theta
+\end{bmatrix} 
+\]
+"--- блочные матрицы размера $(NM{\times }NM)$, в которых $I$ и $\Theta$ "---
+единичная и~нулевая матрицы размера $(N{\times} N)$, а матрица $P_1$ размера $(N{\times} N)$ имеет вид
+\[
+P_1= \begin{bmatrix}
+1 & 0 & 0 & 0 & \ldots & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & \ldots & 0 & 0 & 0\\
+-\lambda_2 & -\lambda_1 & 1 & 0 & \ldots & 0 & 0 & 0 \\
+0 & -\lambda_2 & -\lambda_1 & 1 & \ldots & 0 & 0 & 0\\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots\\
+0 & 0 & 0 & 0 & \ldots & -\lambda_2 & -\lambda_1 & 1
+\end{bmatrix}.
+\]
+
+Очевидно, что матрицы $P_1$ и $\Sigma-\lambda_4\Sigma_1$ невырожденные. Следовательно, существуют обратные матрицы $P_\lambda^{-1}$ и $(\Sigma-\lambda_4\Sigma_1)^{-1}$, где
+\[
+P_\lambda= \begin{bmatrix}
+P_1^{-1} & \Theta & \Theta & \ldots & \Theta \\
+\Theta & P_1^{-1} & \Theta & \ldots & \Theta\\
+\Theta & \Theta & P_1^{-1} & \ldots & \Theta \\
+\vdots & \vdots & \vdots & \ddots & \vdots\\
+\Theta & \Theta & \Theta & \ldots & P_1^{-1}
+\end{bmatrix},
+\]
+причём можно показать, что справедливо равенство $$(\Sigma-\lambda_4\Sigma_1)^{-1}=\Sigma+\lambda_4\Sigma_1+\lambda_4^{2}\Sigma_1^{2}+\ldots+\lambda_4^{M-1}\Sigma_1^{M-1}.$$ Элементы обратной матрицы $P_1^{-1}$ описываются формулами~[1]
+\[ p_{i,j}^{-1}=\left\{
+\begin{array}{cl}
+0, & i<j, \quad i\equiv1, 2,\ldots,N, \quad i=2,\;j=1;\\
+1, & i=j,\quad i\equiv1, 2,\ldots,N;\\
+\lambda_1p_{i-1,j}^{-1}+\lambda_2p_{i-2,j}^{-1},& i>j, \quad i\equiv3, 4, \ldots,N, \quad j\equiv1, 2,\ldots,N.
+\end{array}\right. \]
+
+В основе определения параметров $c_1$, $c_2$, $\alpha_1$, $\alpha_2$, $\beta$ пространственно"=временной функциональной зависимости лежит среднеквадратичное оценивание коэффициентов $\lambda_j$ обобщённой регрессионной модели (8). 
+Оценки коэффициентов обобщённой регрессионной модели находятся из условия минимизации среднеквадратичного отклонения построенной модели пространственно"=временной функциональной зависимости $\hat{z}(t,x)$ от экспериментальных данных~$z_{k,j}$: 
+$$\left\|\hat{z}(t,x)-z(t,x)\right\|^2=\left\|\hat{\varepsilon}\right\|^2\to\min.$$ 
+С~этой целью первое уравнение в (8) преобразуется к виду 
+$$P_\lambda^{-1}(\Sigma-\lambda_4\Sigma_1)^{-1}B=P_\lambda^{-1}(\Sigma-\lambda_4\Sigma_1)^{-1}F\lambda+E.$$ 
+В этом случае задача сводится к минимизации функционала 
+$$\left\|E\right\|^2=\left\|P_{\hat{\lambda}}^{-1}(\Sigma-\hat\lambda_4 \Sigma_1)^{-1}B-P_{\hat{\lambda}}^{-1}(\Sigma-\hat \lambda_4 \Sigma_1)^{-1}F\hat{\lambda}\right\|^2\to \min.$$ 
+Решение этой задачи на основе итерационной процедуры позволяет практически устранить смещение в оценках и тем самым добиться высокой точности результатов вычисления оценок параметров пространственно"=временной функциональной зависимости~[1].
+
+Итерационная процедура среднеквадратичного оценивания коэффициентов разностной схемы описывается рекуррентными соотношениями
+\begin{gather*}
+\hat{\lambda}^{(k+1)}=\bigl(F^\top\Omega_{\hat{\lambda}^{(k)}}^{-1}F\bigr)^{-1}F^\top\Omega_{\hat{\lambda}^{(k)}}^{-1}B, \\ \Omega_{\hat{\lambda}^{(k)}}=\bigl(\Sigma-\hat{\lambda}_4^{(k)}\Sigma_1\bigr)P_{\hat{\lambda}^{(k)}}P_{\hat{\lambda}^{(k)}}^\top \bigl(\Sigma-\hat{\lambda}_4^{(k)}\Sigma_1\bigr)^\top, \quad k\equiv 0, 1, 2,\ldots.
+\end{gather*}
+При этом за начальное приближение принимается  $\hat{\lambda}^{(0)}=(F^\top F)^{-1}F^\top B$.
+
+Найденные среднеквадратичные оценки $\hat{\lambda}_j$ коэффициентов обобщённой регрессионной модели (8) лежат в~основе вычисления параметров двумерной функциональной зависимости $\tilde{z}(t,x)$. 
+Сначала, в~соответствии с формулами (4), из решения квадратного уравнения $\hat{\lambda}_2\mu^2+\hat{\lambda}_1\mu-1=0$ находятся оценки $\hat\mu_1$ и $\hat\mu_2$. Затем по формулам вычисляются оценки параметров $\hat \alpha_1$, $\hat{\alpha}_2$ и $\hat{\beta}$: $$\hat{\alpha}_1=\frac{1}{\tau}\ln\hat{\mu}_1,\quad  \hat{\alpha}_2=\frac{1}{\tau}\ln\hat{\mu}_2, \quad \hat{\beta}=\frac{1}{h}\ln\hat{\lambda}_4.$$ На заключительном этапе вычисляются оценки коэффициентов $c_1$ и $c_2$ из решения системы линейных алгебраических уравнений
+\[ \left\{
+\begin{array}{ll}
+\hat{c}_1(1-\hat{\lambda}_1-\hat{\lambda}_2)+\hat{c}_2(1-\hat{\lambda}_1-\hat{\lambda}_2)=\hat{\lambda}_3,\\
+\hat{c}_1(1-\frac{1}{\hat{\mu}_1})+\hat{c}_2(1-\frac{1}{\hat{\mu}_2})=\hat{\lambda}_7,
+\end{array}\right. \]
+а именно
+$\textstyle \hat{c}_1=\frac{\hat{\lambda}_3(1-\frac{1}{\hat{\mu}_2})-\hat{\lambda}_7(1-\hat{\lambda}_1-\hat{\lambda}_2)}{(1-\hat{\lambda}_1-\hat{\lambda}_2)(\frac{1}{\hat{\mu}_1}-\frac{1}{\hat{\mu}_2})}, $  $\hat{c}_2=\frac{\hat{\lambda}_7(1-\hat{\lambda}_1-\hat{\lambda}_2)-\hat{\lambda}_3(1-\frac{1}{\hat{\mu}_1})}{(1-\hat{\lambda}_1-\hat{\lambda}_2)(\frac{1}{\hat{\mu}_1}-\frac{1}{\hat{\mu}_2})}.$
+
+Проведены численно"=аналитические исследования эффективности разработанного численного метода определения параметров двумерных пространственно"=временных функциональных зависимостей на основе среднеквадратичного оценивания коэффициентов разностной схемы. Моделирование пространственно"=временной функциональной зависимости~(1) проводилось при следующих параметрах двумерного динамического процесса: $c_1=0,5$, $c_2=1,0$, $\alpha_1=2,0$, $\alpha_2=10,0$, $\beta=3,0$ и~параметрах формирования результатов наблюдений: $N=10$, $M=4$, $\tau=0,111$, $h=0,1$. 
+К~смоделированным дискретным значениям двумерной функциональной зависимости 
+$$\tilde{z}(t,x)=\left[c_1(1-e^{-\alpha_1t})+c_2(1-e^{-\alpha_2t})\right]e^{\beta x}$$ 
+добавлялась аддитивная случайная помеха, величина которой 
+
+$$\varepsilon=\sqrt{\frac{\sum^{N-1}_{k=0}\sum^{M-1}_{j=0}\varepsilon_{k,j}^2}{\sum^{N-1}_{k=0}\sum^{M-1}_{j=0}\tilde{z}_{k,j}^2}}$$
+\noindent составляла 0,03 величины от мощности основного сигнала. 
+На рис.~2 точками представлены смоделированные экспериментальные данные $z_{k,j}=\tilde{z}_{k,j}+\varepsilon_{k,j}$ ($k\equiv 0, 1, \ldots, 9$, $j\equiv 0, 1, 2, 3$), а~кривыми 0--3 "--- восстановленные на основе среднеквадратичного оценивания коэффициентов разностной схемы зависимости $\hat{z}(t,x_j)$ при соответствующих $j$.
+
+\begin{wrapfigure}{O}{.5\textwidth}
+\centering
+\includegraphics{zausaeva2}
+\caption{Экспериментальные данные и восстановленная на основе среднеквадратичного оценивания коэффициентов разностной схемы 
+двумерная пространственно"=временная функциональная зависимость $\tilde z (t, x_j)$}
+
+\end{wrapfigure}
+
+Полученные результаты численно"=аналитических исследований подтверждают высокую эффективность разработанного численного метода параметрической идентификации двумерных динамических систем на основе среднеквадратичного оценивания коэффициентов разностной схемы, описывающей результаты наблюдений. 
+Предложенный подход к оценке параметров двумерных динамических процессов может быть использован в~задачах параметрической идентификации широкого круга систем различной физической природы, например, в~задачах построения детерминированных и~стохастических моделей реологического деформирования материалов и~элементов конструкций при первичной обработке серии экспериментальных кривых ползучести при постоянных напряжениях~[2, 3], которые используются при решении соответствующих краевых задач~[4, 5].
+
+\thanks{Работа выполнена при поддержке Федерального агентства по образованию $($проекты {\rm РНП 2.1.1/745} и {\rm РНП 2.1.1/3397}$)$.}
+
+\begin{thebibliography}{9}
+
+
+\RBibitem{zaum:1}
+\by Зотеев~В.\,Е.
+\book Параметрическая идентификация диссипативных механических систем на основе разностных уравнений
+\ed В.\,П.~Радченко
+\publaddr М.
+\publ Машиностроение-1
+\yr 2009
+\finalinfo 344~c
+
+\RBibitem{zausa:st2}
+\by Радченко~В.\,П., Голудин~Е.\,П.
+\paper Феноменологическая стохастическая модель изотермической ползучести поливинилхлоридного пластиката
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\issue 1(16)
+\pages 45--52
+\yr 2008
+
+\RBibitem{zausa:st3}
+\by Радченко~В.\,П., Еремин~Ю.\,А.
+\book Реологическое деформирование и разрушение материалов и элементов конструкций
+\finalinfo 265~c
+\publaddr М.
+\publ Машиностроение-1
+\yr 2004
+
+
+\RBibitem{zausa:st4}
+\by Коваленко~Л.\,В., Попов~Н.\,Н., Радченко~В.\,П.
+\paper Решение плоской стохастической краевой задачи ползучести
+\jour ПММ
+\vol 73
+\issue 6
+\pages 1009--1016
+\yr 2009
+\transl
+англ. пер.:
+\by Kovalenko~L.\,V., Popov~N.\,N., Radchenko~V.\,P. 	 	
+\jour Journal of Applied Mathematics and Mechanics 
+%DOI: 10.1016/j.jappmathmech.2010.01.013
+\paper Solution of the plane stochastic creep boundary value problem
+\vol 73
+\issue 6
+\finalinfo Article in press
+
+
+
+\RBibitem{zausa:st5}
+\by Радченко~В.\,П., Попов~Н.\,Н.
+\paper Нелинейная стохастическая задача ползучести неоднородной плоскости с учетом повреждённости материала
+\jour ПМТФ
+\vol  49
+\issue 3
+\pages 140--146
+\yr 2007
+\transl
+англ. пер.:
+\by Popov~N.\,N., Radchenko~V.\,P. 
+\jour Journal of Applied Mechanics and Technical Physics 
+\vol 48
+\issue 2
+\yr 2007
+\pages 265--270  
+\paper Nonlinear stochastic creep problem for an inhomogeneous plane with the damage to the material taken into account
+
+
+
+
+
+
+\end{thebibliography}
+
+\makeengtitle
+
+%\chead[\fancyplain{}{\scriptsize \sl Z\,a\,u\,s\,a\,e\,v\,a~M.\,A., Z\,o\,t\,e\,e\,v~V.\,E.}]{\fancyplain{}{\scriptsize  Defining the Parameters of the Systems Described by  \dots}}
+
+%\chead[\fancyplain{}{\scriptsize \sl Z\,a\,u\,s\,a\,e\,v\,a~M.\,A., Z\,o\,t\,e\,e\,v~V.\,E.}]{\fancyplain{}{\scriptsize  Definition Of Parameters Of Two-dimensional Dynamical Processes \dots}}
+
+
+% \tableofengcontents
+%
+% \end{document}

@@ -1,0 +1,1812 @@
+%\documentstyle[%righttag%,11pt%,amssymb%,russian%,izvru%]{amsart}
+
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage[russian]{babel}
+\usepackage[cp1251]{inputenc}
+
+%       Math definitions
+
+\newcommand{\A}{{\cal A}}
+\newcommand{\col}{\operatorname{col}}
+\newcommand{\var}{\operatornamewithlimits{var}}
+\newcommand{\sign}{\operatornamewithlimits{sign}}
+\newcommand{\vraisup}{\operatorname{vrai~sup}}
+\newcommand{\s}{\sigma}
+\newcommand{\mtag}[1]{\tag"\<$(#1)$\<"}
+\newcommand{\ve}{\varepsilon}
+\newcommand{\bq}{{\bold q}}
+\newcommand{\boh}{h}
+%//
+\theoremstyle{plain} %% This is the default
+\begingroup
+\theorembodyfont{\it}
+\newtheorem{thmm}{\hskip\parindent Теорема}[section]
+\newtheorem{lemm}{\hskip\parindent Лемма}[section]
+\newtheorem{propm}{\hskip\parindent Предложение}[section]
+\endgroup
+
+\theoremstyle{definition}
+\begingroup
+\theorembodyfont{\rm}
+%//\newtheorem{defn}{\hskip\parindent Определение}%[section]
+%//\newtheorem{note}{\hskip\parindent Замечание}%[section]
+\newtheorem{corm}{\hskip\parindent Следствие}[section]
+\endgroup
+
+\numberwithin{equation}{section}
+
+\setcounter{page}{3}
+\god{1997}
+\nomer{4~(419)}
+\udk{517.929}
+\author{\it А.А. АМОСОВ, А.А. ЗЛОТНИК}
+\title{ПОЛУДИСКРЕТНЫЙ МЕТОД РЕШЕНИЯ УРАВНЕНИЙ\\
+ОДНОМЕРНОГО ДВИЖЕНИЯ НЕОДНОРОДНОГО ВЯЗКОГО\\
+ТЕПЛОПРОВОДНОГО ГАЗА С НЕГЛАДКИМИ ДАННЫМИ}
+
+\thanks{Работа выполнена при финансовой поддержке Российского фонда
+фундаментальных исследований (коды проектов 96-01-00621 и 97-01-00214).}
+\date{}
+\pagestyle{plain}
+\begin{document}
+
+\maketitle
+
+Системы квазилинейных уравнений движения вязкого теплопроводного газа
+(сжимаемой жидкости) относятся к основным моделям механики сплошной среды
+\cite{Ro}, \cite{Ant}. Для задач с одной пространственной переменной $x$ теория
+глобальных обобщенных решений изложена в (\cite{Ant}, гл.\,2) в случае начальных и
+граничных данных из $W_2^1$. Теория разностных методов для таких задач
+разработана в \cite{Amo1}--\cite{Amo4}. Глобальные обобщенные решения в случае различных
+классов разрывных данных изучались в \cite{She}--\cite{Hoff}
+(в \cite{Hoff} в малом по данным).
+
+В данной работе построен и изучен полудискретный разностный по переменной
+$x$ метод решения неоднородных начально-краевых задач с разрывными
+начальными и граничными данными. В частности, от начальных скорости и
+температуры требуется лишь конечность полной энергии и энтропии, от
+граничных значений скорости достаточно конечности вариации. Плотность
+тепловых источников и граничный тепловой поток могут быть функциями из $L_1$.
+Коэффициенты уравнений, определяющие свойства газа, также могут быть
+разрывными по $x$ (модель неоднородного газа).
+
+Доказаны глобальные оценки приближенных решений и их сходимость к
+обобщенным решениям рассматриваемых задач. Более того, само существование
+решений устанавливается в результате предельного перехода и является новым
+результатом, поскольку получается в заметно более общих условиях, чем в
+работах \cite{Amo5}, \cite{Amo6}. Существенно используется техника исследования, развитая
+в (\cite{Ant}, гл.\,2; \cite{Amo1}, \cite{Amo6}, \cite{Amo7}).
+Отметим, что изученный полудискретный метод
+дает хорошую основу для построения и анализа разностных методов.
+
+В \S\,1 дается постановка начально-краевых задач $\cal P_m$,
+$m=\overline{1,3},$ и формулируется теорема 1.1 о существовании обобщенных
+решений. В \S\,2 выводятся разнообразные оценки решений вспомогательной
+параболической полудискретной задачи с краевыми условиями третьего рода.
+Затем в \S\,3 строится полудискретный метод решения задач $\cal P_m$ и
+формулируется теорема 3.1 о глобальных оценках приближенных решений. \S\,4
+посвящен ее доказательству. В \S\,5 доказывается сходимость приближенных
+решений и с помощью предельного перехода устанавливается теорема 1.1.
+
+\section{Постановка задач. Формулировка теоремы существования}
+
+Рассмотрим систему квазилинейных дифференциальных  уравнений
+одномерного движения неоднородного политропного совершенного газа
+\begin{align}
+D_t\eta &=Du  \text{ в }Q,\\
+%
+D_tu &=D\sigma+g[x_e],\quad
+\sigma=\nu\rho Du-p,\quad p=k\rho\theta,\quad \rho=1/\eta \text{\; в \;} Q,\\
+%
+c_VD_t\theta &=D\varpi+\sigma Du+f[x_e],
+\quad \varpi= \lambda\rho D\theta\text {\; в \;} Q,\\
+%
+D_tx_e&=u \text { в } Q.
+\end{align}
+Искомые функции $\eta(x,t),$ $u(x,t),$ $\theta(x,t),$ $x_e(x,t)$
+определены на $Q=Q_T=\Omega\times (0,T)$, где
+$\Omega=(0,X)$. Для производных использованы обозначения:
+$D=\frac{\partial}{\partial x},$ $D_t=\frac{\partial}{\partial t}$.
+Здесь $\nu=\nu(x)$, $k=k(x)$, $c_V=c_V(x)$, $\lambda=\lambda(x)$.
+Кроме того,
+$g[x_e](x,t)=g(x_e(x,t),x,t)$, $f[x_e](x,t)=f(x_e(x,t),x,t)$.
+
+Выписанную систему уравнений дополним начальными условиями
+\begin{equation}
+(\eta, u, \theta, x_{e})|_{t=0}=
+(\eta^0(x), u^0(x), \theta^0(x), x^0_e(x))\text{\; на \;}\Omega,
+\end{equation}
+где $x_e^0(x)\equiv \int\limits_0^x \eta^0(x')\,dx'$, краевыми условиями
+\begin{equation}
+-\varpi|_{x=0} + \mu_0(t)\theta|_{x=0} = \chi_0(t),\quad
+\varpi|_{x=X} + \mu_X(t)\theta|_{x=X} = \chi_X(t)
+\text { на } (0,T)
+\end{equation}
+и одной из пар краевых условий
+\begin{alignat}{3}
+ \left. u\right|_{x=0}&=\ u_{0}(t), &\qquad
+ \left. u\right|_{x=X}&=\ u_{X}(t)&\qquad &\text {на } (0,T),\tag{$1.7_1$}\\
+%
+ \left.\sigma\right|_{x=0}&=-p_{0}(t), &\qquad
+ \left. u\right|_{x=X}&=\ u_{X}(t)&\qquad &\text {на } (0,T),\tag{$1.7_2$}\\
+%
+ \left.\sigma\right|_{x=0}&=-p_{0}(t), &\qquad
+ \left.\sigma\right|_{x=X}&=-p_{X}(t)&\qquad &\text {на } (0,T).\tag{$1.7_3$}
+\end{alignat}
+
+Задачу $(1.1)$--$(1.6)$, $(1.7_m)$ обозначим через
+$\cal P_m$, $m=\overline{1,3}$.
+Ниже удобно считать, что функции $u_0,$ $u_X,$ $p_0,$ $p_X$ определены
+при всех $m=1,2,3$, причем те из них, которые не входят в краевые условия
+конкретной задачи  ${\cal P}_m$, равны нулю.
+
+Напомним физический смысл величин: $x$ --- лагранжева массовая координата
+($X$ --- полная масса газа), $t$ --- время; $\eta,u$ и $\theta$ --- удельный
+объем, скорость и абсолютная температура; $x_e$ --- эйлерова координата;
+$p$ и $\rho$ --- давление и плотность;  $\sigma$ и $\varpi$
+--- напряжение и тепловой поток; $\nu$ и $\lambda$ --- коэффициенты вязкости
+и теплопроводности; $c_V$ --- удельная теплоемкость;
+$g$ и $f$ --- плотности массовых сил и тепловых источников.
+
+Введем {\it обозначения}.
+Через $\frak M(G)$ обозначим множество функций,
+определенных и измеримых (по Лебегу) на измеримом множестве $G$ из
+$\Bbb R^{\ell}$
+$(\ell\ge 1).$ Через  $\frak M_+(G)$ обозначим подмножество
+функций из $\frak M(G)$, положительных п.\,в. (почти всюду) в $G$.
+Будем использовать обозначения  $f_+(\cdot)=\max\{f(\cdot),0\}$,
+$f_-(\cdot)=\max\{-f(\cdot),0\}$. Пусть $L_q(G)$ --- пространство
+Лебега, $q\in [1,\infty]$.
+Положим $\|v\|_G=\|v\|_{L_2(G)}$, $(v,w)_G=\int\limits_G vw\,dG.$
+
+Нам потребуются  анизотропные пространства Лебега (\cite{Be}, \S\,1.1)
+$L_{q,r}(Q)$ с нормой
+$\|w\|_{L_{q,r}(Q)}=\bigl\|\,\|w\|_{L_q(\Omega)}\,\bigr\|_{L_r(0,T)}$,
+$q,r\in [1,\infty]$.
+Пусть $V_q(Q)$ --- пространство функций $w\in \frak M(Q)$ с конечной нормой
+$\|w\|_{V_q(Q)}=\|w\|_{L_{q,\infty}(Q)}+\|Dw\|_{L_q(Q)}$.
+Напомним известные неравенства (\cite{Lad1}, гл.\,2)
+\begin{gather}
+\|w\|_{L_{q,r}(Q_T)}\le c_0\|w\|_{V_2(Q_T)},\tag{1.8}\\
+%
+\|w|_{x=0}\|_{L_4(0,T)}+\|w|_{x=X}\|_{L_4(0,T)}\le c_0\|w\|_{V_2(Q_T)},
+\tag{1.9}
+\end{gather}
+где $q\in [2,\infty]$, $r\in [4,\infty]$,  $(2q)^{-1}+r^{-1}=1/4$,
+$c_0=c_0(X,T)$.
+
+Будем также использовать  банаховы пространства $W_2^{1,0}(Q)$, $W(Q)$,
+$S_2^{1,1}W(Q)$ с нормами
+$\|w\|_{W_2^{1,0}(Q)}=(\|w\|_Q^2+\|Dw\|_Q^2)^{1/2}$,
+$\|w\|_{W(Q)}=\|w\|_Q +\|D_tw\|_Q+\|Dw\|_{L_{2,\infty}(Q)}$,
+$\|w\|_{S_2^{1,1}W(Q)}=\|w\|_{W_2^1(Q)}+\|DD_tw\|_Q$. Известно (см.,
+напр., \cite{Amo8}), что пространства $W(Q)$ и
+$S_2^{1,1}W(Q)$ компактно вложены в $C(\overline Q)$.
+Введем $\cal N(Q)$ --- класс функций
+$\eta\in \frak M_+(Q)$, имеющих конечную сумму норм
+$\left\bracevert\eta\right\bracevert_{\cal N(Q)}=
+\|\eta\|_{L_\infty(Q)}+ \|1/\eta\|_{L_\infty(Q)}+
+\|D_t\eta\|_Q$.
+
+Пусть $V[0,T]$ --- пространство функций ограниченной вариации на $[0,T]$
+с нормой $\|w\|_{V[0,T]}=\sup_{[0,T]}\ |w(t)| +
+\var_{[0,T]}w$.
+Положим $\overset{\circ}{C}{}^1(\overline Q;S_m^T)=
+\{\varphi\in C^1(\overline Q)\mid\,\varphi|_{S_m^T}=0\}$,
+$1\le m\le 3$.
+Здесь
+$S_1^T=\{(0,t)\ |\ 0\le t\le T\}\cup S_2^T$,
+$S_2^T=\{(X,t)\ |\ 0\le t\le T\}\cup S_3^T$,
+$S_3^T=\{(x,T)\ |\ 0\le x\le X\}$.
+Пусть $\tau\in (0,T)$. Введем разность
+$\varDelta^{(\tau)}w(t)=w(t+\tau)-w(t)$ и операторы усреднения и
+интегрирования $w^{(\tau)} = \tau^{-1}\int\limits_t^{t+\tau} w(t')\,dt'$,
+$(I_tw)(t)=\int\limits_0^tw(t')\,dt'.$
+Определим полунорму $\|v\|^{\left<0,1/2\right>}_{2,r}=
+\sup_{0<\tau<T}\tau^{-1/2}\|\varDelta^{(\tau)}v\|_{L_{2,r}(Q_{T-\tau})}$
+и норму $\|v\|_{V^{\left<1,1/2\right>}_2(Q)}=\|v\|_{V_2(Q)}+
+\|v\|^{\left<0,1/2\right>}_{2,2}.$
+
+Через $K(N)$, возможно, с индексами, условимся обозначать
+различные положительные  неубывающие функции параметра $N>1$
+(в доказательствах $N$ опускаем).
+Эти функции могут зависеть также от $X$ и $T$, причем по $T$ они
+неубывающие. Для $q\in [1,\infty]$ положим $q'=q/(q-1)$.
+
+Сформулируем условия $C_1)$--$C_4)$ на данные задачи
+$\cal P_m$ --- коэффициенты,
+начальные значения, свободные члены и граничные функции соответственно.
+
+$C_1)$ $\nu,$ $k,$ $c_V,$ $\lambda\in L_\infty(\Omega)$ и
+ $N^{-1}\le\nu(x)\le N$, $0\le k(x)\le N$,
+ $N^{-1}\le c_V(x)\le N$,
+ $N^{-1}\le\lambda(x)\le N$ п.\,в. в $\Omega$.
+
+$C_2)$ $\eta^0\in L_\infty(\Omega),$ $u^0\in L_2(\Omega),$
+ $\theta^0\in L_1(\Omega)$ и $N^{-1}\le\eta^0(x)\le N$,
+ $\theta^0(x)>0$
+ п.\,в. в $\Omega,$ $\|u^0\|_{L_2(\Omega)}+\|\theta\,^0\|_{L_1(\Omega)}+
+ \|\ln \theta\,^0\|_{L_1(\Omega)}\le N$.
+При $m=1$ дополнительно предполагается, что
+$N^{-1}\le\|\eta^0\|_{L_1(\Omega)}+I_t(u_X-u_0)$
+на $(0,T).$
+
+$C_3)$ $ g,f\in\frak M(\Bbb R\times Q)$, и функции
+$g(\chi,x,t)$ и $f(\chi,x,t)$ непрерывны по $\chi\in \Bbb R$
+для почти всех $(x,t)\in Q$. Кроме того,
+$|g(\chi,x,t)|\le \overline g(x,t)$ и
+$0\le f(\chi,x,t)\le \overline f(x,t)$
+п.\,в. в $\Bbb R\times Q$, где $\|\overline g\|_{L_{2,1}(Q)}+
+\|\overline f\|_{L_1(Q)}\le N.$
+
+$C_4)$ $\mu_0, \mu_X, \chi_0, \chi_X, u_0, u_X, p_0, p_X
+\in \frak M(0,T)$, функции $\mu_0,$ $\mu_X,$ $\chi_0$,
+$\chi_X,$ $p_0,$ $p_X$
+неотрицательны. Кроме того,
+$\|\mu_0\|_{L_s(0,T)}+
+\|\mu_X\|_{L_s(0,T)}\le N$ для  некоторого $s>2$,
+$\|\chi_0\|_{L_1(0,T)}+\|\chi_X\|_{L_1(0,T)}\le N$,
+$\|u_0\|_{V[0,T]}+\|u_X\|_{V[0,T]}\le N$,
+$\|p_0\|_{L_\infty (0,T)}+\|p_X\|_{L_\infty (0,T)}\le N$.
+Предполагается также, что для всех $\tau\in (0,T)$ и почти всех $t\in (0,T-\tau)$
+выполнены неравенства
+$$
+p_0(t+\tau)-p_0(t)\le
+a_\tau (t)\int_{t}^{t+\tau}p_0(t')\,dt',\quad
+%
+p_X(t+\tau)-p_X(t)\le
+a_\tau(t)\int_{t}^{t+\tau}p_X(t')\,dt',
+$$
+где $a_\tau\in L_1(0,T)$, $a_\tau\ge 0\ $ и
+$\sup_{0<\tau<T}\|a_\tau\|_{L_1(0,T)}\le N$.
+
+{\it Обобщенным решением} задачи $\cal P_m$
+$(1\le m\le 3)$ назовем вектор-функцию
+$z=(\eta,u,\theta,x_e)\in\cal N(Q)\times V_2(Q)
+\times\left[V_1(Q)\cap \frak M_+(Q)\right]\times S_2^{1,1}W(Q)$ такую, что:
+
+1) уравнения (1.1) и (1.4) удовлетворяются в  $L_2(Q)$;
+
+2) выполнены интегральные тождества
+\begin{multline*}
+-(u,D_t\varphi)_Q+(\sigma, D\varphi)_Q=
+(u^0, \varphi^0)_\Omega +(g[x_e],\varphi)_Q -\\
+-(p_X,\varphi_X)_{(0,T)} +(p_0,\varphi_0)_{(0,T)}
+\quad \forall \varphi\in \overset{\circ}{C}{}^1(\overline Q;S_m^T),\tag{1.10}
+\end{multline*}
+%
+\begin{multline*}
+-(c_V\theta, D_t\psi)_Q+(\varpi, D\psi)_Q
+=(c_V\theta^0,\psi^0)_\Omega +(\sigma Du+ f[x_e], \psi)_Q -\\
+-(\mu_0\theta|_{x=0}-\chi_0,\psi_0)_{(0,T)} -
+(\mu_X\theta|_{x=X}-\chi_X,\psi_X)_{(0,T)}
+\quad \forall \psi\in \overset{\circ}{C}{}^1(\overline Q;S_3^T),\tag{1.11}
+\end{multline*}
+где $\sigma$ и $\varpi$ определены в (1.2) и (1.3),
+кроме того,
+$\varphi^0 = \left.\varphi\right|_{t=0}$,
+$\varphi_0 = \left.\varphi\right|_{x=0}$,
+$\varphi_X = \left.\varphi\right|_{x=X}$
+и
+$\psi^0 = \left.\psi\right|_{t=0}$,
+$\psi_0 = \left.\psi\right|_{x=0}$,
+$\psi_X = \left.\psi\right|_{x=X}$;
+
+3) начальные условия $\eta\left|_{t=0}\right.=\eta^0$
+и $x_e|_{t=0}=x_e^0$ выполнены в смысле
+пространств $C([0,T];L_2(\Omega))$ и $C(\overline Q)$;
+
+4) краевые условия
+\begin{equation}
+u|_{x=0}=u_{0} \text{ при } m=1\text{ и }u|_{x=X}=u_{X}\text{ при } m=1,2
+\tag{1.12}
+\end{equation}
+выполнены в $L_2(0,T)$  в смысле следов
+функций  из $W_2^{1,0}(Q)$.
+
+Верна следующая теорема существования ``в целом'' обобщенного решения.
+
+\begin{thmm} {\em 1.} Пусть выполнены условия $C_1)-C_4)$. Тогда
+существует обобщенное решение задачи $\cal P_m$,
+удовлетворяющее оценкам
+\begin{gather}
+\left\bracevert\eta\right\bracevert_{\cal N(Q)}+
+\|u\|_{V_2^{\left<1,1/2\right>}(Q)}+
+\|\theta\|_{V_1(Q)}+\|x_e\|_{S_2^{1,1}W(Q)}\le K(N),\tag{1.13}\\
+%
+\|\ln \theta\|_{L_{1,\infty}(Q)}+\|D\ln \theta\|_{L_2(Q)}\le K(N),\tag{1.14}\\
+%
+\|\theta\|_{L_{q_{_0},r_{_0}}(Q)}+\|D\theta\|_{L_{q_{_1},r_{_1}}(Q)}
+\le K_\varepsilon (N),\quad
+\|\theta\|_{2,1}^{\left<0,1/2\right>}\le K(N) \tag{1.15}
+\end{gather}
+с любыми $q_0,r_0\in [1,\infty]$, $q_1,r_1\in [1,2]$
+такими, что $(2q_0)^{-1}+r_0^{-1}=(1+\varepsilon)/2$,
+$(2q_1)^{-1}+r_1^{-1}=1+\varepsilon/4$, $\varepsilon\in (0,1)$.
+
+{\em 2.} Если  дополнительно $N^{-1}\le\theta\,^0(x)$ п.в. в $\Omega$,
+то верна также оценка
+\begin{equation}
+K_2(N)^{-1}\le\theta(x,t)\quad\text{п.\,в. в}\quad Q.\tag{1.16}
+\end{equation}
+\end{thmm}
+
+Доказательство этой теоремы будет дано в \S\,5.
+
+\section{Полудискретная параболическая задача}
+
+Пусть $h=X/n$, $n=2,3,\dotsc$ Введем узлы $x_i=ih,$ $i=\overline{0,n}$,
+и $x_{i-1/2}=(i-1/2)h,$ $i=\overline{1,n}$.
+Положим $\Omega_{1/2}=[0,x_1)$, $\Omega_{i-1/2}=(x_{i-1},x_i)$ для
+$i=\overline{2,n-1}$ и $\Omega_{n-1/2}=(x_{n-1},X]$. Положим также
+$\Omega_0=[0,x_{1/2})$,
+$\Omega_{i}=(x_{i-1/2},x_{i+1/2})$
+для $i=\overline{1,n-1}$, и $\Omega_n=(x_{n-1/2},X]$.
+Пусть
+$\Omega^h= (x_{1/2},x_{n-1/2})$, $Q^h=Q^h_T=\Omega^h\times (0,T)$.
+
+Введем пространства кусочно-постоянных функций
+\begin{align*}
+S^h(\overline\Omega)&=
+\{w\mid w(x)=w_{i}\text{ на }\Omega_{i},
+\ i=\overline{0,n}\},\\
+%
+S^h_{1/2}(\overline\Omega)&=
+\{v\mid v(x)=v_{i-1/2}\text{ на }\Omega_{i-1/2},
+\ i=\overline{1,n}\}.
+\end{align*}
+
+Для $w\in S^h(\overline\Omega)$ через $\widehat w$
+обозначаем функцию из $C(\overline\Omega)$, совпадающую с $w$
+в узлах $x_i,$ $i=\overline{0,n}$, и линейную на
+$\Omega_{i-1/2},$ $i=\overline{1,n}$. Для
+$v\in S^h_{1/2}(\overline\Omega)$ через $\widehat v$ обозначаем функцию из
+$C(\overline\Omega)$, совпадающую с
+$v$ в узлах $x_{i-1/2},$ $i=\overline{1,n}$, и
+линейную на $\Omega_i,$ $i=\overline{0,n}$; предполагается,
+что функция $\widehat v$ доопределена некоторым образом при $x=0,\;X$
+(вообще говоря, $\widehat v(0)\ne v_{1/2},$ $\widehat v(X)\ne v_{n-1/2}$).
+
+Справедлива формула интегрирования по частям
+\begin{equation}
+(w, D\widehat v)_\Omega = w\widehat v|_{x=0}^{x=X} - (D\widehat w,v)_\Omega\quad
+\forall w\in S^h(\overline\Omega),\quad v\in S^h_{1/2}(\overline\Omega).
+\end{equation}
+
+Для функций $w\in S^h(\overline\Omega)$ верны неравенства
+\begin{equation}
+\|\widehat w\|_{L_q(\Omega)}\le \|w\|_{L_q(\Omega)}\le
+2^{1/q} \|\widehat w\|_{L_q(\Omega)}.
+\end{equation}
+Они верны и для функций $v\in S^h_{1/2}(\overline\Omega)$,
+если $\widehat v|_{x=0}=v|_{x=0},$ $\widehat v|_{x=X}=v|_{x=X}$.
+
+Введем операторы проектирования
+$\pi^h: L_1(\Omega)\to S^h(\overline\Omega)$,
+$\pi^h_{1/2}: L_1(\Omega)\to S^h_{1/2}(\overline\Omega)$,
+сопоставляющие заданной функции $\psi$ кусочно-постоянную функцию,
+равную на множествах
+$\Omega_{i}$ $(i=\overline{0,n})$,
+$\Omega_{i-1/2}$ $(i=\overline{1,n})$
+соответствующим средним значениям функции $\psi$.
+Обратим внимание на тождества
+\begin{gather}
+(\pi^h \psi, w)_{\Omega}=(\psi, w)_{\Omega}\quad
+\forall \psi\in L_1(\Omega),\quad
+w\in S^{h}(\overline\Omega), \\
+%
+(\pi^h_{1/2} \psi, v)_{\Omega}=(\psi, v)_{\Omega}\quad
+\forall \psi\in L_1(\Omega),\quad
+v\in S^{h}_{1/2}(\overline\Omega).
+\end{gather}
+
+Пусть $w\in S^h(\overline\Omega),$ $v\in S^h_{1/2}(\overline\Omega)$.
+Положим
+$(I_hw)(x)=\int\limits_0^{x_{i-1/2}}w(x')\,dx'$ на
+$\Omega_{i-1/2}$, $i=\overline{1,n}$, и
+$(I_hv)(x)=\int\limits_0^{x_i}v(x')\,dx'$ на
+$\Omega_i$, $i=\overline{0,n}$.
+Заметим, что $I_h: S^h(\overline\Omega)\to S^h_{1/2}(\overline\Omega)$ и
+$I_h: S^h_{1/2}(\overline\Omega)\to S^h(\overline\Omega)$.
+Введем на $\Omega^h$ функции $v_{(-)}$ и $v_{(+)}$ такие, что
+$v_{(-)}(x)=v_{i-1/2}$ и $v_{(+)}(x)=v_{i+1/2}$ на $\Omega_i$,
+$i=\overline{1,n-1}$.
+
+Рассмотрим полудискретную параболическую начально-краевую задачу
+\begin{gather}
+\alpha D_tv=D\widehat s + f\text{ в } Q,
+\quad s=\varkappa D\widehat v +\psi\text{ в } Q^h,\\
+%
+v|_{t=0}=v^0\quad\text{на}\quad\Omega,\\
+%
+-s|_{x=0}+\mu_0 v|_{x=0}=\chi_0,\quad
+s|_{x=X}+\mu_X v|_{x=X}=\chi_X\text{ на } (0,T)
+\end{gather}
+относительно функции $v\in S^h_{1/2}(\overline\Omega)\otimes W_1^1(0,T)$
+(знак $\otimes$ обозначает тензорное произведение линейных пространств).
+Здесь $\alpha,v^0\in S^h_{1/2}(\overline\Omega)$,
+$\varkappa\in S^h(\overline\Omega)\otimes L_\infty (0,T)$,
+$\psi\in S^h(\overline\Omega)\otimes L_2(0,T)$,
+$f\in S^h_{1/2}(\overline\Omega)\otimes L_1(0,T)$,
+$\mu_0,\mu_X,\chi_0,\chi_X\in L_1(0,T)$.
+Кроме того, $s\in S^h(\overline\Omega)\otimes L_2(0,T)$.
+Предполагается, что $N^{-1}\le \alpha\le N$,
+$N^{-1}\le \varkappa\le N$, $\|(\mu_0)_-\|_{(0,T)}+\|(\mu_X)_-\|_{(0,T)}\le N$.
+
+Искомая функция $v$ принимает значения $v_{i-1/2}(t)$ на
+$\Omega_{i-1/2}\times [0,T]$,
+$i=\overline{1,n}$. Относительно
+функций $v_{i-1/2}(t)$ задача (2.5)--(2.7) является задачей
+Коши для системы обыкновенных дифференциальных уравнений
+\begin{gather*}
+\alpha_{i-1/2}D_tv_{i-1/2}=\frac{s_i-s_{i-1}}{h}+f_{i-1/2},
+\quad v_{i-1/2}(0)=v^0_{i-1/2},\quad 1\le i\le n,\\
+%
+\text{где }s_i=\varkappa_i\frac{v_{i+1/2}-v_{i-1/2}}{h}+\psi_i,\
+0<i<n,\quad s_0=\mu_0 v_{1/2}-\chi_0,
+\end{gather*}
+$s_n=-\mu_X v_{n-1/2}+\chi_X$.
+Ясно, что в сделанных предположениях решение $v$ этой задачи существует
+и единственно. Выведем нужные нам результаты об оценках решения.
+Будем считать, что $\widehat v|_{x=0}=v|_{x=0}$, $\widehat v|_{x=X}=v|_{x=X}$.
+
+\begin{lemm} При $\psi=0$ и $\mu_0\ge 0$, $\mu_X\ge 0$
+справедлива оценка
+\begin{multline*}
+\max\bigl\{\|\alpha v\|_{L_{1,\infty}(Q)},\|\mu_0 v|_{x=0}\|_{L_1(0,T)}+
+\|\mu_X v|_{x=X}\|_{L_1(0,T)}\bigr\}\le \\
+%
+\le \|\alpha v^0\|_{L_1(\Omega)}+
+\|f\|_{L_1(Q)}+\|\chi_0\|_{L_1(0,T)}+\|\chi_X\|_{L_1(0,T)}.
+\end{multline*}
+\end{lemm}
+
+{\bf Доказательство.} Умножим уравнение (2.5) на
+$\sign v$, проинтегрируем по $Q_t$ и после интегрирования по
+частям (см. формулу (2.1)) получим равенство
+\begin{multline*}
+\|\alpha v\|_{L_1(\Omega)}+
+(\varkappa D\widehat v,D\widehat{\sign v})_{Q_t}
++(\mu_0|v|_{x=0}|+\mu_X|v|_{x=X}|,1)_{(0,t)}=\\
+%
+= \|\alpha v^0\|_{L_1(\Omega)}+
+(f,\sign v)_{Q_t}+(\chi_0,\sign v|_{x=0})_{(0,t)}
++(\chi_X,\sign v|_{x=X})_{(0,t)}.
+\end{multline*}
+Поскольку $(D\widehat v)D\widehat {\sign v}\ge 0$, то
+из него легко следует утверждение леммы.
+
+\begin{lemm} Если $\psi=0$ и $f\ge 0$, $v^0\ge 0$,
+$\chi_0\ge 0$, $\chi_X\ge 0$, то $v\ge 0$.
+\end{lemm}
+
+\begin{pf} Представим функцию $v$ в виде $v=v_+-v_-$.
+Положим $\widehat v_-=\widehat{v_-}$. Известно
+(\cite{Lad2}, гл.\,2, лемма 3.3), что
+$D_t v_-(x,t)= D_tv(x,t)$ для почти всех тех $(x,t)\in Q$, где $v(x,t)<0$, и
+$D_t v_-(x,t)= 0$ для почти всех остальных $(x,t)\in Q$. Ясно также, что
+$(D\widehat v_-)^2\le (D\widehat v)D\widehat v_-$. Умножим уравнение
+(2.5) на $v_-$ и проинтегрируем результат по $Q_t$. Отбрасывая знакоопределенные
+слагаемые, приходим к неравенству
+$$
+0.5(\alpha v_-, v_-)_\Omega +
+(\varkappa D\widehat v_-,D\widehat v_-)_{Q_t}\le
+((\mu_0)_-, (\widehat v_-|_{x=0})^2)_{(0,t)}+
+((\mu_X)_-, (\widehat v_-|_{x=X})^2)_{(0,t)}.
+$$
+Используя для $w=\widehat v_-$ неравенство (2.2) и мультипликативное неравенство
+\begin{equation}
+\|w\|^2_{C(\overline\Omega)}\le
+c_X \|w\|_\Omega(\|w\|_\Omega +\|Dw\|_\Omega),
+\end{equation}
+а также применяя неравенство Коши с $\varepsilon$, получаем
+$$
+N^{-1}\|\widehat v_-\|^2_{V_2(Q_t)}\le
+Nc I_t\bigl[((\mu_0)_-+(\mu_X)_-)^2
+\|\widehat v_-\|_{\Omega}^2\bigr].
+$$
+В силу леммы Гронуолла (см., напр., (\cite{Ant}, с.\,33)) заключаем,
+что $\|\widehat v_-\|^2_{V_2(Q)}=0$.
+Таким образом, $v_-=0$, т.е. $v\ge 0$.
+\end{pf}
+
+\begin{lemm} Справедлива энергетическая оценка
+$$
+\|\widehat v\|_{V_2(Q)} \le
+K(N)(\|v^0\|_\Omega+\|\psi\|_{Q^h}+\|f\|_{L_{q,r}(Q)}+
+\|\chi_0\|_{L_{4/3}(0,T)}+\|\chi_X\|_{L_{4/3}(0,T)})
+$$
+с произвольными $q,r\in [1,\infty]$, для которых
+$(2q)^{-1}+r^{-1}\le 5/4$.
+\end{lemm}
+
+\begin{pf} Умножим уравнение (2.5) на $v$ и проинтегрируем по $Q_t$.
+В результате получим равенство
+\begin{gather*}
+0.5(\alpha v,v)_\Omega+
+(\varkappa D\widehat v,D\widehat v)_{Q_t}
++((\mu_0)_+, (\widehat v|_{x=0})^2)_{(0,t)}+
+((\mu_X)_+, (\widehat v|_{x=X})^2)_{(0,t)}=\\
+%
+=0.5(\alpha v^0,v^0)_\Omega
+-(\psi,D\widehat v)_{Q_t^h}+ (f,v)_{Q_t}+\\
+%
++((\mu_0)_- \widehat v|_{x=0}+\chi_0,\widehat v|_{x=0})_{(0,t)}+
+((\mu_X)_- \widehat v|_{x=X}+\chi_X,\widehat v|_{x=X})_{(0,t)}.
+\end{gather*}
+Из него с учетом неравенств (2.2), (1.8), (1.9) и (2.8) следует оценка
+\begin{multline*}
+N^{-1}\|\widehat v\|^2_{V_2(Q_t)}\le
+Nc_1\bigl\{I_t\bigl[((\mu_0)_-+(\mu_X)_-)^2
+\|\widehat v\|_{\Omega}^2\bigr]+\\
+%
++\|v^0\|^2_\Omega+\|\psi\|^2_{Q^h}+\|f\|^2_{L_{q,r}(Q)}+
+\|\chi_0\|^2_{L_{4/3}(0,T)}+\|\chi_X\|^2_{L_{4/3}(0,T)}\bigr\}.
+\end{multline*}
+Остается воспользоваться леммой Гронуолла.
+\end{pf}
+
+\begin{lemm} Пусть $q,r\in [1,\infty]$,
+$(2q)^{-1}+ r^{-1}=1-\varepsilon/2$, $r_\varepsilon=2/(1-\varepsilon)$,
+где $\varepsilon\in (0,1)$. Пусть выполнено условие
+\begin{equation}
+\|(\mu_0)_-\|_{L_{r_\varepsilon}(0,T)}+
+\|(\mu_X)_-\|_{L_{r_\varepsilon}(0,T)}\le N.
+\end{equation}
+Тогда справедлива оценка
+\begin{equation}
+\|v\|_{L_\infty(Q)}\le K_\varepsilon(N)(\|v^0\|_{L_\infty(\Omega)}+
+\|\psi\|_{L_{2q,2r}(Q^h)}+\|f\|_{L_{q,r}(Q)}+
+\|\chi_0\|_{L_{r_\varepsilon}(0,T)}+
+\|\chi_X\|_{L_{r_\varepsilon}(0,T)}).
+\end{equation}
+
+Если $\psi=0$, то оценка {\em (2.10)} справедлива и при $q=\infty$, $r=1$.
+\end{lemm}
+
+\begin{pf} Заметим, прежде всего, что в силу линейности задачи достаточно
+доказать оценку $\|v\|_{L_\infty(Q)}\le K_\varepsilon(N)$ в предположении,
+что
+\begin{equation}
+\|v^0\|_{L_\infty(\Omega)}+
+\|\psi\|_{L_{2q,2r}(Q^h)}+\|f\|_{L_{q,r}(Q)}
++\|\chi_0\|_{L_{r_\varepsilon}(0,T)}+
+\|\chi_X\|_{L_{r_\varepsilon}(0,T)}=1.
+\end{equation}
+
+Пусть $p\ge 1$ --- параметр. Положим $v_p=|v|^{p-1}v$,
+$v_p^0=|v^0|^{p-1}v^0$,
+$\widehat v_p=\widehat{\,v_p\,}$.
+Умножим уравнение (2.5) на $2pv_{2p-1}$ и проинтегрируем
+по $Q_t$. В результате получим равенство
+\begin{multline}
+(\alpha v_p,v_p)_\Omega+
+2p (\varkappa D\widehat v+\psi,D\widehat v_{2p-1})_{Q^h_t}
++2p I_t[(\mu_0 v|_{x=0}-\chi_0)v_{2p-1}|_{x=0}]+\\
+%
++2p I_t[(\mu_X v|_{x=X}-\chi_X)v_{2p-1}|_{x=X}]=
+(\alpha v_p^0,v_p^0)_\Omega+
+2p (f,v_{2p-1})_{Q_t}.
+\end{multline}
+Пользуясь неравенством
+$(D\widehat v_p)^2\le p (D\widehat v) D\widehat v_{2p-1}$
+(оно следует из числового неравенства
+$(|b|^{p-1}b-|a|^{p-1}a)^2\le p(b-a)(|b|^{2p-2}b-|a|^{2p-2}a)$),
+а также неравенством
+$|v_{2p-1}|\le v_p^2+1$ и предположением (2.11),
+выводим
+\begin{gather}
+(4N)^{-1}\|\widehat v_p\|^2_{V_2(Q)}\le N\|v_p^0\|^2_\Omega+
+2p\bigl[\|\psi\|_{L_{2q,2r}(Q^h)}\|D\widehat v_{2p-1}\|_{L_{(2q)',(2r)'}(Q)}+
+\notag\\
+%
++(\|(\mu_0)_-\|_{L_{r_\varepsilon}(0,T)}+
+\|(\mu_X)_-\|_{L_{r_\varepsilon}(0,T)}
++\|\chi_0\|_{L_{r_\varepsilon}(0,T)}+\notag\\
+%
++\|\chi_X\|_{L_{r_\varepsilon}(0,T)})
+\|v_p^2+1\|_{L_{\infty,r_\varepsilon'}(Q)}
++\|f\|_{L_{q,r}(Q)}\|v_p^2+1\|_{L_{q',r'}(Q)}\bigr]
+\le N X^2+\notag\\
+%
++2p\bigl[\|D\widehat v_{2p-1}\|_{L_{(2q)',(2r)'}(Q)}
++(N+1)\|v_p^2+1\|_{L_{\infty,r_\varepsilon'}(Q)}+
+\|v_p^2+1\|_{L_{q',r'}(Q)}\bigr].
+\end{gather}
+Заметим, что $v_{2p-1}=|v_p|^{1-1/p}v_p$, и поэтому в силу формулы
+конечных приращений Лагранжа имеем
+$D\widehat v_{2p-1}= (2-1/p)(D\widehat v_p)|\widetilde v_p|^{1-1/p}$,
+где $\widetilde v_p$ --- промежуточное значение между $(v_p)_{(-)}$
+и $(v_p)_{(+)}$. Поскольку
+$|\widetilde v_p|^{1-1/p}\le |\widetilde v_p|+1$, то
+$\|D\widehat v_{2p-1}\|_{L_{(2q)',(2r)'}(Q)}\le
+4\|D\widehat v_p\|_{Q}\|\,|v_p|\,+1\|_{L_{2q',2r'}(Q)}$, и из (2.13) имеем
+$$
+\|\widehat v_p\|_{V_2(Q)}\le p K_1
+\bigl[\|v_{p/(1+\varepsilon)}\|^{1+\varepsilon}_{L_{2q'(1+\varepsilon),2r'(1+\varepsilon)}(Q)}+
+\|v_{p/(1+\varepsilon)}\|^{1+\varepsilon}_{L_{\infty,4}(Q)}+1\bigr].
+$$
+
+Положим $p=p_k=(1+\varepsilon)^k$, $\Phi_k=\|\widehat v_{p_k}\|_{V_2(Q)}$,
+$k=0,1,\dotsc$ Из полученного
+неравенства с учетом оценок (2.2) и (1.8) следует
+$$
+\Phi_k\le (1+\varepsilon)^k K_2(\Phi_{k-1}^{1+\varepsilon}+1),\quad
+k\ge 1.
+$$
+Отсюда $\Phi_k^{1/{p_k}}\le K_{3,\varepsilon}(\Phi_0+1)$
+(\cite{Lad1}, гл.\,2, лемма 5.6). Поэтому
+$$
+\|v\|_{L_\infty(Q)}=
+\lim_{k\to\infty}\|\widehat v\|_{L_{2p_k,\infty}(Q)}\le
+\overline{\lim}_{k\to\infty}\Phi_k^{1/{p_k}}\le
+K_{3,\varepsilon}(\Phi_0+1).
+$$
+Поскольку $\Phi_0=\|\widehat v\|_{V_2(Q)}\le K_4$, см. лемму 2.3,
+то оценка (2.10) доказана.
+
+Покажем, что если $\psi=0$, то оценка (2.10) верна и при $q=\infty$,
+$r=1$. В силу линейности задачи можно считать $v^0=0$, $\chi_0=\chi_X=0$.
+Пусть сначала $(\mu_0)_-=(\mu_X)_-=0$.
+Умножив уравнение (2.5) на $2pv_{2p-1}$ скалярно в $L_2(\Omega)$,
+приходим к неравенству
+$$
+\frac{d}{dt}\|\alpha^{1/(2p)}v\|_{L_{2p}(\Omega)}^{2p}
+\le 2p\|f\|_{L_{2p}(\Omega)}\|v\|_{L_{2p}(\Omega)}^{2p-1}.
+$$
+Из него в свою очередь вытекает, что
+$\|v\|_{L_{2p,\infty}(Q)}\le N \|f\|_{L_{2p,1}(Q)}$. Переходя к пределу
+при $p\to\infty$, приходим к неравенству
+$\|v\|_{L_{\infty}(Q)}\le N \|f\|_{L_{\infty,1}(Q)}$.
+
+Теперь, рассматривая $(\mu_0)_-v|_{x=0}$ и $(\mu_X)_-v|_{x=X}$ как заданные
+граничные значения типа $\chi_0$, $\chi_X$ из $L_{r_\varepsilon}(0,T)$,
+пользуясь линейностью задачи и полученными выше в доказательстве оценками,
+имеем на $[0,T]$ неравенство
+$$
+\|v\|_{L_\infty(Q_t)}
+\le K_\ve\bigl[\|(\mu_0)_-v|_{x=0}\|_{L_{r_\varepsilon}(0,t)} +
+\|(\mu_X)_-v|_{x=X}\|_{L_{r_\ve}(0,t)}\bigr]+
+N \|f\|_{L_{\infty,1}(Q)}.
+$$
+Ясно, что $|v|_{x=0}|+|v|_{x=X}|\le 2\|v\|_{L_\infty(\Omega)}$.
+Возводя обе части неравенства в степень $r_\ve$,
+по лемме Гронуолла имеем
+$\|v\|_{L_\infty(Q)}\le \overline K_\ve\|f\|_{L_{\infty,1}(Q)}$.
+\end{pf}
+
+\begin{corm} В условиях леммы 2.4 справедлива оценка
+$$
+\|v_+\|_{L_\infty(Q)}\le K_\varepsilon(N)\bigl(\|(v^0)_+\|_{L_\infty(\Omega)}+
+\|\psi\|_{L_{2q,2r}(Q^h)}+\|f_+\|_{L_{q,r}(Q)}
++\|(\chi_0)_+\|_{L_{r_\varepsilon}(0,T)}+
+\|(\chi_X)_+\|_{L_{r_\varepsilon}(0,T)}\bigr).
+$$
+\end{corm}
+
+\begin{pf} Представим $v=u-w$, где $u$, $w$ --- решения задачи
+(2.5)--(2.7), отвечающие данным $(v^0)_+$, $\psi$,
+$f_+$, $(\chi_0)_+$, $(\chi_X)_+$ и $(v^0)_-$, $\psi=0$,
+$f_-$, $(\chi_0)_-$, $(\chi_X)_-$ соответственно. Из леммы 2.2 следует,
+что $w\ge 0$. Поэтому $v\le u$ и $v_+\le |u|$. Оценивая
+$\|u\|_{L_\infty(Q)}$ с помощью леммы 2.4, приходим к заявленной оценке.
+\end{pf}
+
+\begin{lemm} Пусть $q,r\in [1,\infty]$,
+$(2q)^{-1}+ r^{-1}=1-\varepsilon/2$, $r_\varepsilon=2/(1-\varepsilon)$,
+где $\varepsilon\in (0,1)$. Пусть
+$v\in S^h_{1/2}(\overline\Omega)\otimes W_1^1(0,T)$
+удовлетворяет уравнению
+\begin{equation}
+\alpha D_tv=D\widehat s+bv+f\quad\text{в}\quad\text Q,\qquad
+s=\varkappa D\widehat v\quad\text{в}\quad Q^h,
+\end{equation}
+а также начальному условию {\em (2.6)} и краевым условиям {\em (2.7).} Пусть
+$f\ge 0$, $\chi_0\ge 0$, $\chi_X\ge 0$,
+$\|(\mu_0)_+\|_{L_{r_\varepsilon}(0,T)}+\|(\mu_X)_+
+\|_{L_{r_\varepsilon}(0,T)}\le N$
+и $b\in S^h_{1/2}(\overline\Omega)\otimes L_1(0,T)$,
+$\|b_-\|_{L_{q,r}(Q)}\le N$.
+
+Если $0<v^0_{\min}\le v^0(x)$ на $\Omega$,
+то справедлива оценка
+\begin{equation}
+K_{1,\varepsilon}(N)^{-1}v^0_{\min}\le v\quad \text{на}\quad Q.
+\end{equation}
+\end{lemm}
+
+\begin{pf} Поскольку $v^0>0$ и функция
+$v$ непрерывна по $t$, то оценку (2.15) достаточно установить в
+предположении, что $v>0$ в $Q$. Разделим уравнение (2.14) на $-v^2$ и
+для функции $y=1/v$ получим уравнение
+$$
+\alpha D_ty=D\widehat w-by-(g+f)y^2\quad\text{в}\quad Q,
+\qquad w=\varkappa D\widehat y\quad\text{в}\quad Q^h,
+$$
+где $g=D\widehat s + v^2 D\widehat w$.
+Начальное условие (2.6) преобразуем к виду
+$y|_{t=0}=1/{v^0}$,
+а краевые условия (2.7) --- к виду
+$$
+-w|_{x=0}-\mu_0 y|_{x=0}=-\chi_0(y|_{x=0})^2,\quad
+w|_{x=X}-\mu_X y|_{x=X}=-\chi_X(y|_{x=X})^2.
+$$
+
+Справедлива формула $g_{i+1/2} = d_i y_{i-1/2}+ d_{i+1}y_{i+3/2}$
+для $1\le i\le n-2$,
+где $d_i = \varkappa_i\bigl[(v_{i+1/2}-v_{i-1/2})/h\bigr]^2$;
+кроме того, $g_{1/2} = d_1 y_{3/2}$ и
+$g_{n-1/2}=d_{n-1} y_{n-3/2}$ (ср. с \cite{Amo1}).
+В силу этих формул $g\ge 0$.
+
+Согласно следствию 2.1 справедлива оценка
+$$
+\|y\|_{L_\infty(Q_t)}\le
+K_{\varepsilon}(\|1/{v^0}\|_{L_\infty(\Omega)}+\|b_- y\|_{L_{q,r}(Q_t)}),
+\quad 0\le t\le T.
+$$
+Возводя обе части полученного неравенства в степень $r$ и
+применяя лемму Гронуолла, выводим оценку (2.15).
+\end{pf}
+
+\begin{lemm} Пусть $q_0,r_0\in [1,\infty]$, $q_1,r_1\in [1,2]$
+и $(2q_0)^{-1}+r_0^{-1}=(1+\varepsilon)/2$ или $q_0=1$, $r_0=\infty$,
+$(2q_1)^{-1}+r_1^{-1}=1+\varepsilon/4$, $\varepsilon\in (0,1)$.
+Пусть $\psi=0$ и выполнено условие {\em (2.9).}
+Тогда cправедлива оценка
+\begin{equation}
+\|v\|_{L_{q_0,r_0}(Q)}+
+\|D\widehat v\|_{L_{q_1,r_1}(Q)}\le
+K_{2,\varepsilon}(N)(\|v^0\|_{L_1(\Omega)}+\|f\|_{L_1(Q)}+
+\|\chi_0\|_{L_1(0,T)}+\|\chi_X\|_{L_1(0,T)}).
+\end{equation}
+\end{lemm}
+
+\begin{pf} Рассмотрим вспомогательную сопряженную задачу
+\begin{gather*}
+-\alpha D_tV=D\widehat S +\pi^h_{1/2}\Phi\quad\text{в}\quad Q,\quad
+S=\varkappa D\widehat V -\pi^h\Psi\quad\text{в}\quad Q^h,\\
+%
+V|_{t=T}=0,\quad -S|_{x=0}+\mu_0 V|_{x=0}=0,\quad
+S|_{x=X}+\mu_X V|_{x=X}=0,
+\end{gather*}
+где $V\in S^h_{1/2}(\overline\Omega)\otimes W^1_1(0,T)$, а
+$\Phi\in L_{q_0',r_0'}(Q)$, $\Psi\in L_{q_1',r_1'}(Q)$.
+В силу леммы 2.4 и неравенств
+$$
+\|\pi^h \varphi\|_{L_q(\Omega^h)}\le \|\varphi\|_{L_q(\Omega^h)},\quad
+\|\pi^h_{1/2} \varphi\|_{L_q(\Omega)}\le \|\varphi\|_{L_q(\Omega)},\
+q\in [1,\infty],
+$$
+для ее решения справедлива оценка
+\begin{equation}
+\|V\|_{L_\infty(Q)}\le K_\varepsilon
+(\|\Phi\|_{L_{q_0',r_0'}(Q)}+\|\Psi\|_{L_{q_1',r_1'}(Q^h)}).
+\end{equation}
+Умножим уравнение (2.5) на $V$ и проинтегрируем результат по $Q$.
+Интегрируя по частям и применяя тождества (2.3), (2.4),
+придем к равенству
+$$
+(v,\Phi)_Q+(D\widehat v,\Psi)_{Q^h}=
+(\alpha v^0,V|_{t=0})_\Omega+
+(f,V)_Q+(\chi_0,V|_{x=0})_{(0,T)}+(\chi_X,V|_{x=X})_{(0,T)}.
+$$
+Применяя оценку (2.17), имеем
+\begin{multline*}
+\sup_{\|\Phi\|_{L_{q_0',r_0'}(Q)}\le 1}(v,\Phi)_Q+
+\sup_{\|\Psi\|_{L_{q_1',r_1'}(Q^h)}\le 1}
+(D\widehat v,\Psi)_{Q^h}\le\\
+%
+\le K_{2,\varepsilon}(\|v^0\|_{L_1(\Omega)}+\|f\|_{L_1(Q)}+
+\|\chi_0\|_{L_1(0,T)}+\|\chi_X\|_{L_1(0,T)}).
+\end{multline*}
+Используя результат, обратный неравенству Г\"ельдера (\cite{Be}, \S\,2.6),
+приходим к оценке (2.16). Отметим, что аналог оценки (2.16) содержится
+в \cite{Amo6}.
+\end{pf}
+
+\begin{corm} Если $\psi=0$ и выполнено условие (2.9), то
+$$
+\|s|_{x=0}\|_{L_1(0,T)}+\|s|_{x=X}\|_{L_1(0,T)}\le
+K_{3,\varepsilon}(N)
+(\|v^0\|_{L_1(\Omega)}+\|f\|_{L_1(Q)}+\|\chi_0\|_{L_1(0,T)}+
+\|\chi_X\|_{L_1(0,T)}).
+$$
+\end{corm}
+
+\begin{pf} Ясно, что
+$-s|_{x=0}+(\mu_0)_+v|_{x=0}=\widetilde\chi_0$,
+$s|_{x=X}+(\mu_X)_+v|_{x=0}=\widetilde\chi_X$,
+где $\widetilde\chi_a = \chi_a+(\mu_a)_-v|_{x=a}$, $a=0,X$.
+По лемме 2.1 имеем
+$$
+\|s|_{x=0}\|_{L_1(0,T)}+\|s|_{x=X}\|_{L_1(0,T)}
+\le\|\alpha v^0\|_{L_1(\Omega)}+\|f\|_{L_1(Q)}+
+2\|\widetilde\chi_0\|_{L_1(0,T)}+2\|\widetilde\chi_X\|_{L_1(0,T)}.
+$$
+Поскольку
+$$
+\|\widetilde\chi_a\|_{L_1(0,T)}\le \|\chi_a\|_{L_1(0,T)} +
+c\|(\mu_a)_-\|_{L_{r_\varepsilon}(0,T)}
+(\|v\|_{L_{1,r'_\varepsilon}(Q)}+\|D\widehat v\|_{L_{1,r'_\varepsilon}(Q)})
+$$
+для $a=0,X$, то остается применить оценку (2.16).
+\end{pf}
+
+\begin{lemm} Пусть $\psi=0$ и выполнено условие {\em (2.9).} Тогда
+\begin{equation}
+\|v\|_{2,1}^{\langle 0,1/2\rangle}\le
+ K_{4,\ve}(N)(\|v^0\|_{L_1(\Omega)}+\|f\|_{L_1(Q)}+
+\|\chi_0\|_{L_1(0,T)}+\|\chi_X\|_{L_1(0,T)}).
+\end{equation}
+\end{lemm}
+
+\begin{pf} Для $w\in S^h_{1/2}(\overline\Omega)$
+справедливо неравенство
+$$
+\|w\|^2_\Omega\le N(\alpha w,w)_\Omega\le
+N(\|w\|_\Omega+\|D\widehat w\|_{\Omega^h})\|\alpha w\|^{(-1)}_h,
+$$
+где $\|z\|^{(-1)}_h=\max_{\varphi\in S^h_{1/2}(\overline\Omega)}
+(z,\varphi)_\Omega\bigr/(\|\varphi\|_\Omega+\|D\widehat\varphi\|_{\Omega^h})$.
+Из него следует, что
+\begin{equation}
+\|\Delta^{(\tau)}v\|^2_{L_{2,1}(Q_{T-\tau})}\le
+2N(\|v\|_{L_{2,1}(Q)}+ \|D\widehat v\|_{L_{2,1}(Q)})
+\bigl\|\|\alpha\Delta^{(\tau)}v\|^{(-1)}_h\bigr\|_{L_1(0,T-\tau)}.
+\end{equation}
+Далее с учетом уравнения (2.5) имеем
+\begin{multline*}
+\bigl\|\|\alpha\Delta^{(\tau)}v\|^{(-1)}_h\bigr\|_{L_1(0,T-\tau)}\le
+\tau\bigl\|\|\alpha D_tv\|^{(-1)}_h\bigr\|_{L_1(0,T)}=
+\tau\bigl\|\|D\widehat s+f\|^{(-1)}_h\bigr\|_{L_1(0,T)}\le\\
+%
+\le c_X(\|s\|_{L_{2,1}(Q)}+\|s|_{x=0}\|_{L_1(0,T)}
++\|s|_{x=X}\|_{L_1(0,T)} +\|f\|_{L_1(Q)})\tau.
+\end{multline*}
+Применяя лемму 2.6, следствие 2.2 и
+учитывая, что $\|s\|_{L_{2,1}(Q)}\le N \|D\widehat v\|_{L_{2,1}(Q)}$,
+переходим от неравенства (2.19) к неравенству (2.18).
+\end{pf}
+
+\section{Полудискретный метод решения задач $\cal P_m$}
+
+Построим полудискретный аналог системы уравнений (1.1)--(1.4):
+\begin{align}
+D_t\eta^h &= D\widehat u^h\quad\text{в}\quad Q,\\
+%
+D_t u^h &= D\widehat\sigma^h + g^h,
+\sigma^h = \nu^h\rho^h D\widehat u^h - p^h,
+p^h=k^h\rho^h\theta^h, \rho^h=1/\eta^h\text{ в }Q,\quad\\
+%
+c_V^h D_t\theta^h &= D\widehat\varpi^h +
+\sigma^h D\widehat u^h + f^h\quad\text{в}\quad Q,\quad
+\varpi^h = \lambda^h \widetilde\rho^h D\widehat\theta^h
+\quad\text{в}\quad Q^h,\\
+%
+D_tx^h_e &= u^h\quad\text{в}\quad Q.
+\end{align}
+Здесь
+$\nu^h=\pi^h_{1/2}\nu$, $k^h = \pi^h_{1/2}k$,
+$c_V^h=\pi^h_{1/2}c_V$, $\lambda^h = \pi^h\lambda$,
+$\widetilde\rho^h=[\pi^h\eta^h]^{-1}$,
+$g^h=\pi^h g[\widehat x_e^h]$,
+$f^h = \pi^h_{1/2}f[\widehat x^h_e]$.
+Кроме того,
+$\widehat u^h=\widehat{u^h}$,
+$\widehat \sigma^h=\widehat{\sigma^h}$,
+$\widehat \varpi^h=\widehat{\varpi^h}$,
+$\widehat\theta^h=\widehat{\theta^h}$,
+$\widehat x_e^h=\widehat{x_e^h}$.
+Искомой является вектор-функция
+$z^h = (\eta^h, u^h, \theta^h, x_e^h)$ со свойствами
+$\eta^h,\theta^h\in S^h_{1/2}(\overline\Omega)\otimes W^1_1(0,T)$,
+$u^h,x_e^h\in S^h(\overline\Omega)\otimes W^1_1(0,T)$
+и $\eta^h>0$, $\theta^h>0$ в $Q$.
+
+Выписанную систему уравнений дополним начальными условиями
+\begin{equation}
+(\eta^h, u^h, \theta^h,x_{e}^h)\left|_{t=0}\right.=
+(\eta^{0,h}, u^{0,h}, \theta^{0,h}, x^{0,h}_{e})\quad \text{на}\quad\Omega,
+\end{equation}
+краевыми условиями
+\begin{equation}
+-\varpi^h|_{x=0} + \mu_0\theta^h|_{x=0} = \chi_0,\quad
+\varpi^h|_{x=X} + \mu_X\theta^h|_{x=X} = \chi_X
+\quad\text {на}\quad (0,T)
+\end{equation}
+и одной из пар краевых условий
+\begin{alignat}{3}
+ &\left. u^h\right|_{x=0}=u_{0}^{(\tau)},\qquad &
+ \left. u^h\right|_{x=X}=u_{X}^{(\tau)}\qquad &\text {на } (0,T),
+\tag{$3.7_1$}\\
+%
+ &\left. \widehat\sigma^h\right|_{x=0}=-p^{(\tau)}_{0},\qquad &
+ \left. u^h\right|_{x=X}=u_X^{(\tau)}\qquad &\text {на } (0,T),
+\tag{$3.7_2$}\\
+%
+ &\left. \widehat\sigma^h\right|_{x=0}=-p^{(\tau)}_{0},\qquad &
+ \left. \widehat\sigma^h
+\right|_{x=X}=-p^{(\tau)}_{X}\qquad &\text {на } (0,T).
+\tag{$3.7_3$}
+\end{alignat}
+Здесь $\eta^{0,h}=\pi^h_{1/2}\eta^0$,
+$\theta^{0,h}=\pi^h_{1/2}\theta^0$,
+$x^{0,h}_{e}=I_h\eta^{0,h}$. Дополнительно $u^{0,h}=\pi^hu^0$ на
+$\Omega^h$ при $m=1$, на $\Omega\setminus\Omega_n$ при $m=2$, на
+$\Omega$ при $m=3$, а также $u^{0,h}=u_0^{(\tau)}(0)$ на
+$\Omega_0$ при $m=1$, $u^{0,h}=u_X^{(\tau)}(0)$ на
+$\Omega_n$ при $m=1,2$. Кроме того, при $t>T$ полагаем
+$u_0(t)=u_0(T)$, $u_X(t)=u_X(T)$, $p_0(t)=p_X(t)=0$.
+
+Положим $\widehat\theta^h\bigr|_{x=0}=\theta^h\bigr|_{x=0}$,
+$\widehat\theta^h\bigr|_{x=X}=\theta^h\bigr|_{x=X}$.
+Способ доопределения значений $\widehat\sigma^h\left|_{x=0,X}\right.$
+ясен из краевых условий
+$(3.7_m)$ и уравнения (3.2). Так,
+$\widehat\sigma^h\left|_{x=0}\right.=
+\widehat\sigma^h\left|_{x=x_{1/2}}\right.
+-(h/2)\bigl(D_tu_0^{(\tau)}-g^h\left|_{x=0}\right.\bigr)$
+при $m=1$ и
+$\widehat\sigma^h\left|_{x=X}\right.=\widehat\sigma^h\left|_{x=x_{n-1/2}}\right.
++(h/2)\bigl(D_tu_X^{(\tau)}-g^h\left|_{x=X}\right.\bigr)$
+при $m=1,2$.
+
+Обратим внимание на следующие из условий $C_3)$ неравенства
+\begin{gather}
+\|u^{(\tau)}_a\|_{C[0,T]}+\|D_tu^{(\tau)}_a\|_{L_1(0,T)}
+\le \|u_a\|_{V[0,T]}\le N,\quad
+a=0,X, \tag{3.8}\\
+%
+\|p^{(\tau)}_a\|_{C[0,T]}\le \|p_a\|_{L_\infty(0,T)},\quad
+D_tp^{(\tau)}_a\le a_\tau p^{(\tau)}_a,\quad
+a=0,X.\tag{3.9}
+\end{gather}
+
+Задачу (3.1)--(3.6), $(3.7_m)$ назовем {\it задачей}
+$\cal P^h_m$ $(m=1,2,3)$. Сформулируем для нее аналог теоремы 1.1.
+Пусть $\tau\le N^{-2}$ при $m=1$.
+
+\begin{thmm} {\em 1.} Пусть выполнены условия $C_1) - C_4)$.
+Тогда задача $\cal P_m^h$ имеет решение
+$z^h=(\eta^h,u^h,\theta^h,x_e^h)$, удовлетворяющее
+оценкам
+\begin{gather}
+\left\bracevert\eta^h\right\bracevert_{\cal N(Q)}
++ \|\widehat u^h\|_{V_2^{\left<1,1/2\right>}(Q)}+
+\|\widehat\theta^h\|_{V_1(Q)}
++\|\widehat x_e^h\|_{S_2^{1,1}W(Q)}\le K(N),
+\tag{3.10}\\
+%
+\|\ln \theta^h\|_{L_{1,\infty}(Q)}+
+\|D\widehat{\ln \theta^h}\|_{L_2(Q^h)}\le K(N), \tag{3.11}\\
+%
+\|\theta^h\|_{L_{q_{0},r_{0}}(Q)}+
+\|D\widehat\theta^h\|_{L_{q_{1},r_{1}}(Q)}
+\le K_\varepsilon (N),\quad
+\|\theta^h\|^{\left<0,1/2\right>}_{2,1}\le K(N) \tag{3.12}
+\end{gather}
+с любыми $q_0,r_0\in [1,\infty]$, $q_1,r_1\in [1,2]$
+такими, что $(2q_0)^{-1}+r_0^{-1}=(1+\varepsilon)/2$,
+$(2q_1)^{-1}+r_1^{-1}=1+\varepsilon/4$, $\varepsilon\in (0,1)$.
+
+{\em 2.} Если дополнительно $N^{-1}\le\theta\,^0(x)$ п.\,в. в $\Omega$,
+то верна оценка
+\begin{equation}
+K_2(N)^{-1}\le\theta^h(x,t)\quad\text{в}\quad Q.\tag{3.13}
+\end{equation}
+\end{thmm}
+
+Задача $\cal P^h_m$ является задачей Коши
+для системы обыкновенных дифференциальных уравнений относительно функций
+$\eta^h_{i-1/2}(t)$ ($i=\overline{1,n}$), $u^h_i(t)$
+($i=\overline{1,n-1}$ при $m=1$, $i=\overline{0,n-1}$ при $m=2$,
+$i=\overline{0,n}$ при $m=3$),
+$\theta^h_{i-1/2}(t)$ ($i=\overline{1,n}$) и
+$x^h_{e,i}(t)$ ($i=\overline{0,n}$). В сделанных предположениях на данные
+в силу теоремы Каратеодори \cite{Fi} ее решение существует на
+достаточно малом отрезке времени $0\le t\le T_0$ ($T_0>0$). Возможность
+продолжения решения на весь отрезок $[0,T]$
+с сохранением свойств $\eta^h>0$, $\theta^h>0$
+вытекает из априорной оценки
+(3.10) и оценки $\theta^h\ge \delta^h=\exp(-K(N)/h)>0$,
+следующей из (3.11).
+Поэтому ниже в \S\,4 мы сосредоточимся на выводе оценок (3.10)--(3.13)
+произвольного решения $z^h$ задачи $\cal P_m^h$.
+
+\section{Вывод априорных оценок приближенных решений}
+
+Заметим, что уравнение (3.1) с учетом формулы
+$\sigma^h=\nu^h\rho^h D\widehat u^h-k^h\rho^h\theta^h$
+может быть записано в каждой из следующих форм:
+\begin{align}
+D_t\eta^h &=(1/\nu^h)\sigma^h\eta^h+(k^h/\nu^h)\theta^h,\\
+%
+\sigma^h\eta^h &=D_t(\nu^h\eta^h) -k^h\theta^h.
+\end{align}
+
+Положим $V^h(t)=\|\eta^h(\cdot,t)\|_{L_1(\Omega)}$.
+
+\begin{lemm} При $m=1$ верны формула
+$V^h=\|\eta^{0}\|_{L_1(\Omega)}+
+I_t\bigl(u_X^{(\tau)}-u_0^{(\tau)}\bigr)$
+и двусторонняя оценка
+\begin{equation}
+(2N)^{-1}\le V^h(t)\le (X+2T)N.
+\end{equation}
+\end{lemm}
+
+Доказательство см. в (\cite{Amo7}, лемма 3.1). Именно здесь используются
+условия $N^{-1}\le \|\eta^0\|_{L_1(\Omega)}+I_t(u_X-u_0)$ и
+$\tau\le N^{-2}$.
+
+При $m=1$ положим
+$u^h_\Gamma=(1-\ell^h)u^{(\tau)}_0+\ell^h u^{(\tau)}_X$,
+где $\ell^h=I_h\eta^h/V^h$. Заметим, что
+$u^h_\Gamma|_{x=0}=u^{(\tau)}_0$, $u^h_\Gamma|_{x=X}=u^{(\tau)}_X$,
+$0\le \ell^h\le 1$
+и справедливы формулы
+\begin{equation}
+D_tu^h_\Gamma=(1-\ell^h)D_tu^{(\tau)}_0+\ell^h D_tu^{(\tau)}_X
++d_V(u^h-u^h_\Gamma),\
+D\widehat u^h_\Gamma= d_V\eta^h,
+\end{equation}
+где $d_V= (u^{(\tau)}_X - u^{(\tau)}_0)/{V^h}$.
+Положим $u^h_\Gamma = u^{(\tau)}_X$ при $m=2$,
+$u^h_\Gamma =0$ при $m=3$. Введем функцию
+$v^h = u^h - u^h_\Gamma$ и (при $m=3$) функцию
+$p^{(\tau)}_\Gamma(x,t)=\left(1-x/X\right)p^{(\tau)}_0(t) +(x/X)p^{(\tau)}_X(t)$.
+
+\begin{lemm} Справедливо уравнение энергетического баланса
+\begin{equation}
+D_t\cal E^h =
+ \Gamma_m^h + (g^h - D_tu^h_{\Gamma},v^h)_\Omega
++(f^h,1)_\Omega +\chi_0+\chi_X,
+\end{equation}
+в котором
+$\cal E^h = \| c_V^h\theta^h\|_{L_1(\Omega)} +
+\frac{1}{2}\|v^h\|_{\Omega}^2+I_t(\mu_0\theta^h|_{x=0}+
+\mu_X\theta^h|_{x=X})\ge 0$,
+$\Gamma_1^h=D_t(d_V,\nu^h \eta^h)_\Omega - (D_td_V,\nu^h\eta^h)_\Omega
+-(d_V,k^h \theta^h)_{\Omega}$,
+$\Gamma_2^h = -D_t(p^{(\tau)}_0,\eta^h)_{\Omega}+
+(D_tp^{(\tau)}_0,\eta^h)_{\Omega}$,
+$\Gamma_3^h = -D_t(p^{(\tau)}_\Gamma,\eta^h)_{\Omega}+
+(D_tp^{(\tau)}_\Gamma,\eta^h)_{\Omega}-
+((p^{(\tau)}_X-p^{(\tau)}_0 )/X,u^h)_{\Omega}$.
+\end{lemm}
+
+\begin{pf} Запишем уравнение (3.2) в виде
+$D_tv^h = D\widehat\sigma^h + g^h - D_tu^h_{\Gamma}.$
+Умножив его скалярно в $L_2(\Omega)$ на $v^h$, получим равенство
+\begin{equation}
+\frac{1}{2}D_t\left(\|v^h\|^2_\Omega\right) +
+(\sigma^h,D\widehat u^h)_\Omega = \Gamma^h
++ (g^h - D_tu^h_{\Gamma}, v^h)_\Omega,
+\end{equation}
+в котором
+$\Gamma^h = (\sigma^h, D\widehat u^h_{\Gamma})_\Omega +
+\left(\widehat\sigma^h v^h\right)|_{x=X} -
+\left(\widehat\sigma^h v^h\right)|_{x=0}$.
+Преобразуем выражение для $\Gamma^h$. При $m=1$ имеем
+$v^h|_{x=0} = v^h|_{x=X}=0$,
+$D\widehat u^h_\Gamma=d_V\eta^h$
+и поэтому (с учетом формулы (4.2))
+$\Gamma^h=d_V(\sigma^h,\eta^h)_\Omega=\Gamma^h_1$.
+При $m=2$ имеем $v^h|_{x=X}=0$, $D\widehat u^h_\Gamma=0$ и поэтому
+$\Gamma^h= -\left(\widehat\sigma^h v^h\right)|_{x=0}=
+p^{(\tau)}_0(u^h|_{x=0} - u^h|_{x=X})=
+-(p^{(\tau)}_0, D\widehat u^h)_\Omega =
+-(p^{(\tau)}_0, D_t\eta^h)_\Omega=\Gamma^h_2$.
+При $m=3$, учитывая, что величина
+$Dp^{(\tau)}_\Gamma = (p^{(\tau)}_X - p^{(\tau)}_0)/X$
+не зависит от $x$, имеем
+$\Gamma^h =-(p^{(\tau)}_\Gamma \widehat u^h)|_{x=X}
++(p^{(\tau)}_\Gamma \widehat u^h)|_{x=0}=
+-(Dp^{(\tau)}_\Gamma, \widehat u^h)_\Omega
+-(p^{(\tau)}_\Gamma, D\widehat u^h)_\Omega =
+-(Dp^{(\tau)}_\Gamma, u^h)_\Omega -
+(p^{(\tau)}_\Gamma, D_t\eta^h)_\Omega= \Gamma^h_3$.
+
+Интегрируя уравнение (3.3) по $\Omega$ с учетом краевых условий (3.6), имеем
+$$
+D_t\|c^h_V \theta^h\|_{L_1(\Omega)}+
+\mu_0\theta^h|_{x=0}+\mu_X\theta^h|_{x=X} =
+(\sigma^h,D\widehat u^h)_\Omega + (f^h,1)_\Omega
++\chi_0+\chi_X.
+$$
+Складывая это равенство с равенством (4.6), приходим к уравнению (4.5).
+\end{pf}
+
+\begin{propm} Справедлива энергетическая оценка
+\begin{equation}
+\|{\theta^h}\|_{L_{1,\infty}(Q)} + \|u^h\|_{L_{2,\infty}(Q)} \le K(N).
+\end{equation}
+\end{propm}
+
+\begin{pf} Применим к уравнению (4.5) оператор $I_t$ и получим
+\begin{multline}
+\cal E^h(t) = \cal E^h(0) + I_t\Gamma_m^h
++ (g^h - D_tu^h_{\Gamma}, v^h)_{Q_t} +
+(f^h,1)_{Q_t}+ I_t\chi_0+I_t\chi_X\le\\
+%
+\le N\|\theta^0\|_{L_1(\Omega)}+
+\|u^0\|^2_\Omega+\|u^h_\Gamma|_{t=0}\|^2_\Omega +
+I_t\Gamma_m^h+ \|\overline g\|_{L_{2,1}(Q)}\|v^h\|_{L_{2,\infty}(Q)}+\\
+%
++I_t\bigl[\|D_tu^h_{\Gamma}\|_\Omega\|v^h\|_\Omega\bigr]
++\|\overline f\|_{L_1(Q)}+\|\chi_0\|_{L_1(0,T)}+\|\chi_X\|_{L_1(0,T)}\le\\
+%
+\le I_t\Gamma_m^h+ N\|v^h\|_{L_{2,\infty}(Q)}+
+I_t\bigl[\|D_tu^h_{\Gamma}\|_\Omega\|v^h\|_\Omega\bigr]+K_1.
+\end{multline}
+В последнем неравенстве использованы условия $C_2)$--$C_4)$.
+
+При $m=1$, учитывая, что
+$\|\nu^h\eta^h\|_{L_1(\Omega)}\le N V^{h}$,
+$k^h\le N^2 c^h_V$,
+используя формулу
+$D_td_V=\bigl[D_t(u_X^{(\tau)}-u_0^{(\tau)})\bigr]/V^h - d_V^2$,
+оценки (4.3) и (3.8), имеем
+$$
+|I_t\Gamma^h_1|
+\le K_2(\|d_V\|_{C[0,T]}+\|D_td_V\|_{L_1(0,T)} +
+\|d_V\|_{C[0,T]} I_t\| c^h_V\theta^h\|_{L_1(\Omega)})\le
+K_3 I_t\cal E^h+K_4.
+$$
+Используя неравенство (4.8), первую из формул (4.4) и оценку
+$\|v^h\|_{\Omega}\le\sqrt{2}(\cal E^h)^{1/2}$,
+приходим к неравенству
+\begin{equation}
+Y\le I_t(bY)+K_5 Y_{\max}^{1/2}+K_6
+\end{equation}
+для функции $Y=\cal E^h$; здесь
+$b=2|d_V|+K_3$, $Y_{\max}= \|Y\|_{C[0,T]}$.
+
+При $m=2$ и $m=3$ при помощи неравенств (3.8) и (3.9)
+выводим из (4.8) неравенство вида (4.9), в котором
+$Y = \cal E^h +(p^{(\tau)}_0,\eta^h)_\Omega$ при $m=2$,
+$Y = \cal E^h +(p^{(\tau)}_\Gamma,\eta^h)_\Omega$ при
+$m=3$ и $b=a_\tau$ при $m=2,3$.
+
+В силу леммы Гронуолла из неравенства (4.9) следует оценка
+$Y_{\max}\le K_7$ и тем самым --- оценка (4.7).
+\end{pf}
+
+Разрешая уравнение (4.1) относительно $\eta^h$, получаем важную формулу
+\begin{equation}
+\eta^h = a^h\left\{\eta^{0,h} +
+I_t\left[(1/a^h)(k^h/\nu^h)\theta^h \right]\right\},
+\quad a^h = \exp\left[(1/\nu^h)I_t\sigma^h\right].
+\end{equation}
+
+\begin{lemm} Справедлива оценка
+$\|I_t\sigma^h\|_{L_\infty(Q)}\le K(N)$.
+\end{lemm}
+
+\begin{pf} В случае $m=1$ справедлива формула
+\begin{equation}
+I_t\sigma^h = I_hu^h_g - (I_hu^h_g,\eta^h/V^h)_\Omega +
+I_t(\sigma^h,\eta^h/V^h)_\Omega - I_t(u^h_g,v^h/V^h)_\Omega,
+\end{equation}
+где $u_g^h=u^h-u^{0,h}-I_tg^h$
+(см. \cite{Amo9}, доказательство леммы 3.4; аналогичная формула имеется также
+в \cite{Amo7}, доказательство леммы 3.3).
+
+Принимая во внимание формулу (4.2), имеем
+\begin{multline}
+I_t(\sigma^h,\eta^h/V^h)_\Omega =
+\bigl(\nu^h,\eta^h/{V^h}\bigr)_\Omega -
+\bigl(\nu^h,\eta^{0,h}/V^h(0)\bigr)_\Omega +\\
+%
++I_t\bigl[d_V(\nu^h,\eta^h/{V^h}\bigr)_\Omega\bigr] -
+I_t(k^h\theta^h,1/V^h)_\Omega.
+\end{multline}
+Учитывая также, что $\|\eta^h\|_{L_1(\Omega)} = V^h$,
+$0\le\nu^h\le N$,$0\le k^h\le N$ и $(2N)^{-1}\le V^h$,
+из равенств (4.11) и (4.12) выводим оценку
+\begin{multline*}
+\|I_t\sigma^h\|_{L_\infty(Q)}
+\le X^{1/2}\|u^h_g\|_{L_{2,\infty}(Q)} + N +
+2N^2(\|u^{(\tau)}_X\|_{L_1(0,T)}+\|u^{(\tau)}_0\|_{L_1(0,T)}) +\\
++2NT\bigl(N\|\theta^h\|_{L_{1,\infty}(Q)}+
+\|u^h_g\|_{L_{2,\infty}(Q)}\|v^h\|_{L_{2,\infty}(Q)}\bigr).
+\end{multline*}
+Отсюда уже в силу энергетической оценки (4.7) следует заявленная оценка.
+\end{pf}
+
+При $m=2,3$ из уравнения (2.2) и краевого условия
+$\widehat\sigma^h|_{x=0}=-p^{(\tau)}_0$ сразу следует равенство
+$I_t\sigma^h = I_hu^h_g - I_tp^{(\tau)}_0.$
+Поэтому верна оценка
+$$
+\|I_t\sigma^h\|_{L_\infty(Q)}\le X^{1/2}\|u^h_g\|_{L_{2,\infty}(Q)} +
+\|p_0\|_{L_1(0,T)}\le K.
+$$
+
+\begin{corm} Справедливы двусторонние оценки
+\begin{gather}
+K_1(N)^{-1}\le\eta^h\le K_1(N)(1+I_t\theta^h),\\
+%
+K_2(N)^{-1}\le V^h\le K_2(N).
+\end{gather}
+\end{corm}
+
+\begin{pf} Оценка (4.13) непосредственно следует из формулы (4.10),
+леммы 4.3 и неравенства $N^{-1}\le\eta^{0,h}\le N$.
+Так как $\|\theta^h\|_{L_{1,\infty}(Q)}\le K$,
+то при $m=2,3$ интегрирование неравенства (4.13) по
+$\Omega$ приводит к оценке (4.14).
+При $m=1$ эта оценка содержится в лемме 4.1.
+\end{pf}
+
+\begin{lemm} Справедлив закон изменения полной энтропии:
+\begin{multline}
+D_t\bigl(c_V^h\ln\theta^h + k^h\ln\eta^h,1\bigr)_\Omega =
+\bigl(-\lambda^h \widetilde\rho^h D\widehat\theta^h,
+D(\widehat{1/{\theta^h}})\bigr)_{\Omega^h}
+-\mu_0 - \mu_X +\\
+%
++\chi_0/{\theta^h|_{x=0}} +\chi_X/{\theta^h|_{x=X}} +
+\bigl(1/\theta^h, \nu^h \rho^h
+\left(D\widehat u^h\right)^2 + f^h\bigr)_\Omega.
+\end{multline}
+\end{lemm}
+
+\begin{pf} Умножим уравнения (3.1) и (3.3) скалярно в $L_2(\Omega)$
+на ${k^h}/{\eta^h}$ и $1/\theta^h$ соответственно, проинтегрируем по
+частям с учетом краевых условий (3.6). Сложив полученные равенства,
+выведем уравнение (4.15).
+\end{pf}
+
+\begin{corm} Справедливы оценки
+\begin{gather}
+\|\beta^h\|_{L_1(0,T)}\le K(N),\text{ где }\
+\beta^h = \bigl(-\widetilde\rho^h
+D\widehat\theta^h, D(\widehat{1/{\theta^h}})\bigr)_{\Omega^h}\ge 0,\\
+%
+\|\ln \theta^h\|_{L_{1,\infty}(Q)}+
+\|(\widetilde\rho^h)^{1/2}D\widehat{\ln \theta^h}\|_{Q^h}
+\le K(N).
+\end{gather}
+\end{corm}
+
+\begin{pf} Применим к уравнению (4.15) оператор $I_t$.
+Учтем формулу $\ln\theta^h= -|\ln\theta^h|+2(\ln\theta^h)_+$
+и отбросим знакоопределенные слагаемые. Кроме того,
+воспользуемся неравенствами $(\ln\theta^h)_+\le\theta^h$,
+$\ln\eta^h\le~\eta^h$ и неравенствами
+$-\ln\theta^{0,h}\le-\pi^h_{1/2}(\ln\theta^0)$,
+$-\ln\eta^{0,h}\le \ln N$. Тогда получим
+\begin{multline*}
+N^{-1}(\|\ln\theta^h\|_{L_1(\Omega)} + I_t\beta^h)\le
+\bigl(2c^h_V(\ln\theta^h)_+ +
+k^h\ln\eta^h,1\bigr)_\Omega - \\
+%
+-\bigl(c^h_V\ln\theta^{0,h} +
+k^h\ln\eta^{0,h},1\bigr)_\Omega + I_t\mu_0 + I_t\mu_X\le \\
+%
+\le 2N\|\theta^h\|_{L_1(\Omega)}+NV^h -
+\bigl(c_V^h\ln\theta^0,1\bigr)_\Omega + (k^h\ln N,1)_\Omega+ T^{1/{s'}}N.
+\end{multline*}
+Учитывая оценки $\|\theta^h\|_{L_1(\Omega)}\le K_1$, $V^h\le K_2$
+и условие
+$\|\ln\theta^0\|_{L_1(\Omega)}\le N$,
+приходим к (4.16) и оценке
+$\|\ln\theta^h\|_{L_{1,\infty}(Q)}\le K_3$.
+Остается учесть, что
+$(D\widehat{\ln \theta^h})^2
+\le -(D\widehat\theta^h)D(\widehat{1/{\theta^h}})$
+(это следует из числового неравенства
+$(\ln b - \ln a)^2\le -(b-a)(1/b-1/a)$).
+\end{pf}
+
+\begin{lemm} Справедливы оценки
+\begin{equation}
+\|\theta^h\|_{L_\infty(\Omega)}\le
+X^{-1}\|\theta^h\|_{L_1(\Omega)}+
+\|D\widehat\theta^h\|_{L_1(\Omega^h)}\le
+K(N)\bigl[\beta^h\|\eta^h\|_{L_\infty(\Omega)}+1\bigr].
+\end{equation}
+\end{lemm}
+
+\begin{pf} Первая из оценок (4.18) элементарна.
+Учитывая формулу $D\widehat\theta^h =\linebreak
+-\theta^h_{(+)}\theta^h_{(-)}D(\widehat{1/{\theta^h}})$ на $Q^h$
+и неравенство $\|\theta^h\|_{L_1(\Omega)}\le K_1$,
+имеем
+\begin{multline*}
+\|D\widehat\theta^h\|_{L_1(\Omega^h)}\le
+\|\eta^h\|_{L_\infty(\Omega)}^{1/2}
+\bigl\|[-\widetilde\rho^h \theta_{(-)}^h\theta_{(+)}^h
+(D\widehat\theta^h) D(\widehat{1/{\theta^h}})
+]^{1/2}\bigr\|_{L_1(\Omega^h)}\le\\
+\le \bigl[\beta^h\|\eta^h\|_{L_\infty(\Omega)}
+\|\theta^h\|_{L_\infty(\Omega)}\|\theta^h\|_{L_1(\Omega)}\bigr]^{1/2}
+\le \frac{1}{2}\|\theta^h\|_{L_\infty(\Omega)}
++ K_2\beta^h\|\eta^h\|_{L_\infty(\Omega)}.
+\end{multline*}
+Теперь вторая из оценок (4.18) получается с учетом первой.
+\end{pf}
+
+\begin{propm} Справедливы оценки
+\begin{gather}
+K(N)^{-1}\le \eta^h\le K(N), \\
+\|\widehat\theta^h\|_{V_1(Q)}\le K(N),\quad \|p^h\|_Q\le K(N).
+\end{gather}
+\end{propm}
+
+{\bf Доказательство.} Оценки (4.13) и (4.18) приводят к неравенству
+$$
+\|\eta^h\|_{L_\infty(\Omega)}\le
+K_1\bigl[I_t\bigl(\beta^h\|\eta^h\|_{L_\infty(\Omega)}\bigr)+1\bigr].
+$$
+Применяя лемму Гронуолла и пользуясь оценкой (4.16), выводим
+правое неравенство (4.19); левое неравенство доказано
+ранее, см. (4.13). Из неравенства (4.18) теперь следует
+оценка $\|\theta^h\|_{L_{\infty,1}(Q)}
+\le c\|\widehat\theta^h\|_{V_1(Q)}\le K_2$.
+Остается учесть, что
+$$\|p^h\|_Q\le
+N\|\rho^h\|_{L_\infty(Q)}\|\theta^h\|_Q\le
+K_3\|\theta^h\|_{L_{1,\infty}(Q)}^{1/2}\cdot
+%%// remove \cdot in Eng.
+\|\theta^h\|_{L_{\infty,1}(Q)}^{1/2}\le K_4.\;\square
+$$
+
+\begin{propm} Справедлива оценка
+$\|\widehat u^h\|_{V^{\left<1,1/2\right>}_2(Q)}\le K(N).$
+\end{propm}
+
+\begin{pf} Применим к равенству (4.6) оператор $I_t$ и получим
+$$
+\frac{1}{2}\|v^h\|^2_\Omega +
+(\nu^h\rho^h D\widehat u^h-p^h, D\widehat u^h)_Q =
+\frac{1}{2}\|v^{0,h}\|^2_\Omega + I_t\Gamma^h
++ (g^h - D_tu^h_{\Gamma}, v^h)_{Q_t}.
+$$
+C учетом оценок (4.19), (4.20), (1.9), (4.7) и формул (4.4) имеем
+\begin{multline*}
+\|D\widehat u^h\|_Q^2\le K_1\bigl[\|p^h\|_Q \|D\widehat u^h\|_Q
++\|v^{0,h}\|_\Omega^2+(\|D\widehat u^h\|_Q +\|p^h\|_Q)
+\|D\widehat u^h_\Gamma\|_Q+\\
+%
++c(\|p_0\|_{L_{4/3}(0,T)}+\|p_X\|_{L_{4/3}(0,T)})
+\|\widehat v^h\|_{V_2(Q)}+\\
+%
++(\|\overline g\|_{L_{2,1}(Q)} + \|D_t u^h_\Gamma\|_{L_{2,1}(Q)})
+\|v^h\|_{L_{2,\infty}(Q)}\bigr]\le K_2(\|D\widehat u^h\|_Q +1).
+\end{multline*}
+Отсюда следует оценка $\|\widehat u^h\|_{V_2(Q)}\le K$.
+Оценка $\|\widehat u^h\|_{2,2}^{\left<0,1/2\right>}\le K$
+доказана в (\cite{Amo9}, лемма 3.6) (см. также \cite{Amo7}, лемма 3.5).
+\end{pf}
+
+\begin{propm} Справедливы оценки {\em (3.11), (3.12).}
+\end{propm}
+
+\begin{pf} Оценка (3.11) следует из оценок (4.17) и (4.19).
+
+Функция $\theta^h$ является решением
+задачи (2.5)--(2.7) с $\alpha= c^h_V$,
+$\varkappa=\lambda^h\widetilde\rho^h$,
+$\psi=0$, $f=\sigma^h D\widehat u^h + f^h$, $v^0=\theta^{0,h}$.
+Заметим, что $N^{-1}\le c^h_V \le N$,
+$K^{-1}\le \varkappa\le K$ и
+$\|\theta^{0,h}\|_{L_1(\Omega)}\le N$,
+$\|\chi_0\|_{L_1(0,T)}+\|\chi_X\|_{L_1(0,T)}\le N$.
+В силу предложения 4.3 имеем также
+$\|\sigma^h D\widehat u^h + f^h\|_{L_1(Q)}\le
+\|\sigma^h\|_Q\|D\widehat u^h\|_Q+
+\|\overline f\|_{L_1(Q)}\le K$.
+Поэтому оценки (3.12) следуют из лемм 2.6 и 2.7.
+\end{pf}
+
+Для завершения доказательства п.1 теоремы 3.1 учтем, что
+$D_t\eta^h=D\widehat u^h$, $\widehat x^h_e=\widehat x^{0,h}+I_t\widehat u^h$,
+$D_t\widehat x^h=\widehat u^h$, $D\widehat x^h_e=\eta^h$,
+$DD_t\widehat x^h_e=D\widehat u^h$. Поэтому
+$\|D_t\eta^h\|_Q+\|\widehat x_e^h\|_{S_2^{1,1}W(Q)}\le
+c(\|\widehat u^h \|_{V_2(Q)}+\|\eta^0\|_\Omega + \|\eta^h\|_Q)\le K(N)$.
+
+\begin{propm} Если $N^{-1}\le\theta^0$ на $\Omega$, то
+$K(N)^{-1}\le\theta^h$ в $Q$.
+\end{propm}
+
+\begin{pf} Рассмотрим функцию $\theta^h$ как решение задачи
+$(2.14)$, (2.6), (2.7) с $\alpha= c^h_V$,
+$\varkappa=\lambda^h\widetilde\rho^h$,
+$f=\nu^h\rho^h(D\widehat u^h)^2+f^h\ge 0$,
+$b=-k^h\rho^h D\widehat u^h$, $v^0=\theta^{0,h}$.
+Учитывая, что
+$\|b\|_Q\le K_1$, $N^{-1}\le\theta^{0,h}$, приходим в силу леммы 2.5
+к неравенству $K^{-1}\le\theta^h$.
+Теорема 3.1 полностью доказана.
+\end{pf}
+
+\section{Сходимость приближенных решений}
+
+Выполним предельный переход в задаче $\cal P^h_m$
+($m=\overline{1,3}$) при $h\to 0$. Пусть
+$\tau=\tau(h)\to 0$ при $h\to 0$.
+
+В силу теоремы 3.1 существует последовательность
+$z^h = (\eta^h, u^h,\theta^h, x_e^h)$ решений задачи
+$\cal P^h_m$, удовлетворяющая равномерным
+по $h$ оценкам (3.10)--(3.12). Поэтому существуют вектор-функция
+$z=(\eta,u,\theta,x_e)\in\cal N(Q)\times V_2(Q)
+\times V_1(Q)\times S_2^{1,1}W(Q)$, функции $\sigma\in L_2(Q)$,
+$\varpi\in L_1(Q)$
+и подпоследовательность (за которой сохраним
+прежнее обозначение $z^h$) такие, что
+\begin{gather*}
+\eta^h\to\eta\quad \ast-\text{слабо в}\quad L_\infty(Q),\quad
+D_t\eta^h\to D_t\eta\quad\text{слабо в}\quad L_2(Q),\\
+%
+\widehat u^h\to u\quad\text{в}\quad L_2(Q)\quad\text{и}\quad
+\ast-\text{cлабо в}\quad L_\infty(0,T; L_2(\Omega)),\\
+%
+D\widehat u^h\to Du\quad\text{и}\quad \sigma^h\to\sigma\quad\text{cлабо в}
+\quad L_2(Q),\\
+%
+\widehat\theta^h\to \theta\quad\text{в}\quad L_{q_0,r_0}(Q),\quad
+D\widehat\theta^h\to D\theta\quad\text{и}\quad \varpi^h\to \varpi\quad
+\text{слабо в}\quad L_{q_1,r_1}(Q)\\
+%
+\text{для всех $q_0, r_0$ и $q_1,r_1$, указанных в теореме 1.1,}\\
+%
+\widehat x_e^h\to x_e\quad\text{слабо в}\quad S_2^{1,1}W(Q)\quad
+\text{и сильно в}\quad C(\overline Q).
+\end{gather*}
+
+Так как $\|\widehat\theta^h -\theta^h\|_{L_{\infty,1}(Q)}\le
+\|D\widehat\theta^h\|_{L_{2,1}(Q)}h^{1/2}\le Kh^{1/2}$,
+то $\theta^h\to\theta$ в $L_{\infty,1}(Q)$. Поскольку
+$\theta^h\ge 0$, то и $\theta\ge 0$.
+Из оценок $\|\theta^h\|_{L_{1,\infty}(Q)}\le K$,
+$\|\ln\theta^h\|_{L_{1,\infty}(Q)}\le K$ и теоремы Фату
+следуют оценки $\|\theta\|_{L_{1,\infty}(Q)}\le K$,
+$\|\ln\theta\|_{L_{1,\infty}(Q)}\le K$. Последняя из них гарантирует
+свойство $\theta>0$ п.\,в. в $Q$. В силу неравенства
+$\|D\widehat{\ln\theta^h}\|_{Q^h}\le K$, положив
+$\widehat{\ln\theta^h}\bigr|_{x=0}=\ln\theta^h\bigr|_{x=0}$ и
+$\widehat{\ln\theta^h}\bigr|_{x=X}=\ln\theta^h\bigr|_{x=X}$,
+можно считать, что
+$D\widehat{\ln\theta^h}\to D\ln\theta$ слабо в $L_2(Q)$.
+
+Ясно, что вектор-функция $z$ удовлетворяет оценкам (1.13)--(1.15).
+
+\begin{lemm} Справедливы свойства
+$I_t\widehat\sigma^h\to I_t\sigma$ в $C(\overline Q)$,
+$I_t\sigma^h\to I_t\sigma$ в $C([0,T]; L_\infty(\Omega))$.
+\end{lemm}
+
+\begin{pf} Применяя оператор $I_t$ к уравнению (3.2), имеем
+$DI_t\widehat\sigma^h=u^h_g$, откуда
+$\|DI_t\widehat\sigma^h\|_{L_{2,\infty}(Q)}
+\le \|u^h\|_{L_{2,\infty}(Q)}+\|u^{0,h}\|_\Omega+
+\|\overline g\|_{L_{2,1}(Q)}\le K$.
+
+Положим $\widetilde \sigma^h=\widehat \sigma^h$ на $Q^h$ и
+$\widetilde \sigma^h= \sigma^h$ на $Q\setminus Q^h$.
+Нетрудно видеть, что
+$$
+\|I_t\widetilde\sigma^h\|_{W(Q)} \le
+c_T\|\sigma^h\|_Q+ \|DI_t\widehat\sigma^h\|_{L_{2,\infty}(Q)}\le K_1.
+$$
+В силу этой оценки последовательность
+$I_t\widetilde\sigma^h$ относительно компактна в $C(\overline Q)$.
+Осталось заметить, что
+$I_t \sigma^h\to I_t\sigma$ слабо в $L_2(Q)$ и верна оценка
+$\|I_t\widetilde\sigma^h-I_t\widehat\sigma^h\|_{C(\overline Q)}
++ \|I_t\sigma^h-I_t\widetilde\sigma^h\|_{C([0,T];L_\infty(\Omega))}
+\le 2\|DI_t\widehat\sigma^h\|_{L_{2,\infty}(Q)}h^{1/2}$.
+\end{pf}
+
+Обратимся к формуле (4.10). Заметим, что $\eta^{0,h}\to\eta^0$,
+$1/\nu^h\to 1/\nu$,
+$k^h/\nu^h\to k/\nu$ в $L_q(\Omega)$ для всех $q\in [1,\infty)$,
+$\theta^h\to\theta$ в $L_{\infty,1}(Q)$.
+С учетом этих свойств и леммы 5.1 из (4.10) следует
+\begin{equation}
+\eta^h\to\eta,\quad \rho^h\to\rho,\quad
+\widetilde\rho^h\to\rho\quad\text{в}\quad
+C([0,T];L_q(\Omega))\quad \forall q\in [1,\infty),
+\end{equation}
+причем верна формула
+$\eta = a\left\{\eta^{0} +
+I_t\left((1/a)(k/\nu)\theta\right)\right\}$, где
+$a=\exp\left[(1/\nu)I_t\sigma\right]$.
+
+Убедимся в том, что вектор-функция $z$ является обобщенным
+решением задачи $\cal P_m$. Ясно, что уравнения (1.1) и (1.4)
+удовлетворяются в $L_2(Q)$;
+кроме того, выполнены начальные условия $\eta|_{t=0}=\eta^0$ и
+$x_e|_{t=0}=x^0_e$.
+
+\begin{lemm} Верны формулы
+$\sigma=\nu \rho Du-p$, $p=k\rho\theta$ и
+$\varpi=\lambda \rho D\theta$.
+\end{lemm}
+
+\begin{pf} Для обоснования указанных формул
+достаточно перейти к слабому пределу в $L_1(Q)$
+в равенствах
+$\sigma^h=\nu^h \rho^h D\widehat u^h-p^h$, $p^h=k^h\rho^h\theta^h$ и
+$\varpi^h=\lambda^h \widetilde\rho^h D\widehat\theta^h$.
+При этом следует воспользоваться
+тем, что $\nu^h\to\nu$, $\lambda^h\to\lambda$,
+$k^h\to k$ в $L_4(\Omega)$, свойствами (5.1) c $q=4$,
+а также тем, что $D\widehat u^h\to Du$ слабо в $L_2(Q)$,
+$\theta^h\to\theta$ в $L_{2,1}(Q)$ и $D\widehat\theta^h\to D\widehat\theta$
+слабо в $L_{2,1}(Q)$.
+\end{pf}
+
+\begin{lemm}
+Функция $u$ удовлетворяет тождеству {\em (1.10)} и краевым условиям
+{\em (1.12).} Кроме того, справедливо тождество
+\begin{gather}
+-(\frac{1}{2}u^2,D_t\psi)_Q + (\sigma, D(u\psi))_Q =
+(\frac{1}{2}(u^0)^2,\psi^0)_\Omega + (g[x_e]u,\psi)_Q -\notag\\
+%
+-(S)\int_0^T(I_t\sigma)|_{x=X}\,d(u_X\psi_X) -
+(p_X, u|_{x=X}\psi_X)_{(0,T)} +\notag\\
++(S)\int_0^T(I_t\sigma)|_{x=0}\,d(u_0\psi_0) +
+(p_0, u|_{x=0}\psi_0)_{(0,T)}
+\quad \forall \psi\in \overset{\circ}{C}{}^1(\overline Q; S^T_3),
+\end{gather}
+где интегралы с символом $(S)$ понимаются в смысле Римана-Стилтьеса.
+\end{lemm}
+
+\begin{pf} Пусть $\varphi\in \overset{\circ}{C}{}^1(\overline Q;S_m^T)$
+и дополнительно $D_tD\varphi\in L_1(Q)$.
+Умножим уравнение (3.2) на $\varphi$,
+проинтегрируем по $Q$ и после интегрирования по частям получим равенство
+$$
+-(u^h,D_t\varphi)_Q-(I_t\widehat \sigma^h,D_tD\varphi)_Q-
+(g[\widehat x^h_e],\pi^h\varphi)_Q=(u^{0,h},\varphi^0)_{\Omega}-
+(p^{(\tau)}_X,\varphi_X)_{(0,T)}+(p^{(\tau)}_0,\varphi_0)_{(0,T)}.
+$$
+Переходя в нем к пределу при $h\to 0$ и учитывая, что
+$-(I_t\sigma,D_tD\varphi)_Q =(\sigma, D\varphi)_Q$, выводим
+тождество (1.10). Требование $D_tD\varphi\in L_1(Q)$
+снимается предельным переходом с использованием усреднений $\varphi$
+по $t$.
+
+Так как $\widehat u^h\to u$ в $L_2(Q)$ и
+$D\widehat u^h\to Du$ слабо в $L_2(Q)$,
+то $\widehat u^h|_{x=0}\to u|_{x=0}$ и
+$\widehat u^h|_{x=X}\to u|_{x=X}$ слабо в $L_2(0,T)$.
+В то же время $\widehat u^h|_{x=0}=u^{(\tau)}_0\to u_0$ в $L_2(0,T)$ при
+$m=1$ и $\widehat u^h|_{x=X}=u^{(\tau)}_X\to u_X$ в $L_2(0,T)$ при
+$m=1,2$. Следовательно, краевые условия (1.12) выполнены.
+
+Функцию $u$ можно рассматривать как обобщенное
+решение из $V_2(Q)$ линейного параболического уравнения
+$D_tu=D(\varkappa Du -\widetilde\psi)+ \widetilde g,$
+где $\varkappa =\nu\rho$,
+$\widetilde\psi=p$, $\widetilde g = g[x_e]$,
+с соответствующими начальными и краевыми условиями.
+Поэтому тождество (5.2) верно в силу (\cite{Amo10}, предложение 2.3).
+\end{pf}
+
+\begin{lemm} Справедливо тождество
+\begin{multline}
+-(\frac{1}{2}u^2 + c_V\theta, D_t\psi)_Q+
+(\sigma u + \varpi, D\psi)_Q =
+(\frac{1}{2}(u^0)^2 + c_V\theta^0, \psi^0)_\Omega+\\
+%
++ (g[x_e]u + f[x_e],\psi)_Q
+-(S)\int_0^T(I_t\sigma)|_{x=X}\,d(u_X\psi_X) -
+(p_X, u|_{x=X}\psi_X)_{(0,T)} +\\
+%
++(S)\int_0^T(I_t\sigma)|_{x=0}\,d(u_0\psi_0) +
+(p_0, u|_{x=0}\psi_0)_{(0,T)}-\\
+%
+-(\mu_0\theta|_{x=0} -\chi_0,\psi_0)_{(0,T)} -
+(\mu_X\theta|_{x=X} -\chi_X,\psi_X)_{(0,T)}
+\quad \forall \psi\in \overset{\circ}{C}{}^1(\overline Q;S_3^T).
+\end{multline}
+\end{lemm}
+
+\begin{pf} Пусть $\psi\in \overset{\circ}{C}{}^1(\overline Q;S_3^T)$,
+$\psi^h = \pi^h\psi$, $\psi^{0,h}=\pi^h\psi^0$,
+$\psi^h_0 = \psi^h|_{x=0}$,
+$\psi^h_X = \psi^h|_{x=X}$. Уравнение
+(3.2) умножим на $u^h\psi^h$, а
+уравнение (3.3) --- на $\pi^h_{1/2}\psi^h$, проинтегрируем по $Q$
+и сложим результаты:
+\begin{gather*}
+\bigl(D_t\bigl[\frac{1}{2}(u^h)^2\bigr],\psi^h\bigr)_Q +
+\bigl(c_V^hD_t\theta^h, \pi^h_{1/2}\psi^h\bigr)_Q +
+(\sigma^h,D(\widehat{u^h\psi^h}))_Q +\\
+%
++(\varpi^h,D(\widehat{\pi^h_{1/2}\psi^h}))_{Q^h}
+=(\sigma^h D\widehat u^h + f^h, \pi^h_{1/2}\psi^h)_Q +
+(g^h u^h, \psi^h)_Q+\\
+%
++(\widehat\sigma^h|_{x=X}, u^h|_{x=X}\psi^h_X)_{(0,T)} -
+(\widehat\sigma^h|_{x=0}, u^h|_{x=0}\psi^h_0)_{(0,T)}+\\
+%
++(\widehat\varpi^h|_{x=X}, (\pi^h_{1/2}\psi^h)|_{x=X})_{(0,T)} -
+(\widehat\varpi^h|_{x=0}, (\pi^h_{1/2}\psi^h)|_{x=0})_{(0,T)}.
+\end{gather*}
+Преобразуем это равенство, используя интегрирование по частям по $t$,
+учитывая краевые условия (3.6), $(3.7_m)$, тождества (2.3), (2.4) и формулы
+$D(\widehat{u^h\psi^h})=(\pi^h_{1/2}\psi^h)D\widehat u^h +
+(\pi^h_{1/2}u^h)D\widehat\psi^h$ в $Q$,
+$D(\widehat{\pi^h_{1/2}\psi^h})=\pi^h(D\widehat\psi^h)$
+в $Q^h$.
+В результате получим равенство
+\begin{gather*}
+-\bigl(\frac{1}{2}(u^h)^2 + c_V^h\theta^h, D_t\psi^h\bigr)_Q +
+(\sigma^h u^h,D\widehat\psi^h)_Q
++(\varpi^h,D\widehat\psi^h)_{Q^h}=\\
+%
+=(\frac{1}{2}(u^{0,h})^2 + c_V^h\theta^{0,h}, \psi^{0,h})_\Omega
++ (g[\widehat x_e^h] u^h, \psi^h)_Q
++ (f[\widehat x_e^h],\pi^h_{1/2}\psi^h)_Q -\\
+%
+-(S)\int_0^T(I_t\widehat\sigma^h)|_{x=X}\,d(u_X^{(\tau)}\psi^h_{X}) -
+(p^{(\tau)}_X,u^h|_{x=X}\psi^h_X)_{(0,T)}+\\
+%
++(S)\int_0^T(I_t\widehat\sigma^h)|_{x=0}\,d(u_0^{(\tau)}\psi^h_0) +
+(p^{(\tau)}_0,u^h|_{x=0}\psi^h_0)_{(0,T)}-\\
+%
+-(\mu_0\theta^h|_{x=0} -\chi_0,(\pi^h_{1/2}\psi^h)|_{x=0})_{(0,T)}
+-(\mu_X\theta^h|_{x=X} -\chi_X,(\pi^h_{1/2}\psi^h)_{x=X})_{(0,T)}.
+\end{gather*}
+Заметим, что $\psi^h\to\psi$, $\pi^h_{1/2}\psi^h\to\psi$,
+$D_t\psi^h\to D_t\psi$, $D\widehat\psi^h\to D\psi$ в
+$C([0,T]; L_\infty(\Omega))$;
+$\psi^h_a\to\psi_a$ в $C^1[0,T]$ и
+$(\pi^h_{1/2}\psi^h)\bigr|_{x=a}\to\psi_a$
+в $C[0,T]$ для $a=0,X$.
+Кроме того,
+$c_V^h\to c_V$ по мере на $\Omega$ и $0\le c_V^h\le N$,
+$g[\widehat x^h_e]\to g[x_e]$
+в $L_{2,1}(Q)$, $f[\widehat x^h_e]\to f[x_e]$ в $L_1(Q)$.
+Воспользуемся также тем, что, во-первых, $u^h\to u$ в $L_2(Q)$ и $\ast$-слабо в
+$L_\infty(0,T; L_2(\Omega))$, $\theta^h\to\theta$ в $L_{\infty,1}(Q)$,
+$u^{0,h}\to u^0$ в $L_2(\Omega)$,
+$\theta^{0,h}\to \theta^0$ в $L_1(\Omega)$,
+$\sigma^h\to\sigma$ слабо в $L_2(Q)$,
+$\varpi^h\to \varpi$ слабо в $L_1(Q)$.
+Во-вторых, для $a=0,X$ имеем
+$(I_t\widehat\sigma^h)|_{x=a}\to (I_t\sigma)|_{x=a}$
+в $C[0,T]$, $u^{(\tau)}_a(t)\to u_a(t+0)$
+для всех $t\in [0,T]$,
+$\var\limits_{[0,T]}u^{(\tau)}_a\le
+\var\limits_{[0,T]}u_a$,
+$\theta^h\bigr|_{x=a}\to \theta\bigr|_{x=a}$
+в $L_r(0,T)$ при всех $r\in [1,2)$.
+Переходя в полученном равенстве к пределу при $h\to 0$ с использованием
+перечисленных свойств, приходим к тождеству (5.3).
+При предельном переходе под знаком интеграла Стилтьеса
+использована теорема Хелли (\cite{Nat}, гл.\,IX, \S\,7).
+\end{pf}
+
+\begin{corm} Справедливо тождество (1.11).
+\end{corm}
+
+Для доказательства нужно из тождества (5.3) вычесть тождество (5.2).
+
+Из предложения 4.5 легко следует
+
+\begin{lemm} Если $N^{-1}\le\theta^0$ на $\Omega$, то
+$K(N)^{-1}\le\theta$ в $Q$.
+\end{lemm}
+
+Тем самым теорема 1.1 доказана.
+
+
+\begin{thebibliography}{99}
+
+\bibitem{Ro}
+Рождественский Б.Л., Яненко Н.Н. {\em Системы квазилинейных уравнений и
+их приложения к газовой динамике.} -- 2-е изд. -- М.: Наука, 1978. -- 687 c.
+
+\bibitem{Ant}
+Антонцев С.Н., Кажихов А.В., Монахов В.Н. {\em Краевые задачи механики
+неоднородных жидкостей.} -- Новосибирск: Наука, 1983. -- 319 c.
+
+\bibitem{Amo1}
+Amosov A.A., Zlotnik A.A. {\em A study of a finite-difference
+method for the one-dimensional viscous heat-conductive gas
+flow equations. Part} 1: {\em A priori estimates and stability} //
+Sov. J. Numer. Anal. and Math. Model. -- 1987. -- V.\,2. -- \No\,3. -- P.\,159--178.
+
+\bibitem{Amo2}
+Amosov A.A., Zlotnik A.A. {\em A study of a finite-difference
+method for the one-dimensional viscous heat-conductive gas
+flow equations. Part} 2: {\em Error estimates and realization} //
+Sov. J. Numer. Anal. and Math. Model. -- 1987. -- V.\,2. -- \No\,4. -- P.\,239--258.
+
+\bibitem{Amo3}
+Амосов А.А., Злотник А.А. {\em Разностная схема на неравномерной
+сетке для уравнений одномерной магнитной газовой динамики} //
+Журн. вычисл. матем. и матем. физ. -- 1989. -- Т.\,29. -- \No\,4.
+-- С.\,521--534.
+
+\bibitem{Amo4}
+Amosov A.A., Zlotnik A.A. {\em Two-level finite-difference schemes for
+one-dimensional equations of magnetic gas dynamics {\rm (}viscous
+heat-conducting case{\rm)}} // Sov. J. Numer. Anal. and Math.
+Model. -- 1989. -- V.\,4. -- \No\,3. -- P.\,179--197.
+
+\bibitem{She}
+Шелухин В.В. {\em Движение с контактным разрывом в вязком теплопроводном
+газе} // Динам. сплош. среды. -- Новосибирск, 1982. -- \No\,57. --
+С.\,131--152.
+
+\bibitem{Ser}
+Serre D. {\em Sur l'\'equation monodimensionelle d'un fluide visqueux,
+compressible et conducteur de chaler} // C.\,r. Acad. sci. -- 1986. --
+V.\,303. -- S\'er.~I. -- \No\,14. -- P.\,703--706.
+
+\bibitem{Amo5}
+Амосов А.А., Злотник А.А. {\em Обобщенные решения ``в целом'' уравнений
+одномерного движения вязкого теплопроводного газа} // ДАН СССР. -- 1988.
+-- Т.\,301. -- \No\,1. -- С.\,11--15.
+
+\bibitem{Amo6}
+Амосов А.А., Злотник А.А. {\em Разрешимость ``в целом'' системы уравнений
+одномерного движения неоднородного вязкого теплопроводного газа}
+// Матем. заметки. -- 1992. -- Т.\,52. -- \No\,2. -- C.\,3--16.
+
+\bibitem{Hoff}
+Hoff D. {\em Global well-posedness of the Cauchy problem for nonisentropic
+gas dynamics with discontinuous initial data} // J. Different. Equat.
+-- 1992. -- V.\,95. -- P.\,33--74.
+
+\bibitem{Amo7}
+Амосов А.А., Злотник А.А. {\em Разрешимость ``в целом'' одного класса
+квазилинейных систем уравнений составного типа с негладкими данными} //
+Дифференц. уравн. -- 1994. -- Т.\,30. -- \No\,4. -- С.\,596--608.
+
+\bibitem{Be}
+Бесов О.В., Ильин В.П., Никольский С.М. {\em Интегральные представления функций
+и теоремы вложения.} -- М.: Наука, 1975. -- 480 c.
+
+\bibitem{Lad1}
+Ладыженская О.А., Солонников В.А., Уральцева Н.Н. {\em Линейные и
+квазилинейные уравнения параболического типа.} -- М.: Наука, 1967. -- 736 c.
+
+\bibitem{Amo8}
+Амосов А.А., Злотник А.А. {\em О квазиосредненных уравнениях одномерного
+движения вязкой баротропной среды с быстро осциллирующими данными} //
+Журн. вычисл. матем. и матем. физ. -- 1996. -- T.\,36. -- \No\,2.
+-- С.\,87--110.
+
+\bibitem{Lad2}
+Ладыженская О.А., Уральцева Н.Н. {\em Линейные и квазилинейные
+уравнения эллиптического типа.} -- 2-е изд. -- М.: Наука, 1973. -- 576 c.
+
+\bibitem{Fi}
+Филиппов А.Ф. {\em Дифференциальные уравнения с разрывной правой
+частью.} -- М.: Наука, 1985. -- 224 c.
+
+\bibitem{Amo9}
+Амосов А.А., Злотник А.А. {\em Разрешимость ``в целом'' квазиосредненных
+уравнений одномерного движения вязкой баротропной среды с негладкими
+данными} // Вестн. МЭИ. -- 1994. -- \No\,4. -- С.\,7--24.
+
+\bibitem{Amo10}
+Амосов А.А., Злотник А.А. {\em Замечания о свойствах обобщенных
+решений из $V_2(Q)$ одномерных линейных параболических задач} //
+Вестн. МЭИ. -- 1996. -- \No\,6. -- С.\,15--29.
+
+\bibitem{Nat}
+Натансон И.П. {\em Теория функций вещественной
+переменной.} -- М.: Наука, 1974. -- 480 c.
+
+\end{thebibliography}
+
+\vskip 1cm
+
+\post{\it Московский энергетический институт}{\it Поступила}
+\post{({\it технический университет})}{07.10.1996}
+
+\end{document}

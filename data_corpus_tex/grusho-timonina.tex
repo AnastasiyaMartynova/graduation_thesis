@@ -1,0 +1,573 @@
+\def\stat{grusho-tim}
+
+\def\tit{ВЫЯВЛЕНИЕ АНОМАЛИЙ С ПОМОЩЬЮ МЕТАДАННЫХ$^*$}
+
+\def\titkol{Выявление аномалий с~помощью метаданных}
+
+\def\aut{А.\,А.~Грушо$^1$, Е.\,Е.~Тимонина$^2$, Н.\,А.~Грушо$^3$, И.\,Ю.~Терехина$^4$}
+
+\def\autkol{А.\,А.~Грушо, Е.\,Е.~Тимонина, Н.\,А.~Грушо, И.\,Ю.~Терехина}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{А.\,А.~Грушо, Е.\,Е.~Тимонина, Н.\,А.~Грушо, И.\,Ю.~Терехина}
+\index{A.\,A.~Grusho, E.\,E.~Timonina, N.\,A.~Grusho, 
+and~I.\,Yu.~Teryokhina}
+ 
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа частично поддержана РФФИ (проект 18-07-00274).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управ\-ле\-ние>> 
+Российской академии наук, \mbox{grusho@yandex.ru}}
+\footnotetext[2]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управ\-ле\-ние>> 
+Российской академии наук, \mbox{eltimon@yandex.ru}}
+\footnotetext[3]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управ\-ле\-ние>> 
+Российской академии наук, \mbox{info@itake.ru}}
+\footnotetext[4]{Факультет вычислительной математики и~кибернетики Московского государственного университета им.\ 
+М.\,В.~Ломоносова, \mbox{irina\_teryokhina@mail.ru}}
+
+\vspace*{6pt}
+  
+
+  
+  \Abst{Рассматривается проблема контроля безопасности информационных 
+  технологий (ИТ) на 
+основе данных компьютерного аудита. Эти данные представляют собой последовательность 
+малых выборок, каж\-дая из которых описывает передачу информации от одних преобразований 
+к~другим. Информационные технологии представляются математическими моделями в~виде 
+ориентированных ациклических графов. Такие графы, описывающие передачу данных, в~статье 
+называются метаданными (МД). 
+  В~единых данных компьютерного аудита могут одновременно присутствовать следы 
+выполнения нескольких ИТ, описываемые своими графами. Это 
+обстоятельство затрудняет распознавание информационных потоков
+(ИП), которые соответствуют 
+дугам разных графов. В~работе введено понятие легальных ИП, которые 
+соответствуют передаче данных всех выполняемых ИТ. 
+Информационные потоки, не соответствующие выполнению действующих 
+ИТ, называются нелегальными, или аномалиями. Такие ИП могут 
+возникать из-за враждебной деятельности инсайдеров или из-за ошибок действий 
+пользователей.
+  В~\mbox{статье} на основе МД решена задача эффективного выявления легальных 
+ИП и~аномалий. }
+  
+  \KW{информационная безопасность; информационный поток; аномалии; метаданные; 
+системы различных представителей}
+
+\DOI{10.14357/19922264200311}
+ 
+\vspace*{6pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+  
+\section{Введение}
+
+  В работе рассмотрена проблема выявления нелегальных
+ИП с~по\-мощью МД. Пусть распределенная 
+ин\-фор\-ма\-ци\-он\-но-вы\-чис\-ли\-тель\-ная сис\-те\-ма (РИВС) реализует 
+ряд ИТ, поддерживающих работу организации, например банка. Каждая 
+ИТ формируется на основе биз\-нес-про\-цес\-са, и~в~\mbox{РИВС}\linebreak одновременно 
+функционируют несколько ИТ. В~работах~[1, 2] модель произвольной ИТ была 
+представлена в~виде ориентированного ациклического графа (DAG~--- Directed 
+Acyclic Graph). В~этих моделях вершины обозначаются греческими буквами 
+и~соответствуют преобразованиям информации (блокам преобразований) вместе 
+с~входными и~выходными данными. Преобразования обозначаются строчными 
+латинскими буквами, а~входные и~выходные данные~--- прописными 
+латинскими буквами. Дуги DAG соответствуют передаче данных блокам от 
+предыдущих блоков, т.\,е.\ дуга выходит из выходных данных выполненного 
+преобразования и~входит во входные данные для сле\-ду\-юще\-го преобразования. 
+Существуют дуги, входящие в~вершины DAG как исходные данные извне ИТ, 
+и~существуют выделенные дуги, идущие вне DAG к~потребителям результатов 
+ИТ. Все указанные дуги фиксированы и~считаются легальными. Определенные 
+таким образом модели ИТ будем называть метаданными.
+  
+  Одной из важных угроз организации пред\-став\-ля\-ет\-ся возможность 
+существования ИП, которые используются для утечки ценной информации из ИТ. 
+Далее ИП, не участвующие в~функционирующих ИТ, но исходящие из данных ИТ 
+или входящие в~них, будем называть нелегальными ИП, или аномалиями. 
+В~работе поиск аномальных ИП проводится исходя из противоречий с~МД, 
+определяемых с~помощью DAG. Исходными данными для анализа служат 
+результаты компьютерного аудита~[3, 4], в~которых отражены имена субъектов, 
+инициировавших ИП, идентификаторы получателей ИП и~время производимых 
+действий. Таким образом, последовательность легальных ИП соответствует МД. 
+  
+  Проблема восстановления структуры ИП по данным 
+логов рассматривалась в~ряде научных работ, например в~[5, 6]. В~качестве 
+модели структур, восстанавливаемых по логам, предлагались сети Петри. Однако 
+модели сетей Петри представляют собой сложные структуры, и~поэтому их 
+вос\-ста\-нов\-ле\-ние требует сложных алгоритмов. Кроме того, для сетей Петри не 
+найдены алгоритмы иерархической декомпозиции. В~то же время иерархическая 
+декомпозиция DAG~\cite{1-gt} позволяет отслеживать не все ИП (часть ИП 
+невозможно отследить). 
+  
+  В работе рассматривается задача восстановления множества DAG, 
+соответствующих дей\-ст\-ву\-ющим в~данный период времени ИТ. Отметим связь 
+между МД, рассматривавшимися в~предыдущих работах~[7--9], касавшихся 
+контроля соединений в~сети. Если ИП проходил через сеть, то его содержание 
+могло быть зашифровано, т.\,е.\ определялись входные и~выходные блоки сети, где 
+формировались сообщения для передачи по сети, и~в этих блоках использовались 
+криптографические средства. Протокол организации сетевого обмена мог 
+опираться на несколько удаленных субъектов, однако это учитывалось 
+в~организации МД~[10]. 
+  
+  Отметим, что при определении легальности ИП необходимо учитывать 
+присутствие дуг в~других ИТ, а также возможность кратного использования одной 
+ИТ. В этом множестве ИП необходимо найти нелегальные ИП. 
+  
+  В работе рассматривается проведение анализа по поиску нелегальных ИП 
+в~режиме офлайн с~использованием следующей идеи. Для восстановления всех 
+действующих в~данное время ИТ предлагается использовать метод 
+трансверсалей~[11, 12]. Трансверсали (системы различных представителей, СРП) 
+позволяют быстро и~однозначно вос\-ста\-нав\-ли\-вать DAG ИТ, выполняемых в~данное 
+время, т.\,е.\ по СРП вос\-ста\-нав\-ли\-ва\-ют\-ся МД, в~соответствии с~которыми 
+поступают данные аудита. После восстановления МД из данных аудита убирается 
+информация о~легальных ИП. Тогда оставшиеся ИП оказываются аномалиями, 
+которые подлежат дальнейшему анализу службы безопасности. 
+  
+  \section{Выявление нелегальных информационных потоков при~наличии системы
+  различных представителей}
+  
+  Пусть в~рассматриваемых данных функционировали 
+ИТ $\mathrm{IT}_1, \ldots , \mathrm{IT}_L$. Этим технологиям соответствуют 
+МД 
+$G_1,\ldots , G_L$, при этом множеству DAG $G_1,\ldots , G_L$ соответствуют 
+множества вершин $V_1, \ldots, V_L$ и~множества дуг $E_1,\ldots , E_L$. В~тех 
+случаях, когда в~ИТ вносятся внешние данные, можно формально определить 
+вершину~$\alpha_0$, из которой выходит дуга в~соответствующую вершину из 
+множества~$V$, причем эту дугу можно включить в~множество~$E$. Аналогично 
+если предусматривается легальный ИП из~$G$, то можно ввести формальную 
+вершину~$\alpha_1$, в~которую из соответствующей вершины графа~$G$ направлена 
+дуга с~выходящим из~$G$ ИП. 
+  
+  Воспользуемся определением СРП и~формулировкой теоремы Ф.~Холла из 
+работы~\cite{12-gt}. Пусть~$E$~--- множество всех дуг графов $G_1,\ldots , G_L$, 
+$\mathbf{P}(E)$~--- множество подмножеств множества~$E$, $D\hm= (e_1,\ldots 
+,e_L)$~--- выборка из множества~$E$.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Определение.} Пусть~$L$ элементов выборки~$D$ отличны друг от 
+друга и~$e_i\hm\in E_i$, $i\hm=1,\ldots , L$. Тогда~$D$ называется \textit{системой 
+различных представителей} множеств $E_1,\ldots , E_L$. 
+  
+  \smallskip
+  
+  Условия существования СРП получены в~теореме Ф.~Холла~\cite{12-gt}.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Теорема~1}~\cite{12-gt}. \textit{Множества $E_1,\ldots , E_L$ имеют 
+СРП тогда и~только тогда, когда для каждого $k\hm=1,\ldots , L$ и~всех 
+сочетаний индексов $i_1,\ldots , i_k$ выполняются условия}:
+  $$
+  \left\lfloor  \bigcup\limits_{j=1}^k E_{i_j}\right\rfloor \geq k\,.
+  $$
+  
+  Пусть множества $E_1, \ldots , E_L$ удовлетворяют тео\-ре\-ме~1. 
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Теорема~2.} \textit{В~последовательности данных обязательно 
+встретятся все элементы $e_1,\ldots , e_s$ из СРП тогда и~только тогда, когда 
+одновременно функционируют различные} $\mathrm{IT}_{i_1}, \ldots , \mathrm{IT}_{i_s}$.
+  
+  \smallskip
+  
+  \noindent
+  Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,. \textit{Достаточность}. При анализе данных 
+в~режиме офлайн в~последовательности данных все запущенные ИТ можно 
+считать завершившимися. Тогда в~каждом графе~$G_{i_j}$, $j\hm=1, \ldots , s$, 
+должны быть пройдены все дуги. Значит, должны быть пройдены все дуги, 
+принадлежащие СРП. 
+  
+  \textit{Необходимость}. Если в~последовательности данных встретился элемент 
+СРП, то однозначно определен граф, которому принадлежит эта дуга. Это 
+означает, что однозначно определена ИТ, моделью которого служит этот граф. 
+Теорема доказана.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Следствие.} Если в~последовательности данных встретился элемент 
+СРП, то в~данных должны встретиться все дуги, принадлежащие 
+соответствующему графу модели ИТ. 
+  
+  Отсюда следует алгоритм определения легальных ИП. Сначала в~данных 
+находятся все элементы СРП, по ним восстанавливаются соответствующие DAG 
+и~ИТ. Далее выявляются все дуги этих DAG в~данных. Построенное множество 
+ИП является легальным для всех восстановленных DAG. 
+  
+  Как было отмечено выше, одновременно могут функционировать несколько 
+копий одной ИТ. В~условиях существования СРП выявление легальных ИП 
+в~этом случае не выглядит сложным. Пусть одна ИТ запущена~$r$~раз, тогда 
+элемент СРП соответствующего DAG встретится~$r$~раз. Это означает, что 
+необходимо собрать~$r$~экземпляров данного DAG. Очевидно, что в~этих графах 
+дуги могут быть переставлены и~относиться к~разным экземплярам DAG, но 
+несмотря на это совокупность вос\-ста\-нов\-лен\-ных графов будет правильно 
+определять легальные ИП. 
+  
+  В случае существования СРП удаление легальных ИП из последовательности 
+данных определяет множество нелегальных ИП, анализировать которые 
+необходимо отдельно. Отсюда следует, что СРП значительно упрощает поиск 
+нелегальных ИП. 
+  
+  \section{Определение легальных информационных потоков 
+  в~случае отсутствия системы различных представителей}
+  
+  Рассмотрим случай, когда в~системе множеств $E_1, \ldots , E_L$ нет СРП. Это 
+означает, что существует набор подмножеств дуг $E_{i_1}, \ldots , E_{i_k}$, не 
+удовлетворяющих теореме~1, т.\,е.
+$$
+\left\lfloor \bigcup\limits^k_{j=1} E_{i_j} \right\rfloor 
+\hm <k\,.
+$$
+
+ Тогда имеет место следующая цепочка неравенств:
+  \begin{multline*}
+  k> \left\vert E_{i_1} \cup \cdots \cup E_{i_k}\right\vert \geq{}\\
+  {}\geq \left\vert
+  E_{i_1}\cup\cdots\cup E_{i_{k-1}}\right\vert \geq \cdots \geq \left\vert 
+E_{i_1}\right\vert  =t>0\,.
+  \end{multline*}
+В этой цепочке~$k$ неравенств, из которых строгими могут быть не более $k-t$, 
+остальные~$t$ неравенств являются равенствами. Пусть для некоторого $1\hm< 
+s\hm< k$ справедливо равенство:
+$$
+\left\vert E_{i_1} \cup\cdots \cup E_{i_s}\right\vert =\left\vert E_{i_1} \cup\cdots\cup 
+E_{i_{s-1}}\right\vert\,.
+$$
+Отсюда следует, что 
+$$
+E_{i_s}\subseteq E_{i_1}\cup\cdots\cup E_{i_{s-1}}\,,
+$$
+т.\,е.\ дуги графа~$G_{i_s}$ являются частью объединения дуг других DAG.
+
+  Найденные условия позволяют реализовать другой подход к~использованию 
+СРП. Избавляясь от таких включений, разобьем множество $E_1,\ldots , E_L$ 
+на~$M$~групп $E_1^{(1)},\ldots , E^{(1)}_{L_1}$, $E_1^{(2)},\ldots , 
+E^{(2)}_{L_2}$, \ldots , $E_1^{(M)},\ldots , E^{(M)}_{L_M}$, в~каждой из 
+которых есть СРП. Тогда встреча дуги в~$i$-й СРП позволяет восстановить один 
+из DAG этой группы. Если эта дуга встречается в~нескольких СРП, то в~каждой 
+группе она восстанавливает DAG. Если дуга из данного СРП не позволила 
+восстановить DAG, то эта дуга может принадлежать другой группе DAG. Тогда 
+СРП этой другой группы позволит восстановить DAG, в~который войдет 
+указанная дуга. Если дуга $i$-й СРП не породила из данных аудита DAG этой 
+группы и~эта дуга не попала ни в~один из DAG других групп, то это~--- 
+нелегальный ИП. 
+  
+  Основной критерий завершенности выявления легальных ИП~--- это полное 
+восстановление всех DAG, элементы которых возникли из разных СРП 
+с~включенными в~них дугами СРП других групп. Данный метод повышает 
+эффективность анализа данных, если групп мало. Однако следующий пример 
+показывает, что метод работает при любом чис\-ле групп. 
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Пример.} Пусть ИТ порождают графы $G_1,\ldots , G_L$ и~множества 
+дуг $E_1, \ldots , E_L$. Пусть каждое множество дуг есть отдельная группа, тогда 
+каждая дуга может быть взята как СРП в~своей группе. Если встретилась дуга из 
+$E_i$ и~граф~$G_i$ был восстановлен из данных, то множества ИП дуг 
+графа~$G_i$ являются легальными. Если эта же дуга принадлежит другому 
+графу~$G_j$ со своим СРП и~граф~$G_j$ полностью восстановлен, то все его 
+дуги также порождают легальные ИП. Если дуга не попала ни в~один из 
+восстановленных графов~$G_i$, то она представляет нелегальный ИП. После 
+восстановления~$G_i$ нельзя исключать дуги из рассмотрения, так как другой 
+граф может оказаться недостроенным. Поэтому дуги, соответствующие 
+восстановленным легальным ИП, до окончания работы алгоритма необходимо 
+<<раскрашивать>>.  
+  
+  \section{Заключение }
+  
+  В множестве ИТ, модели которых представимы в~виде DAG (МД), 
+можно ввести понятие легальных и~нелегальных ИП. Тогда каждая ИТ может 
+быть представлена множеством дуг соответствующего DAG. Легальность ИП 
+может быть проверена на основе СРП, по которым сами DAG восстанавливаются 
+однозначно. Нелегальные ИП определяются после устранения всех легальных ИП 
+из данных компьютерного аудита. 
+  
+  Этот метод может быть распространен на случай, когда в~исходной 
+  информационной системе не  существует СРП. 
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{2-gt}
+\Au{Самуйлов К.\,Е., Чукарин~А.\,В., Яркина~Н.\,В.} Биз\-нес-про\-цес\-сы и~информационные 
+технологии в~управлении телекоммуникационными компаниями.~--- М.: Альпина Паблишерс, 
+2009. 442~с.
+
+\bibitem{1-gt} %2
+\Au{Грушо Н.\,А., Грушо~А.\,А., Забежайло~М.\,И., Тимонина~Е.\,Е.} Методы нахождения 
+причин сбоев в~информационных технологиях с~помощью метаданных~// Информатика и~её 
+применения, 2020. Т.~14. Вып.~2. С.~33--39.
+ 
+
+\bibitem{4-gt} %3
+Department of Defense Trusted Computer System Evaluation Criteria.
+DoD 5200.28-STD.~--- U.S.\ National Institute of 
+Standards and Technology, Department of Defense, 1985. {\sf 
+http://csrc.nist.gov/\linebreak publications/history/dod85.pdf}.
+
+\bibitem{3-gt} %4
+\Au{Грушо А.\,А., Применко~Э.\,А., Тимонина~Е.\,Е.} Теоретические основы компьютерной 
+безопасности.~--- М.: Академия, 2009. 272~с.
+
+\bibitem{5-gt}
+\Au{Aalst W., Weijters~T., Maruster~L.} Workflow mining: Discovering process models from event 
+logs~// IEEE~T. Knowl. Data En., 2004. Vol.~16. Iss.~9. P.~1128--1142. 
+\bibitem{6-gt}
+\Au{Bezerra F., Weiner~J.} Algorithms of anomaly detection of traces in logs of process aware 
+information systems~// Inform. Syst., 2013. Vol.~38. Iss.~1. P.~33--44. 
+\bibitem{7-gt}
+\Au{Grusho A., Grusho~N., Timonina~E.} Detection of anomalies in non-numerical data~// 8th 
+Congress (International) on Ultra Modern Telecommunications and Control Systems and Workshops 
+Proceedings.~--- Piscataway, NJ, USA: IEEE, 2016. P.~273--276.
+\bibitem{8-gt}
+\Au{Грушо А.\,А., Тимонина~Е.\,Е., Шоргин~С.\,Я.} Иерархический метод порождения 
+метаданных для управления сетевыми соединениями~// Информатика и~её применения, 2018. 
+Т.~12. Вып.~2. С.~44--49.
+\bibitem{9-gt}
+\Au{Grusho A., Grusho~N., Timonina~E.} Information flow control on the basis of meta data~//  
+Distributed computer and communication networks, 22nd International Conference, Revised Selected 
+Papers~/ Eds. V.\,M.~Vishnevskiy, K.\,E.~Samouylov, and D.\,V.~Kozyrev.~---
+Lecture notes in computer science ser.~--- Springer, 2019,  Vol.~11965. P.~548--562.
+\bibitem{10-gt}
+\Au{Grusho A.\,A., Timonina~E.\,E., Shorgin~S.\,Ya.} Modelling for ensuring information security of 
+the distributed information systems~// 31th European Conference on Modelling and Simulation 
+Proceedings.~--- Dudweiler, Germany: Digitaldruck Pirrot GmbH, 2017. P.~656--660.
+
+
+\bibitem{12-gt}
+\Au{Райзер Г.\,Дж.} Комбинаторная математика~/ Пер. с~англ. К.\,А.~Рыбникова.~--- М.: Мир, 
+1966. 154~с. (\Au{Ryser~H.\,J.} {Combinatorial mathematics.}~--- New York, NY, USA: Wiley, 1963. 
+154~p.)
+
+\bibitem{11-gt}
+\Au{Холл М.} Комбинаторика~/ Пер. с~англ. С.\, А.~Широковой.~--- М.: Мир, 1970. 424~с.
+(\Au{Hall~M., Jr.} {Combinatorial theory.}~---
+ New York, NY, USA: Wiley, 1967. 424~p.)
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.07.20}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{IDENTIFYING ANOMALIES USING METADATA}
+
+\def\titkol{Identifying anomalies using metadata}
+
+\def\aut{A.\,A.~Grusho$^1$, E.\,E.~Timonina$^1$, N.\,A.~Grusho$^1$, 
+and~I.\,Yu.~Teryokhina$^2$}
+
+\def\autkol{A.\,A.~Grusho, E.\,E.~Timonina, N.\,A.~Grusho, 
+and~I.\,Yu.~Teryokhina}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Institute of Informatics Problems, Federal Research Center 
+``Computer Sciences and Control'' of the Russian\linebreak
+$\hphantom{^1}$Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119133, Russian Federation
+
+
+\noindent
+$^2$Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov Moscow State University, 
+1-52~Lenin-\linebreak
+$\hphantom{^1}$skiye Gory, GSP-1, Moscow 119991, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 3}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt} 
+
+
+\Abste{The paper discusses the problem of information technology 
+security control based on computer audit data. These data are the sequence 
+of small samples, each of which describes the transmission of information 
+from one transformation to another. Information technologies are 
+represented by mathematical models in the form of oriented acyclic 
+graphs. In the article, such graphs describing data transmission are 
+called metadata. In integrated computer audit data, there may be at the 
+same time traces of the execution of several information technologies 
+described by their graphs. This makes it difficult to recognize 
+information flows that correspond to arcs of different graphs. The 
+concept of legal information flow is introduced in the paper, which 
+corresponds to the transfer of data of all information technologies 
+being performed. Information flows that do not correspond to the 
+execution of existing information technologies are called illegal 
+or anomalies. Such information flows can occur due to hostile activities 
+of insiders or due to errors in user actions. The article solves 
+the problem of effective identification of legal information flows 
+and anomalies on the basis of metadata.}
+
+\KWE{information security; information flow; anomalies; metadata; 
+systems of different representatives}
+
+\DOI{10.14357/19922264200311}
+
+%\vspace*{-20pt}
+
+\Ack
+\noindent
+The paper was partially supported by the Russian Foundation 
+for Basic Research (project 18-07-00274).
+
+%\vspace*{6pt}
+
+ \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{2-gt-1}
+\Aue{Samuylov, K.\,E., A.\,V.~Chukarin, and N.\,V.~Yarkina.} 2009. \textit{Biznes-protsessy 
+i~informatsionnye tekhnologii v~upravlenii telekommunikatsionnymi kompaniyami} [Business 
+processes and information technologies in management of the telecommunication companies]. 
+Moscow: Alpina Pabls. 442~p.
+
+\bibitem{1-gt-1}
+\Aue{Grusho, N.\,A., A.\,A.~Grusho, M.\,I.~Zabezhailo, and E.\,E.~Timonina.} 2020. Metody 
+nakhozhdeniya prichin sboev v informatsionnykh tekhnologiyakh s pomoshch'yu metadannykh 
+[Methods of finding the causes of information technology failures by means of meta data]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 14(2):33--39.
+
+
+\bibitem{4-gt-1}
+DoD 5200.28-STD. 1985. Department of Defense Trusted Computer System Evaluation Criteria. 
+Available at: {\sf http://csrc.nist.gov/publications/history/dod85.pdf} (accessed July~14, 2020).
+
+\bibitem{3-gt-1}
+\Aue{Grusho, A.\,A., E.\,A.~Primenko, and E.\,E.~Timonina.} 2009. \textit{Teoreticheskie osnovy 
+komp'yuternoy bezopasnosti} [Theoretical bases of computer security]. Moscow: Academy. 272~р.
+
+\bibitem{5-gt-1}
+\Aue{Aalst, W., T.~Weijters, and L.~Maruster}. 2004. Workflow mining: Discovering process models 
+from event logs. \textit{IEEE~T. Knowl. Data En.} 16(9):1128--1142.
+\bibitem{6-gt-1}
+\Aue{Bezerra, F., and J.~Weiner.} 2013. Algorithms of anomaly detection of traces in logs of process 
+aware information systems. \textit{Inform. Syst.} 38(1):33--44.
+\bibitem{7-gt-1}
+\Aue{Grusho, A., N.~Grusho, and E.~Timonina.} 2016. Detection of anomalies in non-numerical data. 
+\textit{8th Congress (International) on Ultra Modern Telecommunications and Control Systems and 
+Workshops Proceedings}. Piscataway, NJ: IEEE. 273--276.
+\bibitem{8-gt-1}
+\Aue{Grusho, A.\,A., E.\,E.~Timonina, and S.\,Ya.~Shorgin.} 2018. Ierarkhicheskiy metod 
+porozhdeniya metadannykh dlya upravleniya setevymi soedineniyami [Hierarchical method of meta 
+data generation for control of network connections]. \textit{Informatika i~ee Primeneniya~--- Inform. 
+Appl.} 12(2):44--49.
+\bibitem{9-gt-1}
+\Aue{Grusho, A.\,A., N.\,A.~Grusho, and E.\,E.~Timonina.} 2019. Information flow control on the 
+basis of meta data. \textit{Distributed computer and communication networks, 22nd International 
+Conference, Revised Selected Papers.} Eds. V.\,M.~Vishnevskiy, K.\,E.~Samouylov, and 
+D.\,V.~Kozyrev. Lecture notes in computer science ser. Springer. 11965:548--562.
+\bibitem{10-gt-1}
+\Aue{Grusho, A.\,A., E.\,E.~Timonina, and S.\,Ya.~Shorgin.} 2017. Modelling for ensuring 
+information security of the distributed information systems. \textit{31th European Conference on 
+Modelling and Simulation Proceedings}. Dudweiler, Germany: Digitaldruck Pirrot GmbH. 656--660. 
+
+\bibitem{12-gt-1}
+\Aue{Ryser, H.\,J.} 1963. \textit{Combinatorial mathematics.} New York, NY: Wiley. 154~p.
+
+\bibitem{11-gt-1}
+\Aue{Hall, M., Jr.} 1967. \textit{Combinatorial theory.} New York, NY: Wiley. 424~p.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received July 15, 2020}}
+
+%\pagebreak
+
+%\vspace*{-24pt}
+
+\Contr
+
+\noindent
+\textbf{Grusho Alexander A.} (b.\ 1946)~--- Doctor of Science in physics and mathematics, professor, 
+principal scientist, Institute of Informatics Problems, Federal Research Center ``Computer Sciences 
+and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119133, Russian 
+Federation;  \mbox{grusho@yandex.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Timonina Elena E.} (b.\ 1952)~--- Doctor of Science in technology, professor, leading scientist, 
+Institute of Informatics Problems, Federal Research Center ``Computer Sciences and Control'' of the 
+Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119133, Russian Federation; 
+\mbox{eltimon@yandex.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Grusho Nikolai A.} (b.\ 1982)~--- Candidate of Science (PhD) in physics and mathematics, 
+senior scientist, Institute of Informatics Problems, Federal Research Center ``Computer Sciences and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119133, Russian 
+Federation; \mbox{info@itake.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Teryokhina Irina Yu.} (b.\ 1994)~--- PhD student, Faculty of Computational Mathematics and 
+Cybernetics, M.\,V.~Lomonosov Moscow State University, 1-52~Leninskiye Gory, GSP-1, Moscow 
+119991, Russian Federation; \mbox{irina\_teryokhina@mail.ru}
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

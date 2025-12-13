@@ -1,0 +1,657 @@
+\def\stat{shestakov-1}
+
+\def\tit{СИЛЬНАЯ СОСТОЯТЕЛЬНОСТЬ ОЦЕНКИ СРЕДНЕКВАДРАТИЧНОЙ
+ПОГРЕШНОСТИ ПРИ~РЕШЕНИИ~ОБРАТНЫХ СТАТИСТИЧЕСКИХ ЗАДАЧ$^*$}
+
+\def\titkol{Сильная состоятельность оценки среднеквадратичной
+погрешности при~решении обратных статистических задач}
+
+\def\aut{О.\,В.~Шестаков$^1$}
+
+\def\autkol{О.\,В.~Шестаков}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Шестаков О.\,В.}
+\index{Shestakov O.\,V.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при частичной финансовой поддержке РФФИ (проект 15-07-02652).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский государственный университет им.\ М.\,В.~Ломоносова, кафедра 
+математической статистики факультета вычислительной математики и~кибернетики; 
+Институт проб\-лем информатики Федерального исследовательского центра 
+<<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{oshestakov@cs.msu.su}}
+
+\vspace*{-18pt}
+
+
+
+
+\Abst{Нелинейные методы обработки сигналов и~изображений с~помощью процедур 
+пороговой обработки коэффициентов вейвлет-раз\-ло\-же\-ний стали популярным аппаратом 
+для задач подавления шума и~компрессии. Объясняется это тем, что вейвлет-ана\-лиз 
+позволяет гораздо более эффективно исследовать нестационарные сигналы, 
+чем традиционный Фурье-ана\-лиз, благодаря возможности лучшей адаптации к~функциям, 
+имеющим на разных участках различную степень регулярности. Анализ погрешностей 
+этих методов представляет собой важную практическую задачу, поскольку позволяет 
+оценить качество как самих методов, так и~используемого оборудования. 
+В~некоторых приложениях данные наблюдаются не напрямую, а после применения некоторого
+ линейного преобразования. Задача обращения такого преобразования, как правило, 
+ некорректно поставлена, что приводит к~росту дисперсии шума. В~работе исследуются 
+ асимптотические свойства оценки среднеквадратичной погрешности при обращении 
+ линейных однородных операторов методами вейв\-лет-вейг\-лет-раз\-ло\-же\-ния 
+ и~пороговой обработки. При довольно слабых ограничениях доказывается сильная 
+ состоятельность этой оценки.}
+
+
+\KW{вейвлеты; пороговая обработка; несмещенная оценка риска; коррелированный шум; асимптотическая нормальность}
+
+\vspace*{-8pt}
+
+\DOI{10.14357/19922264170213} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+
+\section{Введение}
+
+ \vspace*{-4pt}
+
+Методы вейвлет-анализа широко применяются при анализе и~обработке зашумленных данных. 
+Во многих статистических задачах эти данные измеряются не напрямую, а после некоторого 
+преобразования. В~таких случаях построение вейв\-лет-оце\-нок осуществляется с~по\-мощью 
+вейв\-лет-вейг\-лет-раз\-ло\-же\-ния и~процедуры мягкой пороговой обработки. Порог 
+обычно зависит от уровня разложения, и~его можно выбирать различными способами,
+ исходя из постановки задачи и~целей обработки. Наличие шума неизбежно 
+ приводит к~погрешностям. Свойства оценки таких погрешностей 
+ (риска) в~модели с~независимым шумом подробно исследовались в~[1--6]. 
+ Модель с~коррелированным шумом исследовалась в~[7--9]. Показано, что при 
+ определенных условиях оценка риска является состоятельной и~асимптотически 
+ нормальной. В~данной работе доказывается сильная состоятельность оценки риска.
+ 
+ \vspace*{-6pt}
+
+\section{Модель данных и~вейвлет-вейглет-разложение}
+
+ \vspace*{-4pt}
+
+В~данной работе рассматривается следующая модель данных:
+
+\noindent
+\begin{equation}
+\label{Data_Model_Operator}
+Y_i=(Kf)_i+\epsilon_i\,,\enskip i=1,\ldots, 2^J\,,
+\end{equation}
+где $K$~--- некоторый линейный оператор; $f$~--- 
+функция, которую необходимо оценить (предполагается, что~$f$ 
+принадлежит области определения~$K$); $\{\epsilon_i$, $i \in Z\}$~--- 
+стационарный гауссовский процесс с~ковариационной последовательностью 
+$r_k \hm= \cov(\epsilon_i,\epsilon_{i+k})$ 
+(предполагается, что~$\epsilon_i$ имеют нулевое среднее и~единичную дисперсию). 
+
+В~данной работе рассматривается модель долгосрочной зависимости 
+$r_k \sim Ak^{-\alpha}$, $0\hm < \alpha \hm<1$, $A\hm>0$. Как показано в~работе~[10], 
+случай краткосрочной зависимости, т.\,е.\ когда $\sum\nolimits_{-\infty}^{+\infty} 
+|r_k| \hm< \infty$, эквивалентен модели с~независимым шумом.
+
+ Во многих случаях нельзя оценить функцию~$f$, просто применив к~данным обратный 
+ оператор~$K^{-1}$, поскольку такой оператор либо не существует, либо не 
+ является ограниченным. Статистические задачи такого рода называются \mbox{некорректно} 
+ поставленными. 
+ 
+ Для решения такого рода задач в~работе~[11] предложен метод так 
+ называемого вейв\-лет-вейг\-лет-раз\-ло\-же\-ния, 
+ который хорошо зарекомендовал себя при обращении линейных однородных операторов, т.\,е.\
+  таких операторов~$K$, для которых выпол-\linebreak нено
+  
+ 
+  
+  \noindent
+\begin{equation}
+K\left[f\left(a\left(x-x_0\right)\right)\right]=a^{-\beta}(Kf)\left[a\left(x-x_0\right)\right]\notag
+\end{equation}
+для любого~$x_0$ и~любого $a\hm>0$. Параметр~$\beta$ называется 
+показателем однородности. Примерами линейных однородных операторов служат 
+оператор интегрирования, преобразование Абеля и~операторы Рисса.
+
+ Вейвлет-разложение функции $f\hm\in L^2(\mathbb{R})$ представляет собой ряд
+\begin{align}
+f=\sum\limits_{j,k\in Z}\langle f,\psi_{jk}\rangle\psi_{jk},
+\label{Wavelet_Decomp}
+\end{align}
+где $\psi_{jk}(t)\hm=2^{j/2}\psi(2^jt-k)$, а $\psi(t)$~--- 
+некоторая материнская вейв\-лет-функ\-ция (семейство $\{\psi_{jk}\}_{jk\in Z}$ 
+образует ортонормированный базис в~$L^2(\mathbb{R})$). Индекс~$j$ 
+в~\eqref{Wavelet_Decomp} называется масштабом, а~индекс~$k$~--- сдвигом.
+
+В дискретной постановке задачи функция задана в~отсчетах на конечном отрезке. 
+Дискретное вейв\-лет-пре\-обра\-зо\-ва\-ние представляет собой умножение вектора 
+значений функции~$f$ на орто\-гональную матрицу~$W$, определяемую вейв\-лет-функ\-цией~$\psi$. 
+При этом в~силу ортогональности матри\-цы дискретные вейв\-лет-ко\-эф\-фи\-ци\-ен\-ты 
+\mbox{связаны} с~непрерывными следующим образом: 
+$\mu_{jk}\hm\approx 2^{J/2}\langle f,\psi_{jk}\rangle$, где $2^J$~--- 
+число отсчетов функции~$f$~[12]. Всюду далее предполагается, что используются 
+вейвлеты Мейера~[12], преобразование\linebreak \mbox{Фурье} которых обладает необходимым количеством 
+непрерывных производных.
+
+Поскольку наблюдается не функция~$f$, а~$Kf$, коэффициенты разложения 
+в~(\ref{Wavelet_Decomp}) вычислить
+напрямую нельзя. Идея метода вейв\-лет-вейг\-лет-раз\-ло\-же\-ния 
+заключается в~том, чтобы выразить коэффициенты разложения в~(\ref{Wavelet_Decomp}) 
+через~$Kf$. Если \mbox{оператор}~$K$ однороден, то существует последовательность
+ функций~$\xi_{jk}$ такая, что $\langle Kf, \xi_{jk}\rangle \hm= \langle f, 
+ \psi_{jk}\rangle$. Нормированные функции $u_{jk}\hm=2^{-\beta j}\xi_{jk}$ 
+ получили название\linebreak <<вейглеты>>. Своими свойствами они очень похо\-жи на вейвлеты 
+ (если соответствующие вейвлеты\linebreak удовлетворяют определенным условиям глад\-кости~[11]), 
+ за исключением свойства ортогональности. Таким образом, ряд~(\ref{Wavelet_Decomp}) 
+ можно переписать в~виде
+\begin{equation*}
+f=\sum\limits_{j,k\in Z}2^{-\beta j}\langle Kf, u_{jk}\rangle\psi_{jk}\,,
+%\label{Wavelet_Vague_Decomp}
+\end{equation*}
+которое и~представляет собой вейв\-лет-вейг\-лет-разложение.
+
+При применении дискретного аналога этого разложения 
+к~модели~(\ref{Data_Model_Operator}) по аналогии с~дискретным вейв\-лет-пре\-обра\-зо\-ва\-ни\-ем 
+получается следующая модель дискретных вейг\-лет-ко\-эф\-фи\-ци\-ен\-тов~\cite{9-sh1}:
+
+\columnbreak 
+
+\noindent
+\begin{multline*}
+X_{jk} = \mu_{j,k} + 2^{J(1-\alpha)/2} 
+\eps_{jk}\,, \\
+j=0,\ldots,J-1;\enskip k=0,\ldots,2^j-1\,,
+\end{multline*}
+где $\mu_{j,k} = 2^{J/2}\langle Kf, \xi_{j,k}\rangle$, 
+$\eps_{jk} \hm= \int \xi_{j,k}\, d \mathbf{B}_H$, а $\mathbf{B}_H(t)$~--- 
+процесс дробного броуновского движения с~$H \hm= 1-\alpha/2$.
+Дисперсии коэффициентов~$X_{jk}$ не зависят от~$k$ и~равны~\cite{10-sh1}
+$$
+\sigma^2_{j} = C 2^{(J - j)(1 - \alpha)} 2^{2\beta j}\,,
+$$
+где $C$~--- положительная константа, зависящая от параметров~$A$, $\alpha$ и~$\beta$.
+
+\section{Оценка среднеквадратичной погрешности}
+
+Для подавления шума в~методе вейв\-лет-вейг\-лет-раз\-ло\-же\-ния 
+используется процедура пороговой\linebreak обработ\-ки коэффициентов, смысл которой
+ заклю\-чается 
+в~удалении достаточно маленьких коэффициентов, которые считаются шумом. 
+В~данной работе рассматривается так называемая мягкая пороговая обработка. 
+К~каждому ко\-эф\-фи\-ци\-ен\-ту применяется функция $\rho_{T}(x)\hm=
+\textrm{sgn}\,(x)\left(\abs{x}-T\right)_{+}$, т.\,е.\ 
+коэффициенты, которые по модулю меньше порога~$T$, 
+обнуляются, а абсолютные величины остальных коэффициентов уменьшаются на 
+величину порога.
+
+Среднеквадратичная погрешность (или риск) мягкой пороговой обработки 
+определяется следующим образом:
+\begin{equation*}
+R_J(f)=\sum\limits_{j=0}^{J-1}\sum\limits_{k=0}^{2^j-1}
+\Expect\left(\mu_{jk}-\rho_{T}(X_{jk})\right)^2\,.
+\end{equation*}
+
+В~\cite{13-sh1} было предложено использовать порог $T_{j} \hm= 
+\sigma_{j}\sqrt{2\ln 2^{j}}$ и~показано, что при таком пороге среднеквадратичная 
+ошибка близка к~минимальной~\cite{12-sh1}. Этот порог получил название 
+<<универсальный>>. В~дальнейшем будет использоваться именно такой вид порога.
+
+Вычислить $R_J(f)$ в~явном виде нельзя, так как в~выражении присутствуют неизвестные 
+<<чистые>> коэффициенты~$\mu_{jk}$. Однако его можно оценить с~по\-мощью 
+следующей величины:
+\begin{equation}
+\widehat{R}_J(f)=\sum\limits_{j=0}^{J-1}\sum\limits_{k=0}^{2^j-1}F\left[X_{jk}^2,T\right]\,,
+\label{Risk_Estimate}
+\end{equation}
+где $F[x,T]=(x-\sigma^2)\Ik(|x|\leqslant T^2)\hm+
+(\sigma^2+T^2)\Ik(|x|\hm>T^2)$. В~работе~\cite{1-sh1} 
+было показано, что~$\widehat{R}_J(f)$ является несмещенной оценкой~$R_J(f)$.
+
+\section{Сильная состоятельность оценки среднеквадратичной погрешности}
+
+В работе~\cite{9-sh1} показано, что~(\ref{Risk_Estimate}) при определенных 
+условиях гладкости на функцию~$f$ является асимптотически нормальной и~состоятельной 
+оценкой~$R_J(f)$. Оказывается, что эта оценка является также сильно состоятельной 
+даже при более слабых ограничениях.
+
+Для доказательства этого утверждения потребуется следующая лемма Боска~\cite{14-sh1}, 
+в~которой оценивается вероятность отклонения суммы ограниченных слабозависимых 
+случайных величин от ее математического ожидания.
+
+\smallskip
+
+\noindent
+\textbf{Лемма.}\ \textit{Пусть $\{X_i,\;i\in Z\}$~--- 
+последовательность случайных величин таких, что $\Expect X_i\hm=0$ 
+и~$\abs{X_i}\leqslant b$ п.в.\ для всех $i\hm\in Z$, где $b\hm>0$~--- 
+некоторая константа. Тогда для любого $q\hm\in[1,n/2]$ и~любого $\eps\hm>0$
+\begin{multline}
+{\sf P}\left(\abs{\sum\limits_{i=1}^n X_i}>n\eps\right)\leqslant 
+4\exp\left\{-\fr{\eps^2}{8b^2}q\right\}+{}\\
+{}+22\left(1+\fr{4b}{\eps}\right)^{1/2}
+q\alpha\left(\left[\fr{n}{2q}\right]\right)\,,
+\label{Bosq_inequality}
+\end{multline}
+где $\alpha(k)$~--- коэффициент $\alpha$-пе\-ре\-ме\-ши\-ва\-ния последовательности
+ $\{X_i,\;i\hm\in Z\}$.}
+ 
+ \smallskip
+
+Докажем теперь сильную состоятельность оценки~(\ref{Risk_Estimate}).
+
+\smallskip
+
+\noindent
+
+\textbf{Теорема.}\ \textit{Пусть $f\in  L^2(\mathbb{R})$ задана на 
+конечном отрезке, а $K$~--- линейный однородный оператор с~показателем $\beta\hm>0$. 
+Тогда имеет место сходимость
+\begin{equation}
+\label{R_Conv}
+\fr{\widehat{R}_J(f)-R_J(f)}{2^{\lambda J}}\rightarrow 0 \;\mbox{ п.в.~при } 
+J\rightarrow\infty
+\end{equation}
+при любом $\lambda>1/2\hm+2\beta$ в~случае $\alpha\hm+2\beta\hm\geqslant1/2$ 
+и~любом $\lambda\hm>1\hm-\alpha$ в~случае $\alpha\hm+2\beta\hm<1/2$}.
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+Пусть $0\hm<p\hm<1$ некоторое число, которое будет выбрано позднее. 
+Представим числитель~(\ref{R_Conv}) в~виде
+$\widehat{R}_J(f)\hm-R_J(f)\hm=\widehat{R}_1\hm+\widehat{R}_2$, где
+\begin{align*}
+\widehat{R}_1&=\sum\limits_{j=0}^{[pJ]-1}\sum\limits_{k=0}^{2^j-1}\left(F
+\left[X_{jk}^2,T\right]-\Expect F\left[X_{jk}^2,T\right]\right)\,;\\
+\widehat{R}_2&=\sum\limits_{j=[pJ]}^{J-1}\sum\limits_{k=0}^{2^j-1}\left(F\left[X_{jk}^2,T\right]
+-\Expect F\left[X_{jk}^2,T\right]\right)\,.
+\end{align*}
+Рассмотрим~$\widehat{R}_2$. Для произвольного $\delta\hm>0$ имеем:
+\begin{multline}
+p_J={\sf P}\left(\abs{\widehat{R}_2}>\delta2^{\lambda J}\right)\leqslant{}\\
+{}\leqslant \sum\limits_{j=[pJ]}^{J-1}{\sf P}\left(
+\abs{\sum\limits_{k=0}^{2^j-1}\left(F\left[X_{jk}^2,T\right]-
+\Expect F\left[X_{jk}^2,T\right]\right)}>{}\right.\\
+\left.{}>\delta J^{-1}2^{\lambda J}
+\vphantom{\abs{\sum\limits_{k=0}^{2^j-1}\left(F\left[X_{jk}^2,T\right]-
+\Expect F\left[X_{jk}^2,T\right]\right)}}
+\right)\,.
+\label{PJ_inequality}
+\end{multline}
+Из вида функции $F[x,T]$ следует, что $-\sigma^2_j\hm\leqslant F[X_{jk}^2,T_j]
+\hm\leqslant\sigma^2_j\hm+T^2_j$. В~работе~\cite{10-sh1} 
+показано, что в~силу свойств вейвлетов Мейера при каждом~$j$ слагаемые в~сумме 
+под вероятностью в~(\ref{PJ_inequality}) удовлетворяют свойству $\rho$-пе\-ре\-ме\-ши\-ва\-ния 
+с~коэффициентом $\rho(k)\hm\leqslant C k^{-M}$, где $C\hm>0$~--- 
+некоторая константа, а~$M$ можно сделать достаточно большим, выбрав соответствующий 
+вейвлет Мейера.
+
+Известно~\cite{15-sh1}, что для коэффициентов $\alpha$-пе\-ре\-ме\-ши\-ва\-ния 
+и~$\rho$-пе\-ре\-ме\-ши\-ва\-ния справедливо неравенство $4\alpha(k)\hm\leqslant\rho(k)$. 
+Применяя неравенство~(\ref{Bosq_inequality}) с~$q\hm=2^{\theta j}$ ($\theta\hm<1$) 
+для каждого~$j$ в~сумме~(\ref{PJ_inequality}) и~выбирая~$M$
+ достаточно большим, получаем:
+\begin{multline}
+p_J\leqslant c_1 J\times{}\\
+{}\times\max\limits_{[pJ]\leqslant j\leqslant J-1}
+\left\{\exp\!\left[-c_2J^{-3} 2^{2(\lambda-1+\alpha)J+(\theta-2\alpha-4\beta)j}\right]
+\!\right\}+{}\\
+{}+o_J\,.
+\label{P_inequality}
+\end{multline}
+Здесь $c_1$ и~$c_2$~--- некоторые положительные константы, а~$o_J$ убывает по~$J$ 
+быстрее, чем~$2^{-M_0 pJ}$, где~$M_0$~--- некоторое положительное число, 
+зависящее от~$M$.
+
+Если $\alpha+2\beta\geqslant 1/2$, то $\theta\hm-2\alpha\hm-4\beta\hm<0$, и~при $j\hm=J$ 
+правая часть~(\ref{P_inequality}) не превосходит $c_1 J\exp\left[-c_2J^{-3} 
+2^{(2\lambda-2+\theta-4\beta)J}\right]$. Поскольку $\theta\hm<1$ 
+можно выбрать произвольно, для того чтобы выполнялось неравенство 
+$2\lambda\hm-2\hm+\theta\hm-4\beta\hm>0$,
+ до\-статочно потребовать $\lambda\hm>1/2\hm+2\beta$. 
+Если же\linebreak $\alpha\hm+2\beta\hm<1/2$, то можно выбрать $\theta\hm<1$ так, 
+что $\theta\hm-2\alpha\hm-4\beta\hm>0$, и~правая часть~(\ref{P_inequality}) 
+не превосходит $c_1 J\exp\left[-c_2J^{-3} 2^{2(\lambda-1+\alpha)J}\right]$. 
+Следовательно, чтобы выполнялось неравенство $\lambda\hm-1\hm+\alpha\hm>0$, достаточно 
+потребовать $\lambda\hm>1\hm-\alpha$. При таком выборе~$\lambda$
+\begin{equation*}
+\sum\limits_{J=1}^{\infty}p_J<\infty\,,
+\end{equation*}
+и в~силу леммы Бо\-ре\-ля--Кан\-тел\-ли для любого $\delta\hm>0$ 
+событие $\left\{\abs{\widehat{R}_2}\hm>\delta2^{\lambda J}\right\}$ осуществляется лишь 
+конечное число раз. Следовательно, $\widehat{R}_2 2^{-\lambda J}\rightarrow 0$ п.в.
+
+В $\widehat{R}_1$ при каждом фиксированном~$j$ ($0\hm\leqslant j\hm\leqslant [pJ]\hm-1$) 
+чис\-ло слагаемых равно~$2^j$, а каждое слагаемое не превосходит по
+ модулю $B J2^{J(1-\alpha)}2^{j(2\beta+\alpha-1)}$, где $B\hm>0$~--- 
+ некоторая константа. Следовательно, 
+ $\abs{\widehat{R}_1}\hm\leqslant B_1J 2^{J(1-\alpha+p(2\beta+\alpha))}$, где 
+ $B_1$~--- некоторая положительная константа. Если $2\beta\hm+\alpha\hm\geqslant1/2$, 
+ то при $\lambda\hm>1/2\hm+2\beta$ всегда можно выбрать такое $0\hm<p\hm<1$, что 
+ $\lambda\hm-(1\hm-\alpha\hm+p(2\beta\hm+\alpha))\hm>0$, и,~следовательно, 
+ $\widehat{R}_1 2^{-\lambda J}\rightarrow 0$ п.в. 
+ Если же $\alpha\hm+2\beta\hm<1/2$, то при $\lambda\hm>1\hm-\alpha$ 
+ всегда можно выбрать такое $0\hm<p\hm<1$, что $\lambda\hm-(1\hm-\alpha\hm+p(2\beta
+ \hm+\alpha))\hm>0$, и,~следовательно, $\widehat{R}_1 2^{-\lambda J}\rightarrow 0$ 
+ п.в. Теорема до\-ка\-зана.
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-sh1}
+\Au{Donoho D., Johnstone~I.\,M.} Adapting to unknown smoothness via wavelet shrinkage~// 
+J.~Amer. Stat. Assoc., 1995. Vol.~90. P.~1200--1224.
+
+\bibitem{3-sh1} %2
+\Au{Маркин А.\,В.} Предельное распределение оценки риска при пороговой обработке 
+вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов~// Информатика и~её применения, 2009. Т.~3. Вып.~4. С.~57--63.
+
+\bibitem{4-sh1} %3
+\Au{Маркин А.\,В., Шестаков~О.\,В.} О~со\-сто\-ятель\-ности оценки риска при пороговой 
+обработке вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов~// Вестн. Моск.
+ун-та. Сер.~15: Вычисл. матем. и~киберн., 2010. №\,1. C.~26--34.
+
+\bibitem{2-sh1} %4
+\Au{Кудрявцев А.\,А., Шестаков~О.\,В.} Асимптотика оценки риска при вейг\-лет-вейв\-лет-раз\-ло\-же\-нии 
+наблюдаемого сигнала~// T-Comm: Телекоммуникации и~транспорт, 2011. №\,2. С.~54--57.
+
+
+
+\bibitem{5-sh1}
+\Au{Шестаков О. \,В.}  Асимптотическая нормальность оценки риска 
+пороговой обработки вейв\-лет-ко\-эф\-фи\-ци\-ен\-тов при выборе
+адаптивного порога~// Докл. РАН, 2012. Т.~445. №\,5. С.~513--515.
+
+\bibitem{6-sh1}
+\Au{Шестаков О.\,В.} О~свойствах оценки среднеквадратичного риска при регуляризации 
+обращения линейного однородного оператора с~помощью адаптивной пороговой 
+обработки коэффициентов вейг\-лет-вейв\-лет раз\-ло\-же\-ния~// 
+Вестн. ТвГУ. Серия: Прикладная математика, 2012. №\,8. С.~117--130.
+
+\bibitem{9-sh1} %7
+\Au{Ерошенко А.\,А., Шестаков~О.\,В.} Асимптотическая нормальность оценки риска 
+при вейв\-лет-вейг\-лет-раз\-ло\-же\-нии функции сигнала в~модели с~коррелированным 
+шумом~// Вестн. Моск. ун-та. Сер.~15: Вычисл. матем. и~киберн., 2014. №\,3. C.~110--117.
+
+\bibitem{7-sh1} %8
+\Au{Ерошенко А.\,А.} Состоятельность оценок риска при вейв\-лет-вейг\-лет 
+и~вейг\-лет-вейв\-лет-раз\-ло\-же\-ни\-ях функции сигнала в~модели с~коррелированным 
+шумом~// Вестн. ТвГУ. Серия: Прикладная математика, 2015. №\,1. С.~103--114.
+
+\bibitem{8-sh1} %9
+\Au{Ерошенко А.\,А., Кудрявцев~А.\,А., Шестаков~О.\,В.} 
+Предельное распределение оценки риска метода вейг\-лет-вейв\-лет-раз\-ло\-же\-ния 
+сигнала в~модели с~коррелированным шумом~// Вестн. Моск. ун-та. Сер.~15: 
+Вычисл. матем. и~киберн., 2015. №\,1. C.~12--18.
+
+
+
+\bibitem{10-sh1}
+\Au{Johnstone I.\,M.} Wavelet shrinkage for correlated data and inverse problems: 
+Adaptivity results~// Stat. Sinica, 1999. Vol.~9. No.\,1. P.~51--83.
+
+\bibitem{11-sh1}
+\Au{Donoho D.} Nonlinear solution of linear inverse problems by wavelet-vaguelette 
+decomposition~// Appl. Comput. Harmon. Anal., 1995. Vol.~2. P.~101--126.
+
+\bibitem{12-sh1}
+\Au{Mallat S.} A~wavelet tour of signal processing.~--- New York, NY, USA:
+Academic Press, 1999. 857~p.
+
+\bibitem{13-sh1}
+\Au{Kolaczyk E.\,D.} Wavelet methods for the inversion of certain homogeneous 
+linear operators in the presence of noisy data.~--- Stanford, CA, USA:
+Stanford University, 1994.
+ PhD Thesis.
+
+\bibitem{14-sh1}
+\Au{Bosq D.} Nonparametric statistics for stochastic processes: Estimation and 
+prediction.~--- New York, NY, USA: Springer-Verlag, 1996. 169~p.
+
+\bibitem{15-sh1}
+\Au{Bradley R.\,C.} Basic properties of strong mixing conditions. 
+A~survey and some open questions~// Probab. Surveys, 2005. Vol.~2. P.~107--144.
+
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 11.11.16}}
+
+\vspace*{8pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{8pt}
+
+
+\def\tit{STRONG CONSISTENCY OF~THE~MEAN SQUARE RISK ESTIMATE IN~THE~INVERSE STATISTICAL 
+PROBLEMS}
+
+\def\titkol{Strong consistency of~the~mean square risk estimate in~the~inverse statistical 
+problems}
+
+\def\aut{O.\,V.~Shestakov$^{1,2}$}
+
+\def\autkol{O.\,V.~Shestakov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Department of Mathematical Statistics, Faculty of Computational Mathematics 
+and Cybernetics, M.\,V.~Lo-\linebreak
+$\hphantom{^1}$monosov Moscow State University, 1-52~Leninskiye Gory,
+ GSP-1, Moscow 119991, Russian Federation
+ 
+ \noindent
+ $^2$Institute of Informatics Problems, Federal Research Center 
+ ``Computer Science and Control'' of the Russian\linebreak
+ $\hphantom{^1}$Academy of Sciences, 44-2~Vavilov Str., 
+ Moscow 119333, Russian Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+\Abste{Nonlinear methods of digital signal processing based on 
+thresholding of wavelet coefficients became a popular tool for solving 
+the problems of signal de-noising and compression. This is explained by 
+the fact that the wavelet methods allow much more effective analysis of 
+nonstationary signals than traditional Fourier analysis,
+thanks to the 
+better adaptation to the functions with varying degrees of regularity. 
+Wavelet thresholding risk
+analysis is an important practical task, because 
+it allows determining the quality of techniques themselves and the equipment\linebreak\vspace*{-12pt}}
+
+\Abstend{which is being used. In some applications, the data are observed not directly 
+but after applying a~linear transformation. The problem of inverting this 
+transformation is usually set incorrectly, leading to an increase in the 
+noise variance. In this paper, the asymptotic properties of the mean square 
+error (MSE) estimate are studied when inverting linear homogeneous operators by means of wavelet 
+vaguelette decomposition and thresholding. 
+The strong consistency of this estimate has been proved under
+mild conditions.}
+
+\KWE{wavelets; thresholding; MSE risk estimate; correlated noise;
+ asymptotic normality} 
+ 
+\DOI{10.14357/19922264170213} 
+
+\vspace*{-8pt}
+
+\Ack
+\noindent
+The work was partly supported by the Russian Foundation
+for Basic Research projects Nos.\,15-37-20611 and
+16-07-00677).
+
+
+
+\vspace*{3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-sh1-1}
+\Aue{Donoho, D., and I.\,M.~Johnstone.} 1995. Adapting to unknown smoothness via
+ wavelet shrinkage. \textit{J.~Amer. Stat. Assoc.} 90:1200--1224.
+ 
+ \bibitem{3-sh1-1}
+\Aue{Markin, A.\,V.} 2009. Predel'noe raspredelenie otsenki riska pri 
+porogovoy obrabotke veyvlet-koeffitsientov [Limit distribution of risk estimate 
+of wavelet coefficient thresholding]. \textit{Informatika i~ee Primeneniya~--- 
+Inform. Appl.}  3(4):57--63.
+
+\bibitem{4-sh1-1}
+\Aue{Markin, A.\,V., and O.\,V.~Shestakov.} 2010. Consistency of risk estimation 
+with thresholding of wavelet coefficients. \textit{Moscow Univ. Comput. Math. 
+Cybern.} 34(1):22--30.
+
+
+\bibitem{2-sh1-1} %4
+\Aue{Kudryavtsev, A.\,A., and O.\,V.~Shestakov}. 2011. Asimptotika otsenki riska pri 
+veyglet-veyvlet-razlozhenii nablyudaemogo signala 
+[The asymptotic behavior of the risk estimate under wavelet-vaguelette 
+decomposition of the observed signal]. \textit{T-Comm: Telekommunikatsii i Transport}
+[T-Comm: Telecommunications and Transport] 2:54--57.
+
+
+
+\bibitem{5-sh1-1}
+\Aue{Shestakov, O.\,V.} 2012. Asymptotic normality of adaptive wavelet thresholding 
+risk estimation. \textit{Dokl. Math.} 86(1):556--558.
+
+\bibitem{6-sh1-1}
+\Aue{Shestakov, O.\,V.} 2012. O~svoystvakh otsenki sred\-ne\-kvad\-ra\-ti\-ch\-no\-go riska pri 
+regulyarizatsii obrashcheniya lineynogo odnorodnogo operatora s~pomoshch'yu adaptivnoy 
+porogovoy obrabotki koeffitsientov veyglet-veyvlet razlozheniya 
+[The properties of mean square error estimate when regularizing the inversion of the homogeneous 
+linear operator using adaptive thresholding of wavelet-vaguelette decomposition 
+coefficients]. \textit{Vestn. TvGU. Seriya: Prikladnaya matematika} 
+[Herald of Tver State University. Series: Applied Mathematics] 8:117--130.
+
+\bibitem{9-sh1-1} %7
+\Aue{Eroshenko, A.\,A., and O.\,V.~Shestakov}. 2014. Asymptotic normality of 
+estimating risk upon the wavelet-vaguelette decomposition of a~signal function 
+in a~model with correlated noise. \textit{Moscow Univ. Comput. Math.  Cybern.} 
+38(3):110--117.
+
+\bibitem{7-sh1-1} %8
+\Aue{Eroshenko, A.\,A.} 2015. Sostoyatel'nost' otsenok riska pri veyvlet-veyglet 
+i~veyglet-veyvlet-razlozheniyakh funktsii signala v~modeli s~korrelirovannym shumom 
+[Consistency of risk estimates for wavelet-vaguelette and vaguelette-wavelet 
+decompositions of signal function in the model of data with correlated noise]. 
+\textit{Vestn. TvGU. Seriya: Prikladnaya matematika} 
+[Herald of Tver State University. Series: Applied Mathematics] 1:103--114.
+
+\bibitem{8-sh1-1} %9
+\Aue{Eroshenko, A.\,A., A.\,A.~Kudryavtsev,  and O.\,V.~Shestakov.} 2015. 
+Limit distribution of a~risk estimate using the vaguelette-wavelet decomposition 
+of signals in a model with correlated noise. 
+\textit{Moscow Univ. Comput. Math. Cybern.} 39(1):6-13.
+
+
+
+\bibitem{10-sh1-1}
+\Aue{Johnstone, I.\,M.} 1999. Wavelet shrinkage for correlated data and inverse
+ problems: Adaptivity results. \textit{Stat. Sinica} 9(1):51--83.
+
+\bibitem{11-sh1-1}
+\Aue{Donoho, D.} 1995. Nonlinear solution of linear inverse problems by 
+wavelet-vaguelette decomposition. \textit{Appl. Comput. Harmon. Anal.}  
+2:101--126.
+
+
+\bibitem{12-sh1-1}
+\Aue{Mallat, S.} 1999. \textit{A~wavelet tour of signal processing.} 
+New York, NY: Academic Press. 857~p.
+
+\bibitem{13-sh1-1}
+\Aue{Kolaczyk, E.\,D.} 1994. Wavelet methods for the inversion of certain homogeneous 
+linear operators in the presence of noisy data. Stanford, CA: Stanford University. 
+PhD Thesis. 163~p.
+
+\bibitem{14-sh1-1}
+\Aue{Bosq, D.} 1996. \textit{Nonparametric statistics for stochastic processes: 
+Estimation and prediction.} New York, NY: Springer-Verlag. 169~p.
+
+\bibitem{15-sh1-1}
+\Aue{Bradley, R.\,C.} 2005. Basic properties of strong mixing conditions. 
+A~survey and some open questions. \textit{Probab. Surveys} 2:107--144.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received November 11, 2016}}
+
+\vspace*{-12pt}
+
+\Contrl
+
+\noindent
+\textbf{Shestakov Oleg V.} (b.\ 1976)~--- 
+Doctor of Science in physics and mathematics, associate professor, 
+Department of Mathematical Statistics, Faculty of Computational Mathematics 
+and Cybernetics, M.\,V.~Lomonosov Moscow State University, 1-52~Leninskiye Gory,
+ GSP-1, Moscow 119991, Russian Federation; senior scientist, 
+ Institute of Informatics Problems, Federal Research Center 
+ ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
+ Moscow 119333, Russian Federation; \mbox{oshestakov@cs.msu.su}
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература} 

@@ -1,0 +1,608 @@
+\def\stat{abgaryan}
+
+\def\tit{МЕТОД КОМПЬЮТЕРНОГО МОДЕЛИРОВАНИЯ УПРУГИХ ХАРАКТЕРИСТИК 
+МНОГОСЛОЙНЫХ КОМПОЗИЦИОННЫХ МАТЕРИАЛОВ$^*$}
+
+\def\titkol{Метод компьютерного моделирования упругих характеристик 
+многослойных %композиционных 
+материалов}
+
+\def\aut{К.\,К.~Абгарян$^1$, Н.\,Л.~Загордан$^2$, Ю.\,Д.~Мочалова$^3$}
+
+\def\autkol{К.\,К.~Абгарян, Н.\,Л.~Загордан, Ю.\,Д.~Мочалова}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Абгарян К.\,К.}
+\index{Загордан Н.\,Л.}
+\index{Мочалова Ю.\,Д.}
+\index{Abgaryan K.\,K.}
+\index{Zagordan N.\,L.}
+\index{Mochalova Y.\,D.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнялась с~использованием инфраструктуры Центра коллективного пользования 
+<<Высокопроизводительные вычисления и~большие данные>> (ЦКП <<Информатика>>) ФИЦ ИУ РАН 
+(г.~Москва).}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{kristal83@mail.ru}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{zagordann@gmail.com}}
+\footnotetext[3]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{juliamochalova96@gmail.com}}
+
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+\vspace*{-12pt}
+
+    
+      
+\Abst{Современные полимерные композиционные материалы (ПКМ) нашли широкое применение  
+в~авиа\-ци\-он\-но-кос\-ми\-че\-ской отрасли. Создание новых материалов с~требуемыми 
+характеристиками на сегодня стало одним из важнейших направлений развития отрасли, 
+особенно в~связи с~необходимостью оперативного решения вопросов, связанных 
+с~импортозамещением. В~работе приведены результаты расчета эффективных упругих 
+характеристик многослойных ПКМ
+с~разноориентированной структурой армирования слоев. Использована модель армированного 
+материала, основанная на предположении, что композиционный материал состоит из 
+квазиоднородных трансверсально изотропных идеально соединенных слоев. Полученные 
+результаты расчетов хорошо согласуются как с~экспериментальными данными, так 
+и~с~результатами расчетов коммерческих пакетов и~могут быть использованы для 
+автоматизации научных и~инженерных расчетов при подборе компонентов и~методологии их 
+укладки по заданным характеристикам ПКМ.}
+
+\KW{компьютерное моделирование; многослойные полимерные композиционные материалы; 
+упругие характеристики}
+
+\DOI{10.14357\!/\!08696527230409}{DPZJSX}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-22pt}
+
+\section{Введение}
+
+\vspace*{-4pt}
+
+     В настоящее время переход к~передовым цифровым, интеллектуальным, 
+производственным технологиям, новым материалам и~способам их 
+конструирования стал одним из важнейших направлений в~развитии нашей 
+страны, реализация которого позволит ускоренными темпами решить проблему 
+импортозамещения. Модернизация промышленного производства требует 
+скорейшего создания новых материалов с~заданными свойствами для их 
+применения в~разных областях, включая авиа\-ци\-он\-но-кос\-ми\-че\-скую 
+отрасль, микроэлектронику, медицину и~др. Разработка программных систем, 
+базирующихся на применении оригинальных методов программной инженерии, 
+дает возможность автоматизировать процесс научных и~инженерных 
+исследований, наиболее эффективно применять методы многомасштабного 
+компьютерного моделирования и~анализа данных для достижения целей 
+опережающего развития в~области создания новых материалов.
+     
+     Сегодня компьютерное моделирование позволяет существенно ускорить 
+и~удешевить процессы создания новых материалов. В~современных силовых 
+конструкциях активно применяют многослойные ПКМ. Проектирование деталей из ПКМ~--- сложная задача, 
+требующая расчета оптимальных характеристик материала, которые будут 
+зависеть от числа монослоев ПКМ, их упру\-го-жест\-кост\-ных свойств и~способа 
+их укладки. 
+     
+     Расчет характеристик многослойных ПКМ также является важной задачей 
+при эксплуатации изделий из ПКМ, так как ремонт агрегатов в~зонах выявленных 
+дефектов, в~том числе и~с~неоригинальными компонентами, требуется 
+конструкциям на протяжении всего жизненного цикла. Например, ремонты 
+конструктивных элементов планера летательного аппарата становятся 
+неотъемлемой частью его эксплуатации. Многослойные ПКМ из стеклотканей 
+и~клеевых пленок применяются в~хвостовой и~носовой областях консольной 
+части крыла, в~обтекателях механизмов закрылков и~законцовках стабилизаторов 
+используются углеленты, стеклоткани и~клеевые пленки. При выявлении 
+дефектов таких агрегатов остро стоит задача подбора компонентов из доступных 
+на рынке материалов и~выбора технологии ремонта таким образом, чтобы 
+механико-прочностные характеристики агрегатов после ремонта дефектной зоны 
+не ухудшались. Однако задача расчета характеристик композиционного 
+материала в~области ремонта остается нетривиальной даже при знании 
+характеристик монослоев ПКМ. Применение методов компьютерного 
+моделирования с~использованием программной системы, позволяющей 
+рассчитывать упругие характеристики многослойных ПКМ, дает возможность 
+автоматизировать научные и~инженерные расчеты при подборе оптимальных 
+компонентов и~методологии их укладки по заданным характеристикам 
+ПКМ.
+     
+\section{Метод моделирования упругих характеристик полимерных 
+композиционных материалов} 
+
+     Развитие высокопроизводительных вычислительных комплексов 
+и~прикладных программных средств позволило проводить исследования структур 
+и~свойств композиционных материалов с~применением многомасштабного 
+компьютерного моделирования~[1--3]. При этом можно выделить~4~основных про\-стран\-ст\-вен\-но-вре\-мен\-н\'{ы}х уровня описания поведения 
+материала: атом\-но-крис\-тал\-ли\-че\-ский,  
+мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ский, мезоскопический и~континуальный.
+     
+     В работе~[4] представлен программный комплекс, позволяющий 
+моделировать структурные свойства композиционного материала на основе 
+многомасштабного подхода. В~настоящей работе класс моделируемых 
+комплексом~[4] композиционных материалов дополнен многослойным 
+материалом, состоящим из разноориентированных монослоев однонаправленного 
+волокна, пропитанного связующим. В~соответствии с~предлагаемым методом 
+свойства монослоев вычисляются на атом\-но-крис\-тал\-ли\-че\-ском 
+и~наноуровне с~применением методов молекулярной динамики при условии их 
+успешной валидации. Полученные данные передаются на мезоуровень, где 
+рассчитываются упругие характеристики гомогенизированного монослоя. 
+Вычисленные свойства монослоев поступают в~базу данных свойств материалов 
+программного комплекса~[4] и~используются в~качестве входных данных для 
+моделирования эффективных упругих характеристик многослойного 
+композиционного материала с~разноориентированной структурой армирования. 
+Программно реализованный модуль позволяет вычислять эффективные свойства 
+многослойного материала. При развитии программного комплекса~[4] 
+предполагается использование вычисленных свойств монослоев для решения 
+обратной задачи~--- проектирования многослойного композиционного материала с~заданными макроскопическими характеристиками.
+     
+     В методе предполагается, что известны определяющие свойства монослоя: 
+модуль упругости слоя вдоль волокон~$E_1$, модуль упругости слоя поперек 
+волокон~$E_2$, модуль сдвига слоя поперек волокон~$G_{12}$ и~коэффициент 
+Пуассона~$\nu_{12}$. 
+     
+В соответствии с~законом Гука коэффициенты матрицы жест\-кости 
+$$
+G^0= \left(g_{11}^0\, g_{12}^0\, g_{16}^0\, g_{21}^0\, g_{22}^0\, g_{26}^0\, 
+g_{61}^0\, g_{62}^0\, g_{66}^0\right)
+$$ 
+для монослоя однонаправленного 
+композиционного материала при плоском напряженном состоянии имеют вид~[5]:
+\begin{gather*}
+g_{11}^0= \fr{E_1}{1-\nu_{12} \nu_{21}}\,;\enskip
+g_{12}^0=g_{21}^0= \fr{E_1 \nu_{21}}{1-\nu_{12} \nu_{21}}\,;\enskip
+g_{22}^0= \fr{E_2}{1-\nu_{12} \nu_{21}}\,;\\
+g_{66}^0=G_{12}\,,\enskip
+g_{61}^0=g_{62}^0=g_{16}^0=g_{26}^0 =0\,;\enskip 
+\nu_{21}=\fr{\nu_{12}E_2}{E_1}\,.
+\end{gather*}
+При плоском напряженном состоянии коэффициенты матрицы жесткости могут 
+быть записаны через независимые коэффициенты~$V_k$, являющиеся 
+инвариантами характеристик жесткости:
+\begin{equation}
+\left.
+\begin{array}{rl}
+V_1&=\fr{3g_{11}^0+2g_{12}^0+3g_{22}^0+4g_{66}^0}{8}\,;\\[3pt]
+V_2&= \fr{g_{11}^0-g_{22}^0}{2}\,;\\[3pt]
+V_3 &= \fr{g_{11}^0 -2g_{12}^0 +g_{22}^0 -4g_{66}^0}{8}\,;\\[3pt]
+V_4 &- \fr{g_{11}^0 -2g_{12}^0 +g_{22}^0 +4g_{66}^0}{8}\,.
+\end{array}
+\right\}
+\label{e1-ab}
+\end{equation}
+При повороте волокнистого материала на угол~$\theta$ в~плос\-кости уклад\-ки 
+слоя коэффициенты симметричной мат\-ри\-цы жест\-кости 
+$$
+G^\prime = 
+\left(g_{11}^\prime\, g_{12}^\prime\, g_{16}^\prime\, g_{12}^\prime\, g_{22}^\prime\, 
+g_{26}^\prime\, g_{16}^\prime\, g_{26}^\prime\, g_{66}^\prime\right)
+$$ 
+
+     \vspace*{-3pt}
+     
+     \noindent
+мож\-но 
+вычислить по формулам:
+\begin{equation}
+\left.
+\begin{array}{rl}
+g_{11}^\prime &= V_1+V_2\cos 2\theta +V_3\cos 4\theta\,;\\[3pt]
+g_{12}^\prime &=V_1-2V_4 -V_3\cos 4\theta\,;\\[3pt]
+g_{16}^\prime &= \fr{1}{2}\,V_2\sin 2\theta +V_3 \sin 4\theta\,;\\[3pt]
+g_{22}^\prime &= V_1-V_2\cos 2\theta +V_3 \cos 4\theta\,;\\[3pt]
+g_{26}^\prime &= \fr{1}{2}\,V_2\sin 2\theta -V_3 \sin 4\theta\,;\\[3pt]
+g_{66}^\prime &= V_4-V_3 \cos 4\theta\,.
+\end{array}
+\right\}
+\label{e2-ab}
+\end{equation}
+
+     \vspace*{-3pt}
+     
+     Используя приведенные выше коэффициенты матриц жесткостей 
+монослоев, можно определить упругие характеристики для композиционного 
+материала, состоящего из нескольких разноориентированных слоев 
+однонаправленного материала.
+     
+     При растяжении однонаправленного слоистого композиционного материала 
+под углом~$\theta$ к~направлению армирования эффективный модуль  
+упру\-гости~$E_x^{\prime\prime}$ можно рассчитать по формуле:
+     \begin{equation}
+     E_x^{\prime\prime} =\fr{\Delta G^\prime}{g_{22}^\prime g_{66}^\prime - \left( 
+g^\prime_{26}\right)^2}\,,
+     \label{e3-ab}
+     \end{equation}
+     
+     \vspace*{-3pt}
+     
+     \noindent
+где $\Delta G^\prime$~--- определитель матрицы жест\-кости~$G^\prime$.
+
+     При укладке однонаправленных слоев композита по технологии 
+перекрестного армирования, когда многослойный композит состоит из $2n$ 
+слоев, $n$ из которых уложены под углом~$\theta$ и~$n$~слоев~--- под углом  
+$-\theta$ относительно оси симметрии укладки, модуль упругости такого 
+композита в~направлении оси~$x$ равен
+     \begin{equation}
+     E_x^\# = g_{11}^\prime -\fr{g^\prime_{12}}{g_{22}^\prime}\,.
+     \label{e4-ab}
+     \end{equation}
+     
+     \vspace*{-15pt}
+
+\section{Результаты расчетов}
+
+     \vspace*{-5pt}
+
+     
+     Для верификации результатов расчета эффективной упругости 
+многослойного композиционного материала было проведено сравнение 
+экспериментальных данных~[6--8] с~результатами численного моделирования. 
+Также результаты расчета сравнивались с~результатами численного 
+моделирования упругих характеристик в~программном комплексе Ansys 
+Composite PrePost (ACP), позволяющем в~явном виде задавать свойства 
+монослоев, структуру укладки многослойных\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+ композитных материалов, 
+рассчитывать и~визуализировать упру\-го-жест\-кост\-ные свойства 
+проектируемых материалов (рис.~1).
+     
+\begin{figure} %fig1
+\vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=70mm 
+\epsfbox{abg-1.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Форма проектирования многослойного материала в~ACP}
+\vspace*{-6pt}
+\end{figure}
+
+     
+     В проведенных численных экспериментах рассчитывались упругие свойства 
+перекрестно армированного материала из~48~слоев. Все слои были выполнены из 
+материала IM7/8551-7a, состоящего из углеродного волокна IM7 и~свя\-зу\-юще\-го~--- 
+эпоксидной смолы 8551-7a. Упругие свойства материала IM7/8551-7а доступны 
+в~открытых источниках: $E_1\hm= 144{,}9$~ГПа; $E_2\hm= 8{,}8$~ГПа; 
+$G_{12}\hm= 4{,}8$~ГПа; $\nu_{12}\hm= 0{,}36$.
+     
+     На рис.~2 представлен экспериментальный и~расчетные графики 
+зависимости эффективного модуля упругости  от угла армирования~$\theta$, 
+изменяющегося от~0$^\circ$ до~90$^\circ$, для перекрестно армированного 
+материала. Видно, что экспериментальные данные хорошо согласуются 
+с~данными численных экспериментов, полученных как в~рамках расчета модуля 
+упругости с~использованием соотношений~(1) и~(2), так и~полученных при 
+использовании модуля ACP. 
+     
+      
+     Рисунок~3 иллюстрирует хорошее качественное и~количественное согласие 
+экспериментальных и~расчетных данных: относительное отклонение расчетных 
+данных от экспериментальных не превышает~5\%. Величины модуля упругости, 
+полученные по соотношениям (1), (2) и~(\ref{e4-ab}) и~в приложении ACP, 
+практически совпадают: относительная величина отклонения не превышает~1\%.
+     
+    
+     
+     
+     На рис.~4 показаны результаты расчета модулей упругости перекрестно 
+армированного композиционного материала AS4/3502, состоящего из 
+одно\-на\-прав\-лен\-ных углеродных волокон и~связующего из смолы. Для расчета 
+использованы данные о~свойствах из открытых источников: $E_1\hm= 
+127{,}65$~ГПа; $E_2\hm= 11{,}32$~ГПа; $G_{12}\hm= 6$~ГПа; $\nu_{12}\hm= 
+0{,}3$. Видно, что результаты численных экспериментов, полученные в~модуле 
+ACP и~при использовании соотношений~(1), (2) и~(4), хорошо согласуются.
+
+ \begin{figure} %fig2
+     \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=81.625mm 
+\epsfbox{abg-2.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+     \Caption{Зависимость модуля упругости $E_x^\#$ от угла армирования~$\theta$ для 
+многослойного композиционного материала IM7/8551-7a: \textit{1}~--- эксперимент; \textit{2}~--- расчет 
+с~использованием соотношений~(1) и~(2); \textit{3}~--- численные эксперименты в~ACP}
+      %\end{figure}
+      % \begin{figure} %fig3
+      \vspace*{6pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=79.625mm 
+\epsfbox{abg-3.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+     \Caption{Погрешность измерения модуля упругости $E_x^\#$: \textit{1}~--- вычисленного по 
+соотношениям (1), (2) и~(\ref{e4-ab}) относительно экспериментального значения; \textit{2}~--- 
+вычисленного в~ACP относительно экспериментального значения; \textit{3}~--- вычисленного 
+по соотношениям (1), (2) и~(3) относительно вычисленного в~ACP}
+\vspace*{-6pt}
+      \end{figure}
+    
+     
+    
+     На эффективные упруго-жесткостные свойства многослойного материала 
+существенное влияние оказывает ориентация армирующих слоев относительно 
+друг друга. На рис.~5 представлены результаты расчета модуля упругости для 
+двух образцов композиционного материала, слои которого состоят из материала 
+марки IM7/8551-7a. 
+ \begin{figure} %fig4
+      \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=81.625mm 
+\epsfbox{abg-4.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+     \Caption{Модули упругости перекрестно армированного композиционного материала 
+AS4/3502: \textit{1}~--- вычисленного по соотношениям~(1), (2) и~(4); \textit{2}~--- 
+вычисленного в~ACP}
+     % \end{figure}
+%
+%\begin{figure} %fig5
+ \vspace*{6pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=81.625mm 
+\epsfbox{abg-5.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Зависимость модулей упругости от угла армирования~$\theta$: \textit{1}~--- модуль 
+упру\-гости материала из одинаково ориентированных слоев под углом~$\theta$ к~оси 
+растяжения; \textit{2}~--- модуль упру\-гости перекрестно армированного материала}
+\vspace*{-6pt}
+\end{figure}
+Кривая~\textit{1} иллюстрирует результаты 
+расчета~$E_x^{\prime\prime}$ при укладке слоев без изменения угла армирования 
+и~растяжении материала под углом~$\theta$ к~на\-прав\-ле\-нию армирования. 
+Кривая~\textit{2}~--- модуль упру\-гости  $E_x^{\#}$ для многослойного материала со 
+структурой армирования $[\pm \theta]$. Видно, что выбор ориентации при 
+укладке слоев может значительно влиять на модуль упругости многослойного 
+композиционного материала. Для рассмотренного случая модули  
+упру\-гости~$E^{\prime\prime}_x$ и~$E_x^\#$ могут отличаться на~50\%.
+
+
+
+
+\section{Заключение}
+
+    В работе показано, что для расчета эффективных упругих характеристик 
+многослойного композиционного материала с~разноориентированной 
+структурой армирования слоев оправдано использование подхода, в~основе 
+которого лежит вычисление коэффициентов мат\-ри\-цы жест\-кости 
+многослойного материала. При этом допущения о~квазиоднородности 
+трансверсально изотропных монослоев и~их идеальном соединении не влияют на 
+степень согласия расчетных и~экспериментальных данных~--- относительное 
+отклонение расчетных данных от экспериментальных не превышает~5\%. 
+Учитывая актуальность задач проектирования композиционных материалов 
+с~заданными свойствами, анализ, апробация и~верификация моделей,  
+поз\-во\-ля\-ющих рассчитывать эффективные упругие свойства 
+композиционного материала, должны стать одними из ключевых этапов 
+построения программного комплекса, позволяющего решать обратную  
+задачу~--- проектирование новых композиционных материалов с~заданными 
+макроскопическими характеристиками. 
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+
+\bibitem{3-ab}
+\Au{Kwon Y.\,W., Allen D.\,H., Talreja~R.} Multiscale modeling and simulation of composite 
+materials and structures.~--- Springer, 2008. 625~p.
+
+\bibitem{1-ab}
+\Au{Rana S., Parveen S., Fangueiro R.} Multiscale composites for aerospace engineering~/\!\!/ 
+Advanced composite materials for aerospace engineering.~--- Elsevier, 2016. P.~265--293.
+doi: B9780081000373000092.
+\bibitem{2-ab}
+\Au{Chatzigeorgiou G., Meraghni F., Charalambakis~N.} Multiscale modeling approaches for 
+composites.~--- Elsevier, 2022. 364~p.
+
+\bibitem{4-ab}
+\Au{Абгарян К.\,К., Гаврилов Е.\,С.} Программный комплекс для многомасштабного 
+моделирования структурных свойств композиционных материалов~/\!\!/ Информатика и~её 
+применения, 2022. Т.~16. Вып.~1. С.~88--97. doi: 10.14357\!/\!19922264220113.
+
+\bibitem{5-ab}
+\Au{Алфутов Н.\,А., Зиновьев П.\,А., Попов~Г.\,Б.} Расчет многослойных пластин и~оболочек из 
+композиционных материалов.~--- М.: Машиностроение, 1984. 264~с.
+\bibitem{6-ab}
+\Au{Peel L.\,D., Hyer W.\,M., Shuart M.\,J.} Compression failure of angle-ply laminates.~--- Blacksburg, VA, USA: College of Engineering, Virginia Polytechnic Institute and State 
+University, 1991. Interim Report 87. 162~p.
+\bibitem{7-ab}
+\Au{Finckenor J.\,L.} Determination of significant composite processing factors by designed 
+experiment.~--- 
+Huntsville, AL, USA: NASA Marshall Space Flight Center, 2003. 
+MSFS Center Director's Discretionary Fund Final Report, Project No.\,95-23.
+68~p. {\sf 
+https://ntrs.nasa.gov/api/citations/20030068919/downloads/20030068919.pdf}.
+\bibitem{8-ab}
+\Au{Barbero E.\,J.} Introduction to composite materials design.~--- Boca Raton, London, New York: 
+CRC Press, 2011. 508~p. 
+
+   \end{thebibliography}
+} }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.09.23}}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+
+
+%\hrule
+
+%\vspace*{8pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+\def\tit{METHOD FOR COMPUTER MODELING OF~ELASTIC CHARACTERISTICS 
+OF~MULTILAYER COMPOSITE MATERIALS}
+
+
+
+\def\titkol{Method for computer modeling of~elastic characteristics 
+of~multilayer composite materials}
+
+\def\aut{K.\,K.~Abgaryan, N.\,L.~Zagordan, and~Y.\,D.~Mochalova}
+
+\def\autkol{K.\,K.~Abgaryan, N.\,L.~Zagordan, and~Y.\,D.~Mochalova}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+Federal Research Center ``Computer Science and Control'' of the Russian Academy
+of Sciences,   44-2~Vavilov Str., Moscow 119133, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2023 vol~33 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2023 vol~33 no\,4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+  
+
+\Abste{Modern polymer composite materials are widely used in the aerospace industry. Creation 
+of new materials with the required characteristics is one of the most important directions for the 
+development of the industry, especially in connection with the need to quickly resolve the issues 
+related to import substitution. The paper presents the results of calculation of the effective elastic 
+characteristics of multilayer polymer composite materials with differently oriented layer reinforcement 
+structure. The model of reinforced material based on the assumption that the composite material 
+consists of quasi-homogeneous transversally isotropic perfectly connected layers is used. The obtained 
+calculation results are in good agreement with both experimental data and the results of calculations of 
+commercial packages and can be used to automate scientific and engineering calculations in the 
+selection of components and methodology of their placement according to the given characteristics of 
+polymer composite materials.}
+
+\KWE{computer modeling; multilayer polymer composites; elastic characteristics}
+
+
+\DOI{10.14357\!/\!08696527230409}{DPZJSX}  
+
+\vspace*{-10pt}
+
+
+\Ack
+
+\vspace*{-3pt}
+
+\noindent
+The research was carried out using the infrastructure of the Shared Research Facilities ``High 
+Performance Computing and Big Data'' (CKP ``Informatics'') of FRC CSC RAS (Moscow).
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{9}
+
+\bibitem{3-ab-1}
+\Aue{   Kwon, Y.\,W., D.\,H.~Allen, and R.~Talreja.} 2008. \textit{Multiscale modeling and simulation 
+of composite materials and structures}. Springer. 625~p.
+
+\bibitem{1-ab-1}
+\Aue{   Rana, S., S.~Parveen, and R.~Fangueiro.} 2016. Multiscale composites for aerospace 
+engineering.  \textit{Advanced composite materials for aerospace engineering}. Elsevier. 265--293. 
+doi: B9780081000373000092.
+\bibitem{2-ab-1}
+\Aue{Chatzigeorgiou, G., F.~Meraghni, and N.~Charalambakis.} 2022. \textit{Multiscale modeling 
+approaches for composites}. Elsevier. 364~p.
+
+\bibitem{4-ab-1}
+\Aue{Abgaryan, K.\,K., and E.\,S.~Gavrilov.} 2022. Pro\-gram\-mnyy komp\-leks dlya  
+mno\-go\-mas\-shtab\-no\-go mo\-de\-li\-ro\-va\-niya struk\-tur\-nykh svoystv  
+kom\-po\-zi\-tsi\-on\-nykh ma\-te\-ri\-a\-lov [Software package for multiscale modeling of structural 
+properties of composite materials]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.}  
+16(1):88--97. doi: 10.14357\!/ 19922264220113.
+\bibitem{5-ab-1}
+\Aue{Alfutov, N.\,A., P.\,A.~Zinov'ev, and G.\,B.~Popov.} 1984. \textit{Ras\-chet  
+mno\-go\-sloy\-nykh plas\-tin i~obo\-lo\-chek iz kom\-po\-zi\-tsi\-on\-nykh ma\-te\-ri\-a\-lov} 
+[Calculation of multilayer plates and shells made of composite materials]. Moscow: 
+Mashinostroenie. 264~p.
+\bibitem{6-ab-1}
+\Aue{Peel, L.\,D., W.\,M.~Hyer, and M.\,J.~Shuart.} 1991. Compression failure of angle-ply 
+laminates.  Blacksburg, VA: College of Engineering, Virginia Polytechnic Institute 
+and State University. Interim Report 87. 162~p.
+\bibitem{7-ab-1}
+\Aue{Finckenor, J.\,L.} 2003. Determination of significant composite processing factors by designed 
+experiment.  Huntsville, AL: NASA 
+Marshall Space Flight Center. MSFS Center Director's Discretionary Fund Final Report, Project No.\,95-23. 68~p. Available at: {\sf 
+https://ntrs.nasa.gov/api/citations/20030068919/downloads/20030068919.pdf} (accessed October~23, 2023).
+\bibitem{8-ab-1}
+\Aue{Barbero, E.\,J.} 2011. \textit{Introduction to composite materials design}. Boca Raton, London, 
+New York: CRC Press. 508~p.
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received September 15, 2023}} 
+
+\vspace*{-14pt} 
+
+\Contr
+
+\vspace*{-3pt}
+
+\noindent
+\textbf{Abgaryan Karine K.} (b.\ 1963)~--- 
+Doctor of Science in physics and mathematics, principal scientist, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119133, Russian Federation; 
+\mbox{kristal83@mail.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Zagordan Nadezhda L.} (b.\ 1984)~--- Candidate of Science (PhD) in physics and mathematics, scientist, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119133, Russian Federation; \mbox{zagordann@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Mochalova Yulia D.} (b.\ 1996)~--- mathematician, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
+\mbox{juliamochalova96@gmail.com}
+
+  
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}    

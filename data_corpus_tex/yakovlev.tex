@@ -1,0 +1,694 @@
+\def\stat{yakovlev}
+
+\def\tit{СТРАТЕГИЯ ОБСЛЕДОВАНИЯ ПОМЕЩЕНИЙ ДЛЯ~АВТОНОМНОГО МОБИЛЬНОГО 
+РОБОТА НА~ОСНОВЕ~КАРТЫ РАКУРСОВ}
+
+\def\titkol{Стратегия обследования помещений для~автономного мобильного 
+робота} % на~основе карты ракурсов}
+
+
+  \def\aut{О.\,А.~Яковлев$^1$, П.\,О.~Архипов$^2$}
+
+  \def\autkol{О.\,А.~Яковлев, П.\,О.~Архипов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Яковлев О.\,А.}
+\index{Архипов П.\,О.}
+\index{Yakovlev O.\,A.}
+\index{Arkhipov P.\,O.}
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1]
+%{Работа частично поддержана РФФИ (проект 18-29-03081).}} 
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Орловский филиал Федерального исследовательского центра <<Информатика и~управ\-ле\-ние>> Российской 
+академии наук, \mbox{maucra@gmail.com}}
+\footnotetext[2]{Орловский филиал Федерального исследовательского центра <<Информатика  
+и~управ\-ле\-ние>> Российской академии наук, \mbox{arpaul@mail.ru}}
+
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt} 
+
+
+ 
+
+  \Abst{Рассмотрен вариант задачи автономного обследования, цель которого~--- 
+построение трехмерной реконструкции по снимкам, получаемым в~процессе перемещения 
+мобильного робота, оснащенного камерой. Предложена структура данных~--- \textit{карта 
+ракурсов}, накапливающая информацию о том, под какими углами наблюдались разные 
+фрагменты сцены. Сформулирована стратегия обследования на основе карты ракурсов 
+и~описана ее эффективная реализация с~применением частичных сумм и~оптимального 
+разбиения ортогонального многоугольника на прямоугольники. Также приведены результаты 
+эксперимента в~виртуальном окружении, подтверждающие возможность применения 
+описанной стратегии в~реальном времени. Оценена полнота полученной трехмерной модели 
+помещения путем сравнения с~эталоном.}
+  
+  \KW{трехмерная реконструкция; стратегия обследования; автономный мобильный робот} 
+  
+  \DOI{10.14357\!/\!08696527210206} 
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-18pt}
+  
+  \section{Введение}
+  
+  Обследование помещений~--- это инкрементальный процесс, на каждой 
+итерации которого выполняется следующая последовательность процедур:
+  \begin{enumerate}[(1)]
+  \item  локализация робота;
+  \item обновление трехмерной модели путем интеграции очередного снимка;
+  \item выбор целевой позиции;
+  \item построение маршрута до целевой точки с~использованием текущей 
+модели помещения для обхода препятствий.
+  \end{enumerate}
+  
+  За выбор целевой позиции отвечает стратегия обследования~--- алгоритм, 
+определяющий позицию робота, позволяющую максимально расширить 
+пред\-став\-ле\-ние об обследуемом окружении.
+  
+  Среди существующих стратегий обследования можно выделить три большие 
+группы: теоретико-информационные стратегии~[1, 2], граничные  
+стратегии~[3--5] и~стратегии наилучшей позиции съемки (next-best-view, 
+NBV)~[6,~7]. 
+  
+  Теоретико-информационные стратегии рассматривают задачу обследования 
+с~позиции минимизации информационной энтропии. Стратегии этого класса 
+обеспечивают качественный результат как с~точки зрения точности 
+реконструкции, так и~с точки зрения общей длины маршрута обследования. 
+Однако они имеют высокую вычислительную сложность, что исключает их 
+применение в~условиях реального времени.
+  
+  Граничные стратегии базируются на разделении регионов области 
+обследования на \textit{проходимые}, \textit{непроходимые} 
+и~\textit{необследованные}. На каждой итерации процесса обследования 
+целевой позицией робота назначается одна из границ между проходимым 
+и~необследованным регионами. Граничные стратегии нацелены главным 
+образом на скорейшее построение навигационной карты робота, что не 
+равносильно формированию точной трехмерной модели.
+  
+  В NBV-стратегиях целью робота является позиция, обеспечивающая 
+наилучшее дополнение или уточнение текущей трехмерной модели. Этот 
+подход дает наиболее точную реконструкцию, однако не обеспечивает 
+оптимальность маршрута.
+  
+  В настоящей работе рассмотрена стратегия, принадлежащая классу NBV. 
+Ключевая идея предложенной стратегии состоит в~формировании структуры 
+данных, основанной на принципе множественности наблюдений: необходимым 
+условием реконструкции отдельно взятой точки ставится съемка с~двух разных 
+позиций, а для построения точной трехмерной модели необходима съемка 
+одних и~тех же фрагментов сцены под разными углами.
+  
+  Рассмотрим распространенный вариант задачи обследования, в~котором 
+субъектом выступает робот с~фиксированной камерой, перемещающийся по 
+плоскости. В~этом случае задача планирования перемещений робота 
+становится двумерной. Примем, что оптическая система робота удовлетворяет 
+модели проективной камеры~[8], следовательно, имеет фиксированный 
+горизонтальный угол обзора. Ограничим область перемещения робота 
+прямоугольником, заведомо вклю\-ча\-ющим обследуемое помещение, и~разобьем 
+его на ячейки равномерной решеткой, получив дискретную область 
+обследования.
+
+\vspace*{-3pt}
+  
+  \section{Карта ракурсов}
+  
+  \vspace*{-3pt}
+  
+  По условию задачи камера неподвижна в~системе координат робота, поэтому 
+для описания его пространственного положения будем использовать тройку 
+  $(x_c, y_c, \varphi)$, где $(x_c, y_c)$~--- координаты проекционного центра 
+камеры; $\varphi$~--- направление обзора, задаваемое углом относительно 
+оси~$Ox$. Пусть~$\gamma$~--- горизонтальный угол обзора камеры. Тогда поле 
+зрения камеры формируют такие точки $(x_, y)$, что
+
+\noindent
+  $$
+  2\mathrm{angd} \left(\varphi, \mathrm{atan}2 \left(y-y_c, x-x_c\right)\right) \leq \gamma\,,
+  $$
+   где 
+   \begin{align*}
+   \mathrm{angd}\left(\alpha,\beta\right)&=\min \left(\vert \alpha-\beta\vert, 2\pi-
+\vert\alpha-\beta\vert\right)\,; 
+\\
+  \mathrm{atan2}(y,x)&=\begin{cases}
+  2\arctg \fr{y}{\sqrt{x^2+y^2}+x}\,, &\ x>0 \vee y\not= 0\,;\\
+  \pi\,, &\ x<0\wedge y=0\,.
+  \end{cases}
+  \end{align*}
+  
+  \begin{floatingfigure}{67mm} %fig1
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=61.914mm 
+\epsfbox{yak-1.eps}
+ }
+ \end{center}
+\vspace*{-6pt}
+  \Caption{Угол наблюдения точки}
+  \vspace*{12pt}
+  \end{floatingfigure}
+  
+  \noindent
+Далее множество точек области обследования, попадающих в~поле зрения 
+камеры при положении робота $(x_c, y_c,\varphi)$, будем обозначать через 
+$\mathrm{fov}\left( x_c, y_c,\varphi\right)$.
+
+
+
+  Углом наблюдения точки $(x,y)$ с~позиции робота $(x_c, y_c, \varphi)$ 
+назовем величину $\theta(x,y,x_c,y_c)$~--- значение полярного угла точки  
+$(x, y)$ относительно $(x_c, y_c)$. В~примере, изображенном на рис.~1, этот 
+угол выделен жирной линией.
+  
+  
+  
+  Разобьем область обследования на ячейки равномерной решеткой 
+и~рассмотрим последовательность снимков, сделанных с~позиций $(x_1, 
+y_1,\varphi_1),\linebreak (x_2, y_2, \varphi_2), \ldots , (x_n, y_n, \varphi_n)$. Для каждой 
+ячейки $(x,y)$ эта последовательность порождает множество углов наблюдения:
+  $$
+  \left\{ \theta\left(x,y,x_i,y_i\right) \vert (x,y)\in \mathrm{fov} \left( x_i, y_i, 
+\varphi_i\right)\,,\enskip i\in 1,2,\ldots , n\right\}\,.
+  $$
+  
+  \begin{floatingfigure}{67mm} %fig2
+\vspace*{-3pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=62mm 
+\epsfbox{yak-2.eps}
+ }
+ \end{center}
+\vspace*{-8pt}
+\Caption{Карта углов наблюдения}
+\vspace*{-6pt}
+\end{floatingfigure}
+  
+  Множества углов наблюдения для всех ячеек области обследования 
+формируют карту углов наблюдения. Пример такой карты для двух позиций 
+съемки приведен на рис.~2. Карта углов наблюдения дает представление 
+о~полноте реконструкции, а~равно и~полноте обследования, но ее анализ 
+требует значительных вы\-чис\-ли\-тель\-ных ресурсов, что затрудняет ее применение в~условиях реального времени.
+  
+
+
+  Введем приближение, заменив угол $\theta(x,y,x_c, y_c)$ углом ориентации 
+робота~$\varphi$. Таким образом, все точки, наблюдаемые роботом с~некоторой 
+позиции, будут иметь один и~тот же угол наблюдения. Это свойство 
+используется для эффективной реализации процедуры выбора целевой точки, 
+описанной в~следующем разделе. Смысл такого приближения заключается 
+в~том, что угол ориентации робота~--- это средний угол наблюдения среди всех 
+точек, попадающих в~поле зрения, если не ограничивать поле зрения областью 
+обследования. По определению поля зрения имеем: 
+$$
+\left\vert \varphi  - 
+\theta\left(x,y,x_c,y_c\right)\right\vert \hm\leq \fr{\gamma}{2}\,.
+$$
+  
+  Переход от карты углов наблюдения к~карте ракурсов выполняется путем 
+дискретизации угла с~шагом~$\pi/4$. Скажем, что точка наблюдалась в~ракурсе 
+$r\hm\in 1, 2, \ldots , 8$, если она наблюдалась под таким углом~$\alpha$, что 
+$\alpha\hm\in [ (r-1)\pi/4; r\pi/4 )$. Таким образом, углу наблюдения~$\alpha$ 
+соответствует ракурс $\lfloor 4\alpha/\pi\rfloor\hm+1$. Карта ракурсов~$M$ 
+каждой ячейке области обследования $(x,y)$ ставит в~соответствие вектор 
+$M_{x,y}\hm\in \{0,1\}^8$, причем 
+$$
+M_{x,y,r}=\begin{cases}
+1, &\ \mbox{если ячейка наблюдалась в~ракурсе~$r$}\,;\\
+0 &\ \mbox{в~обратном случае}.
+\end{cases}
+$$
+  
+  \section{Стратегия обследования}
+  
+  По карте ракурсов~$M$ для всякого положения робота $(x_c, y_c,\varphi)$ 
+можно вычислить число ячеек области обследования, ранее не наблюдавшихся 
+в~ракурсе $r\hm= \lfloor 4\varphi/\pi\rfloor \hm+1$:
+  \begin{equation}
+  \sum\limits_{(x,y)\in \mathrm{fov}\,(x_c, y_c\varphi)} 1-M_{x,y,r}\,.
+  \end{equation}
+Стратегию обследования можно сформулировать следующим образом: на 
+очередной итерации процесса обследования среди позиций робота, 
+достижимых из текущей, выберем ту позицию, которая максимизирует 
+величину~(1). Прямолинейная реализация этой стратегии, в~которой для каждой 
+позиции-кандидата $(x_c, y_c, \varphi)$ просматривается все множество 
+$\mathrm{fov}\,(x_c, y_c,\varphi)$, неприменима в~реальном времени, поэтому 
+рассмотрим эффективную реализацию, основанную на принципе частичных 
+сумм.
+
+  Матрицу $P=(p_{ij})_{n\times m}$ будем называть матрицей частичных сумм 
+для матрицы $A\hm= (a_{ij})_{n\times m}$, если $p_{kl}\hm= 
+\sum\nolimits^k_{i=1}\sum\nolimits^l_{j=1} a_{ij}$. При известной матрице~$P$ 
+можно вычислять суммы на любой подматрице матрицы~$A$, а именно: сумма 
+подматрицы, содержащей элементы с~индексами $i\hm\in [a,b]$, $j\hm\in [c,d]$, 
+равна
+  \begin{equation}
+  p_{bd}-p_{b\,c-1} -p_{a-1\,d} +p_{a-1\,c-1}\,.
+  \end{equation}
+  
+  Чтобы выражение~(2) было определено при $a\hm=1$ или $c\hm=1$, примем, 
+что $p_{i\,0}\hm= p_{0\,j}\hm=0$. Таким образом, вычислительная сложность 
+расчета суммы подматрицы с~использованием частичных сумм 
+составляет~$O(1)$. В~свою очередь, расчет матрицы~$P$ выполняется за 
+линейное время согласно выражению:
+  $$
+  p_{ij}= \begin{cases}
+  a_{ij}\,, &\ i=1\,,\ j=1\,;\\
+  p_{i\,j-1}+a_{ij}\,, &\ i=1\,;\\
+  p_{i-1\,j}+a_{ij}\,, &\ j=1\,;\\
+  p_{i-1\,j} +p_{i\,j-1}-p_{i-1\,j-1}+a_{ij}\,, &\ i>1\,,\ j>1\,.
+  \end{cases}
+  $$
+  
+  \begin{floatingfigure}{67mm} %fig3
+\vspace*{-1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=61.673mm 
+\epsfbox{yak-3.eps}
+ }
+ \end{center}
+\vspace*{-6pt}
+  \Caption{Декомпозиция ортогонального многоугольника}
+  \vspace*{6pt}
+  \end{floatingfigure}
+  
+  
+  Заметим, что дискретное поле зрения камеры представляет собой 
+ортогональный многоугольник, т.\,е.\ многоугольник со сторонами, 
+параллельными координатным осям. Всякий ортогональный многоугольник 
+можно разбить на прямоугольники со сторонами, параллельными осям 
+координат (рис.~3).
+  
+  
+  Имея разбиение поля зрения на прямоугольники, можно вычислить 
+величину~(1), используя частичные суммы. Пусть $P_k\hm= (p_{ij}^{(r)})$~--- 
+матрица частичных сумм для ракурса~$r$; $n$~--- число прямоугольников 
+в~разбиении; $(a_i, b_i)$~--- координаты верхней левой вершины $i$-го 
+прямоугольника; $(c_i, d_i)$~--- координаты нижней правой вершины. Тогда 
+с~учетом~(2) выражение~(1) примет вид:
+  $$
+  \sum\limits^n_{i=1} p^{(r)}_{c_i\,d_i}-p^{(r)}_{c_i\,b_i-1} - p^{(r)}_{a_i-
+1\,d_i}+ p^{(r)}_{a_i-1\,b_i-1}\,.
+  $$
+Таким образом, с~использованием разбиения поля зрения на~$n$ 
+прямоугольников величину~(1) можно вычислить за время порядка $O(n)$, 
+предварительно рассчитав матрицы частичных сумм. Следовательно, для 
+ускорения процедуры выбора целевой позиции необходимо минимизировать 
+число прямоугольников в~разбиении.
+
+  Задача о разбиении ортогонального многоугольника на минимальное число 
+прямоугольников сводится к~задаче поиска максимального независимого 
+множества в~двудольном графе~[9], которая по теореме Кёнига сводится 
+к~поиску наибольшего паросочетания. Поиск наибольшего паросочетания 
+в~двудольном графе можно выполнить с~по\-мощью алгоритма  
+Хоп\-кроф\-та--Кар\-па~[10].
+
+  \section{Эксперимент}
+  
+  
+  
+  Экспериментальная оценка предложенной стратегии обследования 
+помещений выполнена в~виртуальном окружении, реализуемом программным 
+средством\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\
+
+\vspace*{-12pt}
+
+\begin{floatingfigure}{67mm} %fig4
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=62mm 
+\epsfbox{yak-4.eps}
+ }
+ \end{center}
+\vspace*{-6pt}
+  \Caption{Виртуальное окружение}
+ %\end{figure}
+% \begin{figure} %fig5
+\vspace*{6pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=62mm 
+\epsfbox{yak-5.eps}
+ }
+ \end{center}
+\vspace*{-6pt}
+  \Caption{Карта препятствий для поиска пути}
+  \end{floatingfigure}
+  
+  \noindent
+   SfmDataGenerator~\cite{11-ya}. Субъектом обследования в~данном 
+случае вы\-ступает виртуальный наблюдатель, перемещаемый в~пределах сцены, 
+а~последовательность снимков для трехмерной реконструкции получается 
+путем рендеринга сцены с~позиции виртуального наблюдателя. В~рамках 
+эксперимента виртуальное окружение представлено трехмерной моделью 
+помещения, изображенной на рис.~4. Для построения корректных маршрутов 
+перемещения робота используется карта препятствий, полученная путем 
+проекции на базовую плоскость области сцены, соответствующей высоте 
+робота (рис.~5).\linebreak Карта препятствий и~область обследования имеют размер $513 
+\times 558$~ячеек. Поиск кратчайшего пути до целе\-вой позиции, выбранной 
+согласно предлагаемой стратегии обследования, выполняется с~по\-мощью 
+алгоритма~$A^*$~[12].
+  
+  Аппаратной частью эксперимента выступает персональный компьютер на базе процессора Intel 
+Core~i7~8700 с~частотой 3,2~ГГц и~16~ГБ оперативной памяти. Графический 
+процессор для вычислений не задействовался.
+  
+  
+  
+  Ход эксперимента в~виде маршрута обследования и~карт ракурсов на 
+отдельных итерациях показан на рис.~6. Карты ракурсов изображены 
+в~градациях серого таким образом, что светлые тона соответствуют большему 
+числу ракурсов. Можно заметить, что полученный маршрут обследования не 
+оптимален с~точки зрения порядка обхода отдельных комнат, что объясняется 
+локальной природой стратегии обследования. Среднее время выполнения 
+процедуры поиска целевой позиции составило~6~мс, что подтверждает 
+возможность применения рассматриваемого метода в~реальном времени.
+  
+\begin{figure} %fig6
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=110mm 
+\epsfbox{yak-6.eps}
+ }
+ \end{center}
+\vspace*{-11pt}
+\Caption{Процесс обследования}
+\end{figure}
+   В результате обследования была построена трехмерная реконструкция 
+помещения в~виде множества точек, изображенного на рис.~7. Реконструкция 
+получена\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\
+
+\vspace*{-12pt}
+
+\begin{floatingfigure}{67mm} %fig7
+\vspace*{-1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=62mm 
+\epsfbox{yak-7.eps}
+ }
+ \end{center}
+\vspace*{-6pt}
+\Caption{Трехмерная реконструкция}
+\vspace*{6pt}
+\end{floatingfigure}
+
+
+\noindent
+ путем обратной проекции карт глубины, сгенерированных 
+SfmDataGenerator для каждого кадра.
+  
+  Применение метода виртуальной\linebreak съемки для апробации предложенной 
+стратегии дает возможность формально оценить полноту обследования путем 
+сравнения трехмерной реконструк\-ции с~эталоном. Для этого воспользуемся 
+показателем на основе расстояния Хаусдорфа. Рассмотрим множество точек 
+эталона~$G$ и~множество точек реконструкции~$R$. Зафиксируем допустимую 
+точность~$\delta$ и~будем считать всякую точку $g\hm\in G$ покрытой, если  
+$\delta$-окрест\-ность этой точки содержит хотя бы одну точку $r\hm\in R$. 
+В~свою очередь, показателем полноты обследования будем считать отношение 
+числа покрытых точек к~общему числу точек эталона~$\vert G\vert$, 
+выраженное в~процентах: ${\sum\nolimits_{g\in G} [\exists\,r\in R:\ \| r\hm-g\|_2\hm\leq \delta ]}/{\vert 
+G\vert}\cdot 100\%,$
+            где $[\cdot]$~--- скобки Айверсона.
+
+При $\delta=2$~см полнота построенной реконструкции равна~97,54\%. 
+
+
+
+  \section{Заключение}
+  
+  Представленная в~статье структура данных позволяет осуществлять 
+планирование перемещений автономного мобильного робота при обследовании 
+помещений. Предложенная реализация стратегии обследования на основе карты 
+ракурсов может применяться в~приложениях реального времени, что 
+подтверждено результатами измерения быстродействия. Результаты 
+экспериментов показали, что рассмотренная стратегия не позволяет 
+минимизировать общую протяженность маршрута, однако гарантирует 
+достаточную полноту трехмерной реконструкции.
+  
+  В качестве направления дальнейших исследований авторы рассматривают 
+трехмерное обобщение карты ракурсов, позволяющее управлять роботами 
+с~большим числом степеней свободы, например, беспилотным летательным аппаратом.
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+  
+\bibitem{2-ya} %1
+  \Au{Carrillo H., Dames~P., Kumar~V., Castellanos~J.\,A.} Autonomous robotic exploration using 
+occupancy grid maps and graph SLAM based on Shannon and R$\acute{\mbox{e}}$nyi 
+entropy~/\!\!/  IEEE  Conference (International) on Robotics and Automation Proceedings.~--- 
+Piscataway, NJ, USA: IEEE, 2015. P.~487--494.
+
+\bibitem{1-ya} %2
+  \Au{Li P., Yang C., Wang~R., Wang~S.} A~high-efficiency, information-based exploration path 
+planning method for active simultaneous localization and mapping~/\!\!/ Int. J.~Adv. Robot. 
+Syst., 2020. Vol.~17. Iss.~1. doi: 10.1177\!/\!1729881420903207.
+
+\bibitem{3-ya}
+  \Au{Yamauchi B.} A~frontier-based approach for autonomous exploration~/\!/\! IEEE  
+Symposium (International) on Computational Intelligence in Robotics and Automation Proceedings.~--- Piscataway, NJ, 
+USA: IEEE, 1997. P.~146--151.
+
+
+\bibitem{5-ya} %4
+  \Au{Архипов О.\,П., Гасилов А.\,В., Маньяков Ю.\,А., Яковлев~О.\,А.} Алгоритм обследования 
+замкнутого помещения автономным мобильным роботом~/\!\!/ Системы и~средства информатики, 
+2018. Т.~28. №\,4. С.~10--21.
+
+\bibitem{4-ya} %5
+  \Au{Quin P., Nguyen D.\,D.\,K., Vu~T.\,L., Alempijevic~A., Paul~G.} Approaches for efficiently 
+detecting frontier cells in robotics exploration~/\!\!/ Front. Robot. AI, 2021. Vol.~8. 
+doi: 10.3389\!/\!frobt.2021.616470.
+
+
+\bibitem{7-ya} %6
+  \Au{Bircher A., Kamel~M., Alexis~K., Oleynikova~H., Siegwart~R.} Receding horizon 
+  ``Next-Best-View'' planner for 3D exploration~/\!\!/  IEEE Conference (International) on Robotics and 
+Automation Proceedings.~--- Piscataway, NJ, USA: IEEE, 2016. P.~1462--1468.
+
+\bibitem{6-ya} %7
+  \Au{Hardouin G., Moras J., Morbidi~F., Marzat~J., Mouaddib~E.\,M.} Next-best-view planning for 
+surface reconstruction of large-scale 3D environments with multiple UAVs~/\!\!/ IEEE/RSJ 
+Conference (International) on Intelligent Robots and Systems Proceedings.~--- Piscataway, NJ, USA: 
+IEEE, 2020. P.~1567--1574.
+
+\bibitem{8-ya}
+  \Au{Hartley R., Zisserman A.} Multiple view geometry in computer vision.~--- 2nd ed.~--- 
+Cambridge: Cambridge University Press, 2003. 670~p.
+\bibitem{9-ya}
+  \Au{Eppstein D.} Graph-theoretic solutions to computational geometry problems~/\!\!/ 
+  Graph-theoretic concepts in computer science~/ Eds. C.~Paul, 
+M.~Habib.~--- Lecture notes in computer science ser.~--- Springer, 2010. Vol.~5911. P.~1--16.
+\bibitem{10-ya}
+  \Au{Hopcroft J.\,E., Karp R.\,M.} An $n^{5/2}$ algorithm for maximum matchings in bipartite 
+graphs~/\!\!/ SIAM J.~Comput., 1973. Vol.~2. Iss.~4. P.~225--231.
+\bibitem{11-ya}
+  \Au{Яковлев О.\,А., Гасилов А.\,В.} Создание реалистичных наборов данных для алгоритмов 
+трехмерной реконструкции с~помощью виртуальной съемки компьютерной модели~/\!\!/ 
+Системы и~средства информатики, 2016. Т.~26. №\,2. С.~98--107.
+\bibitem{12-ya}
+  \Au{Hart P.\,E., Nilsson N.\,J., Raphael~B.} A~formal basis for the heuristic determination of 
+minimum cost paths~/\!\!/ IEEE T. Syst. Sci. Cyb., 1968. Vol.~4. 
+Iss.~2. P.~100--107.
+       \end{thebibliography}
+} }
+
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.03.21}}
+
+
+
+
+\vspace*{6pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{8pt}
+
+\def\tit{INDOOR EXPLORATION STRATEGY FOR~AUTONOMOUS MOBILE ROBOT BASED 
+ON~DIRECTION MAP}
+
+\def\titkol{Indoor exploration strategy for~autonomous mobile robot based 
+on~direction map}
+
+
+
+\def\aut{O.\,A.~Yakovlev and P.\,O.~Arkhipov}
+
+\def\autkol{O.\,A.~Yakovlev and P.\,O.~Arkhipov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+
+\noindent
+Orel Branch of the Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 137~Moskovskoe Shosse, Orel 302025, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2021 vol~31 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2021 vol~31 no\,2
+\hfill \textbf{\thepage}}}
+  
+  
+\vspace*{3pt}
+  
+  
+  
+\Abste{The paper focuses on the variant of autonomous exploration problem that implies three-dimensional (3D) 
+reconstruction of an unknown environment by moving a~mobile robot with optical sensor through 
+the environment. The authors introduce a~data structure called direction map that accumulates 
+information about viewpoints for every region of the scene. A~direction map is used\linebreak\vspace*{-12pt}}
+
+\Abstend{to formulate an 
+exploration strategy according to the next-best-view principle. This strategy can be efficiently 
+implemented using rectangular partition of an orthogonal polygon and integral matrices. 
+Experimental evaluation of the proposed strategy is done in virtual environment. Completeness of 
+the resulting 3D model is evaluated by comparison with the ground truth.}
+
+\KWE{3D reconstruction; indoor exploration; autonomous mobile robot}
+
+  \DOI{10.14357\!/\!08696527210206} 
+
+%\vspace*{-24pt}
+
+%\Ack
+%\noindent
+
+
+%\vspace*{-12pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+\bibitem{2-ya-1} %1
+\Aue{Carrillo, H., P.~Dames, V.~Kumar, and J.\,A.~Castellanos.} 2015. Autonomous robotic exploration 
+using occupancy grid maps and graph SLAM based on Shannon and R$\acute{\mbox{e}}$nyi 
+entropy. \textit{IEEE Conference (International) on Robotics and Automation Proceedings}. 
+Piscataway, NJ: IEEE.  487--494.
+
+\bibitem{1-ya-1} %2
+\Aue{Li, P., C. Yang, R.~Wang, and S.~Wang.} 2020. A~high-efficiency, information-based exploration 
+path planning method for active simultaneous localization and mapping. \textit{Int. J.~Adv. 
+Robot. Syst.} 17(1). doi:
+10.1177\!/\!1729881420903207. %} (accessed March~31, 2021)
+
+\bibitem{3-ya-1}
+\Aue{Yamauchi, B.} 1997. A~frontier-based approach for autonomous exploration. \textit{IEEE Symposium 
+(International) on Computational Intelligence in Robotics and Automation Proceedings}. 
+Piscataway, NJ: IEEE.  146--151.
+
+\bibitem{5-ya-1} %4
+\Aue{Arkhipov, O.\,P., A.\,V.~Gasilov, Yu.\,A.~Maniakov, and O.\,A.~Yakovlev.} 2018. Algoritm 
+obsledovaniya zamknutogo pomeshcheniya avtonomnym mobil'nym robotom [Enclosed room 
+exploration algorithm for an autonomous mobile robot]. \textit{Sistemy i~Sredstva Informatiki~--- 
+Systems and Means of Informatics} 28(4):10--21.
+
+\bibitem{4-ya-1} %5
+\Aue{Quin P., D.\,D.\,K.~Nguyen, T.\,L.~Vu, A.~Alempijevic, and G.~Paul.} 2021. Approaches for efficiently 
+detecting frontier cells in robotics exploration. \textit{Front. Robot. AI} 8. %Available at: 
+doi: 10.3389\!/\!frobt.2021.616470. %/full} (accessed March~31, 2021).
+
+
+\bibitem{7-ya-1} %6
+\Aue{Bircher, A., M.~Kamel, K.~Alexis, H.~Oleynikova, and R.~Siegwart}. 2016. Receding horizon 
+``Next-Best-View'' planner for 3D exploration. \textit{Conference (International) on Robotics and 
+Automation Proceedings}. Piscataway, NJ: IEEE. 1462--1468.
+
+\bibitem{6-ya-1} %7
+\Aue{Hardouin, G., J.~Moras, F.~Morbidi, J.~Marzat, and E.\,M.~Mouaddib.} 2020. Next-best-view 
+planning for surface reconstruction of large-scale 3D environments with multiple UAVs. 
+\textit{IEEE\!/\!RSJ Conference (International) on Intelligent Robots and Systems Proceedings}. 
+Piscataway, NJ: IEEE.  
+1567--1574.
+\bibitem{8-ya-1}
+\Aue{Hartley, R., and A.~Zisserman.} 2003. \textit{Multiple view geometry in computer vision}. 2nd ed. 
+Cambridge: Cambridge University Press. 670~p.
+\bibitem{9-ya-1}
+\Aue{Eppstein, D.} 2010. Graph-theoretic solutions to computational geometry problems.  
+\textit{Graph-theoretic concepts in computer science}. Eds. C.~Paul and M.~Habib. Lecture notes 
+in computer science ser. Springer. 5911:1--16.
+\bibitem{10-ya-1}
+\Aue{Hopcroft, J.\,E., and R.\,M.~Karp.} 1973. An $n^{5/2}$ algorithm for maximum matchings in bipartite 
+graphs. \textit{SIAM J.~Comput.} 2(4):225--231.
+\bibitem{11-ya-1}
+\Aue{Yakovlev, O.\,A., and A.\,V.~Gasilov.} 2016. Sozdanie realistichnykh naborov dannykh dlya 
+algoritmov trekhmernoy rekonstruktsii s~po\-moshch'yu virtual'noy s''emki komp'yuternoy modeli 
+[Genereating realistic structure-from-motion datasets through virtual photography]. \textit{Sistemy 
+i~Sredstva Informatiki~--- Systems and Means of Informatics} 26(2):98--107.
+\bibitem{12-ya-1}
+\Aue{Hart, P.\,E., N.\,J.~Nilsson, and B.~Raphael.} 1968. Formal basis for the heuristic determination of 
+minimum cost paths. \textit{IEEE T. Syst. Sci. Cyb.} 4(2):100--107.
+ \end{thebibliography}
+} }
+
+%\vspace*{-3pt}
+
+\hfill{\small\textit{Received March 15, 2021}} 
+
+%\vspace*{-16pt}
+
+\Contr
+
+\noindent
+\textbf{Yakovlev Oleg A.} (b.\ 1992)~--- junior scientist, Orel Branch of the Federal Research 
+Center ``Computer Science and Control'' of the Russian Academy of Sciences, 137~Moskovskoe 
+Shosse, Orel 302025, Russian Federation; \mbox{maucra@gmail.com}
+
+\vspace*{6pt}
+
+\noindent
+\textbf{Arkhipov Pavel O.} (b.\ 1979)~--- Candidate of Science (PhD) in technology, director, Orel 
+Branch of the Federal Research Center ``Computer Science and Control'' of the Russian Academy 
+of Sciences, 137~Moskovskoe Shosse, Orel 302025, Russian Federation; \mbox{arpaul@mail.ru}
+
+  
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

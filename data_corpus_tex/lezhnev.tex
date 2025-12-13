@@ -1,0 +1,403 @@
+%%%%%\input{maket.tex}
+
+%\input{../preamblw}
+%
+%\begin{document}
+%
+%
+
+\renewcommand{\baselinestretch}{0.85}
+
+
+\renewcommand{\firstpage}{236}
+\renewcommand{\lastpage}{240}
+
+
+
+\udk{519.63} \msc{34K28}
+
+\title{Проекционный алгоритм краевой задачи для~неоднородного уравнения Ламе}
+{Проекционный алгоритм краевой задачи для неоднородного уравнения Ламе}
+
+\author{В.\,Г.~Лежнев, А.\,Н.~Марковский}{Л\,е\,ж\,н\,е\,в~В.\,Г.,\ М\,а\,р\,к\,о\,в\,с\,к\,и\,й~А.\,Н.}
+
+\institute{Кубанский государственный университет,\\
+350040, Краснодар, ул.~Ставропольская, 149.}
+
+\email{E-mails}{lzhnvv@mail.ru, mark@kubsu.ru}
+
+\otherinf{\fullauthor{Виктор Григорьевич Лежнев} \regalia{д.ф.-м.н., проф.} \position{профессор} \dept{каф. вычислительных технологий}
+\fullauthor{Алексей Николаевич Марковский }\regalia{к.ф.-м.н., доц.} \position{доцент} \dept{каф. вычислительных технологий}}
+
+\keywords{уравнение Ламе, разложение Вейля, бигармоническая задача, метод базисных потенциалов $($фундаментальных решений$)$}
+
+\workabstract{Рассматривается метод решения краевой задачи для стационарного неоднородного уравнения Ламе в ограниченной плоской
+области. Используется определенное расщепление пространства вектор-функций, что приводит для компонент искомого векторного поля к
+задачам для неоднородного бигармонического уравнения и уравнения Пуассона. Для решения этих задач предлагается метод базисных
+потенциалов.}
+
+\engtitle{Progective algorithm of boundary value problem for inhomogeneous Lame's equation}
+
+\engauthor{V.\,G.~Lezhnev, A.\,N.~Markovskiy} {L\,e\,z\,h\,n\,e\,v~V.\,G., M\,a\,r\,k\,o\,v\,s\,k\,i\,y~A.\,N.}
+
+\enginstitute{Kuban State University, \\
+149, Stavropolskaya st., Krasnodar, 350040, Russia.}
+
+\otherenginf{\fullauthor{Victor G.~Lezhnev} \regalia{Dr. Sci. (Phys. \& Math.)} \position{Professor}
+\dept{Dept. of Computational Technologies} \\
+\fullauthor{Aleksey N.~Markovskiy} \regalia{Ph.\,D. (Phys. \& Math.)} \position{Associate Professor} \dept{Dept. of Computational Technologies}}
+
+\engabstract{The method of boundary value problem solution for the stationary inhomogeneous Lame's equation is considered. An appointed vector-function space splitting is used that leads to inhomogeneous biharmonic equation and Poisson's equation problems for components of required vector field. The basic potentials method is proposed to solve these problems.}
+
+\engkeywords{Lame's equation, Weyl's expansion, bigarmonic equation, basic potentials method $($of fundamental solutions$)$}
+
+\date{30/XI/2010}
+\revisiondate{15/III/2011}
+
+\maketitle
+
+\Section{Формулировка задачи} В ограниченной области $Q \subset \mathbb{R}^2$ с достаточно гладкой границей $S = \partial Q$
+рассматривается краевая задача
+\begin{gather}
+\label{lezh:Eq:LzhMrk:L1}
+   (\lambda + \mu) \nabla \text{div}  \bar{u}(x) + \mu \Delta \bar{u}(x) = \bar{f}(x), \quad x \in Q,\\
+\label{lezh:Eq:LzhMrk:L2}
+   \left. \bar{u}(x)\right|_S = \bar{b}(x);
+\end{gather}
+предполагается, что граничное векторное поле $\bar{b}(x)$ непрерывно, компоненты вектор"=функции правой части $\bar{f}(x) = \{
+f_{1}(x),\,f_{2}(x)\}$ суммируемы с квадратом, то есть $\bar{f}(x)$ принадлежит пространству $\bar{L}_{2}(Q)$ со скалярным
+произведением $\langle \bar{f},\, \bar{g} \rangle = (f_1,\,g_1)_Q + (f_2,\,g_2)_Q$ и индуцированной нормой; 
+$({}\cdot{},\,{}\cdot{})_Q$ "--- скалярное произведение в $L_{2}(Q)$; $\lambda$, $\mu$ "--- действительные числа.
+
+Обобщённое решение $\bar{u}(x) \in W^{1}_{2}(Q)$ существует и единственно, если $Q$ "--- ограниченная область с гладкой границей
+$S = \partial Q$, $\bar{f}(x) \in \bar{L}_{2}(Q)$, $\lambda > 0$, $\mu > 0$ \cite{lezh:LzhMrk:bib:Oley}.
+
+
+\smallskip
+
+\Section{Разложение пространства вектор-функций $\boldsymbol{\bar{L}_{2}(Q)}$ в прямую сумму и~расщепление уравнения}
+
+\textbf{2.1.} Справедливо разложение векторного пространства $\bar{L}_{2}(Q)$ в прямую сумму
+[\citen{lezh:LzhMrk:bib:Bh}--\citen{lezh:LzhMrk:bib:LD}]:
+\[
+   \bar{L}_2(Q) =  \bar{P}(Q) \oplus \bar{V}(Q),
+\]
+где $\bar{P}(Q)$ "--- замыкание в норме $\bar{L}_{2}(Q)$ множества непрерывных потенциальных в $Q$ векторных полей, ортогональных
+границе $S$; $\bar{V}(Q)$ "--- замыкание гладких соленоидальных полей.
+
+Разложим искомое векторное поле $\bar{u}(x)$ и правую часть $\bar{f}(x)$ на ортогональные слагаемые:
+\[
+   \bar{u}(x) = \bar{p}(x) + \bar{s}(x), \quad \bar{f}(x) = \bar{f_{p}}(x) + \bar{f_{s}}(x).
+\]
+Алгоритм разложения вектор"=функций из $\bar{L}_{2}(Q)$ на ортогональные слагаемые представлен, например, в~\cite{lezh:LzhMrk:bib:LD}.
+
+Подставляя эти разложения в уравнение \eqref{lezh:Eq:LzhMrk:L1} и используя равенства
+\[
+   \nabla \text{div\,} \nabla \varphi (x) = \nabla \Delta \varphi (x) = \Delta \bar{p}(x),
+\]
+для потенциальной функции $\varphi (x)$ поля $\bar{p}(x) = \nabla \varphi (x)$ получим
+\begin{equation}
+   \label{lezh:Eq:LzhMrk:L3}
+   (\lambda + 2 \mu) \Delta \bar{p}(x) + \mu \Delta \bar{s}(x) = \bar{f_{p}}(x) + \bar{f_{s}}(x).
+\end{equation}
+
+Так как соленоидальное и потенциальное векторные поля могут пересекаться только по гармоническому векторному полю, то в~\eqref{lezh:Eq:LzhMrk:L3} прибавим и отнимем гармоническое поле $(\lambda + 2 \mu) \nabla q(x)$, где $q(x)$ "--- соответствующая
+задаче гармоническая функция. 
+Тогда уравнение \eqref{lezh:Eq:LzhMrk:L3} расщепляется на два:
+\begin{gather}
+   \label{lezh:Eq:LzhMrk:L4}
+   (\lambda + 2 \mu)(\Delta \bar{p}(x) - \nabla q(x)) = \bar{f_p}(x),\\
+   \label{lezh:Eq:LzhMrk:L5}
+   \mu \Delta \bar{s}(x) + (\lambda + 2 \mu) \nabla q(x)=  \bar{f_s}(x).
+\end{gather}
+
+\smallskip
+
+\textbf{2.2.} Уравнение \eqref{lezh:Eq:LzhMrk:L4} можно привести к виду
+\[
+   \nabla \bigl((\lambda + 2 \mu)( \Delta \varphi(x) - q(x)) - \varphi_{f} (x) \bigr) = 0,
+\]
+где $\nabla \varphi_f(x) = \bar{f_p}(x)$, то есть $(\lambda + 2 \mu)( \Delta \varphi(x) - q(x)) - \varphi_{f} (x) \equiv 0$, $x
+\in Q$, и~для потенциальной функции $\varphi (x)$ искомого поля $\bar{p}(x)$ получаем  неоднородное бигармоническое уравнение
+$
+  (\lambda + 2 \mu)\Delta^{2} \varphi(x) = g(x),
+$
+где $g(x) = \Delta \varphi_{f} (x)$.
+
+Обозначим через $\psi(x)$ и $\psi_{f}(x)$ функции тока соленоидальных полей:
+\[
+  \bar{s}(x) = \nabla_c \psi (x), \quad  \bar{f_s}(x) = \nabla_c \psi_f (x),
+\]
+где использован знак $\nabla_c = \{ \partial/\partial x_{1},\, -\partial/\partial x_2\}$.
+
+Пусть $\eta(x)$ "--- сопряжённая к $q(x)$ гармоническая функция, $\nabla q(x) = \nabla_{c} \eta (x)$. Тогда, приводя уравнение
+\eqref{lezh:Eq:LzhMrk:L5} к виду
+\[
+   \nabla_{c}\bigl(\mu \Delta \psi(x) + (\lambda+2\mu) \eta(x) - \psi_{f}(x)\bigr) = 0
+\]
+и применяя к нему оператор Лапласа, для функции тока $\psi (x)$ искомого поля $\bar{s}(x)$ получаем неоднородное бигармоническое уравнение
+$
+   \mu \Delta^{2} \psi(x) = h(x),
+$
+где $h(x) = \Delta \psi_f (x)$ "--- известная функция.
+
+\smallskip
+
+\Section{Вычисление потенциальной и соленоидальной составляющих решения}
+
+\textbf{3.1.} Рассмотрим краевую задачу \eqref{lezh:Eq:LzhMrk:L1}, \eqref{lezh:Eq:LzhMrk:L2}. Разложим граничное векторное поле
+$\bar{b}(x)$ на нормальную $\bar{m}(x)$ и касательную $\bar{l}(x)$ составляющие. 
+Будем обозначать через $\bar{n}$ и $\bar{t}$ единичные векторы "--- внешний нормальный к $S$ и касательный в направлении положительного обхода; обозначим также через $({}\cdot{},\,{}\cdot{})$ скалярное произведение в $\mathbb{R}^2$.
+
+Потенциальная составляющая $\bar{p}(x)$ векторного поля $\bar{u}(x)$ должна удовлетворять граничному условию
+\begin{equation}
+   \label{lezh:Eq:LzhMrk:L58}
+   \bar{p}(x) = \bar{m}(x), \quad  x \in S;
+\end{equation}
+тогда для соленоидальной составляющей $\bar{s}(x)$ получаем
+\begin{equation}
+   \label{lezh:Eq:LzhMrk:L59}
+   \bar{s}(x) = \bar{l}(x), \quad x \in S.
+\end{equation}
+
+Для определения $\varphi(x)$ и потенциальной составляющей $\bar{p}(x) = \nabla \varphi (x)$ искомого векторного поля $\bar{u}(x)$
+рассмотрим следующую задачу для бигармонического уравнения:
+\begin{gather}
+   \label{lezh:Eq:LzhMrk:L6}
+   \Delta^2 \varphi(x) = g(x), \quad x \in Q,\\
+   \label{lezh:Eq:LzhMrk:L7}
+   \varphi(x)\big|_S = 0, \quad \frac{\partial \varphi(x)}{\partial n}\Big|_S = (\bar{n},\,\bar{m})=(\bar{n},\,\bar{b}(x)).
+\end{gather}
+
+Полученное векторное поле $\bar{p}(x) = \nabla \varphi (x)$ удовлетворяет граничному условию \eqref{lezh:Eq:LzhMrk:L58}.
+Действительно, $(\bar{m}-\nabla \varphi )\bot \bar{n}$ по второму условию в \eqref{lezh:Eq:LzhMrk:L7}. Из первого условия следует
+ $\nabla \varphi \bot S$, то есть $(\bar{m}-\nabla \varphi )\bot \bar{t}$. Следовательно, векторное поле
+$\bar{m}-\nabla \varphi$ на $S$ равно нулю, и граничное условие \eqref{lezh:Eq:LzhMrk:L58} для поля $\bar{p}(x)$ выполняется.
+
+\smallskip
+
+\textbf{3.2.} Соленоидальное поле $\bar{s}(x)$ удовлетворяет уравнению
+\begin{equation}
+   \label{lezh:Eq:LzhMrk:L8}
+   \Delta \bar{s}(x) = \frac{1}{\mu} \nabla_{c} \big( \psi_{f}(x) - (\lambda+2\mu) \eta (x) \big), \quad  x \in Q;
+\end{equation}
+должно также выполняться граничное условие \eqref{lezh:Eq:LzhMrk:L59}.
+
+Векторное поле будем формировать из двух соленоидальных слагаемых:
+\[
+   \bar{s}(x) = \bar{s}_0(x) + \bar{s}_1(x)
+\]
+с граничными условиями при $x \in S$:
+$
+   \bar{s}_0(x) = 0,$ $\bar{s}_1(x) = \bar{l}(x).
+$
+Пусть $\psi_{1}(x)$ "--- функция тока для $\bar{s}_{1}(x)$, т.\,е. $\bar{s}_{1}(x) = \nabla_{c} \psi_{1} (x)$. Рассмотрим краевую задачу
+\begin{gather}
+   \label{lezh:Eq:LzhMrk:L9}
+   \Delta^2 \psi_1 (x) = h(x), \quad x \in Q,\\
+   \label{lezh:Eq:LzhMrk:L10}
+   \psi_1 (x)\big|_S = 0, \quad \frac{\partial \psi_{1} (x)}{\partial n}\Big|_S = (\bar{l},\bar{t}).
+\end{gather}
+
+Из \eqref{lezh:Eq:LzhMrk:L10} следует, что выполняется граничное условие для $\bar{s}_1(x)$. Действительно, второе условие
+\eqref{lezh:Eq:LzhMrk:L10} переписывается в виде
+$
+   (\bar{l},\,\bar{t}) = (\nabla \psi,\, \bar{n}) = (\nabla_c \psi,\, \bar{t}),
+$
+то есть $(\bar{l}-\nabla_c \psi) \bot \bar{t}$. Из первого условия \eqref{lezh:Eq:LzhMrk:L10} имеем  $\nabla \psi \bot S$, или $\nabla_c \psi \bot \bar{n}$,
+\mbox{$(\bar{l}-\nabla_c \psi) \bot \bar{n}$.} Следовательно, векторное поле $\bar{l}-\nabla_c \psi$ на $S$ равно нулю и граничное
+условие для $\bar{s}_1(x)$ выполняется.
+
+Обозначим теперь $\Delta \psi_1 = \xi$. Тогда
+$
+   \Delta \bar{s}_1 = \Delta \nabla_c \psi_1 = \nabla_c \xi,
+$
+и для $\bar{s}_0(x)$ из \eqref{lezh:Eq:LzhMrk:L8}, \eqref{lezh:Eq:LzhMrk:L9} получаем задачу для уравнения Пуассона:
+\begin{gather}
+   \label{lezh:Eq:LzhMrk:L11}
+   \Delta \bar{s}_0(x) = \frac{1}{\mu} \nabla_c \bigl( \psi_f (x) - (\lambda+2\mu) \eta (x) - \mu \xi(x) \bigr) , \quad x \in Q,\\
+   \label{lezh:Eq:LzhMrk:L12}
+   \bar{s_{0}}(x)\big|_S = 0.
+\end{gather}
+
+Решение этой задачи $\bar{s}_0(x)$ "--- соленоидальное векторное поле. 
+Действительно, из дифференциального уравнения следует, что $\text{div\,} \bar{s_0}(x)$ "--- гармоническая функция в $Q$, и эта функция равна нулю на границе, что следует из однородного граничного условия, то есть ${\rm div\,} \bar{s_{0}}(x) = 0$ в $Q$.
+
+Покажем, что в общем случае $\text {div\,} \bar{s}_0(x_0) = 0$ при $x_0 \in S$ для векторного поля $ \bar{s}_0(x)$ с нулевым
+граничным условием, если контур $S$ в точке $x_0$ имеет касательную.
+
+Обозначим через $Q_\varepsilon$  пересечение $\varepsilon$-окрестности точки $x_0$ с областью $Q$, пусть $\partial Q_\varepsilon
+= S_\varepsilon + C_\varepsilon$, где $S_\varepsilon \subset S$ и $\bar{s}_0(x) = 0$ при $x \in S_{\varepsilon}$.
+
+В данном случае
+\[
+   \int_Q \text{div\,} \bar{s}_0(x) dx = \int_{C_{\varepsilon}} \bar{s}_0(x) \cdot \bar{n}(x) d C_\varepsilon,
+\]
+по определению дивергенции в точке имеем
+\[
+   \text{div\,}  \bar{s}_0 (x_0) = \lim_{\varepsilon \rightarrow 0} \frac{1}{\left| Q_\varepsilon \right|}
+    \int_{C_\varepsilon} \left| \bar{s}_0 (x) \right| \cos \alpha(x) d C_\varepsilon.
+\]
+
+Разлагая в ряд Тейлора функцию $| \bar{s}_0(x) |$ при $\varepsilon \to 0$ и переходя в последнем интеграле к полярным
+координатам, получаем
+\[
+   \frac{\varepsilon}{\left| Q_\varepsilon \right|} \int^{\pi+\delta(\varepsilon)}_{0} \left( \varepsilon \left| \bar{s}_{0}(x_0) \right|
+    + O(\left|x-x_{0}\right|^{2}) \cos \alpha(x) \right)  d \alpha,
+\]
+где $ \delta(\varepsilon) \to 0 $ при $\varepsilon \to 0$, и все последнее выражение стремится к нулю. 
+Равенство $\text{div\,} \bar{s}_0 (x_0) = 0$ при $x_0 \in S$ доказано.
+
+Алгоритм решения краевой задачи уравнения Ламе \eqref{lezh:Eq:LzhMrk:L1}, \eqref{lezh:Eq:LzhMrk:L2} состоит в решении краевых
+задач \eqref{lezh:Eq:LzhMrk:L6}, \eqref{lezh:Eq:LzhMrk:L7}, \eqref{lezh:Eq:LzhMrk:L9}, \eqref{lezh:Eq:LzhMrk:L10} и
+\eqref{lezh:Eq:LzhMrk:L11}, \eqref{lezh:Eq:LzhMrk:L12} "--- шести скалярных краевых задач в случае $\mathbb{R}^{2}$. 
+Для всех 
+этих краевых задач может быть использован достаточно простой метод базисных потенциалов \cite{lezh:LzhMrk:bib:LM}.
+
+\begin{remark}[1]
+Если касательная составляющая $\bar{l}(x)$ граничного векторного поля $\bar{b}(x)$ равна нулю, то все построения и алгоритмы
+применимы в трёхмерном случае $Q \subset \mathbb{R}^3$. 
+Действительно, при этом соленоидальная составляющая $\bar{s}_{1}(x)$ исчезает. 
+Для другой соленоидальной составляющей $\bar{s}_0(x)$ с однородным граничным условием имеем три уравнения Пуассона.
+\end{remark}
+
+\hypertarget{lzn:2}{}
+
+\begin{remark}[2]
+Алгоритм может быть применён для неодносвязных ограниченных областей. 
+Пусть, например, $Q=Q_1 \backslash  \overline{Q}_2$, $Q_1 \supset Q_2$, где $Q_1$, $Q_2$ "--- ограниченные односвязные области с границами Ляпунова $S_1$, $S_2$, \mbox{$ \partial Q{ =} S {=} S_1 \cup S_2$.}
+Пусть $\left\{ z_{m} \right\}_{m=1}^{\infty}$ "--- базисная последовательность точек в $Q^{+}_{1} = \mathbb{R}^2 \backslash \overline{Q}_1$. 
+Можно доказать, что последовательность функций 
+\[
+   \alpha1^{+}_m (x) = E(z^m - x), \quad  m=1,\,2,\,\ldots, \quad x \in S,
+\]
+где $E(x)$ "--- фундаментальное решение уравнения Лапласа, полна в $L_2 (S_1 \cup S_2)$, и применим алгоритм базисных
+потенциалов.
+\end{remark}
+
+\begin{remark}[3]
+Используя результаты работы \cite{lezh:LzhMrk:bib:NSh} и замечание \hyperlink{lzn:2}{2}, алгоритм можно применять для неогранченных областей.
+\end{remark}
+
+\thanks{ Работа поддержана грантами АВЦП $3341$, $3828$, $10854$ и контрактом ФЦП $2173$.
+Авторы выражают благодарность лаборатории математической физики СамГУ за поддержку на конференции <<Математическая физика и её
+приложения – 2010>>.}
+
+\begin{thebibliography}{9}
+
+\RBibitem{lezh:LzhMrk:bib:Oley}
+\by Олейник~О.\,А., Иосифьян~Г.\,А., Шамаев~А.\,С.
+\book Математические задачи теории сильно неоднородных упругих сред
+\publaddr М.
+\publ МГУ
+\yr 1990
+\totalpages 312
+\misctransl 
+\by Oleynik~O.\,A., Iosif'yan~G.\,A., Shamaev~A.\,S.
+\book Mathematical problems in the theory of strongly inhomogeneous elastic media
+\publ MGU
+\publaddr Moscow
+\yr 1990
+\totalpages 312
+
+
+\RBibitem{lezh:LzhMrk:bib:Bh}
+\by Быховский~Э.\,Б., Смирнов~Н.\,В.
+\paper Об ортогональном разложении пространства вектор-функций, квадратично суммируемых по заданной области, и операторах векторного анализа
+\inbook Математические вопросы гидродинамики и магнитной гидродинамики для вязкой несжимаемой жидкости
+\bookinfo Сборник работ
+\serial Тр. МИАН СССР
+\yr 1960
+\vol 59
+\pages 5--36
+\publ Изд-во АН СССР
+\publaddr М.--Л.
+\misctransl
+\by Bykhovskiy~\'E.\,B., Smirnov~N.~V.
+\paper Orthogonal decomposition of the space of vector functions square-summable on a given domain, and the operators of vector analysis
+\inbook Mathematical problems of hydrodynamics and magnetohydrodynamics for a viscous incompressible fluid
+\bookinfo Collected papers
+\serial Trudy Mat. Inst. Steklov.
+\yr 1960
+\vol 59
+\pages 5--36
+\publ Acad. Sci. USSR
+\publaddr Moscow--Leningrad
+
+\RBibitem{lezh:LzhMrk:bib:LaD}
+\by Ладыженская~О.\,А.
+\book Математические вопросы динамики вязкой несжимаемой жидкости
+\publaddr М.
+\publ Наука
+\yr 1970
+\totalpages 288
+\misctransl
+\by Ladyzhenskaya~O.\,A.
+\book Mathematical questions of the dynamics of a viscous incompressible fluid 
+\publ Nauka
+\publaddr Moscow 
+\yr 1970 
+\totalpages 288
+
+\RBibitem{lezh:LzhMrk:bib:LD}
+\by Лежнев~А.\,В., Лежнев~В.\,Г.
+\book Метод базисных потенциалов в задачах математической физики и гидродинамики
+\publaddr Краснодар
+\publ КубГУ
+\yr 2009
+\totalpages 111
+\misctransl
+\by Lezhnev~A.\,V, Lezhnev~V.\,G.
+\book Method of basic potentials in problems of mathematical physics and hydrodynamics
+\publaddr Krasnodar
+\publ KubGU
+\yr 2009
+\totalpages 111
+
+\RBibitem{lezh:LzhMrk:bib:LM}
+\paper Метод базисных потенциалов для неоднородного бигармонического уравнения
+\by Лежнев~В.\,Г., Марковский~А.\,Н.
+\jour Вестн. Сам. гос. ун-та. Естественнонаучн. сер.
+\yr 2008
+\issue 8/1(67)
+\pages 127--139
+\misctransl
+\by Lezhnev~V.\,G., Markovskiy~A.\,N.
+\paper Method of basis potentials for inhomogeneous biharmonic equation
+\jour Vestn. Samar. Gos. Univ. Estestvennonauchn. Ser.
+\yr 2008
+\issue 8/1(67)
+\pages 127--139
+
+\RBibitem{lezh:LzhMrk:bib:NSh}
+\by Назаров~С.\,А., Шпековиус-Нойгебауер~М.
+\paper Аппроксимация неограниченных областей ограниченными. Краевые задачи для оператора Ламе
+\jour Алгебра и анализ
+\yr 1996
+\vol 8
+\issue 5
+\pages 229--268
+\transl англ. пер.:~
+\by Nazarov~S.\,A., Specovius-Neugebauer~M.
+\paper Approximation of unbounded domains by bounded domains. Boundary value problems for the Lam\'e operator
+\jour St. Petersburg Math. J.
+\yr 1997
+\vol 8
+\issue 5
+\pages 879--912
+
+
+\end{thebibliography}
+
+\hskip6.5cm \thedate \par
+\hskip6.5cm\therevdate\par
+
+\vspace{-3mm}
+
+\makeengtitle
+
+\renewcommand{\baselinestretch}{0.9}
+
+\newpage
+
+%\end{document}

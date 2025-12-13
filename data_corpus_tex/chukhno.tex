@@ -1,0 +1,722 @@
+\def\stat{chukhno}
+
+\def\tit{МЕТОД ИЗВЛЕЧЕНИЯ ЭКСПЕРТНЫХ ОЦЕНОК ИЗ~СОЦИАЛЬНЫХ СЕТЕЙ 
+ПРИ~ПРОВЕДЕНИИ ПРОЦЕССА ГРУППОВОГО ПРИНЯТИЯ РЕШЕНИЙ$^*$}
+
+\def\titkol{Метод извлечения экспертных оценок из~социальных сетей} 
+%при~проведении процесса группового принятия решений}
+
+
+\def\aut{О.\,В.~Чухно$^1$, Н.\,В.~Чухно$^2$, Ю.\,В.~Гайдамака$^3$, 
+К.\,Е.~Самуйлов$^4$}
+
+\def\autkol{О.\,В.~Чухно, Н.\,В.~Чухно, Ю.\,В.~Гайдамака, 
+К.\,Е.~Самуйлов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Чухно О.\,В.}
+\index{Чухно Н.\,В.}
+\index{Гайдамака Ю.\,В.} 
+\index{Самуйлов К.\,Е.}
+\index{Chukhno O.\,V.}
+\index{Chukhno N.\,V.} 
+\index{Gaidamaka Yu.\,V.}
+\index{Samouylov K.\,E.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Публикация подготовлена при поддержке Программы РУДН <<5-100>> 
+и~при финансовой поддержке 
+РФФИ (проекты 17-07-00845 и~18-07-00576).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов, olgachukhno95@gmail.com}
+\footnotetext[2]{Российский университет дружбы народов, nvchukhno@gmail.com}
+\footnotetext[3]{Российский университет дружбы народов; Федеральный исследовательский центр 
+  <<Информатика и~управление>>  Российской академии наук, \mbox{gaydamaka-yuv@rudn.ru}}
+\footnotetext[4]{Российский университет дружбы народов; Федеральный исследовательский центр 
+  <<Информатика и~управление>> Российской академии наук, \mbox{samouylov-ke@rudn.ru}}
+
+
+
+ \label{st\stat}
+
+                  \thispagestyle{headings}
+                  
+  \vspace*{-11pt}
+  
+    
+  
+  \Abst{Социальные сети представляются наиболее предпочтительной средой с~точки 
+зрения взаимодействия пользователей, обмена информацией и~общения, поэтому их 
+можно использовать в~процессе группового принятия решений. Однако в~существующих 
+методах группового принятия решений эксперты должны следовать конкретным 
+предложенным структурам при выставлении своих оценок, что неестественно для 
+он\-лайн-сер\-ви\-сов, в~которых пользователи делятся мнениями в~свободной форме. Для решения 
+данной проб\-ле\-мы предлагается модель процесса группового принятия решений, 
+в~которой эксперты могут чувствовать себя свободнее при оценивании пар альтернатив или 
+высказывании своих мнений. Данный метод открывает возможность для автоматической 
+работы в~социальных сетях. Также предложен обзор и~на его основании 
+формальное описание алгоритма группового принятия решений в~социальной сети. 
+Представлен метод оценивания альтернатив, в~котором эксперты выставляют свои оценки в~ходе обсуждения проблемы с~использованием текстов, сообщений или публикаций на 
+выбранных ими платформах. Кроме того, предложены способы определения достигнутого 
+уровня консенсуса среди экспертов данного процесса.}
+  
+  \KW{групповое принятие решений; социальные сети; консенсусные меры; анализ 
+тональности текстов}
+
+\DOI{10.14357\!/\!08696527190408} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+      \vspace*{-18pt} 
+  
+\section{Введение}
+
+\vspace*{-3pt}
+
+  Благодаря технологии интернета у людей появилась возможность 
+общаться, делиться своими мнениями и~чувствами, обсуждать какие-либо 
+проблемы и~темы, находясь в~любой точке мира. Социальные сети сейчас 
+довольно популярны и~представляют важную среду для проведения 
+процессов группового принятия решений (\textit{англ.}\ Group Decision Making, 
+GDM)~[1, 2]. GDM~--- это процесс, состоящий в~выборе наилучшей 
+альтернативы или множества альтернатив из всех возможных с~учетом 
+мнений, выраженных группой лиц~[3--7]. 
+  
+  Основная цель статьи~--- представить новый метод, способный работать 
+  с~уже существующими социальными сетями.  С~его помощью эксперты 
+смогут использовать любую онлайн-платформу для обсуждения какой-либо 
+проблемы, а система будет выполнять необходимые вычисления без 
+взаимодействия с~пользователем.  Предложенная модель использует анализ 
+тональности текстов (\textit{англ.}\ Sentiment analysis) для извлечения значений 
+предпочтений из опубликованных в~сети сообщений~\cite{8-g, 9-g}. 
+Благодаря свободе, которую получат эксперты, они смогут проявить себя 
+лучше, а оценки станут более объективными.
+  
+  В новом методе также представлены два способа определения степени 
+согласия между экспертами в~процессе группового принятия решений.  
+Первый использует матрицы предпочтений экспертов, полученные при 
+анализе тональности текстов.  Второй опирается на отношения участников 
+процесса друг к~другу.
+  
+  Остальная часть статьи организована следующим образом. В~разд.~2 
+предложен обзор, необходимый для понимания разработанного метода. 
+Третий раздел описывает метод группового принятия решений, в~том числе 
+алгоритм извлечения оценок экспертов из социальных сетей, а также 
+способы измерения достигнутого консенсуса среди экспертов. В~заключении 
+подведены итоги и~поставлены задачи дальнейших исследований.
+
+\section{Предварительные замечания}
+
+  Социальные сети~--- это платформы, которые позволяют пользователям 
+обмениваться информацией, используя сообщения, посты, публикации и~т.\,д. 
+Важная особенность таких сервисов~--- использование хештегов (\textit{англ.}\ 
+Hashtags)~--- наборов ключевых слов, служащих для описания определенной 
+темы. Кроме того, в~сети всегда можно связать пользователя 
+с~опубликованным им сообщением или постом, а также в~процессе GDM 
+определить экспертов, которые согласны или не согласны с~другими 
+участниками процесса. Для обращения к~конкретному пользователю 
+онлайн-платформы используют упоминания, которые создаются как @username, где 
+username~--- имя пользователя. Отличительной осо\-бен\-ностью проведения 
+GDM в~социальных сетях является то, что эксперты могут участвовать 
+в~данном процессе независимо от местоположения, времени и~друг от друга.
+  
+  Для определения настроения человека, будем применять анализ 
+тональности текстов, исследуя сообщения экспертов. 
+  
+  Традиционно процесс группового принятия решений определяется 
+сле\-ду\-ющим образом: множество экспертов $E\hm= \{ e_1, \ldots , e_K\}$ 
+должны ранжировать множество альтернатив $X\hm= \{x_1, \ldots , x_M\}$ 
+по возрастанию степени предпочтения, при этом $\vert E\vert \hm= K\hm< 
+\infty$ и~$\vert X\vert \hm= M\hm< \infty$. Для этой цели эксперты 
+предоставляют свои предпочтения $p_{ij}(k)$ относительно каждой пары 
+альтернатив~$x_i$ и~$x_j$, которые выражаются матрицами 
+индивидуальных предпочтений $\mathbf{P}\hm= \{ \mathbf{P}(1), 
+\mathbf{P}(2), \ldots , \mathbf{P}(K)\}$. 
+  
+  Метод группового принятия решений включает следующие шаги.
+  \begin{enumerate}[1.]
+  \item Предоставление предпочтений: эксперты решают, какие 
+альтернативы являются наиболее подходящими для них, и~делятся с~системой 
+своим мнением. 
+  \item  Вычисление матрицы коллективных предпочтений: после того как 
+все эксперты предоставили оценки по всем парам альтернатив, предпочтения 
+объединяются в~единую матрицу коллективных оценок. Здесь могут 
+применяться различные операторы агрегирования, например OWA (ordered weighted averaging)
+или 
+IOWA (induced OWA)~\cite{10-g}. Полученный результат содержит общее мнение всех 
+экспертов.
+  \item Создание рейтинга альтернатив: итоговые результаты ранжирования 
+по всем альтернативам рассчитываются с~использованием коллективной 
+матрицы предпочтений. Результатом является выбор лучшей альтернативы 
+или список альтернатив, упорядоченных по возрастанию значимости.
+  \item Измерение консенсуса. Чем больше экспертов согласно 
+с~окончательным решением, тем более надежными будут результаты. 
+  \end{enumerate}
+  
+  \begin{figure} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+ \epsfbox{chu-1.eps}
+ }
+
+%\vspace*{6pt}
+
+{\small Модель группового принятия решений}
+
+ \end{center}
+ \vspace*{-1pt}
+ 
+\end{figure}
+
+\vspace*{-4pt}
+  
+\section{Метод процесса группового принятия решений 
+с~использованием анализа сообщений в~социальной сети}
+
+\vspace*{-2pt}
+
+  Новый разработанный метод включает следующие этапы (см.\ рисунок).
+  
+  \textbf{I. Извлечение дискуссионных текстов экспертов }
+  
+  При выполнении данного процесса извлекаются тексты (сообщения), 
+написанные пользователями социальной сети, в~том числе выполняются 
+следующие действия.
+  \begin{enumerate}[1.]
+  \item Создание хештега, который будет идентифицировать процесс 
+группового принятия решений, например \#GDM. Благодаря этому 
+упрощается задача получения всей необходимой информации по процессу из 
+сети. 
+  \item  Выбор учетных записей экспертов, находящихся на целевой  
+он\-лайн-плат\-фор\-ме. Если не ясно, сколько экспертов участвует 
+в~процессе, можно определить их число по хештегу. 
+  \item Создание списка ключевых слов, относящихся к~альтернативам: до 
+проведения обсуждений необходимо связать множество ключевых слов 
+$K\hm= \{K_1, \ldots , K_M\}$ с~конкретной альтернативой. Благодаря этому 
+можно определить, какие альтернативы обсуждают эксперты. Каждое 
+значение~$K_i$ формирует набор слов, которые обычно используются, когда 
+обсуждается альтернатива~$x_i$.
+  \item Извлечение дискуссионных текстов в~процессе группового принятия 
+решений: для этой цели публикации экспертов, содержащие хештег, 
+выбираются из каждой учетной записи. Выполнение данного шага 
+определяет множество текстов $A\hm= \{A_1, \ldots , A_K\}$, связанных 
+с~множеством экспертов $E\hm= \{e_1, \ldots , e_K\}$.
+  \end{enumerate}
+  
+
+
+  
+  \textbf{II. Вычисление предпочтений экспертов}
+  
+  После того как тексты экспертов были извлечены, для вычисления 
+значений предпочтений, которые будут использоваться в~процессе 
+группового принятия решений, применяется анализ тональности текстов. 
+С~этой целью свободный текст, используемый экспертами в~их дискуссиях, 
+должен преобразоваться в~набор значений предпочтений, которые 
+применяются в~процессе GDM для создания окончательного рейтинга 
+альтернатив. Поскольку для решаемой проблемы необходимо определить, 
+есть ли у экспертов положительные, нейтральные или отрицательные чувства 
+при сравнении двух конкретных альтернатив, используются три списка слов: 
+PL, NPL и~SL. В PL содержатся слова, определяющие положительные 
+чувства. Если несколько из этих слов используются экспертом, это означает, 
+что он предпочитает первую альтернативу второй. NPL содержит 
+отрицательные слова. Наконец, SL включает слова, которыми часто 
+оперируют при утверждении, что альтернативы имеют одинаковую 
+значимость. Строки PL и~NPL имеют сравнительное выражение и~его 
+значение~--- степень предпочтения одной альтернативы над другой. Важно 
+отметить, что SL не нуждается в~определении данного значения, так как 
+процесс присваивает среднюю оценку автоматически в~случаях, когда две 
+альтернативы считаются одинаковыми.
+  
+  Предложенный шаг вычисления предпочтений включает:
+  \begin{enumerate}[(1)]
+  \item извлечение сравнительных предложений: анализируются тексты всех 
+экспертов, участвующих в~процессе. Все предложения, содержащие хотя бы 
+одно из выражений из списков слов PL, NPL и~SL, извлекаются из сообщений 
+экспертов. В~результате этого процесса каждый эксперт~$e_k$ оказывается 
+связан с~тремя наборами сравнительных предложений $\mathrm{spl_k}$, $\mathrm{snpl}_k$ 
+и~$\mathrm{ssl}_k$;
+  \item вычисление степени предпочтения $p_{ij}$ для каждой пары 
+альтернатив. Этот процесс выполняется путем сопоставления значений 
+сравнительного выражения, используемого для сравнения альтернатив~$x_i$ 
+и~$x_j$. Предполагается, что для заполнения матрицы предпочтений 
+информации всегда достаточно (нет пустых строк). При этом если 
+сравнительное выражение относится к~PL и~имеет значение~3, то $p_{ij}\hm= 
+3$, в~то время как для такого же значения из NPL $p_{ij}\hm= -3$. В~случае, 
+когда сравнительное выражение принадлежит SL, $p_{ij}\hm=0$; 
+  \item  фиксирование интервала значений предпочтений: чтобы избавиться 
+от отрицательных чисел, можно преобразовать значения. Предварительно 
+полученное представление генерирует значения, которые принадлежат 
+интервалу $[-g, g]$. Если отрицательные числа нежелательны, можно 
+изменить область и~выразить всю информацию с~использованием интервала 
+$[0, 2g]$:
+  \begin{equation*}
+  p_{ij_{[0,2g]}}(k)=p_{ij_{[-g,g]}}(k)+g\,;
+  %\label{e1-g}
+  \end{equation*}
+  
+  %\begin{table}
+  \begin{center}
+  {\small
+  \begin{tabular}{l}
+  \hline
+  \\[-9pt]
+  \multicolumn{1}{c}{\textbf{Алгоритм вычисления значений предпочтений}}\\[3pt]
+  \hline
+  \\[-9pt]
+\textbf{Data:}\ Тексты экспертов в~социальных сетях\\
+  \hspace{2mm}$E=\{e_1, \ldots , e_K\}$,\ $X=\{x_1, \ldots , x_M\}$,\ $\mathrm{hashtag}$, 
+$K=\{ K_1, \ldots , K_M\}$,\\
+\hspace*{10mm}$A=\{A_1, \ldots , A_K\}$.\\
+       \hspace*{4mm}\textbf{procedure} $A_k\to \mathbf{P}(k)$\\
+          \hspace*{6mm}\textbf{for} all~$e_k$, $k=1$ to~$K$\\
+          \hspace*{8mm}\textbf{for} all $A_k$, $k=1$ to~$K$\\
+             \hspace*{10mm}\textbf{assign} $p_{ij}(k)_{i,j\in 1,\ldots , M}$\\
+          \hspace*{12mm}\textbf{if} $p_{ij}(k)\in \mathrm{PL}$ \textbf{do}\\
+          \hspace*{13mm}$p_{ij}(k)=p_{ij}(k)$\\
+     \hspace*{12mm}\textbf{  else if} $p_{ij}(k)\in \mathrm{NPL}$ \textbf{do}\\
+  \hspace*{13mm}$p_{ij}(k) =-p_{ij}(k)$\\
+  \hspace*{12mm}\textbf{else if} $p_{ij}(k)\in \mathrm{SL}$ \textbf{do}\\
+        \hspace*{13mm}$p_{ij}(k)=0$\\
+    \hspace*{12mm}\textbf{and if}\\
+    \hspace*{8mm}\textbf{and for}\\
+    \hspace*{8mm}\textbf{for all} $p_{ij}(k)_{i,j\in 1,\ldots , M}$ \textbf{do}\\
+       \hspace*{10mm}$p_{ij_{[0,2g]}} (k)=p_{ij_{[-g,g]}}(k)+g$\\
+  \hspace*{10mm}$\displaystyle \tilde{p}_{ij}(k)=\fr{p_{ij_{[0,2g]}}(k)}{2g}$\\
+    \hspace*{8mm}\textbf{end for}\\
+         \hspace*{6mm}\textbf{end for}\\
+       \hspace*{4mm}Вывести матрицы оценок экспертов $\mathbf{P}(k)=\left( 
+\tilde{p}_{ij}(k)\right)_{i,j\in 1,\ldots , M}$\\
+    \hspace*{4mm}\textbf{end procedure} $A_k\to \mathbf{P}(k)$\\
+  \hline
+  \end{tabular}
+  }
+  \end{center}
+ % \end{table}
+   
+  \item  нормирование оценок: в~статье предлагается использовать оценки, 
+выраженные на интервале $[0, 1]$, для этого необходимо воспользоваться 
+формулой
+  \begin{equation*}
+  \tilde{p}_{ij}(k)= \fr{p_{ij_{[0,2g]}}(k)}{2g}\,.
+ % \label{e2-g}
+  \end{equation*} 
+  
+  После того как будут рассчитаны матрицы предпочтений для всех 
+экспертов, можно определить рейтинг альтернатив и~вычислить значения 
+консенсуса между всеми экспертами, участвующими в~процессе группового 
+принятия решений.
+  \end{enumerate}
+  
+  \textbf{III. Расчет матрицы коллективных предпочтений}
+  
+  Значения предпочтений всех экспертов объединяются в~единую 
+коллективную матрицу, которая представляет информацию об общем мнении 
+участников процесса GDM. Для этой цели, как и~в~традиционной модели, 
+может применяться любой оператор агрегирования. Будем использовать 
+оператор среднее. Тогда элементы матрицы коллективных предпочтений 
+  будут вычисляться следующим образом:
+  \begin{equation*}
+  c_{ij} =\fr{\sum\nolimits^K_{k=1} \tilde{p}_{ij}(k)}{K}\,.
+%  \label{e3-g}
+  \end{equation*}
+  
+  С этого момента предполагается, что все эксперты имеют одинаковую 
+значимость в~процессе группового принятия решений. 
+  
+  \textbf{IV. Создание рейтинга альтернатив}
+  
+  Для определения ранжированного списка альтернатив можно использовать 
+операторы GDD (\textit{англ.}\ Guided Dominance Degree) и~GNDD (\textit{англ.}\ Guided 
+Non Dominance Degree). Эти операторы способны вычислять рейтинг 
+альтернатив (создавать ранжированные списки), используя матрицу 
+коллективных предпочтений~$\mathbf{C}$, полученную на предыдущем 
+шаге:
+  \begin{align}
+  \mathrm{GDD}_i&= \sum\limits^M_{j=1} c_{ij}\,,\quad i=1,\ldots , M\,;\label{e4-g}\\
+\mathrm{GNDD}_i &= \sum\limits^M_{j=1} \left( 1-\max \left\{  c_{ji} -c_{ij}, 
+0\right\}\right) \,,\ \quad i=1, \ldots , M\,.
+  \label{e5-g}
+  \end{align}
+  
+  Конечные значения ранжирования $\mathrm{RV}$ вычисляются с~использованием 
+среднего между~(\ref{e4-g}) и~(\ref{e5-g}):
+  \begin{equation*}
+  \mathrm{RV}_i=\fr{\mathrm{GDD}_i+\mathrm{GNDD}_i}{2}\,,\quad i=1, \ldots , M\,.
+%  \label{e6-g}
+  \end{equation*}
+  
+  Теперь альтернативы могут быть отсортированы на основании полученных 
+$\mathrm{RV}_i$. Стоит отметить, что предпочтительнее будет та альтернатива, 
+у~которой это значение выше.
+  
+  
+  \textbf{V. Вычисление консенсуса}
+  
+  Чтобы определить, согласны ли эксперты с~результатами или, напротив, их 
+мнения разошлись, проводится анализ достигнутого консенсуса.
+  
+  В~работе предлагается два способа вычисления степени согласия 
+экспертов. 
+  \begin{enumerate}[1.]
+  \item Первый подход опирается на предпочтения, извлеченные из текстов 
+обсуждений, т.\,е.\ на матрицу~$\mathbf{P}(k)$. Полученные результаты 
+определяются из сходств значений предпочтений, предоставляемых каждым 
+из двух экспертов. Для вычисления степени сходства значений предпочтений 
+между экспертами~$e_k$ и~$e_l$ для двух конкретных альтернатив~$x_i$ 
+и~$x_j$ необходимо применить выражение
+  \begin{equation*}
+  \mathrm{sm}_{ij}\left( e_k, e_l\right) =s\left( \tilde{p}_{ij}(k), \tilde{p}_{ij}(l)\right) =1-
+\left\vert \tilde{p}_{ij}(k)-\tilde{p}_{ij}(l)\right\vert \,.
+  %\label{e7-g}
+  \end{equation*}
+  
+  Для того чтобы измерить консенсус между двумя парами 
+альтернатив~$x_i$ и~$x_j$ по всем участникам процесса GDM, используется 
+следующая формула:
+  \begin{equation*}
+  \mathrm{cp}_{ij} =\fr{\sum\nolimits^{K-1}_{k=1,\ k<l} \mathrm{sm}_{ij} (e_k, e_l)} 
+{\begin{pmatrix} K\\ 2\end{pmatrix}}\,.
+ % \label{e8-g}
+  \end{equation*}
+  
+  Значение консенсуса на уровне альтернативы определяется выражением
+  \begin{equation*}
+  \mathrm{ca}_i=\fr{\sum\nolimits^M_{j=1,\ i\not=j} \left( \mathrm{cp}_{ij}+\mathrm{cp}_{ji}\right)}  
+{2(M-1)}\,.
+  %\label{e9-g}
+  \end{equation*}
+  
+  Наконец, можно вычислить глобальный достигнутый консенсус в~процессе 
+группового принятия решений:
+  \begin{equation*}
+  \mathrm{GCP}=\fr{\sum\nolimits^M_{i=1} ca_i}{M}\,.
+%  \label{e10-g}
+  \end{equation*}
+  
+  Таким образом, чем ближе значение глобального консенсуса к~единице, 
+тем более единодушны эксперты в~выражении своих оценок 
+и,~следовательно, надежнее результаты.
+  \item  Вторым способом определения достигнутого консенсуса в~процессе 
+группового принятия решений является исследование отношения экспертов 
+к~другим участникам обсуждения. Благодаря процедурам анализа тональности 
+текстов можно провести тщательную оценку мнений экспертов и~рассчитать 
+консенсусное значение. Вычисление консенсуса включает следующие 
+действия:
+  \begin{enumerate}[(1)]
+\item для каждой учетной записи извлекаются тексты, ссылающиеся 
+непосредственно на других экспертов, участвующих в~процессе группового 
+принятия решений. Например, в~Twitter или Instagram могут быть выбраны 
+тексты обсуждений, которые включают синтаксис @username;
+  \item определение сравнительной парной оценки между экспертами: 
+анализируются предложения, касающиеся экспертов~$e_k$ и~$e_l$. 
+Рассчитывается число слов, принадлежащих списку положительных  
+и~отрицательных слов. Таким образом, $\mathrm{pwcount}(e_k, e_l)$ измеряет согласие 
+между экспертами~$e_k$ и~$e_l$, а~$\mathrm{nwcount}(e_k, e_l)$ дает меру 
+разногласий.
+  
+  Для вычисления консенсуса между экспертами~$e_k$ и~$e_l$ применяется 
+формула:
+  \begin{equation*}
+  \left( e_k, e_l\right) =\fr{\mathrm{pwcount}(e_k,e_l)-
+  \mathrm{nwcount}(e_k,e_l)} 
+{\mathrm{pwcount}(e_k,e_l) + \mathrm{nwcount}(e_k, e_l)}\,.
+ % \label{e11-g}
+  \end{equation*}
+  
+  Полученное значение находится в~интервале $[-1, 1]$. Для нормирования 
+данных можно применить линейное преобразование:
+  \begin{equation*}
+  \mathrm{cs}_{[0,1]}(e_k, e_l)= \fr{\mathrm{cs}_{[-1,1]} (e_k, e_l)+1}{2}\,.
+  %\label{e12-g}
+  \end{equation*}
+  
+  Отметим, чем меньше значение $\mathrm{cs}_{[0,1]} (e_k, e_l)$, тем больше 
+разногласий между экспертами~$e_k$ и~$e_l$;
+  \item вычисление глобального достигнутого консенсуса в~процессе 
+группового принятия решений на основании информации экспертов по 
+отношению друг к~другу:
+  \begin{equation*}
+ \mathrm{ GCS}=\fr{\sum\nolimits^{K-1}_{k=1,\ k<l} \mathrm{cs}_{[0,1]}(e_k, 
+e_l)}{\begin{pmatrix} K\\ 2\end{pmatrix}}\,.
+  %\label{e13-g}
+  \end{equation*}
+  
+  Если полученное значение равно единице (степень согласия~100\%), это 
+означает, что достигнут максимальный консенсус. 
+  \end{enumerate}
+  \end{enumerate}
+  
+\section{Заключение}
+
+  В статье представлен метод группового принятия решений, новизна 
+которого заключается в~том, что использует анализ тональности текстов 
+пользователей для заполнения матриц отношений предпочтений. Благодаря 
+этому эксперты не должны участвовать в~утомляющем и~неудобном процессе 
+выражения мнений системе.  Они могут свободно говорить и~обсуждать 
+проблемы в~социальных сетях, не беспокоясь о том, как предоставить свои 
+предпочтения. 
+  
+  Поскольку социальные сети представляются наиболее привлекательным 
+средством общения через интернет, эта среда выбрана для осуществления 
+процессов группового принятия решений. Предложенный метод также 
+реализует измерения консенсусных мер, основанных на значениях 
+предпочтений экспертов и~мнениях об остальных участниках, принимающих 
+решения. 
+  
+  В дальнейшем планируется разработать программное средство, способное 
+работать с~информацией в~социальных сетях в~реальных условиях.
+
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+
+\bibitem{2-g} %1
+\Au{Wasserman S., Faust K.} Social network analysis: Methods and applications.~--- 
+Cambridge: Cambridge University Press, 1994. Vol.~8. 857~p.
+\bibitem{1-g} %2
+\Au{Scott J.} Social network analysis.~--- 4th ed.~--- London: Sage, 2017. 227~p.
+
+
+\bibitem{6-g} %3
+\Au{Chiclana F., Tapia Garcia~J., del Moral~M.\,J., Herrera-Viedma~E.} A~statistical 
+comparative study of different similarity measures of consensus in group decision 
+making~/\!\!/ Inform. Sciences, 2013. Vol.~221. P.~110--123.
+\bibitem{7-g} %4
+\Au{Morente-Molinera J.\,A., P$\acute{\mbox{e}}$rez~I.\,J., 
+Ure$\tilde{\mbox{n}}$a~M.\,R., Herrera-Viedma~E.} On multi-granular fuzzy linguistic 
+modeling in group decision making problems: A~systematic review and future trends~/\!\!/ 
+Knowl.-Based Syst., 2015. Vol.~74. P.~49--60.
+\bibitem{3-g} %5
+\Au{Urea R., Cabrerizo F.\,J., Morente-Molinera~J.\,A., Herrera-Viedma~E.} GDM-R: 
+A~new framework in~$R$ to support fuzzy group decision making processes~/\!\!/ Inform. 
+Sciences, 2016. Vol.~357. P.~161--181.
+\bibitem{4-g} %6
+\Au{Wu J., Xiong R., Chiclana~F.} Uninorm trust propagation and aggregation methods for 
+group decision making in social network with four tuple information~/\!\!/ Knowl.-Based 
+Syst., 2016. Vol.~96. P.~29--39.
+\bibitem{5-g} %7
+\Au{Herrera-Viedma E., Cabrerizo F., Chiclana~F., Wu~J., Cobo~M., Samuylov~K.} 
+Consensus in group decision making and social networks~/\!\!/ Stud. Inform.  Control, 
+2017. Vol.~26. Iss.~3. P.~259--268.
+\bibitem{9-g} %8
+\Au{Pang B., Lee L.} Opinion mining and sentiment analysis~/\!\!/ Found. Trends 
+Inf. Ret., 2008. Vol.~3. P.~1--135.
+\bibitem{8-g} %9
+\Au{Baccianella S.} Sentiwordnet 3.0: An enhanced lexical resource for sentiment analysis 
+and opinion mining~/\!\!/ Conference  (International) on Language Resources and 
+Evaluation Proceedings, 2010. P.~2200--2204.
+
+\bibitem{10-g}
+\Au{Yager R.\,R.} On ordered weighted averaging aggregation operators in multi-criteria 
+decision making~/\!\!/ IEEE~T. Syst. Man  Cyb., 1988. Vol.~18. 
+P.~183--190.
+
+        \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 13.02.19}}
+
+
+
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{METHOD OF EXTRACTING EXPERTS' ASSESSMENTS FROM~SOCIAL NETWORKS 
+IN~THE~GROUP DECISION MAKING PROCESS}
+
+\def\titkol{Method of extracting experts' assessments from~social networks} 
+%in~the~group decision making process}
+
+
+
+\def\aut{O.\,V.~Chukhno$^1$, N.\,V.~Chukhno$^1$, 
+Yu.\,V.~Gaidamaka$^{1,2}$, and~K.\,E.~Samouylov$^{1,2}$}
+
+\def\autkol{O.\,V.~Chukhno, N.\,V.~Chukhno, 
+Yu.\,V.~Gaidamaka, and~K.\,E.~Samouylov}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+\noindent
+$^1$Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-\linebreak
+$\hphantom{^1}$Maklaya Str., 
+Moscow 117198, Russian Federation
+
+\noindent
+$^2$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
+$\hphantom{^1}$of  Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2019 vol~29 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2019   vol~29   no\,4
+\hfill \textbf{\thepage}}}
+
+
+
+\Abste{Social networks are the most preferred mean in terms of user interaction, 
+information 
+sharing, and communication.  Therefore, they can be used in a~group decision making process. 
+However, in existing methods of group decision making, experts should follow the specific 
+proposed structures when making their decisions.  This is unnatural for online services in which 
+users can express their opinions in a~free form.  To solve this problem, a~model of a~group 
+decision making process is proposed in which experts can feel more free when evaluating pairs 
+of alternatives or expressing their opinions.  This method makes it possible to work in social 
+networks.  The article also offers a review and on its basis a formal description of the group 
+decision making algorithm in a~social network. A~method for evaluating alternatives is 
+presented, in which experts provide their assessments during the discussion of a~problem with 
+the use of texts, messages, or publications in chosen platforms. Methods are proposed for 
+determining the level of consensus reached among the experts of this process.}
+
+\KWE{group decision making; social networks; consensus measures; sentiment analysis}
+
+ \DOI{10.14357\!/\!08696527190408} 
+
+%\vspace*{-24pt}
+
+\Ack
+\noindent
+The publication has been prepared with the support of the ``RUDN University Program 5-100'' and 
+funded by the Russian Foundation for Basic Research
+ according to the research projects Nos.\,17-07-00845 and 18-07-00576.
+
+
+%\vspace*{-12pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+\bibitem{2-g-1}
+\Aue{Wasserman, S., and K.~Faust.} 1994. \textit{Social network analysis: Methods and 
+applications}.  Cambridge: Cambridge University Press. Vol.~8. 857~p.
+
+\bibitem{1-g-1}
+\Aue{Scott, J.} 2017. \textit{Social network analysis}. 4th ed. London: Sage. 227~p.
+
+
+\bibitem{6-g-1} %3
+\Aue{Chiclana, F., J.~Tapia Garcia, M.\,J.~del Moral, and E.~Herrera-Viedma.} 2013. 
+A~statistical comparative study of different similarity measures of consensus in group 
+decision making. \textit{Inform. Sciences} 221:110--123.
+\bibitem{7-g-1} %4
+\Aue{Morente-Molinera, J.\,A., I.\,J.~P$\acute{\mbox{e}}$rez, 
+M.\,R.~Ure$\tilde{\mbox{n}}$a, and E.~Herrera-Viedma.} 2015. On multi-granular fuzzy 
+linguistic modeling in group decision making problems: A~systematic review and future 
+trends. \textit{Knowl.-Based Syst.} 74:49--60.
+\bibitem{3-g-1} %5
+\Aue{Urea, R., F.\,J.~Cabrerizo, J.\,A.~Morente-Molinera, and E.~Herrera-Viedma.} 2016. 
+GDM-R: A~new framework in R to support fuzzy group decision making processes. 
+\textit{Inform. Sciences} 357:161--181.
+\bibitem{4-g-1} %6
+\Aue{Wu, J., R.~Xiong, and F.~Chiclana.} 2016. Uninorm trust propagation and aggregation 
+methods for group decision making in social network with four tuple information. 
+\textit{Knowl.-Based Syst.} 96:29--39.
+\bibitem{5-g-1} %7
+\Aue{Herrera-Viedma, E., F.~Cabrerizo, F.~Chiclana, J.~Wu, M.~Cobo, and 
+K.~Samuylov.} 2017. Consensus in group decision making and social networks. 
+\textit{Stud. Inform. Control} 26(3):259--268.
+
+\bibitem{9-g-1} %8
+\Aue{Pang, B., and L.~Lee.} 2008. Opinion mining and sentiment analysis. 
+\textit{Found. Trends Inf. Ret.}. 3:1--135.
+
+\bibitem{8-g-1} %9
+\Aue{Baccianella, S.} 2010. Sentiwordnet~3.0: An enhanced lexical resource for sentiment 
+analysis and opinion mining. \textit{Conference  (International) on Language Resources and 
+Evaluation Proceedings}. 2200--2204.
+
+\bibitem{10-g-1}
+\Aue{Yager, R.\,R.} 1988. On ordered weighted averaging aggregation operators in  
+multi-criteria decision making. \textit{IEEE~T. Syst. Man Cyb.} 
+18:183--190.
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received February 13, 2019}} 
+
+%\vspace*{-16pt}
+
+\Contr
+
+\noindent
+\textbf{Chukhno Olga V.} (b.\ 1995)~--- student, Department of Applied Probability and 
+Informatics, Peoples' Friendship University of Russia (RUDN University), 
+ 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{olgachukhno95@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Chukhno Nadezhda V.} (b.\ 1995)~---  student, Department of 
+Applied Probability and 
+Informatics, Peoples' Friendship University of Russia (RUDN University),  
+6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{nvchukhno@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Doctor of Science in physics and mathematics, professor, 
+Peoples' Friendship University of Russia (RUDN University), 6 Miklukho-Maklaya Str., Moscow 117198, 
+Russian Federation; senior scientist, Federal Research Center ``Computer Science and Control'' of the 
+Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{gaydamaka-yuv@rudn.university}
+\vspace*{3pt}
+
+\noindent
+\textbf{Samouylov Konstantin E.} (b.\ 1955)~--- Doctor of Science in technology, professor, 
+Head of Department, Director of Institute of Applied Mathematics and Telecommunications, 
+Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian Federation; senior scientist, Federal Research Center ``Computer 
+Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, 
+Russian Federation; \mbox{samuylov\_ke@rudn.university}
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

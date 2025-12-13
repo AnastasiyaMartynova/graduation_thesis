@@ -1,0 +1,1123 @@
+\def\bmx{\mathbf}
+
+\renewcommand{\figurename}{\protect\bf Figure}
+\renewcommand{\tablename}{\protect\bf Table}
+
+\def\stat{raz-1}
+
+\def\tit{STATIONARY SOJOURN TIMES 
+IN~$\mathrm{MAP}/\mathrm{PH}/1/r$ QUEUE WITH~BI-LEVEL HYSTERETIC CONTROL OF~ARRIVALS}
+
+\def\titkol{Stationary sojourn times 
+in~$\mathrm{MAP}/\mathrm{PH}/1/r$ queue with~bi-level hysteretic control of~arrivals}
+
+\def\autkol{R.\,V.~Razumchik}
+
+\def\aut{R.\,V.~Razumchik$^{1,2}$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Razumchik R.\,V.}
+\index{Разумчик Р.\,В.}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1] {This work was supported in part by the
+%Russian Foundation for Basic Research (grants 15-07-03007 and 13-07-00223).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Institute of Informatics Problems, Federal Research 
+Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
+Moscow 119333, Russian Federation} 
+\footnotetext[2]{Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian Federation}
+
+
+%\vspace*{-6pt}
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+
+
+%\def\l{\lambda}
+%\def\m{\mu}
+%\def\a{\alpha}
+%\def\b{\beta}
+%\def\g{\gamma}
+%\def\d{\delta}
+%\def\r{\overline r}
+%\def\f{\overline f}
+%\def\n{\nu}
+
+
+
+\Abste{This paper reports some new results concerning the 
+analysis of the time-related stationary characteristics
+of a~finite-capacity queueing system 
+operating in a~random environment
+with the bi-level hysteretic control of arrivals.
+The topic of the paper is motivated by 
+the overload problem in networks of SIP (session initiation protocol) servers 
+and the viewpoint that multilevel hysteretic control 
+of arrivals in SIP servers
+can be used to mitigate signalling network congestion.
+The considered mathematical model of SIP server is the 
+single server queueing system with Markovian arrival processes (MAP), PH (phase-type)
+service,
+and bi-level hysteretic control policy.
+According to this policy, a~system may be in one
+of the three operation modes: normal, overload, or blocking. 
+The switching between modes occurs at 
+instants whenever the total number of customers in the 
+system changes.
+The analytical method for the computation of the 
+stationary sojourn times in different operation modes (in terms of 
+Laplace--Stieltjes transforms (LST)), 
+which utilizes the knowledge about the presence of 
+hysteretic loops, is given. It is also applicable 
+in the case when, in addition to the sojourn times,
+one needs to account for the number of lost customers.}
+
+
+\KWE{queueing system; random environment; first passage times; hysteretic control}
+
+\DOI{10.14357/19922264170403}
+
+%\vspace*{9pt}
+
+
+\vskip 12pt plus 9pt minus 6pt
+
+      \thispagestyle{myheadings}
+
+      \begin{multicols}{2}
+
+                  \label{st\stat}
+
+
+\section{Introduction}
+
+\noindent
+This paper continues the analysis 
+of the stationary finite-capacity queueing system 
+operating in a~random environment
+with hysteretic control of arrivals, 
+which was started in~\cite{int0}.
+Specifically, we deal with the $\mathrm{MAP}/\mathrm{PH}/1/r$ queue 
+with two-level hysteretic control of 
+arrival rates with nonoverlapping hysteretic
+loops. For this system, the authors 
+of~\cite{int0} proposed the 
+new analytic method for the computation 
+of the steady-state distribution, which
+is different from the known general approaches 
+for QBDs (quasi-birth-deathes). It exploits the knowledge about the hysteretic loops 
+which are present in the system, has a~probabilistic interpretation
+and leads to easy-to-implement computational procedures.  
+We will not dwell on the motivation behind the 
+analysis of this system (for details, refer~\cite{int0} and references therein)
+and just mention that the various aspects of the 
+topic of hysteretic control in 
+queueing models still gains attention from the research 
+community (see~\cite{int2, int3, int4}).
+
+In order to make the picture clearer, let us assume 
+that the control is only bi-level with nonoverlapping 
+loops although all the results 
+presented here (and in~\cite{int0}) can be 
+generalized in a~straightforward manner for 
+hysteretic control of arrivals with arbitrary number of 
+nonoverlapping loops. 
+Following the bi-level hysteretic control, 
+the system changes its status (or mode) 
+between ``normal,'' ``overload,'' and ``blocking'' 
+(this will be made more precise in the next section). In each mode 
+except for a~``normal'' one, server discards a~certain percentage 
+of arriving customers. From a~practical point of view 
+(at least the one mentioned in~\cite{int1}), 
+it may be beneficial when the system spends 
+as little time as possible in ``overload''/``blocking'' 
+modes. This brings one to the analysis of time-related stationary
+characteristics of the system, which was not carried out in~\cite{int0}.
+
+In what follows, we are interested in the two performance characteristics 
+of the hysteretic policy. The first one is the stationary
+distribution of the time system spends in ``normal'' mode. 
+The second one is the distribution of the time it takes the system to get back 
+to ``normal'' mode\footnote[3]{Waiting and system sojourn time distributions
+are of little interest since hysteretic loops have no influence on them in 
+case of FIFO service policy (which is assumed).}. 
+
+After giving the detailed system description in 
+the next section, in section~3, 
+the analytical method for the sequential computation
+of these (sojourn time) distributions will be presented
+in terms of LST.
+The LST of the sojourn times are obtained as solutions to certain matrix difference equations
+and are expressed in terms of recurrence relations.
+They can be used for direct numerical implementation and 
+numerical inversion with well-known methods (Fourier-series method with Euler 
+summation, Talbot, etc.).
+
+\begin{figure*}[b] %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=123.993mm 
+ \epsfbox{raz-1.eps}
+ }
+
+\vspace*{6pt}
+
+{\small Sketch of the bi-level hysteretic control of arrivals in the $\mathrm{MAP}/\mathrm{PH}/1/r$ 
+system}
+
+ \end{center}
+\end{figure*}
+
+
+
+\section{System Description and~Preliminaries}
+
+\noindent
+The system consists of a~single server and a~queue of finite capacity~$r$.
+The arrival process is a~MAP with representation $(\mathbf{D_0}, \mathbf{D_1})$ 
+of order~$N$.
+Let us assume that an arrival, whenever it occurs, can be of one of the two types, either 
+a~priority arrival or a~nonpriority. Thus, the matrix~$\mathbf{D_1}$ is assumed to
+have the form $\mathbf{D_1}=\mathbf{D_{1,1}}+\mathbf{D_{1,2}}$
+where $\mathbf{D_{1,1}}$ ($\mathbf{D_{1,2}}$) describes state transitions with an 
+arrival of
+priority (nonpriority) customer. Bi-level hysteretic control of 
+arrivals is assumed to be implemented in the system. It operates as follows (see figure).
+There are three operation modes for the system: ``normal,'' ``overload,'' 
+and ``blocking.''
+ Let~$L$ and~$H$ be arbitrary integers,
+such that $0 < L < H < r+1$. Assume the system starts empty. 
+As long as the total
+number of customers in the system remains below~$H$,
+the system is considered to be in ``normal`` mode and accepts 
+all arrivals (both priority and nonpriority). 
+When the total number of customers reaches~$H$ for the first time, the
+system changes its mode to ``overload'' and stays in it as long
+as the total number of customers remains between~$L$ and~$r$.
+When overloaded, the system accepts only priority customers (nonpriority customers 
+are lost)
+till the total number of customers either
+drops down below $L$ after which it changes its mode back to
+``normal,'' or exceeds~$r$ after which it changes its state
+to ``blocking.'' In the ``blocking'' mode the system does not accept
+newly arriving customers until the total number of customers
+drops down below $(H+1)$, after which the system changes mode 
+back to ``overload`` and the process goes on.
+The service time of both priority and
+nonpriority customers is PH distributed with representation
+$(\vec{f}, \mathbf{G})$ of order~$M$ and $\vec g=-\mathbf{G}\vec1$, and
+the service policy is FIFO (first in, first out).
+
+
+
+The operation of the considered queueing
+system can be completely described
+by continuous-time Markov chain 
+${\bf{X}} \left( t \right)= {\left( \xi (t); \eta(t); \mu(t); \nu(t) \right) }$ with
+four components:
+$\xi(t)$~--- MAP generation phase at time~$t$;
+$\eta(t)$~--- PH service phase at time~$t$;
+$\mu(t)$~--- system's mode at time~$t$;
+and $\nu(t)$~--- number of customers in
+the system at time~$t$.
+When $\nu(t)=0$, the second component $\eta(t)$ is omitted.
+It is convenient to represent the state space of ${\bf{X}} \left( t \right)$ as
+$\mathcal{X} = {\mathcal{X}_0} \cup {\mathcal{X}_1} \cup {\mathcal{X}_2}$
+where $\mathcal{X}_{0} $ is the set of states of ''normal'' mode,
+$\mathcal{X}_{1} $ is the set of states of ''overload'' mode,
+and $\mathcal{X}_{2}$ is the set of states of ''blocking'' mode, i.\,e.,
+\begin{align*}
+{\mathcal{X}_0} &= \left\{ \left( {k,0,0} \right):  1 \le k \le N  \right\}
+\cup 
+\\
+&\hspace*{5mm}\cup \left\{ {\left( {k,0,n} \right):  1 \le k \le NM, 1 \le n \le H - 1} \right\}\,;\\
+{\mathcal{X}_1} &= \left\{ {\left( {k,1,n}\right): 1 \le k \le NM,  L \le n \le r} \right\}\,;\\
+{\mathcal{X}_2} &= \left\{ {\left( {k,2,n} \right): 1 \le k \le NM, 
+H\! + \! 1 \le n \le r \! + \! 1} \right\}\,.
+\end{align*}
+
+\noindent
+Here, $k$ represents the state of 
+the background (arrival and service) processes.
+Indeed, the state $(k,m,n)$, $n>0$, means that 
+there are~$n$ customers in the system, system's mode is~$m$,
+and arrival and service phases are~$i$ and~$j$, but such that
+$(i-1)M+j=k$; the state $(k,0,0)$ means that the system
+is empty and the arrival phase is~$k$.
+
+Let us denote by $\bmx{E}$ the identity matrix (its size each time will 
+be clear from the context)
+and let introduce the following transition rate matrices:
+\begin{itemize}
+    \item service of a~customer after which the system becomes empty: 
+    $\bmx{P}_1=\bmx{E}\otimes {\vec g}$;
+    \item service of a~customer after which the system remains busy: 
+    $\bmx{P}=\bmx{P}^*=\bmx{P}^{\#}=\bmx{E}\otimes {\vec g}{\vec f}$;
+    \item phase change when system is empty: $\bmx{Q}_0=\bmx{D_0}$;
+    \item phase change when system is in the ``normal'' mode: 
+    $\bmx{Q}=\bmx{D_0}\otimes \bmx{E} + \bmx{E} \otimes \bmx{G}$;
+    \item phase change when system is in the ``overload'' mode: 
+    $\bmx{Q}^*=(\bmx{D_0}+\bmx{D_{12}})\otimes \bmx{E} + \bmx{E} \otimes \bmx{G}$;
+        \item arrival phase change when system is in the ``blocking'' mode: 
+        $\bmx{Q}^{\#}=(\bmx{D_0}+\bmx{D_{1}})\otimes \bmx{E} + \bmx{E} \otimes 
+        \bmx{G}$;
+    \item arrival of a~customer to an empty system: $\bmx{R}_0\linebreak =\bmx{D_1} \otimes
+    {\vec f}$,
+    \item arrival of a~customer to the system in the ``normal'' mode: 
+    $\bmx{R}=\bmx{D_1}\otimes \bmx{E}$; and
+    \item arrival of a~customer to the system in the ``overload'' mode: 
+    $\bmx{R}^*=\bmx{D_{11}}\otimes \bmx{E}$.
+\end{itemize}
+
+In order to be able to compute time-related characteristics,
+in addition to transition rate matrices, one needs
+transition probability matrices, which contain probabilities 
+of possible state change of the background process.
+Thus, let~$\alpha$, $\beta$, and $\gamma$ denote the matrices of
+service, phase change, and arrival transition probabilities
+when the system is in the ``normal'' mode,
+i.\,e.,
+\begin{alignat*}{3}
+[\alpha]_{ij}  
+&=
+\fr{[\bmx{P}]_{ij} }{-{[\bmx{Q}]}_{ii}}\,, &\enskip 1 &\le i, j \le NM\,;
+\\
+[\beta]_{ij}  
+&=\begin{cases}
+\fr{[\bmx{Q}]_{ij}}{-{[\bmx{Q}]}_{ii}}\,,  & i \neq j\,; \\
+0\,, & i = j\,,
+\end{cases}
+&\enskip 1 &\le i,j \le NM\,;
+\\
+[\gamma]_{ij}  
+&=\fr{[\bmx{R}]_{ij} }{-{[\bmx{Q}]}_{ii}}\,, &\enskip 1 &\le i,j \le NM\,.
+\end{alignat*}
+
+\noindent
+Here and henceforth, by $[\cdot]_{ij}$ we denote the $(i,j)${th}
+ entry of any matrix.
+By analogy, let us denote by~$\alpha^*$, $\beta^*$, and~$\gamma^*$
+transition probabilities matrices in the ``overload'' mode,
+by~$\alpha^{\#}$ and~$\beta^{\#}$
+transition probability matrices  
+in the ``blocking'' mode,
+and by~$\alpha^{e}$, $\beta^{e}$, and~$\gamma^{e}$
+transition probability matrices when
+the system becomes or is empty.
+
+
+\section{Sojourn Time Distributions}
+
+\noindent
+As it was mentioned in section~1,
+we are interested in the two stationary characteristics:
+distribution of the time system spends in ``normal'' mode
+and the distribution of the time it takes the  system to get back 
+to ``normal'' mode. These distributions are computed by 
+conditioning on the number of customers in the system
+and the state of the background process
+and can be expressed in terms of
+the following three quantities:
+\begin{description}
+\item[\,] $\bmx{V}_n(s)$, $n=\overline{0,H-1}$,~---
+matrix of size $NM\times NM$,
+which the $(i,j)${th} entry is
+the LST of the first passage time 
+to the ``overload'' mode 
+and state of the background process~$j$, 
+given that initially, the 
+system was in the ``normal'' mode,
+there where~$n$~customers in it,
+and
+the state of the background process was~$i$;
+\item[\,] 
+$\bmx{V}^{\#}_n(s)$, $n=\overline{H+1,R}$,~---
+matrix of size $NM\times NM$,
+which the $(i,j)${th} entry is
+the LST of the first passage time 
+to the ``normal'' mode 
+and state of the background process~$j$, 
+given that initially, the 
+system was in the ``blocking'' mode,
+there where~$n$~customers in it,
+and
+the state of the background process was~$i$; and
+\item[\,] 
+$\bmx{V}^*_n(s)$, $n=\overline{L,R-1}$,~---
+matrix of size $NM\times NM$,
+which the $(i,j)${th} entry is
+the LST of the first passage time 
+to the ``normal'' mode 
+and state of the background process~$j$, 
+given that initially, the 
+system was in the ``overload'' mode,
+there where~$n$~customers in it,
+and
+the state of the background process was~$i$.
+\end{description}
+
+The rest of the section is devoted to obtaining the relations for
+$\bmx{V}_n(s)$, $\bmx{V}^*_n(s)$, and~$\bmx{V}^{\#}_n(s)$.
+Let us begin with the calculation of $\bmx{V}_n(s)$,
+$n=\overline{1,H-1}$. 
+Denote by 
+$\bmx{T}_k(s)$, $k=-1,0,1$, the 
+matrix of size $NM \times NM$ 
+which the $(i,j)${th} entry is 
+LST of the first passage time
+from the state $(i,0,n)$ 
+to the state $(j,0,n-k)$.
+Here,~$n$~may take any value from 
+the set $\{2,3,\dots,H-2\}$. 
+Remembering that the sojourn time 
+in the state $(i,0,n)$ is exponential 
+with rate $-[\bmx{Q}]_{ii}$, one has for 
+$1 \le i,j \le NM$:
+\begin{align*}
+\left[ \bmx{T}_{-\!1}(s) \right]_{ij}
+&=
+\fr{[\bmx{Q}]_{ii} }{[\bmx{Q}]_{ii} - s}
+\left[\gamma\right]_{ij}  \,;
+\\
+\left[ \bmx{T}_0(s) \right]_{ij}
+&=
+\fr{[\bmx{Q}]_{ii}}{[\bmx{Q}]_{ii} - s}
+\left[\beta\right]_{ij}  \,;
+\\
+\left[ \bmx{T}_1(s) \right]_{ij}
+&=
+\fr{[\bmx{Q}]_{ii} }{[\bmx{Q}]_{ii} - s}
+\left[\alpha\right]_{ij} \,.
+\end{align*}
+
+\noindent 
+From the first-step analysis, let us find that
+the LST $\bmx{V}_n(s)$ satisfies the system of matrix 
+difference equations: 
+\begin{equation}
+\left.
+\begin{array}{rl}
+\bmx{V}_n(s)&=\bmx{T}_1(s) \bmx{V}_{n-1}(s)+ 
+\bmx{T}_0(s) \bmx{V}_{n}(s)\\[6pt]
+&\hspace*{1mm}{}+ \bmx{T}_{-1}(s) \bmx{V}_{n+1}(s)\,,\enskip
+n=\overline{2,H-1}\,;
+\\[6pt]
+\bmx{V}_1(s)
+&= \bmx{T}^e_1(s)  \bmx{V}_{0}(s) +  \bmx{T}_0(s)  \bmx{V}_{1}(s)\\[6pt]
+&\hspace*{28mm}{} + 
+\bmx{T}_{-1}(s)  \bmx{V}_{2}(s)\,.
+\end{array}
+\right\}
+\label{eq1-r}
+\end{equation}
+
+\noindent The boundary conditions for the system~\eqref{eq1-r} 
+have the form:
+%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+\left.
+\begin{array}{rl}
+\bmx{V}_{0}(s)&= \bmx{T}^e_0(s)  \bmx{V}_{0}(s)
++  \bmx{T}^e_{-\!1}(s)  \bmx{V}_{1}(s) \,;
+\\[6pt]
+\bmx{V}_{H}(s)
+&=\bmx{E} \,,
+\end{array}
+\right\}
+\label{eq12b}
+\end{equation}
+
+\noindent 
+where the $(i,j)${th} entries of the matrices 
+$\bmx{T}^e_{1}(s)$, $\bmx{T}^e_0(s)$, and $\bmx{T}^e_{-\!1}(s)$
+are equal to 
+\begin{align*}
+\left[ \bmx{T}^e_1(s) \right]_{ij}
+&=
+\fr{[\bmx{Q}]_{ii} }{[\bmx{Q}]_{ii} - s}
+\left[\alpha^{e}\right]_{ij}\,;
+\\
+\left[ \bmx{T}^e_0(s) \right]_{i,j}
+&=
+\fr{[\bmx{Q}_0]_{ii}}{[\bmx{Q}_0]_{ii} - s}
+\left[\beta^{e}\right]_{ij}
+\,;
+\\
+\left[ \bmx{T}^e_{-1}(s) \right]_{i,j}
+&=
+\fr{[\bmx{Q}_0]_{ii}}{[\bmx{Q}_0]_{ii} - s}
+\left[\gamma^{e}\right]_{ij}\,.
+\end{align*}
+
+\noindent 
+Note that here, $\bmx{T}^e_0(s)$ is the square matrix of size~$N$
+and $\bmx{T}^e_1(s) $ and $\bmx{T}^e_1(s)$ are the
+rectangular matrices of size $NM\times N$ and $N\times NM$,
+correspondingly.
+The solution of the system~\eqref{eq1-r}--\eqref{eq12b}
+can be written as 
+$$
+\bmx{V}_{n}(s)=\bmx{X}_{n}(s) \bmx{V}_{n-1}(s)+\bmx{Y}_{n}(s)\,,
+\enskip n=\overline{1,H-1}\,,
+$$
+
+\noindent where 
+$$
+\bmx{X}_{H-1}(s)=(\bmx{E}-\bmx{T}_0(s))\bmx{T}_1(s)\,;
+$$
+$$
+\bmx{Y}_{H-1}(s)=(\bmx{E}-\bmx{T}_0(s))\bmx{T}_{-\!1}(s)\,;
+$$
+$$
+\bmx{X}_{1}(s)=
+\left(\bmx{E}-\bmx{T}_0(s)-\bmx{T}_{-1}(s)\bmx{X}_{2}(s)\right)^{-1}\bmx{T}^e_1(s)\,; 
+$$
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\bmx{X}_{n}(s)=\left(\bmx{E}-\bmx{T}_0(s)-\bmx{T}_{-1}(s)\bmx{X}_{n+1}(s)\right)^{-1}
+\bmx{T}_1(s)\,, \\
+n=\overline{2,H-2}\,;
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\bmx{Y}_{n}(s)=\left(\bmx{E}-\bmx{T}_0(s)\right.\\
+\left.{}-\bmx{T}_{-1}(s)\bmx{X}_{n+1}(s)\right)^{-1}
+\bmx{T}_{-1}(s)\bmx{Y}_{n+1}(s)\,,
+\\ 
+ n=\overline{1,H-2}\,;
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\bmx{V}_{0}(s)\\
+{}=\left(\bmx{E}-\bmx{T}^e_0(s)-\bmx{T}^e_{-1}(s)\bmx{X}_{1}(s)
+\right)^{-1}\bmx{T}^e_{-1}(s)\bmx{Y}_{1}(s)\,. 
+\end{multline*}
+
+If the inverse of the matrix $\bmx{T}_{-\!1}(s)$ exists, then 
+it is possible to write out the solution of the system~\eqref{eq1-r}--\eqref{eq12b}
+using the Kronecker expansion technique (see~\cite{Steeb,Graham,Telek}),
+which is based on the identity $\mathrm{vec}\,(\bmx{A}\bmx{B})=
+(\bmx{E} \otimes \bmx{A}) \mathrm{vec}\,(\bmx{B})$.
+In this identity, ~$\mathrm{vec}$\ denotes the column stacking vector operator
+which transforms a~matrix of size $n \times m$ into a~vector of size $nm \times 1$.
+We are going to utilize the property of the~$\mathrm{vec}$ operator 
+that $\mathrm{vec}\,(\bmx{A})=\bmx{A}$ for matrix~$\bmx{A}$ of size $n \times 1$.
+Firstly by applying $\mathrm{vec}$ operator to~\eqref{eq1-r}--\eqref{eq12b},
+we get the new system of vector-matrix difference equations:
+\begin{align}
+\label{H-1}
+\mathrm{vec}\left(\bmx{V}_{H-1}(s)\right)
+&\notag\\
+&\hspace*{-10mm}{}= \bmx{X}^*(s) \mathrm{vec}\left(\bmx{V}_{H-2}(s)\right) +
+\mathrm{vec}\left(\bmx{Y}^*(s)\right)\,;
+\\
+\label{n}
+\mathrm{vec}\left(\bmx{V}_{n+1}(s)\right)&=\bmx{X}(s)
+\mathrm{vec}\left(\bmx{V}_n(s)\right)\notag\\
+&\hspace*{-10mm}{}+\bmx{Y}(s)
+\mathrm{vec}\left(\bmx{V}_{n-1}(s)\right)\,,\enskip
+n=\overline{2,H-2}\,;
+\\
+\label{2}
+\mathrm{vec}\left(\bmx{V}_{2}(s)\right)&{}\notag\\
+&\hspace*{-12mm}{}=
+\bmx{X}(s) \mathrm{vec}\left(\bmx{V}_1(s)\right)+
+\bmx{Y}^e(s) \mathrm{vec}\left(\bmx{V}_{0}(s)\right)\,;
+\\
+\label{0}
+\mathrm{vec}\left(\bmx{V}_{1}(s)\right) &= \bmx{X}^e(s) \mathrm{vec}\left(\bmx{V}_{0}(s)\right)
+\end{align}
+where
+\begin{align*}
+\bmx{X}(s)&= \bmx{E} \otimes \left(\bmx{T}_{-1}(s)\right)^{-1}
+\left(\bmx{E}-\bmx{T}_0(s)\right)\,; \\
+ \bmx{Y}(s)&= - \left(\bmx{E} \otimes (\bmx{T}_{-1}(s) )^{-1}
+\bmx{T}_1(s)\right)\,;
+\\
+\bmx{X}^e(s)&= \bmx{E} \otimes \left(\bmx{T}^e_{-1}(s) \right)^{-1}
+\left(\bmx{E}-\bmx{T}^e_0(s)\right)\,; \\
+\bmx{Y}^e(s)&=- \left(\bmx{E} \otimes (\bmx{T}_{-1}(s) )^{-1}
+\bmx{T}^e_1(s)\right)\,;\\
+\bmx{X}^*(s)&=
+\bmx{E} \otimes \left(\bmx{E}-\bmx{T}_0(s)\right)^{-1} \bmx{T}_{1}(s) \,; \\ 
+\bmx{Y}^*(s)&=\left(\bmx{E}-\bmx{T}_0(s)\right)^{-1} \bmx{T}_{-1}(s)\,.
+\end{align*}
+
+\noindent Secondly, notice that the new system~\eqref{H-1}---\eqref{0}
+ consists of pairs of simultaneous equations and thus, its solution can 
+ be rewritten as
+\begin{multline}
+\label{v1}
+\begin{pmatrix}
+    \mathrm{vec}\left(\bmx{V}_{n}(s)\right) \\
+    \mathrm{vec}\left(\bmx{V}_{n-1}(s)\right) 
+\end{pmatrix}
+={}\\
+{}=
+\begin{pmatrix}
+    \bmx{X}(s) & \bmx{Y}(s) \\
+    \bmx{E} & \bmx{0}
+\end{pmatrix}^{n-1}
+\begin{pmatrix}
+    \bmx{X}(s) & \bmx{Y}^e(s) \\
+    \bmx{E} & \bmx{0}
+\end{pmatrix}
+\begin{pmatrix}
+    \mathrm{vec}\left(\bmx{V}_{1}(s)\right) \\
+    \mathrm{vec}\left(\bmx{V}_{0}(s)\right)
+\end{pmatrix}\,, \\
+ n=\overline{2,H-1}\,.
+\end{multline}
+
+
+\noindent 
+Finally,~\eqref{v1} for $n=H-1$, \eqref{0} and~\eqref{H-1}
+make up the system of four matrix equations,
+which solution yields the values of 
+$\mathrm{vec}\,(\bmx{V}_{H-1}(s))$, $\mathrm{vec}\,(\bmx{V}_{H-2}(s))$,
+$\mathrm{vec}\,(\bmx{V}_{1}(s))$, and $\mathrm{vec}\,(\bmx{V}_{0}(s))$.
+By virtue of~\eqref{n} and~\eqref{2}, the rest 
+of $\bmx{V}_{n}(s)$ can be computed.
+
+Now, let us proceed to the derivation of the equations for 
+$\bmx{V}^*_{n}(s)$, $n=\overline{L,r}$,
+and $\bmx{V}^{\#}_{n}(s)$, $n=\overline{H+1,r+1}$.
+In order to do this, let us introduce the following auxiliary 
+square matrices (each of size~$NM$):
+\begin{description}
+\item[\,] $\bmx{T}^{\#}(s)$~---  
+matrix with the  $(i,j)${th} entry 
+equal to the LST of the first passage time (of the Markov chain ${\bf{X}}(t)$)
+from the state $(i,2,r+1)$ to the state $(j,2,r)$;
+\item[\,] 
+$\bmx{W}^{\#}_n(s)$, $n=\overline{H+1,r+1}$,~---
+matrix with the $(i,j)${th} entry 
+equal to the LST of the first passage time 
+from the state $(i,2,n)$ to the state $(j,1,H)$;
+
+\item[\,] 
+$\bmx{w}^*_n(s)$, $n=\overline{H+1,r}$,~---
+matrix with the $(i,j)${th} entry 
+equal to the LST of the first passage time 
+from the state $(i,1,n)$ to the state $(j,1,H)$
+without visiting the states $(\cdot,2,r+1)$;
+
+\item[\,] 
+$\bmx{\ov w}^*_n$, $n=\overline{H+1,r}$,~---
+matrix with the $(i,j)${th} entry 
+equal to the LST of the first passage time 
+from the state $(i,1,n)$ to the state $(j,2,r+1)$
+without visiting the states $(\cdot,1,H)$; and
+\item[\,] 
+$\bmx{W}^*_n(s)$, $n=\overline{H+1,r}$,~---
+matrix with the $(i,j)${th} entry 
+equal to the LST of the first passage time 
+from the state $(i,1,n)$ to the state $(j,1,H)$.
+\end{description}
+
+Let us begin with the relation for~$\bmx{T}^{\#}(s)$. 
+Let~$\bmx{T}^{\#}_k(s)$, $k=0,1$, denote 
+the square matrix of size $NM$ with 
+the $(i,j)${th} entry 
+equal to the LST of the first passage time 
+from the state $(i,2,r+1)$ to the state $(j,2,r+k)$.
+Since the sojourn time in the state $(i,2,r+1)$
+is distributed exponentially with the rate $-[\bmx{Q}^{\#}]_{ii}$, 
+one has for $1 \le i,j \le NM$:
+\begin{gather*}
+\left[ \bmx{T}^{\#}_0(s) \right]_{ij}
+=
+\fr{[\bmx{Q}^{\#}]_{ii}}{[\bmx{Q}^{\#}]_{ii} - s}
+\left[\beta^{\#}\right]_{ij}  \,;
+\\
+\left[ \bmx{T}^{\#}_1(s) \right]_{ij}
+= \fr{[\bmx{Q}^{\#}]_{ii} }{[\bmx{Q}^{\#}]_{ii} - s}
+\left[\alpha^{\#}\right]_{ij}  \,.
+\end{gather*}
+
+\noindent The first-step analysis yields the following 
+equation for~$\bmx{T}^{\#}(s)$:
+$$
+\bmx{T}^{\#}(s)= \bmx{T}^{\#}_1(s) + \bmx{T}^{\#}_0(s) \bmx{T}^{\#}(s)\,,
+$$
+which solution is
+$$
+\bmx{T}^{\#}(s)= \left(\bmx{E}-\bmx{T}^{\#}_0(s)\right)^{-1} \bmx{T}^{\#}_1(s)\,.
+$$
+
+
+Since in the ``blocking'' mode any arrival is lost, then the sojourn time in 
+it is equal to the time needed for $(n-H)$ service completions,
+given that initially, there were $n$ customers in the system, i.\,e.,
+$$
+\bmx{W}^{\#}_n(s)= \left(\bmx{T}^{\#}(s)\right)^{n-H}\,, \enskip
+n=\overline{H+1,r+1}\,.
+$$
+
+Equations for $\bmx{w}^*_n(s)$ and $\bmx{\ov w}^*_n(s)$ can be 
+derived by following the same arguments given above for~$\bmx{V}_n(s)$. Denote by 
+$\bmx{T}^{*}_k(s)$, $k=-1,0,1$,  
+the square matrix of size~$NM$ with 
+the $(i,j)${th} entry 
+equal to the LST of the first passage time 
+from the state $(i,1,n)$ to the state $(j,1,n-k)$.
+Then, using the fact that the sojourn time in the state $(i,1,n)$
+is distributed exponentially with the rate~$-[\bmx{Q}^{*}]_{ii}$, 
+one obtains for $1 \le i,j \le NM$:
+\begin{align*}
+\left[ \bmx{T}^{*}_{-1}(s) \right]_{ij}
+&=
+\fr{[\bmx{Q}^{*}]_{ii}}{[\bmx{Q}^{*}]_{ii} - s}
+\left[\gamma^{*}\right]_{ij}\,;
+\\
+\left[ \bmx{T}^{*}_0(s) \right]_{ij}
+&=\fr{[\bmx{Q}^{*}]_{ii}}{[\bmx{Q}^{*}]_{ii} - s}
+\left[\beta^{*}\right]_{ij}  \,;
+\\
+\left[ \bmx{T}^{*}_1(s) \right]_{i,j}
+&=
+\fr{[\bmx{Q}^{*}]_{ii} }{[\bmx{Q}^{*}]_{ii} - s}
+\left[\alpha^{*}\right]_{ij}   \,.
+\end{align*}
+
+Again, by applying the first-step analysis, one gets 
+the following system of matrix difference equations 
+for~$\bmx{w}^*_n(s)$, $n=\overline{H+1,r}$:
+\begin{multline}
+\label{w*n}
+\bmx{w}^*_n(s)
+= \bmx{T}^*_1(s)  \bmx{w}^*_{n-1}(s)\\
+{} +  \bmx{T}^*_0(s) \bmx{w}^*_n(s) + 
+\bmx{T}^*_{-\!1}(s)  \bmx{w}^*_{n+1}(s)\,,
+\end{multline}
+
+\noindent with the boundary conditions
+\begin{equation}
+\label{w*nbound}
+\bmx{w}^*_H(s)
+=
+\bmx{E}\,;
+\enskip  
+\bmx{w}^*_{r+1}(s)
+= 
+\bmx{0}\,.
+\end{equation}
+
+
+\noindent Clearly, the matrices $\bmx{\ov w}^*_n(s)$, $n=\overline{H+1,r}$,
+satisfy the system of equations, which is identical to~\eqref{w*n},
+i.\,e.,
+\begin{multline}
+\label{w*nOV} \bmx{\ov w}^*_n(s)
+= \bmx{T}^*_1(s)  \bmx{\ov w}^*_{n-1}(s)
++  \bmx{T}^*_0(s) \bmx{\ov w}^*_n(s)\\
+{}+  \bmx{T}^*_{-1}(s) 
+\bmx{\ov w}^*_{n+1}(s)\,,
+\end{multline}
+
+\noindent but with the ``reversed'' boundary conditions:
+\begin{equation}
+\label{w*nboundOV}
+\bmx{\ov w}^*_H(s)
+= \bmx{0}\,; \enskip  
+\bmx{\ov w}^*_{r+1}(s) =  \bmx{E}\,.
+\end{equation}
+
+The structure of the systems~\eqref{w*n}, \eqref{w*nbound} 
+and~\eqref{w*nOV}, \eqref{w*nboundOV} is
+similar to the~\eqref{eq1-r}--\eqref{eq12b} (expect for the boundary conditions).
+Thus, its solutions can be found completely in the same way and, therefore, are omitted.
+Once~$\bmx{w}^*_n(s)$ and~$\bmx{\ov w}^*_n(s)$ are found, the 
+matrices~$\bmx{W}^*_n(s)$ can be computed. Noticing that from the 
+state $(i,1,n)$, $n=\overline{H+1,r}$, the Markov chain can enter 
+the state $(j,H,1)$ either from the set of ``overload'' states or
+from the set of ``blocking'' states (see figure), one has:
+$$
+\bmx{W}^*_n(s)= \bmx{w}^*_n(s)+\bmx{\ov w}^*_n(s)\bmx{W}^{\#}_{r+1}(s)\,,
+\enskip n=\overline{H+1,r}\,.
+$$
+
+\columnbreak
+
+Now, everything is prepared for the derivation of
+the relations for the unknown quantities $\bmx{V}^*_n(s)$  
+and $\bmx{V}^{\#}_n(s)$. 
+If $n=\overline{L,H}$, then $\bmx{V}^*_n(s)$ satisfy the following
+system of matrix difference equations:
+\begin{multline}
+\label{V*}
+\bmx{V}^*_n(s)
+= \bmx{T}^*_1(s)  \bmx{V}^*_{n-1}(s) + 
+\bmx{T}^*_0(s) \bmx{V}^*_n(s)\\
+{} +  \bmx{T}^*_{-\!1}(s)  \bmx{V}^*_{n+1}(s)\,,
+\end{multline}
+
+\noindent with the boundary conditions
+\begin{align*}
+\bmx{V}^*_{L-1}(s)
+&= \bmx{E}\,;
+\\[3pt]
+\bmx{V}^*_{H}(s)&=  \bmx{T}^*_1(s)  \bmx{V}^*_{H-1}(s)\\
+&{}  + 
+\bmx{T}^*_0(s) \bmx{V}^*_H(s)
++  \bmx{T}^*_{-1}(s) 
+\bmx{W}^*_{H+1}(s)
+\bmx{V}^*_{H}(s)\,.
+%\label{w*nboundOV1}
+\end{align*}
+
+
+The final expressions for the matrices
+$\bmx{V}^*_n(s)$, $n=\overline{H+1,r}$
+and $\bmx{V}^{\#}_n(s)$, $n=\overline{H+1,r+1}$,
+have the form:
+\begin{alignat*}{2}
+\bmx{V}^{\#}_{n}(s)
+&=  \bmx{W}^{\#}_n(s) 
+\bmx{V}^*_{H}(s)\,, &\enskip n&=\overline{H+1,r+1}\,;
+\\
+\bmx{V}^{*}_{n}(s)
+&=  \bmx{W}^{*}_n(s) 
+\bmx{V}^*_{H}(s)\,, &\enskip n&=\overline{H+1,r}\,.
+\end{alignat*}
+
+The last two relations, together with~\eqref{eq1-r} and~\eqref{V*}, 
+give the complete solution of the considered problem.
+The matrices $\bmx{V}_n(s)$, $\bmx{V}^*_n(s)$, and $\bmx{V}^{\#}_n(s)$
+allow one to calculate various performance characteristics of
+the hysteretic policy such as (conditional\footnote{The corresponding 
+unconditional characteristics 
+are obtained by weighting according to the joint stationary distribution 
+found in~\cite{int0}.}) 
+mean duration of overload period (equal to $-[\bmx{V}^*_H(s)]'_{s=0}$),
+(conditional) mean return time to the ``overload'' 
+mode (equal to $-[\bmx{V}_{L-1}(s)]'_{s=0}- [\bmx{V}^*_H(s)]'_{s=0}$),
+higher moments, etc.
+
+No principal difficulties show up if in addition 
+to the sojourn times one needs to count 
+the number of lost customers. The same
+argumentation applies. For example, 
+let us assume that customers arrived during the
+period of time when the system 
+is in the ``blocking'' mode are considered as lost.
+Then, the LST and the generating function~$\bmx{W}^{\#}_n(s,z)$
+of the joint stationary distribution of the 
+sojourn time in the ``blocking'' mode 
+and the number of lost customers 
+provided that the system is in the ``blocking'' mode 
+and there are $n$ customers in it 
+is equal to 
+\begin{multline*}
+\bmx{W}^{\#}_n(s,z)
+=  \left \{
+\left[ \bmx{E} - z ( \bmx{E}-\bmx{T}^*_0(s))^{-1}\bmx{T}^*_{-1}(s) \right]^{-1}\right.\\
+\left.{}\times
+\left( \bmx{E}-\bmx{T}^*_0(s)\right)^{-1}\bmx{T}^*_{1}(s)
+\right \}^{H+1-n}
+\times{} \\
+{}\times
+\left \{ \bmx{E} +  
+z \left[ \bmx{E} - z \left( \bmx{E}-\bmx{T}^*_0(s)\right)^{-1}
+\bmx{T}^*_{-1}(s) \right]^{-1}
+\right \}\\
+{}\times
+\left( \bmx{E}-\bmx{T}^*_0(s)\right)^{-1}\bmx{T}^*_{1}(s)\,.
+\end{multline*}
+
+\noindent Thus, the substitution of~$\bmx{W}^{\#}_n(s,z)$ 
+instead of~$\bmx{W}^{\#}_n(s)$ in the above expressions
+will account not only for the sojourn time but for losses
+(during the sojourn time). 
+
+
+
+\section{Concluding Remarks}
+
+\noindent
+The approach proposed in the paper allows one to calculate
+the system's sojourn time in various modes 
+in terms of LST by exploiting the knowledge
+about the presence of hysteretic loops. 
+Minor changes are needed to adapt it to the case of overlapping loops. 
+Of course, due to MAP arrivals and PH service times, it
+utilizes matrix analytic techniques and, thus, possesses
+the disadvantages inherent to matrix algebra.
+Despite the fact there is large body of research results 
+available in this topic, 
+there is still a~number of open questions.
+Is there any analytic approach to find the steady-state
+behavior of several interconnected systems each with hysteretic policy, 
+which exploits the knowledge of the presence of hysteretic loops?
+What is the gain of hysteretic control of arrivals with
+respect to other types of control? Just to name a~few.
+
+\vspace*{-4pt}
+
+
+\Ack
+\noindent
+This work was supported by the Russian Science Foundation (grant No.\,16-11-10227).
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+
+\vspace*{-4pt}
+
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\begin{thebibliography}{9}
+
+\bibitem{int0} %1
+\Aue{Razumchik, R.} 2016. Analysis of finite ${\mathrm{MAP}/\mathrm{PH}/1}$ 
+queue with hysteretic control of arrivals.
+\textit{Congress (International)
+on Ultra Modern Telecommunications and Control Systems and Workshops Proceedings}.
+ Lisbon. 288--293.
+
+
+
+\bibitem{int2} %2
+\Aue{Chesoong, K., A.~Dudin, S.~Dudin, and O.~Dudina.} 2016.
+Hysteresis control by the number of active servers in queueing system ${\mathrm{MMAP}/\mathrm{PH}/N}$
+with priority service. \textit{Perform. Evaluation} 101:20--33.
+
+\bibitem{int3} %3
+\Aue{Chan, C.\,W., M.~Armony, and N.~Bambos.} 2016.
+Maximum weight matching with hysteresis in overloaded queues with setups.
+\textit{Queueing Sy.} 82(3-4):315--351.
+
+\bibitem{int4} %4
+\Aue{Rumyantsev, A.\,S., K.\,A.~Kalinina, and T.\,E.~Morozova.} 2017.
+Stokhasticheskioe modelirovanie vycheslitel'nogo klastera s~gisterezisnym upravleniem
+skorost'yu obsluzhivaniya
+[Stochastic modeling of a~high-performance cluster
+with hysteretic control of service rate].
+\textit{Trudy Karel'skogo nauchnogo tsentra RAN}
+[Transactions of KarRC RAS] 8:76--85.
+
+\bibitem{int1} %5
+\Aue{Abaev, P., Y.~Gaidamaka, K.~Samouylov, A.~Pechinkin, R.~Razumchik, and S.~Shorgin.} 2014.
+Hysteretic control technique for overload problem solution in network of SIP servers.
+\textit{Comput. Inform.} 33(1):1--18.
+
+
+
+
+\bibitem{Graham} %6
+\Aue{Graham, A.} 1982.
+\textit{Kronecker products and matrix calculus: With applications}. 
+New York, NY: John Wiley \& Sons. 130~p.
+
+\bibitem{Steeb} %7
+\Aue{Steeb, W.\,H., and Y.~Hardy.} 2011.
+\textit{Matrix calculus and Kronecker product: A~practical 
+approach to linear and multilinear algebra}. 2nd ed. River Edge,
+NJ: World Scientific. 324~p.
+
+\bibitem{Telek} %8
+\Aue{Razumchik, R., and M.~Telek.} 2016.
+Delay analysis of a~queue with re-sequencing buffer
+and Markov environment.
+\textit{Queueing Sy.} 82(1-2):7--28.
+
+\end{thebibliography} }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received September 19, 2017}}
+
+%\vspace*{-12pt}
+
+
+\Contrl
+
+\noindent
+\textbf{Razumchik Rostislav V.} (b.\ 1984)~--- 
+Candidate of Science (PhD) in physics and mathematics, leading scientist, 
+Institute of Informatics Problems, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119333, Russian Federation; associate professor, 
+Peoples' Friendship University of Russia (RUDN University), 
+6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{rrazumchik@ipiran.ru}
+%; \mbox{razumchik\_rv@rudn.university}
+
+%\vspace*{8pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+
+
+\newpage
+
+\vspace*{-28pt}
+
+
+
+\def\tit{СТАЦИОНАРНЫЕ РАСПРЕДЕЛЕНИЯ, СВЯЗАННЫЕ СО~ВРЕМЕНЕМ ПРЕБЫВАНИЯ
+В~СОСТОЯНИИ ПЕРЕГРУЗКИ СИСТЕМЫ $\mathrm{MAP}/\mathrm{PH}/1/r$ С~ГИСТЕРЕЗИСНЫМ УПРАВЛЕНИЕМ 
+НАГРУЗКОЙ$^*$}
+
+\def\aut{Р.\,В.~Разумчик}
+
+
+\def\titkol{Стационарные распределения, связанные со временем пребывания
+в~состоянии перегрузки системы $\mathrm{MAP}/\mathrm{PH}/1/r$}
+% с~гистерезисным управлением  нагрузкой}
+
+\def\autkol{Р.\,В.~Разумчик}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]{Работа выполнена при поддержке РНФ (проект 16-11-10227).}}
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-12pt}
+
+\noindent
+Институт проблем информатики
+Федерального исследовательского центра <<Информатика и~управ\-ле\-ние>>
+Российской академии наук; Российский университет дружбы народов,
+\mbox{rrazumchik@ipiran.ru}
+
+\vspace*{6pt}
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill ИНФОРМАТИКА И ЕЁ ПРИМЕНЕНИЯ\ \ \ том\ 11\ \ \ выпуск\ 4\ \ \ 2017}
+}%
+ \def\rightfootline{\small{ИНФОРМАТИКА И ЕЁ ПРИМЕНЕНИЯ\ \ \ том\ 11\ \ \ выпуск\ 4\ \ \ 2017
+\hfill \textbf{\thepage}}}
+
+
+\Abst{Как известно, одним из решений проблемы перегрузок
+в~сетях SIP (session initiation protocol)
+сиг\-на\-ли\-за\-ции является применение
+в~узлах сети (SIP-сер\-ве\-рах) многоуровневого
+гистерезисного управления нагрузкой.
+В~данной работе представлены некоторые новые 
+результаты анализа системы $\mathrm{MAP}/\mathrm{PH}/1/r$ конечной емкости
+с~двумя петлями гистерезисного управления,
+функционирующей в случайной среде и являющейся
+моделью SIP-сер\-ве\-ра с двухуровневым
+гистерезисным управлением нагрузкой.
+Получен метод вычисления преобразования
+Лап\-ла\-са--Стилть\-еса
+функций распределения времени возврата системы из
+множества состояний перегрузки в множество
+состояний нормальной нагрузки
+и~времени выхода системы из множества состояний
+нормальной нагрузки.
+Метод основан на решении матричных рекуррентных уравнений
+и~применим в случае, когда помимо расчета времени
+выхода из состояния перегрузки необходимо
+также учитывать и число потерянных за это время
+заявок.}
+
+\KW{система массового обслуживания; случайная среда; гистерезисное управление; 
+время пребывания}
+
+\DOI{10.14357/19922264170403}
+
+\vspace*{18pt}
+
+
+ \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily Литература}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\begin{thebibliography}{9}
+
+\bibitem{1-r-1}
+\Au{Razumchik R.} 
+Analysis of finite ${\mathrm{MAP}/\mathrm{PH}/1}$ queue with hysteretic control of arrivals~// 
+ Congress (International) on Ultra Modern Telecommunications and Control 
+Systems and Workshops Proceedings.~--- Lisbon, 2016.  P.~288--293.
+
+
+\bibitem{3-r-1} %2
+\Au{Chesoong K., Dudin~A., Dudin~S., Dudina~O.}
+Hysteresis control by the number of active servers in queueing system 
+$\mathrm{MMAP}/\mathrm{PH}/N$
+with priority service~// Perform. Evaluation, 2016. Vol.~101. P.~20--33.
+
+\bibitem{4-r-1} %3
+\Au{Chan C.\,W., Armony~M., Bambos~N.}
+Maximum weight matching with hysteresis in overloaded queues with setups~// 
+Queueing Sy., 2016. Vol.~82. No.\,3-4. P.~315--351.
+
+\bibitem{5-r-1} %4
+\Au{Румянцев А.\,С., Калинина~К.\,А., Морозова~Т.\,Е.}
+Стохастическое моделирование вычислительного кластера 
+с~гистерезисным управлением скоростью обслуживания~//
+Труды Карельского научного центра РАН, 2017. Вып.~8. С.~76--85.
+
+\bibitem{2-r-1} %5
+\Au{Abaev P., Gaidamaka~Y.,  Samouylov~K.,  Pechinkin~A.,  Razumchik~R.,  Shorgin~S.}
+Hysteretic control technique for overload problem solution in network of SIP servers~//
+Comput. Inform., 2014. Vol.~33. No.\,1. P.~1--18.
+
+
+
+
+
+\bibitem{7-r-1} %6
+\Au{Graham A.}
+Kronecker products and matrix calculus: With applications.~--- 
+New York, NY, USA: John Wiley \& Sons, 1982. 130~p.
+
+\bibitem{6-r-1} %7
+\Au{Steeb W.\,H., Hardy~Y.}
+Matrix calculus and Kronecker product: A~practical
+approach to linear and multilinear algebra.~--- 2nd ed.~---
+River Edge, NJ, USA: World Scientific, 2011. 324~p.
+
+\bibitem{8-r-1}
+\Au{Razumchik~R., Telek~M.}
+Delay analysis of a~queue with re-sequencing buffer
+and Markov environment~// Queueing Sy., 2016. Vol.~82. 
+No.\,1-2. P. 7--28.
+
+\end{thebibliography}
+} }
+
+\end{multicols}
+
+ \label{end\stat}
+
+ \vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию  19.09.2017}}
+%\renewcommand{\bibname}{\protect\rm Литература}
+\renewcommand{\figurename}{\protect\bf Рис.}
+\renewcommand{\tablename}{\protect\bf Таблица} 

@@ -1,0 +1,945 @@
+%
+%
+%\input{../preamblw}
+%\usepackage{pst-barcode}
+%\usepackage{auto-pst-pdf}
+%
+%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tottop}[1]{\raisebox{12pt}[1pt][2pt]{#1}} 
+%\newcommand{\totttop}[1]{\raisebox{18pt}[1pt][2pt]{#1}} 
+%\newcommand{\tottttop}[1]{\raisebox{24pt}[1pt][2pt]{#1}} 
+%\newcommand{\totttttop}[1]{\raisebox{30pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobot}[1]{\raisebox{-6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobbot}[1]{\raisebox{-12pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobbbot}[1]{\raisebox{-18pt}[1pt][2pt]{#1}}
+%
+%%\samgtupubl % для генерации pdf, отдаваемого в типографию СамГТУ
+%\pdfcrop % обрезка pdf для размещения на math-net.ru
+%%\draft % На корректуре
+%%\nofilllastpage % Последняя русскоязычная страница заполнена не полностью
+%\filllastpage
+%%\briefcomm % Статья является кратким сообщением
+
+\vsgtu{1334}
+
+\FirstPage{169}
+\LastPage{182}
+
+
+
+
+%\begin{document}
+
+
+
+%\hfill \begin{pspicture}(1in,1in)
+%\psbarcode{http://dx.doi.org/10.14498/vsgtu1334}{}{qrcode}
+%\end{pspicture}
+%\vspace{-1in}
+
+%\Partition{Информатика}{Computer Science}
+
+
+\udk{519.682}
+\msc{68N15, 68N19}
+
+\rutitle{Препроцессор языка Templet: инструмент программирования
+в терминах модели <<процесс--сообщение>>}
+{Препроцессор языка Templet: инструмент программирования\dots}
+
+\titlehack{Препроцессор языка Templet: инструмент программирования
+в терминах модели <<процесс--сообщение>>$^*$}
+
+\ruauthor{C.~В.~Востокин}
+{В\,о\,с\,т\,о\,к\,и\,н~С.~В.}
+
+
+\ruaffil{\rusgau.}
+
+%\email{1}{\mem{nikonovai@mail.ru}}
+
+\ruauthordetails{1}{\fullauthor{\rupid{27041}{Сергей Владимирович Востокин}} \regalia{д.т.н., доц.; \mem{easts@mail.ru}}\position{профессор} \dept{каф. информационных систем и технологий}\par
+\smallskip
+\noindent
+$^*$Настоящая статья представляет собой расширенный вариант доклада \cite{vostokin:bib3:r}, сделанного автором на Международной научно-технической конференции «Перспективные информационные технологии» (Самара, СГАУ, 30 июня -- 2 июля 2014).}
+
+
+\rukeywords{препроцессор, предметно"=ориентированный язык, процесс, сообщение, параллельное программирование}
+
+\ruabstract{\textbf{Мотивация:} Для большого числа прикладных задач целесообразно представление кода решаемой задачи в виде совокупности процессов, обменивающихся сообщениями. Традиционное применение модели «процесс--сообщение» в средстве программирования состоит в разработке специального языка или библиотеки времени исполнения для имеющегося языка. Недостаток первого подхода "--- это сложность разработки, а второго "--- сложность применения. Предлагается новый метод описания модели «процесс--сообщение»,  использующий язык программирования с~процедурной семантикой и препроцессор, устраняющий указанные недостатки.  \textbf{Метод:} Код программы в терминах модели «процесс--сообщение» делится на блоки: библиотека времени исполнения;  связывающий  код, объединяющий библиотеку времени исполнения и код конкретной задачи;  типы данных для сообщений и процедуры их обработки. Границы блоков обозначаются комментариями. Для описания структуры кода в целом предлагается предметно-ориентированный язык, названный {\tt Templet}. Метод позволяет проводить контроль соответствия структуры кода модели «процесс--сообщение» автоматически перед компиляцией. \textbf{Описание каналов:} Канал описывает протокол обмена сообщениями между парой процессов. Приведён синтаксис каналов с использованием расширенной нотации Бекуса"--~Наура (EBNF). Информационная структура каналов, используемая для генерации кода, описана с применением диаграммы «сущность--связь» (ER).
+ \textbf{Описание процессов:} Процесс определяет алгоритм обработки сообщений, поступающих по каналам от других процессов, и ответы на сообщения. Показана информационная структура каналов во взаимосвязи с синтаксисом. В описании также использованы метамодели EBNF и ER. Описание синтаксиса сопровождается примером процесса «разветвление--слияние». \textbf{Схема работы препроцессора:} Рассматривается укрупнённый алгоритм работы и архитектура препроцессора языка {\tt Templet}. Препроцессор состоит из подсистем синтаксического анализатора, анализатора блоков, базы данных, семантического анализатора, механизма вывода и генератора кода. Описывается алгоритм работы препроцессора. На основе анализа количества строк кода в контрольном примере показано сокращение объёма ручного кодирования примерно в~20~раз. 
+ \textbf{Применение и сравнение с аналогами:} Препроцессор применяется в составе web"=сервиса для автоматизации параллельных вычислений. Он используется для подготовки скелетов программ, которые пользователи дополняют проблемно-ориентированным кодом. Описаны преимущества, общие черты и различия  предложенного подхода в сравнении с технологиями разметки последовательного кода, генерирующими макропроцессорами, специализированными параллельными языками, метапрограммированием и разработкой, управляемой моделями.}
+
+\entitle{The Templet Language Preprocessor: A Programming Tool for Process-per-Message Modeling}
+
+\engtitlehack{The Templet Language Preprocessor: A Programming Tool for Process-per-Message Modeling$^*$}
+
+\enauthor{S.~V.~Vostokin}{V\,o\,s\,t\,o\,k\,i\,n~S.\,V.}
+
+\enaffil{\ensgau.}
+
+\enauthordetails{1}{\fullauthor{\enpid{27041}{Sergey V. Vostokin}}
+\regalia{Dr. Techn. Sci.; \mem{easts@mail.ru}}\position{Professor} \dept{Dept. of
+Information Systems and Technology}\par
+\smallskip
+\noindent
+$^*$This paper is an extended version of a PIT 2014 paper~\cite{vostokin:bib3:e}. }
+
+\enabstract{{\bf Motivation:} A large number of applications can be described as a set of processes that exchange messages. Traditionally the process-per-message model is used in the form of a specialized language or a run-time library for general purpose language. The first approach lacks implementation simplicity, while the second approach is difficult in use. We propose a new method that comprises domain-specific language called Templet for code markup, a general purpose language, and the preprocessor. Our approach is free from disadvantages mentioned above. {\bf Method:} A code of a program is divided into blocks. Block boundaries are indicated by comments. The entire code structure is defined in Templet language so it can be checked out automatically before compilation. {\bf Description of Channels:} A channel defines a message exchange protocol between two interconnected processes. We provide channel syntax in the form of Extended Backus-Naur Formalism (EBNF). The informational structure of the channel is described with Entity-Relation diagram (ER). {\bf Description of Processes:} A process defines the algorithm for message processing. Information structure of the process is shown in conjunction with the syntax. EBNF and ER models are also used in the process specification. Syntax rules are illustrated with the fork-join code sample. {\bf Preprocessor structure and work scheme:} We present the algorithm and the structure of the preprocessor. Subsystems discussed are: syntax analyzer; semantics analyzer; internal database; inference mechanism; and code generator. The method for estimation of workload of manual coding is presented. It shows the diminishment of workload in 20 times comparing with manual coding. {\bf Discussion:} The preprocessor is used for skeleton programming as a part of web-service for automated parallel programming. Its advantages and features are discussed in comparison with parallelization with markup technique; general-purpose macro processor; parallel programming language, metaprogramming; and model-driven development.}
+
+\enkeywords{preprocessor, domain-specific language, process, message, parallel programming}
+
+\date{18/VII/2014}
+\revisiondate{21/VIII/2014}
+\accepteddate{10/IX/2014}
+
+
+
+
+\makerutitle
+
+
+
+
+\Section[n]{Мотивация}
+Для большого числа прикладных задач целесообразно представление кода решаемой задачи в виде совокупности процессов, обменивающихся сообщениями. 
+Например, в области высокопроизводительных вычислений такое разбиение служит для эффективного использования ядер и процессоров.
+В распределенных вычислениях важен протокол взаимодействия объектов при помощи сообщений. 
+В интеллектуальных многоагентных системах необходимы средства описания процедур обработки сообщений в программных агентах. 
+Системы имитационного дискретно"=событийного моделирования обычно в  качестве событий рассматривают поступление сообщений в процессы и их обработку.
+
+Традиционное применение модели «процесс--сообщение» в средстве программирования состоит в разработке специального языка программирования или библиотеки времени исполнения для имеющегося языка. 
+Очевидным недостатком первого подхода является сложность разработки, а второго "--- сложность применения. 
+
+Автором предлагается новый подход, основанный на том, что модель «про\-цесс--сообщение» может быть описана на любом языке программирования с пользовательскими типами данных и процедурной семантикой. 
+Для этого необходимо следовать специальным соглашениям на структуру кода. Использование разработанного универсального препроцессора вместе с предметно"=ориентированным языком позволяет автоматизировать кодирование модели «процесс--сообщение» средствами традиционного языка программирования.
+
+В работе рассмотрены архитектура и принцип работы препроцессора. Описан синтаксис предметно-ориентированного языка (DSL) для модели «про\-цесс--сообщение» на основе расширенной нотации Бекуса"--~Наура (EBNF). 
+Семантика языка показана с использованием диаграмм «сущность--связь» (ER) и вербального описания. 
+Приведён пример описания системы процессов. 
+Рассмотрено применение предлагаемого метода, выполнено сравнение с известными аналогами.
+
+\smallskip
+
+\Section[n]{Метод} 
+Код программы (например, на языке {\tt С++}) в терминах модели «процесс--сообщение» можно структурировать следующим образом. 
+Во"=первых, это библиотека времени исполнения с базовыми классами «процесс», «сообщение», «диспетчер сообщений» и так далее для передачи структуры потока управления. 
+Во"=вторых,  «связывающий»  код, объединяющий библиотеку времени исполнения и код конкретной задачи. 
+В"=третьих,   собственно типы данных для сообщений и процедуры их обработки. 
+Таким образом, код в терминах модели «процесс--сообщение» будет иметь блочную структуру. 
+Поэтому для его анализа не требуется знать синтаксис языка, а достаточно уметь определять границы блоков. 
+Очевидным способом определения границ блоков является разметка при помощи комментариев. 
+Например, в фрагменте кода
+\begin{verbatim}
+bool Parent::hello()
+{
+/*$TET$Parent$hello*/
+    cout<<"Hello world!";
+    return true;
+/*$TET$*/
+}
+\end{verbatim}
+тело метода {\tt Parent::hello()} может быть легко извлечено из кода, если препроцессору известны сигнатуры комментариев. 
+В примере {\tt bool Parent:: hello()\{...\}} "--- связывающий код, а {\tt cout{<}<"Hello world!"; return true;} "--- код конкретной задачи или пользовательский блок.
+
+Структуру связывающего кода и блоков пользователя можно описать в компактной форме на языке модели «процесс--сообщение». 
+При этом само описание может быть также встроено  в код в форме комментария:
+\begin{verbatim}
+/*$TET$templet$!templet!*/
+/* *Parent=+hello(). */
+/*$TET$*/.
+\end{verbatim}
+
+С учётом описанных допущений контроль соответствия структуры кода модели «процесс--сообщение» может быть проведён перед компиляцией. 
+Для этого требуется выполнить следующую трансформацию кода программы. 
+Необходимо извлечь пользовательские блоки и описание структуры кода из программы, а затем (если структура изменилась) генерировать код программы в соответствии с новым описанием структуры, помещая в код извлеченные ранее пользовательские блоки.
+
+Как компактно представить структуру кода на DSL-языке модели «про\-цесс--сообщение» и выполнить генерацию кода на целевом языке программирования, показано ниже. Для этого рассматриваются два типа объектов модели "--- канал и процесс.
+
+\smallskip
+
+\Section[n]{Описание каналов}
+Канал описывает протокол взаимодействия при помощи сообщений от двух участников "--- клиента и сервера. 
+Модель каналов представлена на рис.~\ref{vostokin:figure:1}. 
+Модель описывает множество типов каналов (сущностей CHANNEL). 
+Каждый тип канала имеет имя (атрибут {\tt channel}), однозначно идентифицирующее его. 
+Канал может состоять из нескольких состояний (сущностей STATE). 
+Вышеизложенное описывается правилом EBNF:
+\begin{verbatim}
+    channel = '~' ident ['=' state {';' state}] '.'.
+\end{verbatim}
+
+Нетерминал \verb"ident" соответствует имени типа канала \verb"channel" на ER"=диаграмме рис.~\ref{vostokin:figure:1}. 
+Состояния STATE описывают последовательность взаимодействия между двумя участниками "--- клиентом и сервером. 
+Состояния имеют имя (атрибут \verb"state"); делятся на два множества "--- состояние клиента и состояние сервера (атрибут \verb"cli_or_srv"); одно из состояний определяется как начальное (атрибут \verb"is_initial"). Если состояние является состоянием клиента,  то сообщение передаёт клиент, а принимает сервер. 
+Иначе "--- передаёт сервер, а принимает клиент. 
+Правило EBNF для состояния имеет вид:
+\begin{verbatim}
+    state = ['+'] ident [ ('?'|'!')  [rules] ].
+\end{verbatim}
+
+
+
+Здесь начальное состояние обозначено знаком \verb"'+'"; состояние клиента обозначено знаком \verb"'?'" (он задаёт вопрос); состояние сервера обозначено знаком \verb"'!'" (он отвечает на вопрос клиента). 
+Нетерминал \verb"ident" обозначает имя состояния (\verb"state").
+
+Наконец, правило, представленное сущностью RULE, описывает, в какое состояние \verb"new_state" будет выполняться переход при отправке сообщения с именем \verb"message" из текущего состояния. 
+Сущность RULE задаётся правилом 
+\begin{verbatim}
+    rules = ident '->' ident {'|' ident '->' ident}.
+\end{verbatim}
+
+Идентификатор перед знаком \verb"'->'" обозначает сообщение \verb"message", идентификатор после знака \verb"'->'" обозначает новое состояние \verb"new_state".
+
+
+\begin{figure}[h!]\centering\small
+\includegraphics[scale=1.6]{vostokin-1}
+\caption{ER-модель каналов [Figure~\ref{vostokin:figure:1}. ER model of the channels] \label{vostokin:figure:1}}
+\end{figure}
+
+
+Пример синтаксиса каналов. 
+Пусть требуется проверить тождество $\sin^2 x+ \cos^2 x =1$. 
+Для этого выполним вычисление квадратов синуса и косинуса одновременно (параллельно)  в~двух процессах. 
+Взаимодействие между управляющим процессом и процессом, вычисляющим функцию, представим каналом
+\begin{verbatim}
+~Link=
+    +Begin ? agrSin2 -> Calc | argCos2 -> Calc;
+     Calc  ! result  -> End;
+     End.
+\end{verbatim}
+
+Это описание имеет следующую интерпретацию. 
+В начальном состоянии \verb"Begin" управляющий процесс (в роли клиента) посылает сообщение \verb"argSin2" (которое заставляет вычислить квадрат синуса от переданного в сообщении значения) или \verb"argCos2" (для вычисления квадрата косинуса). 
+Исполняющий процесс в состоянии \verb"Calc" (в роли сервера) выполняет вычисление и возвращает результат в сообщении \verb"result". 
+После этого обработка заканчивается, так как из состояния \verb"End" нет исходящих сообщений. 
+
+Для генерации кода сущности, полученные при синтаксическом анализе, дополняются вычисленными сущностями MESSAGE и NEW\_STATE. Сущность MESSAGE объединяет все упомянутые в канале сообщения. 
+Сущность NEW\_STATE показывает, в каком состоянии \verb"state" может передаваться  сообщение и в какое состояние \verb"new_state" затем переходит канал. 
+Вычисленные сущности выделены на рис.~\ref{vostokin:figure:1} рамкой. 
+Генерация кода выполняется путём обхода дополненного дерева ER-модели каналов.
+
+\smallskip
+
+\Section[n]{Описание процессов}
+Процесс определяет алгоритм обработки сообщений, поступающих по каналам от других процессов, и ответы на сообщения. 
+Модель процессов показана на рис.~\ref{vostokin:figure:2}. 
+Модель описывает множество типов процессов (сущностей PROCESS). 
+Каждый тип процесса имеет имя (атрибут \verb"process"), однозначно идентифицирующее его. 
+Процесс может состоять из нескольких портов (сущностей PORT) и нескольких действий (сущностей ACTION). Вышеизложенное представлено правилом EBNF:
+\begin{verbatim}
+    process = '*' ident ['=' ((ports [';' actions]) | actions) ]'.'.    
+\end{verbatim}
+
+\begin{figure}[b!]\centering\small
+\includegraphics[scale=1.6]{vostokin-2}
+\caption{ER-модель процессов [Figure~\ref{vostokin:figure:2}. ER model of the processes] \label{vostokin:figure:2}}
+\end{figure}
+
+Порт описывает точку подключения канала к процессу. 
+Он характеризуется идентификатором \verb"port"; типом подключаемого канала \verb"channel"; ролью процесса во взаимодействии через данный порт \verb"cli_or_srv" (клиент или сервер); а также действием \verb"alt_action", которое запускается при поступлении сообщения в данный порт, если не выполнены (или не указаны) связанные с~портом правила RULE. 
+Правила EBNF для порта имеют вид:
+\begin{verbatim}
+    ports = port {';' port}.
+    port  = ident ':' ident('?'|'!')[(rules ['|' '->' ident])|
+                                                ( '->' ident)].
+\end{verbatim}
+
+В правилах комбинация имя-тип порта обозначена как \verb"ident ':' ident". Знак \verb"'?'" показывает, что сообщения в правилах "--- вопросы от клиента. 
+Знак \verb"'!'" показывает, что поступающие в данный порт сообщения "--- ответы сервера. 
+
+Синтаксис правил для порта аналогичен правилам для каналов. Правила для канала имеют следующую интерпретацию. 
+Слева от знака \verb"'->'" записывается имя сообщения \verb"message", поступающего в канал, а справа "--- имя действия \verb"action", которое нужно запустить при поступлении данного сообщения.
+
+
+Действия описывают процедуры обработки поступающих в процесс сообщений и выдачу ответных сообщений. 
+Действия имеют уникальные в пределах процесса имена \verb"action". 
+Одно из действий может помечаться как начальное \verb"is_initial" (оно запустится при запуске программы). 
+Действие может иметь связанное действие \verb"on_true_action", запускаемое при успешном выполнении. 
+Также может указываться связанное действие \verb"on_false_action", запускаемое при неуспешном выполнении. 
+Связанные действия образуют цепочку неделимых (атомарных) операций обработки поступившего сообщения (или начального действия при запуске программы). Правила EBNF для действий имеют вид:
+\begin{verbatim}
+    actions = action {';' action}.
+    action  = ['+'] ident '(' [args] ')' ['->' ([ident] '|' ident) 
+                                                          | ident].
+\end{verbatim}
+
+Здесь первый идентификатор задает имя действия \verb"action"; идентификатор, записанный после знака \verb"'->'", задаёт действие \verb"on_true_action";  идентификатор, записанный после знака \verb"'|'", задаёт действие \verb"on_false_action".
+Сущность ARGUMENT описывает аргумент действия "--- сообщение \verb"message" на заданном порте \verb"port", которое может считываться или записываться \verb"read_" \verb"or_write", а затем отправляться получателю. Правило EBNF для аргумента имеет вид  
+\begin{verbatim}
+    args = ident ('?'|'!') ident {',' ident ('?'|'!') ident}.
+\end{verbatim}
+
+Первый идентификатор обозначает порт \verb"port"; знак \verb"'?'" обозначает (в данном контексте) чтение сообщения; 
+знак \verb"'!'" обозначает запись и отправку сообщения. 
+Имя сообщения \verb"message" указывается после знаков \verb"'?'" или \verb"'!'".
+
+Генерация кода, аналогично каналам, выполняется обходом дерева ER"=модели процессов. 
+Для генерации кода необходимо вычислить аргумент \verb"channel" в сущности ARGUMENT (в рамке на рис.~\ref{vostokin:figure:2}). При генерации кода для действия должны выполняться следующие правила. 
+\begin{itemize}
+\item[А.] Действие\hypertarget{vos:A}{} запускается, если в текущем состоянии подключенных к процессу каналов возможно считать или отправить сообщения, перечисленные как аргумент действия. 
+\item[Б.] Сообщения отправляются, если действие было запущено и вернуло признак успешного завершения.
+\item[В.] Если указан атрибут  \verb"on_true_action", то переход к связанному действию происходит, если  действие было запущено и вернуло признак успешного завершения. Иначе, если указан атрибут  \verb"on_false_action",  выполняется переход к данному связанному действию.
+\end{itemize}
+
+Поясним использование описаний процессов на примере проверки тождества $\sin^2 x +\cos ^2 x =1$. Управляющий процесс \verb"Parent" имеет следующий вид: 
+\begin{verbatim}
+*Parent=
+     p1 : Link ! result -> join;
+     p2 : Link ! result -> join;
+    +fork(p1!argCos2,p2!argSin2);
+     join(p1?result,p2?result).
+\end{verbatim}
+
+Порты \verb"p1" и \verb"p2" связывают процесс \verb"Parent" с процессами, вычисляющими квадрат тригонометрических функций. 
+В~действии \verb"fork" выполняется формирование и рассылка сообщений со значением переменной $x$. 
+В~действии \verb"join" выполняется сложение результатов и сравнение суммы с~1. 
+Заметим, что процедура действия \verb"join" запустится только тогда, когда будут доставлены оба результата (согласно правилу \hyperlink{vos:A}{А}, приведённому выше).
+
+Вычисляющий квадрат синуса или косинуса процесс \verb"Child" определяется так:
+\begin{verbatim}
+*Child=
+    p : Link ? argCos2 -> calcCos2 | argSin2 -> calcSin2;
+    calcCos2(p?argCos2,p!result);
+    calcSin2(p?argSin2,p!result).
+\end{verbatim}
+
+В определении показано, какое действие (вычисление квадрата косинуса \verb"calcCos2" или квадрата синуса \verb"calcSin2") нужно запустить при получении сообщений  \verb"argCos2" или \verb"argSin2".
+
+\smallskip
+
+\Section[n]{Схема работы препроцессора}
+Рассмотрим работу препроцессора (рис.~\ref{vostokin:figure:3}). 
+На этапе~1 из кода извлекаются размеченные блоки. 
+На этапе~2 блок с~описанием структуры кода на рассмотренном языке подвергается синтаксическому анализу. 
+Результат анализа (в~форме рис.~\ref{vostokin:figure:1} и рис.~\ref{vostokin:figure:2}) поступает во внутреннюю базу данных на этапе~3. 
+На этапе~4 выполняется семантический контроль. 
+Контроль семантики канала заключается в~проверке уникальности идентификаторов и~проверке ссылочной целостности согласно модели рис.~\ref{vostokin:figure:1}. 
+Дополнительно выполняется контроль достижимости состояний из начального состояния. 
+Семантический контроль процесса заключается в~проверке уникальности идентификаторов согласно модели рис.~\ref{vostokin:figure:2}, проверке ссылочной целостности и выполнимости каждого действия. 
+Вывод на этапе~5 дополняет модели рис.~\ref{vostokin:figure:1} и рис.~\ref{vostokin:figure:2} производными сущностями и атрибутами. 
+На последних этапах~6 и~7 из извлеченных блоков и дополненной базы данных генерируется новый код, который замещает собой исходный.
+
+\begin{figure}[h!]\centering\small
+\includegraphics[scale=1.6]{vostokin-3}
+\caption{Схема взаимодействия подсистем препроцессора \label{vostokin:figure:3}}
+
+\footnotesize [Figure~\ref{vostokin:figure:3}. Subsystems of the preprocessor and their interaction] 
+
+\end{figure}
+
+
+Количество строк кода в программе проверки тождества $\sin^2 x+\cos^2 x=1$ показано в \hyperlink{vostokin:table}{таблице}. 
+Из \hyperlink{vostokin:table}{таблицы} видно, что спецификация и остальной пользовательский код занимают незначительную часть общего объема кода. 
+Размер системного кода также невелик (140~строк), то есть механизм исполнения прост для понимания. 
+Количество строк связывающего кода (255 или $\sim50$\,\%) даёт представление о~степени автоматизации программирования препроцессором. 
+Без препроцессора этот код пришлось бы писать вручную. 
+Размер связывающего кода соотносится с~размером спецификации как 255/13, то есть объем кодирования сокращается примерно в~20 раз. 
+Связывающий код прост для понимания, так как строится обходом деревьев моделей рис.~\ref{vostokin:figure:1} и рис.~\ref{vostokin:figure:2} без других преобразований.
+
+
+\begin{sidewaystable}
+
+\small \centering
+\textbf{Размер фрагментов кода в примере $\boldsymbol{\sin^2 x + \cos^2 x =1}$ [Size of a code fragments in the sample $\boldsymbol{\sin^2 x + \cos^2 x =1}$] \hypertarget{vostokin:table}{}}
+\begin{tabular}{l|l|c|c}
+\hline
+\footnotesize Пользователь / система &
+\footnotesize Назначение фрагмента кода &
+\footnotesize Кол-во строк &
+\footnotesize Доля строк в \% от общего кол-ва строк \\
+\footnotesize [User code / System code] &
+\footnotesize [The function of the code fragment] &
+\footnotesize [Number of lines] &
+\footnotesize [Percentage of lines from the total size] \\
+\hline
+\rule{0mm}{12pt}%
+& Спецификация [Code specification]  & 13 & 2.63 \\ 
+\cline{2-4}
+Код пользователя & Пользовательские блоки & \tobot{35} & \tobot{7.07} \\
+{[User code]} & {[User blocks]} &  &  \\
+\cline{2-4}
+& Всего [Total] & 48 & 9.70 \\
+\hline 
+& Библиотека [Run-time library] & 140 & 28.28 \\
+\cline{2-4}
+Системный код & Разметка блоков [Block mark-up] & 52 & 10.51 \\
+\cline{2-4}
+[System code] & Связывающий код [Binding code] & 255 & 51.51 \\
+\cline{2-4}
+& Всего [Total] & 447 &  90.30 \\
+\hline
+Всего [Total] & Весь код примера [Entire sample code] & 495 & 100 \\
+\hline
+
+
+
+
+\end{tabular}
+
+
+\end{sidewaystable}
+ 
+\smallskip
+
+\Section[n]{Применение и сравнение с аналогами}
+Рассмотренный в настоящей работе препроцессор {\tt Templet} применяется в составе веб"=сервиса автоматизации параллельных вычислений на суперкомпьютере «Сергей Королёв» Самарского государственного аэрокосмического университета, развернутого по адресу \url{http://templet.ssau.ru}~\cite{vostokin:bib1:r}. 
+Он позволяет разработать и отладить каркас приложения как последовательную программу на локальной машине, а затем автоматически запустить код на исполнение на суперкомпьютере в параллельном режиме с использованием {\tt API POSIX Threads}. 
+В~текущей реализации также выполняется  трансформация кода для исполнения в операционных системах {\tt Windows} с использованием {\tt Windows API}. 
+Применение препроцессора {\tt Templet} не требует от пользователя знаний методов параллельного программирования в {\tt Unix} или {\tt Windows} и позволяет сосредоточиться на решении прикладной задачи. 
+Другие варианты генерации кода позволяют добавлять отладочную информацию для работы со специально ориентированным на данную модель отладчиком. 
+Разрабатывается средство визуализации кода на основе пакетов {\tt Open\-Office/LibreOffice} с использованием графической нотации {\tt Templet}~\cite{vostokin:bib2:r}. 
+Сообщение о~препроцессоре впервые представлено в работе \cite{vostokin:bib3:r}, основные алгоритмы препроцессора и синтаксис языка разметки зарегистрированы в Рос\-па\-тенте.\footnote{Эталонная реализация языка {\tt Templet}: свидетельство о гос. регистрации прогр. для ЭВМ №~2014613169 Российская Федерация / С.~В.~Востокин; правообладатель С.В. Востокин. – Зарегистрировано в Реестре программ для ЭВМ 19.03.2014; опубл. 20.04.2014, ОБПБТ № 4 (90).}
+
+
+Концепции, используемые в дизайне языка, в основном соответствуют стилю языково"=ориентированного программирования~\cite{vostokin:bib5:r, vostokin:bib6:r}.
+Применён близкий к алгебраическим конструкциям способ описания процессов в стиле {\tt CSP}~\cite{vostokin:bib7:r}. 
+Идея компактного дизайна, включающего только базовые механизмы абстракции, взята из языка {\tt Oberon}~\cite{vostokin:bib8:r}.
+
+В дизайне препроцессора {\tt Templet} используются несколько подходов к автоматизации программирования. 
+Один из них "--- метод разметки последовательного кода препроцессорными инструкциями для распараллеливания, который широко распространен, в частности, в стандарте {\tt OpenMP} \cite{vostokin:bib9:r}, российской системе {\tt DVM} \cite{vostokin:bib10:r, vostokin:bib11:r}; в системе {\tt Cilk} \cite{vostokin:bib12:r}, в её российском аналоге {\tt T++} \cite{vostokin:bib13:r, vostokin:bib14:r}  и других. 
+Но, в отличие от них, в системе {\tt Templet} контроль структуры кода реализуется автоматически за счёт генерации кода, а не вручную.
+Генерирующие макропроцессоры ({\tt m4} \cite{vostokin:bib15:r} или современный вариант {\tt T4} \cite{vostokin:bib16:r})  используются для автоматизации программирования.
+Описанная система также относится к классу  так называемых активных генераторов, однако является проблемно"=ориентированной. 
+Модель системы {\tt Templet} "--- это разновидность модели акторов [\citen{vostokin:bib17:r}--\citen{vostokin:bib17-2:r}], но в отличие от специальных языков, например {\tt Erlang}  \cite{vostokin:bib18:r}, мы реализуем акторную семантику средствами процедурного языка. 
+Это позволяет использовать системы программирования существующих языков. 
+Система {\tt Templet} реализует концепцию разработки, управляемой моделями (model-driven development) [\citen{vostokin:bib19-1:r}--\citen{vostokin:bib19:r}]. 
+В~области параллельного программирования это важно при  автоматическом преобразовании кода для распараллеливания. 
+Особенность нашей модели в том, что она является комбинацией обычного и предметного языков, 
+причём семантика модели представлена на обычном языке. 
+Роль предметного языка в системе {\tt Templet} "--- краткое описание каркаса программы. 
+Препроцессор {\tt Templet} может использоваться в режиме метапрограммирования \cite{vostokin:bib19-2:r, vostokin:bib20:r}: исходная программа преобразуется в другую программу, выполняющую более сложные преобразования, чем позволяет препроцессор.  
+Например, так могут быть реализованы глубокий семантический анализ и оптимизация кода. 
+
+\thanks{{\bf Благодарности.} Автор выражает благодарность Самарскому государственному аэрокосмическому университету за поддержку этого исследования. Библиотека времени выполнения препроцессора была реализована для использования на суперкомпьютере «Сергей Королёв» СГАУ при постоянной помощи со стороны обслуживающего персонала.
+
+Работа выполнена при государственной поддержке Министерства образования и науки РФ в рамках реализации мероприятий Программы повышения конкурентоспособности СГАУ среди ведущих мировых научно"=образовательных центров на 2013--2020 годы.
+} 
+
+
+%\thanks{{\bf Acknowledgments.} My thanks go to Samara State Aerospace University (SSAU) for its continuous support to this research. The  preprocessor run-time library was tested in the university supercomputer ``Sergey Korolyov'' with ongoing assistance of maintenance team.
+%
+%This work was supported by the Ministry of Education and Science of the Russian Federation in the framework of the implementation of the Program of increasing the competitiveness of SSAU among the world's leading scientific and educational centers over the period from  2013  till 2020.
+%}
+
+\thanks{{\bf ORCID}
+
+{\bf Sergey Vostokin:} \url{http://orcid.org/0000-0001-8106-6893}
+}
+
+\RusRef
+
+\begin{thebibliography}{99}
+
+
+\RBibitem{vostokin:bib3:r}
+\by Востокин~С.~В.
+\paper Базовый синтаксис языка разметки Templet для представления модели «процесс-сообщение» 
+\inbook Перспективные информационные технологии (ПИТ 2014)
+\bookinfo Труды Международной научно-технической конференции 
+\ed С.~А.~Прохоров
+\publaddr Самара
+\publ Изд-во Самарского научного центра РАН
+\yr 2014
+\pages 317--323
+\elink \url{http://templet.ssau.ru/wiki/lib/exe/fetch.php?media=pit2014:templetlang.pdf}
+
+\RBibitem{vostokin:bib1:r}
+\paper Templet – Сервис непрерывной интеграции для разработки высокопроизводительных приложений 
+\by Артамонов~Ю.~С.,  Востокин~С.~В., Назаров~Ю.~П.
+\inbook Высокопроизводительные параллельные вычисления на кластерных системах
+\bookinfo Материалы XII всероссийской конференции
+\publaddr Нижний Новгород
+\publ Изд-во НГУ
+\yr 2012 
+\pages 82
+
+
+\RBibitem{vostokin:bib2:r}
+\by Востокин~С.~В. 
+\paper {\tt Templet} – метод процессно-ориентированного моделирования параллелизма 
+\jour Программные продукты и системы
+\yr 2012
+\issue 3
+\pages 11--14
+
+
+
+\Bibitem{vostokin:bib5:r}
+\by Ward~M.~P. 
+\paper Language-oriented programming 
+\jour Software-Concepts and Tools
+\yr 1994
+\vol 15
+\issue 4
+\pages 147--161
+
+\Bibitem{vostokin:bib6:r}
+\by Dmitriev~S.
+\preprint Language oriented programming: The next programming paradigm 
+\preprintinfo  JetBrains onBoard
+\yr 2004
+\elink \url{http://www.onboard.jetbrains.com/articles/04/10/lop/}
+\totalpages 13
+
+\Bibitem{vostokin:bib7:r}
+\by  Hoare~C.~A.~R.
+\paper Communicating sequential processes 
+\inbook The origin of concurrent prog\-ramming
+\publ Springer 
+\publaddr New York
+\yr 2002
+\pages 413--443
+\crossref{10.1007/978-1-4757-3472-0_16}
+
+\Bibitem{vostokin:bib8:r}
+\crossref{10.1002/spe.4380180707}
+\by Wirth~N. 
+\paper The programming language Oberon 
+\jour Software: Practice and Experience
+\yr 1988
+\vol 18
+\issue 7
+\pages 671--690
+
+\Bibitem{vostokin:bib9:r}
+\by Chandra~R., Menon~R., Dagum~L., Kohr~D., Maydan~D., McDonald~J.
+\book Parallel Programming in OpenMP
+\publ Morgan Kaufmann
+\publaddr San Francisco
+\yr 2000
+\totalpages 230+xvi
+
+\RBibitem{vostokin:bib10:r}
+\by Коновалов~Н.~А., Крюков~В.~А., Михайлов~С.~Н., Погребцов~A.~A.
+\paper Fortran-DVM — язык разработки мобильных параллельных программ
+\jour Программирование
+\yr 1995
+\issue 1
+\pages 49--54
+% 10. Konovalov N. A. et al. FORTRAN-DVM: The Language for Developing Portable Parallel Programs //Programmirovanie. – 1995. – Т. 1. – С. 49-54.
+
+\RBibitem{vostokin:bib11:r}
+\paper Расширение DVM-модели параллельного программирования для кластеров с гетерогенными узлами
+\by Бахтин~В.~А., Крюков~В.~А., Четверушкин~Б.~Н., Шильников~Е.~В.
+\elib{http://elibrary.ru/item.asp?id=17238732}
+\jour Доклады Академии наук
+\yr 2011
+\vol 441
+\issue 6
+\pages 734–736
+%11.Bakhtin V.A., Kryukov V.A., Chetverushkin B.N., Shilnikov E.V.  Extension of the DVM parallel programming model for clusters with heterogeneous nodes //Doklady Mathematics. – MAIK Nauka/Interperiodica, 2011. – Т. 84. – №. 3. – С. 879-881. 10.1134/S1064562411060408
+
+
+\Bibitem{vostokin:bib12:r}
+\by Blumofe~R.~D., Joerg~C.~F., Kuszmaul~B.~C., Leiserson~C.~E., Randall~K.~H., Zhou~Y.
+\paper Cilk: An efficient multithreaded runtime system 
+\jour Journal of parallel and distributed computing
+\yr 1996
+\vol 37
+\issue 1
+\pages 55--69
+\crossref{10.1006/jpdc.1996.0107}
+
+\Bibitem{vostokin:bib13:r}
+\by Moskovsky~A., Roganov~V., Abramov~S. 
+\paper Parallelism Granules Aggregation with the T-System
+\inbook Parallel Computing Technologies
+\serial Lecture Notes in Computer Science
+\vol 4671
+\publ Springer 
+\publaddr Berlin, Heidelberg
+\yr 2007
+\pages 293--302
+\crossref{10.1007/978-3-540-73940-1_30}
+
+\Bibitem{vostokin:bib14:r}
+\by Moskovsky~A., Roganov~V., Abramov~S.,  Kuznetsov~A.
+\paper Variable Reassignment in the T++ Parallel Programming Language
+\inbook Parallel Computing Technologies
+\serial Lecture Notes in Computer Science
+\vol 4671
+\publ Springer 
+\publaddr Berlin, Heidelberg
+\yr 2007
+\pages 579--588
+\crossref{10.1007/978-3-540-73940-1_58}
+
+\Bibitem{vostokin:bib15:r}
+\by Seindal~R.
+\preprint GNU m4 (version 1.4)
+\preprintinfo Technical report
+\publ Free Software Foundation 
+\yr 1997
+
+\Bibitem{vostokin:bib16:r}
+\by Cook~S., Jones~G., Kent~S., Wills~A.~K. 
+\book Domain-Specific Development with Visual Studio DSL Tools
+\publaddr Boston
+\publ Pearson Education
+\yr 2007
+\totalpages 576
+
+
+\Bibitem{vostokin:bib17:r}
+\by Hewitt~C. 
+\eprint Actor Model of Computation: Scalable Robust Information Systems
+\yr 2010
+\totalpages 48
+\arxiv \href{http://arxiv.org/abs/1008.1459}{1008.1459} [cs.PL]
+
+\Bibitem{vostokin:bib17-1:r}
+\paper Viewing control structures as patterns of passing messages  
+\by Hewitt C.  
+\yr 1977  
+\jour Artificial Intelligence
+\vol 8 
+\issue 3
+\pages 323--364
+\crossref{10.1016/0004-3702(77)90033-9}
+
+
+\Bibitem{vostokin:bib17-2:r}
+\paper Cantor: an actor programming system for scientific computing  
+\by Athas~W.~C., Boden~N.~J.
+\yr 1989  
+\jour SIGPLAN Notices (ACM Special Interest Group on Programming Languages)
+\vol 24 
+\issue 4
+\pages 66--68
+\crossref{10.1145/67386.67402}
+
+
+\Bibitem{vostokin:bib18:r}
+\by Larson~J.
+\crossref{10.1145/1467247.1467263}
+\paper Erlang for concurrent programming 
+\jour Communications of the ACM
+\yr 2009
+\vol 52
+\issue  3
+\pages 48--56
+
+
+
+\Bibitem{vostokin:bib19-1:r}
+\paper The pragmatics of model-driven development  
+\by Selic~B.
+\yr 2003  
+\jour IEEE Software
+\vol 20
+\issue 5
+\pages 19--25
+\crossref{10.1109/MS.2003.1231146}
+
+
+\Bibitem{vostokin:bib19-2:r}
+\paper Model-driven development: A metamodeling foundation  
+\by Atkinson~C., K\"uhne~T.
+\yr 2003  
+\jour IEEE Software
+\vol 20 
+\issue 5
+\pages 36--41
+\crossref{10.1109/MS.2003.1231149}
+
+
+\Bibitem{vostokin:bib19-3:r}
+\paper Model-driven development: The good, the bad, and the ugly  
+\by Hailpern~B., Tarr~ P.
+\yr 2006  
+\jour IBM Systems Journal
+\vol 45 
+\issue 3
+\pages  451--461
+\crossref{10.1147/sj.453.0451}
+
+
+
+
+\Bibitem{vostokin:bib19:r}
+\by Mukerji~J., Miller~J.
+\preprint Overview and guide to OMG's architecture 
+\preprintinfo IBM Whitepaper
+\yr 2001
+\totalpages 62
+
+
+\Bibitem{vostokin:bib20:r}
+\by Hazzard~K., Bock~J.
+\book Metaprogramming in .NET
+\publ Manning Publ.
+\yr 2013
+\publaddr Shelter Island
+\totalpages 334+xxiv
+
+\end{thebibliography}
+
+\RuDate	
+
+%
+\newpage
+
+
+
+\makeentitle
+
+
+\thanks{{\bf Acknowledgments.} My thanks go to Samara State Aerospace University (SSAU) for its continuous support to this research. The  preprocessor run-time library was tested in the university supercomputer ``Sergey Korolyov'' with ongoing assistance of maintenance team.
+
+This work was supported by the Ministry of Education and Science of the Russian Federation in the framework of the implementation of the Program of increasing the competitiveness of SSAU among the world's leading scientific and educational centers over the period from  2013  till 2020.
+}
+
+\thanks{{\bf ORCID}
+
+{\bf Sergey Vostokin:} \url{http://orcid.org/0000-0001-8106-6893}
+}
+
+
+\EngRef
+
+
+\begin{thebibliography}{99}
+
+\Bibitem{vostokin:bib3:e}
+\by Vostokin~S.~V.
+\paper The basic syntax of {\tt Templet} markup language for representing   process-per-message model
+\inbook Perspektivnye informatsionnye tekhnologii (PIT 2014) \rm [Advanced information technologies (PIT 2014)]
+\bookinfo Proceedings of the Technical Conference
+\ed S.~A.~Prokhorov
+\publaddr Samara
+\publ Samara Research Center
+\yr 2014
+\pages 317--323
+\lang In Russian
+\elink \url{http://templet.ssau.ru/wiki/lib/exe/fetch.php?media=pit2014:templetlang.pdf}
+
+
+\Bibitem{vostokin:bib1:e}
+\paper Templet – A service of continuous integration  to the development  of high-performance applications
+\by Artamonov~Yu.~S.,  Vostokin~S.~V., Nazarov~Yu.~P.
+\inbook Vysokoproizvoditel'nye parallel'nye vychisleniia na klasternykh sistemakh \rm [High-performance parallel computations on cluster systems]
+\bookinfo Proceedings of XII All-Russian Conference
+\publaddr Nizhni Novgorod
+\publ Nizhni Novgorod State Univ. Publ.
+\yr 2012 
+\pages 82
+\lang In Russian
+
+
+\Bibitem{vostokin:bib2:e}
+\by Vostokin~S.~V. 
+\paper Templet – A method of process oriented simulation of parallelism
+\jour Programmnye produkty i sistemy
+\yr 2012
+\issue 3
+\pages 11--14
+\lang In Russian
+
+
+
+
+\Bibitem{vostokin:bib5:e}
+\by Ward~M.~P. 
+\paper Language-oriented programming 
+\jour Software-Concepts and Tools
+\yr 1994
+\vol 15
+\issue 4
+\pages 147--161
+
+\Bibitem{vostokin:bib6:e}
+\by Dmitriev~S.
+\preprint Language oriented programming: The next programming paradigm 
+\preprintinfo  JetBrains onBoard
+\yr 2004
+\elink \url{http://www.onboard.jetbrains.com/articles/04/10/lop/}
+\totalpages 13
+
+\Bibitem{vostokin:bib7:e}
+\by  Hoare~C.~A.~R.
+\paper Communicating sequential processes 
+\inbook The origin of concurrent prog\-ramming
+\publ Springer 
+\publaddr New York
+\yr 2002
+\pages 413--443
+\crossref{10.1007/978-1-4757-3472-0_16}
+
+\Bibitem{vostokin:bib8:e}
+\crossref{10.1002/spe.4380180707}
+\by Wirth~N. 
+\paper The programming language Oberon 
+\jour Software: Practice and Experience
+\yr 1988
+\vol 18
+\issue 7
+\pages 671--690
+
+\Bibitem{vostokin:bib9:e}
+\by Chandra~R., Menon~R., Dagum~L., Kohr~D., Maydan~D., McDonald~J.
+\book Parallel Programming in OpenMP
+\publ Morgan Kaufmann
+\publaddr San Francisco
+\yr 2000
+\totalpages 230+xvi
+
+\Bibitem{vostokin:bib10:e}
+\by Konovalov~N.~A., Kryukov~V.~A., Mikhailov~S.~N., Pogrebtsov~A.~A.
+\paper FORTRAN-DVM: The Language for Developing Portable Parallel Programs
+\jour Programmirovanie
+\yr 1995
+\issue 1
+\pages 49--54
+\lang In Russian
+
+\Bibitem{vostokin:bib11:e}
+\by Bakhtin~V.~A., Kryukov~V.~A., Chetverushkin~B.~N., Shilnikov~E.~V.
+\paper Extension of the DVM parallel programming model for clusters with heterogeneous nodes 
+\jour Doklady Mathematics
+\yr 2011
+\vol 84
+\issue  3
+\pages 879--881
+\crossref{10.1134/S1064562411060408}
+
+
+\Bibitem{vostokin:bib12:e}
+\by Blumofe~R.~D., Joerg~C.~F., Kuszmaul~B.~C., Leiserson~C.~E., Randall~K.~H., Zhou~Y.
+\paper Cilk: An efficient multithreaded runtime system 
+\jour Journal of parallel and distributed computing
+\yr 1996
+\vol 37
+\issue 1
+\pages 55--69
+\crossref{10.1006/jpdc.1996.0107}
+
+\Bibitem{vostokin:bib13:e}
+\by Moskovsky~A., Roganov~V., Abramov~S. 
+\paper Parallelism Granules Aggregation with the T-System
+\inbook Parallel Computing Technologies
+\serial Lecture Notes in Computer Science
+\vol 4671
+\publ Springer 
+\publaddr Berlin, Heidelberg
+\yr 2007
+\pages 293--302
+\crossref{10.1007/978-3-540-73940-1_30}
+
+\Bibitem{vostokin:bib14:e}
+\by Moskovsky~A., Roganov~V., Abramov~S.,  Kuznetsov~A.
+\paper Variable Reassignment in the T++ Parallel Programming Language
+\inbook Parallel Computing Technologies
+\serial Lecture Notes in Computer Science
+\vol 4671
+\publ Springer 
+\publaddr Berlin, Heidelberg
+\yr 2007
+\pages 579--588
+\crossref{10.1007/978-3-540-73940-1_58}
+
+\Bibitem{vostokin:bib15:e}
+\by Seindal~R.
+\preprint GNU m4 (version 1.4)
+\preprintinfo Technical report
+\publ Free Software Foundation 
+\yr 1997
+
+\Bibitem{vostokin:bib16:e}
+\by Cook~S., Jones~G., Kent~S., Wills~A.~K. 
+\book Domain-Specific Development with Visual Studio DSL Tools
+\publaddr Boston
+\publ Pearson Education
+\yr 2007
+\totalpages 576
+
+\Bibitem{vostokin:bib17:e}
+\by Hewitt~C. 
+\eprint Actor Model of Computation: Scalable Robust Information Systems
+\yr 2010
+\totalpages 48
+\arxiv \href{http://arxiv.org/abs/1008.1459}{1008.1459} [cs.PL]
+
+\Bibitem{vostokin:bib17-1:e}
+\paper Viewing control structures as patterns of passing messages  
+\by Hewitt C.  
+\yr 1977  
+\jour Artificial Intelligence
+\vol 8 
+\issue 3
+\pages 323--364
+\crossref{10.1016/0004-3702(77)90033-9}
+
+\Bibitem{vostokin:bib17-2:e}
+\paper Cantor: an actor programming system for scientific computing  
+\by Athas~W.~C., Boden~N.~J.
+\yr 1989  
+\jour SIGPLAN Notices (ACM Special Interest Group on Programming Languages)
+\vol 24 
+\issue 4
+\pages 66--68
+\crossref{10.1145/67386.67402}
+
+\Bibitem{vostokin:bib18:e}
+\by Larson~J.
+\crossref{10.1145/1467247.1467263}
+\paper Erlang for concurrent programming 
+\jour Communications of the ACM
+\yr 2009
+\vol 52
+\issue  3
+\pages 48--56
+
+\Bibitem{vostokin:bib19-1:e}
+\paper The pragmatics of model-driven development  
+\by Selic~B.
+\yr 2003  
+\jour IEEE Software
+\vol 20
+\issue 5
+\pages 19--25
+\crossref{10.1109/MS.2003.1231146}
+
+\Bibitem{vostokin:bib19-2:e}
+\paper Model-driven development: A metamodeling foundation  
+\by Atkinson~C., K\"uhne~T.
+\yr 2003  
+\jour IEEE Software
+\vol 20 
+\issue 5
+\pages 36--41
+\crossref{10.1109/MS.2003.1231149}
+
+\Bibitem{vostokin:bib19-3:e}
+\paper Model-driven development: The good, the bad, and the ugly  
+\by Hailpern~B., Tarr~P.
+\yr 2006  
+\jour IBM Systems Journal
+\vol 45 
+\issue 3
+\pages  451--461
+\crossref{10.1147/sj.453.0451}
+
+\Bibitem{vostokin:bib19:e}
+\by Mukerji~J., Miller~J.
+\preprint Overview and guide to OMG's architecture 
+\preprintinfo IBM Whitepaper
+\yr 2001
+\totalpages 62
+
+\Bibitem{vostokin:bib20:e}
+\by Hazzard~K., Bock~J.
+\book Metaprogramming in .NET
+\publ Manning Publ.
+\yr 2013
+\publaddr Shelter Island
+\totalpages 334+xxiv
+
+\end{thebibliography}
+
+\EngDate
+
+\newpage \Russian
+
+
+%\end{document}

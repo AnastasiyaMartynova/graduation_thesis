@@ -1,0 +1,377 @@
+%%vsgtu709
+%
+%\input{../preamblw}
+%
+%\begin{document}
+
+\renewcommand{\firstpage}{191}
+\renewcommand{\lastpage}{194}
+
+\renewcommand{\baselinestretch}{0.89}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Информация о статье и об авторах на русском и английском языках
+
+% Номер УДК
+\udk{519.63:004.932}%Обработка текста. Подготовка текстов : Языки программирования. Компьютерные языки
+\msc{68U10; 49M25}% Коды MSC см. http://www.ams.org/msc/
+
+\title{Численное моделирование модифицированной схемы Перона"--~Малика в задачах фильтрации цветных изображений}% Полный заголовок
+{Численное моделирование модифицированной схемы Перона"--~Малика \dots}% Заголовок, который идёт в верхний колонтитул
+
+\author{А.\,А.~Юдашкин\inst{1}, Д.\,А.~Заусаев\inst{1}, И.\,С.~Рябцов\inst{2}}% Автор(ы) для заголовка, если авторов несколько укать \inst
+{Ю\,д\,а\,ш\,к\,и\,н~А.\,А., З\,а\,у\,с\,а\,е\,в~Д.\,А., Р\,я\,б\,ц\,о\,в~И.\,С.}% Автор(ы) для оглавления и колонтитула через 
+
+\institute{\samgtu. \and \samgu.}
+
+\email{E-mails}{yudashkin@wesee.com, zausaev@wesee.com, ryabtsov@wesee.com} %E-mail's авторов
+
+\otherinf{
+\fullauthor{Александр Анатольевич Юдашкин}\regalia{д.т.н.} \position{профессор}
+\dept{каф. автоматики и управления в технических системах}
+\fullauthor{Дмитрий Анатольевич Заусаев} \position{аспирант} \dept{каф. прикладной математики~и информатики} 
+\fullauthor{Игорь Сергеевич Рябцов} \position{аспирант} \dept{каф. функционального анализа~и теории функций}
+}
+
+\keywords{дифференциальные уравнения в частных производных, схема Перона"--~Малика, обработка изображений, фильтрация изображений}
+
+\workabstract{Рассматривается модификация классической модели Перона"---~Малика,
+адаптированная для фильтрации цветных дискретных изображений. 
+Особенностью предлагаемой схемы является применение
+метрик перцептивного цветового различия для оценки расстояния
+между пикселями, а также модификаций подсчёта коэффициентов диффузии.
+Численное моделирование показывает, что предложенная 
+схема обладает высоким качеством и производительностью.}
+
+\engtitle{Numerical simulation of modified Perona--Malik equantion in digital image denoising applications}
+
+\engauthor{A.\,A.~Yudashkin\inst{1}, D.\,A.~Zausaev\inst{1}, I.\,S.~Ryabtsov\inst{2}}
+{Y\,u\,d\,a\,s\,k\,i\,n~A.\,A., Z\,a\,u\,s\,a\,e\,v~D.\,A., R\,y\,a\,b\,t\,s\,o\,v~I.\,S.}
+
+\enginstitute{\engsamgtu. \and \engsamgu.}% Место работы каждого из авторов на англ. языке
+% Если несколько, то так  \enginstitute{ Организация 1 \and Организация 2  \and Организация 3}
+
+\otherenginf{
+\fullauthor{Alexander A. Yudashkin} \regalia{Dr.\,Sci. (Techn.)} \position{Professor}
+\dept{Dept. of Automation \& Control in Technical Systems}
+\fullauthor{Dmitry A. Zausaev} \position{Postgraduate Student} \dept{Dept. of Applied Mathematics \& Computer Science}
+\fullauthor{Igor S. Ryabtsov} \position{Postgraduate Student} \dept{Dept. of Functional Analysis \& Function Theory}
+}
+
+\engabstract{Classical Perona--Malik model is modified and adapted for digital color image filtering. An advantage of the proposed scheme is the use of perceptual color difference metrics to measure the distance between pixels, and the modification of diffusion coefficients calculation formulas. Numerical simulation shows that the proposed scheme has a high quality and performance.}
+
+\engkeywords{partial differential equations, Perona--Malik equation,
+image processing, image denoising}
+
+\date{14/VII/2011} % Дата поступления статьи в редакцию.
+\revisiondate{14/XI/2011} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maketitle
+
+\small
+
+\Section[n]{Введение}
+Проблема фильтрации шума является одной из ключевых 
+и одновременно самых сложных задач в разных областях науки и техники.
+Шумоподавление широко используется при распознавании образов в компьютерном зрении
+для улучшения качества рентгеновских снимков при сжатии видеопоследовательностей и изображений.
+Существует большое число подходов к фильтрации шума:
+box-фильтры, медианная фильтрация, математическая морфология, 
+Гауссовское размытие, вейвлет-преобразования, PCA, фильтры Винера. 
+Однако основная проблема при фильтрации заключается в том, 
+чтобы сохранить чёткость объектов, оставить детали, 
+соизмеримые по амплитуде с самим шумом, и 
+упомянутые подходы не способны её решить. 
+
+Лучшим решением на данный момент можно считать фильтры на 
+основе {\tt PDE} (Partial Differential Equations). 
+Важным достоинством фильтров данного типа является
+возможность распараллеливания алгоритма численного расчёта 
+и, как следствие, возможность реализация его на {\tt GPU} [\citen{yudashkin:bib:GPUComp}].
+В связи с широким применением графических процессоров при решении подобных задач
+[\citen{yudashkin:bib:Felsberg}--\citen{yudashkin:bib:Howison}],
+а также их высокой производительностью одной из целей текущей работы 
+была выбрана реализация предложенной схемы на {\tt GPU}.
+
+Классическим результатом в области PDE-фильтров является цикл работ Перона и Малика [\citen{yudashkin:bib:Perona, yudashkin:bib:Perona2}],  в которых вводится понятие анизотропной нелинейной диффузии в различных
+задачах, в том числе "--- фильтрация шума на изображениях в градациях серого.
+В статье [\citen{yudashkin:bib:Gilboa}] проводится анализ исходной
+схемы, приводятся альтернативные формулы для коэффициентов
+диффузии, которые позволяют повысить устойчивость при большом числе
+шагов, даются оценки качества анизотропной фильтрации изображений. 
+Работы [\citen{yudashkin:bib:Felsberg, yudashkin:bib:Rumpf}] посвящены
+реализации и анализу схем Перона"--~Малика на {\tt GPU}. 
+Результаты показывают преимущество {\tt GPU} перед {\tt CPU}, которое заключается в увеличении скорости исполнения одинаковых входных данных в~5--10 раз. 
+В работе [\citen{yudashkin:bib:Schenke}] 
+рассматривается  применение анизотропной диффузионной фильтрации при сегментации
+{\tt 3D MRI} изображений c реализацией на {\tt CPU} и {\tt CUDA}. 
+В~другой работе  [\citen{yudashkin:bib:Schenke}] даётся сравнение билатерального и~анизотропного фильтров, реализованных на высокоэффективной  платформе {\tt NVIDIA Tesla}. Полученные результаты показывают преимущество
+анизотропного фильтра по качеству и, в некоторых случаях, по скорости.
+
+В текущей работе предлагается обобщение модели  Перона"--~Малика на цветные изображения. Для этого предлагается
+использовать формулы цветового различия в качестве метрики расстояния между пикселями, а также модифицировать подсчёт 
+коэффициентов диффузии. 
+Предложенная в работе модель реализована  на {\tt C++} для {\tt CPU} и {\tt GPU} на платформах {\tt CUDA} и {\tt OpenCL}. 
+Численное моделирование показывает, что предложенная схема даёт лучшие  результаты при работе с цветными изображениями, а 
+также имеет высокую скорость по сравнению с другими реализациями.
+
+\smallskip
+
+\Section{Математическая модель модифицированной схема Перона"--~Малика}
+Рассмотрим схему анизотропной диффузии [\citen{yudashkin:bib:Perona}]. 
+Имеем замкнутую область $D \subset \mathbb{R}^2$, на которой определён класс непрерывных изображений в градациях 
+серого \mbox{$I (x, y, t) : D \mapsto \mathbb{R}$}, связанных следующим уравнением:
+$$
+\frac{\partial I}{\partial t} = \mbox{div} \left( c(x, y, t) \, \nabla I \right) =
+\nabla c \cdot \nabla I + c(x, y, t) \Delta I,
+$$
+где величина $c(x, y, t)$ называется коэффициентом диффузии. 
+Она определяет скорость размытия и обычно выбирается зависящей от градиента $I$ в точке $(x, y)$. Таким образом, удаётся
+сохранять границы изображения от размытия. 
+В работе [\citen{yudashkin:bib:Perona2}] предложено  несколько функций для коэффициентов диффузии:
+$$
+c \left( \Vert \nabla I \Vert \right) = e^{-\left( \tfrac{\Vert \nabla I \Vert}{\sigma} \right)^2}
+\quad
+\mbox{и}
+\quad
+c \left( \Vert \nabla I \Vert \right) = \dfrac{1}{1 + \left( \frac{\Vert \nabla I \Vert}{\sigma} \right)^2 }.
+$$
+Параметр $\sigma$ определяет чувствительность функции к границам и выбирается экспериментально.
+
+Подход Перона"--~Малика удобен при работе с изображениями в градациях серого, где пиксель задаётся одной числовой характеристикой "--- яркостью. 
+Но при переходе к~цветным изображениям применение схемы осложняется наличием дополнительных размерностей (цветовые компоненты). 
+
+Перейдём к рассмотрению модифицированной схемы для дискретных изображений.
+Имеем цветное изображение из $N$ на $M$ пикселей и
+$0 \leq i \leq N-1$, $ 0 \leq j \leq M-1$. Обозначим через $\Omega$ множество векторов:
+$$
+\Omega = \bigl\lbrace (-1, -1), \, (0, -1), \, (1, -1), \, 
+(0, -1), \, (0, 1), \, (-1, 1), \, (0, 1), \, (1, 1) \bigr\rbrace .
+$$
+Начальное состояние всех пикселей соответствует входному изображению:
+$
+I_{i, j}^{0} = I_{i, j}.
+$
+
+Для каждого пикселя подсчитаем коэффициенты $\lambda_{i, j}^* (n)$ 
+в начальный момент времени $k = 0$ по всем восьми направлениям:
+$n = (\Delta i, \Delta j) \in \Omega$
+$$
+\lambda_{i, j}^* (n) = \displaystyle\dfrac{\lambda_{i, j} (n)}{\sum_{n \in \Omega} \lambda_{i, j} (n)}
+, \quad
+\lambda_{i, j} (n) = \dfrac{1}{1 + \left( \dfrac{d \, ( I_{i, j}, 
+I_{i + \Delta i, j + \Delta j} )}{\sigma} \right)^2 }.
+$$
+Значение пикселей изображения в произвольный момент времени $k$ определяется по рекуррентной формуле
+$$
+I_{i, j}^{k+1} = \sum_{n \in \Omega} I_{i + \Delta i, j + \Delta j}^k \cdot \lambda_{i, j}^* (n).
+$$
+
+
+\Section{Метрики оценки цветовой разности}
+Для оценки дистанции $d$ между пикселями на цветных изображениях
+существуют специальные функции, которые метризуют пространство
+цветов и одновременно дают числовую оценку человеческого восприятия
+цветовой разности. Они работают в специфических цветовых 
+пространствах {\tt CIE Lab} и {\tt CIE LCh}.
+
+Простейшим примером формулы для оценки перцептивной цветовой разности является {\tt CIE76} [\citen{yudashkin:bib:CIE}]:
+$$
+d (I_1, I_2) = \sqrt{(L_1 - L_2)^2 + (a_1 - a_2)^2 + (b_1 - b_2)^2} .
+$$
+
+Другими примерами функций подобного рода являются более сложные 
+формулы {\tt CIE94} [\citen{yudashkin:bib:CIE}], {\tt CMC} [\citen{yudashkin:bib:CIE}], 
+{\tt CIEDE2000} [\citen{yudashkin:bib:CIEDE2000}]. 
+В настоящей работе при численном моделировании применялась формула {\tt CIEDE2000},
+поскольку она даёт лучший результат из существующих на данный момент.
+
+\smallskip
+
+\Section{Реализация модели на GPGPU}
+Программа обработки изображений была реализована  для  выполнения как на центральном процессоре, так и на графической плате (технологии {\tt CUDA} и {\tt OpenCL}).
+Для вычислений использовались видеокарты {\tt AMD Radeon HD 6950 GPU}, {\tt GeForce GTX 560 Ti} 
+и процессор {\tt Intel Core i7-2600K 3.40 GHz}. 
+
+Алгоритм вычисления на графической плате был адаптирован. 
+На предварительном этапе массив пикселей изображения загружался в текстурную память видеокарты.
+Данная память обладает высоким быстродействием, однако она имеет доступ только на чтение [\citen{yudashkin:bib:GPUComp}]. 
+
+
+
+Изображение обрабатывалось «окном»: для технологии {\tt CUDA} «окно» имело размер 32 на 16 пикселей, 
+для технологии {\tt OpenCL} размер окна составил 16 на 16 пикселей. 
+Такой размер окна был выбран на основе экспериментальных данных как оптимальный. 
+При каждом проходе происходил перенос пикселей «окна» из текстурной памяти в разделяемую 
+(наиболее быструю память) В разделяемой памяти происходило вычисление анизотропной диффузии по модифицированной схеме, 
+после чего пиксели «окна» переносились в результирующий массив. Таким «окном» обрабатывалось всё изображение. 
+В экспериментах численно моделировалось 50 шагов приведённого алгоритм. 
+
+\begin{wraptable}{O}{.6\textwidth}
+\centering
+\small 
+\caption{\bf Среднее время работы алгоритма (50 шагов) }\vspace{-3mm}
+\begin{tabular}{c|c}
+\hline \footnotesize Вычислительная платформа & \footnotesize  Среднее время(мс) \\
+\hline
+\rule{0mm}{12pt}%
+Intel Core i7-2600K & 38,32  \\
+GeForce GTX 560 Ti & 8,17   \\
+Radeon HD 6950 & 8,43   \\
+\hline
+\end{tabular} 
+
+\end{wraptable}
+
+Данный алгоритм тестировался на наборе картинок, масштабированных до размера 100\,000 пикселей. 
+В табл. 1 приведены усредненные результаты проведенных вычислений.
+
+\begin{table}[b!]
+\centering \vspace{-3mm}
+\begin{minipage}[t]{.67\textwidth} \small \centering 
+\caption{\bf Среднее значения PSNR }\vspace{-3mm}
+\begin{tabular}{c|c|c|c}
+\hline 
+\footnotesize \tt PSNR & \footnotesize 25\% & \footnotesize 50\% & \footnotesize 75\% \\
+\hline
+\rule{0mm}{12pt}%
+ Зашумлённое изображение & 5,4076 & 4,9867 & 4,5807   \\
+ После применения фильтра & 5,8477 & 5,5843 & 5,2156    \\
+\hline
+\end{tabular} 
+\label{yudashkin:tab2}
+\end{minipage}  \vspace{-3mm}
+\end{table}
+
+Удалось добиться пятикратного увеличения производительности при использовании графических плат, 
+при этом различия во времени вычисления между двумя графическими платами невелики. 
+
+В качестве показателя зашумленности использовалось {\tt PSNR}. 
+Был взят набор тестовых изображений, для которых в 25\%, 50\% и 75\% пикселей 
+вносился импульсный шум. В табл.~2 показано среднее значение 
+{\tt PSNR} для зашумленного изображения до и после работы анизотропного фильтра 
+по отношению к исходному изображению. 
+Наблюдается значительное снижение шума в результате работы анизотропного \mbox{фильтра. }
+
+\newpage
+
+\begin{thebibliography}{99}
+
+\Bibitem{yudashkin:bib:GPUComp}
+\by Hwu~W.\,W.
+\book GPU Computing Gems Emerald Edition
+\publ Morgan Kaufmann
+\publaddr San Francisco, CA
+\yr 2011
+\totalpages 886
+
+\Bibitem{yudashkin:bib:Felsberg}
+\by Felsberg~M.
+\paper On the Relation Between Anisotropic Diffusion and Iterated Adaptive Filtering
+\jour LNCS 
+\vol 5096
+\yr 2008
+\pages 436--445
+%DOI: 10.1007/978-3-540-69321-5_44
+
+
+\Bibitem{yudashkin:bib:Rumpf}
+\by Rumpf~M., Strzodka~R.
+\paper Nonlinear Diffusion in Graphics Hardware
+\inbook Proceedings of EG/IEEE TCVG Symposium on Visualization (VisSym ’01)
+\yr 2001
+\pages 75--84
+
+
+\Bibitem{yudashkin:bib:Schenke}
+\by Schenke~S., W\"unsche~B.\,C., Denzler~J.
+\paper GPU-based volume segmentation
+\inbook Proceedings of IVCNZ ’05
+\yr 2005
+\pages 171--176
+
+\Bibitem{yudashkin:bib:Howison}
+\by Howison~M.
+\preprint Comparing GPU Implementations of Bilateral and Anisotropic Diffusion Filters for 3D Biomedical Datasets
+\preprintinfo Technical Report LBNL-3425E
+\publaddr Berkeley, CA
+\publ Lawrence Berkeley National Laboratory
+\yr 2010
+\totalpages 9
+
+
+\Bibitem{yudashkin:bib:Perona}
+\by Perona~P., Malik~J.  
+\paper Scale space and edge detection using anisotropic diffusion
+\inbook Proceedings of the IEEE Computer Society Workshop on Computer Vision
+\publaddr Miami, FL
+\yr 1987
+\pages 16--27
+
+\Bibitem{yudashkin:bib:Perona2}
+\by Perona~P., Malik~J.  
+\paper Scale-Space and Edge Detection Using Anisotropic Diffusion
+\jour Pattern Anal. Mach. Intell.
+\vol 12
+\issue 7
+\yr 1990
+\pages 629--639
+% 10.1109/34.56205 
+
+
+\Bibitem{yudashkin:bib:Gilboa}
+\by Gilboa~G., Zeevi~Y.\,Y., Sochen~N.
+\paper Image enhancement segmentation and denoising by time dependent nonlinear diffusion processes
+\inbook Image Processing' 2001
+\yr 2001
+\pages 134--137
+\bookvol 3
+% 10.1109/ICIP.2001.958069 
+
+
+\Bibitem{yudashkin:bib:CIE}
+\by Melgosa~M.
+\paper Testing CIELAB-Based Color-Difference Formulas
+\jour Color Research and Application
+\vol 25
+\issue 1
+\yr 2000
+\pages 49--55
+%10.1002/(SICI)1520-6378(200002)25:1<49::AID-COL7>3.0.CO;2-4
+
+
+\Bibitem{yudashkin:bib:CIEDE2000}
+\by Sharma~G., Wu~W., Dadal~E.\,N.
+\paper The CIEDE2000 Color-Difference Formula: Implemen\-tation Notes, Supplementary Test Data, and Mathematical Observations
+\jour Color research and application
+\vol 30
+\issue 1
+\yr 2005
+\pages 21--30
+%DOI: 10.1002/col.20070
+
+\end{thebibliography}
+
+
+
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+
+\vspace{-9mm}
+
+
+
+%\chead[\fancyplain{}{\scriptsize \sl Y\,u\,d\,a\,s\,h\,k\,i\,n ~A.\,A.,
+%R\,y\,a\,b\,t\,s\,o\,v~I.\,S., Z\,a\,u\,s\,a\,e\,v~D.\,A.}]{\fancyplain{}{\scriptsize \sl Numerical simulation of modified Perona-Malik equantion \dots}}
+
+\makeengtitle
+
+\renewcommand{\baselinestretch}{0.9}
+
+\newpage
+
+%\end{document}

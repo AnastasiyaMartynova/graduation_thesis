@@ -1,0 +1,826 @@
+\def\stat{moskaleva}
+
+\def\tit{ВЛИЯНИЕ ПАРАМЕТРОВ ИЗОЛЯЦИИ НА~РАЗДЕЛЕНИЕ РЕСУРСОВ ПРИ~НАРЕЗКЕ 
+СЕТИ$^*$}
+
+\def\titkol{Влияние параметров изоляции на~разделение ресурсов при~нарезке 
+сети}
+
+\def\aut{Ф.\,А.~Москалева$^1$, Ю.\,В.~Гайдамака$^2$, В.\,С.~Шоргин$^3$}
+
+\def\autkol{Ф.\,А.~Москалева, Ю.\,В.~Гайдамака, В.\,С.~Шоргин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Москалева Ф.\,А.}
+\index{Гайдамака Ю.\,В.}
+\index{Шоргин В.\,С.}
+\index{Moskaleva F.\,A.}
+\index{Gaidamaka Yu.\,V.}
+\index{Shorgin V.\,S.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Публикация выполнена при поддержке Программы стратегического академического лидерства РУДН 
+и при финансовой поддержке РФФИ (проекты 19-07-00933 и 20-07-01064).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов, moskaleva-fa@rudn.ru}
+\footnotetext[2]{Российский университет дружбы народов; Институт проблем информатики 
+Федерального исследовательского центра <<Информатика и~управ\-ле\-ние>> Российской академии 
+наук, \mbox{gaidamaka-yuv@rudn.ru}}
+\footnotetext[3]{Институт проблем информатики Федерального исследовательского центра 
+<<Информатика и~ управ\-ле\-ние>> Российской академии наук, \mbox{vshorgin@ipiran.ru}}
+%
+\vspace*{-15pt}
+
+  
+  \Abst{Технология нарезки радиоресурсов сети определяется как один из основных 
+компонентов пятого поколения мобильных коммуникаций, способных решить проблему 
+колоссального роста объема трафика данных в сотовых сетях. Ключевая особенность 
+нарезки радиоресурсов сети, или сетевого слайсинга, позволяющая ограничить влияние 
+одного слайса на другой, заключается в обеспечении изолированных гарантий 
+производительности для предоставления высокого качества обслуживания (QoS, Quality of Service). 
+В~статье  
+с~по\-мощью аппарата тео\-рии массового обслуживания построена модель разделения 
+ресурсов при нарезке сети, позволяющая исследовать разделение ресурсов в соответствии 
+с различными стратегиями справедливости. Задача разделения ресурсов сформулирована 
+в~форме задачи оптимизации относительно зависящей от параметра изоляции весовой 
+функции ресурса системы, занятого заявками каждого слайса. Проведенный численный 
+анализ показал существенное влияние параметра изоляции на изменение характеристик 
+производительности сис\-темы.}
+  
+  \KW{нарезка сети; справедливое разделение ресурсов; изоляция слайсов; параметр 
+изоляции}
+\DOI{10.14357/19922264200402} 
+  
+\vspace*{-3pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+  Нарезка радиоресурсов сети (\textit{англ}.\ network slicing)~--- ключевая 
+технология, позволяющая операторам сети предоставлять свою физическую 
+инфраструктуру для поддержки услуг с различными\linebreak требованиями~[1]. 
+Определенный набор услуг\linebreak может быть связан с логически независимой 
+сквоз\-ной сетью, т.\,е.\ слайсом. Слайс (\textit{англ}.\ slice)~--- логи-\linebreak ческая 
+сеть, обеспечивающая определенные\linebreak функциональные возможности и 
+сетевые харак\-те\-ри\-сти\-ки~[2]. Слайсы настраиваются и управ\-ля\-ют\-ся 
+арендаторами (\textit{англ}.\ tenants), например виртуальными операторами 
+(Virtual Network Operator, VNO), которым мобильный оператор, владеющий 
+инфраструктурой, делегирует контроль над использованием ресурсов и 
+качеством предоставления услуг внутри слайса. 
+
+Концепция нарезки сети 
+подразумевает автоматизацию создания и настройки слайса, изоляцию 
+слайсов (независимость показателей качества обслуживания в слайсе от 
+трафика в других слайсах, а~также безопас\-ность и~т.\,п.), эластичность 
+нарезки (справедливое~\cite{4-mos} и эффективное использование ресурсов, 
+адаптация к~условиям), иерархию управ\-ления (самоуправление в слайсе), 
+возможность назначать приоритетные слайсы~\cite{3-mos}.
+  
+  Гарантии качества обслуживания в логической сети обеспечиваются 
+изоляцией слайса, так что никакие изменения в других слайсах не могут 
+повлиять на показатели качества обслуживания (QoS). При 
+этом выбор стратегии изоляции и разделения ресурсов на 
+радиоинтерфейсе~--- достаточно сложная  
+задача~\cite{5-mos}. 
+
+Из-за стохастической природы беспроводной среды и 
+высокой изменчивости трафика во времени и пространстве идеальную 
+изоляцию можно обеспечить лишь в случае резервирования ресурсов 
+в~соответствии с наихудшими ожидаемыми условиями, что ведет к 
+неэффективному использованию ресурсов в~большинстве случаев. 
+Попытка 
+учесть стохастическую природу беспроводной среды и ее особенности 
+с~использованием аппарата цепей Маркова сделана в~\cite{6-mos}. 
+
+Как показано в~\cite{7-mos}, устанавливая взаимосвязь параметров сети, 
+можно достичь баланса между изоляцией и эф\-фек\-тив\-ностью, что позволяет 
+прио\-ри\-тизировать и~настраивать каждый слайс в со\-от\-вет\-ствии с 
+конкретными задачами, для которого он используется. При этом управ\-ле\-ние 
+ресурсами как внутри слайса, так и~меж\-ду разными слайсами должно 
+гарантировать не только изоляцию слайса, но и справедливость разделения 
+ресурсов между пользователями~\cite{8-mos}. 
+
+В~\cite{9-mos} механизмы 
+нарезки сети с учетом гарантий для различных типов трафика исследованы 
+при фиксированных значениях параметров изоляции.
+  
+  В статье построена математическая модель разделения радиоресурсов 
+соты между двумя виртуальными операторами (далее~--- операторами), 
+которая иллюстрирует влияние параметров изоляции на мет\-рики 
+производительности сети. Положим, что на базовой станции сети связи 
+пятого поколения с~технологией радиодоступа New Radio активированы два 
+слайса, принадлежащие разным операторам, и модуль нарезки делит между 
+ними общий ресурс ем\-костью~$C$  единиц ресурса. Примером единицы 
+ресурса может быть герц для полосы радиочастот, бит в секунду для 
+ско\-рости или ресурсный блок LTE/NR (long-term evolution\,/\,new radio). 
+Каждый оператор осуществляет  
+предостав\-ле\-ние некоторой услуги связи, пред\-по\-ла\-га\-ющей 
+непрерывную передачу пользователю потокового трафика на выделенном 
+ресурсе не менее $b_{\min}, d_{\min}\hm >0$ и~не более $b_{\max}, 
+d_{\max}\hm>0$ единиц ресурса для первого и второго слайсов 
+соответственно. Длительность предостав\-ле\-ния услуги пользователю 
+(длительность пользовательской сессии) определяется объемом 
+выделенного для обслуживания сессии ресурса, который зависит от числа 
+активных сессий в каж\-дом слайсе. Считаем, что ресурсы каждого слайса 
+делятся между его пользователями поровну. Для обеспечения 
+справедливого разделения ресурсов введены параметры изоляции, 
+определяющие чис\-ло пользователей в каждом слайсе, которым оператор 
+обязуется предоставить услугу с~минимальным качеством. При низ\-кой 
+за\-гру\-жен\-ности соты каждой сессии\linebreak выделяется ресурс, достаточный 
+для получения пользователем услуги на максимальной ско\-рости. 
+С~увеличением нагрузки, создаваемой запросами пользователей обоих 
+операторов, вы\-де\-ля\-емый каж\-дой сессии ресурс снижается, пока не 
+достигнет уровня минимальной ско\-рости, тре\-бу\-емой для 
+предоставления услуги. При дальнейшем росте нагрузки начинает работать 
+концепция нарезки сети, согласно которой для приема в сис\-те\-му заявки 
+слайса, не достигшего заданного па\-ра\-мет\-ром изоляции предела, долж\-но 
+быть прервано обслуживание одной или нескольких заявок второго 
+слайса, т.\,е.\ <<нарушителя>> (\textit{англ}.\ violator), который пользовался 
+простаивающим ресурсом недогруженного слайса. 
+
+В~сле\-ду\-ющих разделах 
+построена модель в виде\linebreak сис\-те\-мы массового обслуживания (СМО), 
+позво\-ля\-ющая исследовать за\-ви\-си\-мость показателей качества 
+обслуживания от параметров изоляции,\linebreak предложен алгоритм разделения 
+радиоресурсов с~по\-мощью методов теории оптимизации, приведен 
+пример  
+чис\-лен\-но\-го анализа полученных результатов.
+  
+  \section{Математическая модель системы с~двумя слайсами} %2
+  
+  Пусть в многолинейную СМО поступают два пуассоновских потока 
+заявок с интенсивностями~$\lambda_1$ и~$\lambda_2$ (рис.~1), 
+соответствующие запросам на установление сессии от пользователей двух 
+операторов. Длительности обслуживания заявок 1-го и~2-го потоков 
+распределены по экспоненциальному закону с~параметрами~$\mu_1$ 
+и~$\mu_2$ соответственно. Чис\-ло единиц ресурса, выделяемых заявке, 
+принятой на обслуживание, зависит от общей за\-гру\-жен\-ности сис\-те\-мы 
+и~варьируется в~диапазонах $[b_{\min}, b_{\max}]$ и~$[d_{\min}, d_{\max}]$ 
+для 1-го и~2-го потоков со\-от\-вет\-ст\-венно.
+  
+  В системе предусмотрены параметры изоляции~$\overline{M}$ и 
+$\overline{N}$, характеризующие максимальные значения числа заявок 1-го 
+и~2-го потока, для которых обслуживание гарантировано.
+
+  Состояние системы описывает случайный процесс 
+$\boldsymbol{X}(t)\hm= \left(M(t), N(t)\right)$, где $M(t)$~--- число заявок 1-го потока; 
+$N(t)$~--- число заявок 2-го потока в~момент~$t$, с пространством 
+состояний
+\begin{multline*}
+  \mathbb{X}=\left\{ (m,n): m=0,\ldots , \left\lfloor \fr{C}{b_{\min}}\right\rfloor\,,\right.\\ 
+n=0,\ldots ,\enskip
+\left. \left\lfloor \fr{C}{d_{\min}}\right\rfloor \,,\ mb_{\min}+nd_{\min}\leq 
+C\right\}\,.
+  \end{multline*}
+  
+  Введем величины $b(m,n)$ и $d(m,n)$, обо\-зна\-ча\-ющие число единиц 
+ресурса, выделенных для обслуживания одной заявки 1-го и 2-го потоков 
+соответственно в состоянии $(m,n)\hm\in\mathbb{X}$. Заметим, что 
+$b_{\min}\hm\leq b(m,n)\hm\leq b_{\max}$, $d_{\min}\hm\leq d(m,n)\hm\leq 
+d_{\max}$, при этом значения~$b(m,n)$ и~$d(m,n)$ являются решением 
+задачи оптимизации, которая сформулирована в разд.~3 статьи. 
+  
+  Интенсивности обслуживания заявок 1-го и 2-го потока определяются как 
+$mb(m,n)\mu_1$ и~$nd(m,n)\mu_2$ соответственно.
+  
+
+  Параметры изоляции $\overline{M}$ и~$\overline{N}$ управляют при\-емом 
+в систему поступающих заявок и~прерывани-\linebreak
+\vspace*{-12pt}
+
+{ \begin{center}  %fig1
+ \vspace*{3pt}
+    \mbox{%
+ \epsfxsize=79mm 
+ \epsfbox{mos-1.eps}
+ }
+\vspace*{3pt}
+
+\noindent
+{{\figurename~1}\ \ \small{Модель СМО}}
+\end{center}
+}
+
+%\vspace*{6pt}
+
+
+\setcounter{figure}{1}
+\begin{figure*} %fig2
+\vspace*{1pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=161.667mm 
+\epsfbox{mos-2.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Центральное состояние диаграммы интенсивностей переходов случайного 
+процесса~$\mathbb{X}(t)$}
+\end{figure*}
+
+
+
+\pagebreak
+
+\noindent
+ем обслуживания ранее 
+принятых заявок следу\-ющим образом. Если при поступлении заявки 1-го 
+потока в состоянии $(m,n)\hm\in \mathbb{X}$, где $m\hm<\overline{M}$, 
+$n\hm>\overline{N}$,  
+в~сис\-т\-еме недостаточно свободного ресурса для обслуживания $(m+1)$ 
+заявок 1-го потока с выделением каждой минимального числа~$b_{\min}$ 
+единиц ресурса, поступающая заявка 1-го потока вытесняет одну или 
+несколько заявок 2-го потока, чтобы встать на обслуживание (рис.~2). 
+Число $k(m,n)$ таких заявок, которые после прерывания обслуживания 
+покинут систему, не оказывая влияния на ее дальнейшее функционирование, 
+вычисляется следующим образом:
+  \begin{multline*}
+  k(m,n)=\left\lceil \fr{(m+1)b_{\min}+nd_{\min}-C}{d_{\min}}\right\rceil\,,\\ 
+(m,n)\in\mathbb{X}\,,\enskip (m+1,n)\not\in\mathbb{X}\,,\enskip k(m,n)\leq n\,.
+\end{multline*}
+  
+  Аналогично для случая $m\hm>\overline{M}$, $n\hm> \overline{N}$ для 
+при\-ема заявки 2-го потока будет прервано обслуживание $s(m,n)$ заявок 1-го потока:
+  \begin{multline*}
+  s(m,n)= \left\lceil \fr{mb_{\min}+(n+1)d_{\min}-C}{b_{\min}}\right\rceil,\\ 
+(m,n)\in\mathbb{X}\,,\enskip (m,n+1)\not\in\mathbb{X}\,,\enskip s(m,n)\leq m\,.
+ \end{multline*}
+  
+  Для случая $m<\overline{M}$, $n<\overline{N}$ и для случая 
+$m\hm>\overline{M}$, $n\hm>\overline{N}$ поступающая заявка теряется, 
+если в системе недостаточно свободного ресурса для ее приема в систему.
+  
+  Таким образом, множества потери $\mathbb{B}_1^{\mathrm{arr}}$ заявок \mbox{1-го}
+потока и~$\mathbb{B}_2^{\mathrm{arr}}$ заявок 2-го потока при поступлении 
+(\textit{англ}.\ arrival) и~множества прерывания 
+обслуживания~$\mathbb{B}_1^{\mathrm{pr}}$ заявок 1-го потока 
+и~$\mathbb{B}_2^{\mathrm{pr}}$ заявок 2-го потока при вытеснении (\textit{англ}.\ 
+preemption)~\cite{10-mos} имеют сле\-ду\-ющий вид:
+  \begin{align*}
+&  \mathbb{B}_1^{\mathrm{arr}}\!=\!\left\{\! (m,n)\in \mathbb{X}: 
+(m+1,n)\not\in\mathbb{X}\,,\,m\geq \overline{M}\right\}\!;\\[3pt]
+&  \mathbb{B}_2^{\mathrm{arr}}\!=\!\left\{\! (m,n)\in \mathbb{X}: 
+(m, n+1)\not\in\mathbb{X}\,,\,n\geq \overline{N}\right\}\!;\\[3pt]
+&  \mathbb{B}_1^{\mathrm{pr}}\!=\!\left\{\! (m,n)\in \mathbb{X}: 
+(m,n+1)\not\in\mathbb{X}\,,\,m>\overline{M},\,n<\overline{N}\right\}\!;\\[3pt] \hspace*{-.3pt}
+&\mathbb{B}_2^{\mathrm{pr}}\!=\!\left\{\! (m,n)\in \mathbb{X}: 
+(m+1,n)\not\in\mathbb{X}\,,\,m<\overline{M},\,n>\overline{N}\right\}\!. \hspace*{-.3pt}
+\end{align*}
+
+Распределение стационарных вероятностей~$\mathbf{p}$ получаем путем 
+решения системы линейных уравнений:
+\begin{align*}
+\mathbf{pA} &=\mathbf{0}\,;\\
+\mathbf{p1} &=\mathbf{1}\,,
+\end{align*}
+где $\mathbf{A}$~--- инфинитезимальная матрица, элементы которой $a\left( 
+(m,n),(m^\prime n^\prime)\right)$ записаны ниже:
+\begin{multline*}
+ a\left( (m,n), \left( m^\prime,n^\prime\right)\right) ={}\\
+{}=\! 
+\begin{cases}
+\lambda_1\,,  & m+1,\ n^\prime=n\left( m^\prime, n^\prime\right)\in \mathbb{X}\,;\\[3pt]
+\lambda_1\,, & m^\prime=m+1\,,\ n^\prime=n-k\,,\\
+   & (m+1,n)\notin\mathbb{X}\,,\ 
+m<\overline{M},\ n\geq \overline{N}\,;\\[3pt]
+\lambda_2\,, &m^\prime=m,\ n^\prime=n+1,\
+   \left(m^\prime,n^\prime\right)\in\mathbb{X}\,;\\[3pt]
+\lambda_2\,, & m^\prime=m-s\,,\ n^\prime=n+1\,,\\
+   & (m,n+1)\notin \mathbb{X}\,,\ 
+m\geq\overline{M}\,,\ n< \overline{N}\,;\\[3pt]
+mb(m,n)\mu_1\,,\hspace*{-6pt}& m^\prime=m-1\,,\ n^\prime=n\,,\ m^\prime>0\,;\\[3pt]
+nd(m,n)\mu_2\,,\hspace*{-6pt}& m^\prime=m\,,\ n^\prime=n-1\,,\ n^\prime>0 \,;\\[3pt]
+A\,, & m^\prime=m\,,\ n^\prime=n\,;\\[3pt]
+0 &\mbox{иначе}.
+\end{cases}\hspace*{-8.8pt}
+\end{multline*}
+Здесь диагональные элементы $a\left( (m,n), m,n)\right)\hm=A$ имеют 
+следующий вид:
+\begin{multline*}
+A=-\lambda_1 I\left((m+1,n)\in\mathbb{X},n\geq N\right) -{}\\
+{}-\lambda_2 
+I\left( (m,n+1)\in\mathbb{X},m\geq M\right)-{}\\
+{}- mb(m,n)\mu_1 I(m>0)-nd(m,n)\mu_2 I(n>0)\,.
+%\label{e3-mos}
+\end{multline*}
+
+  Получив распределение вероятностей, можно найти некоторые 
+характеризующие производительность системы метрики для заявок 1-го и 
+2-го потока:
+  \begin{itemize}
+  \item вероятность потери заявки при поступлении и~вероятность 
+прерывания обслуживания заявки при вытеснении ($s=1, 2$)
+  \begin{align*}
+  B_s^{\mathrm{arr}}&=\sum\limits_{(m,n)\in \mathbb{B}_s^{\mathrm{arr}}} p(m,n)\,;\\
+  B_s^{\mathrm{pr}}&=\sum\limits_{(m,n)\in \mathbb{B}_s^{\mathrm{pr}}} p(m,n)\,;
+  \end{align*}
+\item среднее время обслуживания заявки
+\begin{multline*}
+\hspace*{-15pt}S_1={}\\
+\hspace*{-15pt}{}={N_1} \!\left(\!\lambda_1(1-B_1^{\mathrm{arr}})- %\vphantom{\sum\limits_{(m,n)}}{}\right.\\[-9pt]
+\lambda_2\!\!\! \sum\limits_{(m,n)\in \mathbb{B}_1^{\mathrm{arr}}}\!\!\! 
+s(m,n)p(m,n)\!\right)^{\!-1}\!;\hspace*{-9pt}
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\hspace*{-15pt}S_2={}\\
+\hspace*{-15pt}{}={N_2} \!\left(\!\lambda_2(1-B_2^{\mathrm{arr}})- %\vphantom{\sum\limits_{(m,n)}}{}\right.\\[-9pt]
+\lambda_1 \!\!\!\sum\limits_{(m,n)\in 
+\mathbb{B}_2^{\mathrm{arr}}} \!\!\!k(m,n)p(m,n)\!\right)^{\!-1}\!;\hspace*{-9pt}
+\end{multline*}
+\item вероятность нарушения
+$$
+V_1=\sum\limits_{m>\overline{M}} p(m,n)\,;\quad 
+V_2=\sum\limits_{n>\overline{N}} p(m,n)\,.
+$$
+  \end{itemize}
+  
+  В следующем разделе сформулирована задача оптимизации для 
+вычисления значений  
+величин $b(m,n)$ и~$d(m,n)$, обеспечивающая эффективное использование 
+ресурса системы.
+  
+  \section{Решение задачи разделения ресурсов} %3
+  
+  Для состояний $(m,n)\in \mathbb{X}$, в которых $mb_{\max}\hm+ 
+nd_{\max}\hm> C$, необходимо определить значения величин $b(m,n)$ 
+и~$d(m,n)$, позволяющие не только полностью использовать ресурс 
+системы, но и максимизировать некоторую функцию по\-лез\-ности. Для 
+примера выберем стратегию max-min-справедливости при разделении 
+ресурсов (\textit{англ.}\  
+max-min fairness), функция полезности при кото-\linebreak
+\vspace*{-12pt}
+\columnbreak
+
+\noindent
+рой~\cite{11-mos} относится 
+к~логарифмическому типу, является возрастающей, строго вогнутой и 
+непрерывно дифференцируемой и определяется как $U(x)\hm= \ln x$, $\min 
+\left( b_{\min}, d_{\min}\right)\hm\leq x\hm\leq \max\left( b_{\max}, 
+d_{\max}\right)$. 
+  
+  Разделение ресурса между заявками в системе соответствует решению 
+следующей задачи оптимизации:
+  \begin{equation}
+  \left.
+  \begin{array}{c}
+  w_1(m,n) mU(b(m,n))+{}\hspace*{60pt}\\[6pt]
+  \hspace*{20pt}{}+w_2(m,n) nU(d(m,n))\to \max\\[6pt]
+  \mbox{s.t.}\ mb(m,n)+nd(m,n)=C\,;\\[6pt]
+  b_{\min} \leq b(m,n)\leq b_{\max}\,;\\[6pt]
+  d_{\min}\leq d(m,n)\leq d_{\max}\,.
+  \end{array}
+  \right\}
+  \label{e4-mos}
+  \end{equation}
+
+Весовые функции $w_1(m,n)$ и~$w_2(m,n)$ будем вычислять по формулам: 
+\begin{align*}
+w_1(m,n) &=\begin{cases}
+1\,, & m\leq \overline{M}\,;\\
+\fr{1}{m-\overline{M}+1}\,,& m>\overline{M}\,;
+\end{cases}\\
+w_2(m,n) &=\begin{cases}
+1\,, & n\leq \overline{N}\,;\\
+\fr{1}{n-\overline{N}+1}\,, & n>\overline{N}\,.
+\end{cases}
+\end{align*}
+  
+  Такой выбор весовых функций обеспечивает max-min-спра\-вед\-ли\-вое 
+распределение ресурсов для пользователей до тех пор, пока их количество 
+в~соответствующих слайсах не превышает зарезервированное, 
+и~<<штрафует>>  
+сре\-зы-на\-ру\-ши\-те\-ли уменьшением их веса. 
+  
+  Таким образом, стационарная точка задачи оптимизации имеет 
+координаты
+  \begin{equation}
+  b(m,n)=\fr{w_1C}{w_1m+w_2n}\,;\enskip
+  d(m,n)=\fr{w_2C}{w_1m+w_2n}
+  \label{e5-mos}
+  \end{equation}
+и расположена на пересечении прямых $C\hm= mb\hm+ nd$ 
+и~$w_1/b(m,n)\hm= w_2/d(m,n)$.
+  
+\begin{figure*}[b] %fig3
+\vspace*{6pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=162.998mm 
+\epsfbox{mos-3.eps}
+ }
+\end{center}
+\vspace*{-12pt}
+\Caption{Разделение ресурсов между заявками: (\textit{а})~$X(t)\hm=(4,4)$;
+(\textit{б})~$X(t)\hm=(5,1)$; (\textit{в})~$X(t)\hm= (9,5)$}
+%\end{figure*}
+%\begin{figure*} %fig4
+\vspace*{15pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=163mm 
+ \epsfbox{mos-4.eps}
+ }
+\end{center}
+\vspace*{-12pt}
+\Caption{Вероятности блокировки~$B_s$~(\textit{а}) и~потери при 
+поступлении~$B_s^{\mathrm{arr}}$ (залитые значки) и~прерывания обслуживания при 
+вытеснении~$B_s^{\mathrm{pr}}$~(пустые значки)~(\textit{б}), $s\hm=1$ (сплошные кривые) 
+и~2 (штриховые кривые)}
+\end{figure*}
+  
+  Решение~(\ref{e5-mos}) задачи оптимизации~(\ref{e4-mos}) обеспечивает 
+одновременно как изоляцию слайсов  
+с~по\-мощью па\-ра\-мет\-ров~$\overline{M}$ и~$\overline{N}$, так и 
+эластичность нарезки для эффективного использования ресурса 
+системы~\cite{3-mos}.
+  
+  \section{Пример численного анализа}  %4
+  
+  Проиллюстрируем зависимость метрик, характеризующих 
+производительность системы, от пара\-метров изоляции при нарезке сети. 
+Предполагаем, что два оператора делят между собой 50~Мбит/с 
+($C\hm=50$) согласно решению задачи оптимизации~(\ref{e4-mos}). 
+Минимальные скорости передачи данных равны 5~Мбит/с 
+($b_{\min}\hm=5$) и 1~Мбит/с ($d_{\min}\hm=1$),\linebreak
+\vspace*{-12pt}
+\pagebreak
+
+\noindent
+ максимальные~--- 
+8~Мбит/с ($b_{\max}\hm=8$) и~50~Мбит/с ($d_{\max}\hm=50$), эти 
+диапазоны показаны на рис.~3 тем\-но-се\-рым цветом. Параметры 
+изоляции: $\overline{M}\hm=5$ и~$\overline{N}\hm=25$ заявок, 
+интенсивности поступления: $\lambda_1\hm=1/150$ и~$\lambda_2\hm=1/120$, 
+интенсивности обслуживания: $\mu_1\hm= 1/1920$ и~$\mu_2\hm=1/4000$, 
+средние размеры файлов: 1,2~ГБ и~500~МБ для услуг 1-го и 2-го операторов 
+соответственно. Указанные значения параметров сис\-те\-мы близ\-ки 
+к~реальным и~соответствуют услуге буферизуемого потокового видео 
+в~высоком разрешении для 1-го оператора, и услуге загрузки файлов, 
+например
+%  \begin{align*}
+%&  \mathbb{B}_1^{\mathrm{arr}}=\left\{\! (m,n)\in\mathbb{X}: (m+1,n)\not=\mathbb{X}, 
+%m\geq \overline{M}\right\}\!;\\
+%&  \mathbb{B}_2^{\mathrm{arr}}=\left\{\! (m,n)\in\mathbb{X}: (m,n+1)\not=\mathbb{X}, 
+%n\geq \overline{N}\right\}\!;\\
+%&  \mathbb{B}_1^{\mathrm{pr}} = \left\{\! (m,n)\in \mathbb{X}: (m+1,n)\not\in \mathbb{X}, 
+%m>\overline{M}, n<\overline{N}\right\}\!;\\
+%&  \mathbb{B}_2^{\mathrm{pr}} = \left\{\! (m,n)\in \mathbb{X}: (m,n+1)\not\in \mathbb{X}, 
+%m<\overline{M}, n>\overline{N}\right\}
+%  \end{align*}
+при обновлении программного обеспечения, для 2-го оператора.
+  
+  На рис.~3 штриховыми линиями показано решение~(\ref{e5-mos}) задачи 
+оптимизации~(\ref{e4-mos}) для  
+max-min-спра\-вед\-ли\-во\-го разделения ресурсов: на рис.~3,\,\textit{а} всем 
+пользователям обоих операторов выделен одинаковый ресурс~6,2~Мбит/с; 
+на рис.~3,\,\textit{б} все 5~пользователей 1-го оператора получили по 
+$b_{\max}\hm=8$~Мбит/с, а~единственный пользователь 2-го оператора~--- 
+оставшиеся~10~Мбит/с; на рис.~3,\,\textit{в} все пользователи обоих 
+операторов получили минимальный требуемый ресурс.
+
+
+\begin{figure*} %fig5
+\vspace*{1pt}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=160.393mm 
+ \epsfbox{mos-5.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Вероятность нарушения $V_s$~(\textit{а}) и среднее время 
+обслуживания~$S_s$~(\textit{б}), $s\hm=1$ (сплошные кривые) и~2 (штриховые кривые)}
+\end{figure*}
+  
+  На рис.~4 показаны графики вероятностей блокировки, потери при 
+поступлении и~прерывания обслуживания заявки при вытеснении для 
+обоих операторов. Вероятность блокировки заявки вы\-чис\-ля\-ет\-ся по 
+формуле: $B_s\hm= B_s^{\mathrm{arr}}\hm+ B_s^{\mathrm{pr}}$, $s\hm=1,2$.
+%o
+ Сравнение рис.~4,\,\textit{а} и рис.~4,\,\textit{б} показывает, что потери 
+при поступлении вносят основной вклад в~блокировку заявки, которая 
+соответствует отказу\linebreak пользователю в получении услуги. При этом с~рос\-том 
+параметра изоляции первого слайса, т.\,е.\ гарантированного 
+числа~$\overline{M}$ принимаемых заявок \mbox{1-го} потока, вероятность 
+прерывания обслуживания заявки 1-го потока~$B_1^{\mathrm{pr}}$ падает, 
+а~вероятность потери заявки 2-го потока при поступлении~$B_2^{\mathrm{arr}}$ растет 
+попарно симметрично. Переломным значением оказывается 
+$\overline{M}\hm=5$, при котором ресурса системы становится 
+недостаточно, чтобы удовлетворять одновременно гарантиям 1-го и 2-го 
+слайса, т.\,е.\ $\overline{M} b_{\min} \hm+ \overline{N} d_{\min}\hm>C$.
+  
+  На рис.~5,\,\textit{а} показано, что существенное влияние параметр 
+изоляции оказывает на вероятность~$V_s$ пребывания слайса в состоянии 
+нарушителя ($m\hm> \overline{M}$ для первого слайса, $n\hm> \overline{N}$ 
+для второго). С~ростом параметра изоляции~$\overline{M}$ 
+вероятность~$V_1$ для 1-го слайса стремится к нулю, а вероятность~$V_2$ 
+для 2-го слайса меняется незначительно, что свидетельствует об 
+обеспечении изоляции. С~увеличением гарантии для 1-го слайса до 
+значения $\overline{M}\hm=5$ среднее время~$S_1$ обслуживания заявок 
+1-го потока (рис.~5,\,\textit{б}) падает, после чего стабилизируется, поскольку 
+при переходе через значение $\overline{M}\hm=5$ параметр изоляции 
+перестает оказывать влияние на вероятность приема заявок, 
+а~следовательно, и на среднее время обслуживания. Противоположный 
+характер поведения кривой наблюдается для второго слайса. 
+  
+  Таким образом, можно сделать вывод, что изменение параметра 
+изоляции оказывает существенное влияние на характеристики 
+про\-из\-во\-ди\-тель\-ности сис\-те\-мы, при этом построенная модель способна 
+обеспечить изоляцию слайсов.
+
+\vspace*{-10pt}
+  
+  \section{Заключение}
+  
+  Построенная в работе модель разделения ресурсов при нарезке 
+радиоресурса сети с обеспечением изоляции слайсов и разработанный 
+алгоритм разделения ресурсов, включающий решение задачи оптимизации, 
+позволяют справедливо разделить ресурсы сети для их эффективного 
+использования\linebreak двумя виртуальными сетевыми операторами, арендующими 
+радиоресурс у~мобильного оператора.\linebreak Заметим, что замена  
+max-min-стра\-те\-гии справедливости на стратегию пропорциональной 
+справедливости или более общий случай  
+$\alpha$-спра\-вед\-ли\-вости повлияет лишь на вид целевой функции 
+в~задаче оптимизации. Модель может быть применена при поиске 
+комбинации па\-ра\-мет\-ров изоляции, удерживающих сис\-те\-му в~целевой  
+об\-ласти значений мет\-рик ее производительности. Целью дальнейших 
+исследований модели разделения ресурсов при нарезке сети может стать 
+развитие построенной модели на случай отсутствия минимальных 
+требований к~ресурсам, что позволит исследовать элас\-тич\-ный трафик, 
+а~также расширение модели до произвольного чис\-ла виртуальных сетевых 
+операторов.
+{\looseness=1
+
+}
+  
+  \bigskip
+  
+  Авторы благодарят Н.\,В.~Яркину и Е.\,Ю.~Лисовскую за полезные 
+обсуждения в ходе работы над статьей.
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\vspace*{3pt}
+
+\bibitem{1-mos}
+NGMN 5G White Paper. 2015. {\sf http://www.ngmn.de/\linebreak 5gwhite-paper.html}.
+
+\bibitem{2-mos}
+5G: System Architecture for the 5G System (Release~15). Version 15.2.0. ETSI 3GPP TS 23.501, 2018. 
+{\sf https://\linebreak
+www.etsi.org/deliver/etsi\_ts/123500\_123599/123501/ 15.02.00\_60/ts\_123501v150200p.pdf}. 
+
+\bibitem{4-mos} %3
+\Au{Jain R., Chiu D.-M., Hawe~W.\,R.} A quantitative measure of fairness and discrimination 
+for resource allocation in shared computer system~// arXiv.org, 1998. 
+\mbox{arXiv}: cs/9809099 [cs.NI].
+
+\bibitem{3-mos} %4
+Network slicing~--- use case requirements.~--- \mbox{GSMA},\linebreak 2018. {\sf  
+https://www.gsma.com/futurenetworks/wp-content/uploads/2018/07/Network-Slicing-Use-Case-Requirements-fixed.pdf}.
+
+\bibitem{5-mos}
+\Au{Richart M., Baliosian~J., Serrat~J., Gorricho~J.-L.} Resource slicing in virtual wireless 
+networks: A~survey~// IEEE~T. Netw. Serv. Man., 2016. Vol.~13. Iss.~3.  
+P.~462--476.
+\bibitem{6-mos}
+\Au{Vila I., P$\acute{\mbox{e}}$rez-Romero J., Sallent~O., Umbert~A.} Characterisation 
+of radio access network slicing scenarios with 5G\linebreak
+\vspace*{-12pt}
+\pagebreak
+
+\noindent
+QoS provisioning~// IEEE Access, 2020. 
+Vol.~8. P.~51414--51430. doi: 10.1109/access.2020.2980685.
+\bibitem{7-mos}
+\Au{Marabissi D., Fantacci~R.} Highly flexible RAN slicing approach to manage isolation, 
+priority, efficiency~// IEEE Access, 2019. Vol.~7. P.~97130--97142. doi: 
+10.1109/ \mbox{access}.2019.2929732.
+
+\bibitem{8-mos}
+\Au{Lieto A., Malanchini~I., Capone~A.} Enabling dynamic resource sharing for slice 
+customization in 5G networks~// Conference and Exhibition on Global Telecommunications 
+Proceedings.~--- IEEE, 2018. P. 1--7. doi: 
+10.1109/\mbox{GLOCOM}.2018.8647249. 
+\bibitem{9-mos}
+\Au{Агеев К.\,А., Сопин Э.\,С., Яркина~Н.\,В., Самуйлов~К.\,Е., Шоргин~С.\,Я.} 
+Анализ механизмов нарезки сети с учетом гарантий для различных типов 
+трафика~// Информатика и~её применения, 2020. Т.~14. Вып.~3. С.~94--100.
+\bibitem{10-mos}
+\Au{Yarkina N., Gaidamaka Y., Correia~L.\,M., Samouylov~K.} An analytical model for 
+5G network resource sharing with flexible SLA-oriented slice isolation~// Mathematics, 2020. 
+Vol.~8. Iss.~7. Art. No.\,1177.
+\bibitem{11-mos}
+\Au{Kelly F.} Charging and rate control for elastic traffic~// Eur.~T. Telecommun., 1997. 
+Vol.~8. P.~33--37.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-5pt}
+
+\hfill{\small\textit{Поступила в~редакцию 11.10.20}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{IMPACT OF THE ISOLATION PARAMETERS ON~RESOURCE ALLOCATION 
+IN~THE~NETWORK SLICING MODEL}
+                  
+\def\titkol{Impact of the isolation parameters on resource allocation in the 
+network slicing model}
+
+
+\def\aut{F.\,A.~Moskaleva$^1$, Yu.\,V.~Gaidamaka$^{1,2}$, and~V.\,S.~Shorgin$^2$}
+
+\def\autkol{F.\,A.~Moskaleva, Yu.\,V.~Gaidamaka, and~V.\,S.~Shorgin}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 
+117198, Russian\linebreak
+$\hphantom{^1}$Federation
+
+
+\noindent
+$^2$Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
+Russian\linebreak
+$\hphantom{^1}$Academy of Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{6pt} 
+
+
+\Abste{Network slicing technology is defined as one of the main components of the fifth generation of 
+mobile communications, capable of solving the problem of the colossal growth of data traffic in cellular 
+networks. A~key feature of slicing that limits the impact of one slice on another is to provide isolated 
+performance guarantees to deliver high quality of service. In this article, a model of resource allocation 
+during slicing is developed using the queuing theory. The main task of the work is to determine how 
+network resources should be fairly shared between two slices in the system. The resource allocation 
+problem is formulated as an optimization problem. For the constructed model, a numerical analysis was 
+carried out showing the significant effect of the isolation parameters on the performance characteristics 
+of the system.}
+
+\KWE{network slicing; fairness resource allocation; isolation of slices; isolation parameter}
+
+
+\DOI{10.14357/19922264200402} 
+
+\vspace*{-12pt}
+
+\Ack
+\noindent
+The paper has been supported by the RUDN University Strategic Academic Leadership Program and 
+funded by the Russian Foundation for Basic Research according to the research projects 
+No.\,19-07-00933 and No.\,20-07-01064.
+\vspace*{3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-mos-1}
+NGMN 5G white paper. 2015. Available at: {\sf http:// www.ngmn.de/5gwhite-paper.html} (accessed 
+Octo-\linebreak ber~22, 2020).
+\bibitem{2-mos-1}
+TS 23.501. 2018. Technical Specification: System architecture for the 5G system (Release~15).
+Version 15.2.0.\linebreak Available at: {\sf 
+https://www.etsi.org/deliver/etsi\_ts/\linebreak
+ 123500\_123599/123501/15.02.00\_60/ts\_123501v
+ 150200p.pdf} 
+(accessed October~22, 2020).
+
+\bibitem{4-mos-1}
+\Aue{Jain, R., D.-M. Chiu, and W.\,R.~Hawe.} 1998. A~quantitative measure of fairness and 
+discrimination for resource allocation in shared computer system. arXiv:cs/9809099 [cs.NI]. Available 
+at: {\sf https://arxiv.org/abs/cs/9809099} (accessed October~22, 2020).
+
+
+\bibitem{3-mos-1} %4
+GSMA. 2018. Network slicing~--- use case requirements.  Available at: {\sf  
+https://www.gsma.com/futurenetworks/
+wp-content/uploads/2018/07/Network-Slicing-Use-Case-Requirements-fixed.pdf}
+(accessed October~22, 2020).
+
+\bibitem{5-mos-1}
+\Aue{Richart, M., J. Baliosian, J.~Serrat, and J.-L.~Gorricho.} 2016. Resource slicing in virtual 
+wireless networks: A~survey. \textit{IEEE~T. Netw. Serv. Man.} 13(3):462--476.
+\bibitem{6-mos-1}
+\Aue{Vila, I., J.~P$\acute{\mbox{e}}$rez-Romero, O.~Sallent, and A.~Umbert.} 2020. 
+Characterisation of radio access network slicing scenarios with 5G QoS provisioning. \textit{IEEE Access} 
+8:51414--51430. doi: 10.1109/\mbox{access}.2020.2980685.
+\bibitem{7-mos-1}
+\Aue{Marabissi, D., and R.~Fantacci.} 2019. Highly flexible RAN slicing approach to manage 
+isolation, priority, efficiency. \textit{IEEE Access} 7:97130--97142. doi: 
+10.1109/\linebreak access.2019.2929732.
+\bibitem{8-mos-1}
+\Aue{Lieto, A., I. Malanchini, and A.~Capone.} 2018. Enabling dynamic resource sharing for slice 
+customization in 5G\linebreak networks. \textit{Conference and Exhibition on Global Tele\-communications 
+Proceedings}. IEEE. 1--7. doi: 10.1109/\linebreak GLOCOM.2018.8647249.
+\bibitem{9-mos-1}
+\Aue{Ageev, K.\,A., E.\,S.~Sopin, N.\,V.~Yarkina, K.\,E.~Samuylov, and S.\,Ya.~Shorgin.} 2020. 
+Analiz mekhanizmov narezki seti s~uchetom garantiy dlya razlichnykh tipov trafika [Analysis of network 
+slicing mechanisms with guarantees for various types of traffic]. \textit{Informatika i~ee 
+Primeneniya~--- Inform. Appl.} 14(3):94--100.
+\bibitem{10-mos-1}
+\Aue{Yarkina, N., Yu. Gaidamaka, L.\,M.~Correia, and K.~Samouylov.} 2020. An analytical model 
+for 5G network resource sharing with flexible SLA-oriented slice isolation. \textit{Mathematics} 
+8(7):1177.
+\bibitem{11-mos-1}
+\Aue{Kelly, F.} 1997. Charging and rate control for elastic traffic. \textit{Eur.~T. Telecommun.} 
+8:33--37.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received October 11, 2020}}
+
+%\pagebreak
+
+%\vspace*{-24pt}
+
+
+\Contr
+
+\noindent
+\textbf{Moskaleva Faina A.} (b.\ 1996)~--- PhD student, Department of Applied Probability and 
+Informatics, Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian Federation; \mbox{moskaleva-fa@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Doctor of Science in physics and mathematics, 
+professor, Department of Applied Probability and Informatics, Peoples' Friendship University of Russia 
+(RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; senior scientist, 
+Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
+Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation;  
+\mbox{gaydamaka-yuv@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Shorgin Vsevolod S.} (b.\ 1978)~--- Candidate of Science (PhD) in technology, senior 
+scientist, Institute of Informatics Problems, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian 
+Federation; \mbox{vshorgin@ipiran.ru}
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

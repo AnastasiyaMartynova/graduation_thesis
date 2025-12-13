@@ -1,0 +1,386 @@
+%\input{../preamblw}
+%
+%%
+% \begin{document}
+
+%\Partition{Механика деформируемого твердого тела }{}
+
+\renewcommand{\firstpage}{261}
+\renewcommand{\lastpage}{267}
+%
+%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}}
+
+
+\udk{517.958:330.101.541}
+\msc{35Q91}% Коды MSC см. http://www.ams.org/msc/*74K25 Shells
+ 
+
+\title{Моделирование и анализ динамики макроэкономической системы в среде MATLAB/Simulink}% Полный заголовок
+{Моделирование и анализ динамики макроэкономической системы \dots}
+
+\author{В.\,С.~Лубенцова, Д.\,А.~Андреянов}{Л\,у\,б\,е\,н\,ц\,о\,в\,а~В.\,С., А\,н\,д\,р\,е\,я\,н\,о\,в~Д.\,А.}
+
+\institute{\samgtu.}
+
+
+\email{E-mails}{lubencova-vs@yandex.ru, daandreyanov@gmail.com}
+
+\otherinf{\fullauthor{Вера Степановна Лубенцова}\regalia{к.т.н., доц.} \position{доцент}\dept{каф. прикладной математики и информатики}
+\fullauthor{Денис Анатольевич Андреянов} \position{студент}\dept{каф. прикладной математики и информатики} }
+
+\keywords{деловые циклы, метод усреднения, мощность акселератора, уравнение макроэкономической динамики, устойчивость системы, точка бифуркации, долгосрочное прогнозирование}
+
+\workabstract{Рассматривается общая теория циклических процессов в экономике. В среде MATLAB/Simulink построена имитационная модель решений дифференциальных уравнений, описывающих циклические колебания деловой активности и трендовую кривую роста ВВП. Исследована устойчивость системы. Приведено графическое изображение решений дифференциальных уравнений, проанализировано влияние мощности акселератора на динамику экономической системы.}
+
+\engtitle{Modeling and analysis of macroeconomic system dynamics in MATLAB/Simulink environment}
+
+\engauthor{V.\,S.~Lubencova, D.\,A.~Andreyanov}{L\,u\,b\,e\,n\,c\,o\,v\,a~V.\,S., A\,n\,d\,r\,e\,y\,a\,n\,o\,v~D.\,A.}
+
+
+\enginstitute{\engsamgtu.}% Место работы каждого из авторов на англ. языке
+% Если несколько, то так  \enginstitute{ Организация 1 \and Организация 2  \and Организация 3}
+
+\otherenginfm{\fullauthor{Vera S. Lubencova} \regalia{Ph.D. (Techn.)} \position{Associate Professor} \dept{Dept. of Applied Mathematics \& Computer Science}
+\fullauthor{Denis A. Andreyanov} \position{Student} \dept{Dept. of Applied Mathematics \& Computer Science}}
+
+\engabstract{The general theory of cyclic processes is examined in an economy. The simulation model of solutions of differential equations describing the cyclic vibrations of business activity and the trend curve of GDP growth is built in MATLAB/Simulink environment. Stability of the system is investigated. The graphic image of solutions of differential equations is brought, the influence of accelerator power on the dynamics of the economic system is analyzed. }
+
+\engkeywords{business cycles, method of averaging, power of accelerator, the equation of macroeconomic dynamics, stability of system, bifurcation point, long-term prognostication}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% даты менять здесь
+
+\date{23/VI/2011} % Дата поступления статьи в редакцию.
+\revisiondate{20/I/2012} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+\small
+
+
+В настоящее время в макроэкономике утвердилась теория, согласно которой  деловые циклы играют значительную роль в формировании тренда экономического 
+роста: эффективность долгосрочного роста является следствием краткосрочных циклических колебаний. 
+Однако характер влияния деловых циклов на формирование траектории долгосрочного экономического роста недостаточно изучен. 
+Последним научным достижением в этой области является создание непрерывных моделей. 
+В~работе А.\,А.~Акаева [\citen{lubencova:1}] дан вывод общего уравнения макроэкономической динамики, описывающего совместное взаимодействие 
+долгосрочного экономического роста и краткосрочных деловых циклов: 
+\begin{multline}
+\label{lub:eq1}
+ \frac{1}{\lambda }\frac{d^2Y}{dt^2}+\left\{ 1+\frac{k}{\lambda }-kv \left[ 1-\chi \frac{4}{3}\Bigl(v \frac{dY}{dt} \Bigr)^2-(1-s)\frac{1}{\gamma } \frac{\partial \overline Y }{\partial L} \right] \right\}\frac{dY}{dt}+ \\ +\Bigl[ k-s(1-s)\frac{\partial \overline Y }{\partial K} \Bigr]Y
++(1-s)\Bigl( \mu -k\frac{a}{h} \Bigr)K\frac{\partial \overline Y }{\partial K} % - \\
+- k(1-s)\frac{b}{h}L\frac{\partial \overline Y }{\partial L}=\frac{dA}{dt}+kA,
+ \end{multline}
+где
+$Y(t)$ "--- текущий объём (уровень) выпуска валовой продукции (ВВП); 
+$\overline Y (t)$ "--- уровень выпуска, соответствующий траектории долговременного роста; 
+$v $ "--- мощность акселератора; 
+$\lambda $ "--- скорость реакции запаздывания предложения от спроса; 
+$k$ "--- скорость реакции запаздывания фактических капиталовложений от момента принятия решения об индуцированных инвестициях; 
+$s$ "--- коэффициент сбережений; $\gamma $ "--- параметр Оукена.
+
+Применяя метод усреднения Крылова"--~Боголюбова"--~Митропольского [\citen{lubencova:2}], автор [\citen{lubencova:1}] из уравнения \eqref{lub:eq1} выделил уравнение, представляющее долговременную траекторию экономического роста \eqref{lub:eq2}, и уравнение, описывающее циклические колебания деловой активности вокруг трендовой кривой роста \eqref{lub:eq3}:
+\begin{gather}
+\label{lub:eq2}
+\frac{d^2\overline Y }{dt^2}+\overline \sigma _0 \frac{d\overline Y }{dt}+\overline \omega _0^2 \overline Y =\lambda \Bigl( \frac{d\overline A }{dt}+k\overline {A} \Bigr),
+\\
+\label{lub:eq3}
+\frac{d^2y}{dt^2}-\left[ \sigma _0 -\frac{4}{3}k\lambda v ^3\Bigl( \frac{dy}{dt} \Bigr)^2 \right]\frac{dy}{dt}+\omega _0^2 \Bigl[ 1-\frac{s(1-s)}{k}i \Bigr]y=\varphi (t),
+\end{gather}
+где 
+$\sigma _0 =-[ \lambda +k-k\lambda v -{\lambda (1-s)\beta }/{\gamma }]$; $\omega _0^2 =\lambda k$; $\beta 
+={h}/({b-a})$; $y=Y-\overline Y $;
+$\varphi $ "--- квазипериодическая функция, выражающая действие внешней 
+вынуждающей силы;
+$\beta $ "--- эластичность выпуска по труду; 
+$i$ "--- норма процента; 
+$\overline \sigma _0 =\lambda +k-k\lambda v$;
+$\overline A $ "--- трендовая составляющая независимых инвестиций ($A(t)=\overline {A}(t)+\varphi (t )$).
+Для дальнейшего анализа были приняты следующие  численные значения параметров: $\lambda =4$, $k=1$, $s=0,25$, $i=0,1$, 
+$\beta =0,67$, $\gamma =2,5.$
+
+Основным управляющим параметром, оказывающим существенное влияние на динамику исследуемой системы, является мощность $v $ акселератора, которая  меняется в определённых пределах. 
+Здесь акселератор выступает как  зависимость между объёмом капиталовложений и текущей скоростью изменения выпуска продукции~${dY}/{dt}$.
+
+В уравнении \eqref{lub:eq3} учитываются не только колебания выпуска продукции, но и колебания занятости. 
+Поскольку циклическая безработица имеет негативные экономические и~социальные последствия, очевидно, что экономическая политика 
+должна быть направлена на ограничение уровня циклической безработицы и,~следовательно, амплитуды колебания выпуска. 
+Таким образом, при сокращении амплитуды колебаний совокупного выпуска продукции одновременно сокращается 
+уровень циклической безработицы.
+
+Количественный анализ динамики предложенной экономической системы проводился путём имитационного моделирования в среде {\tt MATLAB/Simulink}. 
+Для этого была построена модель заданной экономической системы (см. схему). 
+Данная модель  создаётся на основе стандартных блоков среды {\tt MATLAB/Simulink} [\citen{lubencova:4, lubencova:6}]  и 
+позволяет получить искомое значение путём двойного интегрирования блоками {\tt Integrator}.
+
+
+\begin{sidewaysfigure} \centering
+\includegraphics[scale=1]{./00PIC/lubecova1.eps}
+\caption*{Схема модели дифференциальных уравнений (\ref{lub:eq2}) и (\ref{lub:eq3})}
+\end{sidewaysfigure}
+
+Для построения фазовых портретов и проведения качественного анализа в~уравнениях (\ref{lub:eq2}) и (\ref{lub:eq3}) правые части полагаем равными нулю. 
+В процессе моделирования варьировалась мощность акселератора и~исследовалось её влияние  на состояние равновесия системы. Результаты исследования динамики экономического роста (\ref{lub:eq2}) приведены в табл.~1.
+
+\begin{table}[p!]
+\centering \small
+
+
+\begin{flushright}
+Таблица 1 \vspace{-3mm}
+\end{flushright}
+
+\begin{tabular}{c|c|r}
+\hline
+\footnotesize
+Интервал изменения мощ- &
+\footnotesize
+Характер решения одно- &
+\footnotesize
+Характерный график решения \\
+
+
+\footnotesize
+ности акселератора &
+\footnotesize
+родного уравнения (\ref{lub:eq2}) &
+\footnotesize
+однородного уравнения (\ref{lub:eq2})~~~{} \\
+\hline
+
+\raisebox{60pt}[1pt][2pt]{$ 0< v \leqslant 0,75$} & 
+\raisebox{60pt}[1pt][2pt]{неколебательное,} & \includegraphics[scale=1]{./00PIC/lubecova-t1.eps} \\
+& \raisebox{60pt}[1pt][2pt]{затухающее}  & \\
+
+\raisebox{60pt}[1pt][2pt]{$0,75 < v< 1,25$} & 
+\raisebox{60pt}[1pt][2pt]{колебательное,} & \includegraphics[scale=1]{./00PIC/lubecova-t2.eps} \\
+& \raisebox{60pt}[1pt][2pt]{затухающее}  & \\
+
+
+\raisebox{60pt}[1pt][2pt]{$v =1,25$} & 
+\raisebox{60pt}[1pt][2pt]{колебательное,} & \includegraphics[scale=1]{./00PIC/lubecova-t3.eps} \\
+& \raisebox{60pt}[1pt][2pt]{незатухающее}  & \\
+
+\raisebox{60pt}[1pt][2pt]{$1,25 < v \leqslant 1,75$} & 
+\raisebox{60pt}[1pt][2pt]{колебательное,} & \includegraphics[scale=1]{./00PIC/lubecova-t4.eps} \\
+& \raisebox{60pt}[1pt][2pt]{взрывное}  & \\
+
+
+
+\raisebox{60pt}[1pt][2pt]{$ v > 1,75$} & 
+\raisebox{60pt}[1pt][2pt]{неколебательное,} & \includegraphics[scale=1]{./00PIC/lubecova-t5.eps} \\
+& \raisebox{60pt}[1pt][2pt]{взрывное}  & \\
+
+\hline
+
+\end{tabular}
+\end{table}
+
+
+Как видно из табл.~1, устойчивый рост возможен в диапазоне мощностей  акселератора $v$ от $0$ до $1,25$, 
+причём при $0<v \le 0,75$ имеет место неколебательное (апериодическое) затухающее влияние циклических колебаний, 
+при $0,75<v <1,25$ "--- колебательное затухающее влияние, а при $v >1,25$ "--- неустойчивый взрывной рост. 
+В этом случае траектория выпуска  стремительно отклоняется от траектории равновесия, но с~течением времени 
+взрывной рост заканчивается, начинается спад и устанавливается новое  равновесие на новом уровне, которое будет удерживаться до очередного шока. 
+При этом характер влияния циклических колебаний на долговременный рост 
+определяется решением однородной части уравнения (\ref{lub:eq2}).
+
+Результаты исследования влияния мощности акселератора на циклические 
+колебания вокруг трендовой кривой приведены в табл. 2.
+
+\begin{table}[p!]
+\centering \small
+
+\begin{flushright}
+Таблица 2 \vspace{-3mm}
+\end{flushright}
+
+\begin{tabular}{c|c|r}
+\hline
+\footnotesize
+Интервал изме-&
+\footnotesize
+&
+\footnotesize
+\\
+
+
+\footnotesize
+нения мощности &
+\footnotesize Фазовый портрет&
+\footnotesize Решение уравнения (\ref{lub:eq3})~~~~{} \\
+
+
+\footnotesize
+акселератора &  & \\
+\hline
+
+\raisebox{60pt}[1pt][2pt]{$0<v\le 0,05$;} & \rule{0mm}{4cm}%
+ \includegraphics[scale=1]{./00PIC/lubecova-t2-1x1.eps} & \raisebox{10pt}[1pt][2pt]{\includegraphics[scale=1]{./00PIC/lubecova-t2-1x2.eps}} \\
+\raisebox{60pt}[1pt][2pt]{$v=0,01$} & & \\
+
+
+\raisebox{60pt}[1pt][2pt]{$0,05<v< 1,05$;} & \rule{0mm}{4cm}%
+ \includegraphics[scale=1]{./00PIC/lubecova-t2-2x1.eps} & \raisebox{10pt}[1pt][2pt]{\includegraphics[scale=1]{./00PIC/lubecova-t2-2x2.eps}} \\
+\raisebox{60pt}[1pt][2pt]{$v=0,07$} & & \\
+
+\raisebox{60pt}[1pt][2pt]{$v= 1,05$} & \rule{0mm}{4cm}%
+ \includegraphics[scale=1]{./00PIC/lubecova-t2-3x1.eps} & \raisebox{10pt}[1pt][2pt]{\includegraphics[scale=1]{./00PIC/lubecova-t2-3x2.eps}} \\
+
+
+\raisebox{60pt}[1pt][2pt]{$1,05<v< 2,05$;} & \rule{0mm}{4cm}%
+ \includegraphics[scale=1]{./00PIC/lubecova-t2-4x1.eps} & \raisebox{10pt}[1pt][2pt]{\includegraphics[scale=1]{./00PIC/lubecova-t2-4x2.eps}} \\
+\raisebox{60pt}[1pt][2pt]{$v=1,2$} & & \\
+
+\hline
+
+\end{tabular}
+
+\end{table}
+
+
+\begin{table}[t!]
+\centering \small
+
+\begin{flushright}
+Продолжение таблицы 2 \vspace{-3mm}
+\end{flushright}
+
+\begin{tabular}{c|c|r}
+\hline
+\footnotesize
+Интервал изме-&
+\footnotesize
+&
+\footnotesize
+\\
+
+
+\footnotesize
+нения мощности &
+\footnotesize Фазовый портрет&
+\footnotesize Решение уравнения (\ref{lub:eq3})~~~~{} \\
+
+
+\footnotesize
+акселератора &  & \\
+\hline
+
+\raisebox{60pt}[1pt][2pt]{$v \geq 2,05$;} & \rule{0mm}{4cm}%
+ \includegraphics[scale=1]{./00PIC/lubecova-t2-5x1.eps} & \raisebox{10pt}[1pt][2pt]{\includegraphics[scale=1]{./00PIC/lubecova-t2-5x2.eps}} \\
+\raisebox{60pt}[1pt][2pt]{$v=2,2$} & & \\
+
+\hline
+
+\end{tabular}
+
+\end{table}
+
+Как видно из табл.~2, при значениях мощности $v >1,05$ любые малые  колебания, возникающие в системе, перестают затухать и становятся нарастающими, пока не стабилизируются на уровне $\sim  \sqrt {\sigma _0 } $, являющемся следствием нелинейных эффектов. 
+Выходу на предельный цикл предшествует некоторый переходный процесс. 
+При $\sigma _0 \sim 1$ и $v \sim 1,3$ колебания будут существенно нелинейными. 
+Таким образом, экономическая система с~нелинейным акселератором является классической автоколебательной системой, в~которой роль механизма положительной обратной связи играет нелинейный акселератор, а в качестве коэффициента усиления выступает мощность акселератора $v .$ 
+Если $v >1,05$, то в системе будет протекать самоподдерживающийся колебательный процесс, основные характеристики которого 
+определяются параметрами системы и~не зависят от начальных условий.
+
+Результаты качественного анализа решений уравнений (\ref{lub:eq2}) и (\ref{lub:eq3}), описывающих траекторию долгосрочного экономического роста и циклические колебания деловой активности, позволяют проследить влияние деловых циклов на экономический рост.
+
+Результаты моделирования показывают, что устойчивый долгосрочный экономический рост в динамической модели возникает в диапазоне мощностей акселератора $0<v <1,25$. 
+Причём при значениях $v <1,05$ любые внешние шоковые воздействия сглаживаются системой и она, будучи выведена из 
+равновесного состояния, асимптотически стремится к устойчивому  первоначальному тренду экономического роста.
+
+В интервале $1,05<v <1,25$ состояние равновесия неустойчиво; в системе происходит бифуркация и рождается устойчивый незатухающий колебательный  режим. 
+Для этого режима характерны благоприятствующие структурные преобразования, необходимые для переработки и освоения инноваций. 
+Экономическая система переходит к новому состоянию равновесия, которое  фиксируется возникшим в системе автоколебанием. Следовательно, режим автоколебаний в экономической системе чрезвычайно полезен, поскольку  способствует структурным преобразованиям, требуемым для восприятия инноваций.
+
+При высоких значениях мощностей акселератора $v >1,25$ экономический рост 
+может стать неустойчивым вследствие взрывного характера влияния циклических 
+колебаний системы. Однако благодаря цикличности $v $ и естественному 
+ограничению выпуска, вызванному падением предпринимательской прибыли, 
+последующему спаду производства до наступления нового уровня равновесия, 
+закрепляемого при снижении мощности акселератора, система будет продолжать 
+относительно устойчивый рост, сменяя уровни равновесия и пребывая между ними 
+в неравновесном состоянии, т.\,е. в состоянии динамического равновесия.
+
+Компьютерное моделирование в среде {\tt MATLAB/Simu\-link} 
+эффективно для понимания причинно-следственных связей, анализа и построений 
+процессов экономики. Такое моделирование позволяет сделать исследование 
+системы более наглядным и гибким к изменяющимся параметрам, что при 
+аналитическом решении затруднено. Кроме того, имитационное моделирование 
+позволяет решать задачу прогнозирования развития экономического процесса. 
+
+\begin{thebibliography}{9}
+
+\RBibitem{lubencova:1}
+\by Акаев~А.\,А.
+\paper Анализ решений общего уравнения макроэкономической динамики 
+\jour Экономика  и математические методы
+\yr 2008
+\vol 44
+\issue 3
+\pages 62--78
+\misctransl
+\by Akayev~A.\,A. 
+\paper Analysis of solutions of general equations of microeconomic dynamics
+\jour Ekonomika i matematicheskie metody
+\yr 2008
+\vol 44
+\issue 3
+\pages 62--78
+
+\RBibitem{lubencova:2}
+\by Акаев~А.\,А.
+\paper Качественный анализ влияния деловых циклов на экономический рост 
+\jour Экономика и математические методы
+\yr 2009
+\vol 45
+\issue 3
+\pages 64--77
+\misctransl
+\paper Qualitative analysis of the impact of economic cycles on economic growth
+\jour Ekonomika i matematicheskie metody
+\by Akayev~A.\,A. 
+\yr 2009
+\vol 45
+\issue 3
+\pages 64--77
+
+\RBibitem{lubencova:4}
+\by Цисарь~И.\,Ф. 
+\book MATLAB Simulink. Компьютерное моделирование экономики 
+\publaddr М.
+\publ Солон-Пресс
+\yr 2008
+\totalpages 256
+\misctransl
+\by Cisar~I.\,F.
+\book MATLAB Simulink. Computer modeling of economy
+\publaddr Moscow
+\publ Solon-Press
+\yr 2008
+\totalpages 256
+
+\Bibitem{lubencova:6}
+\by Hunt~B.\,R., Lipsman~R.L., Rosenberg~J.\,M. 
+\book A Guide to MATLAB: For Beginners And Experienced Users
+\publaddr Cambridge
+\publ Cambridge University Press
+\totalpages 348
+\yr 2001
+
+\end{thebibliography}
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+
+
+
+\makeengtitlem
+
+
+\newpage
+
+%\end{document}

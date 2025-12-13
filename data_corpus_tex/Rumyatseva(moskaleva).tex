@@ -1,0 +1,899 @@
+\def\stat{gaidamaka}
+
+\def\tit{О МОДЕЛИРОВАНИИ СОВМЕСТНОГО ОБСЛУЖИВАНИЯ ОДНОАДРЕСНОГО 
+И~МНОГОАДРЕСНОГО ТРАФИКА С~ПРИОРИТИЗАЦИЕЙ$^*$}
+
+\def\titkol{О моделировании совместного обслуживания одноадресного 
+и~многоадресного трафика} % с~приоритизацией}
+
+\def\aut{А.\,С.~Румянцева$^1$, Ф.\,А.~Москалева$^2$, А.\,К.~Самуйлов$^3$, 
+С.\,Я.~Шоргин$^4$, Ю.\,В.~Гайдамака$^5$}
+
+\def\autkol{А.\,С.~Румянцева, Ф.\,А.~Москалева, А.\,К.~Самуйлов и~др.}
+%$^3$, %С.\,Я.~Шоргин$^4$, Ю.\,В.~Гайдамака$^5$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Румянцева А.\,С.}
+\index{Москалева Ф.\,А.}
+\index{Самуйлов А.\,К.}
+\index{Шоргин С.\,Я.}
+\index{Гайдамака Ю.\,В.}
+\index{Rumyantseva A.\,S.}
+\index{Moskaleva F.\,A.}
+\index{Samouylov A.\,K.}
+\index{Shorgin S.\,Ya.}
+\index{Gaidamaka Yu.\,V.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Исследование выполнено за счет гранта Российского научного фонда №\,22-79-10053 ({\sf https://rscf.ru/project/22-79-10053}).}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов, 1132223493@rudn.ru}
+\footnotetext[2]{Российский университет дружбы народов, moskaleva-fa@rudn.ru}
+\footnotetext[3]{Российский университет дружбы народов, samuylov-ak@rudn.ru}
+\footnotetext[4]{Федеральный исследовательский центр <<Информатика и~управление>> 
+   Российской академии наук,  \mbox{sshorgin@ipiran.ru}}
+\footnotetext[5]{Российский университет дружбы народов; Федеральный исследовательский центр 
+<<Информатика и~управление>> Российской академии наук, \mbox{gaidamaka-yuv@rudn.ru}}
+
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+\vspace*{-12pt}
+
+
+
+  
+  
+
+\Abst{Увеличение числа пользователей и~высокие требования к~сети привели 
+к~не\-об\-хо\-ди\-мости внед\-ре\-ния технологии передачи данных на мил\-ли\-мет\-ро\-вых волнах 
+(mmWave), чтобы повысить ско\-рость передачи данных и~минимизировать задержки. Переход 
+на миллиметровый диапазон волн в~пятом поколении (5G) сетей связи учитывает особенности 
+реализации предоставления услуг, в~чи\-сле которых чув\-ст\-ви\-тель\-ность на\-прав\-лен\-ных 
+антенных лучей к~блокировкам радиосигнала. Кроме этого, при эффективном планировании 
+сети, предостав\-ля\-ющей одно- и~многоадресные услуги, требуется достигать баланса 
+между входящими в~противоречие решениями для этих двух типов трафика. В~статье 
+с~применением методов теории массового обслуживания разработана математическая модель 
+для описания механизма приоритизации при обслуживании комбинации одно- 
+и~многоадресного трафика, для каждого из которых принимается во внимание воз\-мож\-ность 
+появления блокаторов прямой ви\-ди\-мости (Line of Sight, LoS). Особенности распространения сигнала 
+учитываются в~модели через раз\-би\-ение зоны покрытия на две области. Построенная 
+математическая модель поз\-во\-ля\-ет найти аналитические выражения для вероятностей потери 
+одно- и~многоадресных соединений, а~также объема занятого ресурса как 
+отдельными типами трафика в~разных областях зоны покрытия, так и~во всей сис\-те\-ме 
+в~целом. На балансе между пе\-ре\-чис\-лен\-ны\-ми основными показателями про\-из\-во\-ди\-тель\-ности 
+основан метод распределения радиоресурса базовой станции (БС) сети, который поз\-во\-ля\-ет 
+следить за соблюдением требований к~качеству для обоих типов услуг.}
+
+\KW{mmWave; одноадресные соединения; многоадресные соединения; LoS; блокировка 
+LoS; математическая модель}
+
+\DOI{10.14357\!/\!08696527240203}{QXWAUL}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-12pt}
+
+\section{Введение}
+
+%\vspace*{-8pt}
+
+
+  В сетях 5G для поддержания высокоскоростной передачи данных с~низкими 
+задержками появилась не\-об\-хо\-ди\-мость привлечения незадействованного ранее 
+радиоресурса, поскольку ис\-поль\-зу\-емая полоса частот ниже 6~ГГц не 
+справлялась с~рас\-ту\-щей на\-груз\-кой от устройств mMTC (massive Machine-Type Communication) в~условиях жест\-ких 
+требований URLLC (Ultra-Reliable Low Latency Communication) при\-ло\-же\-ний~[1]. По этой причине для передачи 
+данных начали использоваться миллиметровые волны (с~частотами от~24 
+до~100~ГГц)~[2], что обеспечило дополнительную полосу пропускания, 
+а~значит, и~б\'{о}льшую ско\-рость передачи данных. При этом пришлось 
+учитывать особенности передачи данных на высоких частотах, одна из которых 
+заключается в~чув\-ст\-ви\-тель\-ности сигнала к~блокировке прямой ви\-ди\-мости между при\-е\-мо-пе\-ре\-да\-ющи\-ми устройствами~[3]. 
+Блокатором сигнала может стать практически любой объект, поскольку длина 
+мил\-ли\-мет\-ро\-вых волн значительно меньше размеров большинства предметов 
+в~окружающей среде. В~результате нарушения прямой ви\-ди\-мости происходит 
+существенное падение ско\-рости передачи, что может приводить даже 
+к~разрыву со\-еди\-не\-ния. В~рамках концепции нарезки радиоресурсов сети~[4] 
+предусмот\-ре\-но перераспределение радиоресурса БС для 
+выделения дополнительного ресурса с~целью поддержания соединения на 
+период блокировки сигнала~[5--7], что долж\-но обеспечивать качество 
+предоставления услуги на тре\-бу\-емом уровне. При этом в~сетях с~одноадресной и~многоадресной передачей приоритет следует отдавать поддержанию 
+многоадресных соединений, об\-слу\-жи\-ва\-ющих большее чис\-ло пользователей 
+сети~[8--11]. Авторы~\cite{8-gai-1} используют математический аппарат для 
+исследования влияния двух типов трафика друг на друга при воз\-мож\-ности 
+нарушения прямой ви\-ди\-мости только для многоадресных со\-еди\-не\-ний. 
+Особенность~\cite{9-gai-1, 10-gai-1} заключается в~учете при моделировании 
+обслуживания двух типов трафика расстояния от БС до пользовательского 
+устройства (ПУ). Авторы~\cite{11-gai-1} при построении математической 
+модели принимают во внимание возможности перекрытия прямой ви\-ди\-мо\-сти 
+для обоих типов трафика и~учитывают особенности распространения сигнала, 
+разбивая зону покрытия на несколько областей по отдаленности от БС, при 
+этом изучение характеристик модели происходит с~по\-мощью имитационного 
+моделирования.
+{ %\looseness=1
+
+}
+  
+  В данной работе, служащей продолжением~[12], построена математическая 
+модель в~виде системы массового обслуживания (СМО) с~приоритетным обслуживанием для изуче\-ния 
+характеристик сис\-те\-мы через стационарные вероятности, полученные как 
+решение сис\-те\-мы уравнений равновесия. Модель учитывает особенности 
+распространения сигнала с~по\-мощью разбиения зоны покрытия на две области 
+по от\-да\-лен\-ности пользователей от БС и~возможность появления 
+блокатора прямой ви\-ди\-мости для обоих типов соединений. В~работе 
+ис\-сле\-ду\-ют\-ся сле\-ду\-ющие показатели эф\-фек\-тив\-ности: вероятности блокировки 
+доступа и~прерывания соединений, вероятности потери и~сред\-нее чис\-ло 
+занятого ресурса сети. 
+
+
+\section{Системная модель }
+
+  На рис.~1 изображена зона покрытия антенны БС в~диапазоне 
+мил\-ли\-мет\-ро\-вых волн в~виде сектора в~120$^\circ$, ограниченного 
+окруж\-ностью, радиус которой определяется мо\-делью распространения сигнала. 
+Зона покрытия, в~которой случайным образом распределены стационарные 
+пользователи, ге\-не\-ри\-ру\-ющие запросы на предостав\-ле\-ние услуги по\-сред\-ст\-вом 
+одноадресных и~многоадресных соединений, и~подвижные блокаторы, время от 
+времени пе\-ре\-кры\-ва\-ющие прямую ви\-ди\-мость между БС и~ПУ, услов\-но разбита 
+на две области по отдаленности от БС: ближ\-нюю и~даль\-нюю.
+  
+  Требования к~объему ресурса для поддержания одно- 
+и~многоадресного со\-еди\-не\-ния от пользователей, находящихся в~ближ\-ней 
+об\-ласти, ниже со\-от\-вет\-ст\-ву\-ющих требований в~дальней об\-ласти, что 
+обуслов\-ле\-но простейшей моделью распространения сигнала Free Space Path 
+Loss, FSPL~[5].
+  
+\begin{figure}[b] %fig1
+      \vspace*{-6pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=128mm  
+\epsfbox{rum-1.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Схема зоны покрытия БС}
+\end{figure}
+
+ Появление блокатора прямой ви\-ди\-мости для ПУ в~ближ\-ней об\-ласти не 
+приводит к~мгновенному прерыванию со\-еди\-не\-ния, поскольку сначала 
+планировщиком БС делается попытка выделить дополнительный 
+объем ресурса, необходимый для поддержания со\-еди\-не\-ния. Многоадресные 
+со\-еди\-не\-ния имеют приоритет над одноадресными: если недостаточно 
+свободного ресурса для поддержания многоадресного соединения в~ближ\-ней 
+об\-ласти, прерываются одноадресные со\-еди\-не\-ния, чис\-ло которых определяется 
+объемом необходимого ресурса. При появлении блокатора для ПУ в~дальней 
+об\-ласти качество передачи данных в~радиоканале резко падает, поэтому 
+планировщик БС делает попытку хендовера~--- переключения обслуживания 
+соединения на соседнюю БС, которая может взять на себя поддержание этого 
+со\-еди\-не\-ния в~случае наличия свободного ресурса.
+ 
+  Потеря запроса на предостав\-ле\-ние услуги воз\-мож\-на из-за блокировки 
+доступа запроса в~сис\-те\-му или из-за прерывания уже установленного 
+со\-еди\-не\-ния. Блокировка доступа~--- это потеря запроса в~момент по\-ступ\-ле\-ния 
+в~сис\-те\-му из-за недостатка на БС свободного ресурса для уста\-нов\-ле\-ния 
+со\-еди\-не\-ния. Блокировка доступа может произойти как для многоадресного 
+запроса, так и~для одноадресного, причем как в~ближ\-ней об\-ласти, так 
+и~в~дальней. Прерывание соединения~--- это потеря принятого запроса во 
+время его обслуживания. Прерывание соединений разных типов в~ближ\-ней или 
+дальней об\-ластях может быть вызвано разными причинами. Для одноадресных 
+соединений прерывание может произойти в~двух случаях: первое~--- если 
+потребуется осво\-бо\-дить ресурс для поддержания многоадресного со\-еди\-не\-ния 
+в~ближ\-ней об\-ласти, второе~--- если появится блокатор прямой ви\-ди\-мости для 
+соответствующего ПУ, причем прерывание одноадресного соединения из 
+ближ\-ней об\-ласти в~таком случае происходит при недостатке свободного 
+ресурса для его поддержания на ис\-сле\-ду\-емой БС, прерывание одноадресного 
+соединения в~дальней об\-ласти~--- при недостатке свободного ресурса на 
+соседней БС (неудачная попытка хендовера). Прерывание многоадресных 
+соединений воз\-мож\-но только при появлении блокатора прямой видимости для 
+одного из ПУ. При этом прерваться может только многоадресное соединение 
+в~дальней об\-ласти, поскольку при нехватке доступного ресурса многоадресное 
+соединение в~ближ\-ней об\-ласти всегда поддерживается за счет прерывания 
+одноадресных.
+  
+  Схема функционирования сис\-те\-мы для описанного алгоритма планировщика 
+радиоресурсов БС показана на рис.~2.
+  
+\begin{figure} %fig2
+ \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=116mm  %118
+\epsfbox{rum-2.eps}
+ }
+\end{center}
+%\vspace*{-9pt}
+%\Caption{Схема функционирования системы}
+\end{figure}
+
+  В следующем разделе представлена математическая модель для анализа 
+показателей эффективности сис\-темы.
+
+\section{Математическая модель}
+
+  Для построения математической модели введем сле\-ду\-ющие упро\-ща\-ющие 
+предположения. 
+  \begin{enumerate}[1.]
+\item   Механизм приоритизации: в~случае недостатка ресурса для поддержания 
+многоадресного соединения в~ближ\-ней об\-ласти при появлении блокатора 
+прямой ви\-ди\-мости происходит прерывание соответствующего чис\-ла 
+одноадресных соединений в~порядке убывания занятого ресурса на одно 
+соединение. Как правило, больший объем требуется для соединений в~условиях 
+прямой ви\-ди\-мости (LoS) в~дальней об\-ласти и~для соединений в~условиях 
+отсутствия прямой ви\-ди\-мости (nLoS, non Line-of-Sight) в~ближ\-ней об\-ласти, 
+а~меньший ресурс~--- для соединений в~условии прямой ви\-ди\-мости (LoS) 
+в~ближ\-ней об\-ласти. Указанный механизм создает неявную приоритизацию 
+обслуживания одноадресных заявок с~небольшими требованиями к~ресурсу 
+в~условиях прямой ви\-ди\-мости (LoS).
+\item В момент поступления запроса для установления соединения требуется 
+ресурс, со\-от\-вет\-ст\-ву\-ющий условиям прямой ви\-ди\-мости. Предположение 
+действует как для основ\-ной БС, так и~для соседних БС.
+\item Длительность соединения, переключенного в~результате хендовера 
+с~соседней БС, рав\-на дли\-тель\-ности со\-еди\-не\-ния, уста\-нов\-лен\-но\-го при 
+по\-ступ\-ле\-нии запроса на ис\-сле\-ду\-емую БС.
+\end{enumerate}
+
+  Процесс разделения ресурсов БС может быть смоделирован с~по\-мощью 
+ресурсной СМО~\cite{15-gai-1} 
+с~неограниченным чис\-лом приборов и~ограниченным чис\-лом единиц ресурса, 
+рав\-ным~$R$. Интенсивности по\-ступ\-ле\-ния заявок на одно- 
+и~многоадресные соединения соответственно в~ближ\-ней и~даль\-ней областях 
+рав\-ны $\lambda_U^c$, $\lambda_M^c$ и~$\lambda_U^r$, $\lambda_M^r$, причем 
+$$
+\lambda_U^r= \lambda_U^{\mathrm{AP}} + \lambda_U^H\,;\quad
+\lambda_M^r=  \lambda_M^{\mathrm{AP}} +\lambda_M^H\,,
+$$
+ где~$\lambda^{\mathrm{AP}}_{U/M}$~--- 
+ин\-тен\-сив\-ность по\-ступ\-ле\-ния заявок на од\-но\-ад\-рес\-ные\!/\!мно\-го\-ад\-рес\-ные 
+со\-еди\-не\-ния на\-пря\-мую на ис\-сле\-ду\-емую БС; $\lambda_{U/M}^H$~--- 
+ин\-тен\-сив\-ность по\-ступ\-ле\-ния заявок на  
+од\-но\-ад\-рес\-ные\!/\!мно\-го\-ад\-рес\-ные со\-еди\-не\-ния в~результате хендовера с~соседних БС. Для описания процедуры обслуживания заявок используются 
+па\-ра\-мет\-ры экспоненциального распределения длительности обслуживания 
+заявок на одно- и~многоадресные соединения соответственно 
+в~ближ\-ней и~дальней областях $\mu_U^c$, $\mu_M^c$ и~$\mu_U^r$, 
+$\mu_M^r$. Блокировка прямой ви\-ди\-мости между устройствами определяется 
+сле\-ду\-ющи\-ми па\-ра\-мет\-рами:
+  \begin{itemize}
+\item $\theta^c_{\mathrm{in}}$ и~$\theta^r_{\mathrm{in}}$ ($\sigma^c_{\mathrm{in}}$  
+и~$\sigma^r_{\mathrm{in}}$)~--- па\-ра\-мет\-ры экспоненциального распределения 
+случайной величины дли\-тель\-ности интервала времени между соседними 
+появлениями блокатора LoS для многоадресных (одноадресных) соединений в~ближ\-ней и~дальней областях соответственно;
+\item $\theta^c_{\mathrm{out}}$ и~$\sigma^c_{\mathrm{out}}$~--- параметры экспоненциального 
+распределения случайной величины дли\-тель\-ности интервала блокировки 
+LoS для многоадресных и~одноадресных со\-еди\-не\-ний соответственно 
+в~ближ\-ней об\-ласти.
+\end{itemize}
+
+   Далее обозначим объемы требований к~ресурсам для соединений двух типов 
+в~условиях прямой ви\-ди\-мости (LoS) и~при ее отсутствии (nLoS) в~ближ\-ней 
+и~дальней областях:
+   \begin{itemize}
+\item $d^c_{\mathrm{LoS}}$ и~$d^c_{\mathrm{nLoS}}$ ($b^c_{\mathrm{LoS}}$ 
+и~$b^c_{\mathrm{nLoS}}$)~--- требования к~ресурсу одноадресных 
+(многоадресных) сессий пользователей в~ближ\-ней об\-ласти в~условиях прямой 
+видимости (LoS) и~при ее отсутствии (nLoS) соответственно, причем 
+$d^c_{\mathrm{LoS}}\hm< d^c_{\mathrm{nLos}}$ и~$b^c_{\mathrm{LoS}}\hm<  b^c_{\mathrm{nLoS}}$;
+\item $d^r$ ($b^r$)~--- требования к~ресурсу одноадресных (многоадресных) 
+сессий пользователей в~дальней об\-ласти (в~условиях прямой ви\-ди\-мости, 
+поскольку воз\-мож\-но только такое со\-сто\-яние ПУ).
+\end{itemize}
+
+Пусть 
+$$
+\Delta d^c= d^c_{\mathrm{nLoS}} - d^c_{\mathrm{LoS}}\,;\quad
+\Delta  b^c = b^c_{\mathrm{nLoS}} - b^c_{\mathrm{LoS}}.
+$$
+ Будем 
+рассматривать сис\-те\-му, в~которой ресурс $R\hm\geq b^c_{\mathrm{nLoS}} 
+\hm+ b^r$, что обеспечивает воз\-мож\-ность включения многоадресных 
+со\-еди\-не\-ний в~ближ\-ней и~дальней областях.
+
+  Функционирование системы можно описать с~по\-мощью пятимерного 
+случайного процесса (СП)
+  \begin{equation*}
+  \bm{X}(t) =\left\{ \left( m^c(t), u^c(t), u^c_{\mathrm{nLoS}}(t), m^r(t), 
+u^r(t)\right), t\geq 0\right\},
+  %\label{e1-gai}
+  \end{equation*}
+где 
+%\begin{itemize}
+%\item 
+$m^c(t)\hm\in \{ 0, b^c_{\mathrm{LoS}}, b^c_{\mathrm{nLoS}}\}$~--- 
+объем ресурса, выделенный БС для запроса на установление многоадресного 
+соединения в~ближ\-ней об\-ласти в~момент~$t$;
+%\item 
+$u^c(t)\hm\in \left\{ 0,1,\ldots , \left[ R/d^c_{\mathrm{LoS}} 
+\right]\right\}$~--- чис\-ло всех одноадресных соединений в~ближней об\-ласти 
+(всех возможных: и~LoS, и~nLoS) в~момент~$t$;
+%\item 
+$u^c_{\mathrm{nLoS}}(t)\hm\in \left\{ 0,1,\ldots , \left[ 
+R/d^c_{\mathrm{nLoS}} \right]\right\}$~---  чис\-ло одноадресных соединений 
+в~условиях nLoS в~ближ\-ней об\-ласти в~момент~$t$;
+%\item 
+$m^r(t)\hm\in \{ 0, b^r\}$~--- объем ресурса, выделенный БС для заявок на 
+установление многоадресного соединения в~дальней об\-ласти в~момент~$t$ 
+(возможны только условия LoS, поскольку соединений в~условиях 
+отсутствия прямой ви\-ди\-мости (nLoS) в~дальней области нет);
+%\item 
+$u^r(t)\hm\in \left\{ 0,1,\ldots , \left[ R/d^r\right]\right\}$~--- число 
+одноадресных соединений в~дальней об\-ласти в~со\-сто\-янии nLoS в~момент~$t$ 
+(возможны только условия LoS, поскольку со\-еди\-не\-ний в~условиях 
+отсутствия прямой ви\-ди\-мости (nLoS) в~дальней об\-ласти нет).
+%\end{itemize}
+
+Тогда пространство состояний примет вид:
+\begin{multline*}
+\hspace*{-3.87529pt}\mathbb{X}= \left\{\!\left( m^c, u^c, u^c_{\mathrm{nLoS}}, m^r, u^r\right): m^c\in \left\{
+0, b^c_{\mathrm{LoS}}, b^c_{\mathrm{nLoS}}\right\},\ u^c\in \left\{ 0,1,\ldots , 
+\left[ \fr{R}{d^c_{\mathrm{LoS}}}\right]\!\right\}\!,\right.\\
+u^c_{\mathrm{nLoS}} \in \left\{ 0,1,\ldots, \left[ 
+\fr{R}{d^c_{\mathrm{nLoS}}}\right]\right\},\
+m^r\in \{0, b^r\},\ u^r\in \left\{ 0,1,\ldots , \left[ \fr{R}{d^r}\right]\right\}:\\
+\left.u^c\geq u^c_{\mathrm{nLoS}}, \ m^c+u^c d^c_{\mathrm{LoS}}+ 
+u^c_{\mathrm{nLoS}} \Delta d^c +m^r +u^r d^r \leq R
+\vphantom{\left[ \fr{R}{d^c_{\mathrm{LoS}}}\right]}
+\right\}.
+%\label{e2-gai}
+\end{multline*}
+  
+  В стационарном режиме за\-слу\-жи\-ва\-ющие интереса мет\-ри\-ки могут быть 
+выражены через стационарные вероятности процесса $\bm{X}(t)$, 
+пред\-став\-ля\-юще\-го собой решение сис\-те\-мы уравнений равновесия. Стандартный 
+подход позволяет получить метрики суммированием стационарных 
+вероятностей по соответствующему подпространству со\-сто\-яний модели, как 
+это сделано, например, в~\cite{15-gai-1}. Для иллюстрации в~сле\-ду\-ющем разделе 
+приведен пример чис\-лен\-но\-го эксперимента по анализу ве\-ро\-ят\-ности потери 
+одно- и~многоадресных соединений в~ближ\-ней и~дальней областях 
+и~во всей сис\-те\-ме в~целом, а~так\-же коэффициента использования ресурса 
+отдельными типами трафика и~всей сис\-те\-мой в~целом.
+
+\section{Численный анализ}
+
+\vspace*{-3pt}
+
+  В данном разделе проводится численный анализ влияния сис\-тем\-ных 
+па\-ра\-мет\-ров, пред\-став\-лен\-ных в~таблице~\cite{9-gai-1, 14-gai-1}, на ис\-сле\-ду\-емые 
+характеристики.
+  
+  
+  \begin{table}[b]\small
+  \vspace*{-12pt}
+  \begin{center}
+   \tabcolsep=5pt
+  \begin{tabular}{|c|l|c|}
+  \multicolumn{3}{c}{Системные параметры}\\
+  \multicolumn{3}{c}{\ }\\[-6pt]
+  \hline
+Обозначение&\multicolumn{1}{c|}{Описание}&\multicolumn{1}{c|}{\tabcolsep=0pt\begin{tabular}{c}Значения\\ по умолчанию\end{tabular}}\\
+\hline
+&&\\[-10pt]
+$R$&Емкость системы&1024 Мбит/с\\
+\hline
+\tabcolsep=0pt\begin{tabular}{c}$d^c_{\mathrm{LoS}}$\\ $d^c_{\mathrm{nLoS}}$\\ $d^r$\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l}Требование к~ресурсу\\ для 
+одноадресного соединения\\ в~состоянии LoS, nLoS\\ в~ближней и~дальней 
+областях\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}30 Мбит/с \\ 
+45 Мбит/с\\  
+60 Мбит/с\end{tabular}\\
+\hline
+\tabcolsep=0pt\begin{tabular}{c}$b^c_{\mathrm{LoS}}$\\ $b^c_{\mathrm{nLoS}}$\\ $b^r$\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l}Требование к~ресурсу\\ для 
+многоадресного соединения\\ в~состоянии LoS, nLoS\\ в~ближней и~дальней 
+областях\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}40 Мбит/с\\ 
+60 Мбит/с\\ 
+80 Мбит/с\end{tabular}\\
+\hline
+&&\\[-10pt]
+\tabcolsep=0pt\begin{tabular}{c}$\mu_U^c$\\ $\mu_U^r$\\ $\mu_M^c$\\ $\mu_M^r$\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l}Интенсивность обслуживания\\ 
+одно- и~многоадресных заявок\\ в~ближней и~дальней 
+областях\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}2,0~c$^{-1}$\\ 
+1,5~c$^{-1}$\\ 
+1,5~c$^{-1}$\\ 
+1,0~c$^{-1}$\end{tabular}\\
+\hline
+$\sigma^c_{\mathrm{in}} = \sigma^r_{\mathrm{in}} =\theta^c_{\mathrm{in}} = \theta^r_{\mathrm{in}}$&\tabcolsep=0pt\begin{tabular}{l}Интенсивность появления 
+блокатора\\ LoS для одно- и~многоадресных\\ соединений в~ближней и~дальней\\ 
+областях\end{tabular}&4~c$^{-1}$\\
+\hline
+$\sigma^c_{\mathrm{out}} = \theta^c_{\mathrm{out}}$&\tabcolsep=0pt\begin{tabular}{l}Интенсивность ухода блокатора LoS\\ для одно- 
+и~многоадресных\\ соединений в~ближней области\end{tabular}&1,25~c$^{-1}$\\
+\hline
+&&\\[-10pt]
+\tabcolsep=0pt\begin{tabular}{c}$\lambda^c_U$\\ $\lambda_M^c$\\ $\lambda_U^r$\\ $\lambda_M^r$\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l}Интенсивность поступления 
+заявок\\ на одно- и~многоадресные\\ соединения в~ближней и~дальней\\ 
+областях\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}$[1,\ldots , 20]$~заявок\!/\!с \\ 
+12~заявок\!/\!с \\ 
+\hphantom{9}4 заявки\!/\!с \\ 
+10 заявок\!/\!с\end{tabular}\\
+\hline
+\end{tabular}
+\vspace*{-3pt}
+\end{center}
+\end{table}
+
+  Увеличение интенсивности поступления одноадресных заявок в~ближнюю 
+область $\lambda_U^c$ ведет к~повышению ве\-ро\-ят\-ности потери заявок всех 
+четырех потоков (рис.~3). Важ\-но заметить, что потери заявок, интенсивность 
+по\-ступ\-ле\-ния которых не увеличивается ($B_U^r$, $B_M^c$ и~$B_M^r$), связаны 
+преимущественно с~блокировкой их до\-сту\-па ($B_U^{r\_{\mathrm{arr}}}$, $B_M^{c\_{\mathrm{arr}}}$ 
+и~$B_M^{r\_{\mathrm{arr}}}$). Отметим, что ресурс занят преимущественно одноадресными 
+заявками из ближ\-ней об\-ласти ($\overline{R^c_U}$), т.\,е.\ заявками, 
+ин\-тен\-сив\-ность по\-ступ\-ле\-ния которых возрастает (рис.~\ref{f5-g}). При $\lambda_U^c\hm> 40$ 
+одноадресные заявки из ближ\-ней обл\-асти начинают занимать почти весь ресурс 
+сети, пол\-ностью вытесняя заявки других потоков. В~условиях отсутствия 
+заявок исключается воз\-мож\-ность их прерывания, поэтому прерывание вносит 
+незначительный вклад в~потери много- и~одноадресных заявок 
+в~ближ\-ней об\-ласти.
+  
+  Вероятность потери самих одноадресных заявок из ближ\-ней об\-ласти (рис.~\ref{f4-g}, 
+$B_U^c$) зависит в~большей степени от ве\-ро\-ят\-ности прерывания 
+($B_U^{c\_{\mathrm{pr}}}$). Прерывание преимущественно происходит для одноадресных 
+заявок в~ближ\-ней об\-ласти при появлении блокатора ($B_U^{c\_{\mathrm{prU}}}$) 
+в~со\-сто\-янии, когда свободного ресурса в~сис\-те\-ме недостаточно для 
+под\-дер\-жа\-ния из-за высокой за\-гру\-жен\-ности сис\-темы. 
+  
+
+\setcounter{figure}{2}
+\begin{figure} %fig3
+ \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=89.666mm  
+\epsfbox{rum-3.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Вероятности прерывания в~за\-ви\-си\-мости от ин\-тен\-сив\-ности по\-ступ\-ле\-ния 
+одноадресных заявок в~ближ\-нюю об\-ласть: \textit{1}~--- $B_M^{r\_{\mathrm{pr}}}$; 
+\textit{2}~--- $B_U^{r\_{\mathrm{pr}}}$; \textit{3}~--- $B_U^{c\_{\mathrm{pr}}}$; \textit{4}~--- 
+$B_U^{r\_{\mathrm{prM}}}$;  \textit{5}~--- $B_U^{c\_{\mathrm{prM}}}$; 
+\textit{6}~--- $B_U^{c\_{\mathrm{prM}}\_\mathrm{Los}}$; \textit{7}~--- 
+$B_U^{c\_{\mathrm{prM}}\_\mathrm{nLoS}}$}
+%\end{figure}
+%\begin{figure} %fig4
+ \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=87.671mm  
+\epsfbox{rum-5.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Средний объем занимаемого ресурса в~зависимости от интенсивности поступления 
+одноадресных заявок в~ближнюю область: \textit{1}~--- $\overline{R}$; \textit{2}~--- 
+$\overline{R^c}$; \textit{3}~--- $\overline{R^r}$; \textit{4}~--- $\overline{R_U}$;  \textit{5}~--- 
+$\overline{R_M}$; \textit{6}~--- $\overline{R_U^c}$; \textit{7}~--- $\overline{R_U^r}$; 
+\textit{8}~--- $\overline{R_M^c}$; \textit{9}~--- $\overline{R_M^r}$; \textit{10}~--- 
+$\overline{R_{U^{c\_\mathrm{Los}}}}$; \textit{11}~--- 
+$\overline{R_{U^{c\_\mathrm{nLos}}}}$}
+\label{f5-g}
+\vspace*{-12pt}
+\end{figure}
+
+
+  Вероятности потери заявок иллюстрируют порядок прерывания заявок трех 
+потоков при рос\-те на\-груз\-ки одноадресными заявками в~ближ\-ней об\-ласти. 
+Поскольку для рас\-смот\-рен\-но\-го набора исходных данных $d^r\hm> 
+d^c_{\mathrm{nLoS}} \hm> d^c_{\mathrm{LoS}}$, то первым при рос\-те 
+нагрузки прерывается обслуживание одноадресных заявок в~дальней об\-ласти 
+($B_U^{r\_\mathrm{pr}}$). 
+Вторыми кандидатами на прерывание становятся 
+одноадресные заявки в~ближ\-ней об\-ласти в~условиях nLoS ($B_U^{c\_\mathrm{pr}}$), 
+а~затем, когда одноадресных заявок из дальней и~ближ\-ней областей в~условиях 
+nLoS станет недостаточно для поддержания обслуживания многоадресной 
+заявки, подключатся прерывания одноадресных заявок из ближ\-ней об\-ласти 
+в~со\-сто\-янии LoS.
+
+\begin{figure} %fig5
+ \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=87.671mm  
+\epsfbox{rum-4.eps}
+ }
+\end{center}
+\vspace*{-9pt}
+\Caption{Вероятности потери в~за\-ви\-си\-мости от ин\-тен\-сив\-ности по\-ступ\-ле\-ния одноадресных 
+заявок в~ближ\-нюю об\-ласть: \textit{1}~--- $B_U^c$; \textit{2}~--- $B_U^r$; \textit{3}~--- 
+$B_M^c$; \textit{4}~--- $B_M^r$}
+\label{f4-g}
+\end{figure}
+  
+  Заметим, что при исследованном наборе значений па\-ра\-мет\-ров сис\-те\-мы 
+(см.\ таб\-ли\-цу) и~интенсивности по\-ступ\-ле\-ния заявок на одноадресные соединения 
+в~ближ\-нюю об\-ласть менее 20~за\-явок\!/\!с значения вероятностей потери 
+заявок, опре\-де\-ля\-ющие вероятности отказов в~предостав\-ле\-нии услуги, 
+удовле\-тво\-ря\-ют требованиям стандартов для услуг 4K видео по запросу 
+(одноадресная передача) и~прямой трансляция в~формате 4K 
+(мультивещание)~[14], а~именно: вероятности потери не более~$10^{-3}$. Это 
+свидетельствует о~том, что предложенный механизм приоритизации поз\-во\-ля\-ет 
+обеспечить тре\-бу\-емое качество предостав\-ле\-ния услуги.
+
+\section{Заключение}
+
+  Результаты численного анализа показали, что высокая на\-груз\-ка запросами на 
+представ\-ле\-ние услуги по принципу многоадресной доставки данных ведет 
+к~неявному резервированию ресурса многоадресными соединениями  
+в~сис\-те\-ме, со\-про\-вож\-да\-юще\-му\-ся рос\-том ве\-ро\-ят\-ности блокировки доступа 
+запросов одноадресной доставки данных вследствие уменьшения свободного 
+ресурса сети. При этом исследуемый механизм приоритизации, опре\-де\-ля\-ющий 
+порядок выбора заявок для прерывания обслуживания, приводит к~вытеснению 
+менее приоритетных одноадресных заявок вне за\-ви\-си\-мости от условий прямой 
+ви\-ди\-мости меж\-ду БС и~ПУ. Однако в~диапазоне нагрузок, полученном 
+в~результате исследования, значения вероятностей потери заявок, 
+опре\-де\-ля\-ющие вероятности отказов в~предостав\-ле\-нии услуги, удовле\-тво\-ря\-ют 
+требованиям стандартов, что свидетельствует о~тре\-бу\-емом качестве 
+предостав\-ле\-ния услуги.
+
+
+ {\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-gai-1}
+\Au{Bang J., Kim~J.\,H.} Predicting power density of array antenna in mmWave applications with 
+deep learning~/\!\!/ IEEE Access, 2021. Vol.~9. P.~111030--111038. doi: 
+10.1109\!/\!ACCESS.2021.3102825.
+\bibitem{2-gai-1}
+Cisco Visual Networking Index: Global mobile data traffic forecast update.~--- San Jose, CA, USA: 
+Cisco, 2019.
+\bibitem{3-gai-1}
+\Au{Ruiz C.\,G., Pascual-Iserte~A., Mu\~{n}oz~O.} Analysis of blocking in mmWave cellular 
+systems: Application to relay positioning~/\!\!/ IEEE T. Commun., 2021. Vol.~69. 
+Iss.~2. P.~1329--1342. doi: 10.1109\!/\!TCOMM.2020.3038177.
+\bibitem{4-gai-1}
+Telecommunication management; Study on management and orchestration of 
+network slicing for next generation network. 3GPP TR 28.801.  Version~15.1.  2018.
+\bibitem{5-gai-1}
+\Au{Moltchanov D., Sopin~E., Be\-gi\-shev~V., Sa\-muy\-lov~A., Kou\-che\-rya\-vy~Y., Sa\-mouy\-lov~K.} 
+A~tutorial on mathematical modeling of 5G\!/\!6G millimeter wave and terahertz cellular 
+systems~/\!\!/ IEEE Commun. Surv. Tut., 2022. Vol.~24. Iss.~2. P.~1072--1116. 
+doi: 10.1109\!/\!COMST.2022.3156207.
+\bibitem{6-gai-1}
+\Au{Власкина А.\,С., Бурцева~С.\,А., Ко\-чет\-ко\-ва~И.\,А., Шор\-гин~С.\,Я.} Управ\-ля\-емая 
+сис\-те\-ма массового обслуживания с~эластичным трафиком и~сигналами для анализа 
+нарезки ресурсов в~сети радиодоступа~/\!\!/ Информатика и~её применения, 2022. 
+Т.~16. Вып.~3. С.~90--96. doi: 10.14357\!/\!19922264220312. EDN: MFWTPO.
+
+\bibitem{7-gai-1}
+\Au{Adou Y., Markova~E., Gaidamaka~Y.} Modeling and analyzing preemption-based service 
+prioritization in 5G networks slicing framework~/\!\!/ Future Internet, 2022. Vol.~14. Iss.~10. 
+Art.~299. 16~p. doi: 10.3390\!/\!fi14100299.
+
+\bibitem{9-gai-1} %8
+\Au{Samuylov A., Moltchanov~D., Krup\-ko~A., Ko\-val\-chu\-kov~R., Mos\-ka\-le\-va~F., Gai\-da\-ma\-ka~Yu.} 
+Performance analysis of mixture of unicast and multicast sessions in 5G NR systems~/\!\!/ 
+10th Congress (International) on Ultra Modern 
+Telecommunications and Control Systems and Workshops Proceedings.~--- Piscataway, NJ, USA: 
+IEEE, 2018. P.~287--293. doi: 10.1109\!/\!ICUMT.2018.8631230.
+\bibitem{8-gai-1} %9
+\Au{Москалева Ф.\,А., Бес\-част\-ный В.\,А., Са\-муй\-лов~А.\,К., Мол\-ча\-нов~Д.\,А., 
+Гай\-да\-ма\-ка~Ю.\,В.} Построение модели обслуживания двух типов трафика точкой доступа 
+в~диапазоне mmWave~/\!\!/ Сб. трудов XIII Всеросс. совещания по проблемам  
+управ\-ле\-ния.~--- М.: ИПУ им.\ В.\,А.~Трапезникова РАН, 2019. С.~2985--2991.
+doi: 10.25728\!/\!vspu.2019.2985. EDN: 
+DTBIMZ.
+
+
+\bibitem{11-gai-1} %10
+\Au{Бесчастный В.\,А., Гайдамака~Ю.\,В.} Модель обслуживания трафика 
+одноадресных и~многоадресных со\-еди\-не\-ний высокочастотной сети 5G~/\!\!/ 
+Современные информационные технологии и~ИТ-об\-ра\-зо\-ва\-ние, 2019. Т.~15. 
+№\,2. С.~263--273. doi: 10.25559\!/\!SITITO.15.201902.263-273. EDN: BWKUBC.
+
+\bibitem{10-gai-1} %11
+\Au{Samuylov A., Moltchanov~D., Ko\-val\-chu\-kov~R., Pir\-ma\-go\-me\-dov~R., Gai\-da\-ma\-ka~Y., 
+And\-re\-ev~S., Kou\-che\-rya\-vy~Y., Sa\-mouy\-lov~K.} Characterizing resource allocation trade-offs in 5G 
+NR serving multicast and unicast traffic~/\!\!/ IEEE T. Wirel. Commun., 2020. 
+Vol.~19. Iss.~5. P.~3421--3434. doi: 10.1109\!/\!TWC.2020.2973375.
+
+\bibitem{12-gai-1}
+\Au{Румянцева А.\,С., Москалева~Ф.\,А., Гай\-да\-ма\-ка~Ю.\,В.} Математическая модель 
+обслуживания двух типов трафика точ\-кой до\-сту\-па в~диапазоне mmWave~/\!\!/  
+Ин\-фор\-ма\-ци\-он\-но-те\-ле\-ком\-му\-ни\-ка\-ци\-он\-ные технологии и~математическое 
+моделирование высокотехнологичных систем: Мат-лы Всеросс. конф. с~международным 
+участием.~--- М.: РУДН, 2022. С.~55--60. EDN: VFTDZQ.
+%\bibitem{13-gai-1}
+%\Au{Khatibi S.} Radio resource management strategies in virtual networks: PhD Diss.~--- Lisbon, 
+%2016. 196~p.
+
+\bibitem{15-gai-1} %13
+\Au{Naumov V., Gaidamaka~Yu., Yar\-ki\-na~N., Sa\-mouy\-lov~K.} Matrix and analytical methods for 
+performance analysis of telecommunication systems.~--- Cham: Springer Nature, 
+2021. 308~p. doi: 10.1007\!/\!978-3-030-83132-5.
+
+\bibitem{14-gai-1}
+\Au{Schoolar D., Lambert~P., Nanbin~W., Liang~Z.} 5G service experience-based network 
+planning criteria.~--- Ovum, 2019.  {\sf 
+https://carrier.huawei.com/$\sim$/media/ cnbgv2/download/products/servies/5g-planning-criteria-white-paper.pdf}.
+
+
+     \end{thebibliography}
+} }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 20.02.24}}
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+
+\hrule
+
+%\vspace*{8pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\def\tit{ON MODELING SHARED SERVICE OF~UNICAST AND~MULTICAST TRAFFIC 
+WITH PRIORITIZATION}
+
+
+
+\def\titkol{On modeling shared service of~unicast and~multicast traffic 
+with prioritization}
+
+\def\aut{A.\,S.~Rumyantseva$^{1}$, F.\,A.~Moskaleva$^{1}$, A.\,K.~Samouylov$^{1}$, 
+S.\,Ya.~Shorgin$^{2}$, and~Yu.\,V.~Gaidamaka$^{1,2}$}
+
+\def\autkol{A.\,S.~Rumyantseva, F.\,A.~Moskaleva, A.\,K.~Samouylov, et al.} 
+%S.\,Ya.~Shorgin$^{2}$, and~Yu.\,V.~Gaidamaka$^{1,2}$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+$^1$RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federa-\linebreak 
+$\hphantom{^1}$tion
+
+\noindent
+$^2$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
+$\hphantom{^1}$of  Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2024 vol~34 no\,2}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2024 vol~34 no\,2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+
+\Abste{The increase in the number of users and high network requirements have led to the need to introduce millimeter 
+wave data transmission technology (mmWave) in order to increase data transfer speeds and minimize delays. 
+The transition to the millimeter wave band in the fifth generation of communication networks allows the specifics 
+of the implementation of the provision of services, including the sensitivity of directional antenna beams to 
+radio signal blocking. In addition, when effectively planning a~network providing unicast and multicast services, it is necessary to achieve 
+a~balance between opposite solutions for these two types of traffic. In this article, using the methods of the queuing theory, 
+a~mathematical model has been developed to describe the prioritization mechanism for servicing 
+a~combination of unicast and multicast traffic, for each of which the possibility of line-of-sight (LoS) blockers is regarded. 
+The features of signal\linebreak\vspace*{-12pt}}
+
+\Abstend{propagation are taken into account in the model by dividing the coverage area into two areas.
+ The constructed mathematical model allows one to find analytical expressions for the probabilities of loss of 
+ unicast and multicast connections as well as the amount of occupied resource both by individual types of 
+ traffic in different areas of the coverage area and in the entire system as a~whole. The method of distribution of the radio resource
+  of the network base station is based on the balance between the listed main 
+performance indicators which allows one to monitor compliance with quality requirements for both types of services.}
+
+\KWE{mmWave; unicast connections; multicast connections; LoS; LoS blocking; 
+mathematical model}
+
+
+
+
+\DOI{10.14357\!/\!08696527240203}{QXWAUL}  
+
+\vspace*{-10pt}
+
+
+\Ack
+
+\vspace*{-3pt}
+
+\noindent
+The reported study was funded by the Russian Science Foundation, project  
+No.\,22-79-10053 ({\sf https://rscf.ru/project/22-79-10053}).
+
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{l-gai}
+\Aue{Bang, J., and J.\,H.~Kim.} 2021. 
+Predicting power density of array antenna in mmWave applications with deep learning. 
+\textit{IEEE Access} 9:111030--111038. doi: 10.1109\!/\!ACCESS.2021.3102825.
+
+%2
+\bibitem{2-gai}
+Cisco Visual Networking Index: Global mobile data traffic forecast update. 2019. San Jose, 
+USA.
+
+%3
+\bibitem{3-gai}
+\Aue{Ruiz, C.\,G., A.~Pascual-Iserte, and O.~Mu\~{n}oz.} 2021. 
+Analysis of blocking in mmWave cellular systems: Application to relay positioning. 
+\textit{IEEE T. Commun.} 69(2):1329--1342. doi: 10.1109\!/\!TCOMM.2020.3038177. 
+
+%4
+\bibitem{4-gai}
+3GPP TR 28.801. 2018. Telecommunication management; Study on management and 
+orchestration of network slicing for next generation network.  Version~15.1.0.
+
+%5
+\bibitem{5-gai}
+\Aue{Moltchanov, D., E.~Sopin, V.~Begishev, A.~Sa\-muy\-lov, Y.~Kou\-che\-rya\-vy, and 
+K.~Sa\-mouy\-lov.} 2022. 
+A~tutorial on mathematical modeling of 5G/6G millimeter wave and terahertz cellular 
+systems. \textit{IEEE Commun. Surv. Tut.} 24(2):1072--1116. doi: 
+10.1109\!/\!COMST.2022.3156207.
+
+%6
+\bibitem{6-gai}
+\Aue{Vlaskina, A.\,S., S.\,A.~Bur\-tse\-va, I.\,A.~Ko\-chet\-ko\-va, and S.\,Ya.~Shor\-gin.} 2022. 
+Upravlyaemaya sistema massovogo obsluzhivaniya s~elastichnym trafikom i~signalami 
+dlya analiza narezki resursov v seti radiodostupa [Controllable queuing system with elastic 
+traffic and signals for analyzing network slicing]. \textit{Informatika i~ee Primeneniya --- 
+Inform. Appl.} 16(3):90--96. doi: 10.14357\!/\!19922264220312. EDN: MFWTPO.
+
+%7
+\bibitem{7-gai}
+\Aue{Adou, Y., E.~Markova, and Y.~Gaidamaka.} 2022. Modeling and analyzing 
+preemption-based service prioritization in 5G networks slicing framework. \textit{Future 
+Internet} 14(10):299. 16~p. doi: 10.3390\!/\!fi14100299.
+
+%8
+\bibitem{9-gai} 
+\Aue{Samuylov, A., D.~Moltchanov, A.~Krup\-ko, R.~Ko\-val\-chu\-kov, F.~Mos\-ka\-le\-va, and 
+Yu.~Gai\-da\-ma\-ka.} 2018. Performance analysis of mixture of unicast and multicast sessions 
+in 5G NR systems. \textit{10th Congress (International) on Ultra Modern 
+Telecommunications and Control Systems and Workshops Proceedings}. Piscataway, NJ: IEEE. 287--293. doi:  
+10.1109\!/\!ICUMT.2018.8631230.
+
+%9
+\bibitem{8-gai}
+\Aue{Moskaleva, F.\,A., V.\,A.~Bes\-chast\-ny, A.\,K.~Sa\-mui\-lov, D.\,A.~Mol\-cha\-nov, and 
+Yu.\,V.~Gay\-da\-ma\-ka.} 2019.  Postroenie modeli obsluzhivaniya dvukh tipov trafika 
+tochkoy dostupa v diapazone mmWave [Building a~model for servicing two types of traffic 
+with an access point in the mmWave range]. \textit{Sbornik trudov XIII Vseross. 
+soveshchaniya po problemam upravleniya} [13th All-Russian Meeting on Management 
+Problems Proceedings]. Moscow: V.\,A.~Trapeznikov Institute of Management Problems of 
+the Russian Academy of Sciences. 2985--2991. doi: 10.25728\!/\!vspu.2019.2985. EDN: 
+DTBIMZ.
+
+
+
+%10
+\bibitem{11-gai}
+\Aue{Beschastnyy, V.\,A., and Yu.\,V.~Gay\-da\-ma\-ka.} 2019. 
+Model'  obsluzhivaniya trafika odnoadresnykh i~mnogoadresnykh soedineniy 
+vysokochastotnoy seti 5G [Modeling mixture of unicast and multicast communications in 
+5G high frequency networks]. 
+\textit{Sovremennye informatsionnye tekhnologii i~IT-obrazovanie} [Modern 
+Information Technology and IT-education] 15(2):263--273. 
+doi: 10.25559\!/\!SITITO.15.201902.263-273. EDN: BWKUBC.
+
+%11
+\bibitem{10-gai}
+\Aue{Samuylov, A., D.~Moltchanov, R.~Ko\-val\-chu\-kov, R.~Pir\-ma\-go\-me\-dov, Y.~Gai\-da\-ma\-ka, 
+S.~And\-re\-ev, Y.~Kou\-che\-rya\-vy, and K.~Sa\-mouy\-lov.} 2020. Characterizing resource 
+allocation trade-offs in 5G NR serving multicast and unicast traffic. \textit{IEEE T. Wirel. 
+Commun.} 19(5):3421--3434. doi: 10.1109\!/\!TWC.2020.2973375.
+
+
+
+%12
+\bibitem{12-gai}
+\Aue{Rumyantseva, A.\,S., F.\,A.~Mos\-ka\-le\-va, and Yu.\,V.~Gay\-da\-ma\-ka.} 2022. 
+Ma\-te\-ma\-ti\-che\-skaya model' obsluzhivaniya dvukh tipov trafika tochkoy dostupa v~diapazone 
+mmWave [Mathematical model of servicing two traffic types by mmWave access point]. 
+\textit{Informatsionno-telekommunikatsionnye tekhnologii i~matematicheskoe 
+modelirovanie vysokotekhnologichnykh sistem: Mat-ly Vseross. konf. s~mezhdunarodnym 
+uchastiem} [Information and Telecommunication Technologies and Mathematical Modeling 
+of High-Tech Systems: All-Russian Conference with International Participation Proceedings]. 
+Moscow: RUDN. 55--60. EDN: VFTDZQ.
+
+%13
+%\bibitem{13-gai}
+%\Aue{Khatibi, S.} 2016. Radio resource management strategies in virtual networks.  Lisbon. PhD 
+%Diss. 196~p.
+
+%13
+\bibitem{15-gai}
+\Aue{Naumov, V., Y.~Gaidamaka, N.~Yarkina, and K.~Samouylov.} 2021. \textit{Matrix 
+and analytical methods for performance analysis of telecommunication systems}. Cham: Springer 
+Nature. 308~p. doi: 10.1007\!/\!978-3-030-83132-5.
+
+%14
+\bibitem{14-gai}
+\Aue{Schoolar, D., P.~Lambert, W.~Nanbin, and Z.~Liang.} 2019. 5G service 
+experience-based network planning criteria. Ovum. Available at: {\sf 
+https://carrier.huawei.\linebreak com/$\sim$/media/cnbgv2/download/products/servies/5g-planning-criteria-white-paper. pdf} 
+(accessed April~2, 2024).
+
+
+
+\end{thebibliography}
+} }
+
+\vspace*{-8pt}
+
+\hfill{\small\textit{Received February 20, 2024}} 
+
+\vspace*{-12pt} 
+
+\Contr
+
+\vspace*{-6pt}
+
+\noindent
+\textbf{Rumyantseva Aleksandra S.} (b.\ 2001)~--- student, Department of Probability 
+Theory and Cyber Security, RUDN University, 6~Miklukho-Maklaya Str., Moscow 
+117198, Russian Federation; \mbox{1132223493@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Moskaleva Faina A.} (b.\ 1996)~--- PhD student, Department of Probability Theory 
+and Cyber Security, RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, 
+Russian Federation; \mbox{moskaleva-fa@rudn.ru}
+
+\vspace*{3pt}
+
+%\pagebreak
+
+\noindent
+\textbf{Samouylov Andrey K.} (b.\ 1988)~--- Candidate of Science (PhD) in physics and 
+mathematics, assistant professor, Department of Probability Theory and Cyber Security, 
+RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{samuylov-ak@rudn.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Shorgin Sergey Ya.} (b.\ 1952)~--- Doctor of Science in physics and mathematics, 
+professor, principal scientist, Federal Research Center ``Computer Science and Control'' of 
+the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{sshorgin@ipiran.ru}
+
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Doctor of Science in physics and mathematics, 
+professor, Department of Probability Theory and Cyber Security, RUDN University, 
+6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; senior scientist, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation;  
+\mbox{gaydamaka-yuv@rudn.ru}
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}

@@ -1,0 +1,639 @@
+%%vsgtu709
+%
+% \input{../preamblw}
+%%
+% \begin{document}
+ %\tableofcontents
+% \newpage
+
+\renewcommand{\firstpage}{369}
+\renewcommand{\lastpage}{378}
+
+% Номер УДК
+\udk{51:530.145}
+\msc{22E70, 81S10; 35P99, 81Q05, 81Q99}% Коды MSC см. http://www.ams.org/msc/
+
+
+\title{Высокотемпературное разложение матрицы плотности и его приложения}% Полный заголовок
+{Высокотемпературное разложение матрицы плотности и его приложения}% Заголовок, который идёт в верхний колонтитул
+
+
+\author{В.\,В.~Михеев}% Автор(ы) для заголовка, если авторов несколько укать \inst
+{В.~В.~М\,и\,х\,е\,е\,в}% Автор(ы) для оглавления и колонтитула через \,
+
+\institute{Омский государственный технический университет,\\
+Россия, 644050, Омск, пр. Мира, 11.}
+
+
+\email{E-mail}{vvm125@mail.ru} %E-mail's авторов
+
+\otherinf{\fullauthor{Виталий Викторович Михеев}\regalia{к.ф.-м.н., доц.}\position{доцент}
+\dept{каф. комплексной защиты информации}}
+
+\keywords{матрица плотности, статистическая сумма, функция распределения,
+некоммутативное интегрирование, высокотемпературные асимптотики, эффективный лагранжиан}
+
+\workabstract{Предложен алгоритм построения высокотемпературного разложения матрицы плотности и статистической суммы на многообразиях некомпактных групп Ли, основанный на формализме некоммутативного интегрирования дифференциальных уравнений, базирующемся на методе орбит коприсоединенного представления. Рассмотрены приложения построенного метода для решения задач квантовой статистической механики и квантовой теории поля.}
+
+\engtitle{High temperature heat kernel expansion and~its~applications}
+
+\engauthor{V.\,V.~Mikheyev}{V.~V.~M\,i\,k\,h\,e\,y\,e\,v}
+
+
+\enginstitute{Omsk State Technical University,\\ 
+11, pr. Mira, Omsk, 644050, Russia.}
+
+\otherenginfm{\fullauthor{Vitaly V. Mikheyev} \regalia{Ph.\,D. (Phys. \& Math.)} \position{Associate Professor}
+\dept{Dept. of Complex Information Security}}
+
+\engabstract{The algorithm constructed to build the high-temperature heat kernel expansion and the statistic sum on the noncompact Lie groups manifolds is discussed in the article. The method is based on the formalism of non-commutative integration which originated from the coadjoint orbits' approach to the problems of integration and quantization. Applications of presented method to the problems of quantum statistic mechanics and quantum field theory are also discussed.}
+
+\engkeywords{heat kernel, statistic sum, partition function, non-commutative integration, high-temperature asymptotics, effective lagrangian}
+
+\date{16/XI/2012} % Дата поступления статьи в редакцию.
+\revisiondate{27/I/2013} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+\Section[n]{Введение}
+Настоящая работа посвящена решению основной задачи квантовой статистической механики, иными словами, нахождению статистической суммы, стандартным образом определяемой как
+\begin{equation}\label{e:11.1}
+Z_{\beta}=\sum\limits_{n} d_n \exp(-\beta E_n),
+\end{equation}
+где $\beta=1/kT$ "--- термодинамическая температура системы, $d_n$ есть степень вырождения собственного значения гамильтониана $E_n$, соответствующего собственной функции $\psi_n$,
+$$
+\hat H \psi_n=E_n\psi_n,
+$$
+а под суммированием следует понимать в том числе и интегрирование, если спектр энергии является непрерывным \cite{mikh:bib:Hrt}.
+Эквивалентным способом представления статистической суммы выступает след матрицы плотности (теплового ядра) $\rho_{\beta}(x,x)$:
+\begin{equation}\label{e:11.2}
+Z_{\beta}=Tr\rho_{\beta}(x,x)= \int \rho_{\beta}(x,x) d\mu(x),\quad d\mu(x)=\sqrt{|g|}dx,
+\end{equation}
+определяемой как
+$$
+\rho_{\beta}(x,x')=\psi^{*}(x')exp(-\beta \hat H)\psi(x),
+$$
+которая, в свою очередь, удовлетворяет уравнению Блоха (уравнению теплового ядра) на однородном пространстве
+\begin{equation}\label{e:11.3}
+\frac{\partial \rho_{\beta}(x,x')}{\partial \beta}+H(x) \rho_{\beta}(x,x') =
+0, \quad \rho_{\beta}(x,x')|_{\beta=0}=\delta(x,x').
+\end{equation}
+
+Таким образом, если есть возможность проинтегрировать уравнение Блоха для заданного однородного пространства и гамильтониана $H(x)$ и найти матрицу плотности, то поставленная задача будет решена. Но попытка непосредственного решения может быть связана с серьезными трудностями. Первая из них состоит в собственно интегрировании, особенно в случае, когда пространство исходной задачи не покрывается одной картой и требуется проводить процедуру сшивки решений в областях перекрывания карт атласа. Вторая трудность может быть связана с тем, что традиционно применяемый для интегрирования подобных уравнений метод разделения переменных едва ли может быть применен для \eqref{e:11.3} в силу начального условия специального вида [\citen{mikh:bib:Shap1}--\citen{mikh:bib:Shap3}]. Третья и, возможно, наиболее существенная проблема связана с~расходимостями в  \eqref{e:11.2}, вызванными формально бесконечным объемом некомпактного многообразия. 
+Так, в настоящее время большинство результатов в этой области получено или для компактных многообразий, или для многообразий конечного объема\cite{mikh:bib:Vas, mikh:bib:CV}. В силу указанных причин возрастает важность построения новых методов интегрирования уравнения  \eqref{e:11.3}, которые бы позволяли справляться с упомянутыми трудностями и находить матрицу плотности и статистическую сумму либо точно, либо в виде степенного ряда высокотемпературного приближения.
+
+В работе рассматривается основная проблема термодинамики однородных пространств для некомпактных групп Ли, во-первых, в качестве важного и иллюстративного примера, а во-вторых, в качестве первого шага для решения задачи в случае произвольного однородного пространства. Необходимо подчеркнуть, что настоящая работа не претендует на охват всех возможных приложений разложения матрицы плотности и статистической суммы в физических задачах, но демонстрирует важные случаи как примеры применения предлагаемого в работе метода.
+
+\smallskip
+
+\Section{Интегрирование уравнения Блоха на группах Ли}
+Ниже будет в общих чертах дано описание метода некоммутативного интегрирования уравнения Блоха на группах Ли, содержащее сведения, необходимые для построения ряда высокотемпературного разложения матрицы плотности и статистической суммы. Более строгое и последовательное изложение можно найти в цитируемой литературе.
+
+Рассмотрим уравнение \eqref{e:11.3} на $n$-мерной действительной связной группе Ли $G$, когда оператор $H$ представляет собой квадратичную функцию левоинвариантных векторных полей $\xi_a=\xi^i_a(x) \partial_i$, $i=1, 2, \dots, n$, на группе. Тогда можно считать, что $H$ представляет собой оператор Лапласа"--~Бельтрами на групповом пространстве с левоинвариантной римановой метрикой $$g^{ij}=G^{ab} \xi^i_a(x) \xi^j_b(x),$$ причём для постоянной матрицы $G^{ab}$ выполнено условие $\det=G^{ab}>0$ и
+\begin{equation}\label{Ham}
+H(-i\hbar \xi)= -\hbar^2 G^{ab} \xi_a \xi_b = - \hbar^2 \Delta= - \hbar^2 \frac {1}{\sqrt{\det g_{ij}}}\partial_i \sqrt{\det g_{ij}} g^{ij} p_j.
+\end{equation}
+Такой вид оператора $H$ соответствует газу свободных частиц в групповом пространстве.
+
+Решение уравнения \eqref{e:11.3} на произвольной некомпактной группе Ли будет получено, с использованием формализма обобщённого Фурье-анализа на группах Ли, основанного на методе орбит \cite{mikh:bib:Kir, mikh:bib:SS}.
+
+Для этого введём специальное неприводимое представление алгебры Ли $\cal G$ группы $G$(так называемое $\lambda$-представление) на лагранжевом подмногообразии $Q$ орбиты присоединенного представления $\cal
+O_{\lambda}\in\cal G^{*}$:
+\begin{equation}\label{lr}
+[l_i(q,\partial_{q},\lambda),l_j(q,\partial_{q},\lambda)]=C^{k}_{ij}l_k(q,\partial_{q},\lambda),
+\end{equation}
+где $C^{k}_{ij}$ "--- структурные константы алгебры Ли $\cal G$.
+Можно показать, что любое неприводимое представление алгебры Ли может быть получено как определённое $\lambda$-представление, заданное выбором линейного функционала $\lambda \in \cal G^{*}$. 
+Линейный функционал $\lambda \equiv \lambda(j)$, где число параметров $j$ равно числу функций Казимира "--- индексу алгебры Ли $\cal G$. 
+В~силу этого мера $d\mu(\lambda)$ представляет собой спектральную меру операторов Казимира на группе Ли \cite{mikh:bib:Shir1}.
+
+Рассмотрим далее представление группы Ли $G$ в функциональном пространстве $C^{\infty}(Q)$, действующее на функции из этого пространства следующим образом:
+\begin{equation}\label{T}
+T^{\lambda}_{g}\psi(q)=\int D^{\lambda}_{q \overline{q'}}(g)\psi(q')d\mu(q')
+\end{equation}
+и являющееся поднятием $\lambda$--представления алгебры Ли
+\begin{equation}\label{eq:zeta}
+l_{i}(q,{\partial}_{q},\lambda)=\frac{\partial}{\partial g^{i}}T^{\lambda}_{g}|_{g=e}.
+\end{equation}
+Здесь под $g$, $g'$ будем понимать элементы группы $g$, $g'\in G$, ниже равноправно будут использоваться обозначения $x$, $x'$, под которыми следует понимать координаты соответствующих элементов на групповом многообразии.
+
+Набор функций ${D}^j_{q\overline{q'}}(g)$, представляющий собой матричные элементы представления \eqref{T}, может быть найден из системы уравнений
+\begin{equation}\label{e:5.3}
+\bigl[\xi_i(g)+ \overline{l_i(q',\partial_q',j)}\bigr]D^{\lambda}_{q \overline{q'}}(g)=0, \quad D^{\lambda}_{q
+\overline{q'}}(e)=\delta(q,\overline{q'}).
+\end{equation}
+
+Обобщённые функции $D^{\lambda}_{q \overline{q'}}(g)$ осуществляют обобщенное Фурье"=пре\-об\-ра\-зо\-ва\-ние на группе Ли, решая задачу гармонического анализа \cite{mikh:bib:Bar}
+\begin{equation}\label{e:5.17}
+\varphi(g)=\int_{Q\times Q\times J} \hat\varphi_j(q,q')D^{\lambda}_{q
+\overline{q'}}(g)\,d\mu(q)d\mu(q')d\mu(\lambda).
+\end{equation}
+
+Таким образом, действие право- и  левоинвариантных векторных полей на группе переходит на лагранжевом подмногообразии орбиты присоединённого представления в действие операторов  $\lambda$--представления:
+\begin{equation}\label{e:5.19}
+\xi_i\varphi(g) \iff l_i(q',\partial_q',\lambda)\hat\varphi_j(q,q');\quad \eta_i\varphi(g) \iff
+\overline{l_i(q,\partial_{q},\lambda)}\hat\varphi_j(q,q').
+\end{equation}
+
+После перехода с группового многообразия на лагранжево подмногообразие орбиты $\cal O_{\lambda}$ задача сводится к нахождению матрицы плотности ${\cal R}_{\beta}(q,\overline{\tilde q},j)$, связанной с матрицей плотности $\rho_{\beta}(g,g')$ на исходном пространстве преобразованием Фурье \eqref{e:5.17}:
+\begin{equation}\label{e:11.14}
+\rho_{\beta}(g,g')=\int {\cal R}_{\beta}(q,\overline{\tilde q},j) D^{\lambda}_{\overline{q} \tilde
+q}({g'}^{-1}g)d\mu(q) d\mu(\tilde q) d\mu(\lambda).
+\end{equation}
+Матрица плотности ${\cal R}_{\beta}(q,\overline{\tilde q},j)$ на орбите $\cal O_{\lambda}$ подчиняется редуцированному уравнению Блоха с меньшим числом независимых переменных
+\begin{equation}\label{e:11.12}
+\frac{\partial {\cal R}_{\beta}(q,\overline{\tilde q},j)}{\partial \beta}+ H(-i \hbar l)
+{\cal R}_{\beta}(q,\overline{\tilde q},j) = 0, \quad {\cal R}_{\beta}(q,\overline{\tilde
+q},j)|_{\beta=0}= \delta(q,\overline{\tilde q}),
+\end{equation}
+которое, как видно, интегрируется в квадратурах \cite{mikh:bib:BMS2}, если
+\begin{equation}
+(\dim G - {\rm ind}\, G)/2 < 2.
+\end{equation}
+
+Из решения уравнения \eqref{e:11.12} можно получить статистическую сумму (формально бесконечную) на некомпактной группе Ли, используя свойства набора функций $D^{\lambda}_{q \overline{q'}}(g)$
+\begin{multline}\label{e:11.15}
+Z_{\beta}= \int_{G} d\mu(g) \int_{Q \times J} {\cal R}_{\beta}(q,q,j) d\mu(q)
+d\mu(\lambda)  = \\ =  \mathop{\rm Vol}(G) \int_{Q \times J} {\cal R}_{\beta}(q,q,j) d\mu(q) d\mu(\lambda).
+\end{multline}
+Здесь явно видна возможность осуществить факторизацию в выражении для статистической суммы членов, содержащих расходимости, связанные с бесконечным объемом многообразия, перейдя в дальнейшем к конечной удельной (по объёму) статистической сумме \cite{mikh:bib:MS1,mikh:bib:MS2}
+\begin{equation}\label{e:11.16}
+z_{\beta}= \frac{Z_{\beta}}{\mathop{\rm Vol}(G)}=\int {\cal R}_{\beta}(q,q,j) d\mu(q) d\mu(\lambda).
+\end{equation}
+
+\smallskip
+
+\Section{Высокотемпературное разложение матрицы плотности на группах Ли}
+Представление функции распределения и самой матрицы плотности в виде степенного ряда по переменной $\beta$ (так называемое высокотемпературное разложение) представляет собой важную и, в общем случае, непростую задачу. Стандартным образом это разложение для произвольного однородного пространства записывается в~виде
+\begin{equation}\label{e:1.6}
+Z_{\beta}=\frac{\mathop{\rm Vol}(M)}{(4 \pi \beta)^{d/2}}\sum\limits_{n=0}^{\infty} a_n \beta^n,
+\end{equation}
+где $\beta$ "--- обратная термодинамическая температура.
+
+Для нахождения коэффициентов высокотемпературного разложения статистической суммы на группах Ли представим решение уравнения Блоха в~виде
+\begin{equation}\label{e:4.1}
+{\cal R}_{\beta}(q,\overline{\tilde q},j)=\exp\Bigl(\frac{i}{\hbar}S_{\beta}(q,\overline{\tilde q},j)\Bigr),
+\end{equation}
+где $S_{\beta}(q,\overline{\tilde q},j)$ "--- в общем случае комплексная функция.
+
+Применим к функции ${\cal R}_{\beta}(q,\overline{\tilde q},j)$ стандартное Фурье преобразование по переменной $\tilde q$:
+$$
+\phi(q,p)=\int \phi(q,\tilde q) \exp\Bigl(\frac{ip\tilde q}{\hbar}\Bigr) d \tilde q,
+$$
+$$
+\phi(q,\tilde q)=\frac{1}{(2 \pi \hbar)^{{\mathop{\rm dim} \cal O_\lambda}/{2}}}\int \phi(q,p) \exp\Bigl(-\frac{ipq}{\hbar}\Bigr) dp,
+$$
+что даёт возможность перейти к рассмотрению функции ${\cal R}_{\beta}(q,p,j)$, которая также удовлетворяет уравнению теплового ядра
+\begin{equation}\label{e:4.3}
+\frac{\partial {\cal R}_{\beta}(q,p,j) }{\partial \beta}+\hat H\bigl(-i \hbar l (q, \partial_q)\bigr){\cal R}_{\beta}(q,p,j)=0.
+\end{equation}
+
+Уравнение на функцию $S_{\beta}(q,\overline{\tilde q},j)$ принимает вид
+\begin{equation}\label{e:4.4}
+\frac{i}{\hbar}\frac{\partial S_{\beta}(q,p,j)}{\partial \beta}+
+\exp{\Bigl(-\frac{i}{\hbar}S_{\beta}(q,p,j)\Bigr)} \hat H\bigl(-i \hbar l(q, \partial_q)\bigr) \exp{\frac{i}{\hbar}S_{\beta}(q,p,j))}=0
+\end{equation}
+с начальным условием
+$$
+S_{\beta}(q,p,j)|_{\beta=0}= pq.
+$$
+Его решение также будем представлять в виде степенного ряда
+\begin{equation}\label{e:4.5}
+S_{\beta}(q,p,j)= \sum_{n=0}^{\infty}S_n(q,p,j)\beta^n.
+\end{equation}
+Здесь $\hat H\bigl(-i \hbar l (q, \partial_q)\bigr)$ "--- дифференциальный оператор второго порядка, который может быть представлен в виде
+\begin{multline}\label{e:4.6}
+\hat H\bigl(-i \hbar l(q, \partial_q)\bigr)= - \hbar^2 G^{ab} l_a(q, \partial_q) l_b(q, \partial_q) =
+\\
+= h^{ab}(q) \frac{\partial^2}{\partial q_a \partial q_b}+h^{a}(q) \frac{\partial}{\partial q_a}+h(q),
+\end{multline}
+где коэффициенты $h^{ab}$, $h^{a}$, $h(q)$ могут быть выражены через операторы $\lambda$-представления \eqref{eq:zeta}. 
+Выражение \eqref{e:4.6} может быть переписано, с использованием стандартных для квантовой механики обозначений $\hat p_a = i \hbar \frac{\partial}{\partial q_a}$:
+\begin{equation}\label{e:4.6_1}
+\hat H\bigl(-i \hbar l(q, \partial_q)\bigr)= H^{ab}(q)\hat p_a \hat p_a +H^{a}(q) \hat p_a + H(q).
+\end{equation}
+Так что уравнение \eqref{e:4.4} перейдёт в
+\begin{equation}\label{e:4.7}
+\frac{i}{\hbar}\sum \limits_{k=0}^{\infty} k S_{k}(q,p,j)\beta^{(k-1)}+
+\sum \limits _{k=0}^{\infty} \Theta^{(k)}(q,p,j) \beta^k=0
+\end{equation}
+с обозначением
+\begin{multline}
+\Theta^{(k)}(q,p,j)=-i \hbar H^{ab} S_{k,ab}(q,p,j)+
+ H^{ab} \sum \limits_{m=0}^{k} S_{m,a}(q,p,j) S_{k-m,b}(q,p,j)+\\+
+ S^a S_{k,a}(q,p,j)+H\delta_{k}^{0}.
+\end{multline}
+Это приводит к рекуррентным соотношениям для членов разложения $S_{k+1}(q,p,j)$:
+\begin{equation}\label{e:4.8}
+ S_{k+1}(q,p,j)=\frac{i \hbar}{k+1}\Theta^{(k)}(q,p,j).
+\end{equation}
+Видно, что коэффициент, соответствующий первой степени параметра $\beta$ в~разложении \eqref{e:4.5}, представляет собой $H(q,p)$ "--- $qp$"=символ оператора $\hat H\bigl(-i \hbar l(q, \partial_q)\bigr)$.  Это автоматически приводит к известной формуле для первого порядка высокотемпературного разложения функции распределения:
+$$
+z_{\beta} \approx \frac{1}{(2 \pi \hbar)^{{\mathop{\rm dim} \cal O_\lambda}/{2}}}\int 
+\exp\Bigl(\frac{i(q-\overline q)}{h}-H(q,p)\Bigr) dp dq dj.
+$$
+
+Степенной ряд высокотемпературного разложения матрицы плотности на симплектическом листе орбиты коприсоединенного представления ${\cal R}_\beta(q,p,j)$ получается с использованием коэффициентов $S_{k}(q,p,j)$ согласно следующего выражения:
+\begin{equation}\label{e:4.10}
+{\cal R}_\beta(q,p,j)= \sum_{n=0}^{\infty} \frac{1}{n!} \frac{d}{d \beta^n} \prod_{k=1}^{n+1} \sum_{m=0}^{n+1-k}
+\frac{((\frac{i}{\hbar}S_{k}(q,p,j)) \beta^k)^m}{m!}\Big|_{\beta=0}  \beta^n.
+\end{equation}
+
+Высокотемпературная асимптотика функции распределения (статистической суммы) находится по формуле \eqref{e:11.16}, которая после применения обратного Фурье"=преобразования принимает вид
+$$
+z_{\beta} = \frac{1}{(2 \pi \hbar)^{{\mathop{\rm dim} \cal O_\lambda}/{2}}}\int {\cal R}_\beta(q,p,j) \exp\Bigl(-\frac{ip \overline q}{\hbar}\Bigr) dp dq dj=\sum_{n=0}^{\infty} z_n \beta^n,
+$$
+так что коэффициенты $z_{n}$ разложения статистической суммы есть
+\begin{multline}\label{e:4.12}
+z_{n} = \frac{1}{(2 \pi \hbar)^{{\mathop{\rm dim} \cal O_\lambda}/{2}}}\int \frac{1}{n!} \frac{d}{d \beta^n} \prod_{k=1}^{n+1} \sum_{m=0}^{n+1-k}
+\frac{((\frac{i}{\hbar}S_{k}(q,p,j)) \beta^k)^m}{m!}\Big|_{\beta=0} \times \\ \times \exp{\Bigl(-\frac{ip \overline q}{\hbar}\Bigr)} d\mu(p) d\mu(q) d\mu(\lambda),
+\end{multline}
+и, соответственно, для коэффициентов разложения матрицы плотности имеем
+\begin{multline}\label{e:4.13}
+{\cal R}_{n}(q,\overline{\tilde q},j)=\frac{1}{(2 \pi \hbar)^{{\mathop{\rm dim} \cal O_\lambda}/{2}}}\int \frac{1}{n!} \frac{d}{d \beta^n} \prod_{k=1}^{n+1} \sum_{m=0}^{n+1-k}
+\frac{((\frac{i}{\hbar}S_{k}(q,p,j)) \beta^k)^m}{m!}\Big|_{\beta=0} \times \\
+\times  \exp{\Bigl(-\frac{ip\overline{\tilde q}}{\hbar}\Bigr)} d\mu(p).
+\end{multline}
+
+Окончательный результат для членов высокотемпературного разложения матрицы плотности на пространстве группы Ли $G$ получается после подстановки полученных коэффициентов \eqref{e:4.5} в формулу \eqref{e:11.14}:
+\begin{equation}\label{e:4.14}
+\rho_{n}(x,x')=\int {\cal R}_{n}(q,\overline{\tilde q},j) D^{\lambda}_{\overline{q} \tilde
+q}({g'}^{-1}g)d\mu(q) d\mu(\tilde q) d\mu(\lambda).
+\end{equation}
+
+\pagebreak
+
+\Section{Приложения высокотемпературного разложения матрицы плотности}
+Матрица плотности и статистическая сумма находят  свое приложение во многих областях теоретической физики, укажем лишь на некоторые. В первую очередь, статистическая сумма \eqref{e:11.2} может быть непосредственно использована для выявления термодинамических характеристик больцмановского газа (таких как энергия, энтропия и, в особенности, теплоёмкость) в заданном пространстве \cite{mikh:bib:LL5}, а также определение влияния на эти характеристики геометрических и топологических свойств самого многообразия. Для простого, но иллюстративного примера влияния топологии пространства группы $E(2)$ на поведение теплоёмкости больцмановского газа частиц задача была решена в работе \cite{mikh:bib:MS3}, а решение ее для группы Гейзенберга позволяет получить хорошо известную статистическую сумму для гармонического осциллятора. Отметим, что для вычисления термодинамических величин, таких как средняя энергия, теплоемкость, свободная энергия, энтропия системы существенна полученная выше удельная статистическая сумма $z_{\beta}$, поскольку в выражения для указанных величин входит производная $\ln Z_{\beta}$.
+
+Энергия системы определяется как
+\begin{equation}
+\langle E \rangle =-\frac{\partial \ln Z_{\beta}}{\partial \beta}=-\frac{\partial \ln z_{\beta}}{\partial \beta},
+\end{equation}
+поскольку производная факторизованной константы --- логарифма объёма многообразия "--- обращается в нуль. То же самое относится к теплоёмкости
+\begin{equation}
+c_v=\frac{\partial \langle E \rangle}{\partial T}=\beta^2 k_{B}\frac{\partial^2 \ln Z_{\beta}}{\partial \beta^2}=\beta^2 k_{B}\frac{\partial^2 \ln z_{\beta}}{\partial \beta^2},
+\end{equation}
+свободной энергии
+\begin{equation}
+F=\beta \ln Z_{\beta}
+\end{equation}
+и энтропии
+\begin{equation}
+S=-\frac{\partial F}{\partial T}=\beta^2 k_{B}\frac{\partial (\beta \ln Z_{\beta})}{\partial \beta}.
+\end{equation}
+В последних двух случаях формально бесконечный объём многообразия также сокращается при вычислении имеющих физический смысл приращений свободной энергии и энтропии.
+
+Другая проблема, схожая с рассматриваемой в настоящей работе задачей о построении высокотемпературного разложения матрицы плотности, встает в квантовой электродинамике и связана с процедурой перенормировки эффективного лагранжиана в рамках так называемого формализма пятой переменной \cite{mikh:bib:GMM, mikh:bib:BD}.
+Здесь будет рассмотрена указанная проблема для случая 4-мерной группы Ли, снабжённой левоинвариантной метрикой лоренцевой сигнатуры $g^{ij}$, которая строится уже рассмотренным образом с единственным отличием, состоящим в требовании $\quad \det(G^{ab})<0$.
+
+Рассмотрим в этом случае пятимерное уравнение Шрёдингера на функции $G_t(x,x')$ (здесь и ниже под $x$ понимается набор локальных координат на группе, определяющих элемент $g \in G$):
+\begin{equation}\label{G_t}
+i\hbar\frac{\partial G_{t}(x,x')}{\partial t}+(-\Delta+m^2) G_{t}(x,x') =
+0, \quad G_{t}(x,x')|_{t=0}=\delta(x,x'),
+\end{equation}
+которая связана с эффективным лагранжианом следующим соотношением:
+\begin{equation}\label{e:11.23}
+{\cal L}=-\frac{i}{2} \sqrt{-g} \int_{0}^{\infty} G_{t}(x,x) \frac{dt}{t}.
+\end{equation}
+
+Уравнение \eqref{G_t} полностью аналогично уравнению \eqref{e:11.3} после подстановки $t = i\hbar\beta$ и замены оператора
+$H(x)$ на $-\Delta+m^2$. Соответственно, оно может быть проинтегрировано тем же способом, который был эффективно применен к уравнению Блоха, и задача о нахождении $G_{t}(x,x)$ в \eqref{e:11.23} формально соответствует задаче о построении следа теплового ядра \eqref{e:11.2}.
+
+В рамках предложенного метода могут быть получены выражения для $G_{t}(x,x')$ и $G_t(x,x)$ в следующем виде:
+\begin{equation}\label{Gg_t}
+G_t(x,x')=\int \tilde G_t(q,\tilde q,j) D^{j}_{q \tilde q}({x'}{}^{-1}x)d\mu(q)
+d\mu(\tilde q) d\mu(j),
+\end{equation}
+\begin{equation}\label{e:11.22}
+G_t(x,x)=\int \tilde G_{t}(q,q,j) d\mu(q) d\mu(j).
+\end{equation}
+
+Очевидно, что элементы $G_t(x,x)$, которые образуют след, не зависят от координат на многообразии группы $x$ и ниже будут обозначаться как $G_t$.
+
+Расходимости в \eqref{e:11.23} при этом могут иметь различную природу, в том числе и отличную от описанной выше и связанную с бесконечным объемом многообразия: например, при $t=0$ будут расходиться интегралы $J_1$, $J_2$, $J_3$. Здесь под $J_n$ обозначаются интегралы вида
+$$
+J_n = \int_{0}^{\infty} \frac{\exp(-x)}{x^{n}} dx,
+$$
+так что коэффициенты при первых трёх степенях $\beta$ в ряде высокотемпературного приближения $a_0$, $a_1$, $a_2$ соответствуют коэффициентам при формально расходящихся интегралах $J_1$, $J_2$, $J_3$.
+
+Окончательно для функции $G_t$ получается  выражение через удельную статистическую сумму, полученную выше:
+\begin{equation}\label{e:11.24}
+G_t=e^{-i m^2 t} z_{-i t /\hbar}.
+\end{equation}
+В силу этого, если имеется возможность выразить интеграл \eqref{e:11.22} в виде ряда высокотемпературного разложения, то перенормированная с учётом указанных расходимостей функция $G_t$ легко выражается через $z_{\beta}^{(3)}$ (суммы первых трёх членов высокотемпературного разложения) окончательным образом
+\begin{equation}\label{e:11.25}
+G^{ren}_t=e^{-i m^2 t}\bigl(z_{-i t /\hbar}-z_{-i t /\hbar}^{(3)}\bigr).
+\end{equation}
+
+В заключение следует еще раз заметить, что приложения высокотемпературного разложения матрицы плотности ни в коем случае не ограничиваются рассмотренными примерами и охватывают более широкий спектр задач как теоретической физики, так и тесно связанных с ней областей математики.
+%% Благодарности, гранты и прочее
+
+\pagebreak
+
+\begin{thebibliography}{99}
+
+\Bibitem{mikh:bib:Hrt}
+\by N.~E.~Hurt
+\book Geometric quantization in action 
+\serial Mathematics and Its Applications (East European Series)
+\vol 8
+\publ D.~Reidel Publishing Co.
+\publaddr Dordrecht-Boston, Mass.
+\yr 1983
+\totalpages xiv+336
+\rtransl русск. пер.:~
+\by Н.~Харт 
+\book Геометрическое квантование в действии
+\publaddr М.
+\publ Мир
+\yr 1985
+\totalpages 343
+
+
+
+\RBibitem{mikh:bib:Shap1}
+\paper Симметрия и разделение переменных в линейном дифференциальном уравнении второго порядка.~I
+\by В.~Н.~Шаповалов
+\jour Изв. вузов. Физика
+\yr 1978
+\issue 5
+\pages 116--132
+\transl англ. пер.:~
+\jour Sov. Phys. J.
+\yr 1978
+\vol 21
+\issue 5
+\pages 645--650
+\paper Symmetry and separation of variables in a linear differential equation of second order.~I
+\by V.~N.~Shapovalov 
+
+
+
+\RBibitem{mikh:bib:Shap2}
+\paper Симметрия и разделение переменных в линейном дифференциальном уравнении второго порядка.~II
+\by В.~Н.~Шаповалов
+\jour Изв. вузов. Физика
+\yr 1978
+\issue 6
+\pages 7--10
+\transl англ. пер.:~
+\jour Sov. Phys. J.
+\yr 1978
+\vol 21
+\issue 6
+\pages 693--695
+\paper Symmetry and separation of variables in second-order differential equations.~II
+\by V.~N.~Shapovalov 
+
+
+\RBibitem{mikh:bib:Shap3}
+\paper Разделение переменных в линейном дифференциальном уравнении второго порядка
+\by В.~Н.~Шаповалов
+\jour Диффер. уравн.
+\yr 1980
+\issue 10
+\vol 16
+\pages 1864--1874
+\transl англ. пер.:~
+\by V.~N.~Shapovalov
+\paper Separation of variables in a second-order linear differential equation
+\jour Differ. Equ
+\vol 16 
+\yr 1981
+\issue 10
+\pages 1212--1220
+
+
+\Bibitem{mikh:bib:Vas}
+\paper Heat kernel expansion: user's manual
+\by D.~V.~Vassilevich
+\jour Phys. Rep.
+\yr 2003
+\vol 338
+\issue 5--6
+\pages 279--360
+
+
+\RBibitem{mikh:bib:SS}
+\by А.~В.~Шаповалов, И.~В.~Широков
+\paper Некоммутативное интегрирование линейных дифференциальных уравнений
+\jour ТМФ
+\yr 1995
+\vol 104
+\issue 2
+\pages 195--213
+\mathnet{http://mi.mathnet.ru/tmf1332}
+\mathscinet{http://www.ams.org/mathscinet-getitem?mr=1488670}
+\zmath{http://www.zentralblatt-math.org/zmath/search/?an=Zbl 0856.35109}
+\transl англ. пер.:~
+\by A.~V.~Shapovalov, I.~V.~Shirokov
+\paper Noncommutative integration of linear differential equations
+\jour Theoret. and Math. Phys.
+\yr 1995
+\vol 104
+\issue 2
+\pages 921--934
+\crossref{http://dx.doi.org/10.1007/BF02065973}
+\isi{http://gateway.isiknowledge.com/gateway/Gateway.cgi?GWVersion=2&SrcApp=PARTNER_APP&SrcAuth=LinksAMR&DestLinkType=FullRecord&DestApp=ALL_WOS&KeyUT=A1995UD33400001}
+
+\RBibitem{mikh:bib:Shir1}
+\by И.~В.~Широков
+\paper Координаты Дарбу на $K$-орбитах и спектры операторов Казимира на группах Ли
+\jour ТМФ
+\yr 2000
+\vol 123
+\issue 3
+\pages 407--423
+\mathnet{http://mi.mathnet.ru/tmf612}
+\crossref{http://dx.doi.org/10.4213/tmf612}
+\mathscinet{http://www.ams.org/mathscinet-getitem?mr=1794009}
+\zmath{http://www.zentralblatt-math.org/zmath/search/?an=Zbl 0967.22004}
+\transl англ. пер.:~
+\paper Darboux coordinates on $K$-orbits and the spectra of Casimir operators on Lie groups
+\by I.~V.~Shirokov
+\jour Theoret. and Math. Phys.
+\yr 2000
+\vol 123
+\issue 3
+\pages 754--767
+\crossref{http://dx.doi.org/10.1007/BF02551030}
+\isi{http://gateway.isiknowledge.com/gateway/Gateway.cgi?GWVersion=2&SrcApp=PARTNER_APP&SrcAuth=LinksAMR&DestLinkType=FullRecord&DestApp=ALL_WOS&KeyUT=000088926700004}
+
+
+
+
+
+\RBibitem{mikh:bib:Kir}
+\by А.~А.~Кириллов 
+\book Элементы теории представлений
+\publaddr М.
+\publ Наука 
+\yr 1978
+\totalpages 180 
+\transl \mbox{англ. пер.}:  {} 
+\by A.~A.~Kirillov
+\book Elements of the theory of representations
+\serial Grundlehren der Mathematischen Wissenschaften
+\vol 220
+\publaddr Berlin, New York, Heidelberg
+\publ Springer Verlag
+\yr 1976
+\totalpages xi+315
+
+
+\Bibitem{mikh:bib:Bar}
+\by A.~O.~Barut, R.~Razcka
+\book Theory of group representations and applications. 2nd rev. ed
+\publ World Scientific
+\publaddr Singapore
+\yr 1986
+\totalpages xix+717
+
+
+\RBibitem{mikh:bib:BMS2}
+\by С.~П.~Барановский, В.~В.~Михеев, И.~В.~Широков
+\paper Квантовые гамильтоновы системы на K-орбитах. Квазиклассический спектр асимметрического волчка
+\jour ТМФ
+\yr 2001
+\vol 129
+\issue 1
+\pages 3--13
+\mathnet{http://mi.mathnet.ru/tmf514}
+\crossref{http://dx.doi.org/10.4213/tmf514}
+\mathscinet{http://www.ams.org/mathscinet-getitem?mr=1904743}
+\zmath{http://www.zentralblatt-math.org/zmath/search/?an=Zbl 1035.81023}
+\transl англ. пер.:~
+\paper Quantum Hamiltonian systems on K-orbits: Semiclassical spectrum of the asymmetric top
+\by S.~P.~Baranovsky, V.~V.~Mikheyev,  I.~V.~Shirokov
+\jour Theoret. and Math. Phys.
+\yr 2001
+\vol 129
+\issue 1
+\pages 1311--1319
+\crossref{http://dx.doi.org/10.1023/A:1012455908565}
+\isi{http://gateway.isiknowledge.com/gateway/Gateway.cgi?GWVersion=2&SrcApp=PARTNER_APP&SrcAuth=LinksAMR&DestLinkType=FullRecord&DestApp=ALL_WOS&KeyUT=000172400800001}
+
+
+
+\Bibitem{mikh:bib:MS1}
+\paper Building of heat kernel on non-compact homogeneous spaces
+\by  V.~Mikheyev., I.~Shirokov
+\jour EJTP, Electron. J. Theor. Phys.
+\yr 2006
+\issue 13
+\vol 3
+\pages 99--108
+
+
+\RBibitem{mikh:bib:MS2}
+\paper Метод орбит коприсоединенного представления в термодинамике некомпактных групп Ли
+\by   В.~В.~Михеев, И.~В.~Широков
+\jour Изв. вузов. Физика
+\yr 2007
+\vol 50
+\issue 3
+\pages 84–89
+%Zbl 1133.80001
+\transl англ. пер.:~
+\by  V.~V.~Mikheyev., I.~V.~Shirokov
+\paper Method of orbits of coadjoint representation in thermodynamics of noncompact Lie groups
+\jour Russ. Phys.~J.
+\vol 50
+\issue 3
+\pages 290--295 
+\yr 2007
+
+\Bibitem{mikh:bib:MS3}
+\paper Application of coadjoint orbits in the thermodynamics of non-compact manifolds
+\by   V.~V.~Mikheyev, I.~V.~Shirokov
+\jour EJTP, Electron. J.~Theor. Phys.
+\yr 2005
+\issue 7
+\vol 2
+\pages 1--10
+
+
+\RBibitem{mikh:bib:LL5}
+\by Л.~Д.~Ландау, Е.~М.~Лифшиц
+\book Теоретическая физика. В~10 томах
+\bookvol 5
+\volinfo Статистическая физика. Часть~1
+\publaddr М.
+\publ Наука
+\yr 1995
+\totalpages 606
+\misctransl
+\by L.~D.~Landau; E.~M.~Lifshits
+\book Theoretical physics. In 10 vols
+\bookvol 5
+\volinfo Statistical physics. Part~1
+\publaddr Moscow
+\publ Nauka
+\totalpages 606 
+\yr 1995
+
+\RBibitem{mikh:bib:GMM}
+\by А.~А.~Гриб, С.~Г.~Мамаев, В.~М.~Мостепаненко
+\book Вакуумные квантовые эффекты в сильных полях
+\publaddr М.
+\publ Энергоатомиздат
+\yr 1988
+\totalpages 288
+\transl англ. пер.:~
+\by A.~A.~Grib, S.~G.~Mamayev, V.~M.~Mostepanenko
+\book Vacuum quantum effects in strong fields
+\publaddr  St. Petrsburg
+\publ Friedmann Lab. Publ.
+\yr 1994 
+\totalpages 361
+
+
+
+
+\Bibitem{mikh:bib:BD}
+\book Quantum Fields in Curved Space. Corrected reprint of the 1982 original
+\by N.~D.~Birrell, P.~C.~W.~Davies
+\publ Cambridge University Press
+\publaddr Cambridge 
+\yr 1984 
+\totalpages ix+340
+\rtransl русск. пер.:~
+\by Н.~Биррелл, П.~Девис
+\book Квантованные поля в искривленном пространстве-времени.
+\publaddr М.
+\publ Мир
+\yr 1984
+\totalpages 357
+
+\Bibitem{mikh:bib:CV}
+\paper Integrability and Huygens' principle on symmetric spaces
+\by   O.~A.~Chalykh, A.~P.~Veselov
+\jour Comm. Math. Phys.
+\yr 1996
+\vol 178
+\issue 2
+\pages 311--338
+
+
+
+\end{thebibliography}
+
+
+
+%\newpage
+%
+%\chead[\fancyplain{}{\scriptsize \sl M\,i\,k\,h\,e\,y\,e\,v~V.\,V.}]{\fancyplain{}{\scriptsize \sl  High temperature heat kernel expansion and its applications}}
+
+\makeengtitlem
+
+
+
+ \newpage
+%
+% \tableofengcontents
+%%
+%\end{document}

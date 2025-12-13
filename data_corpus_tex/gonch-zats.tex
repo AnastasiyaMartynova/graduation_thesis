@@ -1,0 +1,877 @@
+\def\stat{gon-zats}
+
+\def\tit{ПРЕДСТАВЛЕНИЕ НОВЫХ ЛЕКСИКОГРАФИЧЕСКИХ ЗНАНИЙ В~ДИНАМИЧЕСКИХ 
+КЛАССИФИКАЦИОННЫХ СИСТЕМАХ$^*$}
+
+\def\titkol{Представление новых лексикографических знаний в~динамических 
+классификационных системах}
+
+\def\aut{А.\,А.~Гончаров$^1$, И.\,М.~Зацман$^2$, М.\,Г.~Кружков$^3$}
+
+\def\autkol{А.\,А.~Гончаров, И.\,М.~Зацман, М.\,Г.~Кружков}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Гончаров А.\,А.}
+\index{Зацман И.\,М.}
+\index{Кружков М.\,Г.}
+\index{Goncharov A.\,A.}
+\index{Zatsman I.\,M.}
+\index{Kruzhkov M.\,G.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена в~Институте проблем информатики ФИЦ ИУ РАН при поддержке РФФИ (проект  
+20-012-00166).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управление>> 
+Российской академии наук, \mbox{a.gonch48@gmail.com}}
+\footnotetext[2]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управление>> 
+Российской академии наук, \mbox{izatsman@yandex.ru}}
+\footnotetext[3]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управление>> 
+Российской академии наук, \mbox{magnit75@yandex.ru}}
+
+
+%\vspace*{-12pt}
+
+
+     
+     \Abst{Характерная особенность динамических классификационных систем (ДКС) состоит 
+     в~том, что в~процессе применения этих систем в~них в~любой момент времени могут 
+добавляться новые рубрики и/или изменяться дефиниции существующих рубрик, включая 
+перераспределение смыслового содержания между ними. С~одной стороны, эта 
+особенность ДКС дает возможность оперативно 
+отражать в~них новое знание и~сразу начинать его использовать, например в~процессе 
+лингвистического аннотирования. С~другой стороны, если некоторая рубрика 
+использовалась при аннотировании, а~затем была изменена, то аннотации с~этой 
+рубрикой, сформированные до внесения изменений, в~ряде случаев должны быть 
+реклассифицированы. Статья преследует двоякую цель, которая состоит, во-пер\-вых, 
+в~сопоставлении подходов к~классификации сущностей на основе (1)~ДКС 
+и~(2)~онтологий, изменяемых во времени, а~во-вто\-рых, 
+в~описании специфики представления новых лексикографических знаний в~ДКС.}
+     
+     \KW{динамическая классификационная система; версионные онтологии; 
+лингвистическое аннотирование; реклассификация аннотаций}
+
+\DOI{10.14357/19922264210112}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+     
+\section{Введение}
+
+Характерная особенность ДКС 
+состоит в~том, что в~процессе применения в~них могут добавляться новые 
+рубрики и/или изменяться дефиниции существующих рубрик, включая 
+перераспределение смыслового содержания между ними. В~отличие от 
+версионных классификационных систем, для которых установлен период их 
+обновления (например, рубрики Международной патентной классификации 
+могут меняться не чаще, чем раз в~квартал~[1]), добавления и~изменения 
+в~ДКС в~случае необходимости могут быть сделаны в~любой момент 
+времени. С~одной стороны, эта особенность ДКС позволяет оперативно 
+отражать в~них новое знание и~сразу начинать его использовать, например 
+в~процессе лингвистического аннотирования~[2]. С~другой стороны, если 
+некоторая рубрика использовалась при аннотировании, а~затем была 
+изменена, то аннотации с~этой рубрикой, сформированные до внесения 
+изменений, в~ряде случаев должны быть реклассифицированы~[3].
+
+Цель статьи состоит в~сопоставлении подходов к~классификации сущностей 
+на основе (1)~ДКС и~(2)~онтологий, изменяемых во времени, а также 
+в~описании специфики представления новых лексикографических знаний 
+в~ДКС. В~качестве примера ДКС в~статье рассматривается фасетная 
+классификация (ФК) надкорпусной базы данных (НБД)~[4--6]. В~проекте по 
+гранту №\,20-012-00166\linebreak НБД используется для аннотирования таких 
+сущностей, как употребления немецких модальных глаго\-лов (НМГ) 
+в~параллельных текстах~[7--9], в~процессе которого могут 
+(1)~обнаруживаться новые значения НМГ, (2)~добавляться новые рубрики 
+для этих значений в~момент их обнаружения~[10, 11] и~(3)~изменяться 
+дефиниции рубрик ФК~[3].
+
+\vspace*{-14pt}
+
+\section{Онтологии, изменяемые во~времени}
+
+\vspace*{-4pt}
+
+Методы аннотирования сущностей с~использованием, с~одной стороны, ДКС 
+и,~с~другой стороны, онтологий, изменяемых во времени, во многом схожи. 
+При аннотировании сущностей \mbox{с~по\-мощью} ДКС им присваиваются рубрики, в~том числе 
+до\-бав\-лен\-ные или измененные непосредственно в~процессе 
+формирования ка\-кой-ли\-бо аннотации. При классификации сущностей 
+с~по\-мощью онтологии для них устанавливаются атрибуты, пред\-став\-ля\-ющие 
+собой ссылки на концепты онтологии. С~течением времени могут меняться 
+структура и~наполнение как ДКС, так и~онтологии. Это может быть связано 
+с~изменениями (1)~самой предметной об\-ласти, (2)~экспертных знаний об этой 
+области и/или (3)~стандартов ее описания~[12].
+
+Кроме этого, при проведении исследований научные коллективы могут 
+пользоваться теми классификационными системами и~онтологиями для \mbox{своей} 
+предметной области, которые находятся в~откры\-том доступе, а~затем 
+модифицировать их в~зависимости от целей и~задач выполняемых проектов. 
+В~силу перечисленных сходств работы, связанные с~эволюцией 
+и~версионностью онтологий, представляют значительный интерес для 
+разработки средств актуализации ДКС.
+
+В~[12] описывается подход к~управлению версионностью онтологий 
+и~предлагается система нумерации версий онтологий, позволяющая 
+определять, обладают ли версии свойством обратной \mbox{совместимости}, или 
+эквивалентности (с~точ\-ностью до синтаксических различий). Обратная 
+совместимость важна потому, что в~случае ее сохранения снимается 
+необходимость в~реклассификации ранее сформированных аннотаций (об 
+этой проблеме применительно к~ДКС на примере ФК НБД см.~[3]). 
+Сохранять историю изменений понятий онтологии предлагается либо 
+в~отдельной онтологии, либо в~выделенных для этого классах исходной 
+онтологии. В~\cite{13-gon} представлены инструменты, позволяющие 
+выделять и~визуализировать структурные различия между версиями одной 
+и~той же онтологии.
+
+В~\cite{14-gon} показано, как с~помощью онтологий могут фиксироваться 
+временн$\acute{\mbox{ы}}$е данные, знания, правила и~отношения, 
+и~рассмотрены подходы к~описанию изменений в~онтологиях. Темпоральная 
+дескриптивная логика (Temporal Description Logics) служит основой 
+дополнения онтологии логическими функциями для работы со временем, 
+поз\-во\-ля\-ющи\-ми выражать и~обрабатывать такие концепты,\linebreak как <<постоянно 
+в~прошлом>> или <<в~некоторый момент в~будущем>>. Для регистрации 
+фактов, относящихся к~определенному периоду времени, используются 
+подходы, позволяющие обходить \mbox{ограничения} большинства онтологий, 
+опирающихся на язык Web Ontology Language (OWL): реификация 
+(Reification), четырехмерные (4D-fluent) онтологии и~переход к~n-ар\-ным 
+отношениям (N-ary relations). Поскольку по умолчанию отношения 
+в~онтологиях OWL являются бинарными, тогда как для фиксации 
+временн$\acute{\mbox{о}}$го интервала события необходим по крайней мере 
+один дополнительный аргумент, все перечисленные подходы 
+характеризуются тем, что для описания временн$\acute{\mbox{ы}}$х фактов 
+в~онтологиях каждый раз создается новая сущность.\linebreak На основе 
+вышеназванных подходов разработана структура SOWL (spatio-temporal OWL), пред\-на\-значенная 
+для включения %\linebreak 
+про\-стран\-ст\-вен\-но-вре\-мен\-н$\acute{\mbox{о}}$й информации 
+в~онтологии OWL, а~также\linebreak инструмент CHRONOS, упро\-ща\-ющий создание 
+и~редактирование данных об \mbox{изменениях} в~онтологиях, ис\-поль\-зу\-ющих эту 
+структуру. Кроме того, для извлечения информации из SOWL-он\-то\-ло\-гий 
+создан язык запросов, описанный в~[15].
+
+В~[16] дается обзор процессов и~алгоритмов, связанных с~развитием 
+онтологий (ontology evolution). Комплекс таких процессов описан как единый 
+и~непрерывный цикл, который можно разделить на несколько этапов: 
+
+\begin{enumerate}[(1)]
+\item выявление потребности в~изменениях; 
+\item формулировка предлагаемых 
+изменений; 
+\item оценка адекватности предлагаемых изменений; 
+\item оценка 
+последствий реализации изменений; 
+\item внедрение изменений.
+\end{enumerate}
+
+ Каждый этап 
+рассматривается отдельно с~учетом опыта, полученного в~ходе других 
+исследований.
+
+Следует отметить ряд особенностей подхода, предлагаемого в~настоящей 
+работе, в~сравнении с~\cite{12-gon, 13-gon, 14-gon, 15-gon, 16-gon}.  
+Во-пер\-вых, он нацелен не на описание любых изменений онтологий во 
+времени, а~на фиксирование дополнений, изменений порядка и~смыслового 
+содержания рубрик самой ДКС. Таким образом, он ближе всего к~работам, 
+где описываются подходы к~управлению различными версиями онтологий 
+и~развитию онтологий; работы же, посвященные описанию темпоральных 
+сущностей в~онтологиях, как правило, имеют иную целевую направленность.
+
+\begin{figure*}[b] %fig1
+\vspace*{1pt}
+\begin{center}
+\mbox{%
+\epsfxsize=88mm
+\epsfbox{gon-1.eps}
+}
+\end{center}
+
+\vspace*{3pt}
+
+\noindent
+{\small %\begin{center}
+{Таблицы для хранения истории изменений рубрик ФК в~НБД.}
+%\end{center} %\newline
+%
+%\vspace*{-6pt}
+%
+%\noindent
+Поля таблицы \textbf{PropHistory}: %\protect\newline
+%\begin{itemize}
+%\item 
+\textbf{PropId} --- уникальный идентификатор рубрики (соответствующей значению НМГ);
+\textbf{Code}~--- краткое обозначение рубрики (для значений НМГ обычно имеет следующий вид: 
+модальный глагол, дефис, номер значения, например, <<sollen-01>>);
+%\item 
+\textbf{Name}~--- дефиниция рубрики;
+\textbf{isCurrent}~--- признак актуальности данного состояния рубрики (1~--- актуально, 0~--- не 
+актуально);
+%\item
+\textbf{OperationId}~--- идентификатор операции, в~результате которой рубрика приняла вид, 
+соответствующий данной строке таблицы;
+%\item
+\textbf{OperationAttr}~--- атрибут, который присваивается рубрике в~рамках операции с~Id, 
+указанным в~поле OperationId (см.\ об атрибутах и~их значениях в~операциях в~табл.~3).
+%\end{itemize}
+Поля таблицы \textbf{PropOperation}:
+%\begin{itemize}
+%\item 
+\textbf{Id}~--- идентификатор операции (обеспечивает связь между операциями и~рубриками, 
+которые они затрагивают);
+%\item 
+\textbf{Operation}~--- задает тип операции (допустимые значения: CREATE, DELETE, MERGE, 
+SPLIT, REORDER, REDISTR, REVISE);
+%\item 
+\textbf{UserId}~--- идентификатор пользователя, осуществившего операцию;
+%\item 
+\textbf{TimeDate}~--- дата и~время выполнения операции
+%\end{itemize}
+}
+\end{figure*}
+
+Во-вто\-рых, хотя структура онтологии обычно сложнее, чем структура ДКС, 
+это отличие не имеет принципиального значения для задач  
+классификации~--- описываемую здесь ФК в~качестве примера ДКС можно 
+рассматривать как потенциальную составляющую онтологии знаний по 
+лексикографии немецкого языка. Узкая направленность ФК позволяет 
+уделить больше внимания непосредственно теме исследования в~рамках 
+упомянутого проекта, что немаловажно, поскольку выделение значений НМГ 
+является нетривиальной задачей, и~помимо таких операций, как слияние или 
+разделение значений, порой требуется перенести часть компонентов 
+смыслового содержания из одного значения в~другое, изменить нумерацию 
+значений в~соответствии с~последовательностью их описания в~словарных 
+статьях, предназначенных для включения в~словарь~\cite{17-gon}, и~т.\,д.
+
+В-третьих, описываемая ФК вложена в~НБД~--- объекты аннотирования 
+и~сама ФК физически располагаются в~одной и~той же базе данных, 
+благодаря чему разработчикам не нужно беспокоиться о~том, что  
+ка\-кие-ли\-бо внешние данные окажутся не\-со\-вмес\-ти\-мы\-ми с~той или иной 
+версией ФК. Однако при внесении изменений в~ФК важно в~случае 
+необходимости сразу же вносить соответствующие изменения в~аннотации, 
+сформированные ранее. Если возможно, это делается автоматически, 
+в~противном случае система должна помечать аннотации, затронутые 
+изменениями, чтобы их реклассифицировали эксперты~\cite{3-gon}.
+
+\vspace*{-9pt}
+
+\section{Динамическая классификационная система}
+
+\vspace*{-2pt}
+
+В отличие от упомянутых выше решений по поддержке версионности 
+онтологий в~предлагаемом подходе и~его реализации в~проекте не 
+предусмот\-ре\-на нумерация версий или создание новой версии ФК после 
+вносимых изменений. Вместо этого для каждой рубрики ФК в~НБД 
+фиксируются все ее изменения и~для них проставляются временн$\acute{\mbox{ы}}$е штампы, 
+а~все старые версии сохраняются. Поэтому можно проследить историю 
+эволюции каждой рубрики, включая ее взаимодействие с~другими 
+руб\-ри\-ка\-ми, а~также восстановить состояние ФК на любой момент времени.
+
+В структуре НБД за сохранение изменений отвечают две связанные между 
+собой таблицы: в~первой (PropHistory) хранятся все~--- текущие 
+и~устаревшие~--- состояния рубрик ФК (которые в~проекте соответствуют 
+значениям НМГ), а~во второй (\mbox{PropOperation})~--- все операции изменения, 
+которые применялись к~этим рубрикам. Структура таблиц и~связь между 
+ними показаны на рисунке.
+
+
+
+Различаются следующие виды операций. 
+\begin{enumerate}[1.]
+\item CREATE~--- создание новой рубрики.
+\item REORDER~--- изменение кода рубрики (соответствует номеру 
+значения НМГ по словарю~\cite{17-gon}).
+\item REVISE~--- изменение дефиниции рубрики (не затрагивающее 
+никакие другие рубрики).
+\item MERGE~--- слияние дефиниций двух рубрик, в~результате которого 
+одна из рубрик удаляется.
+\item DELETE~--- удаление рубрики.
+\item SPLIT~--- разделение дефиниции одной рубрики на две, в~результате 
+чего создается новая рубрика, а~дефиниция исходной рубрики 
+перераспределяется между старой и~новой рубриками.
+\item REDISTR (от англ.\ \textit{redistribute})~--- изменение дефиниций 
+двух рубрик, предусматривающее перенос части компонентов смыслового 
+содержания из одной рубрики в~другую.
+\end{enumerate}
+
+\begin{table*}\small %tabl1
+\begin{center}
+\Caption{Пример выделения компонентов смыслового содержания дефиниции рубрики}
+\vspace*{2ex}
+
+\begin{tabular}{|c|c|c|p{52mm}|p{64mm}|}
+\hline
+Рубрика&Id&Код&\multicolumn{1}{c|}{\tabcolsep=0pt\begin{tabular}{c}
+Дефиниция рубрики\\ без структурного выделения\\ компонентов 
+смыслового\\ содержания\end{tabular}} &
+\multicolumn{1}{c|}{\tabcolsep=0pt\begin{tabular}{c}
+Дефиниция рубрики,\\ в~которой выделены компоненты\\ ее 
+смыслового содержания\end{tabular}}\\
+\hline
+X&482&sollen-01&Обязанность что-л. делать по чье\-\mbox{му-л.}\ указанию, по закону, по 
+правилам и~т.\,п.: должен. Моральный запрет (под отрицанием): \mbox{нельзя}&$a$.~Обязанность 
+что-л.\ делать по чьему-л.\ указанию, по закону, по правилам и~т.\,п.: должен\newline
+$b$.~Моральный запрет (под отрицанием): \mbox{нельзя}\\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+
+В то время как для понимания операций~\mbox{1--6} достаточно приведенных 
+определений, операция REDISTR заслуживает более детального 
+рассмотрения. Для этого понадобятся условные обозначения, введенные 
+в~\cite{3-gon}, а~именно:
+\begin{itemize}
+\item X, Y,\ \ldots~--- рубрики ФК, обозначающие смыс\-ло\-вые значения 
+НМГ;
+\item def$_{\mathrm{X}}$, def$_{\mathrm{Y}}$,\ \ldots~---  дефиниции 
+рубрик;
+\item $\mathbf{S}_{\mathrm{def}_{\mathrm{X}}}$, 
+$\mathbf{S}_{\mathrm{def}_{\mathrm{Y}}}$, \ldots ~--- смысловое 
+содержание дефиниций рубрик.
+\end{itemize}
+Кроме того, для обозначения сущностей, которые были каким-то образом 
+изменены в~результате выполнения операции, используется индекс <<ch>> 
+(от англ.\ \textit{changed}).
+
+Операция REDISTR выполняется только в~том случае, если 
+def$_{\mathrm{X}}$ такова, что 
+в~$\mathbf{S}_{\mathrm{def}_{\mathrm{X}}}$~--- смысловом содержании 
+дефиниции рубрики (соответствующей значению НМГ)~--- выделены 
+компоненты (соответствующие подзначениям внутри значения 
+НМГ\footnote{С~точки зрения смыслового содержания в~дефиниции рубрики могут быть 
+выделены и~более мелкие части, соответствующие частям подзначений. Данная ситуация не 
+рассматривается в~рамках настоящей статьи.}). В табл.~1 приводится пример  
+руб\-ри\-ки~X, в~дефиниции которой структурно выделены компоненты ее 
+смыслового содержания, соответствующие подзначениям,~--- $a$ и~$b$.
+
+
+
+
+Если представить $\mathbf{S}_{\mathrm{def_X}}$, компонентами которого 
+являются~$a$ и~$b$, в~виде множества 
+$\mathbf{S}_{\mathrm{def_X}}\{a,b\}$, то изменение def$_{\mathrm{X}}$ 
+может быть таким, что набор элементов этого множества: (1)~сократится: 
+$\mathbf{S}_{\mathrm{def_X}}^1\hm=\{a\}$; (2)~увеличится: 
+$\mathbf{S}_{\mathrm{def_X}}^2\hm=\{a, b, c, \ldots\}$.
+
+
+
+Более того, возможна ситуация, когда изменение набора элементов затронет 
+не только def$_{\mathrm{X}}$, а~одновременно def$_{\mathrm{X}}$ 
+и~def$_{\mathrm{Y}}$. Рубрики до внесения изменений обозначим как~X 
+и~Y, а~после их внесения~--- как X$_{\mathrm{ch}}$ и~Y$_{\mathrm{ch}}$. 
+Если изменение руб\-рик~X и~Y таково, что  $\mathbf{S}_{\mathrm{def_X}} 
+\cap \mathbf{S}_{\mathrm{def_Y}}^{\mathrm{ch}}\not= \emptyset$ 
+(смысловое содержание def$_{\mathrm{X}}$ и~смысловое содержание 
+измененной def$_{\mathrm{Y}}$ имеют один или более общих компонентов) 
+и/или $\mathbf{S}_{\mathrm{def_Y}} \cap 
+\mathbf{S}_{\mathrm{def_X}}^{\mathrm{ch}}\not= \emptyset$ (смысловое 
+содержание def$_{\mathrm{Y}}$ и~смысловое содержание измененной 
+def$_{\mathrm{X}}$ имеют один или более общих компонентов), то оно может 
+быть описано с~по\-мощью операции \mbox{REDISTR\,(X, Y)}. Экспертная 
+реклассификация потребуется для тех аннотаций, которые до выполнения 
+операции REDISTR содержали: (1)~руб\-ри\-ку~X, смысловое содержание 
+которой в~результате выполнения операции REDISTR сужается;  
+(2)~руб\-ри\-ку~X или~Y, если перенос компонентов смыслового содержания 
+дефиниций осуществляется как из~X в~Y, так и~из~Y в~X.
+
+
+Ниже приводится пример выполнения операции REDISTR для рубрик 
+с~постоянными номерами (id) 482 и~484, которые позволяют отслеживать 
+историю изменений рубрики (табл.~2). В~данном примере: X~---  
+руб\-ри\-ка~482 до выполнения операции, причем 
+$\mathbf{S}_{\mathrm{def_X}}\hm= \{a, b\}$; Y~--- руб\-ри\-ка~484 до 
+выполнения операции, причем $\mathbf{S}_{\mathrm{def_Y}}\hm= 
+\{m,n,o\}$; X$_{\mathrm{ch}}$~--- руб\-ри\-ка~482 после выполнения операции, 
+причем $\mathbf{S}_{\mathrm{def_X}}^{\mathrm{ch}}\hm= \{a, b, n, o\}$; 
+Y$_{\mathrm{ch}}$~--- руб\-ри\-ка~484 после выполнения операции, причем 
+$\mathbf{S}_{\mathrm{def_Y}}^{\mathrm{ch}}\hm=\{m\}$.
+
+
+Поскольку $\mathbf{S}_{\mathrm{def_Y}}\cap 
+\mathbf{S}_{\mathrm{def_X}}^{\mathrm{ch}}\hm=\{n, o\}$ 
+и~$\mathbf{S}_{\mathrm{def_X}}\cap 
+\mathbf{S}_{\mathrm{def_Y}}^{\mathrm{ch}}\hm=\emptyset$, смысловое 
+содержание руб\-ри\-ки~482 после внесения изменения расширяется, 
+а~смысловое содержание руб\-ри\-ки~484~--- сужается. Следовательно,\linebreak 
+аннотации, которые до выполнения операции \mbox{REDISTR} содержали 
+ руб\-ри\-ку~482, после ее выполнения не требуют экспертной 
+реклассификации и~автоматически обозначаются кодом <<sollen-01>>, тогда 
+как аннотации, которые до выполнения операции REDISTR содержали  
+руб\-ри\-ку~484, после ее выполнения требуют экспертной реклассификации 
+и~поэтому автоматически помечаются тегом <<\mbox{TBR-R}>> (от англ. \textit{To 
+Be Reclassified because of Redistribution}).
+
+\begin{table*}\small %tabl2
+\begin{center}
+\Caption{Исходные данные и~результат выполнения операции REDISTR}
+\vspace*{2ex}
+
+\begin{tabular}{|c|c|c|p{120mm}|}
+\hline
+Рубрика&Id&Код&Дефиниции двух рубрик, в~которых структурно выделены 
+компоненты их смыслового содержания, до и~после выполнения операции 
+\mbox{REDISTR}\\
+\hline
+X&482&sollen-01&$a$.~Обязанность что-л.\ делать по чьему-л.\ указанию, по закону, по 
+правилам и~т.\,п.: должен\\
+&&&$b$.~Моральный запрет (под отрицанием): нельзя\\
+\hline
+Y&484&sollen-03&$m$.~Желательность по мнению говорящего (в~формах praet conj 
+и~pqp conj): следовало (бы), нужно было (бы), должно было (бы)\\
+&&&$n$. Совет, рекомендация (только в~формах praet conj)\\
+&&&$o$. Нежелательность (под отрицанием): не следовало (бы), нельзя\\
+\hline
+X$_{\mathrm{ch}}$&482&sollen-01&$a$. Обязанность что-л.\ делать по чьему-л.\ 
+указанию, по закону, по правилам и~т.\,п.: должен\\
+&&&$b$.~Моральный запрет (под отрицанием): нельзя\\
+&&&$n$.~Совет, рекомендация (только в~формах praet conj)\\
+&&&$o$.~Нежелательность (под отрицанием): не следовало (бы), нельзя\\
+\hline
+Y$_{\mathrm{ch}}$&484&sollen-03&$m$.~Желательность по мнению говорящего (в 
+формах praet conj и~pqp conj): следовало (бы), нужно было (бы), должно было (бы)\\
+\hline
+\multicolumn{4}{p{162.7mm}}{\footnotesize\hspace*{3mm}\textbf{Примечания.}
+Расшифровка используемых в~таблице сокращений:
+\begin{itemize}
+\addtolength{\itemsep}{-4pt}
+\item praet conj~--- форма прошедшего времени (лат.\ \textit{praeteritum}) сослагательного 
+наклонения (лат.\ \textit{conjunctivus});
+\item pqp conj~--- форма предпрошедшего времени (лат.\ \textit{plusquamperfectum}) 
+сослагательного наклонения (лат.\ \textit{conjunctivus}).
+\end{itemize}
+Примеры употребления глагола \textit{sollen} по словарю~\cite{17-gon}, иллюстрирующие каждый 
+из компонентов смыслового содержания дефиниций (формы глагола \textit{sollen} выделены 
+полужирным шрифтом):
+\begin{itemize}
+\addtolength{\itemsep}{-4pt}
+\item[$a$.] ich \textbf{soll} heute noch in die Stadt fahren~--- я должен сегодня еще поехать 
+в~город;
+\item[$b$.] du \textbf{sollst} nicht t$\ddot{\mbox{o}}$ten!~--- не убий! 
+(\textit{библейская заповедь});
+\item[$m$.] das \textbf{sollte} sie doch wissen~--- это она (вообще-то) должна была (бы) 
+знать;
+\item[$n$.] Sie \textbf{sollten} mit dem Rauchen aufh$\ddot{\mbox{o}}$ren~--- вам следует 
+бросить курить;
+\item[$o$.] das \textbf{sollte} man nie tun~--- этого не следует делать.
+\end{itemize}
+}
+\end{tabular}
+\end{center}
+\vspace*{-23pt}
+%\end{table*}
+%\begin{table*}\small %tabl3  %\multicolumn{1}{|c|}{\raisebox{-6pt}[0pt][0pt]{
+\begin{center}
+\Caption{Соответствия между операциями, атрибутами и~рубриками}
+\vspace*{2ex}
+
+\tabcolsep=4.2pt
+\begin{tabular}{|l|c|p{105mm}|}
+\hline
+\multicolumn{1}{|c|}{Операция}&Атрибут&\multicolumn{1}{c|}{Рубрика}\\
+\hline
+{\raisebox{-6pt}[0pt][0pt]{\tabcolsep=0pt\begin{tabular}{l}CREATE (создается новая\\ 
+рубрика X)\end{tabular}}}&A&Создаваемая рубрика X\\
+\cline{2-3}
+&C&Рубрики, которые надо перенумеровать после выполнения операции, чтобы 
+освободить в~нумерации нужную позицию для X\\
+\hline
+{\raisebox{-6pt}[0pt][0pt]{\tabcolsep=0pt\begin{tabular}{l}REORDER (код рубрики~X\\ изменяется)\end{tabular}}}&A&Рубрика X, код которой изменяется\\
+\cline{2-3}
+&C&Рубрики, которые надо перенумеровать после выполнения операции, чтобы 
+освободить в~нумерации нужную позицию для X\\
+\hline
+REVISE (изменяется def$_{\mathrm{X}}$)&A&Рубрика X, дефиниция которой изменяется\\
+\hline
+{\raisebox{-6pt}[0pt][0pt]{\tabcolsep=0pt\begin{tabular}{l}MERGE (объединяются\\ def$_{\mathrm{X}}$ 
+и~def$_{\mathrm{Y}}$)\end{tabular}}}&А&Рубрика X, причем 
+def$_{\mathrm{X}}$ поглощает def$_{\mathrm{Y}}$, а X остается в~базе данных\\
+\cline{2-3}
+&B&Рубрика Y, причем def$_{\mathrm{Y}}$ включается в~def$_{\mathrm{X}}$, а~Y 
+удаляется из базы данных\\
+\cline{2-3}
+&C&Рубрики, которые напрямую не затрагиваются операцией MERGE, но которые надо 
+перенумеровать после выполнения операции, чтобы заполнить пробелы в~нумерации, 
+образовавшиеся из-за удаления Y\\
+\hline
+{\raisebox{-6pt}[0pt][0pt]{\tabcolsep=0pt\begin{tabular}{l}DELETE (рубрика~X удаля-\\ ется)\end{tabular}}}&A&Удаляемая рубрика X\\
+\cline{2-3}
+&C&Рубрики, которые надо перенумеровать после выполнения операции, чтобы 
+заполнить пробелы в~нумерации, образовавшиеся из-за удаления X\\
+\hline
+{\raisebox{-6pt}[0pt][0pt]{\tabcolsep=0pt\begin{tabular}{l}SPLIT (def$_{\mathrm{X}}$ делится на две\\
+ части~--- def$_{\mathrm{X}}1$ 
+и~def$_{\mathrm{X}}2$)\end{tabular}}}&A&Рубрика~X, дефиниция которой делится на две части, причем 
+def$_{\mathrm{X}}1$ становится новой дефиницией X\\
+\cline{2-3}
+&B&Рубрика~Y, которая создается в~базе данных, причем def$_{\mathrm{X}}2$ 
+становится дефиницией~Y\\
+\hline
+{\raisebox{-24pt}[0pt][0pt]{\tabcolsep=0pt\begin{tabular}{l}REDISTR (def$_{\mathrm{X}}$ и~def$_{\mathrm{Y}}$ изме-\\
+няются так, что происходит\\ 
+перераспределение компо-\\ нентов смыс\-ло\-во\-го содер-\\ жания 
+между~$\mathbf{S}_{\mathrm{def_X}}$ 
+и~~$\mathbf{S}_{\mathrm{def_Y}}$)\end{tabular}}}&A&Рубрика X, если 
+$\mathbf{S}_{\mathrm{def_X}}$ расширяется за счет переноса компонентов 
+смыс\-ло\-во\-го содержания из~$\mathbf{S}_{\mathrm{def_Y}}$, причем ни один 
+компонент~$\mathbf{S}_{\mathrm{def_X}}$ не переносится 
+в~$\mathbf{S}_{\mathrm{def_Y}}$\\
+\cline{2-3}
+&B&Рубрика Y, если ~$\mathbf{S}_{\mathrm{def_Y}}$ сужается за счет переноса 
+компонентов смыс\-ло\-во\-го содержания в~~$\mathbf{S}_{\mathrm{def_X}}$, причем 
+ни один компонент~$\mathbf{S}_{\mathrm{def_X}}$ не переносится 
+в~~$\mathbf{S}_{\mathrm{def_Y}}$\\
+\cline{2-3}
+&AB&Рубрики~X и~Y, если одновременно осуществляется перенос компонентов 
+смыс\-ло\-во\-го содержания из~$\mathbf{S}_{\mathrm{def_X}}$ 
+в~~$\mathbf{S}_{\mathrm{def_Y}}$ и~из~$\mathbf{S}_{\mathrm{def_Y}}$ 
+в~~$\mathbf{S}_{\mathrm{def_X}}$\\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+Может показаться, что введение операции \mbox{REDISTR} не оправданно, так как 
+рассмотренное перераспределение компонентов значений между~482 и~484 
+можно описать последовательностью операций SPLIT\,(MERGE\,(X, Y)). 
+Однако при таком подходе объем реклассификации может существенно 
+возрасти. Объем реклассификации будет тот же, лишь если верно 
+одновременно и~$\mathbf{S}_{\mathrm{def_X}}\hm\cap 
+\mathbf{S}_{\mathrm{def_Y}}^{\mathrm{ch}}\hm\not= \emptyset$, 
+и~$\mathbf{S}_{\mathrm{def_Y}} \cap 
+\mathbf{S}_{\mathrm{def_X}}^{\mathrm{ch}}\not= \emptyset$, т.\,е.\ 
+осуществляется перенос компонентов смыслового содержания одновременно 
+и~из $\mathbf{S}_{\mathrm{def_X}}$ в~$\mathbf{S}_{\mathrm{def_Y}}$, 
+и~из~$\mathbf{S}_{\mathrm{def_Y}}$ в~$\mathbf{S}_{\mathrm{def_X}}$. Если 
+же верно или $\mathbf{S}_{\mathrm{def_X}} \cap 
+\mathbf{S}_{\mathrm{def_Y}}^{\mathrm{ch}}\not= \emptyset$, 
+а~$\mathbf{S}_{\mathrm{def_Y}} \cap 
+\mathbf{S}_{\mathrm{def_X}}^{\mathrm{ch}} = \emptyset$, или 
+$\mathbf{S}_{\mathrm{def_Y}} \cap 
+\mathbf{S}_{\mathrm{def_X}}^{\mathrm{ch}}\not= \emptyset$, 
+а~$\mathbf{S}_{\mathrm{def_X}} \cap 
+\mathbf{S}_{\mathrm{def_Y}}^{\mathrm{ch}}=\emptyset$ (т.\,е.\ смысловое 
+содержание дефиниции одной рубрики расширяется, а~другой~--- сужается), 
+то в~таком случае реклассификация нужна только для аннотаций, 
+содержавших рубрику с~дефиницией, смысловое
+содержание которой 
+в~результате изменения сужается (в~примере из табл.~2 это аннотации, 
+содержавшие руб\-ри\-ку~Y). Таким образом, введение операции \mbox{REDISTR} 
+оправданно, так как позволяет сократить объем реклассификации.
+
+Рассмотренный пример (см.\ табл.~2) показывает, что операция REDISTR  
+по-раз\-но\-му влияет на руб\-ри\-ки~482 и~484: смысловое содержание 
+дефиниции руб\-ри\-ки~482 расширяется, а~руб\-ри\-ки~484~--- сужается. 
+Для того чтобы на основе таб\-лиц НБД с~историей изменения руб\-рик иметь 
+возможность определять, как именно операция повлияла на некоторую 
+руб\-ри\-ку, каждой из руб\-рик, затронутых операцией, присваивается атрибут. 
+В~этом примере руб\-ри\-ке~482 будет присвоен атрибут~A,  
+а~руб\-ри\-ке~484~--- B. Все возможные атрибуты и~их смыс\-ло\-вое 
+содержание для каждой из семи операций приведены и~расшифрованы 
+в~табл.~3.
+
+\vspace*{-3pt}
+
+\section{Заключение}
+
+Предлагаемый подход к~ведению ДКС дает возможность сохранять всю 
+информацию об изменениях рубрик ФК, фиксировать виды изменений, время 
+их внесения и~данные о~пользователе, который их внес. Он позволяет 
+отслеживать совершенные изменения в~хронологическом порядке, а~также, 
+при необходимости, восстанавливать состояние ДКС на любой момент 
+времени в~прошлом.
+
+\vspace*{-3pt}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+%\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+%\vspace*{-2pt}
+\bibitem{1-gon}
+\Au{Зацман И.\,М., Косарик~В.\,В., Курчавова~О.\,А.} Задачи представления личностных 
+и~коллективных концептов в~цифровой среде~// Информатика и~её применения, 2008. 
+Т.~2. Вып.~3. С.~54--69.
+\bibitem{2-gon}
+Handbook of linguistic annotation~/ Eds. N.~Ide, J.~Pustejovsky.~--- Dordrecht, The 
+Netherlands: Springer Science\;+\;Business Media, 2017. 1468~p.
+\bibitem{3-gon}
+\Au{Гончаров А.\,А., Зацман~И.\,М., Кружков~М.\,Г.} Эволюция классификаций 
+в~надкорпусных базах данных~// Информатика и~её применения, 2020. Т.~14. Вып.~4. 
+С.~108--116.
+\bibitem{4-gon}
+\Au{Зацман И.\,М., Инькова~О.\,Ю., Кружков~М.\,Г., Попкова~Н.\,А.} Представление 
+кроссязыковых знаний о~коннекторах в~надкорпусных базах данных~// Информатика 
+и~её применения, 2016. Т.~10. Вып.~1. С.~106--118.
+\bibitem{5-gon}
+\Au{Зализняк А., Зацман~И.\,М., Инькова~О.\,Ю.} Надкорпусная база данных коннекторов: 
+построение системы терминов~// Информатика и~её применения, 2017. Т.~11. Вып.~1. 
+С.~100--108.
+\bibitem{6-gon}
+\Au{Зацман И.\,М., Кружков~М.\,Г.} Надкорпусная база данных коннекторов: развитие 
+системы терминов проектирования~// Системы и~средства информатики, 2018. Т.~28. 
+№\,4. С.~156--167.
+\bibitem{7-gon}
+\Au{Добровольский Д.\,О., Зализняк~Анна~А.} Немецкие конструкции с~модальными 
+глаголами и~их русские соответствия: проект надкорпусной базы данных~//\linebreak 
+Компьютерная лингвистика и~интеллектуальные технологии: По мат-лам Междунар. 
+конф. <<Диалог>>.~--- М.: РГГУ, 2018. С.~172--184.
+\bibitem{8-gon}
+\Au{Добровольский Д.\,О.} Немецкие модальные глаголы в~параллельном корпусе и~задачи 
+двуязычной лексикографии~// Германские языки: текст, корпус, перевод.~--- М.: Институт 
+языкознания РАН, 2020. С.~103--116.
+\bibitem{9-gon}
+\Au{Добровольский Д.\,О., Зализняк~Анна~А.} Русские конструкции с~потенциально 
+модальным значением по данным параллельных корпусов~// Труды Института русского 
+языка им.\ В.\,В.~Виноградова, 2020. №\,3. С.~35--49.
+\bibitem{10-gon}
+\Au{Zatsman I.} Finding and filling lacunas in linguistic typologies~// 15th  Forum 
+(International) on Knowledge Asset Dynamics Proceedings.~--- Matera: Institute of 
+Knowledge Asset Management, 2020. P.~780--793.
+\bibitem{11-gon}
+\Au{Zatsman I.} Three-dimensional encoding of emerging meanings in AI-systems~// 21st 
+European Conference on Knowledge Management Proceedings.~--- Reading: Academic 
+Publishing International Ltd., 2020. P.~878--887.
+\bibitem{12-gon}
+\Au{Klein M., Fensel~D., De~A.} Ontology versioning on the Semantic Web~// 1st  Conference 
+(International)  on Semantic Web Working Proceedings.~--- Stanford, CA, USA: Stanford 
+University, 2001. P.~75--91.
+\bibitem{13-gon}
+\Au{Noy N., Kunnatur~S., Klein~M., Musen~M.} Tracking changes during ontology evolution~// 
+International Semantic Web Conference~/ Eds. S.\,A.~McIlraith, D.~Plexousakis, F.~van Harmelen.~--- 
+Lecture notes in computer science ser.~--- Springer, 2004. Vol.~3298. P.~259--273.
+\bibitem{14-gon}
+\Au{Preventis A., Petrakis~E.\,G.\,M., Batsakis~S.} CHRONOS Ed: A~tool for handling 
+temporal ontologies in prot$\acute{\mbox{e}}$g$\acute{\mbox{e}}$~// Int. J.~Artif. 
+Intell.~T., 2014. Vol.~23. No.\,4. P.~1460018-1--1460018-26. doi: 
+10.1142/S0218213014600185.
+\bibitem{15-gon}
+\Au{Stravoskoufos K., Petrakis~E., Mainas~N., Batsakis~S., Samoladas~V.} SOWL QL: 
+Querying spatio-temporal ontologies in OWL~// J.~Data Semantics, 2016. Vol.~5. No.\,4. 
+P.~249--269.
+\bibitem{16-gon}
+\Au{Zablith F., Antoniou~G., D'Aquin~M., Flouris~G., Kondylakis~H., Motta~E., 
+Plexousakis~D., Sabou~M.} Ontology evolution: A~process-centric survey~// Knowl. 
+Eng. Rev., 2015. Vol.~30. No.\,1. P.~45--75.
+\bibitem{17-gon}
+Немецко-русский словарь актуальной лексики~/ Под ред. Д.\,О.~Добровольского.~--- М.: 
+Лексрус, 2021 (в~печати).
+\end{thebibliography}
+
+}
+}
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 12.01.2021}}
+
+%\vspace*{8pt}
+
+%\pagebreak
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+%\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{REPRESENTATION OF~NEW LEXICOGRAPHICAL KNOWLEDGE IN~DYNAMIC CLASSIFICATION 
+SYSTEMS}
+
+\def\titkol{Representation of new lexicographical knowledge in~dynamic classification 
+systems}
+
+\def\aut{A.\,A.~Goncharov, I.\,M.~Zatsman, and~M.\,G.~Kruzhkov}
+
+\def\autkol{A.\,A.~Goncharov, I.\,M.~Zatsman, and~M.\,G.~Kruzhkov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+\noindent
+Institute of Informatics Problems, Federal Research Center ``Computer Science and
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333,
+Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 1}
+}%
+\def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 1
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+\Abste{The distinctive feature of dynamic classification systems is that new categories may be introduced 
+in the course of their use or definitions of existing categories may be modified, including cases of 
+rearranging semantic content between categories. On one hand, this feature of dynamic classification 
+systems provides a possibility to integrate new knowledge on-the-fly and to start using it immediately for 
+linguistic annotation. On the other hand, if a category is changed, then, in some cases, the annotations it 
+has been previously applied to will have to be reclassified. This paper has a twofold purpose, which is, 
+first, to compare approaches to classification of entities based on ($i$)~dynamic classification systems and 
+($ii$)~ontologies that change over time; and then, second, to describe how new lexicographical knowledge is 
+represented in dynamic classification systems.}
+
+\KWE{dynamic classification system; ontology versioning; linguistic annotation; reclassification of 
+annotations}
+
+
+
+
+\DOI{10.14357/19922264210112}
+
+\vspace*{-15pt}
+
+\Ack
+\noindent
+The study has been conducted at the Institute of Informatics Problems, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences (FRC CSC RAS) with financial 
+support of the Russian Foundation for Basic Research (grant No.\,20-012-00166).
+%\vspace*{6pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-gon-1}
+\Aue{Zatsman, I.\,M., V.\,V.~Kosarik, and O.\,A.~Kurchavova.} 2008. Zadachi predstavleniya 
+lichnostnykh i~kollektivnykh kontseptov v~tsifrovoy srede [Representation of individual and collective 
+concepts in digital medium]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 2(3):54--69.
+\bibitem{2-gon-1}
+Ide, N., and J.~Pustejovsky, eds. 2017. \textit{Handbook of linguistic annotation}. Dordrecht, The 
+Netherlands: Springer Science\;+\;Business Media. 1468~p.
+\bibitem{3-gon-1}
+\Aue{Goncharov, A.\,A., I.\,M.~Zatsman, and M.\,G.~Kruzhkov.} 2020. Evolyutsiya klassifikatsiy 
+v~nadkorpusnykh ba\-zakh dannykh [Evolution of classifications in supracorpora databases]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 14(4):108--116.
+\bibitem{4-gon-1}
+\Aue{Zatsman, I.\,M., O.\,Yu.~Inkova, M.\,G.~Kruzhkov, and N.\,A.~Popkova.}
+ 2016. Predstavlenie kross-yazykovykh znaniy o~konnektorakh v~nadkorpusnykh 
+ bazakh dannykh [Representation of cross-lingual 
+knowledge about connectors in suprocorpora databases]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 10(1):106--118.
+\bibitem{5-gon-1}
+\Aue{Zaliznyak, A.\,A., I.\,M.~Zatsman, and O.\,Yu.~In'kova.} 2017. Nadkorpusnaya basa dannykh 
+konnektorov: postroenie sistemy terminov [Supracorpora database of connectives: Term system 
+development]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 11(1):100--108.
+\bibitem{6-gon-1}
+\Aue{Zatsman, I.\,M., and M.\,G.~Kruzhkov.} 2018. Nadkorpusnaya baza dannykh konnektorov: razvitie 
+sistemy terminov proektirovaniya [Supracorpora database of connectives: Design-oriented evolution of 
+the term system]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 
+28(4):156--167.
+\bibitem{7-gon-1}
+\Aue{Dobrovol'skiy, D.\,O., and Anna A.~Zaliznyak.} 2018. Ne\-mets\-kie konstruktsii s~modal'nymi 
+glagolami i~ikh russkie sootvetstviya: proekt nadkorpusnoy bazy dannykh [German constructions with 
+modal verbs and their Russian correlates: A~supracorpora database project]. \textit{Komp'yuternaya 
+lingvistika i~intellektual'nyye tekhnologii: po mat-lam Mezhdunar. konf. ``Dialog'}' [Computational 
+Linguistics and Intellectual Technologies. Papers from the Annual Conference (International) 
+``Dialogue'']. Moscow: RSHI. 17(24):172--184. 
+\bibitem{8-gon-1}
+\Aue{Dobrovol'skiy, D.\,O.} 2020. Nemetskie modal'nye glagoly v~parallel'nom korpuse i~zadachi 
+dvuyazychnoy leksikografii [German modal verbs in a parallel corpus and bilingual lexicography tasks]. 
+\textit{Germanskie yazyki: tekst, korpus, perevod} [German languages: Text, corpus, translation].  Moscow:
+Institute of Linguistics RAS. 103--116.
+\bibitem{9-gon-1}
+\Aue{Dobrovol'skiy, D.\,O., and Anna A.~Zaliznyak.} 2020. Russkie konstruktsii s~potentsial'no 
+modal'nym znacheniem po dannym parallel'nykh korpusov [Russian constructions with potentially modal 
+meanings: An analysis based on parallel corpus data]. \textit{Trudy Instituta russkogo yazyka im.\ 
+V.\,V.~Vinogradova} [V.\,V.~Vinogradov Russian Language Institute Proceedings]. 35--49.
+\bibitem{10-gon-1}
+\Aue{Zatsman, I.} 2020. Finding and filling lacunas in linguistic typologies. \textit{15th Forum 
+(International) on Knowledge Asset Dynamics Proceedings}. Matera: Institute of Knowledge Asset 
+Management. 780--793.
+\bibitem{11-gon-1}
+\Aue{Zatsman, I.} 2020. Three-dimensional encoding of emerging meanings in AI-systems. \textit{21st 
+European Conference on Knowledge Management Proceedings}. Reading: Academic Publishing 
+International Ltd. 878--887.
+\bibitem{12-gon-1}
+\Aue{Klein, M., D.~Fensel, and A.~De.} 2001. Ontology versioning on the semantic web. \textit{1st 
+Conference (International) on Semantic Web Working Proceedings}. Stanford, CA: Stanford University. 
+75--91.
+\bibitem{13-gon-1}
+\Aue{Noy, N., S.~Kunnatur, M.~Klein, and M.~Musen.} 2004. Tracking changes during ontology 
+evolution. \textit{International Semantic Web Conference}. Eds. S.\,A.~McIlraith, D.~Plexousakis, and 
+F.~van Harmelen. Lecture notes in computer science ser. Springer. 3298:259--273.
+\bibitem{14-gon-1}
+\Aue{Preventis, A., E.\,G.\,M.~Petrakis, and S.~Batsakis.} 2014. CHRONOS Ed: A~tool for handling 
+temporal ontologies in prot$\acute{\mbox{e}}$g$\acute{\mbox{e}}$. \textit{Int. J.~Artif. 
+Intell.~T.} 23(4):1460018. 26~p.
+doi: 
+10.1142/S0218213014600185.
+\bibitem{15-gon-1}
+\Aue{Stravoskoufos, K., E.~Petrakis, N.~Mainas, S.~Batsakis, and V.~Samoladas.} 2016. SOWL QL: 
+Querying spatio-temporal ontologies in OWL. \textit{J.~Data Semantics} 5(4):249--269.
+\bibitem{16-gon-1}
+\Aue{Zablith F., G.~Antoniou, M.~D'Aquin, G.~Flouris, H.~Kondylakis, E.~Motta, D.~Plexousakis, and 
+M.~Sabou.} 2015. Ontology evolution: A~process-centric survey. \textit{Knowl. Eng. 
+Rev.} 30(1):45--75.
+\bibitem{17-gon-1}
+Dobrovol'skiy, D.O., ed. 2021 (in press). \textit{Nemetsko-russkiy slovar' aktual'noy leksiki} 
+[German--Russian dictionary of actual vocabulary]. Moscow: Leksrus.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+  \hfill{\small\textit{Received January~12, 2021}}
+
+
+%\pagebreak
+
+%\vspace*{-8pt}
+
+\Contr
+
+\noindent
+\textbf{Goncharov Alexander A.} (b.\ 1994)~--- junior scientist, Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences,  
+44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{a.gonch48@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Zatsman Igor M.} (b.\ 1952)~--- Doctor of Science in technology, Head of Department, Institute 
+of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{izatsman@yandex.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Kruzhkov Mikhail G.} (b.\ 1975)~--- senior scientist, Institute of Informatics Problems, Federal 
+Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov 
+Str., Moscow 119333, Russian Federation; \mbox{magnit75@yandex.ru}
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}

@@ -1,0 +1,767 @@
+\def\stat{semenov}
+
+\def\tit{ЭФФЕКТИВНОЕ ИСПОЛЬЗОВАНИЕ ПРОГРАММИРУЕМЫХ 
+ГРАФИЧЕСКИХ ПРОЦЕССОРОВ В~ЗАДАЧАХ  
+МОЛЕКУЛЯРНО-ДИНАМИЧЕСКОГО МОДЕЛИРОВАНИЯ$^*$}
+
+\def\titkol{Эффективное использование программируемых 
+графических процессоров} % в~задачах   молекулярно-динамического моделирования}
+
+
+\def\aut{С.\,А.~Семенов$^1$, Д.\,Л.~Ревизников$^2$}
+
+\def\autkol{С.\,А.~Семенов, Д.\,Л.~Ревизников}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Семенов С.\,А.}
+\index{Ревизников Д.\,Л.}
+\index{Semenov S.\,A.}
+\index{Reviznikov D.\,L.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при финансовой поддержке РФФИ (проект 15-08-06262а).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский авиационный институт (национальный исследовательский 
+университет), \mbox{greyss@mai.ru}}
+\footnotetext[2]{Московский авиационный институт (национальный исследовательский 
+университет); Вы\-чис\-ли\-тель\-ный центр им.\ А.\,А.~Дородницына Федерального 
+исследовательского центра <<Информатика и~управление>> Российской 
+академии наук, \mbox{reviznikov@inbox.ru}}
+
+ \label{st\stat}
+
+                  \thispagestyle{headings}
+                  
+  \vspace*{-12pt}
+ 
+
+\Abst{Использование графических процессоров (GPU) позволяет существенно расширить 
+возможности вычислительных систем. Рассматриваются вопросы применения графических 
+процессоров в~задачах мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ско\-го моделирования со 
+сложным потенциалом межчастичного взаимодействия. С~целью повышения 
+производительности вычислений на GPU реализованы следующие методы: сокращение 
+числа запросов в~глобальную память, сокращение числа ветвлений, подбор оптимальной 
+загрузки мультипроцессоров, использование эквивалентных математических выражений для 
+более быстрого выполнения программного кода. Параллельное исполнение программы 
+реализуется за счет разбиения пространства моделирования на ячейки, составления 
+и~обновления списка соседних атомов с~целью минимизации коллизий памяти, 
+распределения операций по вычислительным потокам и~выделения дополнительной памяти 
+для создания копий координат взаимодействующих атомов.}
+
+\KW{высокопроизводительные вычисления; графические процессоры; разделяемая память;  
+мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ское моделирование; наноматериалы}
+
+\DOI{10.14357\!/\!08696527170408} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+     \vspace*{-20pt} 
+
+\section{Введение. Методы молекулярно-динамического моделирования}
+
+  В методе молекулярной динамики система рассматривается как совокупность 
+взаимодействующих частиц (атомов, молекул, кластеров), движение которых 
+описывается законами классической механики. Существенным является то, что 
+он допускает распараллеливание процессов, происходящих в~разных областях 
+пространства, что позволяет эффективно применять его на многопроцессорных 
+вычислительных системах, полностью реализуя их возможности по 
+увеличению быстродействия и~обработки больших объемов данных. 
+Интенсивный рост производительности вычислительной техники, и~прежде 
+всего многопроцессорных вычислительных систем, делает возможным 
+в~настоящее время эффективно моделировать структуры, состоящие из сотен 
+миллионов структурных элементов. Данный метод предоставляет мощный 
+теоретический инструмент для исследования свойств наноматериалов.
+  
+  Молекулярно-динамическое моделирование основано на решении уравнений 
+динамики структурных элементов (частиц)~[1]:
+  \begin{equation}
+  m_i\fr{d^2\mathbf{r}_i}{dt^2}=\mathbf{F}_i=-\nabla_i E\left(\mathbf{r}_1, 
+\mathbf{r}_2,\ldots ,\mathbf{r}_N\right)\,,
+  \label{e1-sem}
+  \end{equation}
+где $t$~--- время; $m_i$ и~$\mathbf{r}_i$~--- масса и~ра\-ди\-ус-век\-тор $i$-й 
+частицы; $N$~--- число час\-тиц в~системе; $\mathbf{F}_i$~--- сила, 
+действующая на $i$-ю частицу; $\nabla_iE(\mathbf{r}_1, \mathbf{r}_2,\ldots, 
+\mathbf{r}_N)$~--- градиент потенциальной энергии.
+  
+  В настоящей работе уравнение~(1) аппроксимируется  
+ко\-неч\-но-раз\-ност\-ной схемой скоростей Верле второго порядка 
+точности~[2]:
+  \begin{align*}
+  \mathbf{r}_i(t+\Delta t) &=\mathbf{r}_i(t)+\Delta t\cdot 
+\mathbf{v}_i(t)+\fr{1}{2}\,\Delta t^2 a_i(t)\,;\\
+  \mathbf{a}_i(t+\Delta t) &= \fr{\mathbf{F}_i}{m_i}\,;\\
+  \mathbf{v}_i(t+\Delta t) &= \mathbf{v}_i(t)+\fr{1}{2}\,\Delta 
+t\left(\mathbf{a}_i(t)+\mathbf{a}_i(t+\Delta t)\right)\,,
+ %  \label{e2-sem}
+  \end{align*}
+где $\mathbf{v}_i$~--- скорость $i$-й частицы; $\mathbf{a}_i$~--- ускорение.
+
+  Предсказательной возможности простых потенциалов зачастую 
+недостаточно для адекватного воспроизведения широкого спектра свойств 
+молекулярных структур. Необходимо использовать потенциалы, отражающие 
+реальные свойства межатомных связей. В~качестве такого потенциала все 
+большее распространение получает потенциал Бреннера~[3], который состоит 
+из притягивающей~--- $V^A(r_{ij})$~--- и~отталкивающей~--- $V^R(r_{ij})$~--- 
+компонент, а также функции порядка связи~---~$b_{ij}$:
+  \begin{align}
+  E^B &= \sum\limits_i \sum\limits_{j>i} \left( V^R(r_{ij})-b_{ij} 
+V^A(r_{ij})\right)\,;\label{e3-sem}\\
+  V_A\left(r_{ij}\right) &= f^c(r_{ij})
+  \sum\limits_{n=1{,}3} B_n e^{-\beta_nr_{ij}}\,; \notag %\label{e4-sem}
+ \\
+  V^R(r_{ij}) &= f^c(r_{ij}) \left( 1+\fr{O}{r_{ij}}\right) Ae^{-\alpha 
+r_{ij}}\,; \notag %\label{e5-sem}
+\\
+  b_{ij} &= \fr{1}{2}\left( b_{ij}^{\sigma\mbox{-}\pi} + 
+b_{ji}^{\sigma\mbox{-}\pi} \right)  +\pi_{ij}^{RC}+b_{ij}^{DH}\,. 
+\label{e6-sem}
+\end{align}
+Здесь $r_{ij}=\vert \mathbf{r}_i-\mathbf{r}_j\vert$~--- расстояние между $i$-м 
+и~$j$-м атомами; $b_{ij}^{\sigma\mbox{-}\pi}$~--- показатель взаимного 
+расположения трех атомов:
+\begin{equation}
+ b_{ij}^{\sigma\mbox{-}\pi} = \left[ 1+\sum\limits_{k\not= i,j} 
+ f_{ik}^c \left(r_{ik}\right) 
+G_c\left( \cos \left(\theta_{ijk}\right)\right) e^{\lambda ijk}+P_{ij} \left( N_i^C, 
+N_i^H\right)\right]^{-1/2}\,,
+\label{e7-sem}
+\end{equation}
+где
+$G_c(\cos(\theta_{ijk}))$~--- функция угла, 
+образованного тремя атомами; $\pi_{ij}^{RC}$~--- корректирующий показатель 
+материала:
+\begin{equation}
+  \pi_{ij}^{RC} = F_{ij}\left( N_i^l, N_j^l, N_{ij}^{\mathrm{conj}}\right)\,; 
+\label{e8-sem}
+\end{equation}
+$b_{ij}^{DH}$~--- показатель взаимного расположения четырех 
+атомов:
+\begin{equation}
+  b_{ij}^{DH} = T_{ij} \left( N_i^l, N_j^l, N_{ij}^{\mathrm{conj}}\right) \left[ 
+\sum\limits_{k\not= i,j} \sum\limits_{l\not= i, j} \left( 1-\cos^2\left( 
+\Theta_{ijkl}\right)\right) f_{ik}^c (r_{ik}) f^c_{jl}(r_{jl})\right].
+  \label{e9-sem}
+  \end{equation}
+ В~(\ref{e7-sem})--(\ref{e9-sem})  $P_{ij}(N_i^C, N_i^H)$, $F_{ij}(N_i^l, N_j^l, N_{ij}^{\mathrm{conj}})$
+ и~$T_{ij}(N_i^l, 
+N_j^l, N_{ij}^{\mathrm{conj}})$~--- функции, интерполирующие экспериментальные данные.
+
+  В последнее время все больший интерес вызывает распараллеливание 
+вы\-чис\-ле\-ний на графических процессорах. Известен целый ряд 
+эффективных реализаций для сравнительно простых потенциалов 
+межчастичного взаимодействия. В~этой связи отметим такие программные 
+комплексы, как HOOMD~[4], AMBER~[5], LAMMPS~[6--8], GROMACS~[9], 
+NAMD~[10, 11], CHARMM~[12], ACEMD~[13], Desmond~[14], Espresso~[15], 
+Folding@Home~[12]. Все они используют GPU для ускорения  
+мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ских расчетов. В~ранних работах по 
+распараллеливанию мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ских расчетов на 
+GPU~[16] не учитывался многочастичный характер потенциала и~наличие 
+огра\-ни\-чи\-ва\-ющих функций. Реализация потенциала Бреннера на графических 
+процессорах вызывает в~настоящее время повышенный интерес~[17]. Это 
+обуслов\-ли\-ва\-ет актуальность разработки специальных параллельных 
+алгоритмов и~программной реализации на GPU, адаптированных к~специфике 
+таких потенциалов. Данному вопросу посвящена настоящая работа. 
+  
+  \section{Программная модель вычислений на~графических процессорах}
+  
+  Для программирования на GPU производства NVIDIA используется 
+технология CUDA (Compute Unified Device Architecture)~[18]. Согласно архитектуре CUDA вычислительные потоки 
+организованы в~блоки. 
+  
+  Каждый блок имеет не менее~32~потоков. Все потоки в~блоке выполняют 
+одинаковый набор инструкций, однако ветвления внутри программы могут 
+нарушать синхронность исполнения. 
+  
+  Особенностью программирования на GPU является доступ к~памяти. 
+Устройства имеют большую пропускную способность памяти, но и~большую 
+задержку при обращении по заданному адресу. Во время обращения к~памяти 
+может формироваться множество запросов. Если потоки из вычислительного 
+блока обращаются к~близким адресам памяти, то несколько запросов могут 
+быть сгруппированы в~один и~исполнены параллельно. Это свойство 
+используется для повышения эффективности вычислительного процесса 
+в~задачах молекулярной динамики.
+  
+  Текстурная память имеет аппаратную поддержку интерполяции табличных 
+данных, что позволяет эффективно вычислять значения функций $P_{ij}(N_i^C, 
+N_i^H)$, $F_{ij}(N_i^l, N_j^l, N_{ij}^{\mathrm{conj}})$ и~$T_{ij}(N_i^l, N_j^l, 
+N_{ij}^{\mathrm{conj}})$,  входящих в~потенциал Бреннера.
+  
+  Один шаг молекулярно-динамического моделирования состоит из 
+обновления координат, скоростей, вычисления хеш-функ\-ций, сортировки, 
+формирования списка соседних атомов, вычисления действующих на атомы 
+сил и~ускорений. 
+  
+  Эффективность использования программируемых графических процессоров 
+в~мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ском моделировании достигается за счет 
+следующих подходов.
+  \begin{enumerate}[1.]
+\item Алгоритм разбивается на шаги с~одинаковыми блоками вычислений.
+\item  Подбираются оптимальные параметры конфигурации запуска процедур 
+на графических процессорах.
+  \item  Вводится хеш-функция для определения пространственной близости 
+атомов.
+  \item Осуществляется сортировка массива координат атомов.
+  \item Потенциал взаимодействия разбивается на составные части так, чтобы 
+каж\-дый вычислительный поток мог выполняться независимо. 
+  \end{enumerate}
+  
+  При этом для ограничения расстояний взаимодействия атомов используется 
+функция усечения. На отсортированном массиве координат составляется 
+список соседних атомов. Выделяется память, в~которую копируются 
+координаты соседних атомов. Вычисленные по формуле~(\ref{e6-sem}) 
+коэффициенты потенциала записываются в~дополнительную память. 
+Сохраненные значения~$b_{ij}$ используются далее для расчета сил, 
+действующих на атом.
+  
+  На рис.~1 показано взаимодействие функций в~рамках предлагаемого 
+подхода~[19]. Инициализация параметров и~запуск вычислений на GPU 
+выполняется центральным процессором. Все расчеты проводятся 
+в~графической памяти и~на ядрах графического процессора. Данные 
+в~программном комплексе <<Примус>> организованы в~объединенных 
+переменных, состоящих из четырех компонентов: три пространственных 
+составляющих и~масса атома, три компоненты скорости и~значение 
+температуры, три компоненты ускорения и~значение потенциальной энергии. 
+Такая организация переменных соответствует архитектуре графических карт 
+и~совместному запросу памяти.
+
+\begin{figure} %fig1
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=128mm 
+ \epsfbox{sem-1.eps}
+ }
+\end{center}
+ \vspace*{-11pt}
+  \Caption{Этапы молекулярно-динамического моделирования}
+  \end{figure}
+  
+  Как показано на рис.~1, на центральном процессоре выполняются только 
+последовательные части и~вызовы процедур, подготовка и~копирование данных 
+на устройство, задание конфигурации вычислений на GPU и~его запуск. 
+  
+  Справа на рис.~1 показано использование памяти в~процедурах, а также их 
+вычислительная сложность. 
+  
+  Расчетная область описывается ячеистой моделью. За счет использования 
+ограничивающей функции для атомов, находящихся в~некоторой ячейке, можно 
+учитывать только взаимодействие с~частицами из соседних ячеек. Для 
+определения соответствия частицы определенной ячейке используются не 
+трехмерные координаты, а хеш-функ\-ция: 
+  \begin{equation*}
+  \mathrm{hash}_i=z_i \mathrm{Sy}\cdot \mathrm{Sx} + y_i \mathrm{Sx} +x_i\,,
+  %\label{e10-sem}
+  \end{equation*}
+где $x_i$, $y_i$ и~$z_i$~--- компоненты ра\-ди\-ус-век\-то\-ра $\mathbf{r}_i\hm= 
+\mathbf{r}_i(x,y,z)$ $i$-й частицы; $\mathrm{Sx}$ и~$\mathrm{Sy}$~--- число ячеек. 
+  
+  Основной задачей разработки алгоритма вычисления потенциала Бреннера на 
+GPU является обеспечение наиболее эффективного доступа к~памяти. 
+В~авторском программном комплексе <<Примус>> для этого выделяется 
+дополнительная память и~переменные, которые хранят копии координат 
+до~8~соседних атомов. Из функции вычисления сил выносится расчет 
+коэффициентов, так что вычислительно сложная часть операций перенесена 
+в~специальную функцию. Затратная по времени функция составления списка 
+соседних атомов оперирует значениями хеш-функ\-ции и~дополнительной 
+памятью, после построения списка расположение координат атомов 
+оказывается выровненным в~памяти, и~не возникает перекрестного доступа на 
+следующих этапах.
+  
+  Такой подход обеспечивает вычислительную сложность наиболее затратных 
+этапов формирования списка соседних атомов и~расчета атомных сил на уровне 
+$O({N}/{P})$, где $P$~--- число ядер графического процессора. Более точно 
+можно дать следующую оценку для вычислительной сложности: 
+$(s^3+sm){N}/{P}$, где $s$~--- число ковалентных связей; $m$~--- число 
+дополнительных ячеек ис\-поль\-зу\-емой памяти. Покажем это. Согласно 
+предлагаемому алгоритму число потоков устанавливается равным числу 
+элементов~$N$. При вычислениях на GPU имеет место пропорциональная 
+зависимость затрат времени от загруженности памяти. Использование 
+ограничивающей функции приводит к~увеличению памяти в~фиксированное 
+чис\-ло раз, зависящее только от~$s$~--- числа ковалентных связей~--- и~не 
+зависящее от количества атомов в~системе. Учитывая введение дополнительной 
+памяти в~количестве~$m$~ячеек, вычисления по формуле~(\ref{e3-sem}) 
+с~известными значениями~$b_{ij}$ потребуют $s m N$ условных единиц 
+времени. Вычисления по формуле~(\ref{e6-sem}) за счет функции ограничения 
+потребуют $s^3 N$ тактов. Общее число условных единиц времени составит 
+$s^3  N\hm+ s  m  N$. За счет реализованных методов у~каж\-до\-го 
+потока вычислений есть набор данных и~инструкций, одному потоку 
+вычислений нет необходимости ожидать, пока другой поток подготовит данные 
+для расчета, $N$~потоков выполняются на~$P$~процессорах, что дает 
+сложность $(s^3+sm){N}/{P}$ условных единиц времени.
+
+\vspace*{-6pt}
+  
+  \section{Вычислительные эксперименты}
+  
+  \vspace*{-2pt}
+  
+  В данном разделе представлены результаты  
+мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ско\-го моделирования на аппаратном 
+обеспечении Intel Core i5-4200U, 1,6~ГГц, 2~ядра, 12~Гб RAM, nVidia GeForce 
+840M (384~ядра) под управлением ОС Windows~8.1. Максимальные значения 
+числа вычислительных потоков в~блоке: [1024, 1024, 64]. 
+  
+  В качестве примера рассматривается материал графен~[20], который находит 
+все большее применение в~различных отраслях современной индустрии. 
+Моделирование позволяет подбирать необходимые размеры листов 
+и~структуру, подходящую для прикладных задач и~синтезирования 
+в~лабораториях. 
+  
+  Для каждой функции устанавливаются независимые параметры 
+конфигурации. Значения конфигурации соответствуют логическому 
+представлению вычислительных потоков в~блоке. Реализованные методы 
+выравнивания памяти и~использование объединенных переменных позволяют 
+задавать одномерную конфигурацию блоков, что обеспечивает более простое 
+логическое представление данных.
+  
+  Общий прирост ускорения при оптимальном выборе числа вычислительных 
+потоков достигает~17\% для образца из~6720~атомов. Отмечено, что~91\% 
+времени требуется для расчета потенциала и~обновления списка соседних 
+атомов. При этом этап сортировки имеет вычислительную сложность $\alpha 
+N\log N$, но дает незначительный вклад в~общее время вычислений.
+  
+  В качестве примера, позволяющего продемонстрировать методы работы 
+с~памятью, рассмотрим моделирование фуллерена. В~фуллерене каждый атом 
+имеет три соседних; таким образом, задействованы все параметры потенциала, 
+такие как угловая функция, двугранные углы, корректирующие значения 
+связности. В~отличие от про\-стран\-ст\-вен\-но-вы\-тя\-ну\-то\-го листа 
+графена такая структура имеет компактное расположение атомов. 
+  
+  Применение хеш-функции и~сортировки при условии 
+использования~16~вычислительных потоков в~блоке и~64~ячеек памяти 
+позволило уменьшить число перекрестных запросов к~памяти на~13\%. 
+  
+  Для определения производительности программного комплекса <<Примус>> 
+рассматривается актуальная задача моделирования теплопереноса в~углеродных 
+структурах. Важным элементом здесь является определение коэффициента 
+теп\-ло\-про\-вод\-ности. С~этой целью к~центру образца подводится тепловой 
+импульс. Замеряется скорость распространения теплового импульса с~течением 
+времени. По характеру распространения и~скорости определяется коэффициент 
+теплопроводности. 
+  
+  В настоящей работе рассматривается лист графена типа <<кресло>>. 
+В~течение~1000~шагов лист доводится до средней температуры~16,3~К. После 
+стабилизации атомам по центру в~полоске шириной 20{\ptb{\AA}}\ придается 
+тепловой импульс~600~К. Осреднение проводится по~1000~временных шагов 
+по области длиной~20{\ptb{\AA}. Шаг моделирования~--- 1~фс. 
+Проводится~10\,000~шагов моделирования. Выдерживается 
+микроканонический ансамбль. 
+  
+  Молекулярно-динамическое моделирование проводилось на аппаратном 
+обеспечении Intel Xeon CPU E5-2650, 2,00~ГГц, 32~ядра в~ОС, 128~Гб RAM, 
+nVidia Tesla M2075 (448~ядер), nVidia Quadro~4000 (256~ядер) под 
+управлением ОС Centos~6.2. Максимальные значения числа вычислительных 
+потоков в~блоке: [1024, 1024, 64]. В~таблице показано время, необходимое 
+компьютеру для моделирования образцов различного размера. 
+  
+  \begin{table}\small
+  \begin{center}
+  
+  \tabcolsep=2.8pt
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+  \multicolumn{9}{c}{Ускорение, достигнутое на GPU в~задаче 
+теплопереноса}\\
+  \multicolumn{9}{c}{\ }\\[-6pt]
+  \hline
+\multicolumn{1}{|c|}{\raisebox{-16pt}[0pt][0pt]
+{\tabcolsep=0pt\begin{tabular}{c}Длина\\ образ-\\ ца, нм\end{tabular}}}&
+\multicolumn{1}{c|}{\raisebox{-16pt}[0pt][0pt]
+{\tabcolsep=0pt\begin{tabular}{c}Число\\ атомов\end{tabular}}}&
+\multicolumn{2}{c|}{LAMMPS (1 ядро)} &
+\multicolumn{2}{c}{\tabcolsep=0pt\begin{tabular}{c}Программа авторов\\
+ (Tesla M2075,\\ 448 ядер)\end{tabular}}&
+\multicolumn{1}{|c|}{\raisebox{-16pt}[0pt][0pt]
+{\tabcolsep=0pt\begin{tabular}{c}Уско-\\ рение,\\ раз\end{tabular}}}&
+\multicolumn{2}{c|}{\tabcolsep=0pt\begin{tabular}{c}Программа авторов\\
+ (Quadro 4000,\\ 256~ядер)\end{tabular}}\\
+\cline{3-6}
+\cline{8-9}
+&&
+\tabcolsep=0pt\begin{tabular}{c}Время\\ расчета,\\ с\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Затраты\\ памяти,\\ МБ\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Время\\ расчета,\\ с\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Затраты\\ памяти,\\ МБ\end{tabular}&
+&
+\tabcolsep=0pt\begin{tabular}{c}Время\\ расчета,\\ с\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Затраты\\ памяти,\\ МБ\end{tabular}\\
+\hline
+\hphantom{00}12,6&\hphantom{1\,00}960&\hphantom{00}47,1&\hphantom{000}3,5&\hphantom{0}14,8&\hphantom{0}56,0&\hphantom{0}3,2&\hphantom{0}22,3&\hphantom{0}37,0\\
+\hphantom{00}25\hphantom{.0}&\hphantom{00}1\,920&\hphantom{00}99,9&\hphantom{000}5,5&\hphantom{0}25,6&\hphantom{0}58,0&\hphantom{0}3,9&\hphantom{0}28,9&\hphantom{0}38,0\\
+\hphantom{00}50\hphantom{.0}&\hphantom{00}3\,840&\hphantom{0}198,6&\hphantom{00}20,3&\hphantom{0}27,3&\hphantom{0}73,0&\hphantom{0}7,3&\hphantom{0}33,6&\hphantom{0}53,0\\
+\hphantom{0}100\hphantom{.0}&\hphantom{00}7\,680&\hphantom{0}407,4&\hphantom{0}134,1&\hphantom{0}37,6&\hphantom{0}72,0&10,8&\hphantom{0}58,8&\hphantom{0}54,0\\
+\hphantom{0}200\hphantom{.0}&\hphantom{0}15\,360&\hphantom{0}797,1&1026,9&\hphantom{0}62,8&189,0&12,0&113,0&170,0\\
+\hphantom{0}400\hphantom{.0}&\hphantom{0}30\,720&1661,9&1168,9&131,2&195,0&12,7&224,8&176,0\\
+\hphantom{0}800\hphantom{.0}&\hphantom{0}61\,440&3086,8&1230,1&276,3&207,0&11,2&524,1&188,0\\
+1600\hphantom{.0}&122\,880&9666,7&1389,8&524,0&1129,0\hphantom{0}&11,5&
+1002,4\hphantom{0}&1110,0\hphantom{0}\\
+  \hline
+  \end{tabular}
+  \end{center}
+  \end{table}
+
+
+
+  
+  Представлены данные, полученные с~помощью разработанного авторами 
+программного обеспечения и~с~использованием известного пакета  
+мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ско\-го моделирования LAMMPS.
+  
+  Видно, что разработанный подход позволяет существенно повысить 
+производительность и~возможности моделирования (см.\ таблицу и~рис.~2). Отметим, 
+что за счет использования памяти видеокарты процесс моделирования может 
+отображаться на экране в~режиме поступления данных.
+  
+  \section{Выводы}
+  
+  \begin{figure} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=87.946mm 
+ \epsfbox{sem-2.eps}
+ }
+\end{center}
+ \vspace*{-11pt}
+\Caption{Зависимость времени расчета от числа частиц: 
+\textit{1} и~\textit{2}~--- время в~программе авторов 
+(\textit{1}~--- Tesla M2075; \textit{2}~--- Quadro~4000); \textit{3}--\textit{6}~--- 
+время LAMMPS (\textit{3}~--- 1~ядро; \textit{4}~--- 2~ядра;
+\textit{5}~--- 4~ядра; \textit{6}~--- 30~ядер)}
+\end{figure}
+  
+  Представлена эффективная реализация  
+мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ско\-го моделирования со сложным 
+потенциалом межчастичного взаимодействия на видеокартах. 
+  
+  Схема скоростей Верле разбивается на две части: выполнение операций 
+обновления координат и~скоростей, вычисления сил, действующих на атомы, 
+и~ускорений. Для процедуры обновления координат подбирается 
+максимальное число вычислительных потоков в~блоке. Подбор оптимального 
+размера элементарного блока вычислений для каждой процедуры, 
+составляющей один этап моделирования, позволяет ускорить выполнение 
+программы на~17\%. 
+  
+  Доступ к~памяти улучшается за счет сортировки элементов. Вычислительные 
+потоки записывают результаты в~один массив одновременно, при следующем 
+обращении к~памяти они используют весь массив необходимых значений. 
+  
+  Вычисление сил разбивается на два этапа: вычисление сложных 
+коэффициентов потенциала межатомного взаимодействия с~их сохранением 
+в~дополнительную память и~использование готовых коэффициентов для 
+суммирования сил со стороны всех атомов. Такой подход позволяет избежать 
+блокирования доступа к~памяти для параллельных потоков вычислений.
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-sem}
+\Au{Allen M.\,P., Tildesley D.\,J.} Computer simulation of liquids.~--- 
+Oxford: Clarendon Press, 1991. 385~p.
+\bibitem{2-sem}
+\Au{Verlet L.} Computer ``experiments'' on classical fluids. I.~Thermodynamical 
+properties of Lennard--Jones molecules~/\!\!/ Phys. Rev., 1967. Vol.~159.  
+P.~98--103. doi: 10.1103\!/\linebreak PhysRev.159.98.
+\bibitem{3-sem}
+\Au{Brenner D.\,W., Shenderova O.\,A., Harrison~J.\,A.} A~second-generation 
+reactive empirical bond order (REBO) potential energy expression for 
+hydrocarbons~/\!\!/ J.~Phys. Condens. Mat., 2002. Vol.~14. P.~783--802. 
+\bibitem{4-sem}
+\Au{Anderson J.\,A., Lorenz~C.\,D., Travesset~A.} General purpose molecular 
+dynamics simulations fully implemented on graphics processing units~/\!\!/ 
+J.~Comput. Phys., 2008. Vol.~227. No.\,10. P.~5342--5359.
+\bibitem{5-sem}
+\Au{Grand S.\,L., G$\ddot{\mbox{o}}$tz~A.\,W., Walker~R.\,C.} SPFP: Speed 
+without compromise~--- a~mixed precision model for GPU accelerated molecular 
+dynamics simulations~/\!\!/ Comput. Phys. Commun., 2013. Vol.~184. 
+No.\,2. P.~374--380.
+\bibitem{6-sem}
+\Au{Plimpton S.} Fast parallel algorithms for short-range molecular dynamics~/\!\!/ 
+J.~Comput. Phys., 1995. Vol.~117. No.\,1. P.~1--19.
+\bibitem{7-sem}
+\Au{Brown W.\,M., Wang~P., Plimpton~S.\,J., Tharrington~A.\,N.} Implementing 
+molecular dynamics on hybrid high performance computers-short range forces~/\!\!/ 
+Comput. Phys. Commun., 2011. Vol.~182. No.\,4. P.~898--911.
+\bibitem{8-sem}
+\Au{Tang Y.-H., Karniadakis~G.\,E.} Accelerating dissipative particle dynamics 
+simulations on GPUs: Algorithms, numerics and applications~/\!\!/ Comput. Phys. 
+Commun., 2014. Vol.~185. No.\,11. P.~2809--2822.
+\bibitem{9-sem}
+\Au{P$\acute{\mbox{a}}$ll S., Hess~B.} A~flexible algorithm for calculating pair 
+interactions on SIMD architectures~/\!\!/ Comput. Phys. Commun., 2013. 
+Vol.~184. No.\,12. P.~2641--2650.
+\bibitem{10-sem}
+\Au{Stone J.\,E., Phillips~J.\,C., Freddolino~P.\,L., Hardy~D.\,J., Trabuco~L.\,G., 
+Schulten~K.} Accelerating molecular modeling applications with graphics 
+processors~/\!\!/ J.~Comput. Chem., 2007. Vol.~28. No.\,16. P.~2618--2640.
+\bibitem{11-sem}
+\Au{Phillips J., Stone J., Schulten~K.} Adapting a message-driven parallel 
+application to GPU-accelerated clusters~/\!\!/  ACM/IEEE Conference on 
+Supercomputing Proceedings.~--- Piscataway, NJ, USA: IEEE Press, 2008. P.~1--9.
+\bibitem{12-sem}
+\Au{Eastman P., Friedrichs~M.\,S., Chodera~J.\,D., Radmer~R.\,J., Bruns~C.\,M., 
+Ku~J.\,P., Beauchamp~K.\,A., Lane~T.\,J., Wang~L.-P., Shukla~D., Tye~T., 
+Houston~M., Stich~T., Klein~C., Shirts~M.\,R., Pande~V.\,S.} OpenMM~4: 
+A~reusable, extensible, hardware independent library for high performance molecular 
+simulation~/\!\!/ J.~Chem. Theory Comput., 2013. Vol.~9. No.\,1  
+P.~461--469.
+\bibitem{13-sem}
+\Au{Harvey M.\,J., Giupponi~G., Fabritiis~G.\,D.} ACEMD: Accelerating 
+biomolecular dynamics in the microsecond time scale~/\!\!/ J.~Chem. Theory 
+Comput., 2009. Vol.~5. No.\,6. P.~1632--1639.
+\bibitem{14-sem}
+\Au{Deng H., Li X., Liu~X., Wang~G.} Accelerating the near non-bonded force 
+computation in desmond with graphic processing units~/\!\!/ 40th Conference 
+(International) on Parallel Processing Workshops.~--- IEEE, 2011. 
+P.~191--198.
+\bibitem{15-sem}
+\Au{Roehm D., Arnold A.} Lattice Boltzmann simulations on GPUs with 
+ESPResSo~/\!\!/  Eur. Phys.~J. Spec. Top., 2012. Vol.~210. No.\,1. 
+P.~89--100.
+\bibitem{16-sem}
+\Au{Friedrichs M.\,S., Eastman~P., Vaidyanathan~V., Houston~M., Legrand~S., 
+Beberg~A.\,L., Ensign~A.\,L., Bruns~C.\,M., Pande~V.\,S.} Accelerating molecular 
+dynamic simulation on graphics processing units~/\!\!/ J.~Comput. Chem., 
+2009. Vol.~30. No.\,6. P.~864--872.
+\bibitem{17-sem}
+\Au{\mbox{Tr{\!\ptb{\!\c{e}}}dak}~P., Rudnickib~W.\,R., Majewskia~J.\,A.} Efficient implementation of the 
+many-body reactive bond order (REBO) potential on GPU~/\!\!/ J.~Comput.
+Phys., 2016. Vol.~321. No.\,15. P.~556--570.
+\bibitem{18-sem}
+\Au{Боресков А.\,В., Харламов~А.\,А., Марковский~Н.\,Д., Микушин~Д.\,Н., 
+Мортиков~Е.\,В., Мыльцев~А.\,А., Сахарных~Н.\,А., Фролов~В.\,А.} 
+Параллельные вычисления на GPU. Архитектура и~программная модель CUDA.~--- М.: МГУ, 2012. 336~c.
+\bibitem{19-sem}
+\Au{Ревизников Д.\,Л., Семенов~С.\,А.} Особенности  
+мо\-ле\-ку\-ляр\-но-ди\-на\-ми\-че\-ско\-го моделирования наносистем на 
+графических процессорах~/\!\!/ Программная инженерия, 2013. №\,2. C.~31--35.
+\bibitem{20-sem}
+\Au{Елецкий А.\,В., Искандарова~И.\,М., Книжник~А.\,А., Красиков~Д.\,Н.} 
+Графен: методы получения и~теплофизические свойства~/\!\!/ Успехи 
+физических наук, 2011. Т.~181. №\,3. С.~233--268.
+        \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 07.06.17}}
+
+
+
+
+%\vspace*{4pt}
+
+%\hrule
+
+%\vspace*{2pt}
+
+\newpage
+
+\vspace*{-28pt}
+
+%\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{EFFECTIVE USE OF PROGRAMMABLE GRAPHICS PROCESSING UNITS 
+IN~PROBLEMS OF~MOLECULAR 
+DYNAMICS SIMULATION}
+
+\def\titkol{Effective use of programmable GRUs in problems of molecular 
+dynamics simulation}
+
+
+\def\aut{S.\,A.~Semenov$^1$  and D.\,L.~Reviznikov$^{1,2}$}
+\def\autkol{S.\,A.~Semenov  and D.\,L.~Reviznikov}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+$^1$Moscow Aviation Institute (National Research University), 4~Volokolamskoe 
+Av.,\linebreak
+$\hphantom{^1}$Moscow 125993, Russian Federation
+
+\noindent
+$^2$A.\,A.~Dorodnicyn Computing Center, Federal Research Center ``Computer 
+Science\linebreak
+$\hphantom{^1}$and Control'' of the Russian Academy of Sciences, 40~Vavilov Str., 
+Moscow\linebreak 
+$\hphantom{^1}$119333, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2017 vol~27 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2017   vol~27   no\,4
+\hfill \textbf{\thepage}}}
+
+
+\Abste{Graphics processing units (GPU) make it possible to expand significantly the 
+capabilities of computing systems. The article discusses the use of graphics 
+processors in problems of molecular dynamics modeling with a complex particle 
+interaction potential. In order to improve the performance of calculations on the 
+GPU, the following methods are implemented: reduction of the number of requests to the 
+global memory; reduction of the number of branches; selection of the optimal load of 
+multiprocessors; and use of equivalent mathematical expressions that perform functions 
+for faster code execution. Parallel execution of the program is realized by partitioning 
+the space into cells, compiling and updating the list of neighboring atoms in order to 
+minimize memory collisions, distribution of operations over computational flows, 
+and allocation of additional memory for creating copies of the coordinates of 
+interacting atoms. Several examples illustrating the computational complexity of the 
+algorithms are considered.}
+
+\KWE{high-performance computing; graphics processors; shared memory; molecular dynamics 
+simulation; nanomaterials}
+
+
+\DOI{10.14357\!/\!08696527170408} 
+
+%\vspace*{-24pt}
+
+\Ack
+\noindent
+The work was supported by the Russian Foundation
+for Basic Research (project 15-08-06262а).
+ 
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-sem-1}
+\Aue{Allen, M.\,P., and D.\,J.~Tildesley.} 1987. \textit{Computer simulation of 
+liquids}.  Oxford: Clarendon Press. 385~p.
+\bibitem{2-sem-1}
+\Aue{Verlet, L.} 1967. Computer ``experiments'' on classical fluids. 
+I.~Thermodynamical properties of Lennard--Jones molecules. \textit{Phys. Rev.} 
+159:98--103. doi: 10.1103\!/\linebreak PhysRev.159.98.
+\bibitem{3-sem-1}
+\Aue{Brenner, D.\,W., O.\,A.~Shenderova, and J.\,A.~Harrison.} 2002.  
+A~second-generation reactive empirical bond order (REBO) potential energy 
+expression for hydrocarbons. \textit{J.~Phys. Condens. Mat.} 14:783--802. 
+\bibitem{4-sem-1}
+\Aue{Anderson, J.\,A., C.\,D.~Lorenz, and A.~Travesset.} 2008. General purpose 
+molecular dynamics simulations fully implemented on graphics processing units. 
+\textit{J.~Comput. Phys.} 227(10):5342--5359.
+\bibitem{5-sem-1}
+\Aue{Grand, S.\,L., A.\,W.~G$\ddot{\mbox{o}}$tz, and R.\,C.~Walker.} 2013. 
+SPFP: Speed without compromise~--- a~mixed precision model for GPU accelerated 
+molecular dynamics simulations. \textit{Comput. Phys. Commun.} 
+184(2):374--380.
+\bibitem{6-sem-1}
+\Aue{Plimpton, S.} 1995. Fast parallel algorithms for short-range molecular 
+dynamics. \textit{J.~Comput. Phys.} 117(1):1--19.
+\bibitem{7-sem-1}
+\Aue{Brown, W.\,M., P.~Wang, S.\,J.~Plimpton, and A.\,N.~Tharrington.} 2011. 
+Implementing molecular dynamics on hybrid high performance computers-short 
+range forces. \textit{Comput. Phys. Commun.} 182(4):898--911.
+\bibitem{8-sem-1}
+\Aue{Tang, Y.-H., and G.\,E.~Karniadakis.} 2014. Accelerating dissipative particle 
+dynamics simulations on GPUs: Algorithms, numerics and applications. 
+\textit{Comput. Phys. Commun.} 185(11):2809--2822.
+\bibitem{9-sem-1}
+\Aue{P$\acute{\mbox{a}}$ll,~S., and B.~Hess.} 2013. A~flexible algorithm for 
+calculating pair interactions on SIMD architectures. \textit{Comput. Phys. 
+Commun.} 184(12):2641--2650.
+\bibitem{10-sem-1}
+\Aue{Stone, J.\,E., J.\,C.~Phillips, P.\,L.~Freddolino, D.\,J.~Hardy, L.\,G.~Trabuco, 
+and K.~Schulten.} 2007. Accelerating molecular modeling applications with graphics 
+processors. \textit{J.~Comput. Chem.} 28(16):2618--2640.
+\bibitem{11-sem-1}
+\Aue{Phillips, J., J.~Stone, and K.~Schulten.} 2008. Adapting a message-driven 
+parallel application to GPU-accelerated clusters. \textit{ACM/IEEE Conference 
+on Supercomputing Proceedings}. Piscataway, NJ: IEEE Press. 1--9.
+\bibitem{12-sem-1}
+\Aue{Eastman, P., M.\,S.~Friedrichs, J.\,D.~Chodera, R.\,J.~Radmer, C.\,M.~Bruns, 
+J.\,P.~Ku, K.\,A.~Beauchamp, T.\,J.~Lane, L.-P.~Wang, D.~Shukla, T.~Tye, 
+M.~Houston, T.~Stich, C.~Klein, M.\,R.~Shirts, and V.\,S.~Pande.} 2013. 
+OpenMM~4: A~reusable, extensible, hardware independent library for high 
+performance molecular simulation. \textit{J.~Chem. Theory Comput.} 
+9(1):461--469.
+\bibitem{13-sem-1}
+\Aue{Harvey, M.\,J., G.~Giupponi, and G.\,D.~Fabritiis.} 2009.  ACEMD: 
+Accelerating biomolecular dynamics in the microsecond time scale. 
+\textit{J.~Chem. Theory Comput.} 5(6):1632--1639.
+\bibitem{14-sem-1}
+\Aue{Deng, H., X.~Li, X.~Liu, and G.~Wang.} 2011. Accelerating the near  
+non-bonded force computation in desmond with graphic processing units. \textit{40th 
+Conference (International) on Parallel Processing Workshops}. IEEE.  
+191--198.
+\bibitem{15-sem-1}
+\Aue{Roehm D., and A.~Arnold.} 2012. Lattice Boltzmann simulations on GPUs 
+with ESPResSo. \textit{Eur. Phys.~J.~Spec. Top.} 210(1):89--100.
+\bibitem{16-sem-1}
+\Aue{Friedrichs, M.\,S., P.~Eastman, V.~Vaidyanathan, M.~Houston, S.~Legrand, 
+A.\,L.~Beberg, D.\,L.~Ensign, C.\,M.~Bruns, and V.\,S.~Pande.} 2009. Accelerating 
+molecular dynamic simulation on graphics processing units. \textit{J.~Comput. 
+Chem.} 30(6):864--872.
+\bibitem{17-sem-1}
+\Aue{\mbox{Tr{\!\ptb{\c{e}}}dak}, P., W.\,R.~Rudnickib, and J.\,A.~Majewskia.} 2016. Efficient 
+implementation of the many-body reactive bond order (REBO) potential on GPU. 
+\textit{J.~Comput. Phys.} 321(15):556--570.
+\bibitem{18-sem-1}
+\Aue{Boreskov, A.\,V., A.\,A.~Kharlamov, N.\,D.~Markovskiy, D.\,N.~Mikushin, 
+E.\,V.~Mortikov, A.\,A.~Myl'tsev, N.\,A.~Sakharnykh, and V.\,A.~Frolov.} 2012. 
+\textit{Parallel'nye vychisleniya na GPU. Arkhitektura i~programmnaya model' 
+CUDA} [Parallel computing on GPU. Architecture and CUDA 
+programming model]. Moscow:  MSU Publs. 
+336~p.
+\bibitem{19-sem-1}
+\Aue{Reviznikov, D.\,L., and S.\,A.~Semenov.} 2013. Osobennosti 
+molekulyarno-di\-na\-mi\-che\-sko\-go 
+modelirovaniya nanosistem na graficheskikh processorakh 
+[Peculiarities of molecular dynamic modeling of nanostructures on graphical 
+processors]. \textit{Programmnaya in\-zhe\-ne\-riya} [Software Engineering] 2:31--35.
+\bibitem{20-sem-1}
+\Aue{Eletskii, A.\,V., I.\,M.~Iskandarova, A.\,A.~Knizhnik, and D.\,N.~Krasikov}. 
+2011. Graphene: 
+Fabrication methods and thermophysical properties. \textit{Phys. Usp.}
+54(3):227--258.
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received June 7, 2017}} 
+
+\Contr
+
+\noindent
+\textbf{Semenov Sergey A.} (b.\ 1986)~--- engineer, Moscow Aviation Institute (National Research 
+University),  4~Volokolamskoe Av., Moscow 125993, Russian Federation; \mbox{greyss@mai.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Reviznikov Dmitry~L.} (b.\ 1961)~--- Doctor of Sciences in physics and mathematics, 
+professor, Moscow Aviation Institute (National Research University), 4~Volokolamskoe Av., 
+Moscow 125993, Russian Federation; leading scientist, A.\,A.~Dorodnicyn Computing Center, 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
+40~Vavilov Str., Moscow 119333, Russian Federation; \mbox{reviznikov@inbox.ru} 
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

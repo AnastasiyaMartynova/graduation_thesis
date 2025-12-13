@@ -1,0 +1,632 @@
+\documentstyle[% 
+righttag% 
+,11pt% 
+,amssymb% 
+,russian%        remove in Eng. 
+,izvru%         Set izven% in Eng. 
+]{amsart} 
+ 
+%  
+ 
+\newcommand{\la}{\langle} 
+\newcommand{\ra}{\rangle} 
+\newcommand{\col}{\operatorname{col}} 
+\newcommand{\up}[1]{\overset{\,\circ}{#1}{}} 
+\newcommand{\tts}[1]{} 
+ 
+\theoremstyle{definition} 
+\theorembodyfont{\rm} 
+\newtheorem{notenonum}{\hskip\parindent Замечание} 
+\renewcommand{\thenotenonum}{} 
+\numberwithin{equation}{section} 
+ 
+%\hoffset=-15mm%         For Eng. 
+\setcounter{page}{57} 
+\god{2004} 
+\nomer{3~(502)} %            Remove in Eng. 
+%\nomer{Vol.\,48, No.\,3}%        Set in Eng. 
+%\str{\pageref{begin}--\pageref{end}}% Set in Eng. 
+\udk{517.940} 
+ 
+\author{\it С.П.\,Павлов, В.А.\,Крысько} 
+% NB:  ^^ remove in Eng. 
+\title{Смешанная вариационная формулировка задачи\\ о пластине, 
+свободно опертой по криволинейному контуру} 
+ 
+\date{} 
+%\pagestyle{myheadings}%     Set in Eng. 
+\pagestyle{plain} %       Remove in Eng. 
+\begin{document} 
+%\thispagestyle{plain}%     Set in Eng. 
+\maketitle 
+\label{begin} 
+ 
+ 
+В [1] доказана сходимость итерационного метода решения нелинейной 
+системы уравнений Кармана, на каждом шаге которого решаются 
+лишь линейные уравнения. Естественное стремление --- свести решение 
+этих задач к решению задач второго порядка с использованием смешанной 
+вариационной формулировки, которая позволяет это сделать 
+естественным образом. В ([2], с.\,372) подобный подход 
+использован для пластины, защемленной по всему контуру. В случае 
+свободного опирания пластины на полигональный контур соответствующая 
+итерационная процедура состоит всего из двух шагов, на 
+каждом из которых решается задача второго порядка. Эта процедура 
+известна как метод мембранной аналогии [3]. 
+ 
+Однако при попытке применить метод конечных элементов для 
+расчета свободно опертых пластин с криволинейным контуром возникает 
+так называемый парадокс О.М.\,Сапонджяна ([4], с.\,226): 
+невозможность получить решение для пластинки с криволинейным контуром 
+как предел решений для пластинок с полигональными контурами, 
+аппроксимирующими криволинейный контур. 
+ 
+В данной работе предлагается новая итерационная процедура, основанная 
+на смешанной вариационной формулировке для свободной опертой 
+пластины, когда ее контур считается в общем случае криволинейным. 
+Это обстоятельство порождает существенное отличие метода 
+мембранной аналогии от итерационной процедуры, рассматриваемой ниже. 
+\medskip 
+\addtocounter{section}{1} 
+\setcounter{equation}{0} 
+ 
+ 
+{\bf 1. Постановка задачи. Определение пространств.} 
+Рассмотрим пластину, занимающую в плане ограниченную 
+выпуклую область $\Omega\in R^2$, свободно опертую по кусочно-гладкой 
+границе~$\Gamma$. Напряженно-деформированное состояние пластины описывается 
+уравнением 
+\begin{equation} 
+\Delta^2w=q,\quad q=Q/D, 
+\end{equation} 
+с граничными условиями 
+\begin{equation} 
+w|_\Gamma=0,\quad \Delta w-(1-\eta)\chi\frac{\partial w}{\partial n} 
+\Big|_\Gamma=0, 
+\end{equation} 
+где $w$ --- прогиб пластинки, $Q$ --- интенсивность поперечной нагрузки, 
+$D=Eh^3/12(1-\eta^2)$ --- цилиндрическая жесткость, $\eta$ -- коэффициент 
+Пуассона, $E$ --- модуль упругости, $h$ --- толщина пластины и $\chi$ 
+--- кривизна границы $\Gamma$. 
+ 
+Определим множество 
+\begin{equation} 
+E=\{v\in\rho^\infty(\Omega)\,\big|\,v|_\Gamma=0\}, 
+\end{equation} 
+где $\rho^\infty(\Omega)$ --- множество функций, бесконечно дифференцируемых 
+на $\ov\Omega\in R^2$. 
+Замыкание множества (1.3) в норме $H^2(\Omega)$ является подпространством в 
+$H^2(\Omega)$. Обозначим его через $V(\Omega)$. Очевидно, 
+$V(\Omega)=H^2(\Omega)\cap H^1_0(\Omega)$. 
+ 
+Известно [5], что решение задачи (1.1), (1.2) эквивалентно 
+минимизации на $V(\Omega)$ функционала 
+\begin{equation} 
+J(v)=\frac{1}{2}\int_\Omega|\Delta v|^2d\Omega-\int_\Omega dv\,d\Omega 
+-\frac{1-\eta}{2}\int_\Gamma \chi 
+\bigg|\frac{\partial v}{\partial n}\bigg|^2ds. 
+\end{equation} 
+\medskip 
+\addtocounter{section}{1} 
+\setcounter{equation}{0} 
+ 
+{\bf 2. Смешанная вариационная формулировка задачи.} 
+Будем считать, что вместо функционала (1.4) минимизируется 
+функционал 
+\begin{equation} 
+\Phi(v,\psi,\alpha)=\frac{1}{2}\int_\Omega|\psi|^2d\Omega- 
+\int_\Omega qv\,d\Omega-\frac{1-\eta}{2}\int_\Gamma \chi|\alpha|^2ds 
+\end{equation} 
+на таких тройках $(v,\psi,\alpha)\in V(\Omega)\times L^2(\Omega)\times 
+L^2(\Gamma)$, элементы которых 
+связаны равенствами $-\Delta v=\psi$, $\frac{\partial v}{\partial 
+n}\big|_\Gamma=\alpha$. 
+ 
+Определим пространство функций 
+\begin{equation} 
+P(\Omega)=\{(v,\psi,\alpha)\in H^1_0(\Omega)\times L^2(\Omega)\times 
+L^2(\Gamma)\mid \forall\mu\in H^1(\Omega), 
+\ \beta[(v,\psi,\alpha),\mu]=0\}, 
+\end{equation} 
+где билинейная форма $\beta[\cdot,\cdot]$ задается выражением 
+$$ 
+\beta[(v,\psi,\alpha),\mu]=\int_\Omega\nabla v\nabla\mu\,d\Omega- 
+\int_\Omega \psi\mu\,d\Omega-\int_\Gamma \alpha\mu\,ds. 
+$$ 
+ 
+\begin{thm} 
+Пусть область $\Omega$ выпукла и имеет непрерывную по 
+Липшицу границу $\Gamma$, тогда 
+ 
+$1)$ отображение $(v,\psi,\alpha)\in P(\Omega)\to 
+|\psi|^2_{0,\Omega}$\,\footnote{Здесь и далее 
+$|v|_{m,\Omega}=\Big(\sum\limits_{|k|=m} \int\limits_\Omega |\partial^k 
+v|^2d\Omega\Big)^{1/2}$, а $\|v\|_{m,\Omega}=\Big( \sum\limits_{|k|\le 
+m}\int\limits_\Omega |\partial^k v|^2d\Omega \Big)^{1/2}$.} 
+является нормой на пространстве $P(\Omega)$, эквивалентной естественной 
+норме произведения $(v,\psi,\alpha)\in P(\Omega)\to (|v|^2_{1,\Omega}+ 
+|\psi|^2_{0,\Omega}+ |\alpha|^2_{0,\Gamma})^{1/2}$ 
+и превращающей $P(\Omega)$ в гильбертово пространство\/$;$ 
+ 
+$2)$ если $(v,\psi,\alpha)\in P(\Omega)$, то 
+\begin{equation} 
+(v,\psi,\alpha)\in V(\Omega)\times L^2(\Omega)\times L^2(\Gamma), 
+\quad -\Delta v=\psi,\quad \frac{\partial v}{\partial n} 
+\Big|_\Gamma=\alpha; 
+\end{equation} 
+ 
+если выполнено $(2.3)$, то $(v,\psi,\alpha)\in P(\Omega)$. 
+\end{thm} 
+ 
+ 
+{\bf Доказательство} начнем со второго утверждения. Так как 
+$\Omega$ имеет непрерывную границу, то справедлива формула Грина 
+\begin{equation} 
+\int_\Omega \nabla v\nabla\mu\,d\Omega=-\int_\Omega 
+\Delta v\mu\,d\Omega+\int_\Gamma\frac{\partial v}{\partial n} 
+\mu\,ds\quad \forall v\in H^2(\Omega),\ \ \forall\mu\in H^1(\Omega). 
+\end{equation} 
+Пусть $(v,\psi,\alpha)\in P(\Omega)$. Тогда $v\in H^1_0(\Omega)$, $\psi\in 
+L^2(\Omega)$, $\alpha\in L^2(\Gamma)$ 
+и $\beta[(v,\psi,\alpha),\mu]=0$ \; $\forall\mu\in H^1(\Omega)$. Из 
+последнего условия, в 
+частности, для любого $\mu\in H^1_0(\Omega)$ имеем 
+\begin{equation} 
+\int_\Omega \nabla v\nabla \mu\,d\Omega=\int_\Omega 
+\psi\mu\,d\Omega. 
+\end{equation} 
+Из (2.5) следует, что $v$ появляется как решение задачи Дирихле для 
+оператора $-\Delta$ при $v|_\Gamma=0$. Так как область $\Omega$ выпукла, то 
+$v\in H^2(\Omega)$ ([2], с.\,373), а следовательно, $v\in H^2(\Omega)\cap 
+H^1_0(\Omega)$. 
+Используя (2.4) для $\mu\in H^1_0(\Omega)$, получим $-\Delta v=\psi$. А 
+используя 
+ту же формулу Грина для $\mu\in H^1(\Omega)$, найдем $\frac{\partial 
+v}{\partial n}\big|_\Gamma=\alpha$. 
+ 
+Пусть верно (2.3). Покажем, что $(v,\psi,\alpha)\in P(\Omega)$. Так 
+как $v\in V(\Omega)\subset H^2(\Omega)$ и $-\Delta v=\psi$, $\frac{\partial 
+v}{\partial n}\big|_\Gamma=\alpha$, то непосредственно из (2.4) получаем 
+$$ 
+\int_\Omega \nabla v\nabla\mu\,d\Omega=\int_\Omega\psi\mu\,d\Omega+ 
+\int_\Gamma\alpha\mu\,ds\ \ \forall\mu\in H^1(\Omega), 
+$$ 
+т.\,е. $\beta[(v,\psi,\alpha),\mu]=0$ \; $\forall\mu\in H^1(\Omega)$. Кроме 
+того, $v\in V(\Omega)\subset H^1_0(\Omega)$. 
+ 
+Докажем первое утверждение. 
+Гильбертово пространство $P(\Omega)$ снабжено нормой произведения. 
+Если $(v,\psi,\alpha)\in P(\Omega)$, то, 
+как было показано выше, $v\in H^2(\Omega)\cap H^1_0(\Omega)$. Из условия 
+$\beta[(v,\psi,\alpha),\mu]=0$ при $\mu=v$ следует 
+\begin{equation} 
+|v|^2_{1,\Omega}\le C_1|\psi|_{0,\Omega}|v|_{0,\Omega}. 
+\end{equation} 
+Введем подпространство $M\subset H^1(\Omega)$ такое, что можно записать 
+прямую 
+сумму $H^1(\Omega)=\linebreak H^1_0(\Omega)\oplus M$. Кроме того, введем оператор 
+$B:H^1(\Omega)\to L^2(\Gamma)$, определяемый следующим образом: 
+$\alpha=B\psi\in L^2(\Gamma)$ для 
+$\psi\in L^2(\Omega)$ является единственным решением уравнения 
+\begin{equation} 
+\int_\Gamma \alpha\mu\,ds=\int_\Omega \nabla v\nabla\mu\,d\Omega- 
+\int_\Omega \psi\mu\,d\Omega\ \ \forall\mu\in M 
+\end{equation} 
+при условии, что $v\in H^1_0(\Omega)$ удовлетворяет уравнению 
+$$ 
+\int_\Omega \nabla v\nabla\mu\,d\Omega=\int_\Omega 
+\psi\mu\,d\Omega\ \ \forall\mu\in H^1_0(\Omega). 
+$$ 
+Легко проверить, что $B\psi=-B\Delta v=\frac{\partial v}{\partial 
+n}\big|_\Gamma$ в силу условий теоремы, т.\,е. 
+$B$ является оператором внешней нормальной производной для 
+$v\in H^2(\Omega)\cap H^1_0(\Omega)$. 
+ 
+Этот оператор ограничен, т.\,к. $v\in H^2(\Omega)\cap H^1_0(\Omega)$. 
+Обозначим 
+его норму через $\|B\|$. Тогда $\|B\|=\sup\limits_{v\in H^2(\Omega)\cap 
+H^1_0(\Omega)}\frac{\big\| \frac{\partial v}{\partial 
+n}\big\|_{0,\Gamma}}{|\Delta v|_{0,\Omega}}$, 
+где $\|\cdot\|_{0,\Gamma}$ --- норма, ассоциируемая со скалярным 
+произведением 
+$$ 
+(\alpha,\beta)_{L^2(\Gamma)}=\int_\Gamma \alpha\beta\,ds. 
+$$ 
+ 
+Таким образом, $\|\alpha\|_{0,\Gamma}\le\|B\|\,|\psi|_{0,\Omega}$ для 
+$\psi\in L^2(\Omega)$. 
+Отсюда с учетом (2.6) получаем 
+$$ 
+(\|v\|_{1,\Omega}+\|\psi\|_{0,\Omega}+\|\alpha\|_{0,\Gamma})\le 
+C_2\|\psi\|_{0,\Omega}.\quad\square 
+$$ 
+ 
+Этот результат позволяет перейти от минимизации функционала 
+(1.4) на пространстве $V(\Omega)$ к минимизации функционала (2.1) 
+на пространстве $P(\Omega)$. 
+ 
+\begin{thm} 
+Пусть $w\in V(\Omega)$ --- решение задачи $(1.4)$, тогда 
+\begin{equation} 
+\Phi\bigg(w,-\Delta w,\frac{\partial w}{\partial n} \bigg)\to 
+\inf_{(v,\psi,\alpha)\in P(\Omega)}\Phi(v,\psi,\alpha). 
+\end{equation} 
+При этом тройка $\big(w,-\Delta w,\frac{\partial w}{\partial n} \big)\in 
+P(\Omega)$ является единственным решением 
+задачи минимизации $(2.8)$. 
+\end{thm} 
+ 
+\begin{pf} 
+Докажем, что симметричная билинейная форма 
+$$ 
+a[(v,\psi,\alpha),(u,\varphi,\beta)]=\int_\Omega 
+\psi\varphi\,d\Omega-(1-\eta)\int_\Gamma\chi\,d\beta\,ds,\quad 
+(v,\psi,\alpha),(u,\varphi,\beta)\in P(\Omega) 
+$$ 
+непрерывна и эллиптична на $P(\Omega)$. 
+ 
+Согласно теореме 1, если $(v,\psi,\alpha),(u,\varphi,\beta)\in P(\Omega)$, то 
+$-\Delta v=\psi$, $\frac{\partial v}{\partial n}\big|_\Gamma=\alpha$ и 
+$-\Delta u=\varphi$, $\frac{\partial u}{\partial n}\big|_\Gamma=\beta$. 
+Тогда имеем 
+\begin{equation} 
+a[(v,\psi,\alpha),(u,\varphi,\beta)]=\int_\Omega \Delta v 
+\Delta u\,d\Omega-(1-\eta)\int_\Gamma 
+\frac{\partial v}{\partial n}\frac{\partial u}{\partial n}ds. 
+\end{equation} 
+При $u=v$, $\varphi=\psi$ и $\beta=\alpha$ из (2.9) получаем ([2], с.\,38) 
+$$
+a[(v,\psi,\alpha),(v,\psi,\alpha)]=\int_\Omega\bigg[\bigg( 
+\frac{\partial^2 v}{\partial x^2}\bigg)^2+2\eta 
+\frac{\partial^2 v}{\partial x^2}\frac{\partial^2 v}{\partial y^2}+ 
+\bigg(\frac{\partial^2 v}{\partial y^2} \bigg)^2+2(1-\eta) 
+\bigg(\frac{\partial^2 v}{\partial x\partial y} \bigg)\bigg]d\Omega 
+\ge \eta|\psi|^2_{0,\Omega}. 
+$$
+Этим $P$-эллиптичность доказана. Непрерывность билинейной формы 
+очевидна. 
+\end{pf} 
+ 
+ 
+Из теоремы 2 следует, что задача минимизации 
+\begin{equation} 
+\Phi(v^*,\psi^*,\alpha^*)=\inf_{(u,\varphi,\beta)\in P(\Omega)} 
+\Phi(u,\varphi,\beta) 
+\end{equation} 
+имеет решение и притом единственное. Установим связь между решениями 
+задач (2.10) и (1.1), (1.2). Если $(v^*,\psi^*,\alpha^*)\in P(\Omega)$ --- 
+решение задачи (2.10), то должны выполняться следующие условия: 
+\begin{equation} 
+\int_\Omega \psi^*\varphi\,d\Omega-\int_\Omega uq\,d\Omega- 
+(1-\eta)\int_\Gamma \chi\alpha^*\beta\,ds=0\ \ \forall(u,\varphi,\beta) 
+\in P(\Omega). 
+\end{equation} 
+Так как $(v^*,\psi^*,\alpha^*)\in P(\Omega)$, то $-\Delta v^*=\psi^*$, 
+$\frac{\partial v^*}{\partial n}\big|_\Gamma=\alpha^*$ и 
+$v^*\in V(\Omega)$. С учетом этого из (2.11) получаем 
+$$ 
+\int_\Omega \Delta v^*\Delta u\,d\Omega-(1-\eta)\int_\Gamma 
+\chi\frac{\partial v^*}{\partial n}\frac{\partial u}{\partial n}ds= 
+\int_\Gamma uq\,ds. 
+$$ 
+ 
+Таким образом, $v^*$ совпадает с решением $w$ задачи (1.1), (1.2) 
+и $\psi^*=-\Delta w$, $\alpha^*=\frac{\partial w}{\partial n}\big|_\Gamma$. 
+ 
+\begin{notenonum} 
+Так как область выпукла и ее граница регулярна, 
+то при $q\in H^{-1}(\Omega)$ решение $w$ задачи (1.1), (1.2) принадлежит 
+$H^3(\Omega)\cap H^1_0(\Omega)$, и $\Delta w\in H^1(\Omega)$. 
+\end{notenonum} 
+\addtocounter{section}{1} 
+\setcounter{equation}{0} 
+ 
+ 
+{\bf 3. Решение задачи $(2.10)$.} 
+Покажем, что решение задачи может быть сведено к решению 
+последовательности задач Дирихле для оператора $-\Delta$. 
+ 
+Для дальнейшего изложения удобно ввести линейное отображение 
+$A:L^2(\Omega)\to H^1_0(\Omega)$ следующим образом: если задана функция 
+$\psi\in L^2(\Omega)$, то функция $v=A\psi\in H^1_0(\Omega)$ --- 
+единственное решение уравнения 
+$$ 
+v\in H^1_0(\Omega)\int_\Omega \nabla v\nabla\mu\,d\Omega= 
+\int_\Omega \psi\mu\,d\Omega\ \ \forall\mu\in H^1_0(\Omega). 
+$$ 
+С учетом этого пространство $P(\Omega)$, определенное в (2.2), может быть 
+записано в виде 
+$$ 
+P(\Omega)=\{(v,\psi,\alpha)\in H^1_0(\Omega)\times L^2(\Omega)\times 
+L^2(\Gamma)\mid v=A\psi,\ \alpha=B\psi\}. 
+$$ 
+Задача (2.10) теперь эквивалентна следующей задаче оптимального 
+управления:
+\begin{equation} 
+\min_{\psi\in L^2(\Omega)}\bigg[\frac{1}{2}\int_\Omega|\psi|^2 
+d\Omega-\int_\Omega qv\,d\Omega-\frac{1-\eta}{2}\int_\Gamma 
+\chi|\alpha|^2ds\bigg], 
+\end{equation} 
+где состояния $v$ и $\alpha$ связаны с управлением $\psi\in L^2(\Omega)$ 
+посредством 
+уравнений состояния 
+\begin{equation} 
+v\in H^1_0(\Omega),\quad v=A\psi;\quad 
+\alpha\in L^2(\Gamma),\quad \alpha=B\psi. 
+\end{equation} 
+Как следует из замечания, хотя оптимальное управление $\psi$ 
+ищется на $L^2(\Omega)$, на самом деле его регулярность выше при 
+$q\in H^{-1}(\Omega)$, $\psi\in H^1(\Omega)$. В этом случае определен след 
+$\psi|_\Gamma=\lambda$, $\lambda\in M$. 
+ 
+В дальнейшем будем считать 
+\begin{gather*} 
+\int_\Omega\nabla\psi_\lambda\nabla\mu\,d\Omega=\int_\Omega 
+q\mu\,d\Omega\ \ \forall\mu\in H^1_0(\Omega),\\ 
+\psi_\lambda-\lambda\in H^1_0(\Omega). 
+\end{gather*} 
+Если $v_\lambda=A\psi_\lambda$ и $\alpha_\lambda=B\psi_\lambda$, то из (3.1) 
+следует 
+\begin{equation} 
+\min_{\psi\in L^2(\Omega)}\Phi(v,\psi,\alpha)= 
+\min_{\lambda\in M}D(\lambda), 
+\end{equation} 
+где 
+$$ 
+D(\lambda)=-\frac{1}{2}\int_\Omega|\psi_\lambda|^2d\Omega- 
+\int_\Gamma \lambda\alpha_\lambda\,ds-\frac{1-\eta}{2} 
+\int_\Gamma\chi|\alpha_\lambda|^2ds\ \ \forall\lambda\in M. 
+$$ 
+ 
+Основная идея предлагаемого в данной статье итерационного процесса 
+состоит в применении градиентного метода 
+к задаче минимизации (3.3). 
+ 
+Пусть, как обычно, $M'$ --- двойственное пространство для 
+пространства $M$, а $\la\cdot,\cdot\ra$ --- отношение двойственности между 
+пространствами $M$ и $M'$. Обозначим через $D'\in M'$ производную 
+функционала $D(\lambda)$. 
+Введем отображение $S:M\to H^1(\Omega)$ следующим образом: для 
+$\lambda\in M$ \ $\up{\varphi}_\lambda=S(\lambda)$ --- единственная функция 
+из $H^1(\Omega)$, удовлетворяющая 
+соотношению 
+\begin{gather} 
+\int_\Omega\nabla\up{\varphi}_\lambda\nabla\mu\,d\Omega=0 
+\ \ \forall\mu\in H^1_0(\Omega), \\ 
+\up{\varphi}_\lambda-\lambda\in H^1_0(\Omega). \notag
+\end{gather} 
+ 
+\begin{thm} 
+Для любого $\lambda\in M$ функционал $D(\lambda)$ 
+дифференцируем, и его производная определяется соотношением 
+$$ 
+\la D'(\lambda),\mu\ra=\int_\Omega\up{\varphi}_\theta 
+\up{\varphi}_\mu d\Omega\ \ \forall\mu\in M, 
+$$ 
+где $\up{\varphi}_\mu=S(\mu)$, $\up{\varphi}_\theta=S(\theta_\lambda)$ и 
+\begin{equation} 
+\theta_\lambda=\lambda+(1-\eta)\chi\alpha_\lambda,\quad 
+\theta_\lambda\in M. 
+\end{equation} 
+\end{thm} 
+ 
+\begin{pf}
+Дифференцируя (3.3), получим 
+\begin{equation} 
+\la D'(\lambda),\mu\ra=-\int_\Omega\psi_\lambda\up{\varphi}_\mu 
+d\Omega-\int_\Gamma \alpha_\lambda\mu\,d\Omega-\int_\Gamma 
+(\lambda+(1-\eta)\chi\alpha_\lambda)\up{\beta}_\mu ds, 
+\end{equation} 
+где $\up{\varphi}_\mu=S(\mu)$, $\up{\beta}_\mu=B\up{\varphi}_\mu$. 
+Из (3.6) с учетом (2.7) получаем 
+\begin{equation} 
+\la D'(\lambda),\mu\ra=-\int_\Omega\nabla v_\lambda\nabla 
+\up{\varphi}_\mu d\Omega-\int_\Gamma(\lambda+(1-\eta)\chi\alpha_\lambda) 
+\up{\beta}_\mu ds. 
+\end{equation} 
+Первое слагаемое в (3.7) равно нулю в силу (3.4). Введем функцию 
+$\up{\varphi}_\theta=S(\theta_\lambda)$, где $\theta_\lambda$ определяется 
+по (3.5), и обозначим $\up{u}_\mu=A\up{\varphi}_\mu$. 
+Тогда из (3.7) следует 
+$$ 
+\la D'(\lambda),\mu\ra=\int_\Omega\up{\varphi}_\theta 
+\up{\varphi}_\mu d\Omega-\int_\Omega\nabla 
+\up{\varphi}_\theta\nabla\up{u}_\mu d\Omega. 
+$$ 
+Однако последнее слагаемое в этом равенстве равно нулю в силу 
+(3.4).
+\end{pf}
+ 
+Градиентный метод для задачи (3.3) состоит 
+в определении последовательности $\{\lambda_n\}^\infty_{n=0}$ функций 
+$\lambda^n\in M$ по 
+итерационной схеме 
+\begin{equation} 
+(\lambda^{n+1}-\lambda^n,\mu)_M=-\rho_n\la 
+D'(\lambda^n),\mu\ra\ \ \forall\mu\in M, 
+\end{equation} 
+где $(\cdot,\cdot)_M$ --- произвольное скалярное произведение в пространстве 
+$M$, $\rho$ --- положительный параметр, $\lambda^0$ --- произвольная функция 
+из $M$. 
+ 
+Таким образом, одна итерация (3.8) равносильна последовательному 
+решению следующих задач: 
+\begin{itemize} 
+\item[а)] для заданной функции $\lambda^n\in M$ найти (единственную) функцию 
+$\psi^n\in H^1(\Omega)$, удовлетворяющую соотношениям 
+\begin{gather} 
+\psi^n-\lambda^n\in H^1_0(\Omega),\\ 
+\int_\Omega\nabla\psi^n 
+\nabla\mu\,d\Omega=\int_\Omega q\mu\,d\Omega\quad \forall\mu\in H^1_0(\Omega); 
+\end{gather} 
+\item[б)] найти функцию $v^n\in H^1_0(\Omega)$, удовлетворяющую соотношению 
+\begin{equation} 
+\int_\Omega\nabla v^n 
+\nabla\mu\,d\Omega=\int_\Omega \psi^n\mu\,d\Omega\quad \forall\mu\in H^1_0(\Omega); 
+\end{equation} 
+\item[в)] найти функцию $\alpha^n\in L^2(\Gamma)$, удовлетворяющую 
+соотношению 
+\begin{equation} 
+\int_\Gamma \alpha^n\mu\,ds=\int_\Omega 
+\nabla v^n\nabla\mu\,d\Omega-\int_\Omega \psi^n\mu\,d\Omega
+\quad \forall\mu\in M; 
+\end{equation} 
+\item[г)] найти функцию $\lambda^{n+1}\in M$, удовлетворяющую соотношению 
+\begin{equation} 
+(\lambda^{n+1}-\lambda^n,\mu)_M=-\rho 
+\int_\Omega \up{\varphi}^n_\theta\up{\varphi}_\mu d\Omega
+\quad \forall\mu\in M, 
+\end{equation} 
+где $\up{\varphi}^n_\theta=S\theta^n_\lambda$, 
+$\theta^n_\lambda=\lambda^n-(1-\eta)\chi B\psi^n$
+и $\up{\varphi}_\mu=S\mu$.$\quad\square$
+\end{itemize} 
+\medskip
+ 
+Покажем, что при соответствующем выборе параметра $\rho>0$ 
+итерационный процесс (3.9)--(3.13) является сходящимся для любого 
+начального приближения. 
+Сначала определим отображение $C:H^1(\Omega)\to M$ 
+следующим образом: для всякой функции $\psi\in H^1(\Omega)$ функция 
+$C\psi\in M$ --- 
+единственная функция, удовлетворяющая соотношению 
+\begin{equation} 
+(C\psi,\mu)_M=\int_\Omega \psi\up{\varphi}_\mu 
+d\Omega\ \ \forall\mu\in M. 
+\end{equation} 
+ 
+Положим 
+$$ 
+\|C\|=\sup_{\psi\in H^1(\Omega)}\frac{|C\psi|_\mu}{|\psi|_{0,\Omega}}, 
+$$ 
+где $|\cdot|_M$ --- норма, ассоциируемая со скалярным произведением 
+$(\cdot,\cdot)_M$. Ясно, что эта норма существует, т.\,к. отображение 
+$\mu\in M\to\up{\varphi}_\mu\in H^1(\Omega)$ ограничено. 
+ 
+\begin{thm} 
+Если параметр $\rho$ удовлетворяет условию 
+\begin{equation} 
+0<\rho<\frac{2\eta} 
+{\|C\|^2(1-(1-\eta)|\chi|_{L^\infty(\Omega)}\|S\|\,\|B\|)^2}, 
+\end{equation} 
+то итерационный процесс $(3.9)$--$(3.13)$ является сходящимся в том 
+смысле, что 
+\begin{align*} 
+\lim_{n\to\infty}\psi^n&=\psi\ \ \text{в} \ \ L^2(\Omega),\\ 
+\lim_{n\to\infty}v^n&=v\ \ \text{в}\ \ H^1_0(\Omega),\\ 
+\lim_{n\to\infty}\alpha^n&=\alpha\ \ \text{в}\ \ L^2(\Gamma). 
+\end{align*} 
+\end{thm} 
+ 
+\begin{pf} 
+Достаточно показать, что $\lim\limits_{n\to\infty}\psi^n=0$ в $L^2(\Omega)$ 
+в частном случае, когда $q=0$. Если использовать определение 
+(3.14) отображения $C$, то рекуррентное соотношение (3.13) дает 
+$$ 
+\lambda^{n+1}=\lambda^n-\rho C\up{\varphi}^n_\theta, 
+$$ 
+где $\up{\varphi}^n_\theta=S\theta^n_\lambda$, 
+$\theta^n_\lambda=\lambda^n+(1-\eta)\chi B\psi^n$. 
+Отсюда получаем 
+\begin{equation} 
+|\lambda^{n+1}|^2_M=|\lambda^n|^2_M-2\rho(C\up{\varphi}^n_\theta, 
+\lambda^n)_M+\rho^2|C\up{\varphi}^n_\theta|^2_M. 
+\end{equation} 
+ 
+Оценим 
+\begin{multline*} 
+(C\up{\varphi}^n_\theta,\lambda^n)_M=\int_\Omega\up{\varphi}^n_\theta 
+\psi^n d\Omega=-\int_\Gamma(\lambda^n+(1-\eta)\chi B\psi^n)B\psi^n ds=\\ 
+% 
+=\int_\Omega|\psi^n|^2d\Omega-(1-\eta)\int_\Gamma \chi 
+|B\psi^n|^2ds\ge v|\psi^n|^2_{0,\Omega}. 
+\end{multline*} 
+Оценим далее 
+\begin{multline*} 
+|\up{\varphi}^n_\theta|_{0,\Omega}=|S(\lambda_n+(1-\eta)\chi 
+B\psi^n)|_{0,\Omega}\le|\psi^n|_{0,\Omega}+(1-\eta) 
+\|S\|\,|\chi|_{L^\infty(\Omega)}\|B\|\,|\psi^n|_{0,\Omega}\le\\ 
+% 
+\le(1+(1-\eta)|\chi|_{L^\infty(\Omega)}\|S\|\,\|B\|) 
+|\psi^n|_{0,\Omega}. 
+\end{multline*} 
+С учетом этих неравенств из (3.16) получаем 
+$$ 
+|\lambda^{n+1}|^2_M-|\lambda^n|^2_M\le-\rho[2\eta-\|C\|^2 
+(1+(1-\eta)|\chi|_{L^\infty(\Omega)}\|S\|\,\|B\|)^2\rho] 
+|\psi^n|^2_{0,\Omega}. 
+$$ 
+Отсюда, в частности, следует 
+$\lim\limits_{n\to\infty}|\psi^n|^2_{0,\Omega}=0$, 
+если $\rho$ удовлетворяет неравенствам (3.15). Кроме того, имеем 
+$\lim\limits_{n\to\infty}v^n=\lim\limits_{n\to\infty}A\psi^n=0$ в 
+$H^1_0(\Omega)$ и $\lim\limits_{n\to\infty}\alpha^n=\lim\limits_{n\to\infty} 
+B\psi^n=0$ в $L^2(\Gamma)$. 
+\end{pf} 
+ 
+ 
+Сходимость рассматриваемого метода гарантируется, таким образом, 
+для всякого выбора подпространства $M$, удовлетворяющего условию 
+$H^1(\Omega)=H^1_0(\Omega)\oplus M$ и всякого выбора скалярного произведения 
+$(\cdot,\cdot)_M$ на пространстве $M$. Однако от их выбора зависит как 
+величина 
+$\rho$, так и объем вычислений на каждой итерации. 
+ 
+В заключение приведем несколько замечаний относительно 
+практического вычисления\linebreak $\lambda^{n+1}\in M$. 
+ 
+Если скалярное произведение в $M$ определить по формуле 
+$$ 
+(\lambda,\mu)_M=\int_\Omega S\lambda\cdot S\mu\,d\Omega, 
+$$ 
+то в качестве $\lambda^{n+1}$ может быть взята любая функция из $M$, 
+удовлетворяющая условию 
+\begin{equation} 
+\lambda^{n+1}|_\Gamma=(\lambda^n-\rho\theta^n_\lambda)|_\Gamma. 
+\end{equation} 
+ 
+Равенство (3.17) следует понимать в смысле равенства следов 
+на границе. Действительно, если выполнено (3.17), то 
+$$ 
+(\lambda^{n+1}-\lambda^n,\mu)_M=-\rho\int_\Omega S\theta^n S\mu\,d\Omega= 
+-\rho\int_\Omega\up{\varphi}^n_\theta\up{\varphi}_\mu d\Omega, 
+$$ 
+т.\,е. выполнены условия теоремы 3. 
+ 
+В качестве скалярного произведения могут быть выбраны также 
+$(\lambda,\mu)_M=\int\limits_\Omega\nabla\lambda\nabla\mu\,d\Omega$ или 
+$(\lambda,\mu)_M=\int\limits_\Omega\lambda\mu\,d\Omega$. 
+Однако в этом случае необходимо вычислить на каждом шаге градиент 
+$\la D'(\lambda),\mu\ra$, что связано с дополнительными вычислительными 
+затратами. 
+ 
+ 
+\begin{thebibliography}{9} 
+ 
+\bibitem{1} 
+Крысько В.А., Павлов С.П. {\em Об одном итерационном методе 
+решения уравнений гибких пологих оболочек} // Тр. 16-й 
+Межд. конф. по теории оболочек и пластин. -- Казань: Изд-во Казанск. 
+ун-та, 1996, -- С.\,157--162. 
+\bibitem{2} 
+Сьярле Ф. {\em Метод конечных элементов для эллиптических задач}. 
+-- М.: Мир, 1980. -- 512~с. 
+\bibitem{3} 
+Babuska I., Rozenzweid M.B. {\em A finite element scheme for 
+domains with corners} // Numer. Math. -- 1972. -- \No\,20. -- P.\,1--21. 
+\bibitem{4} 
+Стренг Г., Фикс Дж. {\em Теория метода конечных элементов}. -- М.: 
+Мир, 1977. -- 349~с. 
+\bibitem{5} 
+Михлин С.Г. {\em Вариационные методы в математической физике}. -- 
+М.: Наука, 1970. -- 512~с. 
+ 
+\end{thebibliography} 
+ 
+\vskip 2cm 
+ 
+\post{\it Саратовский государственный}{\it Поступила} 
+\post{\it технический университет}{07.03.2002} 
+ 
+\label{end} 
+\end{document} 

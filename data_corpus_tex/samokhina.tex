@@ -1,0 +1,896 @@
+%\newcommand{\m}{{\mathbf{m}}}
+
+\def\stat{samokhina}
+
+\def\tit{МОДЕЛИ КЛАССИФИКАЦИИ ВЫБОРКИ ВЫЗВАННЫХ~ПОТЕНЦИАЛОВ P300$^*$}
+
+\def\titkol{Модели классификации выборки вызванных потенциалов P300}
+
+\def\aut{А.\,М.~Самохина$^1$, Р.\,Г.~Нейчев$^2$, В.\,В.~Гончаренко$^3$, Р.\,К.~Григорян$^4$, В.\,В.~Стрижов$^5$}
+
+\def\autkol{А.\,М.~Самохина, Р.\,Г.~Нейчев, В.\,В.~Гончаренко и~др.}
+%$^3$, Р.\,К.~Григорян~$^4$, В.\,В.~Стрижов$^5$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Самохина А.\,М.}
+\index{Нейчев Р.\,Г.}
+\index{Гончаренко В.\,В.}
+\index{Григорян Р.\,К.}
+\index{Стрижов В.\,В.}
+\index{Samokhina A.\,M.}
+\index{Neychev R.\,G.}
+\index{Goncharenko V.\,V.}
+\index{Grigoryan R.\,K.}
+\index{Strijov V.\,V.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при частичной поддержке РФФИ (проект 20-37-90050).}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Московский физико-технический институт, 
+alina.samokhina@phystech.edu}
+\footnotetext[2]{Московский физико-технический институт, 
+neychev@phystech.edu}
+\footnotetext[3]{Московский физико-технический институт, 
+vladislav.goncharenko@phystech.edu}
+\footnotetext[4]{Московский государственный университет, 
+grk@eegdude.ru}
+\footnotetext[5]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, strijov@phystech.edu}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-10pt} 
+
+
+
+\Abst{Решается задача определения объекта внимания пользователя. 
+Исследуется выбор визуального стимула по электроэнцефалограмме (ЭЭГ)
+с~выделенными в~ней вызванными потенциалами, связанными с~событием,~--- P300. 
+Измеряются электрические потенциалы мозга во время наблюдения визуальных 
+стимулов.  Необходимо выбрать стимул, вызвавший наибольший отклик мозга. 
+Определяется наличие потенциала~P300 на отрезке ЭЭГ. Сравниваются модели 
+классификации потенциалов. Предлагается способ обогащения выборки, повышающий 
+качество классификации. Вычислительные эксперименты выполнены на наборе 
+авторских данных потенциалов~P300. Набор данных собран на~60~здоровых 
+пользователях, которым предъявлялись визуальные стимулы, и~выложен в~открытый 
+доступ.}
+
+\KW{классификация; электроэнцефалограмма; потенциал, связанный 
+с~событием; выбор модели; интерфейс мозг--компьютер}
+
+\DOI{10.14357\!/\!08696527220304}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+
+\section{Введение}
+
+Решается задача построения интерфейса мозг--компь\-ютер (ИМК) для определения 
+объекта внимания пользователя по данным ЭЭГ. 
+В~\cite{ALS_cite} ИМК рас\-смат\-ри\-ва\-ют\-ся как альтернативный способ коммуникации 
+с~пациентами, больными тетраплегией или боковым амиотрофическим склерозом. 
+В~\cite{Kaplan_Shishkin_games} адаптировано применение ИМК к~здоровым 
+пользователям в~рекреационных целях, например в~играх.
+
+Для сбора информации о работе мозга при построении ИМК используются как методы, 
+требующие операции для имплантации электродов, такие как электрокортикограмма, 
+так и~неинвазивные:  функциональная спектроскопия в~ближней инфракрасной 
+области, функциональная маг\-нит\-но-ре\-зо\-нанс\-ная томография, электроэнцефалография.
+
+Интерфейсы на основе ЭЭГ имеют низкую стоимость 
+и~высокое разрешение метода~\cite{eeg_review}. Широко используется сис\-те\-ма 
+размещения электродов~10--10, состоящая из равномерно распределенных по 
+поверхности головы~64 электродов и~покрывающая все области мозга.
+Существуют три типа ИМК: активный, требующий концентрации 
+на специфической для конкретного ИМК задаче; пассивный, не требующий выполнения 
+дополнительных действий; реактивный, считывающий изменения в~ЭЭГ пользователя, 
+связанные со специфическими для ИМК изменениями внешней среды, вызывающими 
+реакции мозга,~--- \emph{стимулами}. Стимулы имеют различную модальность:  
+слуховую, тактильную и~зрительную.
+
+\begin{figure} %fig1 
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=79.47mm 
+\epsfbox{str-1.eps}
+ }
+\end{center}
+\vspace*{-6pt}
+    \Caption{Вызванный потенциал P300, связанный с~событием,~(\textit{1}) и~ЭЭГ без P300~(\textit{2})}
+    \label{fig:p300}
+\end{figure}
+
+Авторы рассматривают реактивный ИМК на основе \textit{вызванных потенциалов, 
+связанных с~событием},~--- изменения амплитуды электрической активности мозга 
+в~ответ на стимул. Рассматриваемые потенциалы~--- \textit{потенциалы P300}, 
+вызванные визуальными стимулами,~--- показаны на рис.~\ref{fig:p300}. 
+Пользователю на экране показываются несколько визуальных объектов. Изменение 
+яркости объекта или начало его движения называется \textit{предъявлением стимула}. 
+Пользователь обращает свое внимание на один из объектов при начале его движения, 
+а~в~ответ на предъявление стимула в~ЭЭГ регистрируется увеличение амплитуды 
+сигнала электрической активности мозга. Максимуму амплитуды  соответствует пик 
+P300. Для визуально вызванных потенциалов наибольшую амплитуду пик P300 имеет 
+в~затылочной доле, где находится зрительная кора головного мозга.
+ %Такой потенциал 
+%возникает только в~ответ на изменяющийся объект, но не на статичный фон.
+Отрезок ЭЭГ после предъявления каждого стимула называется \emph{эпохой}. 
+Потенциал P300 присутствует в~эпохах, соответствующих целевому стимулу,~--- 
+предъявлению стимула на объекте внимания пользователя.
+
+В данной работе предложен эксперимент по записи данных ЭЭГ во 
+время игры <<Еноты и~демоны>>. Рассмотрена игра в~рамках активного ИМК-P300, где 
+стимул~--- начало движения одного из визуальных объектов, представленных на 
+рис.~\ref{fig:game}. Игра разбита на два этапа: обучение и~активное участие. 
+Обучение необходимо для демонстрации пользователю принципов управления ИМК 
+и~сбора обучающей выборки модели классификации. В вычислительном эксперименте, 
+приведенном в~статье, использована авторская {выборка потенциалов 
+P300}~\cite{goncharenkoP300}, полученных в~этом эксперименте по записи данных во 
+время игры.
+
+\begin{figure} %fig2
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=91.246mm 
+\epsfbox{str-2.eps}
+ }
+\end{center}
+\vspace*{-6pt}
+    \Caption{Сцена из игры}
+    \label{fig:game}
+\end{figure}
+
+По данным эпох ЭЭГ проводится мультиклассовая классификация 
+для определения объекта внимания пользователя среди представленных визуальных 
+стимулов. Цель данной работы~--- повышение качества классификации.
+
+Решение задачи мультиклассовой классификации основывается на агрегированных 
+результатах бинарной классификации, где бинарная классификация определяет 
+наличие потенциала P300 в~эпохе. Общее число объектов~--- пять, но объект 
+внимания пользователя только один. Эпох с~потенциалом P300 в~4~раза меньше, 
+чем без него. В~бинарной задаче присутствует дисбаланс классов.
+
+Для решения проблемы дисбаланса классов предлагается проводить аугментацию 
+данных. Здесь \textit{аугментация данных}~--- обогащение выборки сдвигом или 
+интерполяцией присутствующих в~выборке эпох. %новыми эпохами через модификацию существующих.
+После применения аугментации классы для обучения бинарного классификатора 
+сбалансированы. Предполагается, что это повышает качество как бинарной, так и~мультиклассовой классификации.
+
+В работах по классификации ЭЭГ применяют различные методы аугментации. 
+В~\cite{Krell2017} используются пространственные аугментации: варьируется 
+расположение электродов. Сигнал ЭЭГ моделируется с~учетом пространственного 
+расположения электродов на голове. Интерполируется сдвиг электродов в~пространстве для получения аугментации данных эпох ЭЭГ. Для выборки 
+из~6~чел.\ получен прирост мультиклассовой точности около 2,5\%. 
+В~работе~\cite{Zhang2018} на амплитуды сигнала после преобразования Фурье 
+накладывается гауссовский шум, затем обратное преобразование Фурье возвращает 
+к~исходному формату данных. Для задачи представления движения при исследовании 
+выборки из~9~чел.\ получен прирост точности в~2,3\%. В~\cite{Lee2020} 
+к~задаче классификации P300 применяются алгоритмы, основанные на методе 
+синтетической передискретизации меньшинства, SMOTE (synthetic minority oversampling technique)~\cite{smote}. Для выборки из 
+44 пользователей при их применении получено 1,3\% прироста точности. Вариации 
+SMOTE: SMOTE, Borderline-SMOTE (bSMOTE), Adaptive Synthetic (ADASYN) и~Support Vector Machine SMOTE (SVM-SMOTE)~\cite{imblearn}~--- отличаются методами 
+выбора опорного для передискретизации экземпляра эпохи.
+В~\cite{Krell2018DataAF} рассматриваются аугментации сдвигом времени пика Р300 
+относительно предъявления стимула. Эпоха отсчитывается не от момента 
+предъявления стимула, а~с~опозданием. Для выборки из~5~пользователей прирост 
+мультиклассовой точности составил~1\%. В~данной работе авторами рассматриваются 
+два метода аугментаций. Первый метод~--- SMOTE и~его модификации. Второй~--- 
+сдвиг ЭЭГ относительно стимулов.
+
+\section{Процедура построения выборки}
+
+Эксперимент проведен на 60~здоровых пользователях, из которых 23~--- мужчины без 
+опыта работы с~ИМК. Возраст пользователей~--- от~19 до~45, средний возраст~--- 28~лет. Все 
+пользователи соответствовали необходимым условиям по состоянию здоровья.  
+Электроэнцефалограммы записывались с~помощью энцефалографа NVX-52 с~частотой 
+500~Гц. Для записи использовались 8~губчатых электродов. 
+ Стимулы предъявлялись с~помощью шлема HTC Vive Pro VR.
+
+
+Пользователям была предложена игра в~виртуальной реальности на управлении 
+с~по\-мощью ИМК-P300, разбитая на два этапа: обучение и~активное участие. Обучение 
+составляло 5~игровых актов. Акт~--- последовательность блоков с~общим 
+объектом внимания. Число актов в~экспериментах~--- 5 при обучении и~10 на 
+этапе активного участия. Блок~--- последовательность эпох с~общим объектом 
+внимания, где каждый стимул предъявляется один раз, порождая одну эпоху  
+(рис.~\ref{fig:structure}).
+
+Для определения потенциалов P300 в~игре пользователю предъявляются визуальные 
+стимулы. В~проведенном эксперименте предъявлялись 5~разнесенных 
+в~пространстве объектов с~разнесенным во времени началом движения~---  
+предъявлением стимула. Считается, что объектом внимания может быть только один 
+визуальный объект. Пользователь концентрирует внимание на одном из~5~объектов. 
+Поочередно в~случайном порядке с~разницей во времени в~450~мс 
+происходит предъявление каждого стимула. Если предъявляется стимул, 
+соответствующий объекту внимания пользователя, в~ЭЭГ регистрируется потенциал 
+P300.
+
+\begin{figure} %fig3 
+\vspace*{1pt}
+\begin{center}
+ \mbox{%
+ \epsfxsize=91.236mm 
+\epsfbox{str-3.eps}
+ }
+\end{center}
+\vspace*{-6pt}
+\Caption{Иерархическая структура данных}
+\label{fig:structure}
+\end{figure}
+
+Под номерами 1--5 на рис.~\ref{fig:game} изображены демоны, служившие объектами 
+во время этапа активного участия. Под номерами \mbox{1--3} изображены еноты, 
+служившие объектами на этапе обучения. На этапе обучения для тренировки модели 
+пользователь смотрел на заранее определенный объект из 1--3 на 
+рис.~\ref{fig:game}. На этапе активного участия пользователь смотрел на одного из демонов --- 
+произвольный объект из 1--5 на рис.~\ref{fig:game}, а~модель определяла, на 
+какой из объектов смотрел пользователь.
+
+\section{Постановка задачи классификации}
+
+Требуется определить наличие на отрезке ЭЭГ потенциала P300. Задан набор из $M$ 
+измерений ЭЭГ $\mathbf{X} \in \mathbb{R}^{N \times T}$, где $N$~--- число электродов;  $T$~--- 
+число элементов временн\'{о}го ряда,  и~целевая переменная $ Y \in \{0, 1\} $, 
+указывающая на отсутствие или наличие потенциала. Требуется выбрать модель 
+классификации $f(\mathbf{w}, \mathbf{x})$, аппроксимирующую целевую переменную $y$ по описанию  
+$\mathbf{x}$, полученному по измерениям $\mathbf{X}$, и~оптимизировать ее параметры. Критерием 
+качества модели служит бинарная кросс-энт\-ропия
+$$
+    L(\mathbf{w}) =  -\fr{1}{M}\sum\limits_{m=1}^{M} \left[y_{m}\log f(\mathbf{w},\mathbf{x})+(1-
+y_{m})\log(1-f(\mathbf{w},\mathbf{x}))\right ]-c\|\mathbf{w}\|_2,
+$$
+где $c$~--- фиксированный коэффициент регуляризации. Для оптимизации параметров 
+модели классификации решается задача
+\begin{equation*}
+    \hat{\mathbf{w}} = \argmax\limits_{\mathbf{w}} L(\mathbf{w}).
+\end{equation*}
+
+Для построения описания $\mathbf{x}$ матрица~$\mathbf{X}$ векторизуется одним из двух способов. 
+В первом способе ряды матрицы, временн\'{ы}е ряды для каждого канала, записываются 
+друг за другом.
+Во втором способе используется расширенная матрица ковариации: матрица 
+ковариации потенциалов, связанных с~событием, 
+ERPCov~\cite{Plug_and_Play_P300_BCI}. Для одного измерения ЭЭГ $\mathbf{X}_m$ искомая 
+матрица ковариации
+$$
+    \mathbf{C}_{m}=\fr{1}{T-1}\,\mathbf{P}_{m} \mathbf{P}_{m}^{\mathrm{T}}, \qquad
+    \mathbf{P}_{m}=\left[\begin{array}{c}\mathbf{P}_{0} \\ \mathbf{P}_{1} \\ 
+\mathbf{X}_{m}\end{array}\right], \qquad\mathbf{C}_{m} \in \mathbb{R}^{3N \times 3N}, 
+$$
+где $\mathbf{P}_{0}$ и~$\mathbf{P}_{1}$~--- средние значения для классов 
+$\{0,1\}$,
+$$
+    \mathbf{P}_{c} = \fr{\sum\nolimits_{m=1}^{M}\left[y_m = c\right] 
+\mathbf{X}_{m}}{\sum\nolimits_{m=1}^{M}\left[y_m = c\right]}\,, \qquad c \in \{0, 1 \}.
+$$
+Пространство матриц ковариации является римановым многообразием~\cite{Plug_and_Play_P300_BCI}. 
+В~каж\-дой точке риманова многообразия существует 
+касательная плос\-кость с~определенным на ней скалярным произведением. Общая 
+касательная плос\-кость для отображения всех мат\-риц ковариации выборки строится 
+в~точ\-ке среднего гео\-мет\-ри\-че\-ско\-го по римановой мет\-ри\-ке известных ковариационных 
+матриц
+\begin{multline*}
+    \mathbf{C}=\mathbf{C}\left(\mathbf{C}_{1}, \ldots, \mathbf{C}_{M}\right)=\underset{\mathbf{C}}{\argmin } 
+    \sum\limits_{m=1}^{M} \delta_{R}^{2}\left(\mathbf{C}, 
+\mathbf{C}_{m}\right),
+\\
+    \delta_{R}\left(\mathbf{C}, \mathbf{C}_{m}\right)=\left\|\log 
+\left(\mathbf{C}^{-1} \mathbf{C}_{m}\right)\right\|_{F}=\left[\sum\limits_{i=1}^{3N} 
+\log ^{2} \lambda_{i}\right]^{{1}/{2}},
+\end{multline*}
+где~$\lambda_{i}$~--- собственные числа  матрицы $\mathbf{C}^{-1} 
+\mathbf{C}_{m}.$
+
+Согласно~\cite{Plug_and_Play_P300_BCI}, для каждой ковариационной матрицы 
+$\mathbf{C}_{m}$ существует проекция~$\mathbf{S}_{m}$ в~касательное пространство
+$$
+    \mathbf{S}_{m}=\mathbf{C}^{{1}/{2}} \tilde{\mathbf{S}}_m 
+\mathbf{C}^{{1}/{2}}, \qquad
+    \tilde{\mathbf{S}}_m = \log \left(\mathbf{C}^{-{1}/{2}} \mathbf{C}_{m} 
+\mathbf{C}^{-{1}/{2}}\right),
+    % \qquad \mathbf{S}_{m} \in \mathbb{R}^{\frac{3N(3N+1)}{2}}; \qquad m 
+%\in\{1, \ldots, M\}.
+$$
+векторное представление которой в~пространстве с~евклидовой метрикой выражается 
+как записанные последовательно элементы верхней треугольной матрицы от 
+$\tilde{\mathbf{S}}_m$ с~коэффициентами~1 для диагональных элементов 
+и~коэффициентом $\sqrt{2}$ для недиагональных:
+$$
+\mathbf{x} = \left[\tilde{\mathbf{S}}_{m_{1,1}}, \sqrt{2}\tilde{\mathbf{S}}_{m_{1,2}}, \dots  ,
+\sqrt{2}\tilde{\mathbf{S}}_{m_{1,3N}}, \tilde{\mathbf{S}}_{m_{2,2}}, \dots ,
+\tilde{\mathbf{S}}_{m_{3N,3N}}\right], \quad \mathbf{x} \in \mathbb{R}^{{3N(3N-1)}/{2}}.
+$$
+После векторизации~$\mathbf{X}_{m}$ одним из предложенных способов, решается 
+задача классификации потенциалов. Внешними критериями качества модели служат 
+точность, полнота, F1-score и~AUC. Для игрового процесса требуется по итогу акта 
+игры принять решение о выборе объекта, на который было обращено внимание 
+пользователя. В~игровой механике выбирается стимул с~наибольшей суммой 
+рассмотренных бинарных вероятностей. Предполагается, что если в~течение акта 
+игры пользователь обращал внимание на определенный стимул, то в~большинстве эпох 
+у этого стимула будет высокая вероятность наличия потенциала P300. 
+Мультиклассовая точность~--- доля верно определенных таким образом объектов 
+внимания пользователя. Данный критерий качества также является внешним 
+и~используется для определения качества агрегации бинарных предсказаний и~финального выбора объекта в~игровом процессе.
+
+\paragraph*{Модели классификации потенциалов:}
+
+\noindent
+\begin{enumerate}
+    \item Линейная модель логистической регрессии~(LR, logistic regression) для решения задачи 
+классификации на матрице, векторизованной первым способом: %\cite{scikit-learn}
+        \begin{equation}
+            f(\mathbf{w},\mathbf{x})=\fr{1}{1+\text{exp}(-\mathbf{w}^\mathsf{T}\mathbf{x})}\,.
+            \label{eq:log_reg}
+        \end{equation}
+    \item Модель опорных векторов (SVM, support vector machine) на матрице, векторизованной первым 
+способом.
+        %\[
+        %    f(\mathbf{w},\x) =\mathtext{sign}\bigl({\w},\x \bigr).
+        %\]
+    \item Линейная модель дискриминантного анализа (LDA, linear discriminant analysis) на матрице, 
+векторизованной первым способом:
+       \begin{multline*}
+            f(\mathbf{w}, \mathbf{x}) = \mathbf{x}^\mathsf{T}\boldsymbol{\Sigma}^{-1} \boldsymbol{\mu} - 
+\fr{1}{2}\,\boldsymbol{\mu}^\mathsf{T}\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}\,,
+            %+ \log(\pi),
+      \\
+        \boldsymbol{\Sigma}=\sum\limits_{m=1}^{M}\left(\mathbf{x}_m-
+\boldsymbol{\mu}\right)^\mathsf{T}
+        \left(\mathbf{x}_m-\boldsymbol{\mu}\right), \quad \boldsymbol{\mu}=\fr{1}{M} 
+\sum\limits_{m=1}^{M} \mathbf{x}_m.
+ \end{multline*}
+      \item  Модель логистической регрессии~\eqref{eq:log_reg}  на матрице, 
+векторизованной вторым способом  (ERPCov TS LR).
+        \item %Xdawn LDA %\cite{PyRiemann}
+    Линейная модель (LDA) на матрице, полученной после пространственной 
+фильтрации алгоритмом XDawn~\cite{xdawn} и~векторизованной первым способом 
+(XDawn LDA).
+     \item  Линейная модель (LR) на матрице, полученной после пространственной 
+фильтрации исходного сигнала алгоритмом XDawn~\cite{xdawn} и~векторизованной 
+вторым способом~(XDawnCov TS LR).   %\cite{PyRiemann}
+\end{enumerate}
+
+\section{Вычислительный эксперимент}
+
+\paragraph*{Предобработка данных электроэнцефалограмм.}
+Согласно~\cite{Plug_and_Play_P300_BCI}, записи ЭЭГ обрабатывались в~шесть 
+этапов: 
+\begin{enumerate}[(1)]
+    \item
+разделение ЭЭГ на эпохи;
+    \item
+децимация со сглаживающим фильтром;
+   \item
+полосовой фильтр Баттерворта;
+    \item
+передискретизация сигнала с~помощью линейной интерполяции;
+    \item
+клиппинг зашкаливающих значений;
+    \item
+поканальная нормировка~--- вычитание среднего и~деление на стандартное 
+отклонение всех значений каждого канала.
+\end{enumerate}
+Авторами были проведены все шаги предобработки данных. Для шагов~1~и~3 были 
+подобраны оптимальные для рассматриваемой выборки гиперпараметры из 
+рассмотренных диапазонов значений согласно табл.~\ref{table:optimal}.
+
+\begin{table}[h]\small %tabl1
+\vspace*{-12pt}
+\begin{center}
+\Caption{Значения параметров предобработки}
+\label{table:optimal}
+\vspace*{2ex}
+
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\multicolumn{1}{|c|}{Характеристики} & 
+\tabcolsep=0pt\begin{tabular}{c}Начало\\ эпохи, с\end{tabular} & 
+\tabcolsep=0pt\begin{tabular}{c}Конец\\ эпохи, с\end{tabular} & 
+\tabcolsep=0pt\begin{tabular}{c}Нижняя\\ частота, Гц\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}Верхняя\\ частота, Гц\end{tabular}\\
+\hline 
+Начальное значение & 0,1 & 0,7& 0,5 & 20\\
+Диапазон значений & 0,00--0,35& 0,45--0,90& 0--1& 4--22\\
+Оптимальное значение & 0,1& 0,7& 0,5& 12,5\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-12pt}
+\end{table}
+
+
+\paragraph*{Качество моделей.} При фиксированных гиперпараметрах предобработки 
+данных для каждой модели было оценено качество классификации. Обучение моделей 
+проводилось на данных обучающего этапа игры. Значения критериев качества моделей 
+приводятся для той части данных, которая была собрана на этапе активной игры.
+
+
+\paragraph*{Аугментация выборки.} В работе исследовались два способа аугментации 
+выборки: аугментация выборки интерполяцией с~применением метода синтетической 
+передискретизации меньшинства и~аугментация выборки сдвигом.
+
+\begin{table}\footnotesize %tabl2
+\begin{center}
+\Caption{Результаты аугментации выборки методом передискретизации} 
+\label{table:smote}
+\vspace*{2ex}
+
+
+\tabcolsep=2.7pt
+\begin{tabular}{|l|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{1}{|c|}{Модель} & Ауг. & Кл. & 
+\tabcolsep=0pt\begin{tabular}{c}Мультикл.\\ точность\end{tabular} & Точность & Полнота & F1-score & AUC\\
+\hline
+LR              & border & 0,4 & 0,68$\pm$0,23 & 0,36$\pm$0,10 & 0,60$\pm$0,11 & 
+0,40$\pm$0,07 & 0,62$\pm$0,07 \\
+%\hline
+LDA             & adasyn & 0,8 & 0,71$\pm$0,23 & 0,40$\pm$0,12 & 0,44$\pm$0,13 & 
+0,40$\pm$0,11 & 0,63$\pm$0,07 \\
+%\hline
+SVM             & adasyn & 0,8 & 0,69$\pm$0,24 & 0,44$\pm$0,18 & 0,41$\pm$0,13 & 
+0,36$\pm$0,11 & 0,60$\pm$0,07 \\
+%\hline
+ERPCov TS LR    & adasyn & 0,8 & 0,77$\pm$0,24 & 0,46$\pm$0,16 & 0,60$\pm$0,14 & 
+0,44$\pm$0,11 & 0,65$\pm$0,09 \\
+%\hline
+Xdawn LDA       & adasyn & 0,8 & 0,70$\pm$0,23 & 0,42$\pm$0,13 & 0,47$\pm$0,13 & 
+0,42$\pm$0,11 & 0,64$\pm$0,08 \\
+%\hline
+XdawnCov TS LDA & border & 0,4 & 0,71$\pm$0,26 & 0,47$\pm$0,17 & 0,35$\pm$0,16 & 
+0,38$\pm$0,14 & 0,62$\pm$0,08\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+\paragraph*{Метод передискретизации меньшинства.}
+В алгоритмах, основанных на SMOTE, новый экземпляр эпохи строится в~случайной 
+точке на отрезке между существующими экземплярами. В качестве начала отрезка 
+выбирается один опорный экземпляр из менее представленного класса. Из 
+экземпляров менее представленного класса, соседних опорному, случайным образом 
+выбирается один, который назначается концом отрезка. По результатам 
+вычислительных экспериментов оптимальным числом ближайших экземпляров, 
+считающихся соседними, оказались 5~экземпляров. Параметрами алгоритма служат 
+метод выбора опорного экземпляра и~конечное соотношение классов~\cite{smote}. 
+
+По 
+результатам вычислительного эксперимента лучшими методами выбора опорного 
+экземпляра оказались граничный (border) и~адаптивный (adasyn) варианты SMOTE. 
+Для граничного метода опорный экземпляр выбирается из множества экземпляров 
+менее представленного класса, для которых среди ближайших соседей представлены 
+как экземпляры класса меньшинства, так и~экземпляры класса большинства. Для 
+адаптивного метода выбор опорного экземпляра основывается на соотношении 
+экземпляров менее представленного класса и~экземпляров более представленного 
+класса среди ближайших соседей. Чем выше отношение числа экземпляров класса 
+большинства к~классу меньшинства, тем больше новых экземпляров будут 
+использовать эту точку как опорную. В~вычислительном эксперименте варьировалось 
+финальное соотношение классов от исходного~0,25 до~1,0 и~число соседей для 
+выбора конца отрезка от~2 до~10.
+
+
+
+Для каждой модели выбран вариант метода с~лучшим приростом качества. Результаты 
+представлены в~табл.~\ref{table:smote}. Столбец Ауг. указывает на тип 
+аугментации, столбец Кл.~--- на соотношение мощностей классов. Аугментация 
+выборки на основе SMOTE дает прирост мультиклассовой точности до 3 процентных 
+пунктов. Бинарные метрики в~случаях некоторых моделей улучшаются на величину до 
+15 процентных пунктов.
+
+\paragraph*{Метод сдвига.}
+Время от активации стимула до максимума амплитуды потенциала  P300~--- 
+\textit{латентность}. Оно варьируется как между разными людьми, так и~между 
+разными актами игры одного человека~\cite{latency_eeg}. Предлагается обогащать 
+выборку, варьируя время старта и,~следовательно, латентность эпох исходной 
+выборки.
+
+Аугментация выборки сдвигом строит несколько новых экземпляров $\mathbf{X}_m$ по одной 
+оригинальной эпохе. Границы новых эпох сдвинуты относительно исходных влево или 
+вправо по оси времени (см.\ рис.~\ref{fig:p300}). Начало исходной эпохи отсчитывается 
+от момента предъявления стимула. Начало измененной эпохи на 
+рис.~\ref{fig:p300}~--- за 50~мс до момента предъявления стимула. Параметры 
+данного метода~--- число новых экземпляров, построенных по одной эпохе, и~отступ 
+от момента предъявления стимула.
+
+\begin{table}\footnotesize %tabl3
+\begin{center}
+\Caption{Качество моделей на исходной выборке}
+\label{table:modelsraw}
+\vspace*{2ex}
+
+\tabcolsep=7pt
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+\multicolumn{1}{|c|}{Модель} & \tabcolsep=0pt\begin{tabular}{c}  Мультикл.\\ точность\end{tabular} & Точность & Полнота & F1-score & AUC\\
+\hline
+LR              & 0,68$\pm$0,24 & 0,35$\pm$0,09 & 0,44$\pm$0,13 & 0,39$\pm$0,10 
+& 0,62$\pm$0,07 \\
+%\hline
+LDA             & 0,68$\pm$0,24 & 0,40$\pm$0,13 & 0,28$\pm$0,13 & 0,32$\pm$0,13 
+& 0,59$\pm$0,06 \\
+%\hline
+SVM             & 0,67$\pm$0,25 & 0,37$\pm$0,18 & 0,15$\pm$0,13 & 0,20$\pm$0,14 
+& 0,55$\pm$0,05 \\
+%\hline
+ERPCov TS LR    & 0,77$\pm$0,25 & 0,40$\pm$0,12 & 0,47$\pm$0,14 & 0,42$\pm$0,12 
+& 0,64$\pm$0,08 \\
+%\hline
+Xdawn LDA       & 0,69$\pm$0,23 & 0,40$\pm$0,13 & 0,35$\pm$0,15 & 0,37$\pm$0,13 
+& 0,61$\pm$0,07 \\
+%\hline
+XdawnCov TS LDA & 0,71$\pm$0,27 & 0,46$\pm$0,16 & 0,31$\pm$0,16 & 0,36$\pm$0,15 
+& 0,61$\pm$0,08\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+\begin{table}\footnotesize %tabl4
+\begin{center}
+%\captionsetup{justification=raggedright,singlelinecheck=false}
+\Caption{Качество моделей при использовании аугментации сдвигом}
+\label{table:bestaugmentation}
+\vspace*{2ex}
+
+\tabcolsep=7pt
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+\multicolumn{1}{|c|}{Модель} &\tabcolsep=0pt\begin{tabular}{c}  Мультикл.\\ точность\end{tabular} & Точность & Полнота & F1-score & AUC\\
+\hline
+LR              & 0,76$\pm$0,24 & 0,43$\pm$0,10 & 0,60$\pm$0,13 & 0,50$\pm$0,11 
+& 0,66$\pm$0,09 \\
+%\hline
+LDA             & 0,76$\pm$0,23 & 0,40$\pm$0,09 & 0,67$\pm$0,12 & 0,50$\pm$0,09 
+& 0,66$\pm$0,08 \\
+%\hline
+SVM             & 0,77$\pm$0,24 & 0,41$\pm$0,09 & 0,64$\pm$0,13 & 0,50$\pm$0,10 
+& 0,66$\pm$0,09 \\
+%\hline
+ERPCov TS LR    & 0,78$\pm$0,23 & 0,42$\pm$0,10 & 0,57$\pm$0,14 & 0,48$\pm$0,11 
+& 0,65$\pm$0,09 \\
+%\hline
+Xdawn LDA       & 0,73$\pm$0,26 & 0,40$\pm$0,09 & 0,65$\pm$0,12 & 0,50$\pm$0,10 
+& 0,66$\pm$0,09 \\
+%\hline
+XdawnCov TS LDA & 0,78$\pm$0,25 & 0,40$\pm$0,09 & 0,64$\pm$0,14 & 0,49$\pm$0,10 
+& 0,66$\pm$0,09 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+Первым шагом определяется оптимальная величина сдвига. Подход аналогичен подбору 
+оптимальных параметров предобработки ЭЭГ. Из диапазона от~5 до~40 мс 
+выбирается оптимальный отступ от оригинальной эпохи. По результатам эксперимента 
+оптимальный сдвиг  составил 30~мс. Рассматривается оптимальное число аугментаций в~границах~$[-30, 30]$~мс. По результатам эксперимента получены четыре новые 
+эпохи.
+
+В табл.~3 представлено качество моделей на исходной выборке, а~в~табл.~4~--- 
+после применения оптимальной аугментации. Аугментации стартов по схеме $[-30, -15, 15, 30]$ повышают качество моделей.
+
+\section{Заключение}
+
+Поставлена задача повышения качества классификации при определении объекта 
+внимания пользователя. Предложенное решение~--- аугментация выборки сдвигом 
+эпох~--- значительно повышает качество классификации рассмотренных моделей. 
+Проведено сравнение моделей классификации.  По полученным значениям внешних 
+критериев качества сделаны выводы о~том, что использование расширенных матриц 
+ковариации потенциалов, связанных с~событием, значительно повышает качество 
+модели. При использовании одновременно аугментации выборки и~расширенных матриц 
+ковариации точность мультиклассовой классификации модели логистической регрессии 
+повышается на~10~процентных пунктов. В~рамках решения данной задачи был записан 
+набор данных  %\href{https://gin.g-node.org/v-goncharenko/neiry-demons/}
+{вызванных потенциалов P300}~\cite{goncharenkoP300}.
+ %\footnote{https://gin.g-node.org/v-goncharenko/neiry-demons}.
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{ALS_cite}
+\Au{Cipresso~P., Carelli~L., Solca~F., Meazzi~D., Meriggi~P., Poletti~B., 
+Lul$\acute{\mbox{e}}$~D., Albert~C.\,L., Silani~V., Riva~G.}
+The use of P300-based BCIs in amyotrophic lateral sclerosis: From augmentative 
+and alternative communication to cognitive assessment~/\!\!/~Brain  Behav., 
+2012. Vol.~2. Iss.~4. P.~479--498.
+
+\bibitem{Kaplan_Shishkin_games}
+\Au{Kaplan~A.\,Y., Shishkin~S.\,L., Ganin~I.\,P., Basyul~I.\,A., 
+Zhigalov~A.\,Y.}
+Adapting the P300-based brain--computer interface for gaming: A~review~/\!\!/ IEEE 
+T. Comp. Intel. AI, 2013. Vol.~5. 
+Iss.~2. P.~141--149.
+
+\bibitem{eeg_review}
+\Au{Rashid~M., Sulaima~N., Majeed~A.\,P.\,P.\,A., Musa ~R.\,M., 
+Nasir~A.\,F.\,A., Bari~B.\,F., Khatun~S.}
+Current status, challenges, and possible solutions of EEG-based brain--computer 
+interface: A~comprehensive review~/\!\!/
+Front. Neurorobotics, 2020. Vol.~14. Art. No.\,25. 35~p. doi: 
+10.3389\!/\!fnbot.2020.00025.
+
+\bibitem{goncharenkoP300} %4
+\Au{Goncharenko~V.\,V.} Racoons vs.\ demons P300 ERP dataset of Neiry, 2021.  
+{\sf https://gin.g-node.org/v-goncharenko/neiry-demons}.
+
+\bibitem{Krell2017} %5
+\Au{Krell~M.\,M., Kim~S.\,K.} Rotational data augmentation for 
+electroencephalographic data~/\!\!/
+39th Annual  Conference (International) of the IEEE Engineering in Medicine 
+and Biology Society Proceedings.~--- Piscataway, NJ, USA: IEEE, 2017. P.~471--474. 
+doi: 10.1109\!/\!EMBC.2017.8036864.
+
+\bibitem{Zhang2018} %6
+\Au{Zhang~X., Lei~M.\,Y., Li~Y.}
+An amplitudes-perturbation data augmentation method in convolutional neural 
+networks for EEG decoding~/\!\!/ 5th  Conference (International) on Information, 
+Cybernetics, and Computational Social Systems Proceedings.~--- Piscataway, NJ, USA: 
+IEEE, 2018. P.~231--235. doi: 10.1109\!/\!ICCSS.2018.8572304.
+
+\bibitem{Lee2020} %7
+\Au{Lee~T., Kim~M., Kim~S.\,P.}
+Data augmentation effects using borderline-SMOTE on classification of a~P300-based BCI~/\!\!/
+8th  Winter Conference (International) on Brain--Computer Interface Proceedings.~--- 
+Piscataway, NJ, USA: IEEE, 2020. Art. ID: 9061656. 4~p. doi: 
+10.1109\!/\!BCI48061.2020.9061656.
+
+\bibitem{smote} %8
+\Au{Chawla~N.\,V., Bowyer~K.\,W.,  Hall~L.\,O.,  Kegelmeyer~W.\,P.}
+SMOTE: Synthetic minority over-sampling technique~/\!\!/
+J.~Artif. Intell. Res., 2002. Vol.~16. P.~321--357.
+
+\bibitem{imblearn}
+\Au{Lema{{\^i}}tre~G., Nogueira~F.,  Aridas~C.\,K.}
+Imbalanced-learn: A~python toolbox to tackle the curse of imbalanced datasets in 
+machine learning~/\!\!/
+J.~Mach. Learn. Res., 2017. Vol.~18. Iss.~17. P.~1--5.
+
+\bibitem{Krell2018DataAF} %10
+\Au{Krell~M.\,M., Seeland~A.,  Kim~S.}
+Data augmentation for brain--computer interfaces: Analysis on event-related 
+potentials data. Working papers by Cornell University,  2018. 
+arXiv:1801.02730 [cs.CV].
+
+\bibitem{Plug_and_Play_P300_BCI} %11
+\Au{Barachant~A., Bonnet~S., Congedo~M., Jutten~C.}
+Multiclass brain--computer interface classification by Riemannian geometry~/\!\!/
+IEEE T. Bio-med. Eng., 2012. Vol.~59. Iss.~4. P.~920--928.
+
+\bibitem{xdawn}
+\Au{Rivet~B., Souloumiac~A., Attina~V., Gibert~G.}
+{xDAWN} algorithm to enhance evoked potentials: Application to brain-computer 
+interface~/\!\!/
+ IEEE T. Bio-med. Eng., 2009. Vol.~56. Iss.~8. P.~2035--2043.
+
+\bibitem{latency_eeg}
+\Au{Picton~T.W.} The P300 wave of the human event-related potential~/\!\!/
+J.~Clin. Neurophysiol., 1992. Vol.~9. Iss.~4. P.~456--479.
+       \end{thebibliography}
+} }
+
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 16.01.22}}
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{8pt}
+
+\def\tit{CLASSIFICATION MODELS FOR~P300 EVOKED POTENTIALS}
+
+
+
+\def\titkol{Classification models for~P300 evoked potentials}
+
+\def\aut{A.\,M.~Samokhina$^1$, R.\,G.~Neychev$^1$, V.\,V.~Goncharenko$^1$, R.\,K.~Grigoryan$^{2}$, and~V.\,V.~Strijov$^3$}
+
+\def\autkol{A.\,M.~Samokhina, R.\,G.~Neychev, V.\,V.~Goncharenko, et al.}
+%R.\,K.~Gtigoryan$^{2}$, and V.\,V.~Strijov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+$^1$Moscow Institute of Physics and Technology, 9~Institutskiy Per., Dolgoprudny,\linebreak
+$\hphantom{^1}$Moscow Region 141700, Russian Federation
+
+\noindent
+$^2$M.\,V.~Lomonosov Moscow State University, 1~Leninskie Gory, GSP-1, Moscow\linebreak
+$\hphantom{^1}$119991, Russian Federation
+
+\noindent
+$^3$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
+$\hphantom{^1}$of Sciences, 44-2~Vavilov Str., Moscow 119133, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2022 vol~32 no\,3}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2022 vol~32 no\,3
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+
+
+
+
+\Abste{The paper is devoted to the problem of user's attention detection. It investigates the choice of a~visual stimulus by the
+ electroencephalogram (EEG) with the evoked potentials related to the event, P300, highlighted in it. The  electrical  brain potentials are measured while 
+the user is observing visual stimuli. The goal is to select a~stimulus which causes the maximum brain response. 
+A~classification model detects if there is a~P300 potential in an EEG segment. Various classification models for event-related potentials 
+are compared. The paper proposes a~method of data augmentation to improve the quality of classification. Computational experiments use 
+an original real-world dataset of P300 potentials. This dataset was collected on~60~healthy users who are
+presented with visual stimuli. 
+It is released to the public access.}
+
+\KWE{classification; electroencephalogram; event-related potential; model selection; brain--computer interface}
+
+
+
+\DOI{10.14357\!/\!08696527220304} 
+
+%\vspace*{-10pt}
+
+
+\Ack
+\noindent
+This research was partially supported by RFBR (project 20-37-90050).
+
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-sam}
+\Aue{Cipresso, P., L.~Carelli, F.~Solca, D.~Meazzi, P.~Meriggi, B.~Poletti, D.~Lule, C.\,L.~Albert, V.~Silani, and G.~Riva.}
+ 2012. The use of P300-based BCIs in amyotrophic lateral sclerosis: From augmentative and alternative communication to cognitive assessment. 
+ \textit{Brain Behav.} 2(4):479--498.
+
+\bibitem{2-sam}
+\Aue{Kaplan, A.\,Y., S.\,L.~Shishkin, I.\,P.~Ganin, I.\,A.~Basyul, and A.\,Y.~Zhigalov.}
+ 2013. Adapting the P300-based brain-computer interface for gaming: A~review. \textit{IEEE T. Comp. Intel.  AI} 5(2):141--149.
+
+\bibitem{3-sam}
+\Aue{Rashid, M., N.~Sulaima, A.\,P.\,P.\,A.~Majeed, R.\,M.~Musa, A.\,F.\,A.~Nasir, B.\,F.~Bari, and S.~Khatun.}
+ 2020. Current status, challenges, and possible solutions of EEG-based brain--computer interface: A~comprehensive review. 
+ \textit{Front. Neurorobotics} 14:25. 35~p. doi: 
+10.3389\!/\!fnbot.2020.00025.
+
+\bibitem{4-sam}
+\Aue{Goncharenko, V.} 2021. Racoons vs.\ demons P300 ERP dataset of Neiry. 
+Available at: {\sf https://gin.g-node.org/v-goncharenko/neiry-demons} (accessed August~18, 2022).
+
+\bibitem{5-sam}
+\Aue{Krell, M.\,M., and S.\,K.~Kim.}
+ 2017. Rotational data augmentation for electroencephalographic data. 
+ \textit{39th Annual  Conference (International) of the IEEE Engineering in Medicine and Biology Society Proceedings}. 
+ Piscataway, NJ: IEEE. 471--474. doi: 10.1109\!/\!EMBC.2017.8036864.
+
+
+\bibitem{6-sam}
+\Aue{Zhang, X., M.\,Y.~Lei, and Y.~Li.} 2018. An amplitudes-perturbation data augmentation method in convolutional neural networks for EEG decoding. 
+\textit{5th  Conference (International) on Information, Cybernetics, and Computational Social Systems Proceedings}. Piscataway, NJ: IEEE. 231--235.
+doi: 10.1109\!/\!ICCSS.2018.8572304.
+
+\bibitem{7-sam}
+\Aue{Lee, T., M.~Kim, and S.\,P.~Kim.}
+ 2020. Data augmentation effects using borderline-SMOTE on classification of a P300-based BCI. 
+ \textit{8th  Winter IEEE Conference (International) on Brain--Computer Interface Proceedings}.
+ Piscataway, NJ: IEEE. 9061656. 4~p. 
+doi:  10.1109\!/\!BCI48061.2020.9061656.
+
+\bibitem{8-sam}
+\Aue{Chawla, N.\,V., K.\,W.~Bowyer, L.\,O.~Hall, and W.\,P.~Kegelmeyer.}
+ 2002. SMOTE: Synthetic minority over-sampling technique. \textit{J.~Artif. Intell. Res.} 16:321--357.
+
+\bibitem{9-sam}
+\Aue{Lematre, G., F.~Nogueira, and C.\,K.~Aridas.}
+ 2017. Imbalanced-learn: A~python toolbox to tackle the curse of imbalanced datasets in machine learning. 
+ \textit{J.~Mach. Learn. Res.} 18(17):1--5.
+
+\bibitem{10-sam}
+\Aue{Krell, M.\,M., A.~Seeland, and S.~Kim.}
+ 2018. Data augmentation for brain--computer interfaces: Analysis on event-related potentials data.
+ Working papers by Cornell University. arXiv.org. 
+ Available at: {\sf https://arxiv.org/abs/1801.02730} (accessed August~18, 2022).
+
+\bibitem{11-sam}
+\Aue{Barachant, A., S.~Bonnet, M.~Congedo, and C.~Jutten.}
+ 2012. Multiclass brain--computer interface classification by Riemannian geometry. 
+ \textit{IEEE T. Bio-med. Eng.} 59(4):920--928.
+
+\bibitem{12-sam}
+\Aue{Rivet, B., A.~Souloumiac, V.~Attina, and G.~Gibert.}
+ 2009. xDAWN algorithm to enhance evoked potentials: Application to brain--computer interface. 
+ \textit{IEEE T. Bio-med. Eng.} 56(8):2035--2043.
+
+\bibitem{13-sam}
+\Aue{Picton, T.\,W.} 1992. The P300 wave of the human event-related potential. \textit{J.~Clin. Neurophysiol.} 9(4):456--479.
+ \end{thebibliography}
+} }
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received January 16, 2022}} 
+
+\vspace*{-8pt} 
+
+\Contr
+
+\vspace*{-2pt}
+
+\noindent
+\textbf{Samokhina Alina M.} (b.\ 1996)~--- 
+PhD student, Moscow Institute of Physics and Technology, 9~Institutskiy Per., Dolgoprudny, 
+Moscow Region 141701, Russian Federation; \mbox{alina.samokhina@phystech.edu}
+
+\pagebreak
+
+\noindent
+\textbf{Neychev Radoslav G.} (b.\ 1994)~--- 
+PhD student, Moscow Institute of Physics and Technology, 9~Institutskiy Per., Dolgoprudny, Moscow Region
+ 141701, Russian Federation; \mbox{neychev@phystech.edu}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Goncharenko Vladislav V.} (b.\ 1994)~--- 
+PhD student, Moscow Institute of Physics and Technology, 9~Institutskiy Per., Dolgoprudny, Moscow Region
+ 141701, Russian Federation; 
+\mbox{vladislav.goncharenko@phystech.edu}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Grigoryan Rafael K.} (b.\ 1992)~--- 
+PhD student, Faculty of Biology, M.\,V.~Lomonosov Moscow State University, 1~Leninskie Gory, GSP-1, Moscow 119991, 
+Russian Federation; neuroscientist, Laboratory for Neurophysiology and Neuro-Computer Interfaces, Neiry Ltd., 73-2~Bakuninskaya Str., 
+Moscow 105082, Russian Federation; \mbox{grk@eegdude.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Strijov Vadim V.} (b.\ 1967)~--- 
+Doctor of Science in physics and mathematics, leading scientist, Federal Research Center ``Computer Science and Control'' 
+of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119133, Russian Federation; \mbox{strijov@phystech.edu}
+
+
+
+
+ 
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

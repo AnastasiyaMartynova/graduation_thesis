@@ -1,0 +1,855 @@
+\def\stat{grebeshkov}
+
+\def\tit{АНАЛИЗ ВРЕМЕНИ ПЕРЕКЛЮЧЕНИЯ СЕАНСА СВЯЗИ В~ГЕТЕРОГЕННЫХ 
+БЕСПРОВОДНЫХ СЕТЯХ ПРИ~ВЕРТИКАЛЬНОМ ХЭНДОВЕРЕ$^*$}
+
+\def\titkol{Анализ времени переключения сеанса связи в~гетерогенных 
+беспроводных сетях при вертикальном хэндовере}
+
+\def\aut{А.\,Ю.~Гребешков$^1$, Ю.\,В.~Гайдамака$^2$, О.\,Г.~Вихрова$^3$, 
+Э.\,Р.~Зарипова$^4$}
+
+\def\autkol{А.\,Ю.~Гребешков, Ю.\,В.~Гайдамака, О.\,Г.~Вихрова, 
+Э.\,Р.~Зарипова}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Гребешков А.\,Ю.}
+\index{Гайдамака Ю.\,В.}
+\index{Вихрова О.\,Г.} 
+\index{Зарипова Э.\,Р.}
+\index{Grebeshkov A.\,Yu.}
+\index{Gaidamaka Yu.\,V.}
+\index{Vikhrova O.\,G.} 
+\index{Zaripova E.\,R.}
+
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Публикация подготовлена при финансовой поддержке Минобрнауки России (проект 2.882.2017/4.6).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Поволжский государственный университет телекоммуникаций и~информатики, 
+\mbox{grebeshkov-ay@psuti.ru}}
+\footnotetext[2]{Российский университет дружбы народов; Институт проблем информатики Федерального исследовательского 
+центра <<Информатика и~управ\-ле\-ние>> Российской академии наук, 
+\mbox{gaydamaka\_yuv@rudn.university}}
+\footnotetext[3]{Российский университет дружбы народов, vikhrova\_og@rudn.university}
+\footnotetext[4]{Российский университет дружбы народов, zaripova\_er@rudn.university}
+
+\vspace*{4pt}
+ 
+
+\Abst{Для мобильных абонентов гетерогенной беспроводной сети в~некоторых точках могут 
+быть одновременно доступны соединения в~перекрывающих друг друга областях покрытия 
+радиосетей различных стандартов. Пользователь с~современным многорежимным 
+абонентским устройством может переключаться между различными сетями радиодоступа 
+для получения требуемых услуг связи с~помощью процедуры вертикального хэндовера 
+(vertical handover, VHO). Для обеспечения качества и~непрерывности связи существенное 
+значение имеет время переключения сеанса связи из текущей в~целевую сеть. 
+Разработана процедура вертикального хэндовера из беспроводной локальной сети (Wireless 
+Local Area Network, WLAN) в~мобильную сеть (3GPP Long Term Evolution, LTE). Проведен 
+анализ среднего значения и~квантиля времени переключения с~помощью метода оценки 
+времени пребывания заявок в~многофазной системе массового обслуживания (СМО) с~фоновым 
+трафиком. Проведен численный эксперимент для близких к~реальным исходных данных 
+процесса переключения сеанса связи.}
+
+\KW{гетерогенная беспроводная сеть; сотовая сеть; LTE; мобильность; вертикальный 
+хэндовер; надежность соединения; доступность соединения; показатель эффективности; 
+процедура установления соединения}
+
+\DOI{10.14357/19922264170409} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+\vspace*{-2pt}
+
+  Тенденция развития современных сотовых сетей, приводящая к~увеличению 
+емкости сетей за счет их пространственного уплотнения и~совершенствования 
+методов управления распределением радиоресурса, соответствует концепции 
+HetNet (Heterogeneous Network)~--- гетерогенных сетей. Реализация этой 
+концепции стала возможной в~беспроводных сетях стандарта LTE/LTE-A~[1]. 
+Исследования таких сетей с~точки зрения различных показателей качества 
+активно ведутся в~России~[2--4]. После выбора целевой сети переключение 
+сеанса связи многорежимного абонентского устройства (user equipment, UE) 
+осуществляется с~использованием процедуры, которая называется 
+вертикальным хэндовером (VHO). 
+
+Использование VHO 
+позволяет повысить качество обслуживания, например при использовании 
+тактильного Интернета~\cite{5-gre}, для поддержки приложений, работающих 
+в~реальном времени~\cite{6-gre}. Поэтому актуально проведение исследований и~анализ времени переключения с~целью предотвращения потери информации, 
+что особенно важно в~приложениях реального времени. Критерии принятия 
+решения о VHO рассмотрены в~\cite{7-gre}. В~\cite{8-gre} при анализе 
+исполнения VHO не рассматриваются процедуры авторизации в~целевой сети, 
+которые необходимы при VHO. В~\cite{9-gre} на основе теоремы Бёрке 
+рассматривается модель аутентификации и~связанные с~этим временн$\acute{\mbox{ы}}$е 
+задержки без учета времени на получение информации о параметрах целевой 
+сети для VHO. В~\cite{10-gre, 11-gre} не учтено время подключения к~целевой 
+сети и~время выделения радиоканала. 
+
+Отличием данной работы  
+от~\cite{7-gre, 8-gre, 9-gre, 10-gre, 11-gre} является детальная процедура обмена 
+сигнальными сообщениями при вертикальном хэндовере~\cite{12-gre}, которая 
+содержит все стадии, начиная от момента получения информации о доступных 
+сетях и~заканчивая началом IP (Internet Protocol) сес\-сии абонентского устройства в~целевой 
+сети. 
+
+\begin{figure*}[b] %fig1
+\vspace*{6pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=131.756mm 
+ \epsfbox{gre-1.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Обмен сообщениями UE с~ANDSF и~авторизация UE в~сети LTE}
+\end{figure*} 
+
+На основе описанной в~разд.~2 процедуры обмена сигнальными 
+сообщениями при вертикальном хэндовере в~разд.~3 разработан метод оценки 
+времени переключения при вертикальном хэндовере~[13, 14]. С~его помощью 
+в~разд.~4 проведена оценка среднего времени VHO с~учетом загрузки узлов 
+текущей и~целевых сетей.
+
+
+
+\section{Процедура обмена сигнальными сообщениями 
+при~вертикальном хэндовере из~недоверенной сети в~сеть LTE}
+
+  Для разработки процедуры принимаются исходные положения, которые не 
+нарушают ее целостность и~не ограничивают применение. Вертикальный 
+хэндовер осуществляется сервером ANDSF (Access Network Discovery and 
+Selection Function). Для обмена данными между UE и~узлом ANDSF 
+используется специфицированная партнерством 3GPP 
+(3rd Generation Partnership Project) эталонная точка стыка 
+S14 уровня приложений. Поддержка мобильности IP при VHO 
+в~рассматриваемом примере обеспечивается применением мобильной версии 
+протокола с~двойным стеком IPv6~[15, 16]. Для обеспечения без\-опас\-ности 
+используется протокол IPsec, идентификация пользователя с~помощью 
+шифрования открытым ключом IKE (Internet Key Exchange)~[17].
+
+\begin{figure*}[b] %fig2
+\vspace*{6pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=132.09mm 
+ \epsfbox{gre-2.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Обмен сообщениями при установлении соединения UE с~целевой сетью для VHO 
+WLAN-LTE}
+\end{figure*}
+  
+  Пусть многорежимное устройство UE работает в~текущей WLAN-сети, 
+авторизация и~аутентификация в~которой не соответствуют спецификациям 
+3GPP. С~точки зрения оператора сети LTE текущая сеть считается 
+недоверенной (nontrusted) IP-сетью доступа, поэтому UE инициирует VHO 
+в~целевую сеть LTE. Функциональными устройствами, вовлеченными 
+в~процедуру, являются: UE, ANDSF, шлюз пакетных данных ePDG (evolved 
+Packet Data Gateway), расширенная сеть радиодоступа E-UTRAN (evolved 
+UMTS (Universal Mobile Telecommunication
+System) Terrestrial Radio Access Networks), узел управления мобильностью MME 
+(Mobility Management Entity), обслуживающий шлюз S-GW (Serving Gateway), 
+пакетный шлюз P-GW (Packet Data Network Gateway), узел выставления счетов 
+абонентам hPCRF (home network Policy and Charging Rules Function) 
+и~комбинированный сервер HSS/AAA (Home Subscriber 
+Server\,/\,Authentication, Authorization, and Accounting). 
+
+Подробное описание 
+сигнальных сообщений, включаемых в~процедуру вертикального хэндовера, 
+приведено в~\cite{14-gre}.
+%
+Обмен сигнальными сообщениями для данного этапа 
+VHO представлен на рис.~1. 
+{\looseness=1
+
+}
+  
+  В завершающем этап авторизации сообщении (23) UE получает от ePDG 
+данные об успешной ав\-то\-ризации в~сети LTE. После этого программное\linebreak 
+обеспечение UE реконфигурируется для работы в~сети LTE по туннелю IPsec 
+через эталонную точку стыка 3GPP~S2c. 
+  
+
+
+
+  Вторым этапом исполнения VHO является переключение UE в~целевую сеть 
+LTE из текущей недоверенной сети WLAN. Схема обмена сигнальными 
+сообщениями на этом этапе показана на рис.~2. 
+
+\begin{figure*}[b] %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=151.044mm 
+ \epsfbox{gre-3.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Модель многофазной СМО с~фоновым трафиком: \textit{1}~--- основной поток
+заявок; \textit{2}~--- фоновый поток заявок}
+\end{figure*}
+  
+  В начале этапа~2 UE синхронизировано с~расширенной сетью радиодоступа 
+E-UTRAN, имеет информацию о физическом канале и~временный 
+идентификатор радиосоты. Сообщения~(24)--(40)\linebreak
+ отвечают за реконфигурацию 
+физических каналов. После сообщения~(37), в~котором узел~\mbox{S-GW} 
+подтверждает создание требуемого канала для поддержки IP-сес\-сии через 
+расширенную систему пакетной передачи данных EPS (Evolved Packet System) 
+вместо обмена через WLAN, UE начинает\linebreak принимать и~передавать пакеты 
+данных через сеть LTE. 
+  
+
+
+\section{Метод оценки времени переключения с~учетом фонового 
+трафика}
+
+  В настоящей работе предлагается использовать приближенный метод оценки 
+времени переключения с~учетом наличия в~сети фонового трафика~[18]. Для 
+перехода к~аналитической модели пронумеруем введенные в~предыдущих 
+разделах функциональные устройства: UE~(I), ANDSF~(II), ePDG~(III),  
+E-UTRAN~(IV), MME~(V), S-GW~(VI), P-GW~(VII), hPCRF~(VIII) 
+и~HSS/AAA~(IX). Используемая методика подразумевает разбиение потока 
+обслуживаемых в~каждом узле сигнальных сообщений на основной и~фоновый 
+потоки. Под сообщениями основного потока будем понимать включенные 
+в~процедуру вертикального хэндовера сигнальные сообщения, под фоновым 
+потоком~--- сообщения других задач. Поток сигнальных сообщений на рис.~3 
+образует цепь, состоящую из $K\hm=39$~со\-сто\-яний. 
+
+
+
+  Обозначим через~$\lambda_0$ и~$b_k$ интенсивность входящего потока 
+и~среднюю длительность обслу\-жи\-вания заявок основного потока на $k$-й фазе 
+в~многофаз\-ной СМО. Аналогично~$\lambda_k$ и~$d_k$~--- интенсивность 
+потока и~средняя длительность обслуживания заявок фонового потока на $k$-й 
+фазе. 
+  
+  Для расчета времени пребывания заявки в~многофазной СМО необходимо 
+вычислить коэффициент вариации длительности обслуживания на $k$-й фазе 
+по формуле:
+  \begin{equation*}
+  C_k^2 =\fr{(\lambda_0+\lambda_k) \left(\lambda_0 b_k^{(2)} +\lambda_k 
+d_k^{(2)}\right)} {(\lambda_0 b_k+\lambda_k d_k)^2}-1,\enskip
+  k=1,\ldots, K.
+ % \label{e1-gre}
+  \end{equation*}
+Здесь использованы обозначения вторых моментов времени обслуживания 
+заявок основного~$b_k^{(2)}$ и~фонового потока~$d_k^{(2)}$.
+
+  Время ожидания начала обслуживания, полученное из известной формулы 
+Пол\-ла\-че\-ка--Хин\-чи\-на, рассчитывается по формуле:
+  $$
+  \omega_k= \fr{\rho_k^2(1+C_k^2)} {2(\lambda_0+\lambda_k) (1-
+\rho_k)}\,,\enskip k=1,\ldots, K\,.
+  $$
+Здесь $\rho_k=\lambda_0b_k\hm+\lambda_kd_k$~--- суммарная нагрузка на узел, 
+соответствующий $k$-й фазе, $\rho_k\hm< 1$, $k\hm=1,\ldots, K$.
+
+  Время пребывания~$\Delta$ заявки в~многофазной СМО равно сумме времен 
+пребывания заявок основного потока на каждой фазе:
+  $$
+  \Delta= \sum\limits^K_{k=1} \left( \omega_k+b_k\right)\,.
+  $$
+  
+  Время пребывания~$\Delta$ заявки в~многофазной СМО с~учетом фонового 
+трафика соответствует времени переключения при вертикальном хэндовере.
+  
+  Заметим, что данный метод позволяет найти квантиль уровня~$\psi$ времени 
+пребывания заявки в~многофазной СМО с~фоновым трафиком по формуле:
+  $$
+  Q_\psi= q_\psi +\sum\limits^K_{k=1} \left( \fr{\ln (\gamma_k 
+\omega_k)}{\gamma_k}+b_k\right)\,,
+  $$
+где $q_\psi$ является единственным положительным корнем уравнения
+$$
+1-\psi= \sum\limits^{K-1}_{k=0} e^{-\gamma_k q_\psi} \fr{(\gamma_k q_\psi)^k} 
+{k!}\,.
+$$
+  
+  Параметры $\gamma_k$ затухания функций распределения времени 
+ожидания начала обслуживания на $k$-й фазе, в~свою очередь, являются 
+единственными положительными корнями уравнения 
+$$
+\alpha_k(\gamma_k)\beta_k(-\gamma_k)=1\,,
+$$
+ где $\alpha_k(s)\hm= 
+(\lambda_0\hm+ \lambda_k)/(\lambda_0\hm+\lambda_k\hm+ s)$~--- 
+преоб\-разование Лап\-ла\-са--Стилть\-еса (ПЛС) функции\linebreak распределения (ФР) 
+интервалов времени между поступлениями заявок в~узле на $k$-й фазе, 
+а~$\beta_k(s)\hm= (\lambda_0/(\lambda_0\hm+\lambda_k)) e^{-sb_k}\hm+ 
+(\lambda_k/(\lambda_0\hm+ \lambda_k))e^{-sd_k}$~--- ПЛС ФР длительности 
+обслуживания заявок.
+
+  \begin{table*}[b]
+  {\small \begin{center}
+  
+  \begin{tabular}{|l|c|c|}
+  \multicolumn{3}{c}{Средние времена обслуживания}\\
+  \multicolumn{3}{c}{\ }\\[-6pt]
+  \hline
+  \tabcolsep=0pt\begin{tabular}{c}Функциональные\\
+узлы\end{tabular}&Среднее время обслуживания
+$\mu_i^{-1}$, мс&  \tabcolsep=0pt\begin{tabular}{c}Источники данных\\
+ для численного эксперимента\end{tabular}\\
+\hline
+I~--- UE&\tabcolsep=0pt\begin{tabular}{c}77,5 для (24);\\
+28,5 для (26);\\
+2 для остальных\end{tabular}&\cite{19-gre}\\
+\hline
+II~--- ANDSF&70&Считается, как HSS/AAA\\
+\hline
+III~--- ePDG&\hphantom{9}2&Считается, как P-GW\\
+\hline
+IV~--- eNB&\hphantom{9}4&\cite{20-gre}\\
+\hline
+V~--- MME&\tabcolsep=0pt\begin{tabular}{c}15 для (27);\\
+1 для остальных\end{tabular}&\cite{20-gre, 21-gre}\\
+\hline
+VI~--- S-GW&\hphantom{9}2&\cite{19-gre}\\
+\hline
+VII~--- P-GW&\hphantom{9}2&\cite{19-gre}\\
+\hline
+VIII~--- hPCRF&70&Считается, как HSS/AAA\\
+\hline
+IX~--- HSS/AAA&70&\cite{22-gre}\\
+\hline
+\end{tabular}
+\end{center}}
+%\end{table*}
+%\renewcommand{\figurename}{\protect\bf Рис.}
+\renewcommand{\tablename}{\protect\bf Рис.}
+\setcounter{table}{3}
+%\begin{figure*} %fig4
+\vspace*{6pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=164.269mm 
+ \epsfbox{gre-4.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Среднее время переключения~(\textit{а}) и~95\%-ный квантиль времени переключения~(\textit{б}):
+\textit{1}~--- $\lambda_k\hm=\lambda_0$; 
+\textit{2}~--- $\lambda_k\hm=10\lambda_0$; \textit{3}~--- 
+$\lambda_k\hm=100\lambda_0$}
+%\end{figure*}
+\end{table*}
+
+\renewcommand{\figurename}{\protect\bf Рис.}
+\renewcommand{\tablename}{\protect\bf Таблица}
+  
+  
+\section{Численный эксперимент}
+
+  Интенсивность запросов на совершение вертикального хэндовера зависит от 
+местности, типа устройств UE, возможностей оператора связи, плотности 
+мобильных пользователей и~других параметров. В~таблице приведены средние 
+значения времен обслуживания сообщений в~узлах (основной трафик). 
+Некоторые сообщения обслуживаются дольше остальных в~связи с~их 
+функциональными особенностями и~б$\acute{\mbox{о}}$льшим объемом, при 
+применении метода следует использовать данные статистических наблюдений. 
+  
+
+  На рис.~4 представлены результаты анализа времени переключения при 
+вертикальном хэндовере для трех вариантов соотношения интенсивностей 
+основного и~фонового трафиков: \textit{1}~--- $\lambda_k\hm=\lambda_0$; 
+\textit{2}~--- $\lambda_k\hm=10\lambda_0$; \textit{3}~--- 
+$\lambda_k\hm=100\lambda_0$. Среднее время обслуживания фонового трафика 
+$d_k\hm=2$~мс.
+  
+
+
+  
+  Анализ времени переключения показал, что дополнительный трафик со 
+средним временем обслуживания несущественно влияет на время 
+переключения, когда интенсивность этого трафика имеет тот же порядок, что 
+и~интенсивность основного трафика (кривые~\textit{1} и~\textit{2}), 
+и~проявляется, когда отношения интенсивностей основного и~фонового 
+трафиков различаются на два порядка (кривые~\textit{3} на рис.~4).
+  
+  
+
+На рис.~5 показана зависимость среднего значе\-ния и~95\%-ного квантиля 
+времени переклю\-чения при вертикальном хэндовере для трех значений средней 
+длительности обслуживания\linebreak сообщения фонового трафика $d_k\hm=10$, 20 и~50~мс, интенсивности входящего основного и~фонового трафика равны, 
+$\lambda_k\hm= \lambda_0$.
+
+\setcounter{figure}{4}
+
+\begin{figure*} %fig5
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=163.863mm 
+ \epsfbox{gre-6.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Среднее время переключения~(\textit{а})
+и~95\%-ный квантиль времени переключения:
+\textit{1}~--- $d_k\hm=10$~мс;  
+\textit{2}~--- 20; \textit{3}~--- $d_k\hm=50$~мс}
+\end{figure*}
+
+
+
+     При одинаковой интенсивности фонового и~основного трафика 
+и~увеличении среднего времени обслуживания фонового трафика до~50~мс 
+наблюдается резкое увеличение времени переключения при вертикальном 
+хэндовере (кривые~\textit{3} на рис.~5). Однако при среднем времени 
+обслуживания фонового трафика до~20~мс фоновый трафик практически не 
+влияет на время переключения при вертикальном хэндовере 
+(кривые~\textit{1} и~\textit{2} на рис.~5).
+     
+  Рекомендуемый метод оценки позволяет учесть влияние фонового трафика 
+  и~на отдельные узлы сети, участвующие в~процедуре. Тем не менее по 
+результатам проведения статистических наблюдений на реальных сетях связи 
+указанная рекомендация может уточняться.
+
+\section{Заключение}
+
+  Применение процедуры вертикального хэндовера в~гетерогенных 
+беспроводных сетях в~сочетании с~использованием многорежимных 
+абонентских устройств открывает широкие возможности по 
+дифференцированному доступу абонентов к~ресурсам сетей. 
+  
+  В статье разработана процедура обмена сигнальными сообщениями для VHO 
+из беспроводной локальной сети в~сеть LTE, предложен аналитический метод 
+оценки времени переключения. При этом пользователями могут быть как 
+устройства пользователей, так и~<<умные>> устройства, автоматически 
+взаимодействующие по принципу M2M (Machine-to-Machine). 
+  
+  В дальнейших исследованиях планируется применить представленный метод 
+для оценки времени переключения при обратной процедуре из сетей 
+подвижной беспроводной связи LTE в~сеть WLAN.
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-gre}
+\Au{Astely D., Dahlman~E., Fodor~G., Parkvall~S., Sachs~J.} LTE release~12 and 
+beyond~// IEEE Commun. Mag., 2013. Vol.~51. No.\,7. P.~154--160.
+doi: 10.1109/MCOM. 2013.6553692. 
+\bibitem{3-gre} %2
+\Au{Горбунова А.\,В., Зарядов~И.\,С., Матюшенко~С.\,И., Самуйлов~К.\,Е., 
+Шоргин~С.\,Я.} Аппроксимация времени отклика системы облачных 
+вычислений~// Информатика и~её применения, 2015. Т.~9. Вып.~3. С.~32--38.
+\bibitem{2-gre} %3
+\Au{Вихрова О.\,Г., Самуйлов~К.\,Е., Сопин~Э.\,С., Шоргин~С.\,Я.} К~анализу 
+показателей качества обслуживания в~современных беспроводных сетях~// 
+Информатика и~её применения, 2015. Т.~9. Вып.~4. С.~48--55.
+
+\bibitem{4-gre}
+\Au{Гайдамака Ю.\,В., Андреев~С.\,Д., Сопин~Э.\,С., Самуйлов~К.\,Е., 
+Шоргин~С.\,Я.} Анализ характеристик интерференции в~модели 
+взаимодействия устройств с~учетом среды распространения сигнала~// 
+Информатика и~её применения, 2016. Т.~10. Вып.~4. С.~2--10.
+\bibitem{5-gre}
+\Au{Кучерявый А.\,Е., Маколкина~М.\,А., Киричек~Р.\,В.} Тактильный 
+Интернет. Сети связи со сверхмалыми задержками~// Электросвязь, 2016. №\,1. 
+С.~44--46.
+\bibitem{6-gre}
+\Au{Kellokoski J., Koskinen~J., Nyrhinen~R., 
+H$\ddot{\mbox{a}}$m$\ddot{\mbox{a}}$l$\ddot{\mbox{a}}$inen T.} Efficient 
+handovers for machine-to-machine communications between IEEE 802.11 and 3GPP 
+evolved packed core networks~//  IEEE  Conference (International) on Green 
+Computing and Communications Proceedings.~--- 
+\mbox{Besan{\!\ptb{\c{c}}}on}, 2012. P.~722--725.
+\bibitem{7-gre}
+\Au{Ahmed L., Boulahia~L.\,M., Gaiti~D.} Enabling vertical handover decisions in 
+heterogeneous wireless networks: A~state-of-the-art and a classification~// IEEE 
+Commun. Surv.  Tut., 2014. Vol.~16. No.\,2. P.~776--781.
+\bibitem{8-gre}
+\Au{Bukhari J., Akkari~N.} QoS based approach for LTE-WiFi handover~// 7th 
+Conference (International) on Computer Science \& Information Technology 
+Proceedings.~--- Elsevier, 2016. P.~1--6.
+\bibitem{9-gre}
+\Au{Gondim P.\,R.\,L., Trineto~J.\,B.\,M.} DSMIP and PMIP for mobility 
+management of heterogeneous access networks: Evaluation of authentication 
+delay~//  IEEE Globecom Workshops Proceedings.~--- Anaheim, 2012.  
+P.~308--313.
+
+\bibitem{11-gre} %10
+\Au{Do-Hyung~K., Won-Tae~K., Hwan-Gu~L., Sun-Ja~K., Cheol-Hoon~L.} 
+A~performance evaluation of vertical handover architecture with low latency 
+handover~//  Conference (International) on Convergence and Hybrid Information 
+Technology Proceedings.~--- Dusan, 2008. P.~66--69.
+
+\bibitem{10-gre} %11
+\Au{Tsagkaropoulos M., Politis~I., Tselios~C., Dagiuklas~T., Kotsopoulos~S.} 
+Service continuity over intertechnology RATs~// 16th IEEE  Workshop 
+(International) on Computer Aided Modeling and Design of Communication Links 
+and Networks Proceedings.~--- Kyoto, 2011. P.~117--121.
+
+\bibitem{12-gre}
+\Au{M$\acute{\mbox{a}}$rquez-Barja J., Calafate~C.\,T., Cano~J.-C., Manzoni~P.} 
+An overview of vertical handover techniques: Algorithms, protocols and tools~// 
+Comput. Commun., 2011. Vol.~34. P.~985--997.
+\bibitem{13-gre}
+\Au{Гребешков А.\,Ю.} Оценка целесообразности обработки заявки для 
+предоставления услуги в~реконфигурируемых сетях следующего поколения~// 
+T-Comm: Телекоммуникации и~транспорт, 2014. №\,8. С.~24--27. 
+\bibitem{14-gre}
+\Au{Grebeshkov A., Zaripova~E., Roslyakov~A., Samouylov~K.} Modelling of 
+vertical handover from untrusted WLAN network to LTE~// 31st European 
+Conference on Modelling and Simulation Proceedings, 2017. P.~694--700.
+\bibitem{15-gre}
+\Au{Lampropoulos G., Passas~N., Mekaros~L., Kaloxylos~A.} Handover 
+management architectures in integrated WLAN~// IEEE Commun. 
+Surv. Tut., 2005. Vol.~7. No.\,4. P.~30--44.
+\bibitem{16-gre}
+3GPP TS~23.402 Technical specification 3GPP; TS Group Services and System 
+Aspects; Architecture enhancements for non-3GPP accesses. Release~14, 2016.
+{\sf 
+https://\linebreak portal.3gpp.org/desktopmodules/Specifications/Specifi cationDetails.aspx?specificationId=850}.
+\bibitem{17-gre}
+3GPP TS 33.402 Technical specification 3GPP; TS Group Services and System 
+Aspects; 3GPP System Architecture Evolution (SAE); Security aspects of non-3GPP 
+accesses. Release~14, 2016.
+{\sf  
+https://portal. 3gpp.org/desktopmodules/Specifications/Specification\linebreak Details.aspx?specificationId=2297.}
+\bibitem{18-gre}
+\Au{Gaidamaka Yu., Zaripova~E.} Session setup delay estimation methods for  
+IMS-based IPTV services~// Internet of things, smart spaces, and next generation networks
+and systems~/ Eds.\ S.~Balandin, S.~Andreev, Y.~Koucheryavy.~---
+Lecture notes in computer science ser.~---
+Springer, 2014. Vol.~8638. 
+P.~408--418.
+\bibitem{19-gre}
+\Au{Nikaein N., Krco~S.} Latency for real-time machine-to-machine communication 
+in LTE-based system architecture~// 17th European Wireless Conference on 
+Sustainable Wireless Technologies Proceedings.~--- Vienna, Austria: IEEE, 2011. 
+P.~1--6.
+\bibitem{20-gre}
+\Au{Cardona N., Monserrat~J.\,F., Cabrejas~J.} Enabling technologies for 3GPP 
+LTE-advanced networks~// LTE-advanced and next generation wireless networks~/ 
+Eds.\ G.~de la~Roche, A.\,A.~Glazunov, B.~Allen.~--- Chichester, U.K.: John 
+Wiley and Sons, 2013. P.~3--34.
+\bibitem{21-gre}
+\Au{Prados-Garzon J., Ramos-Munoz~J.\,J., Ameigeiras~P., Andres-Maldonado~P., 
+Lopez-Soler~J.\,M.} Latency evaluation of a virtualized MME~//  
+ Wireless Days Proceedings.~--- Toulouse, France: IEEE, 2016. P.~1--3.
+\bibitem{22-gre}
+\Au{Granlund D., Holmlund~P., \mbox{{\ptb{\AA}}hlund~C.}} Opportunistic mobility 
+support for resource constrained sensor devices in smart cities~// Sensors, 2015. 
+Vol.~15. No.\,3. P.~5112--5135.
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 31.05.17}}
+
+\vspace*{8pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{8pt}
+
+
+\def\tit{ANALYSIS OF~VERTICAL HANDOVER TIME\\ IN~HETEROGENEOUS WIRELESS NETWORKS}
+
+\def\titkol{Analysis of~vertical handover time in~heterogeneous wireless networks}
+
+\def\aut{A.\,Yu.~Grebeshkov$^1$, Yu.\,V.~Gaidamaka$^{2,3}$, O.\,G.~Vikhrova$^{2}$, 
+and~E.\,R.~Zaripova$^2$}
+
+\def\autkol{A.\,Yu.~Grebeshkov, Yu.\,V.~Gaidamaka, O.\,G.~Vikhrova, 
+and~E.\,R.~Zaripova}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Povolzhskiy State University of Telecommunications and Informatics, 23~Tolstoy Str., Samara 443010, Russian\linebreak 
+$\hphantom{^1}$Federation
+
+\noindent
+$^2$Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198,\linebreak
+$\hphantom{^1}$Russian Federation
+
+
+\noindent
+$^3$Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' 
+of the Russian\linebreak
+$\hphantom{^1}$Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, 
+Russian Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+\Abste{In a heterogeneous wireless network, connectivity is simultaneously available 
+using different radio networks with overlapping coverage areas. A~mobile user 
+equipment with a~multiple mode card that can work under various frequency bands 
+and modulation schemes can switch from one technology to another in order to 
+maintain communication. This procedure known as a vertical handover (VHO)
+provides the 
+benefit of utilizing the higher bandwidth and lower cost of wide local area networks 
+as well as better mobility support and larger coverage of cellular networks. The 
+authors investigate details of the VHO procedure from WLAN (Wireless Local
+Area Network) to the 
+3GPP Long Term Evolution (LTE). The VHO procedure includes~40~signaling 
+messages, which are responsible for authorization and resource allocation in the 
+target LTE network. The authors analyze the VHO sojourn time and its~95~percent 
+quantile using a~multiphase queuing system with background traffic.}
+
+\KWE{heterogeneous wireless network; cellular network; LTE; mobility; session 
+setup procedure; connection reliability; connection availability; performance 
+measure}
+
+
+
+
+  \DOI{10.14357/19922264170409} 
+
+%\vspace*{-12pt}
+
+\Ack
+\noindent
+The publication was supported by the Ministry of Education and Science of the 
+Russian Federation (project No.\,2.882.2017/4.6). 
+
+
+
+\vspace*{12pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-gre-1}
+\Aue{Astely, D., E.~Dahlman, G.~Fodor, S.~Parkvall, and J.~Sachs.} 2013. LTE 
+release~12 and beyond. \textit{IEEE Commun. Mag.} 51(7):154--160. 
+doi: 10.1109/MCOM. 2013.6553692. 
+
+
+\bibitem{3-gre-1} %2
+\Aue{Gorbunova, A.\,V., I.\,S.~Zaryadov, S.\,I.~Matyushenko, K.\,E.~Samouylov, 
+and S.\,Ya.~Shorgin.} 2015. Approksimatsiya vremeni otklika sistemy oblachnykh 
+vychisleniy [The approximation of response time of a cloud computing system]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 9(3):32--38.
+
+\bibitem{2-gre-1} %3
+\Aue{Vikhrova, O.\,G., K.\,E.~Samouylov, E.\,S.~Sopin, and S.\,Ya.~Shorgin}. 2015. 
+K~analizu pokazateley kachestva obsluzhivaniya v~sovremennykh besprovodnykh 
+setyakh [On performance analysis of modern wireless networks]. \textit{Informatika 
+i~ee Primeneniya~--- Inform. Appl.} 9(4):48--55.
+
+\bibitem{4-gre-1}
+\Aue{Gaidamaka, Yu.\,V., S.\,D.~Andreev, E.\,S.~Sopin, K.\,E.~Samouylov, and 
+S.\,Ya.~Shorgin.} 2016. Analiz kharakteristik interferentsii v~modeli 
+vzaimodeystviya ustroystv s~uchetom sredy rasprostraneniya signala [Interference 
+analysis of the device-to-device communications model with regard to a~signal 
+propagation environment]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 
+10(4):2--10.
+\bibitem{5-gre-1}
+\Aue{Koucheryavy, A.\,E., М.\,А.~Makolkina, and R.\,V.~Kirichek.} 2016. 
+Taktil'niy Internet. Seti svyazi so sverkhmalymi zaderzhkami [Tactile Internet. 
+Ultra-low latency networks]. \textit{Elekrosvyaz'} 
+[Telecomm. Radio Eng.] 1:44--46.
+\bibitem{6-gre-1}
+\Aue{Kellokoski, J., J.~Koskinen, R.~Nyrhinen, and 
+T.~H$\ddot{\mbox{a}}$m$\ddot{\mbox{a}}$l$\ddot{\mbox{a}}$inen.} 2012. 
+Efficient handovers for machine-to-machine communications between IEEE~802.11 
+and 3GPP evolved packed core networks. \textit{IEEE  Conference (International) 
+on Green Computing and Communications Proceedings}. \mbox{Besan{\!\ptb{\c{c}}}on.}  
+722--725.
+\bibitem{7-gre-1}
+\Aue{Ahmed, L., L.~M.~Boulahia, and D.~Gaiti.} 2014. Enabling vertical 
+handover decisions in heterogeneous wireless networks: A~state-of-the-art and 
+a~classification. \textit{IEEE Commun. Surv. Tut.} 16(2):776--781.
+\bibitem{8-gre-1}
+\Aue{Bukhari, J., and N.~Akkari.} 2016. QoS based approach for LTE-WiFi 
+handover. \textit{7th Conference (International) on Computer Science and 
+Information Technology Proceedings}. Elsevier. 1--6.
+\bibitem{9-gre-1}
+\Aue{Gondim, P.\,R.\,L., and J.\,B.\,M.~Trineto.} 2012. DSMIP and PMIP for 
+mobility management of heterogeneous access networks: Evaluation of 
+authentication delay. \textit{IEEE Globecom Workshops Proceedings}. Anaheim. 
+308--313.
+
+
+
+\bibitem{11-gre-1} %10
+\Aue{Do-Hyung, K., K.~Won-Tae, L.~Hwan-Gu, K.~Sun-Ja, and  
+L.\,A.~Cheol-Hoon.} 2008. Performance evaluation of vertical hanover architecture 
+with low latency handover. \textit{Conference (International) on Convergence and 
+Hybrid Information Technology Proceedings}. Dusan. 66--69.
+
+
+\columnbreak
+
+\bibitem{10-gre-1} %11
+\Aue{Tsagkaropoulos, M., I.~Politis, C.~Tselios, T.~Dagiuklas, and 
+S.~Kotsopoulos}. 2011. Service continuity over intertechnology RATs. \textit{16th 
+IEEE  Workshop (International) on Computer Aided Modeling and Design of 
+Communication Links and Networks Proceedings}. Kyoto. 117--121.
+
+\bibitem{12-gre-1}
+\Aue{M$\acute{\mbox{a}}$rquez-Barja,~J., C.\,T.~Calafate, J.-C.~Cano, and 
+P.~Manzoni.} 2011. An overview of vertical handover techniques: Algorithms, 
+protocols and tools. \textit{Comput. Commun.} 34:985--997.
+\bibitem{13-gre-1}
+\Aue{Grebeshkov, A.\,Yu.} 2014. Otsenka tselesoobraznosti obrabotki zayavki dlya 
+predostavleniya uslugi v~re\-kon\-fi\-gu\-ri\-ru\-emykh setyakh sleduyushchego pokoleniya 
+[Estimation of processing feasibility for service provision application in 
+reconfigurable Next Generation Networks]. \textit{\mbox{T-Comm}: Te\-le\-kom\-mu\-ni\-ka\-tsii 
+i~transport} [\mbox{T-Comm}: Telecommunications and Transport ] 8:24--27. 
+\bibitem{14-gre-1}
+\Aue{Grebeshkov, A., E.~Zaripova, A.~Roslyakov, and K.~Samouylov}. Modelling 
+of vertical handover from untrusted WLAN network to LTE. \textit{31st European 
+Conference on Modelling and Simulation Proceedings}. 694--700.
+\bibitem{15-gre-1}
+\Aue{Lampropoulos, G., N.~Passas, L.~Mekaros, and A.~Kaloxylos.} 2005. 
+Handover management architectures in integrated WLAN. \textit{IEEE 
+Commun. Surv.  Tut.} 7(4):30--44.
+\bibitem{16-gre-1}
+3GPP TS 23.402. 2016. Technical specification 3rd Generation Partnership Project; 
+Technical Specification Group Services and System Aspects; Architecture 
+enhancements for non-3GPP accesses. Release~14.  
+Available at: {\sf 
+https://portal.3gpp.org/desktopmodules/\linebreak Specifications/SpecificationDetails.aspx?specificationId\linebreak =850} (accessed May~20, 2017).
+\bibitem{17-gre-1}
+3GPP TS 33.402. 2016. Technical specification 3rd Generation Partnership Project; 
+Technical Specification Group Services and System Aspects; 3GPP System 
+Architecture Evolution (SAE); Security aspects of non-3GPP accesses. Release~14. 
+Available at: {\sf 
+https://portal. 3gpp.org/desktopmodules/Specifications/Specification\linebreak Details.aspx?specificationId=2297}
+ (accessed May~20, 2017).
+\bibitem{18-gre-1}
+\Aue{Gaidamaka, Yu., and E.~Zaripova} 2014. Session setup delay estimation 
+methods for IMS-based IPTV services. 
+\textit{Internet of things, smart spaces, and next generation networks
+and systems}.
+Eds.\ S.~Balandin, S.~Andreev, and Y.~Koucheryavy.
+{Lecture notes in computer science ser.} Springer.
+8638:408--418.
+\bibitem{19-gre-1}
+\Aue{Nikaein, N., and S.~Krco.} 2011. Latency for real-time machine-to-machine 
+communication in LTE-based system architecture. \textit{17th European Wireless 
+Conferense on Sustainable Wireless Technologies Proceedings.} Vienna, Austria: 
+IEEE. 1--6.
+\bibitem{20-gre-1}
+\Aue{Cardona, N., J.\,F.~Monserrat, and J.~Cabrejas.} 2013. Enabling technologies 
+for 3GPP LTE-advanced networks.\linebreak\vspace*{-11pt}
+
+\pagebreak
+
+\noindent
+ \textit{LTE-Advanced and next generation 
+wireless networks}. Eds.\
+ G.~de la~Roche, A.\,A.~Glazunov, and B.~Allen.
+Chichester, U.K.: John Wiley and Sons. 3--34.
+\bibitem{21-gre-1}
+\Aue{Prados-Garzon, J., J.\,J.~Ramos-Munoz, P.~Ameigeiras,  
+P.~Andres-Maldonado, and J.\,M.~Lopez-Soler.} 2016. La-\linebreak\vspace*{-11pt}
+
+\columnbreak
+
+\noindent
+tency evaluation of 
+a~virtualized MME. \textit{Wireless Days Proceedings}. Toulouse, 
+France: IEEE. 1--3.
+\bibitem{22-gre-1}
+\Aue{Granlund, D., P.~Holmlund, and \mbox{C.~{\ptb{\AA}}hlund}}. 2015. 
+Opportunistic mobility support for resource constrained sensor devices in smart 
+cities. \textit{Sensors} 15(3):5112--5135.
+{\looseness=1
+
+}
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received May 31, 2017}}
+
+%\vspace*{-10pt}
+
+\Contr
+
+\noindent
+\textbf{Grebeshkov Alexander Yu.} (b.\ 1967)~--- Candidate of Science (PhD) in 
+technology, senior scientist, Povolzhskiy State University of Telecommunications 
+and Informatics, 23~Tolstoy Str., Samara 443010, Russian Federation;  
+\mbox{grebeshkov-ay@psuti.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Candidate of Science (PhD) in physics and 
+mathematics, associate professor, Peoples' Friendship University of Russia (RUDN University), 
+6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; senior scientist, Institute of 
+Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{gaydamaka\_yuv@rudn.university}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Vikhrova Olga G.} (b.\ 1990)~--- PhD student, Peoples' Friendship University of Russia 
+(RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{vikhrova\_og@rudn.university}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Zaripova Elvira R.} (р.\ 1979)~--- Candidate of Science (PhD) in physics and 
+mathematics, associate professor, Peoples' Friendship University of Russia (RUDN University), 
+6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{zaripova\_er@rudn.university}
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература} 

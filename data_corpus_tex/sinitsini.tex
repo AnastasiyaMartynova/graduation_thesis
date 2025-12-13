@@ -1,0 +1,841 @@
+
+
+\def\stat{sinitsini}
+
+\def\tit{МОДЕЛИРОВАНИЕ НОРМАЛЬНЫХ ПРОЦЕССОВ В~СТОХАСТИЧЕСКИХ СИСТЕМАХ СО~СЛОЖНЫМИ
+ТРАНСЦЕНДЕНТНЫМИ НЕЛИНЕЙНОСТЯМИ$^*$}
+
+\def\titkol{Моделирование нормальных
+процессов в~стохастических системах со сложными трансцендентными нелинейностями}
+
+\def\aut{И.\,Н.~Синицын$^1$, В.\,И.~Синицын$^2$, Э.\,Р.~Корепанов$^3$}
+
+\def\autkol{И.\,Н.~Синицын, В.\,И.~Синицын, Э.\,Р.~Корепанов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Синицын И.\,Н.}
+\index{Синицын В.\,И.}
+\index{Корепанов Э.\,Р.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проект 15-07-02244).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Федерального исследовательского
+центра <<Информатика и~управление>> Российской академии наук,
+sinitsin@dol.ru}
+\footnotetext[2]{Институт проблем информатики Федерального исследовательского
+центра <<Информатика и~управление>> Российской академии наук,
+vsinitsin@ipiran.ru}
+\footnotetext[3]{Институт проблем информатики Федерального исследовательского
+центра <<Информатика и~управление>> Российской академии наук,
+ekorepanov@ipiran.ru}
+
+\vspace*{-6pt}
+
+
+\Abst{Рассматривается развитие методов аналитического и~статистического моделирования нормальных стохастических процессов (СтП)
+на случай непрерывных и~дискретных стохастических систем (СтС) (в~том числе на многообразиях) с~винеровскими и~пуассоновскими шумами и~со сложными трансцендентными нелинейностями (СТН). Даны типовые представления скалярных и~векторных СТН. Получены уравнения методов нормальной аппроксимации (МНА) и~статистической линеаризацией (МСЛ). Представлено алгоритмическое обеспечение МНА (МСЛ) для СтС с~СТН. Приведены тестовые примеры. Рассмотрены возможные обобщения полученных результатов.}
+
+
+\KW{аналитическое и~статистическое моделирование;
+метод нормальной аппроксимации (МНА);
+метод статистической линеаризации (МСЛ);
+многочлены Эрмита; нормальный стохастический процесс;
+сложные трансцендентные нелинейности (СТН); стохастические системы (СтС)}
+
+\DOI{10.14357/19922264150203}
+
+\vspace*{-2pt}
+
+
+\vskip 14pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+Рассмотрим развитие методов аналитического и~статистического моделирования нормальных СтП, приведенных в~[1--4], на случай непрерывных и~дискретных СтС, в~том числе и~на многообразиях с~СТН. В~разд.~2 даны типовые представления трансцендентных функций и~соответствующих  СТН. Раздел~3 посвящен уравнениям МНА и~МСЛ. Алгоритмическое обеспечение МНА (МСЛ) для СтС с~СТН представлено в~разд.~4. Тестовые примеры приведены в~разд.~5. В заключении даны выводы и~рассмотрены некоторые обобщения полученных результатов.
+
+\vspace*{-6pt}
+
+\section{Трансцендентные функции и~нелинейности}
+
+Как известно~[5, 6], трансцендентной аналитической функцией (ТАФ) в~узком смысле слова называется мероморфная функция в~плоскости комплексного переменного $y$, отличная от рациональной. В~частности, сюда относятся целые ТАФ, целые функции, отличные от многочленов, например показательная функция~$e^y$, три\-го\-но\-мет\-ри\-че\=ские функции $\sin y$ и~$\cos y$, гиперболические функции  $\mathrm{sh}\, y$ и~$\mathrm{ch}\, y$. Примерами собственно мероморфных ТАФ могут служить функции
+$\tg y$, $\ctg y$, $\mathrm{th}\, y$ и~$\mathrm{cth}\, y$.
+
+В рамках теории элементарных функций к~трансцендентным вычислительным операциям относятся операции взятия тригонометрических (гиперболических) или обратных функций, логарифмирования и~потенцирования~\cite{5-s}.
+
+В широком смысле под ТАФ понимается всякая аналитическая функция, отличная от алгебраической, для вычисления значений которой помимо алгебраических операций над аргументом необходимо применить предельный переход в~той или иной форме. Примерами предельных переходов могут быть различные интегральные, интегродифференциальные
+и~другие операторные преобразования.
+
+Примерами СТН, получаемых посредством отрезков сумм элементарных ТАФ, могут служить следующие:
+\begin{align}
+\vrp^{\mathrm{СТН}} (Y,t) &=\sss_{r=1}^n l_{rt} \vrp^{\mathrm{ТН}}_r (Y)\,;\label{e2.1-s}\\
+   \vrp^{\mathrm{СТН}} (Y,t) &=\sss_{r=1}^n l_{rt} \vrp^{\mathrm{ТН}}_r (Y)\vrp_r^{\mathrm{АН}} (Y)\,,\label{e2.2-s}
+   \end{align}
+а также дроб\-но-ра\-ци\-о\-наль\-ные пред\-став\-ления:
+    \begin{align}
+    \vrp^{\mathrm{СТН}} (Y,t) &=\fr{\sum\nolimits_{r=1}^{n'} l_{rt}'
+      {\vrp'}^{\mathrm{ТН}}_r (Y)}{ \sum\nolimits_{r=1}^{n''} l_{rt}''
+   {\vrp''}^{\mathrm{ТН}}_r (Y)}\,;\label{e2.3-s}\\
+    \vrp^{\mathrm{СТН}} (Y,t) &=\fr{\sum\nolimits_{r=1}^{n'} l_{rt}'
+        {\vrp'}^{\mathrm{ТН}}_r (Y){\vrp'}_r^{\mathrm{АН}} (Y)}{\sum\nolimits_{r=1}^{n''} l_{rt}'' {\vrp''}^{\mathrm{ТН}}_r (Y){\vrp''}_r^{\mathrm{АН}}
+    (Y)}\,,\label{e2.4-s}
+    \end{align}
+где ${\vrp}^{\mathrm{ТН}}_r (Y)$, ${\vrp'}^{\mathrm{ТН}}_r (Y)$ и~${\vrp''}^{\mathrm{ТН}}_r (Y)$~--- элементарные ТАФ; $ l_{rt}$,  $l_{rt}'$  и~$l_{rt}''$~--- коэффициенты, зависящие от времени~$t$; ${\vrp}_r^{\mathrm{АН}} (Y)$, ${\vrp'}_r^{\mathrm{АН}} (Y)$ и~${\vrp''}_r^{\mathrm{АН}} (Y)$~--- алгебраические нелинейности (многочлены, степенные, иррациональные, дроб\-но-ра\-ци\-о\-наль\-ные и~другие функции).
+
+Другими примерами СТН являются нелинейности, получаемые путем соответствующего преобразования аргумента:
+    \begin{align}
+    \vrp^{\mathrm{СТН}} (Y,t) &=\vrp^{\mathrm{АН}} (\psi^{\mathrm{ТН}} (Y,t), t)\,;
+    \label{e2.5-s}\\
+   \vrp^{\mathrm{СТН}} (Y,t) &=\vrp^{\mathrm{ТН}} (\psi^{\mathrm{АН}} (Y,t), t)\,,\label{e2.6-s}
+   \end{align}
+где $\vrp^{\mathrm{АН}}$, $\psi^{\mathrm{АН}}$, $\vrp^{\mathrm{ТН}} (Y,t)$ и~$\psi^{\mathrm{ТН}} (Y,t)$~--- элементарные алгебраические и~трансцендентные нелинейности.
+
+Операция интегрирования ТАФ может выводить из класса элементарных ТАФ, т.\,е.\ интеграл от элементарной ТАФ не всегда может быть выражен через элементарные функции (алгебраические или трансцендентные). В~результате приходится обращаться к~специальным функциям~[5--8]. Прос\-тей\-ши\-ми примерами специальных функций могут служить интегралы от элементарных ТАФ, а~также функций, получающихся из них с~помощью конечного числа вычислительных операций и~операций дифференцирования~\cite{5-s}. Сюда относятся и~функции, обратные указанным.
+
+В качестве примеров скалярных СТН векторного аргумента $Y\hm=\lk Y_1\cdots Y_p\rk^{\mathrm{T}}$ рассмотрим сле\-ду\-ющие:
+    \begin{align}
+    \vrp^{\mathrm{СТН}} (Y,t) &=\sss_{r=1}^n \prod\limits_{h=1}^H l_{rh,t} \vrp_{rh}^{\mathrm{ТН}} (Y_h)\,;\label{e2.7-s}\\
+   \vrp^{\mathrm{СТН}} (Y,t) &=\fr{\sum_{r=1}^{n'} \prod_{h=1}^{H'} l_{rh,t}' {\vrp'}_{rh}^{\mathrm{ТН}} (Y_h)}{\sum_{r=1}^{n''} \prod_{h=1}^{H''} l_{rh,t}'' {\vrp''}_{rh}^{\mathrm{ТН}} (Y_h)}\,.\label{e2.8-s}
+   \end{align}
+
+В случае векторных и~матричных СТН формулы~(\ref{e2.1-s})--(\ref{e2.8-s}) имеют место для соответствующих компонент.
+
+В настоящей статье ограничимся рас\-смот\-ре\-нием трансцендентных нелинейностей
+(ТН), по\-лу\-ча\-ющихся согласно~(\ref{e2.1-s})--(\ref{e2.6-s}) только из элементарных трансцендент\-ных функций. Случаи специальных аналитических и~разрывных функций будут предметом дальнейшего рассмотрения.
+
+\section{Уравнения методов нормальной аппроксимации и~статистической
+ линеаризации со~сложными трансцендентными нелинейностями}
+
+Как известно~[9--11],  уравнения конечномерных непрерывных нелинейных систем со стохастическими возмущениями путем расширения вектора состояния СтС могут быть записаны в~виде сле\-ду\-юще\-го векторного стохастического дифференциального уравнения Ито:
+\begin{multline}
+   dY_t = a\left(Y_t, t\right) dt + b \left(Y_t, t\right) dW_0+ {}\\
+   {}+\iii_{R_0} c \left(Y_t, t, v\right) P^0 (dt, dv)\,,\enskip Y(t_0) = Y_0\,.
+   \label{e3.1-s}
+   \end{multline}
+Здесь $Y_t$~--- $(p\times 1)$-мер\-ный вектор состояния, $Y_t \hm\in \Delta_y$ ($\Delta_y$~--- многообразие состояний);  $a\hm=a(Y_t, t)$ и~$b\hm=b(y_t, t)$~--- известные  $(p\times 1)$- и~$(p\times m)$-мер\-ные функции~$Y_t$ и~$t$;  $W_0\hm= W_0(t)$~--- $(r\times 1)$-мер\-ный винеровский СтП интенсивности  $\nu_0 \hm= \nu_0(t)$; $c(Y_t, t, v)$~--- $(p\times 1)$-мер\-ная функция  $Y_t, t$ и~вспомогательного $(q\times 1)$-мер\-но\-го параметра~$v$; $\iii_{\Delta} dP^0 (t, A)$~--- центрированная пуассоновская мера, опре\-де\-ля\-емая
+    \begin{equation*}
+    \iii_{\Delta} dP^0 (t, A) = \iii_{\Delta} dP (t,A) =\iii_{\Delta} \nu_P (t,A)\, dt\,.
+%    \label{e3.2-s}
+    \end{equation*}
+В~(\ref{e3.1-s}) принято: $\iii_{\Delta}$~--- число скачков пуассоновского СтП
+в интервале времени  $\Delta \hm= (t_1, t_2]$; $\nu_P (t, A)$~---
+интенсивность пуассоновского СтП  $P(t,A)$; $A$~--- некоторое
+борелевское множество пространства  $R_0^q$ с~выколотым началом.
+Начальное значение~$Y_0$ представляет собой случайную величину
+(с.в.), не зависящую от приращений $W_0(t)$ и~$P(t,A)$ на
+интервалах времени, следующих за~$t_0$, $t_0 \hm\le t_1\hm\le t_2$, для
+любого множества~$A$.
+
+Для аддитивных нормальных (гауссовских) и~обобщенных пуассоновских возмущений уравнение~(\ref{e3.1-s}) имеет вид:
+    \begin{equation}
+    \dot Y = a\left(Y_t,t\right)+ b_0 (t) V\,, \enskip V = \dot W\,,\enskip Y(t_0) = Y_0\,.\label{e3.3-s}
+    \end{equation}
+Здесь $W$~--- СтП с~независимыми приращениями, представляющий собой смесь нормального и~обобщенного пуассоновского СтП.
+
+Для компонент $\vrp(Y_t, t) \hm= \{a_h, b_{kj}, c_h\}$ функций $a$, $b$ и~$c$,  являющихся СТН, примем представления~(\ref{e2.1-s})--(\ref{e2.6-s}).
+Если предположить существование конечных вероятностных моментов второго порядка для моментов времени~$t_1$ и~$t_2$, то уравнения МНА примут следующий вид~[9--11]:
+\begin{itemize}
+\item  для характеристических функций:
+    \begin{equation}
+\left.
+    \begin{array}{c}
+   \hspace*{-10mm}g_1^N (\la;t) =\displaystyle\exp \left[ i\la^{\mathrm{T}} m_t - \fr{1}{2} \la^{\mathrm{T}} K_t \la\right]\!;\\[9pt]
+       \hspace*{-32mm}g_{t_1, t_2}^N \left(\la_1, \la_2;t_1, t_2 \right) ={}\\
+    \hspace*{11mm}{}=\exp \left[ i\bar \la^{\mathrm{T}} \bar m_2 - \fr{1}{2} \bar \la^{\mathrm{T}} \bar K_2 \la\right]\!,
+    \end{array}
+    \right\}
+    \label{e3.4-s}
+    \end{equation}
+где
+    $$
+    \bar \la =\left[ \la_1^{\mathrm{T}}\la_2^{\mathrm{T}}\right]^{\mathrm{T}}\,; \enskip\bar m_2 = \left[ m_{t_1}^{\mathrm{T}} m_{t_2}^{\mathrm{T}}\right]^{\mathrm{T}}\,;\
+    $$
+    $$
+    \bar K_2= \begin{bmatrix}
+    K\left(t_1, t_1\right)& K\left(t_1, t_2\right)\\
+    K\left(t_2, t_1\right)& K\left(t_2, t_2\right)\end{bmatrix}\,;
+    $$
+
+\item для математических ожиданий~$m_t$, ковариационной матрицы~$K_t$ и~матрицы ковариационных функций $K(t_1, t_2)$:
+    \begin{equation}
+    \dot m_t = a_1 (m_t, K_t, t)\,,\enskip m_0 = m(t_0)\,;\label{e3.5-s}
+    \end{equation}
+    \begin{equation}
+\dot K_t = a_2 \left(m_t, K_t, t\right)\,,\enskip K_0 = K(t_0)\,;\label{e3.6-s}
+\end{equation}
+
+\vspace*{-12pt}
+\begin{multline}
+   \fr{\prt K(t_1, t_2)}{\prt t_2 }= K(t_1, t_2) a_{21} \left(m_{t_2}, K_{t_2}, t_2\right)^{\mathrm{T}}\,,\\
+K(t_1, t_1) = K_{t_1}\,.
+    \label{e3.7-s}
+   \end{multline}
+    Здесь приняты следующие обозначения:
+    $$
+    m_t = {\sf M}_{\Delta_y}^N Y_t\,;\  Y_t^0 = Y_t - m_t\,;\  K_t = {\sf M}_{\Delta_y}^N Y_t^0 Y_t^{0\mathrm{T}}\,;
+    $$
+    $$
+    K\left(t_1, t_2\right) = {\sf M}_{\Delta_y}^N Y_{t_1}^{0} Y_{t_2}^{0\mathrm{T}}\,;
+    $$
+    $$
+    a_1 = a_1 \left(m_t, K_t, t\right) = {\sf M}_{\Delta_y}^N a \left(Y_t, t\right)\,;
+    $$
+
+    \vspace*{-12pt}
+
+    \noindent
+    \begin{multline*}
+    a_2 = a_2 \left(m_t, K_t, t\right) = a_{21} \left(m_t, K_t, t\right)+ {}\\
+    {}+a_{21} \left(m_t, K_t, t\right)^{\mathrm{T}} +a_{22}\left(m_t, K_t, t\right)\,;
+    \end{multline*}
+
+    \vspace*{-9pt}
+
+    \noindent
+    $$
+    a_{21} = a_{21}\left(m_t, K_t, t\right)=  {\sf M}_{\Delta_y}^N a\left(Y_t, t\right) Y_{t}^{0\mathrm{T}}\,;
+    $$
+    $$
+    a_{22} = a_{22}\left(m_t, K_t, t\right)= {\sf M}_{\Delta_y}^N \si \left(Y_t, t\right)\,;
+    $$
+
+    \vspace*{-12pt}
+
+    \noindent
+    \begin{multline*}
+    \si \left(Y_t, t\right) = b\left(Y_t, t\right) \nu_0(t) b\left(Y_t, t\right)^{\mathrm{T}} +{}\\
+    {}+\iii_{R_0^q}
+    c \left(Y_t, t, v\right) c\left(Y_t, t,v\right)^{\mathrm{T}} \nu_P (t, dv)\,, %\label{e3.8-s}
+    \end{multline*}
+где ${\sf M}_{\Delta_y}^N$~--- символ вычисления математического ожидания для нормальных распределений~(\ref{e3.4-s}).
+    \end{itemize}
+
+Для стационарных СтС нормальные стационарные СтП~--- если они
+существуют, то  $m_t \hm=\bar m$, $ K_t\;=$\linebreak\vspace*{-12pt}
+
+\columnbreak
+
+\noindent
+$=\;\bar K$, $K(t_1, t_2) \hm=
+k(\tau)$ $(\tau \hm= t_1-t_2)$,--- определяются уравнениями~[9--11]:
+    \begin{equation}
+    a_1 (\bar m, \bar K) =0\,;\enskip a_2 (\bar m, \bar K)=0\,;
+    \label{e3.9-s}
+    \end{equation}
+
+    \vspace*{-14pt}
+
+    \noindent
+    \begin{multline}
+    \dot k_\tau (\tau) = a_{21} \left(\bar m, \bar K\right)\bar K^{-1} k(\tau)\,,\enskip
+    k(0) =\bar K \\
+     (\forall \tau >0)\,, \enskip
+    k(\tau) = k(-\tau)^{\mathrm{T}} \enskip (\forall\tau <0)\,.\label{e3.10-s}
+    \end{multline}
+При этом необходимо, чтобы матрица  $a_{21} (\bar m, \bar K)\hm=\bar a_{21}$ была асимптотически устойчивой.
+
+Уравнения МНА в~случае СтС~(\ref{e3.3-s}) переходят в~уравнения МСЛ~[9--11], если принять
+    \begin{gather}
+    a\left(Y_t,t\right) = a_1 \left(m_t, K_t\right) + k_1^a \left(m_t, K_t\right) Y_t^0\,;\notag
+   \\[1pt]
+    b\left(Y_t,t\right) = b_0 (t)\,,\enskip \si(Y_t, t)= b_0(t) \nu(t) b_0(t)^{\mathrm{T}} = \si_0(t)\,;\notag   \\[1pt]
+    k_1^a (m_t, K_t, t) =\left[ \left(\fr{\prt}{\prt m_t} \right)a_0 \left(m_t, K_t, t\right)^{\mathrm{T}}\right]^{\mathrm{T}}\,;\label{e3.11-s}
+    \\
+    \dot m_t = a_1 \left(m_t, K_t, t\right)\, ,\enskip m_0 = m\left(t_0\right)\,;\label{e3.12-s}
+    \end{gather}
+
+    \vspace*{-12pt}
+
+    \noindent
+    \begin{multline}
+   \dot K_t = k_1^a \left(m_t, K_t, t\right) K_t + K_t k_1^a \left(m_t, K_t, t\right)^{\mathrm{T}} +\si_0(t)\,;\\
+   \hspace*{-3mm}K_0 = K(t_0)\,;\label{e3.13-s}
+   \end{multline}
+
+\vspace*{-12pt}
+
+    \noindent
+    \begin{multline}
+   \fr{\prt K(t_1, t_2)}{\prt t_2} = K\left(t_1, t_2\right) K_{t_2} k_1^a \left(m_{t_2}, K_{t_2}, t_2\right)^{\mathrm{T}}\,,\\
+   K\left(t_1, t_2\right) = K_{t_1}\,.\label{e3.14-s}
+   \end{multline}
+
+Для стационарных СтС~(\ref{e3.3-s}) при условии асимптотической устойчивости матрицы $k_1^a (\bar m, \bar K)$ в~основе МСЛ лежат уравнения~(\ref{e3.9-s}) и~(\ref{e3.10-s}), записанные в~виде:
+    \begin{gather}
+    a_1 \left(\bar m, \bar K\right) =0\,; \label{e3.15-s}\\
+   k_1^a \left(\bar m, \bar K\right) \bar K + \bar K k_1^a \left(\bar m, \bar K\right)^{\mathrm{T}} +\bar \si_0 =0\,;\label{e3.16-s}
+   \end{gather}
+
+   \vspace*{-12pt}
+
+   \noindent
+   \begin{multline}
+   \dot k_\tau (\tau) = k_1^a \left(\bar m, \bar K\right)k(\tau)\,,\enskip k(0) =\bar K \\ (\forall \tau >0),\enskip k(\tau) = k (-\tau)^{\mathrm{T}} \enskip (\forall \tau <0)\,.\label{e3.17-s}
+   \end{multline}
+
+Уравнения~(\ref{e3.4-s})--(\ref{e3.7-s}) лежат в~основе МНА для СтС~(\ref{e3.1-s}), а~урав\-не\-ния~(\ref{e3.11-s})--(\ref{e3.14-s})~--- в~основе МСЛ для СтС~(\ref{e3.3-s}). Для определения стационарных СтП согласно МНА служат соотношения~(\ref{e3.9-s}) и~(\ref{e3.10-s}), а~МСЛ~--- (\ref{e3.15-s})--(\ref{e3.17-s}).
+
+Теперь рассмотрим дискретную СтС с~СТН, описываемую уравнениями
+вида~\cite{4-s, 10-s}:
+    \begin{equation}
+    Y_{k+1} = a_k \left(Y_k\right) + b_k \left(Y_k\right) V_k^d \enskip (k=1,2,\ldots)\,.\label{e3.18-s}
+    \end{equation}
+Здесь $Y_k$~--- $(p\times 1)$-мер\-ный вектор состояния, $Y_k\hm\in \Delta_y$ ($\Delta_y$~--- многообразие состояний); функции $a_k (Y_k)$ и~$b_k (Y_k)$ имеют размерности $(p\times 1)$ и~$(p\times m)$ соответственно; через $V_k^d$ обозначен векторный дискретный шум, обладающий интенсивностью~$\nu_k^d$.
+В~случае аддитивного шума, когда $b_k (Y_k) \hm= b_{0k}$, уравнение~(\ref{e3.18-s}) примет вид:
+    \begin{equation}
+    Y_{k+1} = a_k Y_k + b_{0k} V_k^d\,.\label{e3.19-s}
+    \end{equation}
+
+В~основе МНА лежат следующие соотношения и~уравнения~\cite{4-s, 10-s}:
+   \begin{gather*}
+        g_{1k}^N (\la) = \exp \left( i\la m_k -\fr {1}{2}\, \la^{\mathrm{T}} K_k \la\right)\,;\\
+     g_{k_1k_2}^N = \exp\left( i\bar \la^{\mathrm{T}} \bar m_2 - \fr{1}{ 2}\, \bar \la^{\mathrm{T}} \bar K_2 \bar \la\right)\,;
+    %     \label{e3.20-s}
+     \\
+    m_{k+1}= a_{1k}= {\sf M}_{\Delta_y}^N a_k\,,\enskip m_1 = {\sf M}_{\Delta_y}^NY_1\,; %\label{e3.21-s}
+    \end{gather*}
+
+    \vspace*{-10pt}
+
+    \noindent
+    \begin{multline*}
+    K_{k+1} = a_{2k} ={\sf M}_{\Delta_y}^N \lk a_k a_k^{\mathrm{T}}\rk -\left[ {\sf M}_{\Delta_y}^Na_k\right] \left[ {\sf M}_{\Delta_y}^Na_k^{\mathrm{T}}\right]+{}\\
+    {}+
+     {\sf M}_{\Delta_y}^N\! \left[ b_k \nu_k^d b_k^{\mathrm{T}}\right], \enskip
+         K_1 ={\sf M}_{\Delta_y}^N Y_1^0 Y_1^{0\mathrm{T}}\,;
+\end{multline*}
+
+\vspace*{-12pt}
+
+    \noindent
+    \begin{multline*}
+%\label{e3.22-s}
+    K(l,h) = a_{3k} = {\sf M}_{\Delta_y}^N Y_l^0 a_h (Y_h)^{\mathrm{T}}\,,
+    \\[7pt]
+     K(l,l) = K_l\enskip (l<h)\,,\enskip
+    K(l,h) = K(h,l)^{\mathrm{T}} \enskip (l>h)\,.
+    %    \label{e3.23-s}
+    \end{multline*}
+
+В основе МСЛ для~(\ref{e3.19-s}) после статистической линеаризации функции  $a_k(Y_k)$ согласно
+    \begin{equation*}
+    a_k\left(Y_k\right) = a_{0k} \left(m_k, K_k\right) + k_{1k}^a \left(m_k, K_k\right) Y_k^0
+%    \label{e3.24-s}
+    \end{equation*}
+будут лежать уравнения~\cite{4-s, 10-s}:
+   \begin{gather*}
+   m_{k+1} = a_{0k}\,,\enskip m(1) = m_1\,; %\label{e3.25-s}
+   \\
+    K_{k+1} = k_{1k}^a K_k (k_{1k}^a)^{\mathrm{T}} + b_{0k} \nu_k^d b_{0k}^{\mathrm{T}}\,,\  K(1)= K_1\,; %\label{e3.26-s}
+\end{gather*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+    K(l,h+1) = K(l,h) (k_{1h}^a)^{\mathrm{T}}\,,
+\\
+    K(l,l) = K_l \enskip  (l<h)\,,\enskip
+     K(l,h) = K(h,l)^{\mathrm{T}}  \enskip (l>h)\,.
+    %     \label{e3.27-s}
+    \end{multline*}
+
+Для определения стационарных СтП согласно МНА и~МСЛ с~характеристиками
+    \begin{equation*}
+    m_k = \bar m\,; \enskip K_k =\bar K\,; \enskip K(l,h) = \bar k(r)\enskip (r=h-l) %\label{e3.28-s}
+    \end{equation*}
+используются уравнения:
+    \begin{align*}
+    \bar m &= a_{1k} (\bar m,\bar K)\,; %\label{e3.29-s}
+    \\[2pt]
+    \bar K &= a_{2k} (\bar m, \bar K)\,;%\label{e3.30-s}
+    \\[2pt]
+    \bar K &= k_1^a \bar K (k_1^a)^{\mathrm{T}} + b_0 \nu_k^d b_0^{\mathrm{T}}\,; %\label{e3.31-s}
+    \\[2pt]
+    \bar k(r+1)&= k(r) (k_1^a)^{\mathrm{T}}\,,\enskip \bar k(0)=\bar K\,. %\label{e3.32-s}
+        \end{align*}
+
+Как следует из уравнений МНА, необходимо уметь вычислять следующие интегралы:
+    \begin{align}
+    I_{0k}^a &= I_{0k}^a\left (m_k, K_k\right) = {\sf M}_{\Delta_y}^N a_k \left(Y_k\right)\,;\label{e3.33-s}\\[2pt]
+   I_{1k}^a &= I_{1k}^a \left(m_k, K_k\right) = {\sf M}_{\Delta_y}^N a_k \left(Y_k\right) Y_k^{0\mathrm{T}}\,;\label{e3.34-s}
+\\
+   I_{0k}^\si &= I_{0k}^\si \left(m_k, K_k\right) ={\sf M}_{\Delta_y}^N \si \left(Y_k\right)\notag\\[2pt]
+   &\hspace*{30mm}\left(\si \left(Y_k\right) = b_k \nu_k^d b_k^{\mathrm{T}}\right)\,.\notag %\label{e3.35-s}
+   \end{align}
+
+Для МСЛ достаточно вычислить интеграл~(\ref{e3.33-s}), причем интеграл~(\ref{e3.34-s}) вычисляется по формуле:
+    \begin{equation*}
+    k_{1k}^a = k_{1k}^a (m_k, K_k) =\left[ \fr{\prt}{\prt m_k}\, I_{0k}^a \left(m_k, K_k\right)^{\mathrm{T}}\right]^{\mathrm{T}}\,. %\label{e3.36-s}
+    \end{equation*}
+
+  \section{Алгоритмическое обеспечение аналитического и~статистического моделирования}
+
+  \vspace*{-2pt}
+
+Как следует из~(\ref{e3.15-s}), для МНА необходимо уметь вычислять следующие интегралы:
+
+\noindent
+    \begin{align}
+    I_0^a &= I_0^a \left(m_t, K_t, t\right) = a_1 \left(m_t, K_t, t\right)={}\notag\\
+    &\hspace*{40mm}{}={\sf M}_{\Delta_y}^N a\left(Y_t, t\right)\,; \label{e4.1-s}
+\\
+   I_1^a &= I_1^a \left(m_t, K_t, t\right)= a_{21}\left(m_t, K_t, t\right)= {}\notag\\
+&  \hspace*{35mm}{}=  {\sf M}_{\Delta_y}^N a\left(Y_t , t\right) Y_t^{0\mathrm{T}}\,;\notag %\label{e4.2-s}
+   \\
+    I_0^{\bar \si} &= I_0^{\bar \si} \left(m_t, K_t, t\right) = a_{22}\left(m_t, K_t, t\right) ={\sf M}_N \bar \si \left(Y_t, t\right)\,.\notag %\label{e4.3-s}
+    \end{align}
+
+Для МСЛ достаточно вычислить интеграл~(\ref{e4.1-s}), причем интеграл  $I_1^a$ вычисляется по формуле~[9--11]:
+
+\noindent
+    \begin{equation*}
+k_1^a = k_1^a \left(m_t, K_t, t\right)=
+    \left[ \!\left( \fr{\prt}{\prt m_t}\right) \!I_0^a \left(m_t, K_t, t\right)^{\mathrm{T}}\right]^{\mathrm{T}}\,. %\label{e4.4-s}
+    \end{equation*}
+
+При аналитическом моделировании для элементарных одномерных ТН скалярного аргумента, а~также их суперпозиции составлены таблицы формул (см., например,~[9--11]). В~\cite{11-s} приведены также таблицы формул для двух-, трех-, четырех- и~ $n$-мер\-ных аргументов. Соответствующие формулы для круговых ТН даны в~\cite{13-s, 14-s}.
+
+Важно иметь в~виду, что уравнения МНА (МСЛ) содержат интегралы $I_0^a$, $I_1^a$ и~$I_0^\si$ в~виде соответ\-ствующих коэффициентов. Поэтому процедура вычис\-ле\-ния интегралов должна быть согласована с~методом чис\-лен\-но\-го решения обыкновенных дифференциальных уравнений для~$m_t$, $K_t$ и~$K(t_1, t_2)$. Эти коэффициенты допускают дифференцирование по~$m_t$ и~$K_t$, так как под интегралом стоит сглаживающая нормальная плотность.
+
+В~\cite{12-s} изложены алгоритмы аналитического и~статистического
+моделирования распределений (в том числе нормальных) в~нелинейных
+СтС на многообразиях. Алгоритмы аналитического, статистического
+моделирования для СтС с~СТН, а~также смешанные алгоритмы различной
+степени точ\-ности относительно шага интегрирования также представлены в~\cite{12-s}.
+
+  \vspace*{-6pt}
+
+
+\section{Примеры}
+
+  \vspace*{-2pt}
+
+\textbf{1.}\
+Для СТН вида
+
+\noindent
+   \begin{align*}
+    \vrp_1^{\mathrm{СТН}} (Y) &=\sin \left(pY^2 + 2 q Y +r\right)\,,\\
+    \vrp_2^{\mathrm{СТН}} (Y) &=\cos \left(pY^2 + 2 q Y +r\right)
+    \end{align*}
+
+    \vspace*{-10pt}
+
+    \pagebreak
+
+
+    \noindent
+интегралы~(\ref{e4.1-s}) с~учетом~\cite{7-s, 8-s} имеют следующий вид:
+
+\noindent
+    $$
+    I_{01}  (m,D) = \fr{1}{\sqrt{2\pi D}} A_1\,, \enskip I_{02}  (m,D) = \fr{1}{\sqrt{2\pi D}} A_2\,,
+    $$
+где
+
+\noindent
+    \begin{multline*}
+    A_1 = {}\\
+    \hspace*{-1pt}{}=\fr{\sqrt{\pi}}{\root{4}\of{a^2+p^2}} \exp \left[ \fr{a(b^2 - ac) - (a q^2 - 2 bpq + cp^2)}{a^2 + p^2}\right] \times{}\hspace*{-0.74269pt}\\
+{}\times\;\sin \left[ \fr{1}{2}\, \mathrm{actg}\, \fr{p}{a} -\fr{p(q^2-pr)-(b^2 p - 2abq +a^2 r)}{a^2 + p^2} \right];\hspace*{-6.21078pt}
+\end{multline*}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+   A_2 ={}\\
+    \hspace*{-1.53435pt}{}=\fr{\sqrt{\pi}}{\root{4}\of{a^2+p^2}} \exp \left[ \fr{a(b^2 - ac) - (a q^2 - 2 bpq + cq^2)}{a^2 + p^2}\right] \times{}\\
+{}\times \cos \left[ \fr{1}{2}\,\mathrm{actg}\, \fr{p}{a} -\fr{p(q^2-pr)-(b^2 p - 2abq +a^2 r)}{a^2 + p^2} \right]\\
+   \left( a=\fr{1}{2D}\,,\enskip b= -\fr{m}{2D}\,,\enskip c=\fr{m^2}{2D}\right)\,.
+   \end{multline*}
+
+
+\textbf{2.}\
+Для некоторых СТН при $m\hm=0$, $D\hm\ne 0$ на основе~\cite{7-s, 8-s} получены следующие выражения для интегралов~(\ref{e4.1-s}):
+   \begin{enumerate}
+   \item[(а)] $
+    \vrp^{\mathrm{СТН}} (Y) = Y^{-1} \sin aY\enskip (a>0)\,;
+    $
+
+    \vspace*{-12pt}
+
+   $$
+    \hspace*{-6mm}I^\vrp_0 (0,D) =\fr{a}{\sqrt{2} \beta} \sss_{j=0}^\infty \fr{(-1)^j}{j(2j+1)} \left(\fr{a}{2\beta}\right)^{2j}\!
+    \left(\beta^2 = \fr{1}{2D}\right);
+  $$
+
+    \item[(б)] $
+    \vrp^{\mathrm{СТН}} (Y) = Y^2 \exp \left(-a Y^{-2}\right)\,; \enskip \mu=\fr{1}{2D}\,;$
+
+    \vspace*{-12pt}
+    $$
+    \hspace*{-4mm}I^\vrp_0 (0,D) = \fr{1}{2\sqrt{2D}}\, \mu^{-3/2} \left(1+2\sqrt{a\mu}\right) \exp \left(-2\sqrt{a\mu}\right);
+    $$
+
+   \item[(в)]
+     $\vrp^{\mathrm{СТН}} (Y) = Y^{-2} \exp \left(-a Y^{-2}\right)\,; \enskip \mu=\fr{1}{2D}\,;$
+
+     \vspace*{-12pt}
+
+    $$
+    I^\vrp_0 (0,D) = \fr{1}{\sqrt{2aD}} \exp \left(-2\sqrt{a\mu}\right)\,;
+    $$
+
+    \item[(г)]
+     $ \vrp^{\mathrm{СТН}} (Y) = \mathrm{sh}^{2}\,a Y \enskip (a>0)\,;$
+
+     \vspace*{-12pt}
+    $$
+    \hspace*{-2mm}I^\vrp_0 (0,D) = \fr{1}{2\sqrt{2\mu D}} \left(\exp \fr{a^2}{\mu}-1\right)\,;
+    \enskip \mu=\fr{1}{2D}\,;
+    $$
+\item[(д)]$\vrp^{\mathrm{СТН}} (Y) = \mathrm{ch}^{2}\, a Y \enskip (a>0)\,;$
+
+\vspace*{-12pt}
+
+         $$
+         I^\vrp_0 (0,D) = \fr{1}{2\sqrt{2\mu D}} \left(\exp \fr{a^2}{\mu}+1\right)\,; \enskip \mu=\fr{1}{2D}\,.
+         $$
+          \end{enumerate}
+
+\textbf{3.}\
+Рассмотрим скалярную дифференциальную СтС~(\ref{e3.3-s}) при  $a(Y_t)\hm = \vrp^{\mathrm{СТН}} (Y_t)$. Уравнения МСЛ~(\ref{e3.12-s}), (\ref{e3.13-s}) имеют следующий вид:
+
+\noindent
+   \begin{gather*}
+    \dot m = a_1 (m,D)\,,\enskip m(t_0) = m_0\,;\\
+    \dot D = a_2 (m,D)\,,\enskip D(t_0)=D_0\,.
+    \end{gather*}
+Воспользуемся известным результатом из теории вычисления интегралов путем разложения по многочленам Эрмита~\cite{7-s, 8-s}:
+
+\noindent
+    $$
+    \iin e^{-\xi^2} \vrp(\xi)\, d\xi = \sss_{j=1}^n w_j \vrp (\xi_j) + R_n\,.
+    $$
+Здесь $H_n = H_n (\xi)$~--- многочлен Эрмита; $\xi_j$~--- $j$-й нуль~$H_n$; $w_j$ и $R_n$~--- весовые коэффициенты и~остаточный член, вычисляемые по формулам:
+
+\noindent
+    \begin{align*}
+    w_j &= \fr{2^{n-1} n! \sqrt{\pi}}{n^2 \lk H_{n-1} (\xi_j)\rk^2}\,;\\
+    R_n &= \fr{n! \sqrt{\pi}}{2^n (2n)!}\, \vrp^{2n} (\xi)\enskip (-\infty<\xi<\infty)\,.
+    \end{align*}
+Опуская промежуточные вычисления, приведем окончательные формулы для вычисления правых частей уравнений МСЛ:
+    \begin{gather*}
+    a_1(m,D) =\sss_{j=1}^n w_j \bar a \left( m, D;\xi_j\right)\,;
+  \\
+    \bar a \left( m, D;\xi_j\right)= \fr{a(m+\xi_j \sqrt{2D})}{\sqrt{2\pi D}}\,;
+    \\
+    a_2(m,D)=\sss_{j=1}^n w_j \bar\si \left( m, D;\xi_j\right)\,;
+    \end{gather*}
+
+    \vspace*{-12pt}
+
+    \noindent
+    \begin{multline*}
+    \bar\si \left( m, D;\xi_j\right)={}\\
+    {}=\fr{2a(m+\xi\sqrt{2D})(m+\xi_j\sqrt{2D}) +\si(m+\xi_j\sqrt{2D})}{\sqrt{2\pi D}}.
+\end{multline*}
+Ограничиваясь небольшом числом многочленов Эрмита $H_n$, получаем алгоритмы МСЛ для различных СТН, приведенных в~примерах 1 и~2.
+
+\vspace*{-6pt}
+
+\section{Заключение}
+
+Рассмотрены  дифференциальные и~разностные СтС (в~том числе и~на многообразиях) с~винеровскими и~пуассоновскими шумами и~с~СТН. Такие модели описывают поведение многих современных нано- и~квантовооптических  технических средств информатики.
+Приводятся уравнения МНА и~МСЛ\linebreak
+ для моделирования нестационарных и~стационарных нормальных процессов.
+Рассматриваются методы вычисления типовых интегралов для одно- и~многомерных  СТН скалярного и~векторного\linebreak
+ аргумен\-та, получающихся из суперпозиции элементарных ТН. Обсуждается алгоритмическое обеспечение аналитического и~статистического мо\-делирования.
+Особый интерес представляет раз-\linebreak\vspace*{-12pt}
+
+ \pagebreak
+
+ \noindent
+витие алгоритмов для ТН на основе специальных функций. Приводятся тестовые примеры.
+
+Результаты допускают обобщение на случай интегродифференциальных и~операторных СтС с~СТН,  в~том числе с~автокоррелированными шумами.
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-s}
+\Au{Синицын И.\,Н., Синицын В.\,И. }
+Аналитическое моделирование нормальных процессов в~стохастических системах со сложными нелинейностями~// Информатика и~её применения, 2014. Т.~8. Вып.~3. С.~2--4.
+
+\bibitem{2-s}
+\Au{Синицын И.\,Н., Синицын В.\,И., Сергеев~И.\,В., Белоусов~В.\,В., Шоргин~В.\,С.}
+Математическое обеспечение аналитического моделирования стохастических систем со сложными нелинейностями~// Системы и~средства информатики, 2014. Т.~24. №\,3. С.~4--29.
+
+\bibitem{3-s}
+\Au{Синицын И.\,Н., Синицын В.\,И., Корепанов Э.\,Р.}
+Моделирование нормальных процессов в~стохастических системах со сложными иррациональными нелинейностями~// Информатика и~её применения, 2015. Т.~9. Вып.~1. С.~2--8.
+
+\bibitem{4-s}
+\Au{Синицын И.\,Н., Синицын~В.\,И., Сергеев~И.\,В.,  Корепанов~Э.\,Р.,
+Белоусов~В.\,В., Шоргин~В.\,С.}
+Математическое обеспечение моделирования нормальных процессов
+в стохастических системах со сложными иррациональными нелинейностями~// Системы и~ средства информатики, 2015.
+Т.~25. №\,2. С.~3--19.
+
+\bibitem{5-s}
+\Au{Попов Б.\,А., Теслер~Г.\,С. }
+Вычисление функций на ЭВМ: Справочник.~--- Киев: Наукова Думка, 1984. 599~с.
+
+\bibitem{6-s}
+\Au{Кудрявцев Л.\,Д., Соломенцев~Е.\,Д. }
+Трансцендентная функция~// Математическая энциклопедия~/ Гл. ред. И.\,М.~Виноградов.~--- М.: Советская энциклопедия, 1984. C.~425.
+
+\bibitem{7-s}
+\Au{Градштейн И.\,С., Рыжик~И.\,М. }
+Таблицы интегралов, сумм, рядов и~произведений.~--- М.: ГИФМЛ, 1963. 1100~с.
+
+\bibitem{8-s}
+Справочник по специальным функциям~/ Под ред. М.~Абрамовича, И.~Стигана.~--- М.: Наука, 1979. 832~с.
+
+\bibitem{9-s}
+\Au{Пугачев В.\,С., Синицын И.\,Н.}
+Стохастические дифференциальные системы. Анализ и~фильтрация.~--- М.:
+Наука,  1990.  632~с. [\Au{Pugachev V.\,S., Sinitsyn~I.\,N.}. Stochastic differential systems.
+Analysis and filtering.~--- Chichester, New York, NY, USA: Jonh Wiley, 1987.
+549~p.]
+
+\bibitem{10-s}
+\Au{Пугачев В.\,С., Синицын И.\,Н.}
+Теория стохастических систем.~--- М.: Логос, 2000; 2004. 1000~с.
+%[Англ. пер. \Au{Pugachev V.\,S., Sinitsyn~I.\,N.}. Stochastic systems. Theory and  %applications.~---
+%Singapore: World Scientific, 2001. 908~p.].
+
+
+\bibitem{11-s}
+\Au{Синицын И.\,Н.,  Синицын В.\,И. }
+Лекции по нормальной и~эллипсоидальной аппроксимации распределений в~стохастических системах.~--- М.: ТОРУС ПРЕСС, 2013. 488~с.
+
+
+\bibitem{13-s} %12
+\Au{Синицын И.\,Н. }
+Математическое обеспечение для анализа нелинейных многоканальных круговых стохастических систем, основанное на параметризации распределений~// Информатика и~ её применения, 2012. Т.~6. Вып.~1. С.~12--18.
+
+
+\bibitem{14-s} %13
+\Au{Синицын И.\,Н.,  Корепанов Э.\,Р., Белоусов~В.\,В., Конашенкова~Т.\,Д.}
+Развитие математического обеспечения для анализа нелинейных многоканальных круговых стохастических систем~// Системы и~средства информатики, 2012. Вып.~22. №\,1. С.~29--40.
+
+\bibitem{12-s} %14
+\Au{Синицын И.\,Н. }
+Параметрическое статистическое и~аналитическое моделирование распределений в~ нелинейных стохастических системах на многообразиях~// Информатика и~её применения, 2013. Т.~7. Вып.~2. С.~4--16.
+
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 25.02.15}}
+
+%\newpage
+
+\vspace*{12pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{12pt}
+
+\def\tit{MODELING OF~NORMAL PROCESSES IN~STOCHASTIC SYSTEMS WITH~COMPLEX TRANSCENDENTAL  NONLINEARITIES}
+
+\def\titkol{Modeling of~normal processes in~stochastic systems with~complex transcendental  nonlinearities}
+
+\def\aut{I.\,N.~Sinitsyn, V.\,I.~Sinitsyn, and E.\,R.~Korepanov}
+
+\def\autkol{I.\,N.~Sinitsyn, V.\,I.~Sinitsyn, and E.\,R.~Korepanov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Sinitsyn I.\,N.}
+\index{Sinitsyn V.\,I.}
+\index{Korepanov E.\,R.}
+
+\vspace*{-9pt}
+
+
+\noindent
+Institute of Informatics Problems, Federal Research
+Center ``Computer Science and Control'' of the
+Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333,
+Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+\Abste{Development of methods for analytical and statistical modeling for discrete and continuous stochastic systems (StS) with Wiener and Poisson noises and with complex transcendental nonlinearities (CTN) is given. Typical representation of scalar and vector CTN is considered. Equations for the normal approximation method (NAM) and the method of statistical linearization (MSL) are deduced. Also,
+NAM and MSL for StS with CTN algorithms are given. Test examples are presented. Some generalizations are given.}
+
+\KWE{analytical and statistical modeling; complex transcendental nonlinearities (CTN); Hermite polynomials; method of statistical linearization (MSL); normal approximation method (NAM); stochastic systems (StS)}
+
+
+\DOI{10.14357/19922264150203}
+
+\Ack
+\noindent
+The research was supported by the Russian Foundation for Basic Research
+ (project 15-07-02244).
+
+
+
+%\vspace*{3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-s-1}
+\Aue{Sinitsyn, I.\,N., and V.\,I.~Sinitsyn}. 2014.
+ Analiticheskoe modelirovanie normal'nykh protsessov v~sto\-kha\-sti\-che\-skikh sistemakh so slozhnymi nelineynostyami [Analytical modeling of normal
+  processes in stochastic systems with complex nonlinearities].
+  \textit{Informatika i~ee Primeneniya}~--- \textit{Inform. Appl.}  8(3):2--4.
+
+\bibitem{2-s-1}
+\Aue{Sinitsyn, I.\,N., V.\,I.~Sinitsyn, I.\,V.~Sergeev, V.\,V.~Belousov, and V.\,S.~Shorgin}. 2014.
+Matematicheskoe obespechenie analiticheskogo modelirovaniya stokhasticheskikh sistem so slozhnymi nelineynostyami [Mathematical software for
+analytical modeling of stochastic systems with complex nonlinearities].
+\textit{Sistemy i~Sredstva Informatiki}~--- \textit{Systems and Means of
+Informatics}  24(3):4--29.
+
+
+\bibitem{3-s-1}
+\Aue{Sinitsyn, I.\,N., V.\,I.~Sinitsyn, and E.\,R.~Korepanov}.  2015.
+Modelirovanie normal'nykh protsessov v~sto\-kha\-sti\-che\-skikh sistemakh so slozhnymi irratsional'nymi ne\-li\-ney\-no\-stya\-mi [Modeling of normal processes in stochastic systems with complex irrational nonlinearities].   \textit{Informatika i~ee Primeneniya}~--- \textit{Inform. Appl.} 9(1):2--8.
+
+\bibitem{4-s-1}
+\Aue{Sinitsyn, I.\,N., V.\,I.~Sinitsyn, I.\,V.~Sergeev, E.\,R.~Korepanov, V.\,V.~Belousov, and V.\,S.~Shorgin}. 2015.
+Ma\-te\-ma\-ti\-che\-skoe obespechenie modelirovaniya nor\-mal'\-nykh protsessov v~stokhasticheskikh sistemakh so slozhnymi irratsional'nymi nelineynostyami [Mathematical software for modeling of normal processes in stochsatic systems with complex irrational nonlinearities]. \textit{Sistemy i~Sredstva Informatiki}~--- \textit{Systems and Means of
+Informatics} 25(2):3--19.
+
+
+\bibitem{5-s-1}
+\Aue{Popov, B.\,A., and G.\,S.~Tesler}.  1984.
+\textit{Vychislenie funktsiy na EVM}: Spravochnik [Computing of functions: Handbook]. Kiev: Naukova Dumka.  599~р.
+
+
+\bibitem{6-s-1}
+\Aue{Kudryavtsev, L.\,D., and E.\,D.~Solomentsev}. 1984.
+Transtsepdentnaya funktsiya [Transcendental function].   \textit{Matematicheskaya entsiklopediya} [Mathematical encyclopedia].
+Ed.\ I.\,M.~Vinogradov. Moscow: Sovetskaya Entsiklopediya. 425.
+
+
+\bibitem{7-s-1}
+\Aue{Gradshteyn, I.\,S., and I.\,M.~Ryzhik}.  1963.
+\textit{Tablitsy integralov, summ, ryadov i~proizvedeniy}.  [Tables of integrals, sums, series, and products]. Moscow: GIFML.  1100~p.
+
+\bibitem{8-s-1}
+Abramovich,~M., and I.~Stigan, eds. 1979.
+\textit{Spravochnik po spetsial'nym funktsiyam} [Handbook on special functions].  Moscow:  Nauka.  832~p.
+
+
+\bibitem{9-s-1}
+\Aue{Pugachev, V.\,S., and  I.\,N.~Sinitsyn}.  1987.
+\textit{Stochastic differential systems. Analysis and filtering.}   Chichester, New York, NY: Jonh Wiley. 549~p.
+
+\bibitem{10-s-1}
+\Aue{Pugachev, V.\,S., and I.\,N.~Sinitsyn}. 2001.
+\textit{Stochastic systems. Theory and  applications.} Singapore: Worls Scientific. 908~p.
+
+\bibitem{11-s-1}
+\Aue{Sinitsyn, I.\,N., and  V.\,I.~Sinitsyn}.  2013.
+Lektsii po normal'noy i~ellipsoidal'noy approksimatsii raspredeleniy v~stokhasticheskikh sistemakh [Lectures on normal and ellipsoidal
+approximation of distributions in stochastic systems]. Moscow: TORUS PRESS. 488~p.
+
+
+
+
+
+\bibitem{13-s-1} %12
+\Aue{Sinitsyn, I.\,N.} 2012.
+Matematicheskoe obespechenie dlya analiza nelineynykh mnogokanal'nykh krugovykh stokhasticheskikh sistem, osnovannoe na parametrizatsii raspredeleniy [Mathematical software for analysis of nonlinear multichannel circular stochastic systems based on parametrization of distributions].
+\textit{Informatika i~ee Primeneniya}~---
+ \textit{Inform. Appl.} 6(1):12--18.
+
+\bibitem{14-s-1} %13
+\Aue{Sinitsyn, I.\,N., E.\,R.~Korepanov, V.\,V.~Belousov, and T.\,D.~Konashenkova}. 2012.
+Razvitie matematicheskogo obespecheniya dlya analiza nelineynykh mno\-go\-ka\-nal'\-nykh krugovykh stokhasticheskikh sistem [Development of mathematical software for analysis of nonlinear multichannel circular stochastic systems]. \textit{Sistemy i~Sredstva Informatiki}~--- \textit{Systems and Means of Informatics} 22(1):29--40.
+
+\bibitem{12-s-1} %14
+\Aue{Sinitsyn, I.\,N.}  2013.
+Parametricheskoe statisticheskoe i~analiticheskoe modelirovanie raspredeleniy v~ne\-li\-ney\-nykh stokhasticheskikh sistemakh na mno\-go\-ob\-ra\-zi\-yakh
+[Parametric statistical and analytical modeling of distributions in stochastic systems on manifolds]. \textit{Informatika i~ee Primeneniya}~---
+ \textit{Inform. Appl.} 7(2):4--16.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received February 25, 2015}}
+
+\vspace*{-9pt}
+
+\Contr
+
+\noindent
+\textbf{Sinitsyn Igor N.} (b.\ 1940)~--- Doctor of Science in 
+technology, professor, Honored scientist of RF, Head of Department, 
+Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation; sinitsin@dol.ru
+
+\vspace*{3pt}
+
+
+     \noindent
+\textbf{Sinitsyn Vladimir I.} (b.\ 1968)~--- Doctor 
+of Science in physics and mathematics, associate professor, 
+Head of Department, Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation; VSinitsyn@ipiran.ru
+
+\vspace*{3pt}
+
+    \noindent
+\textbf{Korepanov Eduard R.} (b.\ 1966)~--- Candidate of Science (PhD) in technology, Head of Laboratory, Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation; ekorepanov@ipiran.ru
+
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература} 

@@ -1,0 +1,1064 @@
+
+\def\stat{popkovi}
+
+\def\tit{МЕТОДЫ ДЕТЕРМИНИРОВАННЫХ И~РАНДОМИЗИРОВАННЫХ ЭНТРОПИЙНЫХ ПРОЕКЦИЙ 
+ДЛЯ~РЕДУКЦИИ РАЗМЕРНОСТИ МАТРИЦЫ ДАННЫХ$^*$}
+
+\def\titkol{Методы детерминированных и рандомизированных энтропийных проекций 
+для редукции размерности матрицы} % данных}
+
+\def\aut{Ю.\,С.~Попков$^1$, А.\,Ю.~Попков$^2$, Ю.\,А.~Дубнов$^3$}
+
+\def\autkol{Ю.\,С.~Попков, А.\,Ю.~Попков, Ю.\,А.~Дубнов}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Попков Ю.\,С.}
+\index{Попков А.\,Ю.}
+\index{Дубнов Ю.\,А.}
+\index{Popkov Y.\,S.}
+\index{Popkov A.\,Y.}
+\index{Dubnov Y.\,A.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проекты 17-29-03119 и 20-07-00470).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и 
+управление>> Российской академии наук; Институт проб\-лем управ\-ле\-ния 
+им.~В.\,А.~Трапезникова Российской академии наук; ОРТ Брауде Колледж, 
+Кармиель, Израиль, \mbox{popkov@isa.ru}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика и 
+управление>> Российской академии наук, \mbox{apopkov@isa.ru}}
+\footnotetext[3]{Федеральный исследовательский центр <<Информатика и 
+управление>> Российской академии наук; Национальный исследовательский 
+университет <<Высшая школа экономики>>, \mbox{yury.dubnov@phystech.edu}}
+
+%\vspace*{-12pt}
+
+
+\Abst{Предложены методы детерминированного и рандомизированного 
+проектирования, ориентированные на решение задачи понижения размерности. В 
+случае детерминированного проектирования развивается параллельная процедура 
+сжатия матрицы данных, минимизирующая кросс-энтропию Куль\-ба\-ка--Лейб\-ле\-ра 
+с~учетом ограничения на информационную емкость, основанная на методе 
+проекции градиента. Для рандомизированного проектирования рассматривается 
+задача понижения размерности признакового пространства. Идея применения 
+процедур проектирования для сжатия матрицы данных реализуется в предлагаемом 
+методе рандомизированного энтропийного проектирования, где используется 
+принцип сохранения среднего расстояния между многомерными и маломерными 
+точками в соответствующих пространствах. Задача поиска оптимальных проекторов 
+сводится к поиску распределения вероятностей, максимизирующего информационную 
+энтропию Ферми при ограничении на среднее расстояние между точками 
+многообразия, которые отображаются матрицами данных и оптимальной проекции.}
+
+\KW{понижение размерности; кросс-энтропия Кульбака--Лейблера; энтропия}
+
+
+\DOI{10.14357/19922264200407} 
+  
+%\vspace*{9pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+Во многих прикладных задачах обработки данных последние присутствуют в виде 
+прямоугольных матриц $U_{(m \times s)}$. Например, в задачах машинного
+обучения элементами строк матрицы данных выступают признаки объекта ($s$), а 
+строки служат характеристиками $m$ объектов в~признаковом \mbox{$s$-про}\-стран\-ст\-ве. 
+По разным причинам возникает \mbox{необходимость} <<сжать>> матрицу данных, 
+т.\,е.\ использовать для обучения матрицу размерности $(m \times r)$ или $(n 
+\times r)$, $n\hm < m$, $r \hm< s$. Содержательно это сводится к уменьшению 
+числа признаков или уменьшению числа признаков и объектов, на массиве которых 
+проводится обучение.
+
+Данная проблема вложена в более общую: приближение заданного набора 
+многомерных точек маломерным аффинным многообразием~\cite{Bruckstein_2009}. 
+Здесь следует отметить метод главных компонент 
+(МГК)~\cite{Kendall_1973, Jolliffe_2011} и его робастные 
+версии~\cite{Polyak_2017}, а также метод случайных 
+проекций~\cite{Bingham_2001, Vempala_2005}.
+
+В~\cite{Popkov_2018_at_a_en} был предложен энтропийный метод одномерного 
+(столбцы или строки) детерминированного сжатия матрицы данных (EDR-ме\-тод), 
+основанный на <<прямом>> и <<обратном>> проектировании. 
+Мат\-ри\-цы-про\-ек\-то\-ры определяются путем минимизации кросс-эн\-тро\-пий\-но\-го функционала.
+
+В данной работе EDR-метод развивается для детерминированного параллельного 
+сжатия матрицы данных на основе процедуры минимизации  кросс-эн\-тро\-пий\-но\-го 
+функционала специального вида при ограничениях. Последние связаны с 
+информационной емкостью мат\-ри\-цы-про\-ек\-ции.
+
+Идея применения процедур проектирования для сжатия матрицы данных реализуется 
+в предлагаемом методе рандомизированного энтропийного проектирования (REDR-ме\-тод). 
+Здесь используется принцип сохранения среднего расстояния между 
+многомерными и маломерными точками в соответствующих пространствах.
+
+
+\section{Параллельное проектирование с~ограничениями (EDR-метод)}
+
+Параллельная реализация  процедуры <<прямого>> и <<обратного>> 
+проектирования, примененная к матрице данных $U \hm> 0$,  приводит к 
+следующей цепочке матричных равенств:
+\begin{itemize}
+  \item <<прямая>> проекция
+\begin{equation}
+\left.
+\begin{array}{rl}
+U_{(m \times s)} Q_{(s \times r)} &= Y_{(m \times r)}\,;\\[6pt]
+B_{(n \times m)}  Y_{(m \times r)} &= Z_{(n \times r)},
+\end{array}
+\right\}
+\label{2_1}
+\end{equation}
+  \item <<обратная>> проекция
+\begin{equation}
+\left.
+\begin{array}{rl}
+Z_{(n \times r)} W_{(r \times s)} &= D_{(n \times s)}\,;\\[6pt]
+ E_{(m \times n)}  D_{(n \times s)}& = X_{(m \times s)}.
+\end{array}
+\right\}
+\label{2_1a}
+\end{equation}
+\end{itemize}
+Матрицы-проекторы $Q$, $B$, $W$ и $E$~--- неотрицательные.
+Равенства~(\ref{2_1}) преобразуют матрицу~$U_{(m \times s)}$ в~<<сжатую>> 
+матрицу~$Z_{(n \times r)}$, где $n \hm< m$, $r \hm< s$. Равенство 
+(\ref{2_1a}) преобразует мат\-ри\-цу~$Z_{(n \times r)}$ в~мат\-ри\-цу~$X_{{m \times 
+s}}$ той же размерности, что и исходная матрица данных $U_{(m \times s)}$.
+
+Из равенств (\ref{2_1}) и~(\ref{2_1a}) имеем:
+\begin{multline*}
+%\label{2_2}
+X_{(m \times s)} = {}\\[3pt]
+{}=E_{(m \times n)} \left\{\left[B_{(n \times m)} \left(U_{(m 
+\times s)} Q_{(s \times r)}\right)\right] W_{(r \times s)}\right\} > 0\,.\hspace*{-3.59842pt}
+\end{multline*}
+Скобки в этом равенстве указывают на последовательность операций 
+проектирования: 
+$$
+(\bullet) \hm\rightarrow [\bullet] \hm\rightarrow 
+\left\{\bullet\right\}.
+$$
+
+Элементы матрицы-проекции $Z_{(n \times s)}$ имеют вид:
+\begin{equation*}
+%\label{2_3a}
+z_{\mu,\nu} = \sum\limits^m_{\beta=1} b_{\mu,\beta} \sum\limits^r_{\alpha=1} 
+u_{\beta,\alpha}\,q_{\alpha,\nu},\enskip \mu = \overline{1,n},\ \nu = 
+\overline{1,r}.
+\end{equation*}
+
+Элементы матрицы $X_{(m \times s)}$ имеют вид:
+\begin{multline}
+\label{2_3}
+x_{ij} = \sum\limits^n_{\mu=1} e_{i,\mu} \sum\limits^r_{\nu=1} w_{\nu,j} 
+\sum\limits^m_{\beta=1} b_{\mu,\beta} \sum^s_{\alpha=1} u_{\beta,\alpha} 
+q_{\alpha,\nu} > 0\,,\\[2pt] 
+i = \overline{1,m},\enskip 
+j = \overline{1,s}\,.
+\end{multline}
+Для измерения отклонения преобразованной матрицы $X_{(m \times s)}$ от 
+исходной $U_{(m \times s)}$ воспользуемся \textit{информационной кросс-эн\-тро\-пи\-ей}~\cite{Kullback_1951}:
+\begin{equation}
+\label{2_4}
+\mathcal{H}(X\,|\,U) = \sum\limits^m_{i=1}\sum^s_{j=1} s_{ij}(X\,|\,U)\,,
+\end{equation}
+где
+\begin{equation*}
+%\label{2_5}
+s_{ij} = x_{ij} \ln \fr{x_{ij}}{u_{ij}}\,.
+\end{equation*}
+С учетом равенства~(\ref{2_3}) нетрудно видеть, что информационная 
+кросс-эн\-тро\-пия~(\ref{2_4}) есть скалярная функция от матрицы данных $U > 0$ и 
+мат\-риц-про\-ек\-то\-ров $(Q, B, W, E) \hm\ge 0$, т.\,е.
+\begin{equation*}
+%\label{2_6}
+\mathcal{H} = \mathcal{H}(U\,|\,Q,B,W,E).
+\end{equation*}
+
+Важным показателем качества процедуры редукции служит оптимальное снижение 
+информационной емкости редуцированной матрицы $Z_{(n \times r)}$ по сравнению 
+с информационной емкостью исходной матрицы данных $U_{(m \times 
+s)}$~\cite{Popkov_2019_dan}.
+
+\textit{Информационная емкость} измеряется в~энтропийных терминах:
+\begin{align*}
+%\label{2_9}
+\mathcal{I}_Z &= \sum\limits^{n,r}_{(i,j)=1} z_{ij}(Q,B) \ln z_{ij}(Q,B) + 
+e^{-1} nr\,;\\
+\mathcal{I}_U &= \sum\limits^{m,s}_{(i,j)=1} u_{ij} \ln u_{ij} + e^{-1} 
+ms\,. %\notag
+\end{align*}
+Различие в указанных информационных емкостях будем характеризовать 
+квадратичным функционалом:
+\begin{equation*}
+\mathcal{J}(Q,B) \!= \!\left(\sum\limits^{n,r}_{(i,j)=1}\!\! z_{ij}(Q,B) \ln 
+z_{ij}(Q,B) - A\! \right)^{\!2}\!\!,\!\!\!
+%\label{2_9a}
+\end{equation*}
+где
+\begin{equation*}
+%\label{2_9b}
+A = e^{-1}(ms - nr) + \sum\limits^{m,s}_{(i,j)=1} u_{ij} \ln u_{ij}.
+\end{equation*}
+Образуем обобщенный функционал
+\begin{equation*}
+%\label{2_9c}
+\mathcal{F}(U\,|\,Q,B,W,E) = \mathcal{H}(U\,|\,Q,B,W,E) + \mathcal{J}(Q,B)
+\end{equation*}
+и оптимальные значения неотрицательных элементов мат\-риц-про\-ек\-то\-ров 
+будем определять, минимизируя функционал $\mathcal{F}(U\,|\,Q,B,W,E)$:
+\begin{multline}
+\label{2_10}
+(Q^*,B^*,W^*,E^*) ={}\\
+{}+ \argmin\limits_{(Q,B,W,E) \ge 0} 
+\mathcal{F}(U\,|\,Q,B,W,E).
+\end{multline}
+
+\smallskip
+
+\noindent
+\textbf{Замечание.} В задаче~(\ref{2_10}) условие близости информационных 
+емкостей матрицы данных и редуцированной матрицы может быть реализовано ввиду 
+соответствующего ограничения.
+Тогда оптимальные значения неотрицательных элементов мат\-риц-про\-ек\-то\-ров 
+определяются решением следующей за\-дачи:
+\begin{equation*}
+%\label{2_11}
+(Q^*,B^*,W^*,E^*) = \argmin\limits_{(Q,B,W,E) \in \Omega} 
+\mathcal{H}(U\,|\,Q,B,W,E)\,,
+\end{equation*}
+где
+\begin{multline*}
+\Omega = \left\{(Q,B,W,E): (Q,B,W,E) \ge 0; \right.\\
+\left.\mathcal{I}_Z(Q,B) \ge 
+\delta\,\mathcal{I}_U\right\},\enskip \delta \in (0,1).
+\end{multline*}
+Допустимый уровень снижения информационной емкости редуцированной матрицы 
+регулируется параметром~$\delta$.
+
+\section{Алгоритм решения задачи~(\ref{2_10})}
+
+Задача~(\ref{2_10}) представляет собой задачу минимизации функционала на 
+неотрицательном ортанте. Для ее решения можно применить метод проекций 
+градиента, предварительно осуществив векторизацию соответствующих матриц.
+
+Введем блочные векторы $\mathbf{v}$ и~$\mathbf{c}$, каждый размерности
+$N\hm = (sr \hm+ nm),$
+блоками которых являются векторы $\mathbf{q}$ и~$\mathbf{b}$ для вектора 
+$\mathbf{v}$ и векторы~$\mathbf{w}$ и~$\mathbf{e}$ для вектора $\mathbf{c}$. 
+Все векторы~--- результат векторизации мат\-риц-про\-ек\-то\-ров~$Q$, $B$, $W$ и~$E$ 
+соответственно.
+
+Представим (\ref{2_10})  в следующем виде:
+\begin{equation*}
+%\label{3_3}
+\mathcal{F}(\mathbf{v}, \mathbf{c}\,|\,\mathbf{u}) = \mathcal{H}(\mathbf{v}, 
+\mathbf{c}\,|\,\mathbf{u}) + \mathcal{J}(\mathbf{v}) \Rightarrow \min,
+\end{equation*}
+где
+\begin{gather*}
+\mathcal{H}(\mathbf{v}, \mathbf{c}\,|\,\mathbf{u}) = 
+\langle\,\mathbf{x}(\mathbf{v}, \mathbf{c}), \mathbf{y}(\mathbf{v}, 
+\mathbf{c}\,|\,\mathbf{u})\rangle_{R^{ms}}\,;\\
+\mathcal{J}(\mathbf{v}) = \langle\,\mathbf{z}(\mathbf{v}),  
+\mathbf{g}(\mathbf{v}) \rangle_{R^{nr}}\,;\\
+\mathbf{v} \geq  \mathbf{0};\enskip \mathbf{c} \geq  \mathbf{0}.
+\end{gather*}
+
+Здесь приняты следующие обозначения \cite{Magnus_1988}:
+\begin{itemize}
+\item
+вектор $\mathbf{u}$~--- результат векторизации матрицы данных $U$, его 
+размерность $(ms)$; вектор $\mathbf{x}$ размерности $(ms)$ с 
+компонентами~(\ref{2_3});
+
+\item
+вектор $\mathbf{y}$ размерности $(ms)$ с компонентами
+\begin{equation*}
+%\label{3_4}
+y_k = ln \fr{x_k}{u_k},\qquad k = \overline{1,ms}\,;
+\end{equation*}
+
+\item
+вектор $\mathbf{g}$ размерности $(nr)$ с компонентами
+\begin{equation*}
+%\label{3_4}
+g_k = ln z_k,\qquad k = \overline{1,nr}\,.
+\end{equation*}
+\end{itemize}
+
+Для численного решения этой задачи применим покоординатную схему метода 
+проекций градиента.
+
+В параллельной процедуре вектор $\mathbf{v}$ объединяет элементы матриц~$Q$
+и~$B$, с~по\-мощью которых проводится <<сжатие>> матрицы данных по одному 
+измерению. В~вектор $\mathbf{c}$ входят элементы мат\-риц~$W$ и~$E$, с~по\-мощью 
+которых проводится <<сжатие>> по второму измерению. Такое разделение векторов 
+удобно для применения покоординатного ал\-го\-ритма.
+
+Итерационный шаг покоординатной схемы
+метода проекций градиента состоит из двух последовательно реализуемых этапов: 
+на одном осуществляется итерация по  $\mathbf{v}$-про\-ек\-ци\-ям градиента, 
+а на другом~--- по 
+$\mathbf{c}$-про\-ек\-ци\-ям градиента функционала $\mathcal{F}(\mathbf{v}, 
+\mathbf{c}\,|\,\mathbf{u})$.
+Обозначим градиенты по этим векторам:
+\begin{align*}
+%\left.
+%\begin{array}{rl}
+\nabla_{\mathbf{v}} \mathcal{F} &= \nabla_{\mathbf{v}} \mathcal{H} + 
+\nabla_{\mathbf{v}} \mathcal{I}\,;\\[6pt]
+\nabla_{\mathbf{c}} \mathcal{F} &= \nabla_{\mathbf{c}} \mathcal{H}.
+%\end{array}
+%\right\}
+%\label{3_5}
+\end{align*}
+
+Алгоритм минимизации функционала~$\mathcal{F}$ имеет следующий вид:
+\begin{itemize}
+\item[(\textit{a})] \textit{начальный шаг}
+
+\noindent
+$$
+\mathbf{v}^0 > \mathbf{0},\quad \mathbf{c}^0 > \mathbf{0};
+$$
+\item[(\textit{б})] \textit{$i$-й итерационный шаг}
+$$
+X^i = E^i \left\{\left[ B^i \left( U Q^i\right)\right] W^i \right\};
+$$
+$$
+\mathcal{F}^i = \mathcal{H}^i(\mathbf{v}^i, \mathbf{c}^i\,|\,\mathbf{u}) + 
+\mathcal{J}^i(\mathbf{v}^i);
+$$
+$$
+\hspace*{-5mm}\mathbf{v}^{(i+1)}\! =
+\!\begin{cases}
+\mathbf{v}^{i} + \gamma_{\mathbf{v}} \left(\nabla_{\mathbf{v}} 
+\mathcal{H}^i(\mathbf{v}^i, \mathbf{c}^i\,|\,\mathbf{u}) + 
+\nabla_{\mathbf{v}} \mathcal{J}^i(\mathbf{v}^i)\right), &\\
+&\hspace*{-30mm}\mbox{если} \, 
+\mathbf{v}^{(i+1)} \geq \mathbf{0};\\
+\mathbf{v}^{i}, &\hspace*{-30mm}\mbox{если} \,\mathbf{v}^{(i+1)} < \mathbf{0};
+\end{cases}
+$$
+$$
+ \mathbf{v}^{(i+1)} \Rightarrow Q^{(i+1)}, B^{(i+1)};
+$$
+$$
+\mathbf{c}^{(i+1)} =
+\begin{cases}
+\mathbf{c}^{n} + \gamma_{\mathbf{c}} \nabla_{\mathbf{c}} 
+\mathcal{H}(\mathbf{v}^i, \mathbf{c}^i\,|\,\mathbf{u}) , &\\
+&\hspace*{-15mm}\mbox{если} \, 
+\mathbf{c}^{(i+1)} \geq \mathbf{0},\\
+\mathbf{c}^{i}, &\hspace*{-15mm}\mbox{если}\, \mathbf{c}^{(i+1)} < \mathbf{0};
+\end{cases}
+$$
+$$
+ \mathbf{c}^{(n+1)} \Rightarrow W^{(i+1)}, E^i{(i+1)};
+$$
+$$
+X^{(i+1)} = E^{(i+1)} \left\{\left[B^{(i+1)} \left(U Q^{(i+1)}\right)\right] 
+W^{(i+1)}\right\};
+$$
+$$
+\mathcal{F}^{(i+1)} = \mathcal{H}^{(i+1)} + \mathcal{J}^{(i+1)};
+$$
+
+\item[(\textit{в})] \textit{условие остановки}:
+$$
+\mbox{если } \mathcal{F}^{(i+1)} - \mathcal{F}^{(i)} \le \Delta,\, \mbox{то } 
+\mbox{STOP}.
+$$
+\end{itemize}
+
+\vspace*{-18pt}
+
+\section{Энтропийно-рандомизированное проектирование (REDR-метод)}
+
+\vspace*{-2pt}
+
+Рассмотрим матрицу данных $U_{(m \times s)}$. В~пространстве~$R^s$ ее 
+отображает множество точек\linebreak $\mathfrak{U} \hm= \{\mathbf{u}^{(1)}, \dots, 
+\mathbf{u}^{(m)}\}$. Будем придерживаться использованной ранее интерпретации 
+<<объекты ($m$)\,--\,приз\-на\-ки ($s$)>>. Объекты обычно выбираются из одного 
+класса, что позволяет выдвинуть гипотезу о~том, что расстояние между точками 
+в множестве~$\mathfrak{U}$ флуктуирует несильно, т.\,е.\ точки образуют 
+достаточно <<компактную>> группу.
+
+Определим \textit{индикатор} этой группы (матрицы данных) в виде:
+
+\noindent
+\begin{equation}
+\label{4_1}
+\rho_U = \fr{2}{m(m-1)} \sum\limits^m_{(\alpha,\beta)=1} 
+\varrho(\mathbf{u}^{\alpha}, \mathbf{u}^{\beta}).
+\end{equation}
+
+Матрицу данных $U_{(m \times s)}$ трансформируем 
+в мат\-ри\-цу-про\-ек\-цию $Z_{(n \times r)}$, $n \hm< m$, $r \hm< s$, 
+с~по\-мощью левых и правых мат\-риц-про\-ек\-то\-ров:
+\begin{equation*}
+%\label{4_2}
+Z_{(n \times r)} = B_{(n \times m)} U_{(m \times s)} Q_{(s \times r)}.
+\end{equation*}
+Матрицы $B$ и~$Q$~--- случайные, интервального типа:
+\begin{equation*}
+%\label{4_3}
+Q \in \mathcal{Q} = [Q^-, Q^+]\,;\qquad B \in \mathcal{B} = [B^-, B^+]\,.
+\end{equation*}
+
+\noindent
+Совместная функция плотности распределения ве\-ро\-ят\-ности (ПРВ)~$P(Q,B)$  определена на 
+носителе~$\mathcal{Z}$:
+\begin{equation*}
+%\label{4_4}
+(Q,B) \in \mathcal{Z} = \mathcal{Q} \bigcap \mathcal{B}.
+\end{equation*}
+Элементы матрицы-проекции $\mathcal{Z}$ имеют вид:
+\begin{multline*}
+\label{4_5}
+z_{\mu,\nu}(Q,B) = \sum\limits^m_{\beta=1} b_{\mu,\beta} 
+\sum\limits^r_{\alpha=1} u_{\beta,\alpha}\,q_{\alpha,\nu},\\ \mu = 
+\overline{1,n},\,\nu = \overline{1,r}.
+\end{multline*}
+По аналогии с~(\ref{4_1}) определим индикатор мат\-ри\-цы-про\-ек\-ции $Z_{(n 
+\times s)}$ в виде:
+\begin{equation*}
+%\label{4_6}
+\rho_Z(Q,B) = \fr{2}{n(n-1)}\sum\limits^n_{(\eta, 
+\kappa)=1}\!\!\varrho(\mathbf{z}^{(\eta)}(Q,B), \mathbf{z}^{(\kappa)}(Q,B)).
+\end{equation*}
+Поскольку элементы мат\-риц-про\-ек\-то\-ров~--- случайные, индикатор $\rho_Z(Q,B)$ 
+является функцией случайных переменных. Его математическое ожидание:
+\begin{equation*}
+%\label{4_6}
+G[P(Q,B)] = \int\limits_{\mathcal{Z}} P(Q,B) \rho_Z(Q,B)\,dQ dB\,.
+\end{equation*}
+
+Для определения функции ПРВ $P(Q,B)$ будем использовать оценку максимальной 
+энтропии~\cite{Popkov_2020_dan}
+\begin{multline}
+\label{4_7}
+\mathcal{H[P(Q,B)]} ={}\\
+{}= - \int\limits_{\mathcal{Z}} P(Q,B) \ln P(Q,B)\, dQ dB 
+\Rightarrow \max
+\end{multline}
+при ограничениях:
+\begin{multline}
+%\left.
+%\begin{array}{l}
+\displaystyle \int\limits_{\mathcal{Z}} P(Q,B)\,dQ dB = 1;\ G[P(Q,B)] = \delta \rho_U,\\
+0 < \varepsilon \le \delta \le \theta < 1.
+%\end{array}
+%\right\}
+\label{4_8}
+\end{multline}
+
+Задача (\ref{4_7})--(\ref{4_8}) относится к классу ляпуновских 
+задач~\cite{Joffe_1974}, для которых условия оптимальности формулируются в 
+терминах стационарности функционала Лагранжа:
+\begin{equation*}
+%\label{4_9}
+\mathcal{L}[P(Q,B), \lambda] = \mathcal{H[P(Q,B)]} + \lambda \left(\delta 
+\rho_U - G[P(Q,B)]\right),
+\end{equation*}
+где $\lambda$~--- скалярный множитель Лагранжа.
+
+Получим:
+\begin{equation}
+\label{4_10}
+P^*(Q,B) = 
+\fr{\exp\left(- \lambda \rho_Z(Q,B) \right)}{\mathcal{P}(\lambda)}\,,
+\end{equation}
+где
+
+\noindent
+
+\begin{equation*}
+%\label{4_11}
+\mathcal{P}(\lambda) = \int\limits_{\mathcal{Z}} \exp\left(- \lambda 
+\rho_Z(Q,B)\right)\,dQ dB\,.
+\end{equation*}
+Множитель Лагранжа $\lambda$ определяется из следующего уравнения:
+\begin{equation*}
+%\label{4_12}
+\fr{\int\nolimits_{\mathcal{Z}} \exp\left(- \lambda \rho_Z(Q,B) \right) 
+\rho_Z(Q,B)\, dQ dB}{\mathcal{P}(\lambda)} = \delta \rho_U.
+\end{equation*}
+Таким образом, энтропийно-оптимальная функция ПРВ~$P^*(Q,B)$~(\ref{4_10}) 
+позволяет, путем ее семплирования, генерировать 
+мат\-ри\-цы-про\-ек\-то\-ры~$Q$ и~$B$, сохраняющие <<в среднем>> расстояние 
+между точками (векторами $\mathbf{z}^{(\alpha)}$) 
+мат\-ри\-цы-про\-ек\-ции~$\mathcal{Z}$.
+
+\section{Энтропийные случайные матрицы-проекторы с~заданными значениями 
+элементов}
+
+Рассмотрим матрицу данных $U_{(m \times s)}$, которую нужно <<сжать>> по 
+переменной~$s$ до размера~$r$:
+\begin{equation}
+\label{5_1}
+Y_{(m \times r)} = U_{(m \times s)} Q_{(s \times r)}.
+\end{equation}
+Матрица $U_{(m \times s)} \ge 0$ и имеет нормированные элементы ($0\hm \le 
+u_{ij} \hm\le 1$). Введем полезные обозначения:
+\begin{itemize}
+\item вектор-столбец $^{(\diamond)}\bullet$, век\-тор-стро\-ка 
+$\bullet^{(\diamond)}$;
+\item векторы-строки: $\mathbf{u}^{(i)} \hm= \{u_{i,1}, \dots, u_{i,s}\}$, $i 
+\hm= \overline{1,m}$;
+\item векторы-строки  $\mathbf{y}^{(k)} \hm= \{y_{k,1}, \dots, y_{k,r}\}$, 
+$k\hm = \overline{1,m}$;
+\item векторы-столбцы  $^{(l)}\mathbf{q}\hm = \{q_{1,l}, \dots, q_{s,l}\}$, 
+$l\hm = \overline{1,s}$.
+\end{itemize}
+Тогда равенство~(\ref{5_1}) представим в виде:
+
+%\pagebreak
+
+\noindent
+\begin{multline*}
+%\label{5_2}
+\mathbf{y}^{(i)}(Q) = \left\{^{(1)}\mathbf{q}^\intercal\,\mathbf{u}^{(i)}, 
+\dots, ^{(r)}\mathbf{q}^\intercal\,\mathbf{u}^{(i)}\right\} \in R^r,\\
+ i =  \overline{1,m}.
+\end{multline*}
+Определим индикатор матрицы-проекции $Y_{(m \times r)}$ в~виде:
+\begin{equation}
+\label{5_3}
+\!\!\!\rho_Y(Q) = \fr{2! (m-2)!}{m!} \sum\limits^m_{(i,j)=1}\!\!\|\mathbf{y}^{(i)}(Q) - 
+\mathbf{y}^{(j)}(Q)\|^2.\!\!
+\end{equation}
+
+Рассмотрим случай, когда элементы матрицы $Q_{(s \times r)}$ могут принимать 
+значения~$0$ или~$1$ и размещение их в матрице~--- случайное. Заменим матрицу 
+строкой длины~$sr$. Число различных последовательностей из~$0$ и~$1$ равно $N 
+\hm= 2^{rs}$. В~качестве примера для $s \hm= 3$ и~$r \hm= 1$ таких реализаций 
+будет~8:
+$$
+000, 100, 010, 001, 110, 011, 101, 111;
+$$
+для $s = 4$ и~$r = 1$ их будет~16:
+$$
+0000, 1000, 0100, 0010, 0001, 1100, 0110, 0011,
+$$
+$$
+1001, 0101, 1010, 1111, 1110, 0111, 1011, 1101.
+$$
+Для матрицы-проектора $Q_{(s \times r)}$ существует конечное число ее 
+$(0,1)$-реализаций:
+\begin{equation*}
+%\label{5_4}
+Q^{(1)}, \dots,  Q^{(N)},\qquad N = 2^{sr}.
+\end{equation*}
+Полагая, что реализации~--- случайные, их вероятностные свойства будем 
+характеризовать  функцией распределения вероятностей (ДРВ) с дискретным 
+носителем~$W(\alpha)$, $\alpha \hm= \overline{1,N}$, где
+\begin{equation*}
+%\label{5_4a}
+W(\alpha) = w_{\alpha},\quad 0 \le w_{\alpha} \le 1,\quad l = \overline{1,N}.
+\end{equation*}
+Математическое ожидание индикатора~(\ref{5_3}):
+\begin{equation*}
+%\label{5_3a}
+\mathcal{M}_{W} = \sum\limits^N_{\alpha=1} w_{\alpha} \rho(Q^{(\alpha)}).
+\end{equation*}
+Функцию ДРВ $W(\alpha)$ будем искать в классе функций, максимизирующих 
+функцию информационной энтропии Ферми~\cite{Popkov_1995}:
+\begin{multline}
+\label{5_5}
+\!\!F(W) = - \sum\limits^N_{\alpha=1} w_{\alpha} \ln w_{\alpha} + (1 - 
+w_{\alpha})\ln(1 - w_{\alpha}) \Rightarrow{}\\
+{}\Rightarrow \max\,,
+\end{multline}
+при ограничении математического ожидания индикатора~(\ref{5_3}):
+\begin{multline}
+\label{5_6}
+G[\mathbf{w}\,|\,Q^{(1)}, \dots, Q^{(N)}] = \sum\limits^N_{\alpha=1} 
+w_{\alpha} \rho(Q^{\alpha}) = \delta\,\rho_U,\\
+ 0 < \varepsilon \le 
+\delta \le 1\,.
+\end{multline}
+Задача (\ref{5_5})--(\ref{5_6}) представляет собой конечномерную задачу на 
+условный экстремум с вогнутой целевой функцией и квадратичным ограничением. 
+Хотя последнее требует специального исследования, но, поскольку оно одно, 
+решение несложно найти чис\-ленно.
+
+Рассмотрим функцию Лагранжа:
+\begin{equation*}
+%\label{5_7}
+L(\mathbf{w}, \lambda) = F(\mathbf{w}) + \lambda \left(\delta\,\rho_U - 
+\sum\limits^N_{\alpha=1} w_{\alpha} \rho(Q^{\alpha})\right).
+\end{equation*}
+Условия стационарности этой функции имеют вид $(\alpha \hm= \overline{1,N})$:
+\begin{align*}
+%\!\left.
+%\begin{array}{rl}
+\!\displaystyle\fr{\partial L}{\partial w_{\alpha}} &= - \ln \fr{w_{\alpha}}{1 - w_{\alpha}} 
+- \lambda \rho(Q^{\alpha}) = 0\,;\\[6pt]
+\!\displaystyle\fr{\partial L}{\partial \lambda} &= \displaystyle\left(\delta\,\rho_U - 
+\sum\limits^N_{\alpha=1} w_{\alpha} \rho(Q^{\alpha})\right) = 0\,.
+%\end{array}\!
+%\right\}\!\!\!\!
+%\label{5_8}
+\end{align*}
+Отсюда получаем, что энтропийно-оптимальное распределение вероятностей имеет 
+вид:
+\begin{equation}
+\label{5_9}
+w^*_{\alpha} = \fr{\exp\left(- \lambda \rho(Q^{\alpha}) \right)}{1 + 
+\exp\left(- \lambda \rho(Q^{\alpha}) \right)},\qquad \alpha = \overline{1,N},
+\end{equation}
+где параметр $\lambda$ определяется из следующего уравнения:
+\begin{equation*}
+%\label{5_10}
+\sum\limits^N_{\alpha=1}\frac{\exp(- \lambda \rho(Q^{(\alpha)})) 
+\rho(Q^{(\alpha)})}{1 + \exp(- \lambda  \rho(Q^{(\alpha)}))} = \delta \rho_U.
+\end{equation*}
+Таким образом, равенство~(\ref{5_9}) определяет распределение вероятностей 
+мат\-риц-про\-ек\-то\-ров с~элементами $\{0,1\}$. Имеет смысл выбрать 
+мат\-ри\-цу-про\-ектор:
+\begin{equation*}
+%\label{5_11}
+Q^{(\alpha^*)} \Rightarrow \alpha^* = \max_{1 \le \alpha \le N} w^*_{\alpha},
+\end{equation*}
+хотя возможны и другие стратегии.
+
+\begin{center}
+\textbf{Алгоритм}
+\end{center}
+
+\noindent
+\textbf{Шаг 0.}\ \textit{Нормировка матрицы данных:}
+$$
+u_{ij} := \fr{u_{ij} - u_{\min}}{u_{\max} - u_{min}},\qquad i = 
+\overline{1,m};\,j = \overline{1,s}.
+$$
+
+\noindent
+\textbf{Шаг 1.}\ \textit{Вычисление индикатора матрицы данных:}
+$$
+\rho_U := \fr{2!(m-2)!}{m!} \sum\limits^m_{\beta, \gamma = 1,\,\gamma \ne 
+\beta} \varrho(\mathbf{u}^{(\beta)}, \mathbf{u}^{(\gamma)}).
+$$
+
+
+\noindent
+\textbf{Шаг 2.}\ \textit{Генерация множества $\mathfrak{Q}$ мат\-риц-про\-ек\-то\-ров с 
+элементами $0,1$}:
+$$
+Q^{(\alpha)},\qquad \alpha = \overline{1,N},\,\,\,N = 2^{rs}.
+$$
+
+\begin{figure*} %fig1
+\vspace*{1pt}
+\begin{minipage}[t]{80mm}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=78.264mm 
+ \epsfbox{pop-1.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Множество $\mathfrak{U}$ трехмерных точек}
+\label{fig1a}
+\end{minipage}
+%\end{figure*}
+\hfill
+%\begin{figure*} %fig2
+\vspace*{1pt}
+\begin{minipage}[t]{80mm}
+    \begin{center}  
+  \mbox{%
+ \epsfxsize=78.952mm 
+ \epsfbox{pop-2.eps}
+ }
+\end{center}
+\vspace*{-11pt}
+\Caption{Множество $\mathfrak{Y}$ двумерных точек с $\rho_Y\hm = 
+\rho_U$}\label{fig1b}
+\end{minipage}
+\vspace*{6pt}
+\end{figure*}
+
+\noindent
+\textbf{Шаг 3.}\ \textit{Формирование множества $\mathfrak{Y}$ мат\-риц-про\-ек\-ций с 
+элементами}
+$$
+y^{(\alpha)}_{i,k} := \sum\limits^s_{\nu=1} u_{i,\nu} 
+q^{(\alpha)}_{\nu,k},\qquad i = \overline{1,m},\,k = \overline{1,r},
+$$
+\textit{и векторами-строками}
+$$
+\mathbf{y}^{\alpha}_{\nu} := \left\{y^{(\alpha)}_{\nu,1}, \dots, 
+y^{(\alpha)}_{\nu,r} \right\},\qquad \nu = \overline{1,m}.
+$$
+
+\noindent
+\textbf{Шаг 4.}\ \textit{Вычисление индикатора мат\-риц-про\-ек\-ций}:
+$$
+\rho^{(\alpha)}_Y := \fr{2!(m-2)!}{m!} \sum\limits^m_{\nu, \mu = 1,\,\nu \ne 
+\mu} \!\!\varrho(\mathbf{y}^{(\nu)}, \mathbf{y}^{(\mu)}), \ \alpha = 
+\overline{1,N}\,.
+$$
+
+\noindent
+\textbf{Шаг 5.} \textit{Определение значения множителя Лагранжа~$\lambda^*$ из 
+уравнения}:
+$$
+\sum\limits^N_{\alpha=1}\fr{\exp(- \lambda\, \rho^{(\alpha)}_Y)\,\, 
+\rho^{(\alpha)}_Y}{1 + \exp(- \lambda\,\rho^{(\alpha)}_Y)} = \delta \rho_U.
+$$
+
+\noindent
+\textbf{Шаг 6.}\  \textit{Определение в множестве~$\mathfrak{Q}$ наиболее вероятной 
+мат\-ри\-цы-про\-ек\-тора:}
+$$
+Q^{(\alpha^*)}: \,\alpha^* = \argmax\limits_{\alpha} w(\alpha\,|\,\lambda^*).
+$$
+
+\noindent
+\textbf{Шаг 7.}\ \textit{Определение элементов наиболее вероятной 
+мат\-ри\-цы-про\-ек\-ции:}
+$$
+Y^{(\alpha^*)}_{(m \times r)} = U_{(m \times s)} Q^{(\alpha^*)}_{(s \times 
+r)}.
+$$
+
+\noindent
+{STOP} 
+
+\smallskip
+
+\noindent
+\textbf{Пример.} В~качестве иллюстрации предлагаемого алгоритма рассмотрим 
+матрицу данных $U_{(100 \times 3)}$, элементами которой служат случайные 
+числа из интервала $[0,1]$. В~пространстве~$R^3$ эта матрица отображается в 
+множество~$\mathfrak{U}$ трехмерных точек, характеризуемых векторами-строками 
+$\mathbf{u}^{(i)}$, $i \hm= \overline{1,100}$. Это множество изображено на 
+рис.~\ref{fig1a}.
+Расстояния между точками~--- евклидовы, и индикатор матрицы данных $\rho_U 
+\hm= 0{,}677$.
+
+Применяя рассмотренный выше алгоритм с параметром $\delta \hm= 1{,}0$, 
+генерируем множество~$\mathfrak{Y}$ двумерных точек с $\rho_Y \hm= \rho_U$, 
+показанное на рис.~\ref{fig1b}. Множество~$\mathfrak{Y}$ локализовано в 
+квадрате со стороной~1,7.
+
+
+
+\section{Заключение}
+
+Предложены процедуры детерминированного и~рандомизированного проектирования, 
+ориентированные на редукцию размерности матрицы данных. В~случае 
+детерминированного проектирова\-ния развивается параллельная процедура сжатия 
+матрицы данных, минимизирующая кросс-энт\-ро\-пию Куль\-ба\-ка--Лейб\-ле\-ра с 
+учетом ограничения на информационную емкость.  Предложен алгоритм условной 
+минимизации, использующий метод проекций градиента.
+
+Для рандомизированного проектирования рассмотрена задача редукции матрицы 
+данных по одному измерению и с заданными элементами 
+мат\-риц-про\-ек\-то\-ров, в частности со случайными\linebreak
+ $(0,1)$-эле\-мен\-та\-ми. Задача сводится к 
+поиску распределения вероятностей, максимизирующего\linebreak информационную энтропию 
+Ферми при ограничении на среднее расстояние между точками многообразия, 
+которые отображаются матрицами данных и~оптимальной проекции. Предложен 
+алгоритм для решения этой задачи.
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{Bruckstein_2009}
+\Au{Bruckstein A.\,M., Donoho~D.\,L., Elad~M.} From sparse solutions of 
+systems of equations to sparse modeling of signals and images~// SIAM Rev., 
+2009. Vol.~51. Iss.~1. P.~34--81.
+
+\bibitem{Kendall_1973}
+\Au{Кендалл М., Стьюарт~А.} Статистические выводы и~связи~/
+Пер. с~англ.~--- М.:~Наука, 
+1973. 896~с. (\Au{Kendall~M.\,G., Stuart~A.} {The advanced theory of statistics.}~--- 
+London: Charles Griffin, 1961.  Vol.~2. 676~p.)
+
+\bibitem{Jolliffe_2011}
+\Au{Jolliffe I.} Principal component analysis.~--- New York, NY, USA: 
+Springer, 2011. 488~p. doi: 10.1007/b98835.
+
+\bibitem{Polyak_2017}
+\Au{Поляк Б.\,Т., Хлебников~М.\,В.} Метод главных компонент: робастные 
+версии~// Автоматика и телемеханика, 2017. №\,3. C.~130--148.
+
+\bibitem{Bingham_2001} %5
+\Au{Bingham E., Mannila~H.} Random projection in dimensionality reduction: 
+Applications to image and text data~// 7th ACM SIGKDD Conference 
+(International) on Knowledge Discovery and Data Mining Proceedings.~--- New 
+York, NY, USA: ACM, 2001. P.~245--250. doi: 10.1145/502512.502546.
+
+\bibitem{Vempala_2005} %6
+\Au{Vempala S.\,S.} The random projection method.~--- \mbox{DIMACS} ser. in discrete 
+mathematics and theoretical computer science.~--- Providence, RI, USA: 
+American Mathematical Society, 2004. Vol.~65. 105~p.
+
+\bibitem{Popkov_2018_at_a_en}
+\Au{Попков Ю.\,С., Дубнов~Ю.\,А., Попков~А.\,Ю.} Энтропийная редукция 
+размерности в задачах рандомизированного машинного обучения~// Автоматика и 
+телемеханика, 2018. №\,11. С.~106--122.
+
+\bibitem{Kullback_1951} %8
+\Au{Kullback S., Leibler~R.\,A.} On information and sufficiency~// Ann. 
+Math. Stat., 1951. Vol.~22. Iss.~1. P.~79--86.
+
+\bibitem{Popkov_2019_dan}
+\Au{Попков Ю.\,С., Попков~А.\,Ю.} Кросс-энтропийная оптимальная редукция 
+размерности матрицы данных с ограничением информационной емкости~// Докл. 
+Акад. наук, 2019. Т.~488. С.~21--23. doi: 10.31857/S0869-5652488121-23.
+
+\bibitem{Magnus_1988}
+\Au{Magnus J.\,R., Neudecker~H.} Matrix differential calculus with 
+applications in statistics and econometrics.~--- 
+Chichester\,--\,New York\,--\,Brisbane\,--\,Toronto\,--\,Singapore: John 
+Wiley \& Sons, 1988. 393~p.
+
+\bibitem{Popkov_2020_dan}
+\Au{Попков Ю.\,С.} Асимптотическая эффективность оценок максимальной 
+энтропии~// Докл. Акад. наук, 2020. Т.~493. С.~104--107. {doi: 
+10.31857/ S2686954320040165}.
+
+\bibitem{Joffe_1974}
+\Au{Иоффе А.\,Д., Тихомиров~В.\,М.} Теория экстремальных задач.~--- М.: 
+Наука, 1984. 481~с.
+
+\bibitem{Popkov_1995}
+\Au{Popkov Yu.\,S.} Macrosystems theory and its applications.~--- Lecture notes 
+in control and information sciences ser.~--- Berlin--Heidelberg: 
+Springer-Verlag, 1995. Vol.~203. 327~p.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 25.12.19}}
+
+\vspace*{7pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{DETERMINISTIC AND~RANDOMIZED METHODS OF~ENTROPY 
+PROJECTION FOR~DIMENSIONALITY REDUCTION PROBLEMS}
+
+
+\def\titkol{Deterministic and randomized methods of entropy projection for 
+dimensionality reduction problems}
+
+
+\def\aut{Y.\,S.~Popkov$^{1,2,3}$, A.\,Y.~Popkov$^1$, and~Y.\,A.~Dubnov$^{1,4}$}
+
+\def\autkol{Y.\,S.~Popkov, A.\,Y.~Popkov, and Y.\,A.~Dubnov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+\noindent
+$^1$Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
+44-2~Vavilov\linebreak
+$\hphantom{^1}$Str., Moscow 119333, Russian Federation
+
+\noindent
+$^2$V.\,A. Trapeznikov Institute of Control Sciences, Russian Academy of Sciences, 
+65~Profsoyuznaya Str., Moscow\linebreak
+$\hphantom{^1}$117997, Russian Federation
+
+\noindent
+$^3$ORT Braude College, Karmiel 2161002, Israel
+
+\noindent
+$^4$National Research University Higher School of Economics, 20~Myasnitskaya Str., Moscow 
+101000, Russian\linebreak
+$\hphantom{^1}$Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt} 
+
+
+\Abste{The work is devoted to development of methods for deterministic and randomized projection 
+aimed at dimensionality reduction problems. In the deterministic case, the authors develop the parallel 
+reduction procedure minimizing Kullback--Leibler cross-entropy target to condition on information 
+capacity based on the gradient projection method. In the randomized case, the authors solve the 
+problem of reduction of feature space. The idea of application of projection procedures for reduction 
+of data matrix is implemented in the proposed method of randomized entropy projection where the 
+authors use the principle of keeping average distances between high- and low-dimensional 
+points in the corresponding spaces. The problem leads to searching of a~probability distribution maximizing 
+Fermi entropy target to average distance between points.}
+
+\KWE{dimensionality reduction; Kullback--Leibler cross-entropy; entropy}
+
+\DOI{10.14357/19922264200407} 
+
+\vspace*{-18pt}
+
+\Ack
+
+\vspace*{-2pt}
+
+\noindent
+This work was supported by RFBR, projects Nos.\,17-29-03119 and 20-07-00470.
+
+%\vspace*{6pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-pop}
+\Aue{Bruckstein, A.\,M., D.\,L.~Donoho, and M.~Elad.} 2009. From sparse solutions of systems of 
+equations to sparse modeling of signals and images. \textit{SIAM Rev.}
+ 51(1):34--81.
+\bibitem{2-pop}
+\Aue{Kendall, M.\,G., and A.~Stuart.} 1961. \textit{The advanced theory of statistics.} 
+London: Charles Griffin.  Vol.~2. 676~p.
+
+\columnbreak
+
+
+\bibitem{3-pop}
+\Aue{Jolliffe, I.} 2011. \textit{Principal component analysis}. New York, NY: Springer. 488~p. 
+doi: 10.1007/b98835.
+\bibitem{4-pop}
+\Aue{Polyak, B.\,T., and M.\,T.~Khlebnikov.} 2017. Principal component analysis: Robust versions. 
+\textit{Automat. Rem. Contr.} 78:490--506.
+\bibitem{5-pop}
+\Aue{Bingham, E., and H.~Mannila.} 2001. Random projection in dimensionality reduction: 
+Applications to image and text data. \textit{7th ACM SIGKDD Conference (International) on 
+Knowledge Discovery and Data Mining Proceedings}. ACM. 245--250. doi: 10.1145/502512.502546.
+
+\bibitem{6-pop}
+\Aue{Vempala, S.\,S.} 2004. \textit{The random projection method}. \mbox{DIMACS} ser. in discrete 
+mathematics and theoretical computer science.
+Providence, RI: 
+American Mathematical Society. Vol.~65. 105~p. 
+\bibitem{7-pop}
+\Aue{Popkov, Y.\,S., Y.\,A.~Dubnov, and A.\,Y.~Popkov.} 2018. Entropy dimension reduction 
+method for randomized machine learning problems. \textit{Automat. Rem. Contr.} 79(11): 2038--
+2051. 
+\bibitem{8-pop}
+\Aue{Kullback, S., and R.\,A.~Leibler.} 1951. On information and sufficiency. \textit{Ann. 
+Math. Stat.} 22(1):79--86.
+
+
+\bibitem{9-pop}
+\Aue{Popkov, Y.\,S., and A.\,Y.~Popkov.} 2019. Cross-entropy optimal dimensionality reduction 
+with a condition on information capacity. \textit{Dokl. Math.}
+ 100:420--422.
+ 
+ \columnbreak
+ 
+\bibitem{10-pop}
+\Aue{Magnus, J.\,R., and H.~Neudecker.} 1988. \textit{Matrix differential calculus with 
+applications in statistics and econometrics}. 
+Chichester\,--\,New York\,--\,Brisbane\,--\,Toronto\,--\,Singapore: John Wiley \& Sons. 393~p.
+\bibitem{11-pop}
+\Aue{Popkov, Y.\,S.} 2020.
+ Asymptotic efficiency of maximum entropy estimates. \textit{Dokl. Math.} 102:350--352.
+ doi: org/ 10.1134/S106456242004016X.
+\bibitem{12-pop}
+\Aue{Joffe, A.\,D., and V.\,M.~Tikhomirov.} 1984. \textit{Teoriya eks\-tre\-mal'-nykh zadach} [Theory 
+of extreme problems]. Moscow: Nauka. 481~p.
+\bibitem{13-pop}
+\Aue{Popkov, Yu.\,S.} 1995. \textit{Macrosystems theory and its applications}.
+Lecture notes 
+in control and information sciences ser.
+ Berlin--Heidelberg: Springer-Verlag. Vol.~203.\linebreak 327~p.
+ 
+ 
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received December 25, 2019}}
+
+%\pagebreak
+
+%\vspace*{-24pt}
+
+
+\Contr
+
+\noindent
+\textbf{Popkov Yuri S.} (b.\ 1937)~--- Doctor of Science in technology, professor, Academician of 
+RAS, principal scientist, Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; principal scientist, 
+V.\,A.~Trapeznikov Institute of Control Sciences, Russian Academy of Sciences, 65~Profsoyuznaya 
+Str., Moscow 117997, Russian Federation; senior research fellow, ORT Braude College, Karmiel 
+2161002, Israel; \mbox{popkov@isa.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Popkov Alexey Y.} (b.\ 1978)~--- Candidate of Science (PhD) in technology, leading 
+scientist, Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{apopkov@isa.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Dubnov Yuri A.} (b.\ 1990)~--- scientist, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian 
+Federation; senior lecturer, National Research University Higher School of Economics, 
+20~Myasnitskaya Str., Moscow 101000, Russian Federation; \mbox{yury.dubnov@phystech.edu}
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

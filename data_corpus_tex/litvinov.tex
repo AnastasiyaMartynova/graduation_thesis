@@ -1,0 +1,972 @@
+%
+%
+%\input{../preamblw}
+%\usepackage{pst-barcode}
+%\usepackage{auto-pst-pdf}
+%
+%
+%
+%
+%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tottop}[1]{\raisebox{12pt}[1pt][2pt]{#1}} 
+%\newcommand{\totttop}[1]{\raisebox{18pt}[1pt][2pt]{#1}} 
+%\newcommand{\tottttop}[1]{\raisebox{24pt}[1pt][2pt]{#1}} 
+%\newcommand{\totttttop}[1]{\raisebox{30pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobot}[1]{\raisebox{-6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobbot}[1]{\raisebox{-12pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobbbot}[1]{\raisebox{-18pt}[1pt][2pt]{#1}}
+%
+%%\samgtupubl % для генерации pdf, отдаваемого в типографию СамГТУ
+%\pdfcrop % обрезка pdf для размещения на math-net.ru
+%%\draft % На корректуре
+%%\nofilllastpage % Последняя русскоязычная страница заполнена не полностью
+%\filllastpage
+%%\briefcomm % Статья является кратким сообщением
+
+\vsgtu{1341}
+
+\FirstPage{183}
+\LastPage{195}
+
+
+
+
+%\begin{document}
+
+%\graphicspath{{./00PIC/}}
+
+\hfill \begin{pspicture}(1in,1in)
+\psbarcode{http://dx.doi.org/10.14498/vsgtu1341}{}{qrcode}
+\end{pspicture}
+\vspace{-1in}
+
+
+
+\udk{519.681.2}
+\msc{68Q10, 68Q85}
+
+\rutitle{Разработка и применение вычислительной модели~типовых решений. Пример~использования~<<портфеля~задач>> для~обучения нейронной сети HRBF}
+{Разработка и применение вычислительной модели типовых решений\dots}
+
+%\titlehack{Препроцессор языка Templet: инструмент программирования
+%в терминах модели <<процесс--сообщение>>$^*$}
+
+\ruauthor{В.~Г.~Литвинов}{Л\,и\,т\,в\,и\,н\,о\,в~В.~Г.}
+\enauthor{V.~G.~Litvinov}{L\,i\,t\,v\,i\,n\,o\,v~V.~G.}
+
+
+\ruaffil{\rusgau.}
+\enaffil{\ensgau.}
+
+\ruauthordetails{1}{\fullauthor{\rupid{71529}{Владимир Геннадьевич Литвинов}} \regalia{\mem{litvinov_vg@ssau.ru}} \position{ассистент} \dept{каф. информационных систем и технологий}}
+
+\enauthordetails{1}{\fullauthor{\enpid{71529}{Vladimir G. Litvinov}}  \regalia{\mem{litvinov_vg@ssau.ru}} \position{Assistant}\dept{Dept. of Information Systems \& Technology} }
+
+
+\rukeywords{кластер, суперкомпьютинг, язык Templet, типовое решение, портфель задач, скелетон, модель вычислений,  нейронная сеть HRBF}
+
+\ruabstract{Рассматривается проблема отображения задач вычислительной математики на архитектуру вычислительных систем и метод ее решения. В~качестве метода предлагается разработанный подход реализации параллельных паттернов, заключающийся в построении точной модели вычислительного процесса в виде графа и его динамической интерпретации. Для описания модели вычислительного процесса используется темпоральная логика Лампорта. На примере типового решения <<портфель задач>> показано, каким образом при помощи графической нотации выполняется связь абстрактной модели исполнения с операциями типового решения. В терминах этих операций определяется конкретный алгоритм обучения нейронной сети типа HRBF (Hyper-Radial Basis Function), который распараллеливается единообразно для различных типовых решений и зависит только от программно-аппаратной платформы целевой системы исполнения. Приведены вычислительные эксперименты, которые подтверждают, что применение типовых решений не снижает производительность результирующих программ и пригодно в случаях, когда специалисту предметной области требуется построить параллельный алгоритм и выполнить вычислительный эксперимент на высокопроизводительной технике.}
+
+\entitle{Development and application of the computational model for skeleton solutions. Case study – using ``bag-of-task'' for HRBF neural network learning}
+
+
+\enabstract{The article proposes a solution to the problem of mapping an algorithm from the field of Computational Mathematics on the target computing environment. The solution is based on a formal method for constructing parallel skeletons. The method comprises a specification of concurrency with the directed graphs and a formula for interpretation of dynamic behavior of such graphs. This interpretation is based on Temporal Logic of Actions approach proposed by Leslie Lamport. To illustrate the use of the method the ``bag-of-tasks’’ parallel skeleton is discussed hereinafter. We present graphically basic skeleton operations with the proposed computational model.  After that we specify a learning algorithm of hyper-radial basis function neural network in the terms of skeleton operations as a case study. This made it possible to parallelize the leaning algorithm and map it on desired computing environments with predefined run-time libraries. Computational experiments confirming that our approach does not reduce the performance of the resulting programs are presented. The approach is suitable for researchers not familiar with parallel computing. It helps to get a reliable and effective supercomputer application both for SMP and distributed architectures.}
+
+\enkeywords{cluster, supercomputing, Templet language, pattern, bag-of-tasks, skeleton programming, model of computation, HRBF neural network}
+
+
+\date{18/VIII/2014}
+\revisiondate{03/IX/2014}
+\accepteddate{10/IX/2014}
+
+
+
+
+\makerutitle
+
+
+
+
+\Section[1]{Введение}
+Эпоха увеличения тактовых частот вычислительных ядер процессоров закончена, её конец ознаменовал начало эпохи многоядерных процессоров и распределенных вычислительных систем \cite{Sutter2005}. 
+На текущий момент огромное количество задач математического моделирования требует разработки параллельных (распределенных) программ. 
+Это требование связано с необходимостью увеличения размерности и сокращения времени решения задачи. 
+Инженерная сложность такой разработки во много раз выше, чем стандартный последовательный подход и переход от численного метода к реализации программы для высокопроизводительных вычислений. 
+На данный момент это остается самостоятельной научной и инженерной проблемой. 
+Данная проблема выделена академиком Г.~И.~Марчуком как фундаментальное научное направление, называемое проблемой отображения \cite{MarchukKotov}. 
+Одним из методов её решения является повторное использование имеющихся паттернов (шаблонов или типовых решений), что отражено в работе Э.~Гамма, Р.~Хелма, Р.~Джонсона и Дж.~Влиссидеса \cite{Gamma1995Design}. 
+В области типовых решений для параллельного программирования известны работы отечественных и зарубежных ученых: 
+М.~И.~Коула \cite{Cole1989AlgorithmicSkeletons}, С.~Макдональда \cite{MacDonald2000Generating}, Д.~Шмидта \cite{Schmidt2001cpp1}, П.~К.~Берзигиярова \cite{Berzigiyarov}, В.~Э.~Малышкина \cite{Malishkin2001Assembly} и других. 
+Описано около двух десятков типовых решений в области параллельного программирования. 
+Однако задача разработки моделей типовых решений, удобных для понимания специалистами прикладных областей и для конструирования программ на их основе, сохраняет актуальность.
+
+\smallskip
+
+\Section{Метод} 
+В работе предлагается подход к реализации параллельных паттернов, близкий к языкам координации [\citen{Botorog1996skil, Dorta2003llc}]. 
+Модели выполнения данных языков отражают только аспекты, относящиеся к синхронизации и обмену данными в параллельных алгоритмах. Таким образом, можно строить скелеты типовых решений, которые пользователь затем дополняет последовательным кодом, относящимся к конкретной прикладной задаче. Строится точная модель исполнения в виде графа и его динамической интерпретации. 
+Далее  на примере типового решения <<портфель задач>> \cite{Iosup2008performance} показано, каким образом при помощи графической нотации выполняется связь абстрактной модели исполнения с операциями типового решения. 
+Наконец, в терминах этих операций определяется конкретный алгоритм обучения нейронной сети типа HRBF (Hyper-Radial Basis Function). Распараллеливание алгоритма благодаря введённой модели выполнения производится единообразно для различных типовых решений и зависит только от программно-аппаратной платформы целевой системы исполнения. Предлагаемый подход близок к реализованному в библиотеке {\tt tbb::gragh} пакета {\tt Intel Threading Building Blocks} \cite{IntelThreadingBuildingBlocks2007}, однако он не ограничен только языком {\tt C++}. По сравнению с техниками инкрементного распараллеливания ({\tt Cilk} \cite{Blumofe1996cilk}, {\tt OpenMP} \cite{Dagum1998openmp}, {\tt DVM} \cite{Konovalov1994fortran}), в которых последовательный код пользователя дополняется распараллеливающими инструкциями, в данном подходе код каркаса (последовательный, но с известным методом распараллеливания) дополняется пользовательским кодом. 
+Проводимые в дальнейшем вычислительные эксперименты призваны подтвердить, что это не снижает производительность результирующих программ и пригодно для применения в случаях, когда специалисту предметной области требуется построить параллельный алгоритм и выполнить вычислительный эксперимент на высокопроизводительной технике.
+
+
+\smallskip
+
+\Section{Построение имитационной модели}
+Для описания типовых решений использовалась темпоральная логика Лампорта [\citen{Lamport1994Temporal, Lamport2002SpecifyingSystems}]. 
+C её помощью структуру алгоритмов можно представить ориентированным графом вида
+\begin{equation}
+G_{M}\triangleq\left(P,C\right),\quad P\subset N, \quad C\subset N\times N,
+\label{eqGraph}
+\end{equation}
+в котором вершины $P$ представляют собой процессы, а дуги $C$ "--- каналы, по которым передаются сообщения между процессами. Состояние вычислительного процесса "--- значения множества переменных, связанных с процессами и каналами:
+$$
+f\triangleq\left(i\in P\colon a_{i}; \left(i,j\right)\in C\colon e_{i,j}, d_{i,j}\right),
+%\label{eqProcess}
+$$
+где $a_{i}\in\left\{1, 0\right\}$, $b_{i,j}\in\left\{1, 0\right\}$, $d_{i,j}\in\left\{1, 0\right\}$.
+
+Логические переменные $a_{i}$ обозначают пассивное $0$ или активное $1$ состояние процесса $i$; $e_{i,j}$ "--- пассивное 0 или активное 1 состояние канала $\left(i,j\right)$; $d_{i,j}$ "--- направление передачи сообщений по двунаправленным каналам 
+(1 "--- $i\rightarrow j$; 0 "--- $j\rightarrow i$).
+
+В начальном состоянии некоторые каналы находятся в активном состоянии с передачей сообщений в направлении $i\rightarrow j$, все процессы находятся в пассивном состоянии:
+$$
+I\triangleq\forall i\in P\colon\neg a_{i}\wedge\forall\left(i,j\right)\in C\colon\left(e_{i,j}\wedge d_{i,j}\right)\vee\left(\neg e_{i,j}\wedge\neg d_{i,j}\right).
+%\label{eqStartState}
+$$
+
+Действия, выполняемые каналами, описываются формулой
+\begin{multline}
+A_{c}\left(i,j\right)\triangleq\left\{e_{i,j}\wedge\neg e'_{i,j}\wedge\left(\left(d_{i,j}\wedge d'_{i,j}\right)\vee\left(\neg d_{i,j}\wedge\neg d'_{i,j}\right)\right)\right\}\vee\\
+\vee\left\{\neg e_{i,j}\wedge e'_{i,j}\wedge\left(\left(d_{i,j}\wedge\neg d'_{i,j}\right)\vee\left(\neg d_{i,j}\wedge d'_{i,j}\right)\right)\right\}.
+\label{eqWorkChannel}
+\end{multline}
+
+Действия описывают соседние в истории вычислительного процесса состояния, переменные следующего состояния обозначены апострофом. Согласно формуле \eqref{eqWorkChannel}, состояние канала периодически меняется с активного на пассивное, а направление передачи данных "--- с прямого на обратное. Действия, выполняемые процессами, описываются формулой 
+\begin{multline}
+A_{p}\left(i\right)\triangleq\left\{\neg a_{i}\wedge a'_{i}\wedge\left(\exists !j\colon e_{i,j}\wedge\neg e'_{i,j}\wedge\neg d'_{i,j}\right)\wedge\neg\left(\exists j\colon e_{j,i}\wedge\neg e'_{j,i}\wedge d'_{j,i}\right)\right\}\vee\\
+\vee\left\{\neg a_{i}\wedge a'_{i}\wedge\left(\exists !j\colon e_{j,i}\wedge\neg e'_{j,i}\wedge d'_{j,i}\right)\wedge\neg\left(\exists j\colon e_{i,j}\wedge\neg e'_{i,j}\wedge\neg d'_{i,j}\right)\right\}\vee\\
+\vee\left\{a_{i}\wedge\neg a'_{i}\wedge\bigvee_{k\colon\left(i,k\right)\in C}\left(\neg e_{i,k}\wedge e'_{i,k}\wedge d'_{i,k}\right)\right\}\vee\\
+\vee\left\{a_{i}\wedge\neg a'_{i}\wedge\bigvee_{k\colon\left(k,i\right)\in C}\left(\neg e_{k,i}\wedge e'_{k,i}\wedge d'_{k,i}\right)\right\}\vee\left\{a_{i}\wedge\neg a'_{i}\right\}.
+\label{eqWorkProcess}
+\end{multline}
+
+Процесс становится активным, когда из смежного с ним канала поступает сообщение. При этом такой канал сам переходит в пассивное состояние. Среди нескольких каналов, готовых передать сообщение в процесс, выбирается произвольный канал. Когда процесс завершит работу и перейдет в пассивное состояние, по одному или нескольким каналам от него могут передаваться сообщения в другие процессы.
+
+С учетом выражений \eqref{eqWorkChannel} и \eqref{eqWorkProcess} действия, выполняемые моделируемым вычислительным процессом, можно представить в виде
+$$
+N\triangleq\bigvee_{\left(i,j\right)\in C}A_{c}\left(i,j\right)\vee\bigvee_{i\in P}A_{p}\left(i\right).
+%\label{eqWorkResult}
+$$
+
+Способ планирования вычислительного процесса характеризуется выражением
+$$
+F\triangleq\left(\forall i\in P:WF_{f}\left(a_{i}\wedge\neg a'_{i}\right)\right)\wedge\left(\forall\left(i,j\right)\in C:WF_{f}\left(e_{i,j}\wedge\neg e'_{i,j}\right)\right),
+%\label{eqPlain}
+$$
+подразумевающим справедливую в слабом смысле стратегию планирования. Окончательно получаем модель вычислительных процессов для представления типовых решений:
+\begin{equation}
+\mathit{\Phi}_{M}\triangleq I\wedge\square\left[N\right]_f\wedge F.
+\label{eqModel}
+\end{equation}
+
+По построению вычислительного процесса порядок смены состояний, удовлетворяющий формуле \eqref{eqModel}, легко воспроизвести дискретно"=событийной имитационной моделью. Для этого организуется очередь каналов, находящихся в активном состоянии. На каждом шаге моделирования случайным образом выбирается активный канал. Далее он переводится в неактивное состояние, выполняется действие процесса и отправка сообщений из данного процесса.
+
+Для представления типового решения далее требуется определить сообщения, передаваемые в каналах, и методы процессов, запускаемые при их обработке. Это реализуется использованием графической нотации {\tt Templet} [\citen{Vostokin2007Graph}--\citen{Vost2012Method}]. 
+Так как типовыми схемами решения многих переборных и оптимизационных задач являются схемы <<управляющий-рабочие>>, далее рассматривается модель одной из общих схем управления вычислениями из данного класса: вычисление с <<портфелем задач>>. Это схема с активными рабочими, реализующая управление {\tt pull}-типа. Здесь иллюстрируется описание более сложного протокола взаимодействия процессов с несколькими типами сообщений (по сравнению с исходными \eqref{eqWorkChannel} протоколами <<запрос-ответ>>). 
+
+Подробное описание реализации шаблона приведено в работе \cite{VostKhayrLitvMakag2012VisualModel}, для дальнейшей ясности приведем фрагмент диаграммы управляющего процесса с именем {\tt Master} (рис.~\ref{imgMaster}), относящийся к порту $\tt p_{\tt N}$, где $\tt N$ "--- номер порта. Методы процесса {\tt get}, {\tt put}, \verb"if_task" и \verb"start"  реализуют специфические для решаемой задачи операции: 
+{\tt get} "--- извлечение очередной задачи; 
+{\tt put} "--- сохранение результата; 
+\verb"if_task" "--- проверку наличия задачи для обработки. 
+Метод {\tt start} может использоваться для инициализации. 
+Методы \verb"if_active", 
+{\tt wait}$_{\tt N}$, {\tt stop}$_{\tt N}$, {\tt waiting}$_{\tt N}$  являются универсальными для произвольного численного метода. 
+Метод \verb"if_active" возвращает истинное значение, если имеются активные рабочие процессы. 
+То есть  имеются каналы, не находящиеся в состоянии <<доставлено сообщение {\tt start} или {\tt result}>>, что в программной реализации определяется простым подсчетом при поступлении и отправке сообщений. 
+Метод $\tt wait_{\tt N}$ устанавливает признак, что канал находится в состоянии ожидания появления заданий, метод $\tt waiting_{N}$  возвращает значение данного признака. 
+Метод $\tt stop_{N}$ используется при отправке сообщения $\tt stop$ рабочему для начала очистки.
+
+\begin{figure}[h!]
+\centering \footnotesize 
+\includegraphics{fig}
+\caption{Фрагмент диаграммы управляющего процесса $\tt Master$}
+\label{imgMaster}
+\smallskip
+
+[Figure \ref{imgMaster}. Fragment of the $\tt Master$ control process diagram]
+
+\end{figure}
+
+Роль рабочих процессов заключается в периодическом получении задания от управляющего процесса в сообщении $\tt task$ и отправке результата его обработки $\tt result$. Обработка выполняется в методе $\tt do$. Цикл обработки начинается по инициативе рабочего с отправки сообщения $\tt start$ и заканчивается при получении от управляющего процесса сообщения $\tt stop$.
+
+Остановка вычислений и очистка начинаются, если нет задач и нет активных рабочих процессов. Когда сформирована и отправлена очередная задача, происходит поиск ожидающего рабочего процесса. Если такой процесс найдется и есть еще одна задача для обработки, то выполняется ее формирование и отправка рабочему. В противном случае управляющий процесс либо заканчивает обработку сообщения и ждет ответа от рабочих, либо начинает остановку вычислений и очистку.
+
+Для типового решения <<портфель задач>> разработаны среды многопоточного исполнения на основе {\tt Windows API}, {\tt POSIX} и {\tt MPI}, позволяющие проводить высокопроизводительные вычисления на системах с общей и распределённой памятью.
+
+
+\smallskip
+
+\Section{Реализация алгоритма обучения}
+Параллельный алгоритм обучения был реализован для HRBF нейронной сети [\citen{Osovsky2004Neural, Heikin2008Neural}] на языке {\tt C++} с использованием библиотеки {\tt CLAPACK}. 
+Он основан на использовании метода грубой силы и выполняет обучение и подбор количества нейронов скрытого слоя \cite{Litvinov2010Methods}. 
+Алгоритм заключается в итеративном добавлении различающихся случайным положением центра нейронов в идентичные копии нейронных сетей. 
+На каждой итерации производится выбор лучшей сети (по критерию достижения минимального значения целевой функцией) и её клонирование. 
+Применение типового решения <<портфель задач>>, фрагмент которого показан на рис.~\ref{imgMaster},  состоит в определении его методов $\tt get$, $\tt put$, \verb"if_task". В <<портфеле задач>> для управления вычислениями хранятся:
+\begin{enumerate}
+\item $\tt K$ "--- текущее количество нейронов в скрытом слое;
+\item $\tt K_{max}$ "--- максимальное число нейронов в скрытом слое;
+\item $\tt W$ "--- число решенных задач;
+\item $\tt W_{max}$ "--- максимальное количество задач (попыток добавления нейрона);
+\item $\tt E_{end}$ "--- значение, при достижении целевой функцией которого процесс обучения останавливается;
+\item $\tt \Psi_{K}$ "--- коэффициенты обученной нейронной сети с $\tt K$ нейронами (включают вектора центров, матрицы диаметров и вектор весов выходного слоя);
+\item $\tt \Psi_{K+1}$ "--- коэффициенты обученной нейронной сети с $\tt K+1$ нейронами;
+\item $\tt E_{K+1}$ --- значение целевой функции сети $\tt \Psi$.
+\end{enumerate}
+
+Задача определяется коэффициентами  $\tt \Psi'_{K}$ и положением центра добавляемого нейрона $\tt \psi'$. 
+Результат её вычисления --- коэффициенты $\tt \Psi'_{K+1}$ и значение ошибки  $\tt E'_{K+1}$. 
+Как и в последовательном случае, при решении задачи производится уточнение коэффициентов сети $\tt \Psi'_{n+1}$"=гибридным алгоритмом. 
+В начальном состоянии ($\tt start$) определяются постоянные алгоритма $\tt K_{max}$, $\tt W_{max}$, $\tt E_{end}$; 
+переменные $\tt W:=0$, $\tt K:=2$, $\tt \Psi_{K}:=\Psi_{2}$ (параметры сети с двумя нейронами), $\tt \Psi_{K+1}$ --- не определены, $\tt E_{K+1}\gg E_{end}$.
+
+
+
+\smallskip
+
+{\tt Проверка наличия задачи (\verb"if_task")}. Возможна выборка очередной задачи на обработку, если одновременно выполняются следующие условия: не достигнута заданная ошибка обучения $\tt E_{K+1}<E_{end}$; остались невыданные задачи $\tt W<W_{max}$.
+
+\smallskip
+
+{\tt Алгоритм извлечения задачи (get)}. Присвоить $\tt \Psi'_{K}:=\Psi_{K}$; определить случайное положение центра нейрона $\tt \psi'$. Увеличить счетчик запущенных задач $\tt W:=W+1$.
+
+\smallskip
+
+{\tt Алгоритм помещения результата вычисления задачи (put)}. 
+Если $\tt E'_{K+1}<E_{K+1}$, то определить $\tt E_{K+1}:=E'_{K+1}$ и $\tt \Psi_{K+1}:=\Psi'_{K+1}$. 
+Если $\tt W=W_{max}$, то закончено обучение слоя. В этом случае, если $\tt K<K_{max}$, переходим к следующему слою: $\tt K:=K+1$; $\tt W:=0$.
+
+\smallskip
+
+Алгоритм завершается, когда будут обучены все сети с числом нейронов до $\tt K_{max}$ включительно либо будет достигнуто заданное значение ошибки обучения $\tt E_{K+1}\le E_{end}$.
+
+\smallskip
+
+\Section{Численный эксперимент}
+Эксперимент по обучению нейронной сети параллельным алгоритмом на основе типового решения <<портфель задач>> был проведен на кластере Сергей Королёв (\url{http://hpc.ssau.ru}). Запуск задач производился на узлах 3-х типов с 3-мя различными типами процессоров соответственно:
+\begin{enumerate}
+\item узлы с процессорами типа Intel\textregistered Xeon\textregistered X5560 (8M Cache, 2.80 GHz, 6.40 GT/s Intel\textregistered QPI), имеющими 8 вычислительных ядер;
+\item узлы с процессорами типа Intel\textregistered Xeon\textregistered X5670 (12M Cache, 2.93 GHz, 6.40 GT/s Intel\textregistered QPI), имеющими 12 вычислительных ядер;
+\item узлы с процессорами типа Intel\textregistered Xeon\textregistered E5-2665 (20M Cache, 2.40 GHz, 8.00 GT/s Intel\textregistered QPI), имеющими 16 вычислительных ядер.
+\end{enumerate}
+
+В рамках данного эксперимента на быстродействие влияло количество доступных вычислительных ядер на узле, остальные параметры ощутимого влияния не оказывали.
+
+
+
+\begin{figure}[p!]
+\centering  \footnotesize
+\includegraphics[scale=.9]{8}
+\caption{Зависимость времени исполнения от количества рабочих процессов (8-ядер)}
+\label{img8}
+
+
+[Figure \ref{img8}. Dependence of the performance on the number of worker processes (8 cores)] 
+
+\bigskip
+
+\includegraphics[scale=.9]{8s}
+
+\caption{Зависимость СКО от количества рабочих процессов (8-ядер) [Figure \ref{img8s}. Dependence of the standard deviation (SD) on the number of worker processes (8 cores)]}
+\label{img8s}
+
+\bigskip
+
+\includegraphics[scale=.9]{12}
+
+\caption{Зависимость времени исполнения от количества рабочих процессов (12-ядер)}
+\label{img12}
+
+[Figure \ref{img12}. Dependence of the performance on the number of worker processes (12 cores)]
+
+\bigskip
+
+  
+\includegraphics[scale=.9]{12s}
+ 
+ 
+ 
+\caption{Зависимость СКО от количества рабочих процессов (12-ядер)  [Figure \ref{img12s}. Dependence of the standard deviation (SD) on the number of worker processes (12 cores)]}
+\label{img12s}
+
+\end{figure}
+
+Условия эксперимента состояли в следующем.
+\begin{enumerate}
+\item[1.] Варьировалось максимальное количество рабочих процессов $P$ <<портфеля задач>> (объявлено в конкретном эксперименте).
+\item[2.] Предельное количество нейронов $\tt K_{max}$ во всех экспериментах равнялось 100.
+\item[3.] Количество попыток добавления нейронов $\tt W_{max}$ во всех экспериментах равнялось 100.
+\end{enumerate}
+
+Для осуществления сравнительного анализа были произведены замеры времени исполнения последовательного и параллельного алгоритмов. Для минимизации воздействия сторонней динамической нагрузки процессоров на измеряемое время производилось по 20 запусков. При этом полученное время исполнения параллельного алгоритма $ {t_{\rm pr}}_{i} (P)$ было усреднено:
+\begin{equation}
+t_{\rm pr}(P)=\frac1{20}{\sum\nolimits_{i=1}^{20}{t_{\rm pr}}_{i}(P)}.\label{eqPr}
+\end{equation}
+
+Для времени исполнения последовательного алгоритма ${t_{\rm sq}}_{i}$ было найдено минимальное значение ${t_{\rm sq}}_{\min}=\min{\left({t_{\rm sq}}_{1}, {t_{\rm sq}}_{2}, \dots, {t_{\rm sq}}_{20}\right)}$, и на его основе рассчитано эталонное время исполнения параллельного алгоритма
+\begin{equation}
+t_{\rm std}(P )={{t_{\rm sq}}_{\min}}/{P}.
+\label{eqStd}
+\end{equation}
+Среднеквадратическое отклонение (СКО) рассчитывалось для ${t_{\rm pr}}_{i}(P)$.
+
+На узлах с процессорами Intel\textregistered Xeon\textregistered X5560 максимальное количество рабочих процессов $P$ изменялось в интервале [$1, 2, \ldots, 20$]. Данные, полученные при проведении эксперимента, приведены на рис.~\ref{img8}, соответствующее среднеквадратическое отклонение изображено на рис.~\ref{img8s}.
+
+
+На узлах с процессорами Intel\textregistered Xeon\textregistered X5570 максимальное количество рабочих процессов $P$ изменялось в интервале [$1, 2, \ldots, 30$]. Данные, полученные при проведении эксперимента, приведены на рис.~\ref{img12}, соответствующее среднеквадратическое отклонение изображено на рис.~\ref{img12s}.
+
+На узлах с процессорами Intel\textregistered Xeon\textregistered E5-2665 максимальное количество рабочих процессов $P$ изменялось в интервале [$1, 2, \ldots, 40$]. Данные, полученные при проведении эксперимента, приведены на рис.~\ref{img16}, соответствующее среднеквадратическое отклонение изображено на рис.~\ref{img16s}.
+
+\begin{figure}[h!]
+\centering
+\footnotesize 
+\includegraphics[scale=.9]{16}
+
+\caption{Зависимость времени исполнения от количества рабочих процессов (16-ядер)}
+\label{img16}
+
+[Figure~\ref{img16}. Dependence of the performance on the number of worker processes (16 cores)]
+
+\bigskip
+
+\includegraphics[scale=.9]{16s}
+
+\caption{Зависимость СКО от количества рабочих процессов (16-ядер) [Figure~\ref{img16s}. Dependence of the standard deviation (SD) on the number of worker processes (16 cores)]}
+\label{img16s}
+
+\end{figure}
+
+\Section[1]{Заключение}
+Анализируя графики, изображенные на рис.~\ref{img8}--\ref{img16s}, можно сделать вывод, что усредненное время исполнения параллельного алгоритма \eqref{eqPr}, разработанного с использованием типового решения <<портфель задач>>, лишь немного больше эталонного времени исполнения последовательного алгоритма \eqref{eqStd}. 
+
+Также можно заметить, что при достижении количеством рабочих процессов значения, приблизительно равного удвоенному количеству физических вычислительных ядер, уменьшение времени исполнения параллельного алгоритма практически прекращается. Это объясняется наличием технологии Hyper-threading в процессорах (удвоенное количество вычислительных потоков по отношению к количеству ядер). Если продолжать увеличивать количество рабочих процессов, то в связи с ростом накладных расходов время исполнения начнёт возрастать. Следовательно, число рабочих процессов, равное количеству вычислительных потоков, можно считать оптимальным и рекомендовать для использования в экспериментах с применением типового решения <<портфель задач>>.
+
+Реализация параллельного алгоритма с использованием данного типового решения значительно снижает трудоёмкость построения параллельного численного метода и сокращает объем кода, введенного ручным способом \cite{VostKhayrLitv2011GPT}; избавляет программиста от необходимости проектирования параллельной программы и, следовательно, уменьшает вероятность ошибок.
+
+Еще одно достоинство применения данного метода заключается в платформонезависимости. Для переноса программы с одной операционной системы на другую или с платформы, имеющей общую память, на платформу с распределенной памятью достаточно лишь заменить библиотеку времени исполнения, при этом программа будет компилироваться без каких-либо доработок (при условии, что она написана по стандартам {\tt ANSI С}/{\tt С++}).
+
+Разработанное в настоящей работе типовое решение <<портфель задач>> включено в состав веб-сервиса автоматизации параллельных вычислений на суперкомпьютере Сергей Королёв Самарского государственного аэрокосмического университета, развернутого по адресу \url{http://templet.ssau.ru} \cite{ArtamVostNazar2012IntegrationService}.
+
+{\thanks{{\bf Благодарности.} Автор выражает благодарность Самарскому государственному аэрокосмическому университету за поддержку этого исследования. Работа выполнена при государственной поддержке Министерства образования и науки РФ в рамках реализации мероприятий Программы повышения конкурентоспособности СГАУ среди ведущих мировых научно-образовательных центров на 2013--2020 годы.
+
+Отдельную благодарность автор выражает своему научному руководителю Сергею Владимировичу Востокину "--- за советы и неоценимую помощь в ходе работы.}}
+
+\thanks{{\bf ORCID}
+
+{\bf Litvinov, Vladimir:} \url{http://orcid.org/0000-0002-7082-9805}
+}
+
+\RusRef
+
+
+
+
+\begin{thebibliography}{10}
+
+
+\Bibitem{Sutter2005}
+\by Sutter~H.
+\paper The free lunch is over: A fundamental turn toward   concurrency in software
+\jour Dr. Dobb’s journal
+\yr 2005
+\vol 30
+\issue 3
+\pages 202--210
+\scopus{2-s2.0-34548083281}
+
+\RBibitem{MarchukKotov}
+\paper Проблемы вычислительной техники и фундаментальные   исследования
+\by Марчук~Г.~И., Котов~В.~Е.
+\jour Автом. и вычисл. техн.
+\yr 1979
+\issue 2
+\pages 3--14
+
+\Bibitem{Gamma1995Design}
+\book Design patterns: elements of reusable object-oriented software
+\by Gamma~E., Helm~R., Johnson~R., Vlissides~J.
+\publaddr Westford
+\publ Addison-Wesley
+\yr 1995
+\totalpages 395
+
+\Bibitem{Cole1989AlgorithmicSkeletons}
+\by Cole~M.~I.
+\book Algorithmic skeletons: structured management of parallel   computation
+\publaddr Massachu\-setts, Cambridge, Boston
+\publ MIT Press
+\yr 1989
+\totalpages v+132
+
+
+
+\Bibitem{MacDonald2000Generating}
+\paper Generating parallel program frame\-works from parallel design patterns
+\by MacDonald~S., Szafron~D., Schaeffer~J., Bromling~S.
+\inbook  Euro-Par 2000 Parallel Processing
+\vol 1900 
+\serial Lecture Notes in Computer Science
+\publ Springer 
+\publaddr Berlin, Heidelberg
+\yr 2000
+\pages 95--104
+\crossref{10.1007/3-540-44520-X_13}
+
+
+
+\Bibitem{Schmidt2001cpp1}
+\book C++ Network Programming
+\bookvol I
+\volinfo Mastering   Complexity with ACE and Patterns
+\by Schmidt~D.~C., Huston~S.~D. 
+\publ FT Press
+\yr 2001
+\totalpages  336
+\scopus{2-s2.0-32444441098}
+
+\RBibitem{Berzigiyarov}
+\by Берзигияров~П.~К.
+\paper Программирование на типовых алгоритмических   структурах с массивным параллелизмом
+\jour Вычислительные методы и программирование
+\yr 2001
+\vol 2
+\issue 2
+\pages 1--16
+
+\Bibitem{Malishkin2001Assembly}
+\paper Assembly technology for parallel realization of   numerical models on mimd-multicomputers
+\by Kraeva~M.~A., Malyshkin~V.~E.
+\jour Future Generation Computer Systems
+\yr 2001
+\vol  17
+\issue 6
+\pages 755--765
+\crossref{10.1016/s0167-739x(00)00058-3}
+\scopus{2-s2.0-0035312956}
+
+
+\Bibitem{Botorog1996skil}
+\crossref{10.1109/hpdc.1996.546194}
+\paper Skil: An imperative language with algorithmic   skeletons for efficient distributed programming
+\by Botorog~G.~H., Kuchen~H.
+\inbook Proceedings of 5th IEEE International Symposium on High Performance Distributed Computing, \rm HPDC-96
+\yr 1996
+\totalpages 243--252
+\scopus{2-s2.0-0029728519}
+
+\Bibitem{Dorta2003llc}
+\crossref{10.1142/s0129626403001409}
+\paper Llc: A parallel skeletal lan\-guage
+\by Dorta~A.~J., Gonz\'alez~J.~A., Rodr\'iguez~C., De~Sande~F.
+\jour Parallel Processing   Letters
+\yr 2003
+\vol 13
+\issue 03
+\pages 437--448
+\scopus{2-s2.0-0346267382}
+
+\Bibitem{Iosup2008performance}
+\paper The performance of bags-of-tasks in large-scale distributed systems
+\by   Iosup~A., Sonmez~O., Anoep~S., Epema~D.
+\inbook Proceedings of the 17th International Symposium on High Performance Distributed Computing 2008, \rm HPDC'08
+\yr 2008
+\pages 97--108
+\crossref{10.1145/1383422.1383435}
+\scopus{2-s2.0-57349116875}
+
+
+\Bibitem{IntelThreadingBuildingBlocks2007}
+\by Reinders~J.
+\book Intel Threading Building Blocks: Outfitting C++ for  Multi-core Processor Parallelism
+\publ O'Reilly Media
+\publaddr Beijing, Cambridg, etc.
+\yr 2007
+\totalpages 336
+
+
+
+
+\Bibitem{Blumofe1996cilk}
+\paper Cilk: An Efficient Multithreaded Runtime System
+\yr 1996 
+\jour Journal of Parallel and Distributed Computing 
+\vol 37 
+\issue 1 
+\pages 55--69
+\by Blumofe~R.~D., Joerg~C.~F., Kuszmaul~B.~C., Leiserson~C.~E., Randall~K.~H., Zhou~Y. 
+\crossref{10.1006/jpdc.1996.0107} 
+\scopus{2-s2.0-0030601279}
+
+\Bibitem{Dagum1998openmp}
+\paper OpenMP: an industry standard API for shared-memory programming
+\yr 1998 
+\jour IEEE Computational Science and Engineering 
+\vol 5 
+\issue 1 
+\pages 46--55
+\crossref{10.1109/99.660313}
+\scopus{2-s2.0-0002806690}
+
+
+\Bibitem{Konovalov1994fortran}
+\paper Fortran dvm --- a language for portable parallel program development
+\by Konovalov~N.~A., Krukov~V.~A., Mihailov~S.~N., Pogrebtsov~A.~A.
+\inbook Proceedings of Software For Multiprocessors \& Supercomputers:   Theory, Practice, Experience
+\yr 1994
+\pages 124--133
+
+
+\Bibitem{Lamport1994Temporal}
+\by Lamport~L.
+\paper The temporal logic of actions
+\jour ACM Transactions on Programming Languages and Systems
+\vol 16
+\issue 3
+\pages 872–923
+\yr 1994
+\crossref{10.1145/177492.177726}
+
+
+\Bibitem{Lamport2002SpecifyingSystems}
+\by Lamport~L.
+\book Specifying systems: The TLA+ Language and Tools for Hardware and Software Engineers 
+\publ Addison-Wesley
+\publaddr Boston, San Francisco, etc.
+\yr 2002
+\totalpages xviii+364
+
+
+\RBibitem{Vostokin2007Graph}
+\by Востокин~С.~В.
+\book Графическая объектная модель параллельных процессов и~ее применение в задачах численного моделирования
+\publaddr Самара
+\publ СНЦ РАН
+\yr 2007
+\totalpages 286
+
+\RBibitem{Vost2010GPT}
+\by Востокин~С.~В.
+\paper Система автоматизации параллельного программирования Graphplus Templet
+\inbook Параллельные вычисления и задачи управления, \rm PACO’2010
+\bookinfo Труды Пятой Международной конференции
+\publaddr М.
+\publ ИПУ РАН
+\yr 2010
+\pages 1143--1156
+\url{http://paco2010.ipu.ru/pdf/C105.pdf}
+
+\RBibitem{Vost2012Method}
+\by Востокин~С.~В. 
+\paper Templet – метод процессно-ориентированного моделирования параллелизма 
+\jour Программные продукты и системы
+\yr 2012
+\issue 3
+\pages 11--14
+
+
+
+\RBibitem{VostKhayrLitvMakag2012VisualModel}
+\by Востокин~С.~В., Литвинов~В.~Г., Макагонова~Д.~Д., Хайрутдинов~А.~Р.
+\paper Визуальное моделирование параллельных алгоритмов в процессно-ориентированной нотации Templet 
+\inbook Параллельные вычисления и задачи управления, \rm PACO’2012
+\bookinfo Тр. Шестой Меж\-ду\-народн. конф-ции
+\publaddr  М.
+\publ ИПУ РАН
+\yr 2012
+\bookvol 1 
+\pages 260--269
+\url{http://paco2012.ipu.ru/procdngs/E208.pdf}
+
+
+
+
+
+
+\RBibitem{Osovsky2004Neural}
+\by Осовский~С.
+\book Нейронные сети для обработки информации
+\publaddr М.
+\publ Финансы и статистика
+\yr 2004
+\totalpages 344
+
+\Bibitem{Heikin2008Neural}
+\by Haykin~S.~O.
+\book Neural Networks and Learning Machines \rm (3rd Edition)
+\publ Prentice Hall
+\yr 2008
+\publ New York 
+\totalpages 936
+
+
+
+\RBibitem{Litvinov2010Methods}
+\by Литвинов~В.~Г., Солдатова~О.~П.
+\paper Методы построения оптимальной структуры HRBF нейронной сети для решения задачи прогнозирования
+\inbook Перспективные информационные технологии для авиации и~космоса, \rm ПИТ-2010
+\bookinfo Труды Международной конференции с элементами научной   школы для молодежи
+\publaddr СГАУ
+\publ Самара
+\yr 2010
+\pages 252--254
+
+
+\RBibitem{VostKhayrLitv2011GPT}
+\by Востокин~С.~В., Хайрутдинов~А.~Р., Литвинов~В.~Г.
+\paper Программный комплекс параллельного программирования Graphplus Templet
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\yr 2011
+\issue 4(25)
+\pages 146--153
+\mathnet{http://mi.mathnet.ru/vsgtu1027}
+\crossref{10.14498/vsgtu1027}
+
+
+
+\RBibitem{ArtamVostNazar2012IntegrationService}
+\paper Templet – Сервис непрерывной интеграции для разработки высокопроизводительных приложений 
+\by Артамонов~Ю.~С.,  Востокин~С.~В., Назаров~Ю.~П.
+\inbook Высокопроизводительные параллельные вычисления на кластерных системах
+\bookinfo Материалы XII всероссийской конференции
+\publaddr Нижний Новгород
+\publ Изд-во НГУ
+\yr 2012 
+\pages 82
+
+
+\end{thebibliography}
+
+
+\RuDate
+
+\vspace{1cm}
+
+\makeentitle
+
+
+\thanks{{\bf Acknowledgments.}
+The author thanks Samara State Aerospace University named after academician S.~P.~Korolyov for its support of this research. 
+The work has been done being supported by The Ministry of Education and Science of the Russian Federation to realize the items of the Samara State Aerospace University named after academician S.~P.~Korolyov under competitiveness improvement program among leading world scientific-educational centers for the period of 2013--2020.
+
+I am especially thankful to Sergey Vladimirovich Vostokin my scientific supervisor for his advices and great help during the work.}
+
+\thanks{{\bf ORCID}
+
+{\bf Litvinov, Vladimir:} \url{http://orcid.org/0000-0002-7082-9805}
+}
+
+
+\EngRef
+
+
+
+\begin{thebibliography}{10}
+
+
+\Bibitem{Sutter2005-eng}
+\by Sutter~H.
+\paper The free lunch is over: A fundamental turn toward   concurrency in software
+\jour Dr. Dobb’s journal
+\yr 2005
+\vol 30
+\issue 3
+\pages 202--210
+\scopus{2-s2.0-34548083281}
+
+\Bibitem{MarchukKotov-eng}
+\lang In Russian
+\paper  Problems of computer technology and fundamental research
+\by Marchuk~G.~I., Kotov~V.~E.
+\jour Avtom. i vychisl. tekhn.
+\yr 1979
+\issue 2
+\pages 3--14
+
+\Bibitem{Gamma1995Design-eng}
+\book Design patterns: elements of reusable object-oriented software
+\by Gamma~E., Helm~R., Johnson~R., Vlissides~J.
+\publaddr Westford
+\publ Addison-Wesley
+\yr 1995
+\totalpages 395
+
+\Bibitem{Cole1989AlgorithmicSkeletons-eng}
+\by Cole~M.~I.
+\book Algorithmic skeletons: structured management of parallel   computation
+\publaddr Massachu\-setts, Cambridge, Boston
+\publ MIT Press
+\yr 1989
+\totalpages v+132
+
+
+
+\Bibitem{MacDonald2000Generating-eng}
+\paper Generating parallel program frame\-works from parallel design patterns
+\by MacDonald~S., Szafron~D., Schaeffer~J., Bromling~S.
+\inbook  Euro-Par 2000 Parallel Processing
+\vol 1900 
+\serial Lecture Notes in Computer Science
+\publ Springer 
+\publaddr Berlin, Heidelberg
+\yr 2000
+\pages 95--104
+\crossref{10.1007/3-540-44520-X_13}
+
+
+
+\Bibitem{Schmidt2001cpp1-eng}
+\book C++ Network Programming
+\bookvol I
+\volinfo Mastering   Complexity with ACE and Patterns
+\by Schmidt~D.~C., Huston~S.~D. 
+\publ FT Press
+\yr 2001
+\totalpages  336
+\scopus{2-s2.0-32444441098}
+
+\Bibitem{Berzigiyarov-eng}
+\lang In Russian
+\paper Programming using standardized algorithmic structures with massive parallelism
+\by Berzigiyarov~P.~K. 
+\jour Vychislitel'nye metody i programmirovanie
+\yr 2001
+\vol 2
+\issue 2
+\pages 1--16
+
+\Bibitem{Malishkin2001Assembly-eng}
+\paper Assembly technology for parallel realization of   numerical models on mimd-multicomputers
+\by Kraeva~M.~A., Malyshkin~V.~E.
+\jour Future Generation Computer Systems
+\yr 2001
+\vol  17
+\issue 6
+\pages 755--765
+\crossref{10.1016/s0167-739x(00)00058-3}
+\scopus{2-s2.0-0035312956}
+
+
+\Bibitem{Botorog1996skil-eng}
+\crossref{10.1109/hpdc.1996.546194}
+\paper Skil: An imperative language with algorithmic   skeletons for efficient distributed programming
+\by Botorog~G.~H., Kuchen~H.
+\inbook Proceedings of 5th IEEE International Symposium on High Performance Distributed Computing, \rm HPDC-96
+\yr 1996
+\totalpages 243--252
+\scopus{2-s2.0-0029728519}
+
+\Bibitem{Dorta2003llc-eng}
+\crossref{10.1142/s0129626403001409}
+\paper Llc: A parallel skeletal lan\-guage
+\by Dorta~A.~J., Gonz\'alez~J.~A., Rodr\'iguez~C., De~Sande~F.
+\jour Parallel Processing   Letters
+\yr 2003
+\vol 13
+\issue 03
+\pages 437--448
+\scopus{2-s2.0-0346267382}
+
+\Bibitem{Iosup2008performance-eng}
+\paper The performance of bags-of-tasks in large-scale distributed systems
+\by   Iosup~A., Sonmez~O., Anoep~S., Epema~D.
+\inbook Proceedings of the 17th International Symposium on High Performance Distributed Computing 2008, \rm HPDC'08
+\yr 2008
+\pages 97--108
+\crossref{10.1145/1383422.1383435}
+\scopus{2-s2.0-57349116875}
+
+
+\Bibitem{IntelThreadingBuildingBlocks2007-eng}
+\by Reinders~J.
+\book Intel Threading Building Blocks: Outfitting C++ for  Multi-core Processor Parallelism
+\publ O'Reilly Media
+\publaddr Beijing, Cambridg, etc.
+\yr 2007
+\totalpages 336
+
+
+
+
+\Bibitem{Blumofe1996cilk-eng}
+\paper Cilk: An Efficient Multithreaded Runtime System
+\yr 1996 
+\jour Journal of Parallel and Distributed Computing 
+\vol 37 
+\issue 1 
+\pages 55--69
+\by Blumofe~R.~D., Joerg~C.~F., Kuszmaul~B.~C., Leiserson~C.~E., Randall~K.~H., Zhou~Y. 
+\crossref{10.1006/jpdc.1996.0107} 
+\scopus{2-s2.0-0030601279}
+
+\Bibitem{Dagum1998openmp-eng}
+\paper OpenMP: an industry standard API for shared-memory programming
+\yr 1998 
+\jour IEEE Computational Science and Engineering 
+\vol 5 
+\issue 1 
+\pages 46--55
+\crossref{10.1109/99.660313}
+\scopus{2-s2.0-0002806690}
+
+
+\Bibitem{Konovalov1994fortran-eng}
+\paper Fortran dvm --- a language for portable parallel program development
+\by Konovalov~N.~A., Krukov~V.~A., Mihailov~S.~N., Pogrebtsov~A.~A.
+\inbook Proceedings of Software For Multiprocessors \& Supercomputers:   Theory, Practice, Experience
+\yr 1994
+\pages 124--133
+
+
+\Bibitem{Lamport1994Temporal-eng}
+\by Lamport~L.
+\paper The temporal logic of actions
+\jour ACM Transactions on Programming Languages and Systems
+\vol 16
+\issue 3
+\pages 872–923
+\yr 1994
+\crossref{10.1145/177492.177726}
+
+
+\Bibitem{Lamport2002SpecifyingSystems-eng}
+\by Lamport~L.
+\book Specifying systems: The TLA+ Language and Tools for Hardware and Software Engineers 
+\publ Addison-Wesley
+\publaddr Boston, San Francisco, etc.
+\yr 2002
+\totalpages xviii+364
+
+
+\Bibitem{Vostokin2007Graph-eng}
+\lang In Russian
+\by Vostokin~S.~V.
+\book Graficheskaia ob"ektnaia model' parallel'nykh protsessov i~ee primenenie v zadachakh chislennogo modelirovaniia \rm [Graphical object model of parallel processes and its appication in the numerical modeling problem]
+\publaddr Samara
+\publ Samara Research Center of RAS
+\yr 2007
+\totalpages 286
+
+
+\Bibitem{Vost2010GPT-eng}
+\lang In Russian
+\by Vostokin~S.~V. 
+\paper Parallel programming automation system Graphplus Templet 
+\inbook Parallel'nye vychisleniia i zadachi upravleniia, \rm PACO’2010 \rm [Parallel Computing and Control Problems]
+\bookinfo Proc. Fifth International Conf.
+\publaddr Moscow
+\publ Institute of Control Sciences
+\yr 2010
+\pages 1143--1156
+\url{http://paco2010.ipu.ru/pdf/C105.pdf}
+
+\Bibitem{Vost2012Method-eng}
+\by Vostokin~S.~V.
+\paper Templet – A method of process oriented simulation of parallelism
+\jour Programm\-nye produkty i sistemy
+\yr 2012
+\issue 3
+\lang In Russian
+\pages 11--14
+
+
+
+\Bibitem{VostKhayrLitvMakag2012VisualModel-eng}
+\lang In Russian
+\by Vostokin~S.~V., Litvinov~V.~G., Makagonova~D.~D., Khairutdinov~A.~R.
+\paper Visual modeling of parallel algorithms in process oriented notation Templet
+\inbook Parallel'nye vychisleniia i zadachi upravleniia, \rm PACO’2012 \rm [Parallel Computing and Control Problems]
+\bookinfo Proc. Sixth International Conf.
+\publaddr Moscow
+\publ Institute of Control Sciences
+\yr 2012
+\bookvol 1 
+\pages 260--269
+\url{http://paco2012.ipu.ru/procdngs/E208.pdf}
+
+
+
+
+
+
+\Bibitem{Osovsky2004Neural-eng}
+\by Osovskii~S.
+\book Neironnye seti dlia obrabotki informatsii \rm [Neural network for processing information]
+\publaddr Moscow
+\publ Finansy i statistika
+\yr 2004
+\totalpages 344
+
+
+
+\Bibitem{Heikin2008Neural-eng}
+\by Haykin~S.~O.
+\book Neural Networks and Learning Machines \rm (3rd Edition)
+\publ Prentice Hall
+\yr 2008
+\publ New York 
+\totalpages 936
+
+
+
+\Bibitem{Litvinov2010Methods-eng}
+\by Litvinov~V.~G., Soldatova~O.~P.
+\paper Methods of constructing optimal structure of the HRBF neural network for solving forecasting problem
+\inbook Perspektivnye informatsionnye tekhnologii dlia aviatsii i~kosmosa, \rm PIT-2010 [Advanced information technologies for aviation and cosmos]
+\publaddr Samara State Aerospace Univ.
+\publ Samara
+\yr 2010
+\pages 252--254
+
+
+
+
+\Bibitem{VostKhayrLitv2011GPT-eng}
+\lang In Russian
+\by Vostokin~S.~V., Khayrutdinov~A.~R., Litvinov~V.~G.
+\paper Parallel programming software package Graphplus templet
+\jour Vestn. Samar. Gos. Tekhn. Univ. Ser. Fiz.-Mat. Nauki
+\yr 2011
+\issue 4(25)
+\pages 146--153
+\mathnet{http://mi.mathnet.ru/vsgtu1027}
+\crossref{10.14498/vsgtu1027}
+
+
+
+\Bibitem{ArtamVostNazar2012IntegrationService-eng}
+\paper Templet – A service of continuous integration  to the development  of high-performance applications
+\by Artamonov~Yu.~S.,  Vostokin~S.~V., Nazarov~Yu.~P.
+\inbook Vysokoproizvoditel'nye parallel'nye vychisleniia na klasternykh sistemakh \rm [High-performance parallel computations on cluster systems]
+\bookinfo Proceedings of XII All-Russian Conference
+\publaddr Nizhni Novgorod
+\publ Nizhni Novgorod State Univ. Publ.
+\yr 2012 
+\pages 82
+\lang In Russian
+
+
+
+\end{thebibliography}
+
+
+\EngDate
+
+
+
+
+\newpage 
+\Russian
+%
+% \tableofengcontents
+%
+%\end{document}

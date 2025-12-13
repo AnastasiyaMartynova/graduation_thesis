@@ -1,0 +1,861 @@
+% \input{../preamblw}
+%
+%
+%
+%%%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}} 
+%%\newcommand{\tobot}[1]{\raisebox{-6pt}[1pt][2pt]{#1}
+%
+% \begin{document}
+
+
+\renewcommand{\firstpage}{103}
+\renewcommand{\lastpage}{114}
+
+
+%\Partition{Математическое моделирование}{Differential equations} 
+
+
+\udk{519.1:539.3}
+\msc{74S30; 74B05}% Коды MSC см. http://www.ams.org/msc/
+
+\title{Осесимметричная графовая модель упругого тела с~переменным модулем упругости}{Осесимметричная графовая модель упругого тела с переменным модулем упругости}
+
+\author{А.\,А.~Тырымов}{Т\,ы\,р\,ы\,м\,о\,в~А.\,А.}
+
+\institute{\volggtu.}
+% Если несколько, то так  \institute{ Организация 1 \and Организация 2  \and Организация 3}
+
+\email{E-mail}{tyrymov2010@yandex.ru} 
+
+\otherinf{\fullauthor{Александр Александрович Тырымов}\regalia{к.ф.-м.н., доц.} \position{доцент}
+\dept{каф. прикладной математики} }
+
+\keywords{математическое моделирование, теория упругости, ориентированный граф, деформация, напряжения}
+
+\workabstract{Предлагается численный метод анализа упругой среды на
+основе дискретной модели в виде ориентированного графа. 
+В~процессе анализа на основе графового подхода тело рассекается на элементы и~для каждого из них строится элементарная ячейка (подграф), являющаяся его моделью. 
+С использованием матриц, представляющих структурные элементы графа, а также уравнений, описывающих разрезанное тело, получены  уравнения связного тела. Приведён числовой пример, показывающий работоспособность предложенного подхода.}
+
+\engtitle{Numerical solution of axisymmetric problem of the theory of elasticity on the basis of continuum graph model}
+
+\engauthor{A.\,A.~Tyrymov}{T\,y\,r\,y\,m\,o\,v~A.\,A.}
+
+
+\enginstitute{\engvolggtu.}% Место работы каждого из авторов на англ. языке
+% Если несколько, то так  \enginstitute{ Организация 1 \and Организация 2  \and Организация 3}
+
+\otherenginfm{\fullauthor{Alexander A. Tyrymov} \regalia{Ph.\,D. (Phys. \& Math.)} 
+\dept{Dept. of Applied Mathematics} }
+
+\engabstract{A numerical method  for analysis of the stress  strain
+state of elastic media based on a discrete model in form of
+directed graph is suggested. To analyze a deformable body using
+the graph approach, we partition a solid body on elements and
+replace each element by its model in the form of an elementary
+cell. The matrices, presenting several structure elements of the
+graph, and the equations, describing the elementary cells,
+contribute to deriving the constitutive equations of the intact
+body. Numerical examples are presented. }
+
+\engkeywords{mathematical simulation, elasticity, directed graph, strain, stress}
+
+\date{28/XII/2010} % Дата поступления статьи в редакцию.
+\revisiondate{27/II/2012} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+
+\Section[n]{Введение} Графовая модель однородной упругой среды в~осесимметричной постановке рассматривалась в~работах Е.~Г.~Кузовкова и А.~А.~Тырымова~\cite{tyr:bib:1, tyr:bib:2}, где деформации в пределах элемента предполагались постоянными, и~в~\cite{tyr:bib:3}, где использовалась линейная аппроксимация деформаций, однако при определении коэффициентов было сделано несколько упрощающих допущений. Автор настоящей работы показывает возможности графового подхода при определении напряжённо"=деформированного состояния в~упругих телах с~непрерывной неоднородностью, причём при выводе матрицы жёсткости графового элемента он не делает никаких упрощающих предположений.
+
+\smallskip
+
+
+
+\Section{Основные уравнения осесимметричной теории упругости} В
+цилиндрической системе координат $r$, $z$, $\varphi$   закон Гука для
+изотропного тела запишем, используя тензор плотности напряжений
+$\{\sigma'\}$ , компоненты которого имеют вид
+$\sigma'^{ij}=r\sigma^{ij}$. В результате получим
+\begin{equation}\label{tyrymov:sis1}
+\begin{array}{l}
+  \displaystyle \sigma'^{rr}=(\lambda+2\mu)r\varepsilon_{rr}+\lambda r\varepsilon_{zz}+
+  \frac{\lambda}{r}\varepsilon_{\varphi\varphi} , \\
+    \displaystyle  \sigma'^{zz} =\lambda r\varepsilon_{rr}+    (\lambda+2\mu)r\varepsilon_{zz}+\frac{\lambda}{r}\varepsilon_{\varphi\varphi}, \\
+  \displaystyle  \sigma'^{\varphi\varphi}=\frac{\lambda}{r}\varepsilon_{rr}+\frac{\lambda}{r}\varepsilon_{zz}+
+  \frac{\lambda+2\mu}{r^3}\varepsilon_{\varphi\varphi} ,\\
+    \sigma'^{rz}=\mu r \gamma_{rz}, \\
+\end{array}
+\end{equation}
+где $\gamma_{rz}=\varepsilon_{rz}+\varepsilon_{zr}$, $ \lambda$ и $\mu$ "--- упругие постоянные Ламе, которые в общем случае изотропного неоднородного тела являются функциями координат $r$ и $z$. 
+В~дальнейшем будем рассматривать наиболее важный частный случай, когда коэффициент Пуассона постоянен ($\nu ={\rm const} $), а модуль упругости изменяется по закону степенной функции $E(r)=E_0r^\alpha$, где $E_0$ "--- постоянный коэффициент, $ \alpha $ "--- вещественное число, $r$ "--- расстояние от оси симметрии тела.
+Тогда
+\begin{equation}\label{tyrymov:ur2}
+   \mu(r)=0,5E_0r^\alpha(1+\nu)^{-1},\quad \lambda(r)=k_0\mu(r),\quad    k_0=2\nu(1-2\nu)^{-1}.
+\end{equation}
+Уравнения равновесия с использованием тензорных плотностей имеют вид \cite{tyr:bib:4}
+\begin{equation}\label{tyrymov:sis2}
+\begin{array}{l}
+  \displaystyle \frac{\partial\sigma'^{rr} }{\partial r}+\frac{\partial\sigma'^{rz} }{\partial z}-
+  r\sigma'^{\varphi\varphi}=0,\qquad
+   \frac{\partial\sigma'^{zz} }{\partial z}+\frac{\partial\sigma'^{zr} }{\partial r}=0. 
+\end{array}
+    \end{equation}
+
+\smallskip
+
+\Section{Конструирование элементарной ячейки} Основой для
+построения моделей в~виде графа служит объективный характер
+операций измерения выбранных независимых переменных. Как известно,
+целью любого измерения является установление зависимости между
+значениями переменной и показаниями прибора. В то же время
+измерение связано как с точками системы, между которыми оно
+осуществляется, так и с ориентацией измерителя. Эти свойства
+операции измерения можно представить направленным отрезком, то
+есть дугой графа.
+
+С точки зрения операции измерения все переменные независимо от их
+физической природы могут быть подразделены на два типа "---
+параллельные и последовательные \cite{tyr:bib:5}. Параллельные переменные
+характерны тем, что измеритель подключается к двум точкам системы
+параллельно потоку энергии. Для измерения последовательных
+переменных прибор должен быть установлен в разрыв энергетического
+потока. К параллельным переменным относятся линейные и угловые
+разности перемещений, относительные скорости и ускорения,
+деформации, разности давлений, температур, электрических
+потенциалов и так далее. К последовательным переменным относятся
+силы, моменты сил, электрический ток, тепловой поток, поток
+жидкости или газа и другие. Выбор связной пары переменных
+определяется тем, что произведение последовательной и параллельной
+переменных должно давать скаляр с размерностью мощности или
+работы. При построении графа исследуемого тела за исходные удобно
+взять те переменные, которые измеряются установкой прибора
+непосредственно на исследуемый объект, то есть параллельные
+переменные. Способ конструирования графа тела связан с процессом
+измерения полного и независимого комплекта переменных, которые
+однозначно характеризуют деформированное состояние элементов,
+полученных в результате декомпозиции. Элементарной ячейкой
+(графовым элементом) будем называть подграф, соответствующий
+одному элементу, полученному при разбиении исходной области на
+отдельные части. При построении конфигурации элементарной ячейки в
+осесимметричной постановке сечение тела плоскостью, проходящей
+через его ось, покрываем сеткой координатных линий $r={\rm const}$, 
+$z={\rm const}$, между узлами которых устанавливаем гипотетические
+измерители. Полученную сеть измерителей преобразовываем в граф,
+представляя каждый из приборов дугой, а узлы, между которыми
+осуществлялось измерение, "--- вершинами графа. При этом вместо
+собственно измерителя будем ставить символ, отражающий природу
+измеряемой величины. Если вершины элемента обозначить $A$, $B$, $C$  и
+$D$, то измерители необходимо установить так, чтобы измерять
+относительные перемещения точек $A$, $B$, $C$, $D $ друг относительно
+друга (деформации $\delta_{rr}$, $\delta_{rz}$, $\delta_{zz}$, $\delta_{zr}$) и относительно
+глобальной  системы координат (перемещения
+$u_r^A$, $u_r^B$, $u_r^C$, $u_r^D$). 
+Поскольку одни и те же точки участвуют в разных группах измерений относительно осей $r$  и
+$z$, они представлены разными вершинами. 
+В~соответствии с описанной последовательностью получаем элементарную
+ячейку прямоугольного элемента в осесимметричной постановке (рис.~1). 
+Дуги элементарной ячейки вводят два вектора: вектор деформаций $\{\delta\}_c$  и вектор внутренних сил $\{f\}_c$:
+\begin{equation}\label{tyrymov:ur4}
+\begin{array}{l}
+    \{\delta\}_c^\top =\{\delta_{rr}^d,\delta_{zz}^l,u_r^C,u_r^D,\delta_{rr}^u,\delta_{zz}^r,
+    u_r^A,u_r^B,\delta_{zr}^d,\delta_{rz}^l,\delta_{zr}^u,\delta_{rz}^r\}, \\[2mm]
+%\\
+%\label{tyrymov:ur5}
+    \{f\}_c^\top =\{f_d^{rr},f_l^{zz},f_C^{r},f_D^{r},f_u^{rr},f_r^{zz},f_A^{r},f_B^{r},f_d^{zr},f_l^{rz},f_u^{zr},f_r^{rz}\},
+    \end{array}
+\end{equation}
+где $\delta_{rr}^d$, $\delta_{zz}^l$, $\delta_{rr}^u$, $\delta_{zz}^r$ "---
+нормальные деформации;
+$\delta_{zr}^d$, $\delta_{rz}^l$, $\delta_{zr}^u$, $\delta_{rz}^r$ "---
+относительные перемещения, обусловленные поворотом сторон
+элемента;
+$u_r^A$, $u_r^B$, $u_r^C$, $u_r^D$ "--- перемещения точек,
+соответствующих вершинам в глобальной системе координат;
+$f_d^{rr}$, $f_l^{zz}$, $f_u^{rr}$, $f_r^{zz}$ "--- нормальные внутренние силы
+(обобщённые напряжения); $f_d^{zr}$, $f_l^{rz}$, $f_u^{zr}$, $f_r^{rz}$ "---
+тангенциальные внутренние силы; $f_A^{r}$, $f_B^{r}$, $f_C^{r}$, $f_D^{r}$ "---
+внутренние силы в глобальной системе координат. 
+Индексы $u$, $d$, $l$, $r$  обозначают соответственно верхние, нижние,
+левые и правые  дуги элементарной ячейки, а символ $\top$ "--- операцию
+транспонирования.
+
+%\begin{figure}[h]
+%    \includegraphics[width=10cm]{RS1.eps}\\
+%    \caption{Элементарная ячейка в осесимметричной постановке (в кружках --- верхний и нижний индексы
+%    переменных, представленных дугами ячейки);$U_r$ - компонента (а), $U_z$ - компонента (б); стрелками показано
+%     направление обхода контура}
+%  \end{figure}
+
+\begin{figure}[h!]\centering
+\includegraphics[scale=1]{./00PIC/ris1}
+\caption{Элементарная ячейка в осесимметричной постановке: \footnotesize {\sl а}\/)  компонента $U_r$, {\sl б}) компонента  $U_z$; стрелками показано      направление обхода контура; в кружках "--- верхний и нижний индексы
+    переменных, представленных дугами ячейки}
+%\includegraphics{ris.eps}
+\end{figure}
+
+
+
+\Section{Построение матрицы жёсткости элементарной ячейки}
+Описание элементарной ячейки, т.~е. связь векторов $\{f\}_c$  и~$\{\delta\}_c$,  а~также зависимость их от напряжений $\{\sigma\}$ и деформаций $\{\varepsilon\}$  моделируемого тела устанавливаем,
+принимая в качестве инварианта перехода к модели энергию деформации элемента среды:
+\begin{equation}\label{tyrymov:fd}
+    \{f\}_c^\top \{\delta\}_c=\int_V\{\sigma'\}^\top \{\varepsilon\}dV,
+\end{equation}
+где $\{\delta\}_c$  и $\{f\}_c$   определяются формулами
+\eqref{tyrymov:ur4}. В результате энергию элементарной ячейки
+можно представить, с одной стороны, в виде
+\begin{multline}\label{tyrymov:energ}
+   \{f\}_c^\top \{\delta\}_c=f_d^{rr}\delta_{rr}^d+f_l^{zz}\delta_{zz}^l+f_C^{r}u_{r}^C+f_D^{r}u_{r}^D+
+   f_u^{rr}\delta_{rr}^u+f_r^{zz}\delta_{zz}^r+ \\
+  +f_A^{r}u_{r}^A+f_B^{r}u_{r}^B+f_d^{zr}\delta_{zr}^d+f_l^{rz}\delta_{rz}^l+
+   f_u^{zr}\delta_{zr}^u+f_r^{rz}\delta_{rz}^r,
+\end{multline}
+с другой стороны, энергия деформации элемента сплошной среды есть
+\begin{equation}\label{tyrymov:endef}
+    \int_V\{\sigma' \}^\top \{\varepsilon\}dV=\int_V\left(\sigma'^{rr}\varepsilon_{rr}+\sigma'^{zz}\varepsilon_{zz}+
+    \sigma'^{\varphi\varphi}\varepsilon_{\varphi\varphi}+\sigma'^{rz}\gamma_{rz}\right)dV.
+\end{equation}
+При определении энергии деформации \eqref{tyrymov:endef} требуется
+интегрирование выражения
+$\sigma'^{rr}\varepsilon_{rr}+\sigma'^{zz}\varepsilon_{zz}+
+    \sigma'^{\varphi\varphi}\varepsilon_{\varphi\varphi}+\sigma'^{rz}\gamma_{rz}$,
+содержащего неизвестные деформации и напряжения. В связи с этим
+аппроксимируем неизвестные деформации в~пределах элемента
+полиномами, линейными относительно переменных~$r$~и~$z$:
+\begin{equation}\label{tyrymov:aprxm}
+    \begin{array}{c}
+      \displaystyle \varepsilon_{rr}=\frac{\partial u_r}{\partial r}=a_0+a_1r+a_2z, \qquad
+      \varepsilon_{zz}=\frac{\partial u_z}{\partial z}=b_0+b_1r+b_2z , \\[2mm]
+       \displaystyle \frac{\partial u_r}{\partial z}=c_0+c_1r+c_2z, \qquad
+      \frac{\partial u_z}{\partial r}=d_0+d_1r+d_2z, \\[2mm]
+      \displaystyle \gamma_{rz}=\frac{\partial u_r}{\partial z}+\frac{\partial u_z}{\partial r}=
+      c_0+d_0+(c_1+d_1)r+(c_2+d_2)z,\quad \varepsilon_{\varphi\varphi}=ru_r. \\
+    \end{array}
+\end{equation}
+Выбирая систему координат так, чтобы ось $z$  совпадала с осью
+симметрии тела, а ось $r$  проходила через центр элемента, в
+пределах элемента имеем $ R_i\leqslant r \leqslant R_e$, $-\Delta z \leqslant 2 z \leqslant \Delta z$. 
+Неизвестные коэффициенты полиномов в~\eqref{tyrymov:aprxm} выразим через деформации сторон элемента. С помощью интегрирования вдоль соответствующей грани элемента имеем
+$$
+\begin{array}{c}
+ \displaystyle  \delta_{rr}=\int_{R_i}^{R_e}\frac{\partial u_r}{\partial r} dr=(a_0+a_1R_c+a_2z)\Delta r, \quad
+ \delta_{rz}=\int_{-\Delta z/2}^{\Delta z/2}\frac{\partial u_r}{\partial z} dz=(c_0+c_1r)\Delta z,\\[2mm]
+ \displaystyle \delta_{zz}=\int_{-\Delta z/2}^{\Delta z/2}\frac{\partial u_z}{\partial z} dz=(b_0+b_1r)\Delta
+ z,
+  \quad \delta_{zr}=\int_{R_i}^{R_e}\frac{\partial u_z}{\partial r} dr=(d_0+d_1R_c+d_2z)\Delta r, 
+\end{array}
+$$ 
+где $\Delta r=R_e-R_i$, $R_c=(R_i+R_e)/2$.
+
+
+В результате получим
+\begin{equation}\label{tyrymov:rezsis}
+    \begin{array}{c}
+      \displaystyle a_0+a_1R_c=\frac{\delta_{rr}^u+\delta_{rr}^d}{2\Delta r},\quad
+      b_0+b_1R_c=\frac{\delta_{zz}^l+\delta_{zz}^r}{2\Delta z}, \\[2mm]
+       \displaystyle a_2=\frac{\delta_{rr}^d-\delta_{rr}^u}{\Delta r\Delta z},\quad
+      d_2=\frac{\delta_{zr}^d-\delta_{zr}^u}{\Delta r\Delta z},\quad
+      c_1=\frac{\delta_{rz}^r-\delta_{rz}^l}{\Delta r\Delta z},\quad
+      b_1=\frac{\delta_{zz}^r-\delta_{zz}^l}{\Delta r\Delta z}, \\[2mm]
+       \displaystyle c_0+c_1R_c=\frac{\delta_{rz}^l+\delta_{rz}^r}{2\Delta z},\quad
+      d_0+d_1R_c=\frac{\delta_{zr}^u+\delta_{zr}^d}{2\Delta r}. 
+         \end{array}
+\end{equation}
+Заметим, что
+\begin{equation}\label{tyrymov:zam}
+    a_2=c_1,\quad b_1=d_2.
+\end{equation}
+Это следует из контурных законов \cite{tyr:bib:6}, применённых к $U_r$ и~$U_z$ компонентам элементарной ячейки
+$\delta_{rz}^l+\delta_{rr}^d-\delta_{rz}^r-\delta_{rr}^u=0$,
+$\delta_{zz}^l+\delta_{zr}^d-\delta_{zz}^r-\delta_{zr}^u=0 $ и~соответствующих выражений из \eqref{tyrymov:rezsis}. 
+Такой же результат следует из равенств смешанных производных $\partial(\partial u_r/\partial r )/\partial z= \partial(\partial u_r/\partial z )/\partial r$ и $\partial(\partial u_z/\partial z )/\partial r=
+\partial(\partial u_z/\partial r )/\partial z$.
+
+
+ В \eqref{tyrymov:rezsis} найдена только часть неизвестных коэффициентов из \eqref{tyrymov:aprxm}. 
+ Чтобы найти оставшиеся, воспользуемся \eqref{tyrymov:sis1}, \eqref{tyrymov:aprxm} и,
+обеспечивая повышенную точность метода, удовлетворим в~пределах элемента уравнениям равновесия \eqref{tyrymov:sis2}. 
+В~результате получим
+\begin{multline}\label{tyrymov:povth}
+      \bigl((k_0+2)\mu(r)-k_0r\mu'(r)\bigr) u_r= \\
+       =r^2\mu'(r)\bigl((k_0+2)(a_0+a_1r+a_2z)+
+           k_0(b_0+b_1r+b_2z)\bigr) + \\+(k_0+2)r\mu(r)(a_0+2a_1r+a_2z)+ r^2\mu(r)(k_0b_1+c_2+d_2),
+\end{multline}
+\begin{multline}\label{tyrymov:povth1}
+      r\mu(r)(k_0a_0+k_0b_2+2b_2)+k_0\mu(r)(c_0+c_1r+c_2z)+ \\ 
+      +r\mu'(r)\bigl(c_0+d_0+ (c_1+d_1)r+(c_2+d_2)z\bigr)+ \\
+       + \mu(r)\bigl(c_0+d_0+2(c_1+d_1)r+(c_2+d_2)z\bigr)=0.
+\end{multline}
+Из уравнения \eqref{tyrymov:povth} для функции $\mu(r)$, представленной в \eqref{tyrymov:ur2}, имеем
+\begin{multline}\label{tyrymov:u_r}
+      u_r=\Bigl(\alpha r\bigl((k_0+2)(a_0+a_1r+a_2z)+k_0(b_0+b_1r+b_2z)\bigr)+
+      \\
+      +(k_0+2)(a_0+2a_1r+a_2z)r+(k_0b_1+c_2+d_2)r^2\Bigr)(k_0+2-k_0\alpha)^{-1}.
+\end{multline}
+ Кроме этого, из \eqref{tyrymov:aprxm} получим
+\begin{equation}\label{tyrymov:u_r1}
+      u_r=(a_0+0,5a_1r+a_2z)r+f(z),
+\end{equation}
+где $f(z)$ "--- произвольная функция. Приравнивая
+\eqref{tyrymov:u_r} и \eqref{tyrymov:u_r1}, получим
+\begin{multline*}
+      f(z)=r\Bigl(2\alpha(k_0+1)a_0+0,5(3\alpha k_0+3k_0+4\alpha+6)a_1r  +2\alpha(k_0+1)a_2z+ \\ + \alpha
+      k_0(b_0+b_1r+b_2z)+(k_0b_1+c_2+d_2)r\Bigr)(k_0+2-k_0\alpha)^{-1},
+\end{multline*}
+а это возможно только при выполнении условий
+\begin{gather}
+\label{tyrymov:us1}
+    2(k_0+1)a_0+k_0b_0=0,
+%\end{equation}
+%\begin{equation}
+\\
+\label{tyrymov:us2}
+    2(k_0+1)a_2+k_0b_2=0,
+%\end{equation}
+%\begin{equation}
+\\
+\label{tyrymov:us3}
+    (3k_0+3k_0\alpha+4\alpha+6)a_1+2k_0(\alpha+1)b_1+2(c_2+d_2)=0,
+\end{gather}
+Таким образом, $ f(z)=0$, а
+\begin{equation}\label{tyrymov:ur_3}
+    u_r=a_0r+0,5a_1r^2+a_2rz.
+\end{equation}
+Из уравнения \eqref{tyrymov:povth1} следует
+$$(k_0c_2+c_2+d_2)\mu(r)+(c_2+d_2)r\mu'(r)=0,$$
+%$$%\begin{equation}\label{tyrymov:sis3}
+\begin{multline*}
+      (k_0a_0+k_0b_2+2b_2)r\mu(r)+k_0(c_0+c_1r)\mu(r)+ \\ 
+      +\bigl(c_0+d_0+(c_1+d_1)r\bigr)r\mu'(r)       + \bigl(c_0+d_0+2(c_1+d_1)r\bigr)\mu(r)=0.
+\end{multline*}
+%$$%\end{equation}
+ Отсюда, используя вид функции $\mu(r)$  из
+\eqref{tyrymov:ur2}, получаем
+\begin{gather}
+\label{tyrymov:sis4}
+          k_0c_2+(\alpha+1)(c_2+d_2)=0,
+%    \end{equation}
+%\begin{equation}
+\\
+\label{tyrymov:sis5}
+      k_0a_2+(k_0+2)b_2+k_0c_1+(\alpha+2)(c_1+d_1)=0,
+%      \end{equation}
+%\begin{equation}
+\\
+\label{tyrymov:sis6}
+          k_0c_0+(\alpha+1)(c_0+d_0)=0.
+    \end{gather}
+В результате из \eqref{tyrymov:us2} и \eqref{tyrymov:sis4} имеем
+\begin{equation}\label{tyrymov:bck}
+    b_2=k_2a_2,\quad c_2=k_4d_2, \quad  k_2=-2(k_0+1)k_0^{-1}, \quad
+    k_4=-(\alpha+1)(k_0+\alpha+1)^{-1}.
+\end{equation}
+Из \eqref{tyrymov:us3} с учётом \eqref{tyrymov:zam} и \eqref{tyrymov:bck} получим
+\begin{equation}\label{tyrymov:a1} 
+\begin{array}{l}
+  a_1=k_1b_1, \\
+  k_1=-2k_0\bigl((\alpha+1)^2+(\alpha+1)k_0+1\bigr)\times \\ 
+\qquad ~  \times
+  \bigl((k_0+\alpha+1)(3k_0+3k_0\alpha+4\alpha+6)\bigr)^{-1}. 
+\end{array}
+  \end{equation}
+Коэффициент $d_1$  найдём из \eqref{tyrymov:sis5} с~учётом \eqref{tyrymov:bck} и равенства \eqref{tyrymov:zam}:
+\begin{equation}\label{tyrymov:d1}
+    d_1=k_3c_1,\quad
+    k_3=(4k_0+4-k_0\alpha)\left[k_0(\alpha+2)\right]^{-1}.
+\end{equation}
+Используя \eqref{tyrymov:ur_3}, найдём перемещения вершин элемента $ABCD$: 
+$$%\begin{equation}\label{tyrymov:uAuC}
+    \begin{array}{ll}
+      u_r^A=a_0R_i+0,5a_1R_i^2-0,5a_2R_i\Delta z, &
+      u_r^B=a_0R_e+0,5a_1R_e^2-0,5a_2R_e\Delta z, \\
+      u_r^C=a_0R_i+0,5a_1R_i^2+0,5a_2R_i\Delta z, &
+      u_r^D=a_0R_e+0,5a_1R_e^2+0,5a_2R_e\Delta z.
+    \end{array}
+$$%\end{equation}
+ С учётом этих зависимостей перемещение $u_r$ представим в виде
+\begin{equation}\label{tyrymov:UR}
+    u_r=r\left(\frac{u_r^A+u_r^B+u_r^C+u_r^D}{4R_c}+\frac{1}{2}a_1\Bigl(r-R_c-\frac{\Delta
+    r^2}{4R_c}\Bigr)+a_2z\right).
+\end{equation}
+Вводя в \eqref{tyrymov:aprxm} для сокращения записи обозначения
+$a=a_0+a_1R_c$, 
+$b=b_0+b_1R_c$, 
+$c=c_0+c_1R_c$,
+$d=d_0+d_1R_c$,
+имеем
+\begin{equation}\label{tyrymov:sisdef}
+    \begin{array}{l}
+      \varepsilon_{rr}=a+a_1(r-R_c)+a_2z,\qquad \varepsilon_{zz}=b+b_1(r-R_c)+b_2z, \\[2mm] 
+     \gamma_{rz}=c+d+(c_1+d_1)(r-R_c)+(c_2+d_2)z, \\[2mm]
+     \displaystyle \varepsilon_{\varphi\varphi}=ru_r=
+     r^2\left(\frac{u_r^A+u_r^B+u_r^C+u_r^D}{4R_c}+
+     \frac{1}{2}a_1\Bigl(r-R_c-\frac{\Delta r^2}{4R_c}\Bigr)+a_2z\right), \\
+    \end{array}
+\end{equation}
+где коэффициенты представлены в \eqref{tyrymov:rezsis}, \eqref{tyrymov:bck}, \eqref{tyrymov:a1} и \eqref{tyrymov:d1}. 
+В результате деформациям \eqref{tyrymov:sisdef} можно придать вид
+\begin{equation}\label{tyrymov:def2}
+    \begin{array}{l}
+       \displaystyle \varepsilon_{rr}=\frac{\delta_{rr}^u+\delta_{rr}^d}{2\Delta r}+
+      k_1\frac{\delta_{zz}^r-\delta_{zz}^l}{\Delta r\Delta z} \left(r-R_c\right)+
+      \frac{\delta_{rr}^d-\delta_{rr}^u}{\Delta r\Delta z}z, \\[3mm]
+        \displaystyle\varepsilon_{zz}=\frac{\delta_{zz}^l+\delta_{zz}^r}{2\Delta z}+
+     \frac{\delta_{zz}^r-\delta_{zz}^l}{\Delta r\Delta z} \left(r-R_c\right)+
+      k_2\frac{\delta_{rr}^d-\delta_{rr}^u}{\Delta r\Delta z}z ,\\[3mm]
+       \displaystyle \gamma_{rz}=\frac{\delta_{rz}^l+\delta_{rz}^r}{2\Delta z}+
+     \frac{\delta_{zr}^u+\delta_{zr}^d}{2\Delta r}+
+       (1+k_3)\frac{\delta_{rz}^r-\delta_{rz}^l}{\Delta r\Delta z}\left(r-R_c\right)+ \\ 
+\hspace{7cm}            \displaystyle +
+       (1+k_4)\frac{\delta_{zr}^d-\delta_{zr}^u}{\Delta r\Delta z}z,\\[3mm]
+      \displaystyle \varepsilon_{\varphi\varphi}=  
+      r^2\Bigl(\frac{u_r^A+u_r^B+u_r^C+u_r^D}{4R_c}+ \\
+\hspace{3cm}            \displaystyle       +
+     \frac{1}{2}k_1\frac{\delta_{zz}^r-\delta_{zz}^l}{\Delta r\Delta z}
+     \Bigl(r-R_c-\frac{\Delta r^2}{4R_c}\Bigr)+\frac{\delta_{rr}^d-\delta_{rr}^u}{\Delta r\Delta z}z\Bigr).
+    \end{array} 
+\end{equation}
+Подставляя \eqref{tyrymov:def2} в правую часть равенства \eqref{tyrymov:endef} и
+пользуясь формулами \eqref{tyrymov:fd}, \eqref{tyrymov:energ} и приравнивая выражения при соответствующих компонентах вектора $\{\delta\}_c$,  получим
+\begin{equation}\label{tyrymov:posis}
+    \begin{array}{l}
+\displaystyle  
+      f_d^{rr}=\int_V\left( \Bigl(\frac{1}{2\Delta r}+\frac{z}{\Delta r\Delta z}\Bigr)\sigma'^{rr}
+      +k_2\frac{z}{\Delta r\Delta z}\sigma'^{zz}+\frac{r^2z}{\Delta r\Delta z}\sigma'^{\varphi\varphi}\right)dV,
+\\[3mm]
+\displaystyle 
+       f_u^{rr}=\int_V\left(\Bigl(\frac{1}{2\Delta r}-\frac{z}{\Delta r\Delta z}\Bigr)\sigma'^{rr}
+      -k_2\frac{z}{\Delta r\Delta z}\sigma'^{zz}-\frac{r^2z}{\Delta r\Delta z}\sigma'^{\varphi\varphi}\right)dV,
+\\[3mm]
+\displaystyle 
+f_l^{zz}=\int_V\left(-\frac{k_1(r-R_c)}{\Delta r\Delta z}\sigma'^{rr}+
+      \Bigl(\frac{1}{2\Delta z}-\frac{r-R_c}{\Delta r\Delta z}\Bigr)\sigma'^{zz}-\right.
+      \\[3mm]
+\displaystyle  \hspace{4cm}
+      \left.-\frac{1}{2}k_1\frac{r^2(r-R_c-0,25\Delta r^2R_c^{-1})}{\Delta r\Delta z}\sigma'^{\varphi\varphi}\right)dV,
+\\[3mm]
+\displaystyle 
+f_r^{zz}=\int_V\left(\frac{k_1(r-R_c)}{\Delta r\Delta z}\sigma'^{rr}+
+      \Bigl(\frac{1}{2\Delta z}+\frac{r-R_c}{\Delta r\Delta z}\Bigr)\sigma'^{zz}+\right.
+      \\[3mm]
+\displaystyle  \hspace{4cm}
+      \left.+\frac{1}{2}k_1\frac{r^2(r-R_c-0,25\Delta r^2R_c^{-1})}{\Delta r\Delta z}\sigma'^{\varphi\varphi}\right)dV,
+\\[3mm]
+       \displaystyle
+       f_A^r=f_B^r=f_C^r=f_D^r=\int_V\frac{r^2}{4R_c}\sigma'^{\varphi\varphi}dV,
+\\[3mm]
+       \displaystyle f_d^{zr}=\int_V\Bigl(\frac{1}{2\Delta r}+\frac{k_4+1}{\Delta r\Delta z}z\Bigr)\sigma'^{rz}dV,
+\\[3mm]
+      f_l^{rz}=\int_V\Bigl(\frac{1}{2\Delta z}-\frac{k_3+1}{\Delta r\Delta z}(r-R_c)\Bigr)\sigma'^{rz}dV,
+\\[3mm]
+      \displaystyle f_u^{zr}=\int_V\Bigl(\frac{1}{2\Delta r}-\frac{k_4+1}{\Delta r\Delta z}z\Bigr)\sigma'^{rz}dV, 
+\\[3mm]
+      \displaystyle      f_r^{rz}=\int_V\Bigl(\frac{1}{2\Delta z}+\frac{k_3+1}{\Delta r\Delta z}(r-R_c)\Bigr)\sigma'^{rz}dV.
+    \end{array}
+\end{equation}
+Выполняя сначала подстановку \eqref{tyrymov:def2} в формулы \eqref{tyrymov:sis1}, 
+а затем подстановку полученных выражений в \eqref{tyrymov:posis}, после интегрирования получим
+\begin{equation}\label{tyrymov:urpos}
+    \{f\}_c=[K]_c\{\delta\}_c.
+\end{equation}
+Элементы симметрической матрицы $[K]_c$  получены аналитически в~явном виде, но здесь не приводятся из-за их громоздкости.
+%\begin{figure}
+%  % Requires \usepackage{graphicx}
+%  \includegraphics[width=10cm]{rs2.eps}\\
+%  \caption{Граф тела из четырех элементов}
+%\end{figure}
+
+\smallskip
+
+\Section{Уравнения графовой модели тела} Граф всего тела
+строится по тому же принципу, что и графовый элемент, и является
+результатом  операции объединения элементарных ячеек. На рис. 2
+представлен граф тела, состоящего из четырёх элементов. Тело,
+расчлененное на отдельные элементы, и соответствующая ему
+совокупность элементарных ячеек описываются уравнением
+\begin{equation}\label{tyrymov:urpos1}
+    \{f\}=[K]\{\delta\}.
+\end{equation}
+Здесь $\{f\}^\top =\{f_{1c}^\top , f_{2c}^\top , \ldots, f_{nc}^\top \}$  и
+$\{\delta\}^\top =\{\delta_{1c}^\top ,\delta_{2c}^\top ,\ldots,\delta_{nc}^\top \}$
+"--- векторы внутренних сил и деформаций, причём $\{f\}_{ic}^\top$, $\{\delta\}_{ic}^\top $ определяются через \eqref{tyrymov:ur4},   $[K]=\mathop{\rm diag}\{[K]_{1c}, [K]_{2c}, \ldots,  [K]_{nc}\}$ "---
+глобальная несвязная матрица жёсткостей тела, расчленённого на отдельные элементы, 
+где $[K]_{ic}$  определены в \eqref{tyrymov:urpos}, а $n$ "--- число ячеек, образующих граф. 
+Теория графов обеспечивает возможность искусственного конструирования квадратных матриц преобразования, с~помощью которых можно исходя из уравнений, описывающих разрезанное на элементы тело, получить
+уравнение связного тела.
+
+
+\begin{figure}[t]\centering
+\includegraphics[width=\textwidth]{./00PIC/ris2}
+\caption{Граф тела из четырёх элементов}
+%\includegraphics{ris.eps}
+\end{figure}
+
+
+Структурные элементы графа "--- разрезы, контуры, пути и хорды "---
+могут быть заданы матрицами \cite{tyr:bib:6}. Примеры этих матриц для
+элементарной ячейки  приведены в \cite{tyr:bib:3}. 
+После преобразования с~помощью квадратных матриц дополнений $[A_B]_S$  и маршрутов
+$[P_C]_S$, аналогично \cite{tyr:bib:3, tyr:bib:7}, имеем общесистемный вектор сил $F$ и общесистемный вектор перемещений $\Delta$:
+\begin{equation}\label{tyrymov:FS}
+\{F\}_S=[A_B]_S\{f\},\quad \{\Delta\}_S=[P_C]_S\{\delta\},
+\end{equation}
+где индексом $S$ обозначены переменные глобальной системы координат графа. 
+Поскольку матрицы дополнений и маршрутов не сингулярны, а~также в силу равенств $[P_C]^\top =[A_B]^{-1}$ и
+$[A_B]^\top =[P_C]^{-1}$ получим
+\begin{equation}\label{tyrymov:urf}
+    \{f\}=[A_B]_S^{-1}\{F\}_S=[P_C]_S^\top \{F\}_S,\quad
+    \{\delta\}=[P_C]_S^{-1}\{\Delta\}_S=[A_B]_S^\top \{\Delta\}_S.
+\end{equation}
+Тогда, используя \eqref{tyrymov:FS}, \eqref{tyrymov:urpos1}, \eqref{tyrymov:urf}, получим уравнения, описывающие связное тело:
+\begin{equation}\label{tyrymov:urF}
+    \{F\}_S=[K]_S\{\Delta\}_S,
+\end{equation}
+где $[K]_S=[A_B]_S[K][A_B]_S^\top $.
+
+Заметим, что при выводе уравнения \eqref{tyrymov:urF}, связывающего общесистемный вектор перемещений и вектор внешних сил,
+использовалась информация только о структуре графа и физическом законе среды. 
+Кроме этого, используемые в \eqref{tyrymov:urf} квадратные матрицы преобразования получены не путём их численного обращения,
+а путём сочленения квадратных матриц, представляющих собой структурные элементы графа. 
+Важно отметить, что уравнения равновесия и~совместности деформаций на графовой модели обеспечиваются автоматически как следствие присущих графу фундаментальных зависимостей "--- вершинному и контурному законам \cite{tyr:bib:6}. 
+Эти законы были установлены Кирхгофом для электрических цепей применительно к~токам и~напряжениям. 
+Впоследствии оказалось, что они носят фундаментальный характер и~применимы ко всем переменным вне зависимости от их физической природы \cite{tyr:bib:5}.
+Согласно вершинному закону алгебраическая сумма последовательных переменных, представленных дугами графа, равна нулю, а в
+соответствии с~контурным законом алгебраическая сумма параллельных переменных равна нулю на любом замкнутом контуре.
+
+Покажем, что континуальную модель сплошной среды удаётся полностью восстановить из её дискретной модели в~виде ориентированного
+графа.
+
+Вершинный закон, если его применить к~центральным вершинам (их номера 9 и 10) графа, изображенного на рис.~2, принимает вид
+\begin{equation}\label{tyrymov:35}
+\begin{array}{l}
+    -f_{d1}^{rr}+f_{d2}^{rr}-f_{u3}^{rr}+f_{u4}^{rr} -f_{r1}^{rz}+ f_{r3}^{rz} - \\[2mm] 
+    \hspace{1.85cm} -f_{l2}^{rz}+f_{l4}^{rz}
+    -f_{D1}^{r}-f_{C2}^{r}-f_{B3}^{r}-f_{A4}^{r}=0, \\[2mm]
+%\end{equation} 
+%\begin{equation}\label{tyrymov:36}
+    -f_{d1}^{zr}+f_{d2}^{zr}-f_{u3}^{zr}+f_{u4}^{zr} -f_{r1}^{zz}+f_{r3}^{zz}-f_{l2}^{zz}+f_{l4}^{zz}=0.
+    \end{array}
+\end{equation}
+Разложим значения внутренних сил в ряд Тейлора относительно их значений в~смежных элементах, сохранив по два члена разложения:
+\begin{equation}\label{tyrymov:37}
+    \begin{array}{lll}
+      f_{d2}^{rr}=f_{d1}^{rr}+(\partial f_{d1}^{rr}/\partial r)\Delta r+\ldots ,& \quad  &
+      f_{u4}^{rr}=f_{u3}^{rr}+(\partial f_{u3}^{rr}/\partial r)\Delta r+\ldots ,\\
+     f_{r3}^{rz}=f_{r1}^{rz}+(\partial f_{r1}^{rz}/\partial z)\Delta z+\ldots ,& &
+        f_{l4}^{rz}=f_{l2}^{rz}+(\partial f_{l2}^{rz}/\partial z)\Delta z+\ldots, \\
+%         \end{array}
+%\end{equation}
+%\begin{equation}\label{tyrymov:38}
+%    \begin{array}{cc}
+      f_{d2}^{zr}=f_{d1}^{zr}+(\partial f_{d1}^{zr}/\partial r)\Delta r+\ldots ,& &
+      f_{u4}^{zr}=f_{u3}^{zr}+(\partial f_{u3}^{zr}/\partial r)\Delta r+\ldots, \\
+     f_{r3}^{zz}=f_{r1}^{zz}+(\partial f_{r1}^{zz}/\partial z)\Delta z+\ldots ,& &
+        f_{l4}^{zz}=f_{l2}^{zz}+(\partial f_{l2}^{zz}/\partial z)\Delta z+\ldots. \\
+         \end{array}
+\end{equation}
+
+Подставив в \eqref{tyrymov:35}  выражения из \eqref{tyrymov:37} с учётом \eqref{tyrymov:posis}, получим
+\begin{gather}
+\label{tyrymov:39}
+    \int_V\Bigl(\frac{\partial \sigma'^{rr}}{\partial r} + \frac{\partial \sigma'^{rz}}{\partial z }-r\sigma'^{\varphi\varphi}\Bigr)drdz=0,
+%\end{equation}
+%\begin{equation}
+\quad 
+%\\
+%\label{tyrymov:40}
+    \int_V\Bigl( \frac{\partial \sigma'^{zz}}{\partial z} + \frac{\partial \sigma'^{rz}}{\partial r} \Bigr) drdz=0.
+\end{gather}
+В силу произвольности выбора размеров ячейки из \eqref{tyrymov:39} следует, что подынтегральные выражения в~них должны
+обращаться в~ноль, а~это влечёт выполнение уравнений равновесия \eqref{tyrymov:sis2}.
+
+С~использованием связи между физическими компонентами тензора напряжений и~контравариантными компонентами
+$$
+\sigma_{(rr)}=\sigma^{rr},\quad
+\sigma_{(zz)}=\sigma^{zz},\quad\sigma_{(\varphi\varphi)}=r^2\sigma^{\varphi\varphi},\quad
+\sigma_{(rz)}=\sigma^{rz}
+$$
+и соотношений
+$$
+\sigma_{(rr)}=\sigma'^{rr}/r,\quad\sigma_{(zz)}=\sigma'^{zz}/r,\quad\sigma_{(\varphi\varphi)}=r\sigma'^{\varphi\varphi},
+\quad\sigma_{(rz)}=\sigma'^{rz}/r
+$$
+уравнения равновесия приобретают традиционную форму \cite{tyr:bib:8}:
+$$
+\frac{\partial \sigma_{(rr)}}{\partial r}+ \frac{\partial \sigma_{(rz)} }{\partial z} +\frac 1r (\sigma_{(rr)}-\sigma_{(\varphi\varphi)})=0,
+\quad 
+\frac{\partial \sigma_{(zz)} }{\partial z} + \frac{\partial \sigma_{(rz)} }{ \partial r} +\frac{\sigma_{(rz)}}{r}=0.
+$$
+Поступая,  как в \cite{tyr:bib:3}, покажем, что контурный закон графов, применённый к~определённой комбинации контуров, приводит к~уравнениям совместности деформаций. 
+Рассмотрим разность контуров, образованных дугами ячеек с~номерами~1 и~3 компоненты $U_r$ графа (ячейки левого ряда на~рис.~2,~{\sl а}\/):
+\begin{equation}\label{tyrymov:41}
+    \delta_{rr}^{u1}-\delta_{rr}^{d1}-\delta_{rz}^{l1}+\delta_{rz}^{r1}
+   -\delta_{rr}^{u3}+\delta_{rr}^{d3}+\delta_{rz}^{l3}-\delta_{rz}^{r3}=0.
+\end{equation}
+Контурные законы для дуг ячеек с~номерами 1 и 2  компоненты $U_z$ (ячейки верхнего ряда на рис.~2,~{\sl б}\/) приводят к~равенству
+\begin{equation}\label{tyrymov:42}
+    \delta_{zr}^{u1}-\delta_{zr}^{d1}-\delta_{zz}^{l1}+\delta_{zz}^{r1}
+   -\delta_{zr}^{u2}+\delta_{zr}^{d2}+\delta_{zz}^{l2}-\delta_{zz}^{r2}=0.
+\end{equation}
+Дуги $\delta_{rr}^{d1}$ и $\delta_{rr}^{u3}$ образуют замкнутый контур и~поэтому $ \delta_{rr}^{d1}=\delta_{rr}^{u3}$. 
+Разложим деформации $\delta_{rr}^{d1},\delta_{rr}^{d3}$ и~$\delta_{rz}^{r1},\delta_{rz}^{r3}$  в~ряд Тейлора, сохраняя только два члена:
+\begin{equation}\label{tyrymov:43}
+    \begin{array}{l}
+      \delta_{rr}^{d1}=\delta_{rr}^{u1}+(\partial \delta_{rr}^{u1}/\partial z)\Delta  z, 
+\\[2mm]
+      \delta_{rr}^{d3}=\delta_{rr}^{u3}+(\partial \delta_{rr}^{u3}/\partial z)\Delta  z=
+      \delta_{rr}^{u3}+(\partial \delta_{rr}^{d1}/\partial z)\Delta  z=
+\\
+\hspace{3.8cm}
+     =\delta_{rr}^{u3}+\left(\partial(\delta_{rr}^{u1}+(\partial \delta_{rr}^{u1}/\partial z)\Delta  z)/\partial z\right)\Delta  z, 
+\\[2mm]
+     \delta_{rz}^{r1}=\delta_{rz}^{l1}+(\partial \delta_{rz}^{l1}/\partial r)\Delta  r,
+\\[2mm]
+     \delta_{rz}^{l3}=\delta_{rz}^{l1}+(\partial \delta_{rz}^{l1}/\partial z)\Delta  z, 
+\\[2mm]
+     \delta_{rz}^{r3}=\delta_{rz}^{l3}+(\partial \delta_{rz}^{l3}/\partial r)\Delta  r=
+      \delta_{rz}^{l3}+(\partial( \delta_{rz}^{l1}+(\partial \delta_{rz}^{l1}/\partial z)\Delta  z)/\partial r)
+      \Delta  r. 
+    \end{array}
+\end{equation}
+Подстановка \eqref{tyrymov:43} в \eqref{tyrymov:41} даёт
+\begin{multline*}
+-(\partial \delta_{rr}^{u1}/\partial z)\Delta 
+z+(\partial(\delta_{rr}^{u1}+(\partial \delta_{rr}^{u1}/\partial
+z)\Delta z)/\partial z)\Delta z+ \\ 
++ (\partial \delta_{rz}^{l1}/\partial r)\Delta  r  -(\partial(\delta_{rz}^{l1}+(\partial \delta_{rz}^{l1}/\partial
+z)\Delta z)/\partial r)\Delta  r = \\ =(\partial^2 \delta_{rr}^{u1}/\partial z^2)\Delta 
+z^2-\bigl(\partial^2\delta_{rz}^{l1}/(\partial r\partial z)\bigr)\Delta 
+r\Delta  z=0.
+\end{multline*}
+Принимая во внимание, что $\delta_{rr}\approx (\partial
+u_r/\partial r)\Delta  r$, $\delta_{rz}\approx (\partial u_r/\partial z)\Delta  z $, и сократив на $\Delta  r \Delta 
+z^2$, получаем, что компонента графа $U_r$ приводит к уравнению
+\begin{equation}\label{tyrymov:44}
+    \partial^2(\partial u_r /\partial r)/\partial z^2-
+    \partial^2(\partial u_r /\partial z)/ (\partial r \partial     z)=0.
+\end{equation}
+После аналогичных преобразований уравнение \eqref{tyrymov:42} приобретает вид
+\begin{equation}\label{tyrymov:45}
+    \partial^2(\partial u_z/\partial z)/\partial r^2-
+     \partial^2(\partial u_z/\partial r)/(\partial r \partial z)=0.
+\end{equation}
+Складывая \eqref{tyrymov:44} и \eqref{tyrymov:45}, получим известное уравнение совместности деформаций:
+$$
+\partial^2(\partial u_r /\partial r)/\partial z^2+
+\partial^2(\partial u_z /\partial z)/\partial r^2-
+\partial^2(\partial u_r /\partial z+\partial u_z /\partial r)/ (\partial r\partial z)=0.
+   $$
+   
+Таким образом, при уменьшении размеров сетки вершинный и~контурный законы приводят к~выполнению уравнений равновесия и~совместности деформаций теории упругости, что влечёт сходимость приближённого решения к~точному.
+
+Важным преимуществом графового метода является возможность аппроксимации поля деформаций четырёхузлового элемента линейными полиномами. 
+В~результате при таком же уровне аппроксимации графовый метод использует систему уравнений, содержащую примерно в~3 раза меньше уравнений по сравнению с системой, используемой в методе конечных элементов.
+
+Специально был рассмотрен вопрос о влиянии размеров элементов на результаты расчётов. 
+Тестирование показало, что при соотношении сторон прямоугольного элемента, равном  1/100, решение не искажается. 
+Анализ также показал, что в~пределах допустимых соотношений сторон элементов координатные линии можно сгущать произвольно и после широких элементов можно сразу же размещать узкие.
+
+\smallskip
+
+\Section{Численные результаты} 
+Проведено сравнение результатов, полученных по предложенной методике, с известным аналитическим  решением \cite{tyr:bib:8} для
+толстостенной цилиндрической трубы с внутренним  $r_1=3$~мм  и~внешним $r_2=7$~мм радиусами, находящейся под действием равномерного давления $p=1$~МПа. При этом предполагается, что модуль  Юнга материала является функцией вида $E=E_0r^{\alpha}$, где $E_0=100$~МПа, а коэффициент Пуассона $\nu=0,3$. 
+В~таблице   приведены отношения $\sigma_r/p $  и $ \sigma_\varphi/p$ для различных точек в~радиальном направлении в~зависимости от показателя степени~$\alpha$.
+
+
+\begin{table}[h!] 
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\centering
+\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  &\multicolumn{5}{c|}{\scriptsize $\sigma_r/p $}&
+  \multicolumn{5}{c}{ \scriptsize $ \sigma_\varphi/p$}\\
+ % &&& $\sigma_r/p $ &&&&&$ \sigma_\varphi/p$&&\\
+  \hline
+\backslashbox{\scriptsize$\alpha$}{\scriptsize$r$}
+ & \scriptsize3 & \scriptsize4 & \scriptsize5 & \scriptsize6 & \scriptsize7 & \scriptsize3 & \scriptsize4 & \scriptsize5 & \scriptsize6 & \scriptsize7\\
+  \hline
+\rule{0mm}{12pt}%
+\raisebox{-6pt}[1pt][2pt]{0} &  $-1,000$ & $-0,464$ &  $-0,216$ &   $-0,081$ &  \phantom{$-$}0,000 & \phantom{$-$}1,450 &0,914 &  0,666 &   0,531 &  0,450\\
+          &  $-0,991$ & $-0,467$ &  $-0,217$ &   $-0,082$ & $-0,001$ & \phantom{$-$}1,443 &  0,917 &  0,668 &   0,532 & 0,451\\
+\hline
+\raisebox{-6pt}[1pt][2pt]{1} & $-1,000$ &  $-0,542$ &  $-0,284$ &   $-0,117$ &   \phantom{$-$}0,000 &\phantom{$-$}0,904 &  0,779 &   0,727 &   0,706 &   0,701\\
+          & $-0,993$ &  $-0,545$ &  $-0,285$ &   $-0,118$ &   $-0,001$ & \phantom{$-$}0,900  & 0,781   & 0,728   & 0,707  & 0,701\\
+\hline
+\raisebox{-6pt}[1pt][2pt]{2}
+&$-1,000$ &  $-0,756$ &  $-0,542$ &   $-0,303$ &   \phantom{$-$}0,000 &\phantom{$-$}0,487 &  0,610 &  0,745 &   0,887 &   1,033\\
+&$-0,996$ & $-0,755$  & $-0,540$   & $-0,300$   & $-0,002$ &\phantom{$-$}0,486 & 0,611  &0,746   &0,887   &1,030\\
+\hline
+\raisebox{-6pt}[1pt][2pt]{5}&
+$-1,000$&  $-0,613$&  $-0,355$&   $-0,159$&   \phantom{$-$}0,000&$-0,139$&  0,114&  0,555&   1,286&   2,427\\
+&$-0,994$  &$-0,615$  &$-0,356$   &$-0,160$   &$-0,002$&$-0,138$  &0,113  &0,561   &1,290   &2,418\\
+  \hline
+\end{tabular}
+
+\end{table}
+
+Верхняя строчка каждого ряда соответствует аналитическому решению, а~нижняя строчка "--- графовому методу. 
+Видно, что результаты хорошо согласуются. Отметим, что выделяемый в расчётах фрагмент трубы покрывался не очень плотной ($16\times9$) сеткой элементарных ячеек.
+
+
+
+
+
+%% Благодарности, гранты и прочее
+
+\begin{thebibliography}{9}
+
+\RBibitem{tyr:bib:1}
+\by Кузовков~Е.\,Г., Тырымов~А.\,А.
+\paper Графовая модель упругой среды в осесимметричной постановке
+\bookinfo Сб. научных трудов
+\inbook Моделирование в механике
+\yr 1990
+\pages 103--109
+%\vol 4(21)
+%\issue 6
+\publ Новосибирск
+\publaddr СО АН СССР
+\misctransl
+\paper Graph model of an elastic solid in the axisymmetric formulation
+\by Kuzovkov~E.\,G., Tyrymov~A.\,A.
+\publ Novosibirsk
+\publaddr SO AN SSSR
+\inbook Modelling in Mechanics
+\yr 1990
+\pages 103--109
+
+
+\RBibitem{tyr:bib:2}
+\by Тырымов~А.\,А.
+\paper Треугольный элемент графовой модели для осесимметричной задачи теории упругости
+\bookinfo Тр. XVIII Межресп. конф.
+\inbook Численные методы решения задач теории упругости и пластичности
+\yr 2003
+\procinfo 1--3~июля 2003~г.
+\pages 187--191
+\publ Нонпарель
+\publaddr Новосибирск
+\misctransl
+\paper  Triangular element of the graph model for the axisymmetric problem of elasticity theory
+\by Tyrymov~A.\,A.
+\inbook Numerical methods for solving problems in the theory of elasticity and plasticity
+\yr 2003
+\pages 187--191
+\publ Nonparel 
+\publaddr Novosibirsk
+
+
+\Bibitem{tyr:bib:3}
+\paper Axisymmetric graph model of an elastic solid
+\by Kuzovkov~E.\,G.
+\jour Strength of Materials
+\yr 1996
+\vol 28
+\issue 6
+\pages 470--485
+
+\RBibitem{tyr:bib:4}
+\by Крон~Г.
+\book Исследование сложных систем по частям "--- диакоптика
+\publaddr М.
+\publ Наука
+\yr 1972
+\totalpages 542
+\misctransl
+\by Kron~G.
+\book Ivestlgatlon  of Complex Systems by Parts (Diacoptics)
+\publ Nauka
+\publaddr Moscow
+\yr 1972
+\totalpages 542
+
+
+\Bibitem{tyr:bib:5}
+\paper Isomorphisms between Oriented Linear Graphs and Lumped Physical Systems
+\by Trent~H.\,M.
+\jour J. Acoust. Soc. Am.
+\yr 1955
+\vol 27
+\issue 3
+\pages 500--527
+%http://dx.doi.org/10.1121/1.1907949
+
+\Bibitem{tyr:bib:6}
+\book Graphs, Networks and Algorithms
+\by  Swamy~M.\,N.\,S.,  Thulasiraman~K.
+\publ John Wiley
+\publaddr New York
+\yr 1981
+\totalpages 592
+\rtransl русск. пер.:~
+\by Свами~М., Тхуласираман~К.
+\book Графы, сети и алгоритмы
+\publaddr М.
+\publ Мир
+\yr 1984
+\totalpages 454
+
+
+\RBibitem{tyr:bib:7}
+\paper Сингулярный элемент графовой модели упругой среды в декартовой системе координат
+\by Тырымов~А.\,А.
+\jour Вычисл. мех. сплошн. сред
+\yr 2011
+\vol 4
+\issue 4
+\pages 125--136
+\misctransl
+\paper A singular element of the graph model of an elastic medium in a cartesian coordinate system
+\by Tyrymov~A.\,A.
+\jour Computational Continuum Mechanics
+\yr 2011
+\vol 4
+\issue 4
+\pages 125--136
+
+
+
+\RBibitem{tyr:bib:8}
+\by Демидов~С.\,П.
+\book Теория упругости
+\publaddr М.
+\publ Высш. шк.
+\yr 1979
+\totalpages 432
+\misctransl 
+\by Demidov~S.\,P.
+\book Theory of Elasticity 
+\publaddr Moscow 
+\publ Vyssh. Shk.
+\yr 1979
+\totalpages 432
+
+\end{thebibliography}
+
+
+
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+%\pagebreak
+%
+%\chead[\fancyplain{}{\scriptsize \sl T\,y\,r\,y\,m\,o\,v~A.\,A.}]{\fancyplain{}{\scriptsize \sl  Axisymmetric graph model of an elastic solid with varying modulus of elasticity}}
+
+\makeengtitlem
+
+
+
+ \newpage
+%
+% \tableofengcontents
+%
+%\end{document}

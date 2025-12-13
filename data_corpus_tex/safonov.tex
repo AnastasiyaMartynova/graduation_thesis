@@ -1,0 +1,395 @@
+%%vsgtu709
+%
+% \input{../preamblw}
+%
+%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobot}[1]{\raisebox{-6pt}[1pt][2pt]{#1}} 
+%
+% \begin{document}
+
+
+\renewcommand{\firstpage}{183}
+\renewcommand{\lastpage}{187}
+
+
+\udk{539.384.6}
+\msc{74S03; 74K20, 74K25}
+
+\title{Численное исследование статического изгиба пластинок при локальных воздействиях вдоль кривых сложного вида}
+{Численное исследование статического изгиба пластинок\dots}
+
+\author{Р.\,А.~Сафонов}
+{С\,а\,ф\,о\,н\,о\,в~Р.\,А.}
+
+
+\institute{Саратовский государственный университет им.~Н.~Г.~Чернышевского, \\ 410012, Саратов, ул. Астраханская, 83.}
+
+\email{E-mail}{safonovra@gmail.com}
+
+\otherinf{\fullauthor{Роман Анатольевич Сафонов}\position{аспирант}
+\dept{каф. математической теории упругости и биомеханики} }
+
+\keywords{пластинки, локальные усилия, метод сплайн-коллокации}
+
+\workabstract{Рассматривается численное решение задач статического изгиба тонких пластинок с помощью метода сплайн-коллокации. 
+В~качестве внешней нагрузки используются локальные усилия специального вида. Оценивается их эффективность как аппроксимации сосредоточенных сил, приложенных вдоль произвольных кривых. Проводится сравнение результатов, полученных этим методом, с расчётами в конечно-элементном пакете.
+}
+
+\engtitle{Numerical research of static bending of plates at~the local influences along complex form curves}
+
+\engauthor{R.\,A.~Safonov}{S\,a\,f\,o\,n\,o\,v~R.\,A.}
+
+
+\enginstitute{Saratov State University named after N.~G.~Chernyshevsky, \\ 
+83, Astrkhanskaya st., Saratov,  410012, Russia.}
+
+\otherenginfm{\fullauthor{Roman A. Safonov} \position{Postgraduate Student} \dept{Dept. of Mathematical Theory of Elasticity \& Biomechanics}
+}
+
+\engabstract{The numerical solution for the problems of static bending of thin plates by spline collocation method is considered. The local loads of a special type are used as external forces. Their efficiency as the approximation of concentrated loads applied along compound curves is estimated. The results obtained by this method are compared with those calculated by finite element software.}
+
+\engkeywords{plates, local loads, spline-collocation method}
+
+\date{26/VII/2011}
+\revisiondate{29/XI/2011} 
+
+
+\maketitle
+
+\small
+
+\Section[n]{Введение}
+В последнее время для численного решения задач статического изгиба и установившихся колебаний пластинок и оболочек широко применяется метод сплайн-коллокации. Это объясняется рядом причин, среди которых следует отметить простоту реализации, например, по сравнению с методом конечных элементов, вычислительную эффективность, устойчивость счета, разнообразие возможных вариантов граничных условий и др. Для применения метода сплайн-коллокации внешние усилия, приложенные к пластинке, должны быть заданы в виде распределенной поперечной нагрузки на одной из лицевых поверхностей. Если на пластинку помимо распределенной нагрузки действуют сосредоточенные силы, их обычно заменяют на локальные усилия. Полученная таким образом задача эквивалентна исходной с точностью до принципа Сен"--~Венана.
+
+Как правило, для замены сосредоточенных сил используется кусочно-постоянная функция. Например, приложенные в точке $\left(p_x, p_y\right)$ сосредоточенные усилия можно аппроксимировать функцией, равной нулю на всей площади пластинки за исключением узкой зоны $p_x-\delta \leqslant x \leqslant p_x + \delta$, $p_y - \delta \leqslant y \leqslant p_y + \delta$. В указанной зоне значение функции подбирается таким образом, чтобы равнодействующая нагрузки при замене не изменялась \cite{saf:grigorenko1996, saf:grigorenko1998}.
+
+Помимо кусочно-постоянной функции для этих целей можно использовать другие функции, ненулевые значения которых сосредоточены в узкой зоне вблизи зоны приложения нагрузки. Так, для рассмотренного ранее примера сосредоточенной в точке силы локальную нагрузку можно задать функцией
+\begin{equation}\label{saf:q-point}
+q(x, y) = C \cos^k \biggl(\frac{\pi}{2}\frac{x - p_x}{\max\limits_{\left(\xi,\eta\right) \in D}\left|\xi - p_x\right|}\biggr) \cos^k \biggl(\frac{\pi}{2}\frac{y - p_y}{\max\limits_{\left(\xi,\eta\right) \in D}\left|\eta - p_y\right|}\biggr), \quad  k \gg 1,
+\end{equation}
+где $C$ "--- нормирующий коэффициент, $D$ "--- область пластинки. 
+Показатель степени $k$ выбирается таким образом, чтобы при удалении от точки приложения нагрузки значения рассматриваемой функции быстро снижались до неотличимого от нуля значения, однако при этом в~зону ненулевых значений попадало достаточное количество точек расчётной сетки. 
+Такие функции применялись в работах [\citen{saf:Safonov-10}--\citen{saf:Safonov-13}] для численного решения задач статического изгиба и установившихся колебаний тонких прямоугольных в плане пластинок и оболочек из упругого изотропного, ортотропного и упруго"=наследственного материала при локальных нагрузках, приложенных в точке и вдоль прямых. В данной работе рассматривается использование функций такого вида для задания локальной нагрузки, приложенной вдоль кривой \mbox{$f(x, y) = 0$.}
+
+\smallskip
+
+\begin{wrapfigure}[13]{O}{.45\textwidth}
+\centering
+\includegraphics[width=.4\textwidth]{./00PIC/plate}
+
+\end{wrapfigure}
+
+
+\textbf{Постановка задачи.} 
+Имеется тонкая прямоугольная в~плане пластинка из упругого изотропного материала, отнесённая к~декартовым координатам $x, y$ (см. рисунок). 
+К~одной из лицевых поверхностей пластинки приложены внешние поперечные распределённые усилия $q(x, y)$. 
+Прогиб пластинки определяется из решения краевой задачи для бигармонического уравнения \cite{saf:Timoshenko1966}
+$$
+D \nabla^2\nabla^2 w = q(x, y)
+$$
+с граничными условиями, соответствующими способам заделки краев пластинки. 
+Здесь  $D = E / (12 (1-\nu^2))$ "--- жёсткость пластинки на изгиб; $E$, $\nu$ "--- модуль Юнга и коэффициент Пуассона материала пластинки соответственно.
+
+
+
+Для численного решения поставленной задачи используется метод сплайн"=коллокации \cite{saf:grigorenko1996, saf:grigorenko1987, saf:nedorezov}. 
+
+Если сосредоточенные усилия приложены вдоль кривой $f(x, y) = 0$, то для аппроксимации их локальными нагрузками функцию \eqref{saf:q-point} следует модифицировать:
+$$
+q(x, y) = C \cos^k \biggl(\frac{\pi}{2}\frac{f(x, y)}{\max\limits_{\left(\xi,\eta\right) \in D}\left|f\left(\xi,\eta\right)\right|}\biggr), \quad  k \gg 1.
+$$
+Для окружности радиуса $R$ с центром в точке $(p_x, p_y)$ имеем
+\begin{equation}\label{saf:q-circle}
+q(x, y) = C \cos^k \biggl(\frac{\pi}{2}\frac{\left(x - p_x\right)^2 + \left(y-p_y\right)^2 - R^2}{\max\limits_{\left(\xi,\eta\right) \in D}|(\xi-p_x)^2 +(\eta-p_y)^2 -R^2|}\biggr), \quad  k \gg 1.
+\end{equation}
+
+\smallskip
+
+\textbf{Результаты.} 
+В таблице приведены максимальные значения прогиба пластинки при различных вариантах граничных условий на краях под действием локальной нагрузки, сосредоточенной в окрестности центра пластинки (при $R = 0$) и вдоль окружности радиуса $R$ с центром в геометрическом центре пластинки. 
+В методе сплайн"=коллокации было взято $80$ точек коллокации и $200$ точек ортогонализации. 
+План пластинки представляет собой квадрат со стороной $1$~м, толщина пластинки равна $0,01$~м. 
+Материал пластинки "--- сталь ($E = 2 \cdot 10^{11}$ Па, $\nu = 0,3$). 
+Значения прогиба, полученные методом сплайн"=коллокации с~локальной нагрузкой вида \eqref{saf:q-circle}, обозначены верхним индексом $S$, а индексу $F$ соответствуют значения, вычисленные с помощью коммерческого конечно"=элементного пакета {\tt Comsol Multiphysics} для соответствующей сосредоточенной силы. При этом в конечно"=элементных расчётах пластинка рассматривалась как трёхмерное упругое тело.
+
+\begin{table}[h!]
+\centering
+\small
+{\bf Максимальные прогибы пластинки} 
+	\begin{tabular}{c|c|c|c}
+		\hline
+\tobot{\scriptsize $R$} & 
+\tobot{\scriptsize $W_{\max}^{F}$, м} & 
+\multicolumn{2}{c}{\scriptsize $W_{\max}^{S}$, м} \\ 
+\cline{3-4}
+& & \scriptsize \hspace{1cm} $k = 5000$ \hspace{1cm} & \scriptsize \hspace{1cm} $k = 10000$ \hspace{1cm} \\ \hline
+		\multicolumn{4}{c}{\rule{0mm}{12pt}Жёсткая заделка всего контура} \\ \hline
+\rule{0mm}{12pt}%
+		$0,00$	& $ 2,957 \cdot 10^{-7} $ & $ 2,869 \cdot 10^{-7} $ & $ 2,831 \cdot 10^{-7} $ \\
+		$0,02$	& $ 2,933 \cdot 10^{-7} $ & $ 2,717 \cdot 10^{-7} $ & $ 2,797 \cdot 10^{-7} $ \\
+		$0,05$	& $ 2,837 \cdot 10^{-7} $ & $ 2,685 \cdot 10^{-7} $ & $ 2,761 \cdot 10^{-7} $ \\
+		$0,10$	& $ 2,546 \cdot 10^{-7} $ & $ 2,541 \cdot 10^{-7} $ & $ 2,583 \cdot 10^{-7} $ \\
+		$0,20$	& $ 1,760 \cdot 10^{-7} $ & $ 1,796 \cdot 10^{-7} $ & $ 1,790 \cdot 10^{-7} $ \\ \hline
+		\multicolumn{4}{c}{\rule{0mm}{12pt}Шарнирное опирание всего контура} \\ \hline
+\rule{0mm}{12pt}%		
+		$0,00$	& $ 6,373 \cdot 10^{-7} $ & $ 5,942 \cdot 10^{-7} $ & $ 5,858 \cdot 10^{-7} $ \\
+		$0,02$	& $ 6,199 \cdot 10^{-7} $ & $ 5,904 \cdot 10^{-7} $ & $ 6,008 \cdot 10^{-7} $ \\
+		$0,05$	& $ 6,159 \cdot 10^{-7} $ & $ 5,863 \cdot 10^{-7} $ & $ 5,962 \cdot 10^{-7} $ \\
+		$0,10$	& $ 5,782 \cdot 10^{-7} $ & $ 5,673 \cdot 10^{-7} $ & $ 5,731 \cdot 10^{-7} $ \\
+		$0,20$	& $ 4,621 \cdot 10^{-7} $ & $ 4,614 \cdot 10^{-7} $ & $ 4,609 \cdot 10^{-7} $ \\ \hline
+		\multicolumn{4}{c}{\rule{0mm}{12pt}Консольная пластинка} \\ \hline
+\rule{0mm}{12pt}%			
+		$0,00$	& $ 6,069 \cdot 10^{-6} $ & $ 5,967 \cdot 10^{-6} $ & $ 5,640 \cdot 10^{-6} $ \\
+		$0,02$	& $ 6,069 \cdot 10^{-6} $ & $ 6,133 \cdot 10^{-6} $ & $ 6,321 \cdot 10^{-6} $ \\
+		$0,05$	& $ 6,081 \cdot 10^{-6} $ & $ 6,138 \cdot 10^{-6} $ & $ 6,121 \cdot 10^{-6} $ \\
+		$0,10$	& $ 6,047 \cdot 10^{-6} $ & $ 6,161 \cdot 10^{-6} $ & $ 6,126 \cdot 10^{-6} $ \\
+		$0,20$	& $ 5,736 \cdot 10^{-6} $ & $ 6,321 \cdot 10^{-6} $ & $ 6,153 \cdot 10^{-6} $ \\ \hline
+		\multicolumn{4}{c}{\rule{0mm}{12pt}Две смежные стороны жёстко заделаны, остальные свободны} \\ \hline
+\rule{0mm}{12pt}%		
+		$0,00$	& $ 1,697 \cdot 10^{-6} $ & $ 1,655 \cdot 10^{-6} $ & $ 1,564 \cdot 10^{-6} $ \\
+		$0,02$	& $ 1,737 \cdot 10^{-6} $ & $ 1,718 \cdot 10^{-6} $ & $ 1,718 \cdot 10^{-6} $ \\
+		$0,05$	& $ 1,707 \cdot 10^{-6} $ & $ 1,722 \cdot 10^{-6} $ & $ 1,722 \cdot 10^{-6} $ \\
+		$0,10$	& $ 1,725 \cdot 10^{-6} $ & $ 1,739 \cdot 10^{-6} $ & $ 1,739 \cdot 10^{-6} $ \\
+		$0,20$	& $ 1,847 \cdot 10^{-6} $ & $ 1,852 \cdot 10^{-6} $ & $ 1,852 \cdot 10^{-6} $ \\ \hline
+		\multicolumn{4}{c}{\rule{0mm}{12pt}Две смежные стороны шарнирно опёрты, остальные свободны} \\ \hline
+\rule{0mm}{12pt}%		
+		$0,00$	& $ 1,008 \cdot 10^{-5} $ & $ 9.549 \cdot 10^{-6} $ & $ 9.027 \cdot 10^{-6} $ \\
+		$0,02$	& $ 1,007 \cdot 10^{-5} $ & $ 9,749 \cdot 10^{-6} $ & $ 9,748 \cdot 10^{-6} $ \\
+		$0,05$	& $ 1,008 \cdot 10^{-5} $ & $ 9,749 \cdot 10^{-6} $ & $ 9,749 \cdot 10^{-6} $ \\
+		$0,10$	& $ 1,008 \cdot 10^{-5} $ & $ 9,749 \cdot 10^{-6} $ & $ 9,749 \cdot 10^{-6} $ \\
+		$0,20$	& $ 1,008 \cdot 10^{-5} $ & $ 9,749 \cdot 10^{-6} $ & $ 9,749 \cdot 10^{-6} $ \\ \hline
+	\end{tabular}
+\end{table}
+
+Из приведённых в~таблице данных видно, что различие между максимальными значениями прогиба $W_{\max}^S$ и $W_{\max}^F$, полученными с~помощью метода сплайн"=коллокации и метода конечных элементов, не превосходит $10\,\%$. 
+При различных значениях показателя степени $k$ имеет место небольшое расхождение между результатами, которое можно объяснить различным количеством точек расчётной сетки, попавшим в зону ненулевых значений функции локальной нагрузки.
+
+\vspace{1cm}
+
+\begin{thebibliography}{99}
+
+
+\RBibitem{saf:grigorenko1996}
+\by Григоренко,~Я.\,М. 
+\paper Некоторые подходы к численному решению линейных и нелинейных задач теории оболочек в классической и уточненной постановках 
+\jour Прикл. мех., Киев
+\yr 1996
+\vol 32
+\issue 6
+\pages 3--39
+\transl англ. пер.:~
+\jour Int. Appl. Mech.
+\vol 32
+\issue 6
+\pages 409--442
+%DOI: 10.1007/BF02088409
+\paper Approaches to the numerical solution of linear and nonlinear problems in shell theory in classical and refined formulations
+\by Grigorenko~Ya.\,M. 
+
+
+\RBibitem{saf:grigorenko1998}
+\paper Расчет гофрированных круглых пластин под действием локальной нагрузки как гибкой системы из оболочек вращения
+\by Григоренко~Я.\,М., Крюков~Н.\,Н., Крижановская~Т.\,В.
+\jour Прикл. мех., Киев
+\yr 1998
+\vol 34
+\issue 4
+\pages 36--42
+\transl англ. пер.:~
+\jour Int. Appl. Mech.
+\by Grigorenko~Ya.\,M., Kryukov~N.\,N., Krizhanovskaya~T.\,V.
+\paper Design of corrugated circular plates under a local load as a flexible system of shells of revolution
+\vol 34
+\issue 4
+\pages 327--333 
+\yr 1998
+
+
+\RBibitem{saf:Safonov-10}
+\by Недорезов~П.\,Ф., Ромакина~О.\,М., Сафонов~Р.\,А.
+\paper Модифицированный метод сплайн-коллокации в~задачах о~колебаниях тонкой прямоугольной вязкоупругой пластинки
+\jour Изв. Сарат. ун-та. Нов. сер. Сер. Математика. Механика. Информатика
+\yr 2010
+\vol 10
+\issue 3
+\pages 59--64
+\misctransl
+\by Nedorezov~P.\,F., Romakina~O.\,M., Safonov~R.\,A.
+\paper Modified spline collocation method in the problems of thin rectangular viscoelastic plate vibrations
+\jour Izv. Saratov. Univ. Mat. Mekh. Inform.
+\yr 2010
+\vol 10
+\issue 3
+\pages 59--64
+
+
+\RBibitem{saf:Safonov-08}
+\paper Численное решение некоторых задач статического изгиба прямоугольных пластин под действием локальной нагрузки
+\by Сафонов~Р.\,А.
+\inbook Математика. Механика
+\bookvol 11
+\bookinfo Сб. науч. тр.
+\publ Сарат. ун-т
+\publaddr Саратов
+\yr 2009
+\pages 133--136
+\misctransl 
+\by Safonov~R.\,A.
+\paper Numerical solution of some problems of static bending of rectangular plates under the action of a local load
+\bookvol 11
+\inbook Mathematics. Mechanics
+\publ Sarat. Un-t
+\publaddr Saratov
+\yr 2009
+\pages 133--136
+
+
+\RBibitem{saf:Safonov-09}
+\paper Статический изгиб ортотропной прямоугольной пластинки при локальных воздействиях.
+\by Сафонов~Р.\,А.
+\inbook Механика деформируемых сред
+\bookinfo Межвуз. науч. сб.
+\bookvol 16
+\publaddr Саратов
+\publ Сарат. ун-т
+\yr 2010
+\pages 93--96
+\misctransl 
+\by Safonov~R.\,A.
+\paper Static bending of orthotropic rectangular plate under local influences
+\bookvol 16
+\inbook Deformable media mechanics
+\publ Sarat. Un-t
+\publaddr Saratov
+\yr 2010
+\pages 93--96
+
+
+
+
+\RBibitem{saf:Safonov-11}
+\paper Установившиеся колебания вязкоупругой пластинки при локальных воздействиях
+\by Сафонов~Р.\,А.
+\inbook Проблемы прочности элементов конструкций под действием нагрузок и рабочих сред
+\bookinfo Сб. науч. тр
+\publ СГТУ
+\publaddr Саратов
+\yr 2010
+\pages 109--113
+\misctransl 
+\by Safonov~R.\,A.
+\paper Steady-state oscillations of viscoelastic plate in the local influences
+\inbook Problems of the strength of structural elements under the action of loads and working media
+\publ SGTU
+\publaddr Saratov
+\yr 2010
+\pages 109--113
+
+
+\RBibitem{saf:Safonov-12}
+\paper Численное исследование статического изгиба прямоугольной пластинки под действием локальной нагрузки 
+\by Сафонов~Р.\,А.
+\book Труды седьмой Всероссийской научной конференции с международным участием. \rm Часть~1
+\bookinfo Математические модели механики, прочности и надёжности элементов конструкций
+\serial Матем. моделирование и краев. задачи
+\yr 2010
+\publ СамГТУ
+\publaddr Самара
+\pages 318--321
+\misctransl
+\by Safonov~R.\,A.
+\paper Numerical research of static bending for  rectangular plate under the action of a local load
+\book Proceedings of the Seventh All-Russian Scientific Conference with international participation. \rm Part~1
+\serial Matem. Mod. Kraev. Zadachi
+\yr 2009
+\publ SamGTU
+\publaddr Samara
+\pages 318--321
+
+
+\RBibitem{saf:Safonov-13}
+\paper Численное исследование установившихся колебаний прямоугольной ортотропной пластинки при локальных воздействиях 
+\by Сафонов~Р.\,А.
+\inbook Актуальные проблемы прикладной математики, информатики и механики
+\bookinfo Сб. тр. Международн. конф-ции
+\publaddr Воронеж
+\publ ВГУ
+\yr 2010
+\pages 325--328
+\misctransl 
+\by Safonov~R.\,A.
+\paper Numerical research of steady oscillations of a rectangular orthotropic plate under local influences
+\inbook Actual Problems of Applied Mathematics, Computer Science, and Mechanics
+\publaddr Voronezh
+\publ VGU
+\yr 2010
+\pages 325--328
+
+\RBibitem{saf:Timoshenko1966}
+\paper Пластинки и оболочки
+\by Тимошенко~С.\,П., Войновский"--~Кригер~С.
+\publaddr М.
+\publ Наука
+\yr 1966
+\totalpages 636
+\misctransl
+\by Timoshenko~S.\,P., Woinowskiy--Krieger~S.
+\book Theory of plates and shells
+\publaddr Moscow
+\publ Nauka
+\totalpages 636 
+\yr 1966
+
+\RBibitem{saf:grigorenko1987}
+\paper Решения двумерных задач об изгибе прямоугольных пластин на основе метода сплайн"=коллокации
+\by Григоренко,~Я.\,М., Беренов~М.\,Н.
+\jour Докл. АН. УCСР. Сер. А.
+\yr 1987
+\issue 8
+\pages 22--25
+\misctransl
+\by Grigorenko~Ya.\,M., Berenov~M.\,N.
+\paper Solution of two-dimensional problems on bending of rectangular plates on the basis of spline approximation
+\jour Dokl. Akad. Nauk Ukr. SSR, Ser.~A
+\yr  1987
+\issue 8
+\pages 22--25
+
+\RBibitem{saf:nedorezov}
+\by Недорезов~П.\,Ф., Шевцова~Ю.\,В., Ромакина~О.~М.
+\paper Модифицированный метод сплайн"=коллокации в задачах изгиба изотропных прямоугольных пластинок
+\inbook Труды Второй Всероссийской научной конференции \rm (1--3 июня 2005~г.). Часть~1
+\bookinfo Математические модели механики, прочность и надежность конструкций
+\serial Матем. моделирование и краев. задачи
+\yr 2005
+\pages 203--209
+\publ СамГТУ
+\publaddr Самара
+\misctransl
+\by Nedorezov~P.\,F., Shevcova~J.\,V., Romakina~O.\,M.
+\paper A modified spline-collocation method  in problems of bending of isotropic rectangular plates
+\inbook Proceedings of the Second All-Russian Scientific Conference \rm (1--3 June 2005). Part~1
+\serial Matem. Mod. Kraev. Zadachi
+\yr 2005
+\pages 203--209
+\publ SamGTU
+\publaddr Samara
+
+\end{thebibliography}
+
+
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+
+\newpage
+
+
+\chead[\fancyplain{}{\scriptsize \sl S\,a\,f\,o\,n\,o\,v~R.\,A.}]{\fancyplain{}{\scriptsize \sl  Numerical research of static bending of plates \dots}}
+
+\makeengtitlem
+
+\newpage
+
+%\end{document}

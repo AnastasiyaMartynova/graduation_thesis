@@ -1,0 +1,517 @@
+%\input{../preamblw}
+%\begin{document}
+%
+%
+%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobot}[1]{\raisebox{-6pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobbot}[1]{\raisebox{-12pt}[1pt][2pt]{#1}} 
+%\newcommand{\tobbbot}[1]{\raisebox{-18pt}[1pt][2pt]{#1}}
+
+\renewcommand{\firstpage}{129}
+\renewcommand{\lastpage}{135}
+
+
+\udk{616.71-001.5:539.4.014.1} % Номер УДК
+\msc{97M60; 74L15, 74S05} % Коды MSC см. http://www.ams.org/msc/
+
+\title{Двухслойная математическая модель шейки бедра человека для исследования напряж\"eнного состояния при армировании имплантатами различной конструкции}% Полный заголовок
+{Двухслойная математическая модель шейки бедра человека для исследования напряжённого \dots} % Заголовок, который идёт в верхний колонтитул
+
+\author{А.~В.~Нехожин}{А.~В.~Н\,е\,х\,о\,ж\,и\,н}% Автор(ы) для оглавления и колонтитула через \,
+
+\institute{\samgtu.}% Если несколько, то так  \institute{Организация 1 \and Организация 2}
+
+\email{E-mail}{stswoon@yandex.ru} %E-mail's авторов
+
+\otherinf{
+\fullauthor{Анатолий Вадимович Нехожин}\position{аспирант}\dept{каф. прикладной математики и~информатики}
+}
+
+\keywords{бедренная кость, кортикальная и губчатая костная ткань, имплантат, армирование, геометрическая модель, метод конечных элементов, напряженно-деформированное состояние}
+ 
+\workabstract{Представлена двухслойная математическая модель шейки бедренной кости человека, армированная имплантатами различной конструкции. 
+Спроектированы новые модели имплантатов. 
+Разработано новое программное обеспечение для геометрического моделирования костной ткани с внедрёнными имплантатами. 
+Предложена рациональная геометрия по внедрению имплантатов в костную ткань для максимальной разгрузки наиболее нагруженных областей. Решён ряд краевых задач по оценке напряжённо"=деформированного состояния в армированной шейке бедра. Показано, что в армированной конструкции напряженное состояние в наиболее нагруженной области значительно меньше, чем в неармированной.}% Здесь должна быть краткая аннотация статьи
+
+\engtitle{Bilayer mathematical model of human femur neck for research of the stress state after reinforcement with different designs of implants}
+
+\engauthor{A.~V.~Nekhozhin}{A.~V.~N\,e\,k\,h\,o\,z\,h\,i\,n}
+
+\enginstitute{\engsamgtu.}
+
+\otherenginfm{
+\fullauthor{Anatoliy V. Nekhozhin}\position{Postgraduate Student}\dept{Dept. of Applied Mathematics \& Computer Science}
+}
+
+\engabstract{A bilayer mathematical model of human femur neck reinforced with implants of various designs is represented. New models of implants are designed.  The software for geometric modeling of bone with the implant is developed. The rational geometry for placing implants into the bone tissue to unload the most loaded areas is proposed. A number of boundary value problems for evaluating the stress-strain state in the reinforced femoral neck are solved. It is shown that stress state in the most loaded region in the reinforced construction is considerably less than in the non-reinforced one.}
+
+\engkeywords{femur, cortical and cancellous bone tissue, implant, reinforcement, geometric modeling, finite element method, stress-strain state, mechanical properties of bone}
+
+\date{01/VII/2013} % Дата поступления статьи в редакцию.
+\revisiondate{22/VIII/2013} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maketitle
+
+
+\Section[n]{Введение} 
+В работе \cite{nekh:b1} предложена хирургическая методика профилактики переломов шейки бедренной кости путём принудительного введения имплантатов из различных материалов.
+
+В работе \cite{nekh:b2} проведено моделирование напряжённо"=деформированного состояния и получены положительные результаты, показывающие эффективность использования имплантатов для уменьшения вероятности перелома кости. 
+Однако в \cite{nekh:b2} была рассмотрена лишь однослойная модель бедренной кости, которая фактически имеет более сложную структуру, в~частности во многих работах рассматривается двухслойная модель \cite{nekh:b3, nekh:b4}, состоящая из кортикальной кости "--- внешний слой и губчатой кости "--- внутренний слой.
+
+В исследовании \cite{nekh:b2} использовалась %упрощённая 
+геометрия кости проекта {\tt The Titanium Bone Project}, полученная при помощи лазерного сканирования [\citen{nekh:b5-1}--\citen{nekh:b5-3}],  
+которая упрощалась авторами в CAD"=приложении {\tt КОМПАС} (\href{http://kompas.ru/}{kompas.ru}).
+Для экспорта упрощённой модели в конечно"=элементный комплекс {\tt ANSYS} (\href{http://www.ansys.com}{www.ansys. com}) была специально разработана программа, которая по модели из CAD {\tt КОМПАС} генерировала код {\tt APDL} ({\tt ANSYS Parametric Design Language}) для построения конечно"=элементного разбиения, которое и использовалось для расчёта напряжённо"=деформированного состояния кости. 
+
+%%Для упрощения геометрии кости использовался программный продукт {\tt КОМПАС} (\href{http://kompas.ru/}{kompas.ru}), в котором строилась более простая модель кости на основе информации лазерного сканирования, которая экспортировалась в конечно"=элементный комплекс {\tt ANSYS} (\href{http://www.ansys.com}{www.ansys.com}). 
+%При помощи специально разработанной программы, которая генерировала код {\tt APDL} ({\tt ANSYS Parametric Design Language}), для построенной модели кости генерировалось конечно"=элементное разбиение, которое и использовалось для расчёта напряжённо"=деформированного состояния кости. 
+%%Следует отметить, что практическая часть геометрического моделирования армированной шейки бедра костной ткани "--- достаточно трудоёмкая задача, занимающая по времени несколько суток.
+
+%\pagebreak
+\smallskip
+
+\Section{Геометрическое моделирование} 
+Поскольку для построения  двухслойной модели шейки бедренной кости человека необходима её более точная геометрия, в данной статье предлагается другой подход к её построению, нежели в работе \cite{nekh:b2}. 
+Ключевые особенности этого подхода:
+\begin{itemize}
+\item использование алгоритма автоматического упрощения геометрии кости;
+\item значительное снижение времени построения геометрии кости;
+\item возможность регулировать точность построения геометрии.
+\end{itemize}
+
+
+В качестве алгоритма автоматического упрощения геометрии кости проекта {\tt The Titanium Bone Project}\footnote{{\tt VRML}"=модель кости проекта {\tt The Titanium Bone Project}, полученная лазерным сканированием,  находится по адресу \href{https://webspace.utexas.edu/reyesr/titanium/3D_models.html}{\tt webspace.utexas.edu/reyesr/titanium/3D\_models.html}.}\!\!, было решено использовать алгоритм {\tt Quad\-ric Edge Collapse Decimation} ({\tt QECD}), который позволяет упростить модель без нарушения топологии. 
+Для этой цели был выбран программный продукт {\tt MeshLab} (\href{http://meshlab.sourceforge.net}{\tt meshlab.sourceforge.net}), который  представляет собой набор различных фильтров для работы с объёмными моделями. Один из фильтров для этой программы и реализует необходимый алгоритм. 
+В~результате применения фильтра получаем упрощенную геометрическую модель. Её можно сохранить в формате {\tt VRML}, спецификация которого находится по адресу \href{http://www.web3d.org/x3d/specifications/vrml/ISO-IEC-14772-VRML97}{\tt www.web3d.org/x3d/specifications/vrml/ISO-IEC-14772-VRML97}. 
+На языке {\tt Python} (\href{http://www.python.org}{www.python.org}) был разработан скрипт, который позволяет конвертировать данные из формата {\tt VRML} в код {\tt APDL}.
+
+
+Таким образом, алгоритм построения модели кости можно описать так:
+\begin{itemize}
+\item[1)] открытие объемной модели в программе {\tt MeshLab};
+\item[2)] последовательное применение фильтра {\tt QECD} до достижения необходимого соотношения точности и простоты модели;
+\item[3)] конвертирование данных при помощи {\tt Python}-скрипта.
+\end{itemize}
+
+
+На рис.~\ref{nekh:i2} представлена геометрия кости после применения фильтра {\tt QECD}  к модели кости проекта {\tt The Titanium Bone Project}.
+
+%На рис.~\ref{nekh:i2} представлены геометрия кости из исследования \cite{nekh:b2} (рис. \ref{nekh:i2}, {\sl а}\/) и~результаты работы фильтра (рис. \ref{nekh:i2}, {\sl б} и \ref{nekh:i2}, {\sl в}\/).
+
+
+%%
+%Исходя из количества точек модели на рис. \ref{hekh:i2}, можно констатировать, что модель 1,а и 1,б имеют примерно одинаковую сложность (в данном случае сложность определяется количеством точек в геометрической модели), а модель 1,в в 2 – 3 раза сложнее. Исходя из объема памяти компьютера, требуемой для проведения расчетов (объем памяти прямо пропорционален количеству точек модели), а также предварительных расчетов по геометрическим моделям с разной сложностью, можно утверждать, что среднестатистический персональный компьютер не справиться с расчетами более сложных моделей.
+
+
+
+\begin{figure}[p!] \centering \scriptsize
+%	\begin{minipage}[h]{0.32\linewidth}
+%		\center{\includegraphics[scale=1.0]{2a} \\\centering  \textsl{a}}
+%	\end{minipage}
+%	\hfill
+%	\begin{minipage}[h]{0.32\linewidth}
+		\includegraphics[scale=.75]{2br} 
+		
+%		\\\centering  
+
+\textsl{а}
+\smallskip
+
+%	\end{minipage}
+%	\hfill
+%	\begin{minipage}[h]{0.32\linewidth}
+%		\center{
+		\includegraphics[scale=.75]{2cr} 
+%		\\\centering  
+
+\textsl{б}
+
+%	\end{minipage}
+\caption{Геометрия кости (показана верхняя часть) после применения фильтра {\tt QECD}  к модели кости проекта {\tt The Ti\-ta\-ni\-um Bone Project}: \scriptsize \textsl{а\/} "--- 938 точек; \textsl{б\/} "--- 1875 точек}
+\label{nekh:i2}	
+%\end{figure}
+%
+\smallskip
+%
+%\begin{figure}[t!]
+\centering
+	\includegraphics[scale=.55]{3cr}
+	\caption{Расположение имплантатов в шейке бедренной кости: \scriptsize \textsl{a} "--- неармированная кость; \textsl{б} "--- спица сверху; \textsl{в} "--- спица снизу; \textsl{г} "--- спица посередине; 
+	\textsl{д} "--- спица~-- спица; \textsl{е} "--- шнек; \textsl{ж} "--- штопор; \textsl{з} "--- штопор~-- спица}
+	\label{nekh:i3}
+\end{figure}
+
+Для построения двухслойной модели шейки бедренной кости  из геометрической модели кости, полученной с использованием фильтра {\tt QECD}, разработана вспомогательная программа, которая преобразует исходную модель в~двухслойную.  
+Основная идея этой программы "--- создание внутреннего слоя кости за счёт уменьшения масштаба исходной геометрии с~учётом невыпуклой особенности геометрии кости.
+Для  построения двухслойной модели кости использовалась геометрическая модель, представленная на рис.~\ref{nekh:i2},~{\sl а}.
+
+
+Для автоматизации <<внедрения>> имплантатов в шейку бедренной кости человека и генерации конечно"=элементной сетки  разработаны вспомогательные программные средства со следующими особенностями:
+\begin{itemize}
+\item генерация {\tt APDL}-команд для построения геометрии имплантатов по заданным характеристикам (длина, диаметр, шаг резьбы и прочее);
+\item позиционирование имплантата внутри шейки бедренной кости;
+\item генерация {\tt APDL}-команд для объединения геометрий кости и имплантата;
+\item задание характеристик материала и типа конечных элементов для кости и имплантата.
+\end{itemize}
+
+
+На рис.~\ref{nekh:i3} показано расположение имплантатов различного вида в шейке бедренной кости. 
+Были использованы как <<старые>> имплантаты \cite{nekh:b2}: спица, штопор \cite{nekh:b9}, так и ранее не участвующий в исследовании \cite{nekh:b2} шнековый винт \cite{nekh:b9}. 
+
+%\begin{figure}[H]
+%	\begin{minipage}[h]{0.24\linewidth}
+%		\center{\includegraphics[scale=1.0]{img/3a.pdf} \\ а)}
+%	\end{minipage}
+%	\hfill
+%	\begin{minipage}[h]{0.24\linewidth}
+%		\center{\includegraphics[scale=1.0]{img/3b.pdf} \\ б)}
+%	\end{minipage}
+%	\hfill
+%	\begin{minipage}[h]{0.24\linewidth}
+%		\center{\includegraphics[scale=1.0]{img/3c.pdf} \\ в)}
+%	\end{minipage}
+%	\hfill
+%	\begin{minipage}[h]{0.24\linewidth}
+%		\center{\includegraphics[scale=1.0]{img/3d.pdf} \\ г)}
+%	\end{minipage}	
+%
+%	\vfill
+%	
+%	\begin{minipage}[h]{0.24\linewidth}
+%		\center{\includegraphics[scale=1.0]{img/3e.pdf} \\ д)}
+%	\end{minipage}
+%	\hfill
+%	\begin{minipage}[h]{0.24\linewidth}
+%		\center{\includegraphics[scale=1.0]{img/3f.pdf} \\ е)}
+%	\end{minipage}
+%	\hfill
+%	\begin{minipage}[h]{0.24\linewidth}
+%		\center{\includegraphics[scale=1.0]{img/3g.pdf} \\ ж)}
+%	\end{minipage}
+%	\hfill
+%	\begin{minipage}[h]{0.24\linewidth}
+%		\center{\includegraphics[scale=1.0]{img/3h.pdf} \\ з)}
+%	\end{minipage}	
+%	
+%	\caption{Расположение имплантатов в кости}
+%	\label{i3}
+%\end{figure}
+
+\smallskip
+
+
+
+\Section{Краевые условия и механические характеристики материалов}
+На рис.~\ref{nekh:i4} схематически представлены внешние нагрузки и закрепления бедренной кости, соответствующие падению человека с~высоты своего роста.
+Сосредоточенная нагрузка $F$ равномерно распределена по части поверхности головки 
+
+\begin{wrapfigure}{O}{0.4\textwidth} 
+	\centering
+	\includegraphics[scale=.8]{4cr}
+	\caption{Схема  двухслойной модели бедренной кости;  нагрузки и закрепления кости при
+падении человека}
+	\label{nekh:i4}
+\end{wrapfigure} 
+
+\noindent
+бедренной кости таким образом, чтобы интегральная величина от распределённой нагрузки численно была равна значению $F$. 
+Равнодействующая распределённых сил $F$ в~расчётах принималась равной 8000~H.
+Такое значение $F$ использовалось в~реальных экспериментальных исследованиях~\cite{nekh:b10}.
+
+
+Необходимо отметить, что в работе \cite{nekh:b2} использовалась однослойная модель кости с~усреднёнными механическими характеристиками нелинейной (упругопластической) диаграммы деформирования материала кости, приведённой в~\cite{nekh:b11}. 
+Однако для двухслойной модели кости не удалось найти аналогичных нелинейных диаграмм механических характеристик для губчатого и кортикальных слоёв кости. 
+Поэтому в данной статье использованы изотропные однородные характеристики кости в упругой области \cite{nekh:b4} и~титановых имплантатов, численные значения которых представлены в табл.~\ref{nekh:t1}.
+
+
+
+\begin{table}[h]\small \centering
+
+\begin{minipage}{.8\textwidth}
+\centering
+
+\caption{\bf Механические характеристики материалов} \label{nekh:t1}
+\vspace{-3mm}
+\centering
+\begin{tabular}{l|c|c}
+\hline
+\footnotesize
+~~~~~~~~Материал & 
+\footnotesize
+Модуль Юнга, Па & 
+\footnotesize
+Коэффициент Пуассона
+\\ \hline
+\rule{0mm}{12pt}%
+Кортикальная кость & $1,7 \cdot 10^{10}$ & 0,32 \\ 
+Губчатая кость & $3,25 \cdot 10^9$ & 0,29 \\ 
+Титан & $1,1  \cdot 10^{11}$ & 0,32 \\ \hline
+\end{tabular}
+
+\end{minipage}
+
+\end{table}
+
+
+
+\Section{Конечно-элементное разбиение и результаты расчётов} 
+Разбиение модели на конечные элементы проводится аналогично работе \cite{nekh:b2} с тем лишь различием, что расстояние $D$ между узлами конечного элемента было выбрано в соответствии с~данными работ \cite{nekh:b12, nekh:b13}, где указано, что среднее расстояние между центрами остеонов (клетки кости, из которых состоит её матрица) в~физической структуре костной ткани имеет значение $D = 0,3$~мм.
+
+В работе \cite{nekh:b2} доказаны следующие положения:
+\begin{itemize}
+\item[1)] максимальные нормальные компоненты тензора напряжений (по модулю) на поверхности больше соответствующих напряжений внутри кости;
+\item[2)] в конструкции шейки бедра имеются приповерхностные (критические) области, в~которых нормальные компоненты имеют максимальные (по модулю) значения;
+\item[3)] итерационный процесс решения краевой (нелинейной) задачи является сходящимся, что установлено выполненными расчётами со сгущением конечно"=элементной сетки.
+\end{itemize}
+
+На основании этих результатов  в данной работе проведено исследование только критических областей. Исследуются верхняя и нижняя части шейки бедра (точки $A$ и $B$ соответственно, см. рис.~\ref{nekh:i4}).
+
+Следует отметить, что согласно \cite{nekh:b14} нормальные напряжения растяжения (точка $B$ на рис.~\ref{nekh:i4}) более  опасны (до 2 раз), чем напряжения сжатия.
+
+Для анализа напряжённого состояния в приповерхностных наиболее нагруженных областях (точки $A$ и $B$ на рис.~\ref{nekh:i4}) введены локальные системы координат, при этом ось $Oz$ имеет направление касательной в выбранном сечении (см. рис.~\ref{nekh:i4}), и в этом же направлении возникают максимальные (по модулю) нормальные напряжения $\sigma_z$, которые в дальнейшем и были подвержены тщательному анализу при решении краевых задач с~различной конструкцией имплантатов.
+
+В табл.~\ref{nekh:t2} приведены систематизированные результаты расчётов компоненты $\sigma_z$ (по модулю) в точках $A$ и $B$ для разных типов имплантатов, а в колонках $\Delta \sigma_z$ показано, на сколько (в процентах) уменьшилась (по модулю) величина $\sigma_z$ в конструкциях с~имплантатами по сравнению с этой же конструкцией без имплантатов. 
+
+\begin{table}[h!] 
+\centering
+\begin{minipage}{.85\textwidth}
+\small \centering
+\caption{\bf Максимальные (по модулю) значения $\boldsymbol{\sigma_z}$ в областях сжатия (точка $\boldsymbol A$) и растяжения (точка $\boldsymbol B$) \label{nekh:t2}} \vspace{-3mm}
+\begin{tabular}{l|c|c|c|c}
+\hline
+\tobot{\footnotesize ~~~~~~~~Имплантат} & 
+\multicolumn{2}{c|}{\footnotesize точка $A$} & 
+\multicolumn{2}{c}{\footnotesize точка $B$} \\ \cline{2-5}
+& \footnotesize $\sigma_z$, Па &
+\footnotesize $\Delta \sigma_z$, \% 
+& \footnotesize $\sigma_z$, Па &
+\footnotesize $\Delta \sigma_z$, \%   \\ \hline
+\rule{0mm}{12pt}%
+Неармированная кость & $1,64 \cdot 10^8$ & ---	& $6,57 \cdot 10^7$ & --- \\
+Спица вверху & $1,49 \cdot 10^8$ & 10,1 & $6,39 \cdot 10^7$ & 2,8 \\ 
+Спица внизу & $1,66 \cdot 10^8$ & $-1,2$ & $6,10 \cdot 10^7$ & 7,7 \\ 
+Спица~-- спица & $1,47 \cdot 10^8$ & 11,6 & $5,86 \cdot 10^7$ & 12,1 \\ 
+Спица посередине & $1,60 \cdot 10^8$ & 2,5 & $6,49 \cdot 10^7$ & 1,2 \\ 
+Шнек & $1,64 \cdot 10^8$ & 0,0 & $6,47 \cdot 10^7$ & 1,5 \\ 
+Штопор & $1,66 \cdot 10^8$ & $-1,2$ & $6,32 \cdot 10^7$ & 4,0 \\ 
+Штопор~-- спица & $1,69 \cdot 10^8$ & $-3,2$ & $5,96 \cdot 10^7$ & 10,2 \\ \hline
+\end{tabular}
+
+
+\end{minipage}
+\end{table}
+
+
+Анализ данных табл.~\ref{nekh:t2} свидетельствует о том, что для снижения уровня нагрузки наиболее рациональной конструкцией (для данного вида нагрузки) является система <<кость~-- спица~-- спица>>. 
+В~технологическом смысле это также и  оптимальный вариант превентивного <<лечения>> костной ткани.
+
+\smallskip
+
+\Section[n]{Выводы} 
+В данной статье предложена новая методика построения геометрии бедренной кости, разработаны необходимые программные инструменты и~спецификации, реализована программа для конвертирования данных в~необходимый формат. 
+Показано превосходство новой методики над имеющимся подходом к построению геометрии бедренной кости. 
+Более точно учтены геометрические и~механические характеристики кости.
+Проанализированы результаты и выбрана оптимальная модель имплантирования "--- <<кость~-- спица~-- спица>>. 
+По результатам расчётов такая конструкция позволяет снизить наибольшие напряжения в~кости примерно на 12\,\%.
+
+\begin{thebibliography}{14}
+
+\RBibitem{nekh:b1}
+\by А.~Л.~Матвеев
+\thesis Оперативный способ профилактики переломов шейки бедренной кости
+\thesisinfo Патент РФ на на изобретение №~2316280 от 10.02.2008
+\misctransl
+\by A.~L.~Matveev
+\thesis Operative way of femoral neck fractures preventing
+\thesisinfo Invention patents of the Russian Federation. No.~2316280 of February~10, 2008
+
+\RBibitem{nekh:b2}
+\by В.~П.~Радченко, А.~В.~Нехожин, А.~Л.~Матвеев
+\paper Математическое моделирование напряжённого состояния армированной костной ткани шейки бедра при статических нагрузках
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\yr 2011
+\issue 4(25)
+\pages 75--81
+\mathnet{http://mi.mathnet.ru/vsgtu1037}
+\misctransl
+\by V.~P.~Radchenko, A.~V.~Nekhozhin, A.~L.~Matveev
+\paper Mathematical modeling of the stress state of reinforced bone tissue of the femoral neck with static load
+\jour Vestn. Samar. Gos. Tekhn. Univ. Ser. Fiz.-Mat. Nauki
+\yr 2011
+\issue 4(25)
+\pages 75--81
+
+
+\RBibitem{nekh:b3}
+\book Гистология
+\by Ю.~И.~Афанасьев, Н.~А.~Юрина, Е.~Ф.~Котовский
+\publaddr М.
+\publ Медицина
+\yr 2002 
+\totalpages 774
+\misctransl
+\book Histology \by Yu.~I.~Afanas'yev, N.~A.~Yurina, Ye.~F.~Kotovskiy \publaddr M. \publ Meditsina \yr 2002 \totalpages 774
+
+\RBibitem{nekh:b4}
+\by Г.~И.~Рогожников, С.~Г.~Конюхова, Ю.~И.~Няшин, С.~А.~Чернопазов, С.~В.~Еремина
+\paper Влияние модуля упругости губчатой и кортикальной кости на напряженное состояние в области пластинчатого имплантата при окклюзионной нагрузке
+\jour Российский журнал биомеханики
+\yr 2004
+\vol 8
+\issue 1
+\pages 54--60
+\misctransl
+\by G.~I.~Rogozhnikov, S.~G.~Konyuhova, Yu.~I.~Nyashin, S.~A.~Chernopazov, S.~V.~Eremina 
+\paper The influence of elasticity modulus of spongy and cortical bone on stress state near planar implant under occlusal load
+\jour Russian Journal of Biomechanics
+\yr 2004
+\vol 8
+\issue 1
+\pages 54--60
+
+
+\Bibitem{nekh:b5-1}
+\by N.~Harlan
+\paper Titanium Bone Implants
+\jour Materials Technology
+\yr 2000
+\vol 15
+\issue 3
+\pages 185--187
+
+\Bibitem{nekh:b5-2}
+\by N.~Harlan, R.~Reyes, D.~L.~Bourell, J.~J.~Beaman
+\paper Titanium Castings using Laser Scanned Data and Selective Laser Sintered Zirconia Molds
+\jour ASM Journal of Materials Engineering \& Performance
+\vol 10
+\issue 4
+\pages 410--413
+\yr 2001
+
+
+\Bibitem{nekh:b5-3}
+\by N.~Harlan, R.~Reyes, D.~L.~Bourell
+\paper Building Better Bones
+\jour Foundry Management \& Technology
+\vol 128
+\issue 8
+\pages 82--83
+\yr 2000 
+
+
+\RBibitem{nekh:b9}
+\by А.~Л.~Матвеев, А.~В.~Нехожин, И.~И.~Матвеева
+\paper Имплантаты для армирования шейки бедренной кости с целью профилактики переломов при остеопорозе
+\inbook Актуальные вопросы диагностики, лечения  и реабилитации больных
+\publaddr Пенза
+\yr 2011
+\pages 160--162
+\misctransl
+\by A.~L.~Matveyev, A.~V.~Nekhozhin, I.~I.~Matveyeva 
+\paper Implants for reinforcement of the femoral neck to prevent fractures in osteoporotic
+\inbook Actual problems of diagnosis, treatment and rehabilitation of patients
+\publaddr Penza 
+\yr 2011 
+\pages 160--162
+
+
+\RBibitem{nekh:b10}
+\by Б.~Ш.~Минасов, М.~Ю.~Ханин, Р.~Р.~Якупов, Т.~Б.~Минасов
+\paper Результаты стендовых испытаний системы кость--имплантат--кость в условиях стандартного остеосинтеза при переломах проксимального отдела бедра
+\jour Казанский медицинский журнал
+\yr 2010
+\issue 1
+\pages 40--44
+\misctransl
+\by B.~Sh.~Minasov, M.~Yu.~Khanin, P.~P.~Yakupov, T.~B.~Minasov
+\paper The results of bone – implant – bone bench tests of standard osteosynthesis during fractures of the proximal part of the thigh bone
+\jour  Kazanskiy Medicinskiy Zhurnal
+\vol 91
+\issue 1 
+\yr 2010
+\pages 40–44
+
+\RBibitem{nekh:b11}
+\by Винц~Х.
+\paper Изменение механических свойств компактной костной ткани человека в зависимости от возраста
+\jour Механика полимеров
+\yr 1975
+\issue 11
+\pages 659--663
+\transl англ. пер.:~
+\by H.~Vinz 
+\paper Change in the mechanical properties of human compact bone tissue upon aging
+\jour Mechanics of Composite Materials
+\vol 11
+\issue 4 
+\yr 1975
+\pages 568–571
+
+\RBibitem{nekh:b12}
+\by А.~А.~Утенькин
+\paper Кость – многоэтажный композит
+\jour Химия и жизнь
+\yr 1981
+\issue 4
+\pages 38--40
+\misctransl
+\paper  Bone is a multi-storey composite
+\by A.~A.~Uten'kin 
+\jour Khimiya i Zhizn' 
+\yr 1981 
+\issue 4 
+\pages 38--40
+
+\RBibitem{nekh:b13}
+\by Т.~Б.~Минасов, А.~Е.~Стрижков, Л.~М.~Бакусов, Р.~В.~Насыров
+\book Структурная самоорганизация костной ткани и ее механизмы как источник диагностической информации
+\publaddr Уфа
+\yr 2010 
+\totalpages 116
+\misctransl
+\by T.~B.~Minasov, A.~E.~Strizhkov, L.~M.~Bakusov, R.~V.~Nasyrov 
+\book Structural self-organization of bone tissue and its mechanisms as a source of diagnostic information
+\publaddr Ufa \yr 2010 \totalpages 116
+
+\RBibitem{nekh:b14}
+\by Р.~Лайуни 
+\paper К вопросу о механических свойствах костной ткани
+\inbook Физическое воспитание студентов творческих специальностей
+\publaddr Харьков
+\yr 2002
+\vol 4
+\pages 18--22
+\misctransl
+\by R.~Liayouni
+\paper  To a question on mechanical charecteristics bone tissue 
+\inbook Physical education of students of creative disciplines
+\publaddr Khar'kov
+\yr 2002
+\vol 4
+\pages 18--22
+
+\end{thebibliography}
+
+
+\noindent
+\hskip6.5cm \thedate \par\noindent
+\hskip6.5cm\therevdate
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\chead[\fancyplain{}{\scriptsize \sl A.~V.~N\,e\,k\,h\,o\,z\,h\,i\,n}]{\fancyplain{}{\scriptsize \sl Bilayer mathematical model of human femur neck \dots }}
+
+\makeengtitlem
+
+ \newpage
+%
+% \tableofengcontents
+%
+%\end{document}

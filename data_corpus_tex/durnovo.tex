@@ -1,0 +1,682 @@
+\def\stat{durnovo}
+
+\def\tit{ИНТЕГРАЦИОННЫЕ ВОЗМОЖНОСТИ НАДКОРПУСНЫХ~БАЗ~ДАННЫХ$^*$}
+
+\def\titkol{Интеграционные возможности надкорпусных баз данных}
+
+\def\aut{А.\,А.~Дурново$^1$, О.\,Ю.~Инькова$^2$, В.\,А.~Нуриев$^3$}
+
+\def\autkol{А.\,А.~Дурново, О.\,Ю.~Инькова, В.\,А.~Нуриев}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Дурново А.\,А.}
+\index{Инькова О.\,Ю.}
+\index{Нуриев В.\,А.}
+\index{Durnovo A.\,A.}
+\index{Inkova O.\,Yu.}
+\index{Nuriev V.\,A.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнялась с~использованием инфраструктуры Центра коллективного пользования 
+<<Высокопроизводительные вычисления и~большие данные>> (ЦКП <<Информатика>>) ФИЦ ИУ РАН 
+(г.~Моск\-ва) в~рамках швей\-цар\-ско-рос\-сий\-ско\-го проекта <<Методология аннотирования 
+в~надкорпусной базе данных коннекторов>> по гранту Швейцарского государственного секретариата по 
+образованию, исследованиям и~инновациям.}} 
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{duralex49@mail.ru}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук; 
+Женевский университет, \mbox{olyainkova@yandex.ru}}
+\footnotetext[3]{Федеральный исследовательский центр <<Информатика и~управление>>
+           Российской академии наук, \mbox{nurieff.v@gmail.com}}
+
+ \label{st\stat}
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-16pt} 
+ 
+    
+          
+  
+  \Abst{Описываются интеграционные возможности надкорпусных баз данных, 
+разработанных в~ФИЦ ИУ РАН. Продемонстрировано, как три базы данных~--- 
+Надкорпусная база данных иерархии логико-семантических отношений (НБДИ ЛСО), 
+База данных параллельных текстов (БДТ) и~Надкорпусная база данных коннекторов 
+(НБДК)~--- интегрированы между собой. Информационная система иерархии 
+ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений (ИСИЛСО) использует специально спроектированную базу 
+данных (НБДИ ЛСО), в~которой аннотации ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений 
+представлены в~виде деревьев, т.\,е.\ ориентированных связных ациклических графов, где 
+узлы содержат данные, а ребра отображают отношение подчиненности между узлами. 
+Наряду с~НБДИ ЛСО ИСИЛСО использует данные из БДТ и~НБДК. Такая интеграция 
+позволяет комбинировать методологические наработки информатики, контрастивной 
+и~корпусной лингвистики, теории и~практики перевода, не упуская из виду факторы, 
+которые могут отрицательно сказаться на валидности и~надежности конечных данных.}
+  
+  \KW{надкорпусная база данных; интеграция баз данных; многоязычный корпус; 
+параллельный корпус; корпусные информационные ресурсы; переводоведение; 
+контрастивная лингвистика; машинный перевод}
+  
+  
+\DOI{10.14357\!/\!08696527230103}  
+
+\vskip 10pt plus 9pt minus 6pt
+
+ \thispagestyle{headings}
+ 
+ \vspace*{-22pt}
+ 
+  \section{Введение}
+  
+  \vspace*{-6pt}
+  
+  Контрастивная лингвистика, переводоведение и~практика (машинного 
+и~осуществляемого человеком) перевода имеют очевидные точки 
+пересечения: по меньшей мере каж\-дая из указанных областей связана 
+с~обработкой двух и~более естественных языков. Кроме того, сейчас все три 
+области в~своей методологии ориентируются на корпусные методы 
+исследования и~получения данных. В~машинном переводе многоязычный 
+корпус служит источником параллельных текстов, используемых в~качестве 
+тренировочных выборок для переводных моделей. Переводоведы используют 
+корпусные данные для описания процесса перевода и~его теоретического 
+моделирования (с~учетом переводческих стратегий и~особенностей 
+переводимого текста). Практикующий переводчик из параллельного корпуса 
+получает референтные образцы, и~в~этом смысле подобные 
+информационные ресурсы максимально сближаются с~двуязычным словарем, 
+значительно превосходя его по широте наполнения и~удобству пользования. 
+В~контрастивной лингвистике корпусные данные служат эмпирическим 
+базисом, позволяющим упрочить теоретические изыскания и~более рельефно 
+показать межъ\-язы\-ко\-вые различия, не попадавшие до этого в~фокус 
+исследования (подробнее о~взаимодействии трех областей см.~[1,  
+с.~v--vi,~1]).
+  
+  Несмотря на существующие точки соприкосновения, методологический 
+взаимообмен между тремя областями не является паритетным. Развитие 
+корпусной парадигмы его ускорило, не обеспечив при этом равноправного 
+взаимовлияния вовлеченных дисциплин, теории и~практики. 
+Переводоведение активно пользуется наработками контрастивной 
+лингвистики, в~то время как последняя гораздо реже обращается к~опыту, 
+накопленному в~теории перевода, проявляя интерес скорее к~переводам как 
+объекту анализа, но не к~методологии корпусной работы с~ними. Поэтому 
+в~контрастивных исследованиях могут не учитываться некоторые 
+особенности переводного процесса, определяющие валидность и~надежность 
+получаемых данных (см., например,~[2, 3]). Так, при использовании 
+параллельного корпуса не всегда учитываются факторы, способные 
+существенно исказить результирующие данные,~--- направление перевода, 
+индивидуальная переводческая стратегия, особенности переводного текста 
+(жанр, регистр, время возникновения) и~т.\,д.
+  
+  За последние несколько лет вышел ряд работ, где предпринимается 
+попытка исправить сложившееся положение~[4--9], в~том числе публикации 
+исследователей, осуществляющих свою научную деятельность в~ФИЦ ИУ 
+РАН~[10, 11].
+  
+  В данной статье рассматривается НБДИ ЛСО и~возможности ее 
+интеграции с~другими базами данных, функционирующими на основе 
+параллельных корпусов. Это один из информационных корпусных ресурсов, 
+позволяющих успешно комбинировать наработки контрастивной 
+лингвистики и~теории перевода, не упуская из виду факторы, которые могут 
+негативно повлиять на валидность и~надежность конечных данных.
+  
+Надкорпусная база данных иерархии  
+ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений\footnote{Архитектура НБДИ ЛСО описана в~работе~\cite{14-dur}.} создана в~ФИЦ ИУ РАН, чтобы расширить 
+возможности аннотирования ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений и~их показателей, имеющиеся в~НБДК, также созданной в~ФИЦ ИУ  
+РАН~\cite{12-dur}. Надкорпусная база данных иерархии  
+ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений использует тексты параллельных 
+подкорпусов Национального корпуса русского языка~\cite{13-dur} общим 
+объемом свыше~11~млн словоупотреблений, а также аннотации НБДК.
+  
+  \section{Интеграция баз данных НБДИ ЛСО, БДТ и~НБДК}
+  
+  Информационная система иерархии логико-семантических отношений, обсуждаемая в~настоящей работе, использует специально 
+спроектированную базу данных (НБДИ ЛСО), в~которой аннотации  
+ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений представлены в~виде деревьев, 
+т.\,е.\ ориентированных связных ациклических графов, где узлы (вершины) 
+содержат данные, а~ребра отображают отношение подчиненности между 
+узлами.
+  
+  Информационная система иерархии ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений помимо НБДИ ЛСО использует информацию из БДТ и~НБДК. 
+  
+  База данных параллельных текстов служит источником параллельных текстов, на основе которых 
+создаются аннотации. Основной единицей хранения текстов в~БДТ служит 
+\textit{трансляция}. Трансляция представляет собой упорядоченную 
+последовательность пар, где первым элементом выступает \textit{фрагмент} 
+(одно или несколько предложений) текста оригинала, а~вторым~--- 
+соответствующий ему фрагмент текста перевода:
+  $\langle\langle o_0, t_0\rangle, \langle o_1, t_1\rangle, \langle o_2, t_2\rangle, \ldots , \langle 
+o_{n-1}, t_{n-1}\rangle\rangle.$
+  Здесь $n$~--- число пар фрагментов в~трансляции, $o_0$, $o_1$  
+и~$o_{n-1}$~--- первый, второй и~последний фрагменты текста оригинала; 
+$t_0$, $t_1$ и~$t_{tn-1}$~--- первый, второй и~последний фрагменты текста 
+перевода. Последовательность $\langle o_0, o_1, o_2, \ldots , o_{n-1}\rangle$ 
+соответствует полному тексту оригинала, а~последовательность $\langle t_0, 
+t_1, t_2, \ldots , t_{n-1}\rangle$~--- полному тексту перевода. Пары вида $\langle o_i, 
+t_i\rangle$ будем называть парами фрагментов, или просто \textit{парами}.
+  
+  Связь НБДИ ЛСО с~НДБК более тесная прежде всего потому, что одним из 
+важнейших типов данных в~НБДИ ЛСО, как и~в~НБДК, выступают 
+коннекторы. Кроме того, множество пользователей, имеющих возможность 
+работать с~НБДИ ЛСО, совпадает с~множеством пользователей НБДК.
+  
+  Главным типом объектов в~НБДК служат \textit{аннотации}. Важнейшей 
+частью аннотации является пара (в математическом смысле) вида $\langle 
+g_0, g_t\rangle$, где $g_0$~--- \textit{контекст} оригинала; $g_t$~--- 
+контекст перевода. Контекст, в~свою очередь, упрощенно может быть 
+представлен как тройка вида $\langle w, t, p\rangle$, где $w$~--- 
+последовательность словоформ фрагмента (нескольких соседних 
+фрагментов); $t$~--- тип речевой реализации коннектора, т.\,е.\ та форма, 
+в~которой коннектор зафиксирован в~аннотируемом контексте\footnote{Речь 
+идет о таких, например, случаях, как речевые реализации \textit{да и~еще} и~\textit{да притом 
+еще} в~следующих примерах: А~я вот представлю$\ldots$ совершила я что-то эдакое$\ldots$ мне 
+и~так плохо, \textit{да и~еще} самые близкие и~дорогие во мне разочарованы (родители)~--- 
+к~кому бежать, от кого ждать помощи? [Наши дети: Подростки (2004)]; ~---~Из русского окопа 
+ответили одним словом, \textit{да притом еще} очень коротким [Василий Гроссман. Жизнь 
+и~судьба. Ч.~3 (1960)]. Ср.\ кластер речевых реализаций коннектора \textit{да}, зафиксированных 
+в~НБДК: \textit{да}, \textit{да~и}, \textit{да еще~и}, \textit{да и~еще, да притом еще}, \textit{да 
+притом еще~и} и~др. Подробнее о формальной вариативности коннекторов см.~\cite{15-dur}.};  
+$p$~--- набор свойств, характеризующих коннектор и~контекст его 
+употребления. При этом фрагменты обоих контекстов должны относиться 
+к~одной и~той же паре (парам~--- в~случае нескольких соседних фрагментов).
+  
+  Узлы дерева в~НБДИ ЛСО бывают двух типов: Т-узлы, содержащие текст, и~C-уз\-лы, содержащие коннектор. Корневым узлом дерева всегда является 
+T-узел. Дочерними узлами T-уз\-лов могут быть только C-уз\-лы, причем 
+у~каж\-до\-го Т-уз\-ла может быть не более одного дочернего, тогда как 
+дочерними узлами C-уз\-лов могут быть только T-уз\-лы, причем для каж\-до\-го 
+C-уз\-ла в~количестве не менее двух.
+  
+  В результате тесных связей НБДИ ЛСО с~БДТ и~НБДК из восьми таб\-лиц, 
+имеющихся в~НБДИ ЛСО, шесть имеют поля, которые тем или иным образом 
+ссылаются на БДТ или НБДК. Так, в~таблице Structure, которая содержит 
+информацию о дереве в~целом, имеются поля TranslationId (идентификатор 
+трансляции в~БДТ), ParaNumStart и~ParaNumEnd (номера соответственно 
+первой и~последней пар из трансляции, определяющих диапазон текста, 
+в~пределах которого строится дерево), FromTransl (строится ли дерево на 
+основе оригинала или, напротив, перевода) и~LangId (идентификатор языка 
+текста в~БДТ). В~таб\-ли\-це Context, которая соответствует T-уз\-лам дерева, 
+имеются поля WNumTextStart и~WNumTextEnd (порядковые номера первой 
+и~последней словоформ оригинального или переводного текста трансляции, 
+которые определяют диапазон текста, являющегося контекстом данного  
+T-уз\-ла). В~таб\-ли\-це Link, соответствующей C-уз\-лам дерева, есть поле 
+LGFTypeId (идентификатор типа речевой реализации коннектора в~НБДК). 
+Таблица Link\_LGFProp, которая задает множество свойств из кластера 
+<<Отношения>>, характеризующих коннектор данного C-уз\-ла, имеет поле 
+LGFPropId (идентификатор свойства из НБДК). Таб\-ли\-ца Portion, которая 
+соответствует отрезкам текста в~контексте Т-уз\-ла (если текст не сплошной, 
+а~имеет пропуски), содержит поля WNumTextStart и~WNumTextEnd 
+(выполняющие ту же функцию, что и~одноименные поля таблицы Context). 
+Наконец, таб\-ли\-ца History, содержащая информацию о~всех состояниях 
+каж\-до\-го дерева в~разные периоды времени, имеет поле UserId 
+(идентификатор пользователя из НБДК).
+{\looseness=1
+
+}
+  
+  Далее будут приведены примеры совместного использования нескольких 
+баз в~рамках одной и~той же операции с~данными.
+  
+  \section{Примеры совместного использования нескольких баз}
+  
+  \subsection{Вход в~систему}
+  
+  Доступ к~ИСИЛСО имеют только пользователи, зарегистрированные 
+в~НБДК. Для входа в~систему необходимо ввести те же логин и~пароль, 
+которые используются для подключения к~пользовательскому интерфейсу 
+для работы с~НБДК.
+  
+  Приведем пример запроса к~НБДИ ЛСО на языке MS~SQL, где 
+проверяется корректность введенных пользователем логина и~пароля:
+
+\noindent
+{\small  \begin{verbatim}
+   select top 1 [Id] from [LingvoConnector].[dbo].[Users] 
+   where [Login] = N'Ivanov' and [Password] = N'287@307'
+   \end{verbatim}
+   }
+   
+   \noindent
+Здесь и~далее в~примерах LingvoText~--- имя БДТ, а LingvoConnector~--- имя 
+НБДК.
+  
+  \subsection{Создание дерева}
+  
+  При необходимости создания нового дерева у~пользователя есть три 
+возможности:
+  \begin{enumerate}[(1)]
+\item создать дерево по идентификатору аннотации из НБДК;
+\item создать дерево по идентификатору пары из БДТ;
+\item создать дерево по отрывку текста.
+\end{enumerate}
+
+  В каж\-дом случае в~НБДТ происходит поиск (в~первом случае 
+с~использованием информации, хранящейся в~НБДК) хотя бы одной пары, 
+удовлетворяющей требуемому критерию. Если такая пара будет найдена, 
+текст ее левого или правого (в зависимости от выбранного языка) фрагмента 
+станет корневым контекстом нового дерева. При создании дерева корневой 
+контекст может быть расширен за счет фрагментов соседних пар. Это бывает 
+необходимо в~том случае, когда корневой контекст недостаточен для 
+определения свойств, характеризующих данное употребление 
+коннектора~\cite{16-dur}.
+  
+  В результате создается вырожденное дерево с~единственным T-уз\-лом 
+в~качестве корневого.
+  
+  Приведем пример запроса к~НБДИ ЛСО на языке MS~SQL, где требуется 
+найти в~БДТ пару по идентификатору аннотации в~НБДК, равному~19711:
+
+ \noindent
+ {\footnotesize \begin{verbatim}
+  with [Aux]  as  
+   (
+   select distinct
+       [t].[Id] as [TranslationId],
+       [a].[Name] as [AuthorName],
+       [b].[Title] as [BookTitle],
+       [p].[ParaNum] as [ParaNum],
+       [fo].[Text] as [OrigText],
+       [ft].[Text] as [TranslText]     
+   from [LingvoConnector].[dbo].[Equivalence] [e]
+   join [LingvoConnector].[dbo].[LGF] [go] on [go].[Id] = [e].[LGFOrigId]      
+   join [LingvoConnector].[dbo].[LGF_Word] [gwo] on [gwo].[LGFId] = [go].[id]
+   join [LingvoText].[dbo].[WordInText] [wo] on [wo].[Id] = [gwo].[WordId]
+   join [LingvoText].[dbo].[Fragment] [fo] on [fo].[Id] = [wo].[FragmentId]
+   join [LingvoText].[dbo].[Para] [p] on [p].[FragOrigId] = [fo].[Id]
+   join [LingvoText].[dbo].[Fragment] [ft] on [ft].[Id] = [p].[FragTranslId]
+   join [LingvoText].[dbo].[Translation] [t] on [t].[Id] = [p].[TranslationId]
+        and [t].[LangId] in (2, 9)
+   join [LingvoText].[dbo].[Book] [b] on [b].[Id] = [t].[BookId]
+        and [b].[LangId] = 1 
+   join [LingvoText].[dbo].[Author] [a] on [a].[Id] = [b].[AuthorId]
+   where [e].[Id] = 19711
+  )  
+  select top 1     
+   [TranslationId],        
+   [AuthorName],       
+   [BookTitle],        
+   [ParaNum],      
+   [OrigText],
+   [TranslText]
+  from [Aux]
+  where [TranslationId] = (select min([TranslationId]) from [Aux])    
+   \end{verbatim}
+   }
+   
+  
+  Ответ на запрос содержит идентификатор трансляции, имя автора, 
+название произведения, порядковый номер пары в~трансляции, а также 
+тексты фрагментов.
+  
+  \subsection{Дальнейшее развитие дерева}
+  
+  В ходе дальнейшего построения дерева происходит разделение контекстов 
+на составляющие с~появлением узлов, подчиненных корневому. При этом 
+возникают узлы, содержащие коннектор, т.\,е.\ C-уз\-лы. Создание каж\-до\-го  
+C-уз\-ла вызывает необходимость поиска информации в~НБДК, где 
+содержатся данные о~речевых реализациях коннекторов, а~также об их 
+свойствах из кластера <<Отношения>>.
+  
+  Приведем пример запроса к~НБДИ ЛСО на языке MS~SQL, где требуется 
+получить в~НБДК список типов коннекторов для русского языка:
+
+\noindent
+{\small
+  \begin{verbatim}
+   select [Id], [Code] from [LingvoConnector].[dbo].[LGFType] 
+   where [LangId] = 1 order by [Id]
+  \end{verbatim}
+  }
+  
+  
+  Более того, при отсутствии в~НБДК необходимой речевой реализации 
+коннектора пользователь имеет возможность ее создать в~НБДК. То же 
+касается и~свойств коннекторов из кластера <<Отношения>>. Из этого 
+следует, что \mbox{ИСИЛСО} не только использует данные из НБДК, но и~дает 
+возможность их пополнения.
+  
+  \subsection{Поиск соседних аннотаций}
+  
+  \textit{Соседние аннотации} дерева~--- это аннотации в~НБДК, имеющие 
+общие пары с~данным деревом (формально: если пересечение множества пар, 
+на которых построена аннотация, с~множеством пар, на которых построено 
+дерево, не является пустым).
+  
+  Приведем пример запроса к~НБДИ ЛСО на языке MS SQL, где требуется 
+найти в~НБДК соседние аннотации дерева с~идентификатором~1:
+
+\noindent
+{\footnotesize
+  \begin{verbatim}
+   select distinct  
+    [eq].[Id]
+   from [LingvoConnector].[dbo].[Equivalence] [eq]  
+   join [LingvoConnector].[dbo].[LGF] [lg] on [lg].[Id] = [eq].[LGFOrigId]  
+   join [LingvoConnector].[dbo].[LGF_Word] [lw] on [lw].[LGFId] = [lg].[Id]  
+   join [LingvoText].[dbo].[WordInText] [wt] on [wt].[Id] = [lw].[WordId]  
+   join [Structure] [s] on [s].[Id] = 1
+   join [LingvoText].[dbo].[Para] [p] on [p].[FragOrigId] = [wt].[FragmentId] 
+    and [p].[ParaNum] between [s].[ParaNumStart] and [s].[ParaNumEnd] 
+    and [p].[TranslationId] = [s].[TranslationId]  
+   \end{verbatim}
+   }
+  
+  \subsection{История изменений дерева}
+  
+  В НБДИ ЛСО фиксируется каж\-дая операция по изменению состояний 
+каж\-до\-го дерева (создание дерева, добавление, редактирование, удаление 
+узлов). При этом фиксируется также информация о~пользователе, который 
+произвел данное изменение. В~ИСИЛСО есть возможность получить список 
+всех изменений некоторого дерева, а~также просмотреть каж\-дое состояние 
+и~сравнить его с~предыдущим (если такое имеется).
+  
+  Приведем пример запроса к~НБДИ ЛСО на языке MS~SQL, где требуется 
+получить список всех состояний дерева с~идентификатором~10:
+
+\noindent
+{\small   \begin{verbatim}
+   select   
+    [h].[Order],        
+    [h].[StartTime],        
+    [h].[EndTime],      
+    [u].[LastName]      
+   from [History] [h]
+   join [LingvoConnector].[dbo].[Users] [u] on [u].[Id] = [h].[UserId]
+   where [h].[StructureId] = 10
+   \end{verbatim}
+   }
+   
+  
+  Обращение к~НБДК здесь необходимо потому, что в~НБДИ ЛСО нет 
+своего списка пользователей, а~множества пользователей НБДИ ЛСО 
+и~НБДК совпадают.
+  
+  \section{Заключение}
+  
+  В статье представлены интеграционные возможности баз данных, 
+функционирующих на основе параллельных корпусов. Такая интеграция, 
+объединяющая несколько корпусных информационных ресурсов между 
+собой, позволяет в~методологическом отношении комбинировать наработки 
+контрастивной лингвистики, теории и~практики перевода, не упуская из виду 
+факторы, которые могут отрицательно сказаться на валидности и~надежности 
+конечных данных.
+  
+  В перспективе интеграционные возможности надкорпусных баз данных 
+можно будет использовать при наполнении баз знаний искусственного 
+интеллекта (в~том числе в~системах машинного перевода). Кроме того, 
+благодаря некоторым своим особенностям~--- таким как, например, свойство 
+фиксировать историю изменений состояния дерева~--- надкорпусная база 
+данных типа НБДИ ЛСО может стать важным инструментом 
+в~психолингвистических исследованиях речи. Для изучения процесса 
+принятия решений при речепорождении, как правило, используют 
+программное обеспечение, отслеживающее движение глаз или 
+регистрирующее щелчки клавиш на клавиатуре компьютера. 
+Здесь НБДИ ЛСО  открывает новые возможности. Также история изменений состояния 
+дерева может оказаться востребованной для теории порождения 
+и~управления знаниями, наглядно представляя всю хронологическую 
+последовательность приложения когнитивных усилий к~одному и~тому же 
+информационному объекту (и~прирост нового знания, с~ним связанного).
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-dur}
+Crossroads between contrastive linguistics, translation studies and machine translation: TC3~II 
+(Translation and Multilingual Natural Language Processing~4)~/ Eds. O.~Czulo, S.~Hansen-Schirra.~--- Berlin: Language Science Press, 2017. 208~p. 
+\bibitem{2-dur}
+\Au{Bystrova-McIntyre T.} Looking at the overlooked: A~corpora study of punctuation use in 
+Russian and English~/\!\!/ Transl. Interpret. Stu., 2007. Vol.~2. No.\,1. P.~137--162.
+\bibitem{3-dur}
+\Au{Gast V.} On the use of translation corpora in contrastive linguistics: A~case study of 
+impersonalization in English and German~/\!\!/ Languages Contrast, 2015. Vol.~15. Iss.~1.  
+P.~4--33.
+\bibitem{4-dur}
+New directions in corpus-based translation studies~/ Eds. C.~Fantinuoli, F.~Zanettin.~--- 
+Berlin: Language Science Press, 2015. 168~p.
+\bibitem{5-dur}
+\Au{Mikhailov M., Cooper~R.} Corpus linguistics for translation and contrastive studies: 
+A~guide for research.~--- Abingdon, New York: Routledge, 2016. 
+258~p.
+\bibitem{6-dur}
+Parallel corpora for contrastive and translation studies: New resources and applications~/ Eds. 
+I.~Doval, M.\,T.~S\'{a}nchez Nieto.~--- Amsterdam, Philadelphia: John Benjamins, 2019. 
+310~p.
+\bibitem{7-dur}
+Translating and comparing languages: Corpus-based insights~/ Eds. S.~Granger, 
+ \mbox{M.-A.}~Lefer.~--- Louvain-la-Neuve, Belgique: Presses universitaires de Louvain, 2020. 298~p.
+\bibitem{8-dur}
+Corpora in translation and contrastive research in the digital age: Recent advances and 
+explorations~/\!\!/ Eds. J.~Lavid-L\'{o}pez, C.~Ma\'{\i}z-Ar\'{e}valo,  
+J.\,R.~Zamorano-Mansilla.~--- Amsterdam, Philadelphia: John Benjamins, 2021. 351~p.
+\bibitem{9-dur}
+Extending the scope of corpus-based translation studies~/ Eds. S.~Granger, \mbox{M.-A.}~Lefer.~--- 
+London: Bloomsbury Academic, 2022. 288~p.
+\bibitem{10-dur}
+Семантика коннекторов: контрастивное исследование~/ Под ред. О.\,Ю.~Иньковой.~--- 
+М.: ТОРУС ПРЕСС, 2018. 396~с.
+\bibitem{11-dur}
+Структура коннекторов и~методы ее описания~/ Науч. ред. О.\,Ю.~Иньковой.~--- М.: 
+ТОРУС ПРЕСС, 2019. 316~с.
+
+\bibitem{14-dur} %12
+\Au{Дурново А.\,А., Инькова~О.\,Ю., Попкова~Н.\,А.} Архитектура базы данных иерархии  
+ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений~/\!\!/ Сис\-те\-мы и~средства информатики, 
+2022. Т.~32. №\,1. С.~114--125. doi: 10.14357\!/\!08696527220111.
+
+\bibitem{12-dur} %13
+\Au{Inkova~O., Popkova~N.} Statistical data as information source for linguistic analysis of 
+Russian connectors~/\!\!/ Информатика и~её применения, 2017. Т.~11. Вып.~3. С.~123--131.
+\bibitem{13-dur} %14
+Национальный корпус русского языка (НКРЯ). {\sf https://ruscorpora.ru/new.}
+
+
+\bibitem{15-dur}
+\Au{Инькова О.\,Ю.} Структура коннекторов: лингвистические методы описания~/\!\!/ 
+Структура коннекторов и~методы ее описания~/ Науч. ред. О.\,Ю.~Иньковой.~--- М.: 
+ТОРУС ПРЕСС, 2019. С.~5--47.
+\bibitem{16-dur}
+\Au{Дурново А.\,А., Инькова О.\,Ю., Попкова~Н.\,А.} Интерфейс пользователя 
+Надкорпусной базы данных иерархий ло\-ги\-ко-се\-ман\-ти\-че\-ских отношений~/\!\!/  
+Сис\-те\-мы и~средства информатики, 2022. Т.~32. №\,3. С.~103--115. doi: 
+10.14357\!/\!08696527220310.
+ \end{thebibliography}
+} }
+
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 11.10.22}}
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{8pt}
+
+\def\tit{INTEGRATION CAPACITIES OF~SUPRACORPORA DATABASES}
+
+
+
+\def\titkol{Integration capacities of~supracorpora databases}
+
+\def\aut{A.\,A.~Durnovo$^1$, O.\,Yu.~Inkova$^{1,2}$, and~V.\,A.~Nuriev$^1$}
+
+\def\autkol{A.\,A.~Durnovo, O.\,Yu.~Inkova, and~V.\,A.~Nuriev}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-8pt}
+
+\noindent
+$^1$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
+$\hphantom{^1}$of  Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+\noindent
+$^2$University of Geneva, 22 Bd des Philosophes, CH-1205 Geneva 4, Switzerland
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2023 vol~33 no\,1}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics 2023 vol~33 no\,1
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+
+\Abste{The paper centers on integration capacities of supracorpora databases developed at the 
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences. 
+It is shown how three databases~--- the Supracorpora database of hierarchal logical-semantic 
+relations (SDBH LSR), the Database of parallel texts (DBT), and the Supracorpora database of 
+connectives (SDBC)~--- are integrated between themselves. The information system of 
+hierarchal logical-semantic relations uses a~specially designed database (SDBH LSR) 
+in which annotations of logical-semantic relations are presented as trees, i.\,e., directed 
+connected acyclic graphs where nodes contain data and edges depict the subordination between 
+nodes. Along with the SDBH LSR, ISHLSR uses data from the DBT and SDBC. Such 
+integration makes it possible to combine the methodological strengths of the informatics, 
+contrastive and corpus linguistics, and theory and practice of translation without losing sight of the 
+factors that may adversely affect the validity and reliability of the final data.}
+
+\KWE{supracorpora database; integration of databases; multilingual corpus; parallel corpus; 
+corpus-based information resources; translation studies; contrastive linguistics; machine 
+translation}
+
+
+
+
+\DOI{10.14357\!/\!08696527230103}  
+
+%\vspace*{-10pt}
+
+
+\Ack
+\noindent
+The research was carried out using the infrastructure of the Shared Research Facilities ``High 
+Performance Computing and Big Data'' (CKP ``Informatics'') of FRC CSC RAS (Moscow) and 
+supported by the Switzerland--Russia Research Preparation Grant ``Annotation Methodology in 
+a~Supracoprora Database of Connectives'' of the State Secretariat for Education, Research, and 
+Innovation.
+
+%\vspace*{-3pt}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{ %\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-dur-1}
+Czulo, O., and S.~Hansen-Schirra, eds. 2017. \textit{Crossroads between contrastive linguistics, 
+translation studies and machine translation: TC3~II (Translation and Multilingual Natural 
+Language Processing~4)}. Berlin: Language Science Press. 208~p.
+\bibitem{2-dur-1}
+\Aue{Bystrova-McIntyre, T.} 2007. Looking at the overlooked: A~corpora study of punctuation 
+use in Russian and English. \textit{Transl. Interpret. Stu.} 2(1):137--162.
+\bibitem{3-dur-1}
+\Aue{Gast, V.} 2015. On the use of translation corpora in contrastive linguistics: A~case study of 
+impersonalization in English and German. \textit{Languages Contrast} 15(1):4--33.
+\bibitem{4-dur-1}
+Fantinuoli, C., and F.~Zanettin, eds. 2015. \textit{New directions in corpus-based translation 
+studies}. Berlin: Language Science Press. 168~p.
+\bibitem{5-dur-1}
+\Aue{Mikhailov, M., and R.~Cooper.} 2016. \textit{Corpus linguistics for translation and 
+contrastive studies: A~guide for research}. Abingdon, New York: Routledge. 
+258~p.
+\bibitem{6-dur-1}
+Doval, I., and M.\,T.~S\'{a}nchez Nieto, eds. 2019. \textit{Parallel corpora for contrastive and 
+translation studies: New resources and applications}. Amsterdam, Philadelphia: John 
+Benjamins. 310~p.
+\bibitem{7-dur-1}
+Granger, S., and M.-A. Lefer, eds. 2020. \textit{Translating and comparing languages:  
+Corpus-based Insights.} Louvain-la-Neuve, Belgique: Presses universitaires de Louvain. 298~p.
+\bibitem{8-dur-1}
+Lavid-L\'{o}pez, J., C.~Ma\'{\i}z-Ar\'{e}valo, and J.\,R.~Zamorano-Mansilla, eds. 2021. 
+\textit{Corpora in translation and contrastive research in the digital age: Recent advances and 
+explorations}. Amsterdam, Philadelphia: John Benjamins. 351~p.
+\bibitem{9-dur-1}
+Granger, S., and M.-A. Lefer, eds. 2022. \textit{Extending the scope of corpus-based translation 
+studies}. London: Bloomsbury Academic. 288~p.
+\bibitem{10-dur-1}
+Inkova, O.\,Yu., ed. 2018. \textit{Semantika konnektorov: Kontrastivnoe issledovanie} 
+[Semantics of connectives: Contrastive study]. Moscow: TORUS PRESS. 396~p.
+\bibitem{11-dur-1}
+Inkova, O.\,Yu., ed. 2019. \textit{Struktura konnektorov i~metody ee opisaniya} [Structure of 
+connectives and methods for its description]. Moscow: TORUS PRESS. 316~p.
+
+\bibitem{14-dur-1} %12
+\Aue{Durnovo, A.\,A., O.\,Yu.~Inkova, and N.\,A.~Popkova.} 2022. Arkhitektura bazy dannykh 
+ierarkhii logiko-semanticheskikh otnosheniy [Database of hierarchies of logical-semantic 
+relations: Architecture]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of 
+Informatics} 32(1):114--125. doi: 10.14357\!/\!08696527220111.
+
+\bibitem{12-dur-1} %13
+\Aue{Inkova, O.\,Yu., and N.~Popkova.} 2017. Statistical data as information source for 
+linguistic analysis of Russian connectors. \textit{Informatika i~ee Primeneniya~--- Inform. 
+Appl.} 11(3):123--131.
+\bibitem{13-dur-1} %14
+Natsional'nyy korpus russkogo yazyka [Russian national corpus]. Available at: {\sf 
+http://www.ruscorpora.ru} (accessed March~17, 2022).
+
+\bibitem{15-dur-1}
+\Aue{Inkova, O.\,Yu.} 2019. Struktura konnektorov: lingvisticheskie metody opisaniya 
+[Structure of connectives: Linguistic methods of description].  
+\textit{Struktura konnektorov i~metody ee opisaniya} [Structure of connectives and methods of 
+its description]. Ed.\ O.\,Yu.~Inkova. Moscow: TORUSS PRESS. 5--47.
+\bibitem{16-dur-1}
+\Aue{Durnovo, A.\,A., O.\,Yu.~Inkova, and N.\,A.~Popkova.} 2022. Interfeys pol'zovatelya 
+Nadkorpusnoy bazy dannykh ierarkhiy logiko-semanticheskikh otnosheniy [Database of 
+hierarchies of logical-semantic relations: User interface]. \textit{Sistemy i~Sredstva  
+Informatiki~--- Systems and Means of Informatics} 32(3):103--115. doi: 
+10.14357\!/\!08696527220310.
+\end{thebibliography}
+} }
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received October 11, 2022}} 
+
+\vspace*{-12pt} 
+
+\Contr
+
+\noindent
+\textbf{Durnovo Aleksandr A.} (b.\ 1949)~--- leading programmer, Institute of Informatics 
+Problems, Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{duralex49@mail.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Inkova Olga Yu.} (b.\ 1965)~--- Doctor of Science in philology, senior scientist, Institute 
+of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
+Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; faculty 
+member, University of Geneva, 22 Bd des Philosophes, CH-1205 Geneva~4, Switzerland; 
+\mbox{olyainkova@yandex.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Nuriev Vitaly A.} (b.\ 1980)~--- Doctor of Science in philology, leading scientist, 
+Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of 
+the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{nurieff.v@gmail.com}
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

@@ -1,0 +1,1933 @@
+\def\ss2{\mathop {\sum\limits^{p^\Theta}\sum\limits}}
+
+
+\def\stat{sin-2}
+
+\def\tit{ПАРАМЕТРИЧЕСКОЕ АНАЛИТИЧЕСКОЕ
+  МОДЕЛИРОВАНИЕ ПРОЦЕССОВ В~СТОХАСТИЧЕСКИХ СИСТЕМАХ, 
+  НЕ~РАЗРЕШЕННЫХ ОТНОСИТЕЛЬНО ПРОИЗВОДНЫХ$^*$}
+
+\def\titkol{Параметрическое аналитическое
+  моделирование процессов в~стохастических системах} %, не~разрешенных относительно производных}
+
+
+\def\aut{И.\,Н.~Синицын$^1$}
+
+\def\autkol{И.\,Н.~Синицын}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Синицын И.\,Н.}
+\index{Synytsin I.\,N.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проект 15-07-02244).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проб\-лем
+информатики Федерального исследовательского центра
+<<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{sinitsin@dol.ru}}
+
+
+\label{st\stat}
+
+                  \thispagestyle{headings}
+ 
+ % \vspace*{-6pt}
+
+
+\Abst{Рассматриваются методы параметрического аналитического 
+моделирования (МАМ) стохастических процессов (СтП) в~конечномерных нелинейных 
+стационарных и~нестационарных стохастических системах (СтС), не разрешенных 
+относительно производных. Такие модели описывают поведение многих технических 
+систем информатики и~управления, если пренебречь переходными процессами. 
+Для аналитического моделирования и~оценки точности и~чувствительности алгоритмов 
+разработаны усовершенствованные МАМ на основе методов нормальной аппроксимации (МНА)
+и~статистической линеаризации (МСЛ), методов ортогональных разложений (МОР) и~квазимоментов, 
+а~также других методов параметризации одно- и~многомерных плотностей. Особое внимание 
+уделено МАМ для дискретных СтС по методу МОР на основе эталонного пуассоновского 
+распределения. Даны типовые нелинейности, не разрешенные относительно 
+производных, и~коэффициенты их статистической линеаризации, а~так\-же  два 
+тестовых примера. Алгоритмы положены в~основу разрабатываемого экспериментального 
+программного 
+обеспечения для решения задач надежности и~безопасности технических сис\-тем.}
+
+\KW{анализ точности и~чувствительности; метод аналитического моделирования (МАМ);
+метод нормальной аппроксимации (МНА); метод ортогональных разложений (МОР);
+метод статистической линеаризации (МСЛ); одно- и~многомерные плотности;
+стохастическая система (СтС); стохастический процесс (СтП)}
+
+\DOI{10.14357\!/\!08696527170102} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+    %  \vspace*{-18pt}
+
+\section{Введение}
+
+Методы  аналитического моделирования широкополосных СтП 
+в~нелинейных дифференциальных СтС, разрешенных относительно производных, пред\-став\-ле\-ны
+ в~[1--7]. В~[8] развиты МСЛ 
+ и~МНА, лежащие в~основе МАМ в~СтС, 
+ не разрешенной относительно производных, в~част\-ности приведены типовые негладкие 
+ нелинейности, зависящие от производных, даны формулы МСЛ для СтС с~аддитивными шумами. 
+ Для гладких нелинейностей развит МНА. Получены уравнения чувствительности МСЛ (МНА). 
+ В~приложении даны тестовые при\-меры.
+
+Рассмотрим развитие МАМ~\cite{1-s2, 2-s2, 5-s2} 
+применительно к~СтС, не разрешенных относительно производных.
+В~разд.~2 рассмотрены уравнения нелинейных дифференциальных СтС, 
+не разрешенных относительных производных с~винеровскими и~пуассоновскими 
+белыми, а также  автокоррелированными шумами. Раздел~3 содержит обобщение МАМ  
+на основе МНА (МСЛ)~\cite{8-s2} на случай автокоррелированных шумов. В~разд.~4 рассмотрены  
+общие вопросы МАМ на основе параметризации одно- и~многомерных плотностей СтП 
+нелинейных дифференциальных  СтС, не разрешенных относительно производных, 
+приводимых к~СтС, разрешенных относительно производных. Разделы~5--7 
+посвящены МАМ на основе МОР и~метода квазимоментов 
+(МКМ) для одно- и~многомерных плотностей в~случае эталонных гауссовских и~пуассоновских 
+плотностей. Заключение содержит выводы и~некоторые обобщения. 
+В~приложениях приведены формулы для коэффициентов статистической линеаризации 
+типовых нелинейностей, не разрешенных относительно производных, и~два тестовых примера, 
+иллюстрирующих МНА (МСЛ) и~МОР с~точностью до вероятностных моментов третьего 
+порядка включительно.
+
+\section{Нелинейные дифференциальные стохастические системы, 
+не~разрешенные относительно производных}
+
+Следуя~[8], рассмотрим сначала дифференциальную СтС с~нелинейностями, 
+описываемыми гладкими функциями:
+
+\noindent
+    \begin{multline}
+       \vrp =\vrp\left(t, \Theta, Y_t, \dot Y_t \tr Y_t^{(k)}, U_t\right) =0\,, \quad 
+    Y\left(t_0\right) = Y_0\,, \\ 
+    \dot Y\left(t_0\right) = \dot Y_0 \tr Y^{(n)} \left(t_0\right) = Y_0^{(k)}\,,
+       \label{e2.1-s2}
+    \end{multline}
+    при этом уравнение  нелинейного формирующего фильтра (ФФ) возьмем в~виде, 
+    разрешенном относительно возмущений:
+     \begin{equation}
+     \dot U_t = a^U \left(t, \Theta,U_t\right)  + b^U\left(t, \Theta,U_t\right) V_t^U\,, 
+     \quad U\left(t_0\right) = U_0\,.
+     \label{e2.2-s2}
+     \end{equation}
+Здесь $a^U = a^U(t, \Theta,U_t)$ и~$b^U(t, \Theta,U_t)$~--- 
+$(n^Y\times 1)$- и~$(n^Y\times n^V)$-мер\-ные функции; $V_t^U$~--- 
+белый шум в~строгом смысле~\cite{1-s2, 2-s2}, допускающий представление:
+       \begin{equation}
+       V_t^U = \dot W_t^U\,, \enskip 
+       W_t^U = W_0^U (t,\Theta) + \iii_{R_0^q} c^U (\Theta,\rho) P^0 
+       ( t,\Theta, d\rho)\,,\label{e2.3-s2}
+       \end{equation}
+где $\nu_t$~--- его интенсивность:
+
+\noindent
+    \begin{equation}
+    \nu_t=\nu_t^W =\nu_t^{W_0} +  \iii_{R_0^q} c^U (\Theta,\rho) 
+    \left[c^U (\Theta,\rho)\right]^{\mathrm{T}} \nu_P (t,\Theta,\rho) \,d\rho\,;
+    \label{e2.4-s2}
+    \end{equation}
+ $c^U \hm= c^U(\Theta,\rho)$~--- 
+известная векторная функция той же размерности, что и~$W_t^0$, а~интеграл при любом
+ $t\hm\ge t_0$ представляет собой стохастический интеграл по центрированной 
+ пуассоновской мере $P^0(t,\Theta,{\cal A})$, независимой от~$W_0^U$ и~имеющей 
+ независимые значения на попарно непересекающихся множествах; ${\cal A}$~--- 
+ борелевское множество пространства~$R_0^q$ с~выколотым началом; 
+ $\nu_t^W$, $\nu_t^{W_0}$ и~$\nu_P$~--- интенсивности СтП $W_t^U$, $W_{0}^U$ и~$P^0$. 
+ Уравнение~(\ref{e2.2-s2}) понимается в~смысле Ито и~имеет единственное 
+ решение в~среднем квадратическом (с.к.)~\cite{1-s2, 2-s2}.
+
+
+Для гладких функций в~(\ref{e2.1-s2}), допускающих стохастические производные Ито 
+до $h$-го порядка, выполним  следующие преобразования.
+Будем дифференцировать сполна по~$t$ левые части уравнений~(\ref{e2.1-s2}) 
+по обобщенной формуле Ито~\cite{1-s2, 2-s2} до тех пор, пока не появятся производные 
+белого шума. В~результате получим следующую систему нелинейных дифференциальных 
+уравнений:
+\begin{equation}
+\vrp=0\,,\enskip \dot \vrp =0\tr \vrp^{(h)}=0\,.
+\label{e2.5-s2}
+\end{equation}
+
+Далее введем вектор  $Z_t \hm= \lk Z_T^{'T} Z_t^{''T}\rk^{\mathrm{T}}$, составленный из 
+$Z_t' \hm= \lk Y_t^{\mathrm{T}} \dot{Y}_t^{\mathrm{T}}\cdots Y_t^{(k-1)\mathrm{T}}\rk^{\mathrm{T}}$ и~вспомогательного 
+вектора~$Z_t''$, определяемого уравнениями~(\ref{e2.5-s2}).
+В~результате придем к~уравнениям, разрешенным относительно дифференциалов, 
+следующего вида:
+\begin{equation}
+dZ_t = a^Z  dt + b^Z d W_0 + \iii_{R_0^q} c^Z P^0(t,\Theta,du)\,,
+\label{e2.6-s2}
+\end{equation}
+где $a^Z \hm= a^Z(t,\Theta,Z_t)$; $b^Z\hm=b^Z(t,\Theta,Z_t)$; 
+$c^Z\hm=c^Z(t,\Theta,Z_t, u)$.
+
+Таким образом, имеем следующее утверждение.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.1.}\ \textit{Пусть нелинейная негауссовская СтС}~(\ref{e2.1-s2}), 
+(\ref{e2.2-s2}), \textit{не разрешенная относительно производных $k$-го порядка, 
+удовле\-тво\-ря\-ет условиям}:
+\begin{itemize}
+\item[$1^0$] \textit{функции}~(\ref{e2.1-s2}) 
+\textit{допускают обобщенные стохастические дифференциалы Ито вплоть до $h$-го порядка 
+включительно};
+
+\item[$2^0$] \textit{уравнение ФФ}~(\ref{e2.2-s2}) 
+\textit{разрешено относительно возмущений $U_t$, имеет единственное 
+с.к.\ решение}.
+\end{itemize}
+\textit{Тогда система}~(\ref{e2.1-s2}), (\ref{e2.2-s2}) 
+\textit{приводима к~системе, разрешенной относительно производных}~(\ref{e2.6-s2}).
+
+\smallskip
+
+
+Пусть теперь в~(\ref{e2.1-s2}) стохастическое возмущение~$U_t$ 
+является автокоррелированным СтП и~описывается стохастическим дифференциальным 
+уравнением следующего ФФ:
+
+\noindent
+\begin{multline}
+\!\!\!\!U_t^{(n)} + \!\!\sss_{k=n-m}^{n-1}\hspace*{-2mm}\alpha_k^U \left(t, \Theta, U_t, 
+    \dot U_t \tr U_t^{(n-m-1)}\right) U_t^{(k)} +{}\\
+    \!\!\!\!{}+ \alp_0^U 
+    \left(t, \Theta, U_t, \dot U_t \tr U_t^{(n-1)}\right) =
+     \sss_{h=1}^m \beta_h \!\left(\!t, \Theta, U_t, \dot U_t \tr U_t^{(n-m-1)}\!\right)\!
+V_t^{(h)}.\!\!\label{e2.7-s2}
+\end{multline}
+Здесь $n=n^U$~--- порядок дифференциального уравнения, причем $0\hm<m\hm<n$; 
+$\alp_0^U$, $\alp_k^U$ и~$\beta_k^U$~--- известные функции отмеченных переменных.
+
+Пусть компоненты СтП $Y_t, \dot Y_t\tr Y_t^{(k)}$ более гладкие, чем~$U_t$. 
+В~этом случае для приведения~(\ref{e2.1-s2}), (\ref{e2.7-s2}) к~(\ref{e2.6-s2}) 
+можно применить способ, 
+основанный на дифференцировании~(\ref{e2.1-s2}) и~исключении~$U_t$ и~ее производных, не 
+содержащих белого шума, из уравнений~(\ref{e2.1-s2}) и~уравнений, полученных из него 
+дифференцированием~(\ref{e2.7-s2}) по обобщенной формуле Ито~\cite{1-s2, 2-s2}. 
+В~результате придем к~следующему уравнению вида~(\ref{e2.6-s2}):
+    \begin{equation}
+    d\bar Z_t = \bar a^Z dt + \bar b^Z dW_0 + \iii_{R_0^q} 
+    \bar c^Z P^0 (t,\Theta, du)\,,\label{e2.8-s2}
+    \end{equation}
+где $\bar a^Z = \bar a^Z(t,\Theta, \bar Z_t)$; $\bar b^Z \hm= \bar b^Z
+(t,\Theta, \bar Z_t)$; $\bar c^Z\hm = \bar c^Z(t,\Theta, \bar Z_t, u)$.
+
+В случае аддитивных возмущений уравнения~(\ref{e2.6-s2}) и~(\ref{e2.8-s2}) 
+приобретают следующий вид:
+\begin{equation}
+\dot Z_t = a^Z + b_0^Z V_t\,;\label{e2.9-s2}
+\end{equation}
+\begin{equation}
+\dot{\bar Z}_t = \bar a^Z + \bar b_0^Z V_t\,.\label{e2.10-s2}
+\end{equation}
+Здесь СтП $V_t \hm= \dot W_t$, а~СтП~$W_t$ определен формулами~(\ref{e2.3-s2}) 
+и~(\ref{e2.4-s2})  без индекса~$U$:
+    \begin{gather*}
+    Z_t = \lk {Y'}_t^{\mathrm{T}} U_t^{\mathrm{T}} \rk^{\mathrm{T}}\,;\enskip 
+    Y'_t = \lk Y_t^{\mathrm{T}}  \dot{Y}_t^{\mathrm{T}} \cdots Y_t^{(k-1)T}\rk^{\mathrm{T}} = 
+   \lk Y_t^{\mathrm{T}} \bar Y_{1t}^{\mathrm{T}} \cdots 
+   Y_{k-1,t}^{\mathrm{T}}\rk^{\mathrm{T}}\,;\\
+ \bar Y_{kt} = Y_t^{(k)}.
+    \end{gather*}
+
+Таким образом, получаем следующий результат.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~2.2.}\ \textit{Пусть нелинейная негауссовская СтС}~(\ref{e2.1-s2}), 
+(\ref{e2.7-s2}) \textit{удовлетворяет условиям}:
+\begin{itemize}
+\item[$1^0$] функции~(\ref{e2.1-s2}) допускают обобщенные стохастические дифференциалы Ито 
+ вплоть до $h$-го порядка включительно;
+
+ \item[$2^0$] уравнение ФФ~(\ref{e2.7-s2}) имеет единственное с.к.\ решение;
+
+ \item[$3^0$] СтП $Y_t, \dot Y_t\tr Y_t^{(k)}$ более гладки, чем возмущение~$U_t$.
+\end{itemize}
+\textit{Тогда система}~(\ref{e2.1-s2}), (\ref{e2.7-s2}) \textit{приводима к~системе}~(\ref{e2.8-s2}).
+
+\section{Методы аналитического моделирования на~основе методов нормальной аппроксимации 
+(статистической реализации)}
+
+В основе МАМ на базе МНА для~(\ref{e2.1-s2})--(\ref{e2.6-s2}) 
+лежат следующие обыкновенные 
+дифференциальные уравнения~\cite{9-s2}:
+  \begin{equation}
+  \left.
+  \begin{array}{c}
+  \dot m_t^Z = \Phi_t^m \left(t,\Theta,m_t^Z, K_t^z\right)\,, \quad m_0^Z = m_{t_0}^Z\,;
+\\[7pt]
+    \dot K_t^Z = \Phi_t^K \left(t,\Theta,m_t^Z, K_t^z\right)\,, \quad K_0^Z = K_{t_0}^Z\,;
+   \\[7pt]
+    \fr{\prt K^Z (t_1, t_2)}{\prt t_2} = \Phi_{t_1, t_2}^K 
+    \left(t_1, t_2,\Theta,m_{t_2}^Z, K_{t_2}^z\right)\,,\enskip 
+    K^Z\left(t_1, t_2\right) = K_{t_1}^Z\,.
+    \end{array}
+    \right\}
+    \label{e3.1-s2}
+    \end{equation}
+Здесь
+    \begin{equation}
+    \left.
+    \begin{array}{rl}
+    \Phi_t^m\left(t,\Theta,m_t^Z, K_t^Z\right)&= \mm_{\cal N}\lk a^Z\rk\,;
+\\[6pt]
+        \Phi_t^K \left(t, \Theta,m_t^Z, K_t^Z\right)&=\mm_{\cal N}\Phi_{1t} 
+    \left(t,\Theta,m_t^Z, K_t^Z\right)+{}\\[7pt]
+    &{}+
+    \Phi_{1t}^{\mathrm{T}} \left(t,\Theta,m_t^Z, K_t^Z\right)
+    +\Phi_{2t}\left(t,\Theta,m_t^Z, K_t^Z\right)\,;
+\\[7pt]
+    \Phi_{1t}
+     \left(t,\Theta,m_t^Z, K_t^Z\right)&=\mm_{\cal N} \lk a^Z 
+     \left(Z_t - m_t^Z\right)^{\mathrm{T}}\rk\,;\\[7pt]
+\Phi_{2t} \left(t,\Theta,m_t^Z, K_t^Z\right)&=
+    \mm_{\cal N} \lk \si\left(t,\Theta,Z_t\right)\rk\,;
+\\[7pt] 
+    \si\left(t,\Theta,Z_t\right)&= \si_0\left(t,\Theta,Z_t\right) +{}\\[7pt]
+    &\hspace*{-8mm}{}+
+    \displaystyle\iii_{R_0^q}  c^Z\left(t,\Theta,Z_t,u\right) 
+    c^Z \left(t,\Theta,Z_t,u\right)^{\mathrm{T}} \nu_P (t,\Theta,du)\,;
+\\[7pt]
+    \si_0\left(t,\Theta,Z_t\right) &=  b^Z \left(t,\Theta,Z_t\right) 
+    \nu_0 (t,\Theta) b^Z\left(t,\Theta,Z_t\right)^{\mathrm{T}}\,;
+\\[7pt]
+    \Phi_{t_1, t_2}^k \left(t_1, t_2, \Theta, m_{t_2}^Z, K_{t_2}^Z\right)& = 
+    K^Z \left(t_1, t_2\right) \left(K_{t_2}^Z\right)^{-1} \Phi_{1t}^{\mathrm{T}}\,,
+    \end{array}
+    \right\}
+    \label{e3.2-s2}
+    \end{equation}
+    где $\mm_{\cal N}$~--- символ математического ожидания для гауссовского 
+(нормального) распределения.
+
+В стационарном случае уравнения МНА имеют следующий вид:
+\begin{equation}
+\left.
+\begin{array}{c}
+\Phi_*^m \left(\Theta, m_*^Z, K_*^Z\right)=0\,,\enskip \Phi_*^K 
+    \left(\Theta, m_*^Z, K_*^Z\right) =0\,,
+    \\[6pt]
+    \fr{dk^Z(\tau)}{dt} = \Phi_\tau^k \left(k^Z(\tau),\Theta, m_*^Z, K_*^Z\right)\,, 
+    \enskip k^Z (0) = K_*^Z\,,
+    \end{array}
+    \right\}
+    \label{e3.3-s2}
+    \end{equation}
+где принято
+
+\noindent
+\begin{equation}
+\left.
+\begin{array}{c}
+\Phi_*^m\left(\Theta, m_*^Z, K_*^Z\right)=\mm_{\cal N} \lk a^Z\rk\,;
+\\[6pt]
+    \hspace*{-55mm}\Phi_*^K \left(\Theta, m_*^Z, K_*^Z\right)={}\hspace*{55pt}\\[6pt]
+    {}=\Phi_{1*} \left(\Theta, m_*^Z, K_*^Z\right)+
+    \Phi_{1*}\left(\Theta, m_*^Z, K_*^Z\right)^{\mathrm{T}} + 
+    \Phi_{2*} \left(\Theta, m_*^Z, K_*^Z\right)\,;
+\\[6pt]
+    \Phi_{1*} \left(\Theta, m_*^Z, K_*^Z\right)= \mm_{\cal N} \lk a^Z 
+    \left(Z_t -m_*^Z\right)\rk\,;
+    \\[6pt]
+    \Phi_{2*} \left(\Theta, m_*^Z, K_*^Z\right)= \mm_{\cal N} 
+    \lk \si_* \left(\Theta,Z_t\right)\rk\,;
+\\[6pt]
+    \si_* \left(\Theta,Z_t\right)=\si_{0*} \left(\Theta,Z_t\right)+
+   \displaystyle \iii_{R_0^q} c^Z \left(\Theta,Z_t,u\right) c^Z \left(\Theta,Z_t,u\right)^{\mathrm{T}}
+    \nu_P(t,\Theta,du)\,;
+\\[6pt]
+    \si_{0*} \left(\Theta,Z_t\right)=b^Z \left(\Theta,Z_t\right)\nu_{0*}(\Theta) 
+    b^Z\left(\Theta,Z_t\right)^{\mathrm{T}}\,;
+\\[6pt]
+    \Phi_\tau^k \left( k^Z(\tau), \Theta, m_*^Z, K_*^Z\right) = 
+    k^Z(\tau) \left(K_*^Z\right)^{-1} \Phi_{1*}^{\mathrm{T}}\,, \enskip 
+    \tau = t_1-t_2\,.
+    \end{array}
+    \right\}
+    \label{e3.4-s2}
+    \end{equation}
+Таким образом, имеем следующие результаты.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~3.1.}\ \textit{Пусть для нелинейной негауссовской СтС}~(\ref{e2.1-s2}), 
+(\ref{e2.2-s2})  \textit{выполнены условия}:
+\begin{itemize}
+\item[$1^0$]  \textit{правые части уравнений}~(\ref{e2.1-s2}) 
+\textit{имеют стохастические производные 
+Ито до порядка}~$h$;
+
+\item[$2^0$]  \textit{уравнения}~(\ref{e2.1-s2}) \textit{совместно с}~(\ref{e2.5-s2}) 
+\textit{имеют единственное решение,  понимаемое в~с.к.}
+\end{itemize}
+
+\textit{Тогда уравнения МАМ на основе МНА имеют вид}~(\ref{e3.1-s2}) 
+\textit{при условиях конечности  интегралов}~(\ref{e3.2-s2}).
+
+\smallskip
+
+\noindent
+\textbf{Теорема~3.2.}\ \textit{Пусть в~условиях теоремы~$3.1$ 
+параметры СтС не зависят от времени и~имеет 
+место ко\-ва\-ри\-а\-ци\-он\-но-ста\-ци\-о\-нар\-ный СтП. Тогда его математические ожидания, 
+ковариационная матрица и~матрица ковариационных функций определяются уравнениями}~(\ref{e3.3-s2}) 
+\textit{при условиях конечности интегралов}~(\ref{e3.4-s2}) 
+\textit{и~асимптотической устойчивости  матрицы~$\Phi_{1*}$}.
+
+\smallskip
+
+Для случая автокоррелированных возмущений~$U_t$ имеют место аналогичные утверждения.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~3.3.}\ \textit{Пусть для СтС}~(\ref{e2.1-s2}), 
+(\ref{e2.7-s2}) \textit{выполнены условия}:
+\begin{itemize}
+\item[$1^0$] \textit{компоненты $Y_t\tr Y_t^{(k)}$ более гладкие, чем~$U_t$};
+
+\item[$2^0$] \textit{правые части уравнений}~(\ref{e2.1-s2}) 
+\textit{имеют стохастические производные Ито до порядка~$h$};
+
+\item[$3^0$] \textit{уравнения}~(\ref{e2.1-s2}) 
+\textit{совместно с}~(\ref{e2.5-s2})  \textit{имеют единственное с.к.\ решение}.
+\end{itemize}
+\textit{Тогда уравнения МАМ на основе МНА определяются уравнениями теоремы~$3.1$ и~имеют 
+вид}~(\ref{e3.1-s2}) \textit{при условии конечности интегралов}~(\ref{e3.2-s2}) 
+\textit{для функций  $\Phi_t^K$ и~$\si_t$, в~которых $a^Z$, $b^Z$ и~$c^Z$ следует заменить на 
+$\bar a^Z$, $\bar b^Z$ и~$\bar c^Z$}.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~3.4.}\ \textit{Пусть в~условиях теоремы~$3.3$ 
+параметры СтС не зависят от времени и~имеет 
+место ко\-ва\-ри\-а\-ци\-он\-но-ста\-ци\-о\-нар\-ный СтП. Тогда его
+ математическое ожидание,  ковариационная матрица и~матрица ковариационных функций 
+ определяются  уравнениями}~(\ref{e3.3-s2}) 
+ \textit{с~заменой функций $a^Z_*$, $b_*^Z$ и~$c_*^Z$  
+на $\bar a_*^Z$, $\bar b_*^Z$ и~$\bar c_*^Z$ при условии асимптотической 
+устойчивости матрицы $\bar \Phi_{1*}$.}
+
+\smallskip
+
+Для СтС с~аддитивными шумами~(\ref{e2.9-s2}), (\ref{e2.10-s2}) 
+уравнения МНА переходят в~уравнения 
+МСЛ~\cite{8-s2}. В~этом случае требование к~гладкости функций~(\ref{e2.1-s2}) можно снять.
+Повторяя~\cite{8-s2}, приходим к~уравнениями МСЛ для СтС~(\ref{e2.9-s2}):
+   \begin{equation}
+   \left.
+   \begin{array}{c}
+    \vrp_0=0\,, \enskip \dot K_t^Z = a^Z K_t^Z + K^Z \left(a^Z\right)^{\mathrm{T}} 
+    + b_0^Z \nu \left( b_0^Z\right)^{\mathrm{T}}\,,\enskip K_{t_0}^Z = K_0^Z\,;
+   \\[6pt]
+    \fr{\prt K^Z (t_1, t_2)}{\prt t_2} = K^Z \left(t_1, t_2\right) 
+    \left(a^Z_{t_2}\right)^{\mathrm{T}}\,,\enskip 
+    K^Z \left(t_1, t_1\right) = K_{t_1}^Z \enskip 
+    (\mbox{\textbf{теорема~3.5}})\,;
+    \end{array}
+    \right\}
+    \label{e3.5-s2}
+    \end{equation}
+    $$
+    \vrp_{0*} =0\,;\quad a_*^Z K_*^Z + K_*^Z \left(a_*^Z\right)^{\mathrm{T}} + 
+    b_{0*}^Z \nu_* \left( b_{0*}^Z\right)^{\mathrm{T}} =0\,;
+    $$
+$$
+    \fr{d k^Z(\tau)}{d\tau} = a_* k^Z(\tau)\,, \quad 
+    k^Z (0) = K_*^Z\enskip (\mbox{\textbf{теорема~3.6}})\,.
+    %\label{e3.6-s2}
+  $$
+
+Уравнения МСЛ для СтС~(\ref{e2.10-s2}) получаются из~(\ref{e3.5-s2}) 
+заменой~$a^Z$ и~$b_0^Z$ на~$\bar a^Z$ и~$\bar b_0^Z$  и~$a_*^Z$ и~$b_{0*}^Z$
+ на~$\bar a_*^Z$ и~$\bar b_{0*}^Z$.
+
+В~приложении~П1 даны выражения для коэффициентов статистической линеаризации 
+типовых нелинейностей, не разрешенных относительно производных, скалярного и~векторного
+ аргумента.
+
+
+\section{Методы аналитического моделирования  на~основе  параметризации 
+одно- и~многомерных распределений}
+
+Как известно~\cite{1-s2, 2-s2}, обобщением МНА распределений являются различные
+приближенные методы, основанные на параметризации распределений.
+Аппроксимация одномерной характеристической функции $g_1 (\la;\Theta,t)$
+и соответствующей плотности $f_1 (y;\Theta,t)$ известными функциями
+$g_1^* (\la;\Theta,\Xi)$ и~$f_1^* (y;\Theta,\Xi)$, зависящими от
+конечномерного векторного параметра~$\Xi$,  сводит задачу
+приближенного определения одномерного распределения к~выводу из
+уравнения для характеристических функций обыкновенных
+дифференциальных уравнений, определяющих~$\Xi$ как функцию
+времени. Это относится и~к остальным многомерным распределениям.
+При аппроксимации многомерных распределений целесообразно выбирать
+последовательности функций $\{g_n^* (\la_1\tr \la_n;\Theta,\Xi_n)\}$ 
+и~$\{ f_n^* (y_1,\ldots,y_n;\Theta,\Xi_n)\}$, каждая пара
+которых находилась бы в~такой  за\-ви\-си\-мости от векторного параметра~$\Xi_n$, 
+чтобы при любом~$n$~множество па\-ра\-мет\-ров, образующих
+вектор~$\Xi_n$, включало в~качестве подмножества множество
+па\-ра\-мет\-ров, образующих вектор~$\Xi_{n-1}$. Тогда при
+аппроксимации $n$-мер\-но\-го распределения придется определять только
+те координаты вектора~$\Xi_n$, которые не были определены ранее
+при аппроксимации функций~$g_1$, $f_1\tr g_{n-1}$, $f_{n-1}$.
+
+При этом в~зависимости от того, что представляют собой параметры, от
+которых зависят функции $f_n^* (y_1\tr y_n;\Theta,\Xi_n)$ и~$g_n^*
+(\la_1\tr \la_n;\Theta,\Xi_n)$, аппроксимирующие неизвестные
+многомерные плотности $f_n (y_1,  \ldots,y_n;\Theta, t_1 \tr t_n)$ 
+и~характеристические функции $g_n (\la_1\tr \la_n;\Theta, t_1,\ldots,t_n)$,
+используются различные приближенные методы решения
+уравнений, определяющих многомерные
+распределения вектора состояния системы~$Y_t$, в~частности методы
+моментов, семиинвариантов, ортогональных разложений и~др.
+
+Для оценки качества СтС на многообразиях (МСтС) при гауссовских~$\Theta$ выбрана условная функция 
+потерь~$\rho$, допускающая квадратическую аппроксимацию~\cite{9-s2, 10-s2}
+    \begin{equation*}
+    \rho = \rho(\Theta) = \rho \left(m^\Theta\right) + 
+    \sss_{i=1}^{p^\Theta} \rho_i' \left(m^\Theta\right) \Theta_i^0 + 
+    \ss2_{i, j =1} \rho_{ij}'' \left(m^\Theta \right)\Theta_i^0\Theta_j^0\,,
+     %\label{e4.1-s2}
+     \end{equation*}
+и показатель~$\eps$, равный
+    \begin{equation*}
+    \eps = \eps_2^{1/4}\,,\enskip 
+    \eps_2 =\mm_{\cal N} \lk \rho (\Theta)\rk^2 - \rho \left(m^\Theta\right)^2\,,
+    %\label{e4.2-s2}
+    \end{equation*}
+где
+   \begin{multline*}
+    \mm_{\cal N} \lk \rho(\Theta)^2\rk = \rho \left(m^\Theta\right)^2 + 
+    \rho' (m^\Theta)^{\mathrm{T}} K^\Theta \rho' (m^\Theta) + 2 \rho \left(m^\Theta\right) 
+    \mathrm{tr} \lk \rho'' (m^\Theta) K^\Theta\rk +{}\\
+{}+ \lf \mathrm{tr} \lk \rho '' \left(m^\Theta\right) K^\Theta\rk \rf^2 +
+ 2 \mathrm{tr} \lk \rho'' \left(m^\Theta\right) K^\Theta\rk^2\,.
+ %\label{e4.3-s2}
+ \end{multline*}
+
+Основываясь на обобщении  МОР, полученном в~\cite{9-s2, 10-s2}, рассмотрим развитие МАМ 
+применительно к~одно- и~многомерным плотностям, предполагая выполненными условия 
+приведения раздела~2.
+
+\section{Методы аналитического моделирования на~основе метода ортогональных
+разложений для~одномерных плотностей}
+
+Следуя~\cite{9-s2, 10-s2},
+представим уравнения МОР в~виде следующего отрезка разложения:
+    \begin{equation}
+    f=f\left(y_t, \Theta, \vartheta^y, t\right) \approx w\left(y_t, \Theta\right) \lk 1 +
+    \sss^{n_1}_{l=3}\sss_{|\nu |=l} c_{\nu t} (\Theta, t)p_\nu (y_t)\rk\,.
+    \label{e5.1-s2}
+    \end{equation}
+Здесь  $w=w(y_t; \Theta)$~--- эталонная одномерная плотность, выбираемая из 
+условия совпадения первых двух вероятностных моментов для~$w$ и~$f$; 
+$\{p_\nu (y_t), q_\nu (y_t)\}$~--- система биортонормальных полиномов с~весом~$w$, 
+т.\,е.\ удовлетворяющих условию:
+   \begin{equation}
+    \mm^{w}_{\Delta^y} \lk p_\nu \left(Y_t\right) q_\mu (Y_t)\rk = \delta_{\nu\mu} =
+    \begin{cases}
+    0 &\ \mbox{при}\ \mu\ne \nu\,;\\
+    1 &\ \mbox{при}\  \mu=\nu\,.
+    \end{cases}
+    \label{e5.2-s2}
+    \end{equation}
+Здесь $\mm_{\Delta^y}^w$~--- символ математического ожидания в~об\-ласти~$\Delta^y$; 
+$\vartheta^y \hm= \lf m_t, K_t, c_{\nu t}\rf$~--- условные параметры МОР, т.\,е.\ 
+вектор условного математического ожидания $m_t\hm= m(\Theta, t)$, условная ковариационная 
+матрица $K_t\hm=K(\Theta, t)$ и~условная матрица коэффициентов ортогонального 
+разложения $c_{\nu t}\hm= c_{\nu t}(\Theta, t)$, удовлетворяющая условию:
+\begin{equation}
+c_{\nu t} = \mm_{\Delta^y}^f \lk q_\nu \left(Y_t\right)\rk = q_\nu (\alp)\,.
+\label{e5.3-s2}
+\end{equation}
+Функция~$q_\nu (\alp)$ представляет собой комбинацию условных начальных 
+моментов~$\alp_t$ вектора~$Y_t$, полученную из $q_\nu (x)$ заменой всех 
+одночленов $x_1^{k_1} \tr x_r^{k_r}$ соответствующими 
+моментами $\alp_{k_1} \tr \alp_{k_r}$.
+
+Будем пользоваться векторной нумерацией полиномов  $\lf p_\nu, q_\nu\rf$ так, 
+чтобы сумма координат  $|\nu |\hm = \nu_1 +\cdots +\nu_r$ векторного индекса 
+$\nu\hm = [\nu_1 \cdots \nu_r]^{\mathrm{T}}$ была равна степени полиномов. Тогда число 
+линейно независимых полиномов данной степени $\nu_* \hm= |\nu |$ будет равно 
+числу независимых одночленов степени~$\nu_*$, т.\,е.\ $C_{r+\nu_*-1}^{\nu_*}$. 
+Отметим также, что согласно~\cite{1-s2, 2-s2} существование всех моментов для плотности 
+необходимо и~достаточно для существования интегралов~(\ref{e5.1-s2}).
+
+\smallskip
+
+\noindent
+\textbf{Теорема~5.1.} \textit{Если в~условиях теорем~$2.1$ и~$2.2$ 
+существует одномерное распределение СтП~$Y_t$, 
+то при фиксированном векторе параметров~$\Theta$ и~полиномиальных 
+$\lf p_\nu (y_t), q_\nu (y_t)\rf$ в~основе МОР для одномерных распределений 
+лежат разложения}~(\ref{e5.1-s2}) \textit{и~уравнения}:
+   \begin{equation}
+   \left.
+   \begin{array}{rl}
+    \dot m_t &={A}^m \left(m_t, K_t, c_{\nu t}, \Theta, t\right)=
+    \vrp_{10} \left(m_t, K_t, \Theta, t\right) + {}\\[6pt]
+&\hspace{20mm}{}+\displaystyle    \sss_{l=3}^n \sss_{| \nu | =l} \vrp_{1\nu}\left(m_t, K_t, \Theta, t\right) 
+    c_{\nu t}\,,
+    \quad
+     m\left(t_0\right) = m_0\,;\\[6pt]
+      \dot K_t &={A}^K \left(m_t, K_t, c_{\nu t}, \Theta, t\right)=
+    \vrp_{20}\left(m_t, K_t, \Theta, t\right)+ {}\\[6pt]
+   & \hspace{20mm}{}+\displaystyle
+    \sss_{l=3}^n \sss_{| \nu | =l}  \vrp_{2\nu} 
+    \left(m_t, K_t, \Theta, t\right)c_{\nu t}\,, \quad
+     K\left(t_0\right)= K_0\,;
+\end{array}
+\right\}
+\label{e5.4-s2}
+\end{equation}
+\begin{multline}
+         \dot c_{\kappa t} ={A}^{c_\kappa} \left(m_t, K_t, c_{\kappa t}, \Theta, t\right)=
+    \vrp_{\kappa 0} \left(m_t, K_t, \Theta, t\right)+{}\\
+{}+
+    \psi_{\kappa 0}^{m_t} \left(m_t, K_t, \Theta, t\right)^{\mathrm{T}} \dot m_t 
++ \fr{1}{2} \,\mathrm{tr}\, \lk \psi_{\kappa 0}^{K_t} 
+    \left(m_t, K_t, \Theta, t\right) \dot K_t\rk+ {}\\
+    {}+\fr{1}{2} \,\mathrm{tr}\, 
+    \lk \psi_{\kappa \nu}^{K_t} \left(m_t, K_t, \Theta, t\right) \dot K_t\rk+
+\displaystyle \sss_{l=3}^n \sss_{| \nu | =l} c_{\nu t} \left[ \vrp_{\kappa \nu}
+\left(m_t, K_t, \Theta, t\right) +{}\right.\\
+\left.{}+\psi_{\kappa \nu}^{m_t}
+\left(m_t, K_t, \Theta, t\right)^t \dot m_t\right],\  
+c_{\kappa} \left(t_0\right) = c_{\kappa 0}\,.
+\label{e5.4-s21}
+\end{multline}
+\textit{Здесь приняты следующие обозначения:}
+\begin{equation}
+\left.
+\begin{array}{rl}
+    \vrp_{10} \left(m_t, K_t, \Theta, t\right)&=
+    \mm_{\Delta^y}^w \lk a \left(Y_t, \Theta, t\right)\rk \,;
+   \\[6pt]
+    \vrp_{1\nu}\left (m_t, K_t, \Theta, t\right)&= 
+    \mm_{\Delta^y}^{w p_\nu} \lk a \left(Y_t , \Theta, t\right)\rk\,;
+   \\[6pt]
+    \vrp_{20} \left(m_t, K_t, \Theta, t\right)&=
+    \mm_{\Delta^y}^w \left[ a \left(Y_t, \Theta, t\right) 
+    \left(Y_t - m_y\right)^{\mathrm{T}}+{}\right.\\[6pt]
+&\hspace*{10mm}\left.    {}+ \left(Y_t - m_t\right) a 
+    \left(Y_t, \Theta, t\right)^{\mathrm{T}} + \bar\si \left(Y_t, \Theta, t\right)\right]\,;
+\\[6pt]
+    \vrp_{2\nu} \left(m_t, K_t, \Theta, t\right)&=
+    \mm_{\Delta^y}^{wp_\nu} \left[ a \left(Y_t, \Theta, t\right)
+    \left(Y_t-m_t\right)^{\mathrm{T}} +{}\right.\\[6pt]
+&\hspace*{10mm}\left.    {}+ \left(Y_t- m_t\right) a 
+    \left(Y_t, \Theta, t\right)^{\mathrm{T}} + \bar\si \left(Y_t, \Theta, t\right)\right]\,;
+\\[6pt]
+    \bar\si \left(Y_t, \Theta, t\right)&= \si\left(Y_t, \Theta, t\right)+{}\\[6pt]
+    &\hspace*{3mm}{}+
+    \displaystyle\iii_{R_0^q}c\left(Y_t, \Theta, t,v\right)c 
+    \left(Y_t, \Theta, t,v\right)^{\mathrm{T}} \nu_P (t, \Theta) \,dv\,;
+    \\[6pt]
+    \si \left(Y_t, \Theta, t\right)&= b \left(Y_t, \Theta, t\right)\nu_0 
+    (\Theta, t) b \left(Y_t, \Theta, t\right)^{\mathrm{T}}\,;
+    \\[6pt]
+    \vrp_{\kappa \nu}\left( m_t, K_t, \Theta, t\right) &= 
+    \mm_{\Delta^y}^{wp_\nu} \left\{ \fr{\prt^{\mathrm{T}} 
+    q_\kappa (Y_t)}{\prt Y_t} \,a 
+    \left( Y_t, \Theta, t\right) + {}\right.\\
+&\hspace*{-28mm}\displaystyle\left.    {}+\fr{1}{2}\,\mathrm{tr} \lk 
+    \fr{\prt}{\prt Y_t}\,\fr{\prt^{\mathrm{T}}}{\prt Y_t}\, 
+    q_\kappa \left(Y_t\right) \si \left( Y_t, \Theta, t\right)\rk+
+\displaystyle \iii_{R_0^q} \left[
+ \vphantom{\fr{\prt q_\kappa (Y_t)}{\prt Y_t}}
+  q_\kappa \left(Y_t + c\left( Y_t, \Theta, t,v\right)\right) -{}\right.\right.\\
+&\left.\left. {}-
+ q_\kappa \left(Y_t\right) -
+\fr{\prt q_\kappa (Y_t)}{\prt Y_t}\, c \left( Y_t, \Theta, t,v\right)\right] 
+\nu_P (\Theta, t, dv)
+\vphantom{\fr{\prt^{\mathrm{T}} 
+    q_\kappa (Y_t)}{\prt Y_t}}
+\right\}\,;
+\end{array}
+\right\}
+\label{e5.5-s2}
+\end{equation}
+    \begin{equation}
+    \left.
+    \begin{array}{rl}
+\psi_{\kappa\nu}^{m_t} \left( m_t, K_t, \Theta, t\right)& = 
+    \mm_{\Delta^y}^{wp_\nu} \lk q_\kappa^{m_t} \left(Y_t\right)\rk\,;\\[6pt]  
+    \psi_{\kappa\nu}^{K_t} \left( m_t, K_t, \Theta, t\right)&=
+    \mm_{\Delta^y}^{wp_\nu} \lk q_\kappa^{K_t} \left(Y_t\right)\rk\,,
+    \end{array}
+    \right\}
+    \label{e5.6-s2}
+    \end{equation}
+\textit{а интегралы $\psi_{\kappa 0}^{m_t} (m_t, K_t, \Theta, t)$ и~ $\psi_{\kappa 0}^{K_t} ( m_t, K_t, \Theta, t)$ выражаются согласно}~(\ref{e5.6-s2}) 
+\textit{при $p_\nu (y_t) \hm= p_0 (y_t)\hm =1$.
+При этом предполагается, что выполнены условия}~(\ref{e5.2-s2}), 
+(\ref{e5.3-s2}), \textit{а интегралы}~(\ref{e5.5-s2}), (\ref{e5.6-s2}) \textit{конечны.}
+
+\smallskip
+
+\noindent
+\textbf{Замечание~5.1.}
+Уравнения теоремы~5.1 для~$\dot m_t$ и~$\dot K_t$ линейны 
+относительно~$c_{\kappa t}$, в~то время как уравнения для $\dot c_{\kappa t}$ 
+в~силу~(\ref{e5.4-s2}) и~(\ref{e5.4-s21} нелинейны.
+
+\smallskip
+
+Для рассмотрения стационарных распределений с~параметрами 
+$\vartheta^{*y} \hm= \lf m^*; K^*; c_\nu^*\rf$ достаточно правые части 
+уравнений~(\ref{e5.4-s2}) и~(\ref{e5.4-s21}) приравнять  нулю:
+\begin{equation}
+\left.
+\begin{array}{c}
+    {A}^m \left(m^*, K^*, c_{\nu}^*,\Theta\right)=0\,; \\[6pt] 
+    {A}^K \left(m^*, K^*, c_{\nu}^*,\Theta\right)=0\,;\\[6pt]
+    {A}^{c_\kappa} \left(m^*, K^*, c_{\kappa}^*,\Theta\right)=0\,.
+    \end{array}
+    \right\}
+    \label{e5.7-s2}
+    \end{equation}
+
+
+\noindent
+\textbf{Теорема~5.2.}\ \textit{Пусть в~условиях теоремы~$5.1$ 
+СтС стационарна и~существует негауссовский 
+стационарный СтП. Тогда его одномерная плотность определяется отрезком 
+ортогонального разложения согласно}~(\ref{e5.1-s2}) \textit{и~уравнениями}~(\ref{e5.7-s2}) 
+\textit{при условии 
+асимптотической устойчивости линейных  уравнений в~вариациях 
+для системы}~(\ref{e5.4-s2}), (\ref{e5.4-s21}).
+
+
+\smallskip 
+
+Как известно~\cite{9-s2, 10-s2}, методы теории чувствительности в~инженерной практике 
+широко применяются для приближенного анализа точности СтС со случайными 
+параметрами~$\Theta$ в~предположении малых дисперсий этих параметров 
+по сравнению с~их математическими ожиданиями. Используя теоремы~5.1 и~5.2, 
+найдем условные параметры $\vartheta^y\hm =\lf m_t; K_t; c_{\nu t} \rf$ 
+одномерной плотности. Уравнения функций чувствительности  первого 
+порядка условных параметров $\vartheta^y$ для МОР получаются путем 
+дифференцирования правых и~левых частей уравнений теоремы~5.1 по~$\Theta$ 
+согласно формулам разд.~4. В~этом случае получаются следующие уравнения 
+для функций чувствительности первого порядка $\nabla^\Theta m_t$ 
+$\left(\nabla^\Theta\hm=( \prt/\prt \Theta)\right)$, 
+$\nabla^\Theta K_t \hm= \left( \prt/\prt \Theta\right) K_t$ 
+и~$\nabla^\Theta c_{\nu t} \hm= \left( \prt/\prt \Theta\right) c_{\nu t}$:
+    \begin{equation}
+    \left.
+    \begin{array}{c}
+  \hspace*{-2mm}\displaystyle \nabla^\Theta \dot m_t =\nabla^\Theta \vrp_{10} +\sss_{l=3}^n \sss_{|\nu |=l} 
+    \left( \nabla^\Theta  \vrp_{1\nu} m_t^{c_\nu} + \vrp_{1\nu} \nabla^\Theta  
+    c_{\nu t}\right)\,, \enskip \nabla^\Theta  m \left(t_0\right) =0\,;
+\\[6pt]
+      \displaystyle  \nabla^\Theta \dot K_t = \nabla^\Theta  \vrp_{20} +\sss_{l=3}^n \sss_{|\nu  |=l} 
+     \left(\nabla^\Theta \vrp_{2\nu} +\vrp_{2\nu} \nabla^\Theta  c_{\nu t}\right)\,,
+     \enskip \nabla^\Theta K\left(t_0\right) =0\,;
+\\[6pt]
+        \displaystyle   \nabla^\Theta  \dot c_{\kappa t} = \nabla^\Theta  \vrp_{\kappa 0} + \nabla^\Theta 
+    \lf \psi_{\kappa 0}^{m_t} \dot m_t + \fr{1}{2}\,\mathrm{tr} 
+    \left( \psi_{\kappa 0}^{m_t}\dot K_t\right) +
+    \fr{1}{2}\,\mathrm{tr} \left(\psi_{\kappa \nu}^{K_t} \dot K_t\right) \rf + {}\\[6pt]
+   \displaystyle{}+ \sss_{l=3}^n \sss_{|\nu | =l} \left\{ 
+\nabla^\Theta  c_{\nu t} \lk \vrp_{\kappa\nu} +
+\left(\psi_{\kappa\nu}^{m_t}\right)^{\mathrm{T}}
+ \dot m_t\rk + c_{\nu t} \nabla^\Theta  \lk \left(\vrp_{\kappa \nu}^{m_t}\right)^{\mathrm{T}}
+  \dot m_t\rk\right\}\,,\\[6pt] 
+ \hspace*{81mm}\displaystyle \nabla^\Theta c_\kappa \left(t_0\right)=0\,.
+  \end{array}\!
+  \right\}\!
+  \label{e5.8-s2}
+  \end{equation}
+
+
+Таким образом, \textit{в условиях теоремы~$5.1$ уравнения алгоритма чувствительности 
+МОР имеют вид}~(\ref{e5.8-s2}) (\textbf{теорема 5.3}).
+
+\smallskip
+
+\noindent
+\textbf{Замечание~5.2.}
+При дифференцировании~$\vartheta^y$ по~$\Theta$ порядок уравнений возрастает 
+пропорционально числу производных.
+Аналогично выписываются уравнения для функций чувствительности второго 
+порядка $\nabla^\Theta (\nabla^\Theta )^{\mathrm{T}} m_t$, 
+$\nabla^\Theta (\nabla^\Theta )^{\mathrm{T}} K_t$ 
+и~$\nabla^\Theta (\nabla^\Theta )^{\mathrm{T}} c_{\nu t}$.
+
+\smallskip
+
+\noindent
+\textbf{Замечание~5.3.}
+Основной вычислительной трудностью практического применения МОР для многомерных 
+дифференциальных МСтС является быстрый рост числа уравнений для~$c_{\nu t}$ 
+с~увеличением размерности~$p$ вектора состояния~$Y_t$. В~\cite{1-s2, 2-s2} 
+содержатся таблицы, отражающие эти закономерности. В~част\-ности, для МСтС 
+размерности  $p\hm=10$, порядка учитываемого вероятностного момента $N\hm=4$ и~отрезка 
+разложения одномерной плотности $n_1\hm=n=4$ число  уравнений составляет 
+$Q^{\mathrm{МОР}}\hm=85$.
+Описанные в~\cite{1-s2, 2-s2} универсальные методы сокращения числа уравнений МОР, 
+основанные на использовании метода С.\,В.~Мальчикова и~его обобщений, 
+мо\-мент\-но-се\-ми\-ин\-ва\-ри\-ант\-ных соотношений, соответствующего 
+ряда Эджуорта, а~так\-же  их комбинации могут быть использованы.
+В~тех случаях, когда известна аналитическая природа нелинейной задачи, применяют 
+метод нормальных координат совместно с~обобщенной формулой Ито непосредственно 
+в~уравнениях МСтС или в~уравнениях~(\ref{e5.4-s2}) и~(\ref{e5.4-s21}).
+
+\section{Методы аналитического моделирования на~основе метода ортогональных
+разложений для~многомерных плотностей}
+
+Следуя~\cite{10-s2}, возьмем следующий конечный отрезок согласованных ортогональных разложений многомерных плотностей:
+ \begin{multline*}
+    f_n = f_n \left(y_1\tr y_n ; \Theta, \vartheta_n^y, t_1\tr t_n\right) 
+    \approx w_n\left (y_1\tr y_n ; \Theta, \vartheta_n^y, t_1\tr t_n\right)\times{}\\
+{}\times \lk 1+ \sss_{l=3}^{n_n} \sss_{|\nu_1 | +\cdots |\nu_n | = l} 
+c_{\nu_1\tr \nu_n} p_{\nu_1\tr \nu_n} \left(y_1\tr y_n\right)\rk\,.
+%\label{e6.1-s2}
+\end{multline*}
+Здесь, в~отличие от разд.~5, положим $Y(t_i) \hm= Y_i$ $(i\hm=\overline{1,p})$; 
+$w_n \hm=\left\{ w_n (y_1\tr y_n\right.$; $\Theta$, 
+$\left.\vartheta_n^y, t_1\tr t_n)\right\}$~--- согласованные последовательности 
+плотностей, имеющие те же вероятностные моменты первого и~второго порядка, 
+что и~$f_n$, вследствие чего каждая из плотностей~$w_n$ зависит как от параметров, 
+так и~от значений условного математического ожидания $m(\Theta, t) \hm= 
+\mm_{\Delta^y}^{f_1} Y_t$ и~условной ковариационной функции $K(\Theta,t,t')\hm= 
+\mm_{\Delta^y}^{f_2} \lk Y^0(\Theta,t) \, Y^0 (\Theta, t')^{\mathrm{T}}\rk$ 
+при $t, t'\hm= t_1\tr t_n$ $(n\hm=1,2,\ldots)$. Количества
+\begin{equation*}
+    c_{\nu_1\tr \nu_n} \left(\Theta, t_1\tr t_n\right) = 
+    \mm_{\Delta^y}^{f_n} \lk q_{\nu_1\tr \nu_n} \left(Y_1 \tr Y_n\right)\rk
+    %\label{e6.2-s2}
+    \end{equation*}
+представляют собой коэффициенты МОР для многомерного распределения; 
+$\left\{ p_{\nu_1 \tr \nu_n} (Y_1 \tr Y_n)\right.$, 
+$\left.q_{\nu_1 \tr \nu_n} (Y_1 \tr Y_n)\right\}$~--- 
+многомерные биортонормальные полиномы, удовлетворяющие условиям согласованности~\cite{1-s2, 2-s2}:
+    \begin{equation}
+    c_{\nu_1 \tr \nu_{n-1}, 0} \left(\Theta, t_1\tr t_n\right) =
+     c_{\nu_1\tr \nu_{n-1}} \left(\Theta, t_1\tr t_{n-1}\right)\,.
+     \label{e6.3-s2}
+     \end{equation}
+В результате придем к~следующим обыкновенным дифференциальным уравнениям 
+для параметров условного многомерного распределения $\vartheta_n^y \hm= \lf \bar m_n; 
+\bar K_n ; c_{\kappa_1\tr \kappa_n}\rf$:
+  \begin{equation}
+  \left.
+  \begin{array}{rl}
+    \dot m_n &={A}^{m_n} \left(m_n \left(\Theta,t_n\right), K_n 
+    \left(\Theta,t_n\right)\right)\,;\\[6pt] 
+    c_{\nu_n} \left(\Theta, t_n\right) &=\vrp_{10} \left(m_n, K_n, \Theta, t_n\right)+ 
+    \displaystyle \sss_{l=1}^{n_1} \sss_{|\nu | =l} \vrp_{1\nu} 
+\left(m_n , K_n, \Theta, t_n\right) c_{\nu_n}\,;
+\end{array}
+\right\}
+\label{e6.4-s2}
+\end{equation}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\dot K_n ={A}^{K_n} \left(m_n \left(\Theta,t_n\right), 
+K_n \left(\Theta,t_n\right), c_{\nu_n} \left(\Theta, t_n\right)\right)
+={}\\
+{}=\vrp_{20} \left(m_n, K_n, \Theta, t_n\right)+ 
+\sss_{l=1}^{n_1} \sss_{|\nu | =l} \vrp_{2\nu} 
+\left(m_n , K_n, \Theta, t_n\right) c_{\nu_n}\,;
+\label{e6.5-s2}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+    \fr{\prt K(t_1, t_2)}{\prt t_2} ={A}^{K_2} 
+    \left(m_2 \left(\Theta,t_2\right), K_2 \left(\Theta,t_2\right), 
+    c_{\nu_1, \nu_2} \left(\Theta, t_2\right)\right) ={}\\
+    {}=
+    \vrp_{30} \left(\bar m_2, \bar K_2, \Theta, t_2\right)+  \sss_{l=3}^{n_2} \sss_{|\nu_1 | +|\nu_2 |=l} c_{\nu_1,\nu_2} \vrp_{3\nu_1\nu_2} 
+\left(\bar m_2 , \bar K_2, \Theta, t_2\right)\,;
+\label{e6.6-s2}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\fr{\prt c_{\kappa_1 \tr \kappa_n} (\Theta, t_1\tr t_n)}{\prt t_n} = {}\\
+{}=
+{A}^{c_\kappa} \left(m_n, \dot m_n, \bar m_n, K_n, \dot K_n, \bar K_n, 
+\dot K_h, K_{nh}, \Theta, t_1\tr t_n\right) ={}\\
+{}= \vrp_{\kappa_1\tr \kappa_n, 0} \left(\bar m_n, \bar K_n, \Theta, t_n\right)+ 
+\psi_{\kappa_1 \tr \kappa_n, 0}^{m_n}\left(\bar m_n, \bar K_n, \Theta, t_n\right)\dot m\left(t_n\right) 
++{}\\
+{}+\mathrm{tr}\, \lk \psi_{\kappa_1\tr \kappa_n, 0}^{K_n} 
+\left(\bar m_n, \bar K_n, \Theta, t_n\right) \dot K (t_n)\rk +{}\\
+{}+\sss_{h=1}^{n_n-1} \mathrm{tr}\, \lk \psi_{\kappa_1\tr \kappa_n, \nu_1\tr 
+\nu_n}^{K,h} \left(\bar m_n, \bar K_n, \Theta, t_n\right) 
+\fr{\prt K(t_n, t_h)}{\prt t_n}\rk +{}\\
+{}+\sss_{l=3}\sss_{|\nu_1 | +\cdots + |\nu_n |=l}^{n_n} c_{\kappa_1 \tr \kappa_n, 0} 
+\biggl\{ \vrp_{\kappa_1\tr \kappa_n, \nu_1\tr \nu_n} 
+\left(\bar m_n, \bar K_n, \Theta, t_n\right)+{}\\
+{}+ \psi_{\kappa_1\tr \kappa_n, \nu_1\tr \nu_n}^{m_n} 
+\left(\bar m_n, \bar K_n, \Theta, t_n\right)\dot m \left(t_n\right) +{}\\
+{}+
+\mathrm{tr} \lk \psi_{\kappa_1\tr \kappa_n,\nu_1\tr \nu_n}^{K_n} 
+\left(\bar m_n, \bar K_n, \Theta, t_n\right) \dot K \left(t_n\right)\rk+{}\\
+{}+\mathrm{tr}\, \left[ \psi_{\kappa_1\tr \kappa_n, \nu_1\tr \nu_n}^{K_h} 
+\left(\bar m_n, \bar K_n, \Theta, t_n\right)
+\fr{\prt K(t_n, t_h)}{\prt t_n}\right] \biggr\}\,.\label{e6.7-s2}
+\end{multline}
+Здесь приняты следующие обозначения:
+    $$
+    \bar m_n =\lk m\left(t_1\right) \ldots m\left(t_n\right)\rk^{\mathrm{T}}\,;\quad 
+    \bar K_n = \lf K_{ij} \left(t_n, t_h\right)\rf\,, \enskip i,j=\overline{1,p}\,;
+    $$
+    $$
+    \lv \kappa_1\rv \tr \lv \kappa_n\rv =
+    \overline{1,n_n}\,;\enskip \lv 
+    \kappa_1+\cdots+  \kappa_n\rv = \max \lf (3, n\tr n_n)\rf\,;
+    $$
+    $$
+    \vrp_{3,\nu_1,\nu_2} \left(\bar m_2, \bar K_2, \Theta, t_2\right) =
+    \mm_{\Delta^y}^{w_2 p_{\nu_1, \nu_2}} \lf \lk y_1 - 
+    m\left(t_1\right)\rk a \left(y_2, \Theta, t_2\right)^{\mathrm{T}}\rf\,;
+    $$
+    
+    \vspace*{-12pt}
+    
+    \noindent
+    \begin{multline}
+    \vrp_{\kappa_1\tr \kappa_n, \nu_1\tr \nu_n} \left(
+    \bar m_n, \bar K_n, \Theta, t_n\right)= {}\\
+    {}=
+    \mm_{\Delta^y}^{w_n p_{\nu_1\tr \nu_n}} \biggl\{ 
+    \fr{\prt^{\mathrm{T}} q_{\kappa_1\tr \kappa_n} (y_1\tr y_n)}{\prt y_n}\,
+     a\left(y_n, \Theta, t_n\right)+{}\\
+{}+\fr{1}{2}\,\mathrm{tr}\, \lk \fr{\prt}{\prt y_n}\,
+\fr {\prt^{\mathrm{T}}}{\prt y_n}\, q_{\kappa_1 \tr \kappa_n} 
+\left(y_1\tr y_n\right) \si \left(y_n,\Theta, t_n\right) \rk +{}\\
+{}+\iii_{R_0^q} \biggl[ q_{\kappa_1\tr \kappa_n} 
+\left(y_1 \tr y_{n-1}, y_n+ c\left( y_n, \Theta, t_n,v\right)\right)-
+q_{\kappa_1\tr \kappa_n} \left(y_1\tr y_n\right) \times{}\\
+{}\times
+\fr{\prt^{\mathrm{T}} q_{\kappa_1\tr \kappa_n} (y_1\tr y_n)}{\prt y_n}\,
+ c\left(y_n,\Theta, t_n, v\right)\biggr] \nu_P \left(\Theta, t_n, dv\right)
+ \biggr\}\,;\label{e6.8-s2}
+ \end{multline}
+
+\noindent
+\begin{equation}
+\psi_{\kappa_1\tr \kappa_n, \nu_1\tr \nu_n}^{m_n} 
+\left(\bar m_n, \bar K_n, \Theta, t_n\right) = 
+\mm_{\Delta^y}^{w_n p_{\nu_1\tr \nu_n}}\! \lk q_{\kappa_1\tr \kappa_n}^{m_n} 
+\left(y_1\tr y_n\right)\rk;\!\!\!
+\label{e6.9-s2}
+\end{equation}
+\begin{equation}
+ \psi_{\kappa_1\tr \kappa_n, \nu_1\tr \nu_n}^{K_n} 
+ \left(\bar m_n, \bar K_n, \Theta, t_n\right)= 
+ \mm_{\Delta^Y}^{w_n p_{\nu_1\tr \nu_n}}\! \lk q_{\kappa_1\tr \kappa_n}^{K_n} 
+ \left(y_1\tr y_n\right)\rk;\!\!\!
+ \label{e6.10-s2}
+ \end{equation}
+\begin{equation}
+\psi_{\kappa_1\tr \kappa_n, \nu_1\tr \nu_n}^{K_h} 
+\left(\bar m_n, \bar K_n, \Theta, t_n\right)= 
+\mm_{\Delta^y}^{w_n p_{\nu_1\tr \nu_n}} \!\lk q_{\kappa_1\tr \kappa_n}^{K_h} 
+\left(y_1\tr y_n\right)\rk,\!\!\!
+\label{e6.11-s2}
+\end{equation}
+где $\vrp_{30}$ определяется~(\ref{e6.8-s2}) 
+при $p_{\nu_1, \nu_2} (y_1, y_2)\hm= p_{0,0} (y_1, y_2) \hm=1$, 
+$K(t_1, t_1) \hm= K_1$; $q_{\kappa_1\tr \kappa_n}^{m_n} (y_1\tr y_n)$~--- 
+мат\-ри\-ца-стол\-бец производных полинома $q_{\kappa_1\tr \kappa_n} (y_1\tr y_n)$ 
+по компонентам вектора $m_n \hm= m(t_n)$; $a_{\kappa\tr \kappa_n}^{K_h} (y_1\tr y_n)$~--- 
+квадратная матрица вторых производных полинома $q_{\kappa_1\tr \kappa_n} (y_1\tr y_n)$ 
+по элементам матрицы $K(t_n, t_n)$ $(h\hm=\overline{1,n})$; 
+$q_{\kappa_1\tr \kappa_n}^{m_n} (\alp)$ и~$q_{\kappa_1\tr \kappa_n}^{K_h} (\alp)$~--- 
+результат замены одночленов $y_{11}^{r_{11}} \tr$ $y_{1p}^{r_{1p}} \tr$ 
+$y_{n1}^{r_{n1}},\ldots, y_{np}^{r_{np}}$ соответствующими моментами 
+$\alp_{r_{11} \tr r_{1p}\tr r_{n1}\tr r_{np}}$ в~выражениях 
+полиномов $q_{\kappa_1\tr \kappa_n}^{m_n} (\alp)$ 
+и~$q_{\kappa_1\tr \kappa_n}^{K_h} (\alp)$; функции $\vrp_{\kappa_1\tr \kappa_n, 0}$, 
+$\psi_{\kappa_1\tr \kappa_n,0}^{m_n}$, $\psi_{\kappa_1\tr \kappa_n,0}^{K_n}$, 
+$\psi_{\kappa_1\tr \kappa_n,0}^{K_{n,h}} (\alp)$ 
+определяются формулами~(\ref{e6.3-s2})--(\ref{e6.11-s2}); 
+$p_{\nu_1\tr \nu_n} (y_1\tr y_n)\hm = p_{0\tr 0} (y_1\tr y_n)\hm =1$ 
+для $\nu_1 \tr \nu_n\hm=0$.
+
+Начальные условия для уравнений~(\ref{e6.4-s2})--(\ref{e6.7-s2}) имеют следующий вид:
+\begin{gather}
+m\left(t_0\right) = m_0\,, \enskip K\left(t_0, t_0\right) = K_0\,, \enskip 
+c_\nu \left(\Theta, t_0\right) = c_{\nu 0}\,;\label{e6.12-s2}\\
+K\left(\Theta, t_1, t_1\right) = K\left(\Theta, t_1\right)\,,\enskip 
+c_{\nu_1,\nu_2}\left(\Theta, t_1, t_1\right) = 
+c_{\nu_1 +\nu_2} \left(\Theta, t_1\right)\,;\label{e6.13-s2}\\
+c_{\kappa_1\tr \kappa_n} \left(\Theta, t_1\tr t_{n-1}, t_{n-1}\right) = 
+c_{\kappa_1\tr \kappa_{n-1},\kappa_{n-1} + \kappa_n} 
+\left(\Theta, t_1\tr t_{n-1}\right)\,.\label{e6.14-s2}
+\end{gather}
+
+Таким образом, приходим к~следующему результату.
+
+\pagebreak
+
+%\smallskip
+
+\noindent
+\textbf{Теорема~6.1.}\ \textit{Если в~условиях теоремы~$5.1$ 
+существует последовательность $n$-мер\-ных согласованных распределений СтП~$Y(t)$  
+при фиксированном векторе параметров~$\Theta$ и~согласованное семейство 
+полиномов $\lf p_{\nu_1\tr \nu_n} (y_1\tr y_n), q_{\nu_1\tr \nu_n} (y_1\tr y_n)\rf$, 
+то уравнения}~(\ref{e6.4-s2})--(\ref{e6.6-s2}) \textit{при условиях}~(\ref{e6.12-s2})--(\ref{e6.14-s2}) 
+\textit{и конечности интегралов}~(\ref{e6.7-s2})--(\ref{e6.11-s2}) 
+\textit{лежат в~основе МОР для многомерных распределений}.
+
+\vspace*{4pt}
+
+Дифференцируя уравнения для параметров плотностей по~$\Theta$, 
+приходим к~следующим уравнениям точности и~чувствительности для многомерных 
+распределений:
+\begin{gather}
+\nabla^\Theta \dot m_n =\nabla^\Theta {A}^{m_n} ={A}_0^{m_n} 
++{A}_{m_n}^{m_n} \nabla^\Theta m_n + {A}_{K_n}^{m_n} \nabla^\Theta K_n +
+{A}_{c_{\nu n}}^{m_n} \nabla^\Theta c_{\nu n}\,;
+\label{e6.15-s2}\\
+\nabla^\Theta \dot K_n = \nabla^\Theta {A}^{K_n} = {A}_0^{K_n} + 
+{A}_{m_n}^{K_n} \nabla^\Theta m_n +{A}_{K_n}^{K_n}\nabla^\Theta K_n + 
+{A}^{K_n}_{c_{\nu n}} \nabla^\Theta c_{\nu n}\,;\label{e6.16-s2}
+\end{gather}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\fr{\prt}{\prt t_2} \,\nabla^\Theta K\left(\Theta, t_1, t_2\right) = 
+\nabla^\Theta {A}^K ={}\\
+{}+{A}_0^{K} + {A}_{m_2}^K \nabla^\Theta m_2 
++ {A}_{K_2}^K \nabla^\Theta K_2 + 
+{A}_{K}^K \nabla^\Theta K +  
+{A}_{c_{\nu 2}}^K \nabla^\Theta c_{\nu 2}\,;\label{e6.17-s2}
+\end{multline}
+
+\vspace*{-12pt}
+
+\noindent
+\begin{multline}
+\fr{\prt}{\prt t_n} \nabla^\Theta c_{\kappa_1\tr \kappa_n} 
+\left(\Theta, t_1\tr t_n\right) = \nabla^\Theta {A}^{c_\kappa}= 
+{A}_{0}^{c_\kappa}+{A}_{m_n}^{c_\kappa}\nabla^\Theta m_n +
+{A}_{\dot m_n}^{c_\kappa}\nabla^\Theta \dot m_n + {}\\
+{}+
+{A}_{K_n}^{c_\kappa}\nabla^\Theta K_n +
+{A}_{\dot K_n}^{c_\kappa}\nabla^\Theta \dot K_n +
+{A}_{K}^{c_\kappa}\nabla^\Theta K  +
+{A}_{K,h}^{c_\kappa}\nabla^\Theta K,h\,.\label{e6.18-s2}
+\end{multline}
+
+Таким образом, \textit{в условиях теоремы~$6.1$ уравнения чувствительности МОР имеют 
+вид}~(\ref{e6.15-s2})--(\ref{e6.18-s2}) (\textbf{теорема~6.2}).
+
+\smallskip
+
+\noindent
+\textbf{Замечание~6.1.}
+Приравнивая нулю правые части уравнений~(\ref{e6.15-s2})--(\ref{e6.18-s2}), 
+получим конечные уравнения для соответствующих стационарных значений. Суждение 
+о~точ\-ности и~устойчивости стационарных значений можно сделать на основе 
+рас\-смот\-ре\-ния линейных уравнений в~вариациях для~(\ref{e6.15-s2})--(\ref{e6.18-s2}).
+Аналогично выписываются уравнения для функций чувствительности второго 
+порядка $\nabla^\Theta (\nabla^\Theta)^{\mathrm{T}} \vartheta_n^y$.
+
+
+
+\section{Методы аналитического моделирования на~основе~метода~квазимоментов}
+
+
+Рассмотрим применение алгоритмов разд.~5 и~6 для случая, когда 
+параметризация распределений проводится на основе МКМ~\cite{9-s2, 10-s2}.
+Тогда при аппроксимации одномерной плот\-ности~ $f$ отрезком разложения по многомерным 
+полиномам Эрмита $\lf H_\nu , G_\nu\rf$ имеем согласно~\cite{1-s2, 2-s2}
+  \begin{equation}
+  \left.
+  \begin{array}{c}
+    p_\nu \left(y_t\right) = \fr{H_\nu (y_t-m_t)}{\nu_1 ! \ldots \nu_p !}\,;\qquad 
+    q_\nu \left(y_t \right)= G_\nu \left(y_t-m_t\right)\,;\\ 
+    c_{\nu t} = q_\nu (\alp) = G_\nu(\mu)\,;
+    \qquad
+    q_\kappa^{m_t} =0\,;\qquad q_\kappa^{K_t} (\alp)=0 \qquad ( | \kappa |=3)\,;
+\end{array}
+    \right\}
+    \label{e7.1-s2}
+    \end{equation}
+
+\noindent
+\begin{equation}
+  \left.
+  \begin{array}{rll}
+    q_{\kappa r}^{m_t} &= -\kappa_r c_{\kappa - e_r, t} &\enskip 
+    \left(r=\overline{1,p};\ |\kappa | = 4\tr N\right)\,;
+\\[6pt]
+    q_{\kappa rr}& =-\kappa_r \kappa_s c_{\kappa - e_r - e_s ,t} &\enskip 
+    \left(r,s = \overline{1,p};\  s>r;\  |\kappa | = 5\tr N\right)\,.
+    \end{array}
+    \right\}
+    \label{e7.1-s21}
+    \end{equation}
+
+Таким образом, \textit{в основе МКМ лежат уравнения теоремы~$5.1$ при условиях}~(\ref{e7.1-s2})
+и~(\ref{e7.1-s21})
+ (\textbf{теорема~7.1}).
+ 
+ \smallskip
+
+При использовании согласованных многомерных полиномов Эрмита 
+$\bigl\{ H_{\nu_1\tr \nu_n} (Y_1\tr Y_n)$, $G_{\nu_1\tr \nu_n} (Y_1\tr Y_n)\bigr\}$~\cite{1-s2, 2-s2}:
+    $$
+    p_{\nu_1\tr \nu_n}\left (y_1\tr y_n; t_1\tr t_n\right) = 
+    \fr{H_{\nu_1\tr \nu_n} (y_1- m(t_1)\tr y_n-m(t_n))}{\nu_{11}!\ldots \nu_{nr}!}\,;
+    $$
+    $$
+    q_{\nu_1\tr \nu_n} \left(y_1\tr y_n; t_1\tr t_n\right) = 
+    G_{\nu_1\tr \nu_n} \left(y_1- m\left(t_1\right)\tr y_n-m\left(t_n\right)\right)\,,
+    %\label{e7.2-s2}
+    $$
+в уравнениях теоремы~6.1 следует положить
+    $$
+    q_{\kappa_1\tr \kappa_{n,r}}^{m_n} (\alp) =-\kappa_{nr} 
+    c_{\kappa_1\tr \kappa_n-e_r} \enskip 
+    \left(r=\overline{1,p};\  \lv\kappa_1\rv+\cdots +\lv \kappa_n\rv = 4, n_n\right)\,;
+    $$
+    
+  \vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+    q_{\kappa_1\tr \kappa_{n,r,s}}^{K,h} (\alp) =
+    -\kappa_{hr} \kappa_{ns} c_{\kappa_1 \tr \kappa_{h-e_r} \tr \kappa_{n-e_{s}}}\\
+ \left(r,s =\overline{1,p}; \enskip h=\overline{1,(n-1)},\enskip 
+ \lv\kappa_1\rv +\cdots + \lv \kappa_n\rv =\overline{5, n_n}\right)\,;
+ \end{multline*}
+ 
+ \vspace*{-9pt}
+ 
+ \noindent
+    $$
+    q_{\kappa_1\tr \kappa_n, rr}^{K_n} (\alp) = -\fr{1}{2}\,
+     \kappa_{nr} (\kappa_{nr} -1) c_{\kappa_1\tr \kappa_n - 2e_r}\,;
+     $$
+     
+   \vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+    q_{\kappa_1\tr \kappa_n, rs}^{K_n} (\alp) = - \kappa_{nr} \kappa_{ns} 
+    c_{\kappa_1\tr \kappa_n - e_r-e_s}\\
+\left(r,s=\overline{1,p}; \enskip s\ne r;\enskip \lv \kappa \rv +\cdots +
+\lv\kappa\rv =\overline{5, n_n}\right)\,;
+\end{multline*}
+
+\vspace*{-3pt}
+
+\noindent
+\begin{equation}
+\left.
+\begin{array}{rl}
+q_{\kappa_1\tr \kappa_n}^{m_n} (\alp) &=0\ \mbox{при}\  \lv\kappa_{1}\rv+\cdots+\lv \kappa_{n}\rv =3\,;\\[6pt]
+q_{\kappa_1\tr \kappa_n}^{K,h} (\alp) &=0\ \mbox{при}\  \lv\kappa_{1}\rv+\cdots+\lv \kappa_{n}\rv =3\ \mbox{и}\  4.
+\end{array}
+\right\}
+\label{e7.3-s2}
+\end{equation}
+
+Имеем следующее утверждение.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~7.2.}\ 
+\textit{В~основе МКМ  и~многомерных согласованных распределений лежат уравнения 
+теоремы~$6.1$ при условиях}~(\ref{e7.3-s2}).
+
+\section{Обобщение}
+
+Полученные в~\cite{9-s2, 10-s2} и~разд.~3--7 результаты легко обобщаются на 
+случай дискретных СтС, если воспользоваться результатами~\cite{1-s2, 2-s2, 5-s2}.
+
+В частности, для дискретных МСтС МОР и~аппроксимации, например, 
+одномерной плот\-ности~$f(x)$ на основе пуассоновского эталонного распределения~$w_0(x)$, 
+плот\-ность~$f(x)$ представляется в~виде ряда
+\begin{equation}
+f(x) = w_0(x) \sss_{\nu=0}^\infty c_\nu p_\nu (x)\,.\label{e8.1-s2}
+\end{equation}
+Здесь $p_\nu(x)$~--- биортонормальная система полиномов, удовлетворяющая 
+условиям~\cite{1-s2, 2-s2, 5-s2}:
+\begin{equation}
+\iin p_\nu (x) p_\mu (x) w_0(x)\, dx =\delta_{\nu\mu}\,, \enskip 
+p_0 (x) = 1\,,\enskip p_\nu (x) = \sss_{k=0}^\nu a_{nk} x^k\,.
+\label{e8.2-s2}
+\end{equation}
+Коэффициенты разложения~$c_\nu$ определяются согласно
+\begin{equation*}
+c_\nu = \iin p_\nu (x) f(x)\, dx = p_\nu (\alp) \enskip 
+(\nu = 0,1,2,\ldots)\,,
+%\label{e8.3-s2}
+\end{equation*}
+где $p_\nu(\alp)$ представляет собой результат замены в~выражении 
+полинома  $p_\nu (\alp)$ всех одночленов $x_\nu^{k_1} \tr x_\nu^{k_\nu}$ 
+соответствующими начальными моментами $\alp_{k_1\tr k_\nu}$ случайной величины (СВ)~$X$ 
+с~плот\-ностью~$f(x)$. В~случае скалярной СВ~$X$ и~условия~(\ref{e8.2-s2}) имеем:
+\begin{equation}
+c_0 =1\,, \enskip c_\nu = a_{\nu 0} + \sss_{k=2}^\nu a_{\nu k} \alp_k\,,
+\label{e8.4-s2}
+\end{equation}
+где $\alp_k$~--- начальный момент порядка~$k$ для СВ~$X$.
+
+Таким образом, все коэффициенты $c_\nu$ в~(\ref{e8.1-s2}) 
+легко определяются, если известны конечные начальные вероятностные моменты СВ~$X$.
+
+ Рассмотрим дискретную скалярную СВ~$X$, $f(x)$ которой аппроксимируется рядом 
+ ортогонального разложения плотности СВ, возможными значениями которой служит все 
+ целые неотрицательные числа, причем
+ \begin{equation*}
+ P(X=\nu)=p_\nu \enskip (\nu = 0,1,2,\ldots)\,.
+ %\label{e8.5-s2}
+ \end{equation*}
+Выберем эталонное пуассоновское распределение~$w_0(x)$ с~тем же начальным 
+вероятностным моментом~$\alp_1$:
+\begin{equation*}
+w_0(x) = \sss_{\nu=0}^\infty \fr{\alp_1^{\nu}}{\nu!}\, e^{-\alp_1} \delta (x-\nu)\,.
+%\label{e8.6-s2}
+\end{equation*}
+Учтем, что ортонормальные полиномы $p_\nu(x)$ выражаются через начальные 
+моменты~$\alp_1^0$, $\alp_2^0 ,\ldots$ эталонного распределения~$w_0(x)$ 
+и~моменты~$\alp_1$, $\alp_2 ,\ldots$ распределения~$f(x)$ при любых~$w_0(x)$ и~$f(x)$ 
+согласно формуле:
+    \begin{equation*}
+    p_\nu (x) = \fr{(-1)^\nu\pi_{2\nu} (x)}{\sqrt{\pi_{2\nu-2} (\alp)
+     \Delta_{2\nu} (x)}} \enskip (\nu= 1,2,\ldots)\,,
+     %\label{e8.7-s2}
+     \end{equation*}
+где
+
+\noindent
+\begin{align*}
+\pi_{2n} (x)& = \begin{vmatrix}
+    1&x&\cdots&x^n\\[2pt]
+    1&\alp_1^0&\cdots&\alp_n^0\\[2pt]
+    \vdots&\vdots&\ddots&\vdots\\[2pt]
+    \alp_{n-1}^0&\alp_n^0&\cdots&\alp_{2n-1}^0\end{vmatrix}
+     \enskip 
+    (n=1,2,\ldots)\,;
+    %\label{e8.8-s2}
+    \\[6pt]
+\pi_{2r} (\alp) &= \begin{vmatrix}
+    1&\alp_1^0&\cdots&\alp_r^0\\[2pt]
+    \alp_1^0&\alp_2^0&\cdots&\alp_{r+1}^0\\[2pt]
+    \vdots&\vdots&\ddots&\vdots\\[2pt]
+    \alp_{r}^0&\alp_{r+1}^0&\cdots&\alp_{2r}^0\end{vmatrix}
+     \enskip (r=1,2,\ldots)\,.
+     %\label{e8.9-s2}
+     \end{align*}
+Тогда в~соответствии с~(\ref{e8.4-s2}) 
+коэффициент~$c_\nu$ получается заменой в~определителе $\Delta_{2\nu} (x)$ 
+степеней аргумента~$x$ соответствующими начальными моментами. 
+В~результате получим для~$f(x)$ пуассоновское ортогональное разложение:
+\begin{equation*}
+f(x) = w_0(x) \lk 1 + \sss_{n=1}^\infty \fr{\pi_{2n} (\alp) \pi_{2n}(x)}
+{\pi_{2n-2} (\alp) \pi_{2n}(x)}\rk\,,
+%\label{e8.10-s2}
+\end{equation*}
+где
+
+\noindent
+\begin{equation*}
+\pi_{2n} (\alp) = \begin{vmatrix}
+    1&\alp_1&\cdots&\alp_n\\[2pt]
+    1&\alp_1^0&\cdots&\alp_{n}^0\\[2pt]
+    \vdots&\vdots&\ddots&\vdots\\[2pt]
+    \alp_{n-1}^0&\alp_{n}^0&\cdots&\alp_{2n-1}^0\end{vmatrix}
+     \enskip (n=1,2,\ldots)\,.
+     %\label{e8.11-s2}
+     \end{equation*}
+Отсюда при  $\alp_1^0 \hm= \alp_1$, выразив $\alp_2^0$ и~$\alp_3^0$ через~$\alp_1$ 
+по известным формулам~\cite{2-s2}, получим:
+
+\noindent
+\begin{multline*}
+f(x) = \sss_{n=0}^\infty \fr{\alp_1^n}{n!} \exp\left(-\alp_1\right) 
+\left[ 1 + \fr{\alp_2 - \alp_1 - \alp_1^2}{2} -{}\right.\\
+\left.{}- 
+\fr{(\alp_2 - \alp_1 - \alp_1^2) (1+ 2 \alp_1)}{2 \alp_1^2} \,n +
+\fr{\alp_2 - \alp_1 - \alp_1^2}{2 \alp_1^2} n^2 + \cdots \right] 
+\delta (x-n)\,,
+%\label{e8.12-s2}
+\end{multline*}
+где $\alp_n = \sss_{\nu=1}^\infty \nu^n p_\nu$ $(n\hm=1,2,\ldots)$.
+
+\section{Заключение}
+
+Рассмотрены МАМ 
+СтП в~конечномерных нелинейных стационарных 
+и~нестационарных СтС, не разрешенных относительно 
+производных.
+
+\pagebreak
+
+Для аналитического моделирования и~оценки точности и~чувствительности 
+алгоритмов разработаны усовершенствованные МАМ на основе МНА
+и~МСЛ, МОР и~МКМ, а~также других методов параметризации одно- и~многомерных 
+плотностей.
+
+ В~приложении~П1 даны типовые нелинейности, не разрешенные относительно производных, 
+ и~коэффициенты их статистической линеаризации, а~в~приложениях~П2 и~П3~--- 
+ два тестовых примера. Алгоритмы положены в~основу разрабатываемого экспериментального 
+ программного обеспечения для решения задач надежности и~без\-опас\-ности технических 
+ сис\-тем~[11--15].
+
+{\small
+
+\begin{table}[b]\small
+\vspace*{-6pt}
+\begin{center}
+
+\begin{tabular}{|p{35mm}|p{87mm}|}
+\multicolumn{2}{p{126mm}}{Коэффициенты статистической линеаризации типовых нелинейностей, 
+не разрешенных  относительно производных}\\
+\multicolumn{2}{c}{\ }\\[-6pt]
+\hline
+\multicolumn{1}{|c|}{$\vrp$}&\multicolumn{1}{c|}{$\vrp_0$}\\
+\hline
+$\dot Y^{2n +1}$ &$\displaystyle\sss_{l=0}^{2n+1} C_{2n+1}^l m^l \mu_{2n +1-l}$, 
+$D=D_{\dot Y}$, $\mu_{2p} = (2p-1)!! D^p$,\ \ $\mu_{2p+1} =0$, $p=0,1,2,\ldots $\\[3pt]
+\hline
+&\\[-8pt]
+$\dot Y^{3} $&$  \left(3+\fr{m^2}{D} \right) $\\[8pt]
+\hline
+&\\[-8pt]
+$\sin \w\dot Y$&$ \exp \left(-\fr{\w^2 D}{2}\right) \sin \w m$\\[8pt]
+\hline
+&\\[-8pt]
+$\dot Y \exp \left(\alp \dot Y\right)$&
+$(m+ \alp D) \exp\left(\alp m+ \fr{\alp^2 D}{2}\right)$\\[8pt]
+\hline
+&\\[-9pt]
+$\dot Y \cos\w\dot Y$&$ 
+(m\cos \w m - \w D \sin \w m) \exp \left(- \fr{\w^2 D}{2}\right)$\\[8pt]
+\hline
+&\\[-9pt]
+$\mathrm{sgn}\, \dot Y$&$ \Phi \left(\fr{m}{\sqrt{D}}\right)$\\[11pt]
+\hline
+&\\[-8pt]
+$\dot Y^{2} \mathrm{sgn}\, \dot Y$&$
+2D \left\{ \left(\fr{m^2}{D} +1\right) \Phi \left(\fr{m}{\sqrt{D}}\right) + 
+\fr{1}{\sqrt{2\pi D}} \exp \left(-\fr{m^2}{2D}\right)\right\}$\ 
+$\left(m = m_{\dot Y},\ D=D_{\dot Y}\right)$\\[-8pt]
+&\\
+\hline
+\multicolumn{2}{r}{\textit{Окончание таблицы на c.}~\pageref{tp.1-a}}
+\end{tabular}
+\end{center}
+\vspace*{-12pt}
+\end{table}
+
+\begin{table}\small
+\begin{center}
+\label{tp.1-a}
+%\vspace*{2ex}
+
+\tabcolsep=3pt
+\begin{tabular}{|p{36mm}|p{86mm}|}
+\multicolumn{2}{p{126mm}}{Коэффициенты статистической линеаризации типовых нелинейностей, 
+не разрешенных  относительно производных (\textit{окончание})}\\
+\multicolumn{2}{c}{\ }\\[-6pt]
+\hline
+\multicolumn{1}{|l|}{\raisebox{-60pt}[0pt][0pt]{$\begin{cases}
+\fr{l}{d}\, \dot Y, &\ |\dot Y | \le d\,;\\
+l,&\ \dot Y > d\,;\\
+-l,&\ \dot Y <-d\end{cases}$}}&
+\vspace*{-24pt}\begin{multline*}
+l\left\{
+\vphantom{\left(\fr{1-m_1}{\si_1}\right)^2}
+ \left(1+m_1\right)\Phi \left(\fr{1+m_1}{\si_1}\right) - \left(1-m_1\right) 
+\Phi\left(\fr{1-m_1}{\si_1}\right)+{}\right.\\
+{}+
+\fr{\si_1}{\sqrt{2\pi}} \left[ \exp \left\{ -\fr{1}{2}  \left(
+\fr{1+m_1}{\si_1}\right)^2 \right\}-{}\right.\\
+\left.\left.{}- \exp\left\{ -\fr{1}{2}\left(\fr{1-m_1}{\si_1}\right)^2\right\} 
+\right] \right\}+{}\\
+\left(m_1 = m/d,\ \si_1 =\sqrt{D}/d\right)
+\end{multline*}\\
+&\\[-24pt]
+\hline
+&\\[-24pt]
+\multicolumn{1}{|l|}{\raisebox{-72pt}[0pt][0pt]{$
+\begin{cases}
+\gamma\left(\dot Y +d\right),&\ \dot Y  <-d\,;\\
+0,&\ |\dot Y |\le d\,;\\
+\gamma \left(\dot Y -d\right),&\ \dot Y >d\end{cases}$}}&
+\begin{multline*}
+\gamma\left\{ 1-\fr{1}{m_1}\left[ \left(1+m_1\right)\Phi 
+\left(\fr{1+m_1}{\si_1}\right) - {}\right.\right.\\
+\left.{}-
+\left(1-m_1\right) \Phi\left(\fr{1-m_1}{\si_1}\right)\right]+{}\\
+{}+\fr{\si_1}{m_1\sqrt{2\pi}} \left[ \exp \left\{ -
+\fr{1}{2}  \left(\fr{1-m_1}{\si_1}\right)^2 
+\right\}- {}\right.\\
+\left.\left.{}-\exp\left\{ -\fr{1}{2}\left(\fr{1+m_1}{\si_1}\right)^2\right\} 
+\right] \right\}
+\end{multline*}\\
+&\\[-20pt]
+\hline
+&\\[-8pt]
+$\begin{cases}
+-l,&\ \dot Y <-d\,;\\
+0,&\ |\dot Y| \le d\,;\\
+l,&\ \dot Y >d\end{cases}$&
+$l\lk \Phi \left(\fr{1+m_1}{\si_1}\right) - \Phi\left(\fr{1-m_1}{\si_1}\right)\rk$\\
+&\\[-8pt]
+\hline
+&\\[-8pt]
+$\dot Y_1^{n_1} \dot Y_2^{n_2}$\newline $(n=n_1\hm+n_2\hm>1)$&
+$\displaystyle
+\alp_n = m_p \alp_{n-e_p} + \sss_{r=1}^2 n_r K_{pr} \alp_{n-e_p-e_r} - 
+K_{pp} \alp_{n-2e_p}$\\[2pt]
+\hline
+&\\[-8pt]
+$\dot Y_1 \dot Y_2$&$m_1m_2 + K_{12}$\\[1pt]
+\hline
+&\\[-8pt]
+$\dot Y_1^2 \dot Y_2$&$\left(m_1^2 + K_{11}\right) m_2 +2m_1 K_{12}$\\[3pt]
+\hline
+&\\[-8pt]
+$\sin \left(\w_1\dot Y_1 +\w_2\dot Y_2\right)$&
+$\exp \left[ -\fr{\w_1^2 K_{11} + 2 \w_1\w_2 K_{12} +\w_2^2 K_{22}}{2}\right] \sin 
+\left(\w_1m_1+\w_2m_2\right)$\\[8pt]
+\hline
+$\mathrm{sgn} \left(\dot Y_1 +\dot Y_2\right)$&
+$2\Phi \left(\zeta_{1,2}\right)$, $\zeta_{1,2} =\fr{m_1+m_2 }{\sqrt{D}}$, 
+$ D= K_{11} + 2 K_{12} + K_{22}$\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\vspace*{-12pt}
+
+\section*{\raggedleft Приложения}
+
+
+\noindent
+\textbf{П1.}\
+Типовые одно- и~многомерные нелинейности, приведенные в~\cite{4-s2}, 
+если в~качестве одной из переменных выбрать~$\dot Y_t$, могут служить моделями 
+нелинейностей, не разрешенных относительно производных.
+
+В таблице на основе~\cite{4-s2} составлены аналитические 
+выражения для некоторых типовых одно- и~многомерных нелинейностей. 
+В~таблице введены следующие обозначения:
+
+\noindent
+ $$
+ h \hm= \lk h_1 \cdots h_n\rk^{\mathrm{T}}\,;\enskip
+|h|\hm = h_1 +\cdots + h_n\,;\enskip 
+e_p \hm= \lk 0\cdots \begin{matrix}1\\ p\end{matrix}
+  \cdots 0\rk\,;
+  $$
+  
+  \noindent
+  $$
+  k_p = \lk k_{p_1} \cdots k_{p_n}\rk\enskip
+(p= 1\tr n)\,, \enskip K=\lk k_{pq}\rk\,,
+$$
+  а~через~$\alp_h$ и~$\mu_h$ 
+  обозначены вероятностные начальные и~центральные моменты порядка~$h$, 
+  $\alp_0 \hm=1$, $\alp_{e_p}\hm= m_p$. Функцию Лапласа и~интеграл от нее возьмем 
+  в~виде~\cite{1-s2, 2-s2}
+    $$
+    \Phi(z) = \fr{1}{\sqrt{2\pi}} \iii_0^z e^{-t^2/2} \,dt\,,\quad 
+    \Phi'(z) = \fr{1}{\sqrt{2\pi}} \iii_0^z e^{-z^2/2}\, dt\,.
+    $$
+
+
+
+
+
+
+\medskip
+
+\noindent
+\textbf{П2.}\
+Рассмотрим МАМ для скалярной нелинейной СтС вида
+ \begin{equation}
+ \vrp \left(Y_t, \dot Y_t\right) = \vrp_1 \left(\dot Y_t\right) 
+ + \vrp_2 \left(Y_t\right) + V_t = 0\,,\label{p2.1-s2}
+ \end{equation}
+где $\vrp_{1,2}$~--- скалярные нелинейные недифференцируемые функции отмеченных 
+переменных; $V_t$~--- гауссовский белый шум интенсивности~$\nu$. 
+В~соответствии с~теоремами~3.5 и~3.6 выполним с~(\ref{p2.1-s2}) 
+следующие преобразования: заменим нелинейные функции статистически 
+линеаризованными выражениями:
+\begin{align*}
+     \vrp_1&=\vrp_1 \left(\dot Y_t\right) = \vrp_{10} 
+     \left( m_t^{\dot Y}, D_t^{\dot Y}\right) + 
+     k_{1\dot Y}^{\vrp_1}\left( m_t^{\dot Y}, D_t^{\dot Y}\right) \dot Y_t^0\,;\\
+     \vrp_2&=\vrp_2 \left(Y_t\right) = \vrp_{20} \left( m_t^{Y}, D_t^{Y}\right) + 
+     k_{1 Y}^{\vrp_2}\left( m_t^{Y}, D_t^{ Y}\right) Y_t^0\,,
+%     \label{p2.2-s2}
+     \end{align*}
+далее составим уравнения для математических ожиданий
+\begin{equation}
+\vrp_{10} \left( m_t^{\dot Y}, D_t^{\dot Y}\right)+\vrp_{20} 
+\left( m_t^{Y}, D_t^{Y}\right) =0\,,\enskip  
+\dot m_t^{Y}= m_t^{\dot Y} \label{p2.3-s2}
+\end{equation}
+и центрированных составляющих $Y_t^0 \hm= Y_t\hm - m_t^Y$, 
+$\dot Y_t^0 \hm= \dot Y_t\hm - m_t^{\dot Y}$:
+\begin{equation}
+k_{1\dot Y}^{\vrp_1}\left( m^{\dot Y_t}, D^{\dot Y_t}\right)
+\dot Y_t^0 +k_{1 Y}^{\vrp_1}\left( m_t^{  Y}, D_t^{ Y}\right) Y_t^0 + V_t\,.
+\label{p2.4-s2}
+\end{equation}
+В предположении
+     $$
+     k_{1\dot Y}^{\vrp_1}=k_{1\dot Y}^{\vrp_1}
+     \left( m_t^{\dot Y_t}, D_t^{\dot Y_t}\right)\ne 0
+     %\label{p2.5-s2}
+     $$
+разрешим~(\ref{p2.4-s2}) относительно производной~$\dot Y_t^0$
+    $$
+    \dot Y_t^0= aY_t^0 + bV_t\,, 
+    %\label{p2.6-s2}
+    $$
+положив
+   \begin{align*}
+    a&=a \left( m_t^{\dot Y}, m_t^Y, D_t^{\dot Y}, D_t^Y\right) = 
+    - k_{1Y}^{\vrp_2}  \left( m_t^{Y}, D_t^{Y}\right) \lk k_{1\dot Y}^{\vrp_1}
+    \left ( m_t^{\dot Y}, D_t^{\dot Y}\right)\rk^{-1}\,;
+    %\label{p2.7-s2}
+\\
+    b&=b \left( m_t^{\dot Y}, D_t^{\dot Y}\right)\lk k_{1\dot Y}^{\vrp_1} 
+     \left( m_t^{\dot Y}, D_t^{\dot Y}\right)\rk^{-1}\,.
+     %\label{p2.8-s2}
+\end{align*}
+Наконец, по известным формулам теории линейных стохастических систем~\cite{1-s2, 2-s2} 
+получим следующее обыкновенное дифференциальное уравнение для дисперсии~$D_t^Y$:
+\begin{equation}
+\dot D_t^Y = 2 a D_t^Y + b^2 \nu\,,\quad D_{t_0}^Y = D_0^Y\,.
+\label{p2.9-s2}
+\end{equation}
+
+Уравнения~(\ref{p2.3-s2}) и~(\ref{p2.9-s2}) определяют МАМ на основе МСЛ.
+
+Если существует ковариационно-ста\-цио\-нар\-ный процесс и~функция~$a_*$ 
+отрицательна, то имеем
+    $$
+    m_*^{\dot Y} =0\,;\enskip m_*^Y = {const}\,;\enskip 
+    D_*^Y ={const} = \fr{b^2 \nu_*}{2a_*}\,.
+    %\label{p2.9}
+    $$
+
+
+\medskip
+
+\noindent
+\textbf{П3.}\
+Рассмотрим скалярную нелинейную СтС вида
+\begin{equation}
+ \vrp=\dot Y_t^3 =-Y_t^3 + Y_t V(\Theta)\,,\enskip Y_{t_0}=Y_0\,.
+ \label{p3.1-s2}
+ \end{equation}
+Здесь $V(\Theta)$~--- гауссовский белый шум интенсивности $\nu\hm=\nu(\Theta)$. 
+Выполним с~(\ref{p3.1-s2}) следующие преобразования. Проведем статистическую 
+линеаризацию левой части согласно приложению~П1:
+    $$
+    \dot Y_t^3 = \vrp_0 \left( m_t^{\dot Y}, D_t^{\dot Y}\right)+ 
+    k_{1\dot Y}^{\vrp} \left( m_t^{\dot Y}, D_t^{\dot Y}\right)\dot Y_t^0\,,
+    %\eqno(\hbox{П}.3.2)
+    $$
+где
+    \begin{align*}
+    \vrp_0&=\vrp_0 \left( m_t^{\dot Y}, D_t^{\dot Y}\right)= 
+    D_t^{\dot Y} \lk 3 + \fr{\left( m_t^{\dot Y}\right)^2}{D_t^{\dot Y}}\rk\,;\\
+    k_1 &= k_1 \left( m_t^{\dot Y}, D_t^{\dot Y}\right)= 
+    3D_t^{\dot Y} \lk 1+\fr{( m_t^{\dot Y})^2}{D_t^{\dot Y}}\rk\,.
+    %\eqno(\hbox{П}.3.3)
+    \end{align*}
+Учитывая, что  $k_1^\vrp \ne 0$, заменим~(\ref{p3.1-s2}) приближенной 
+системой следующего вида:
+\begin{equation}
+\dot Y_t = \alp - \beta Y_t^3 + \gamma Y_t V(\Theta)\,, \enskip 
+Y\left(t_0\right) = Y_0\,, \label{p3.4-s2}
+\end{equation}
+где
+   \begin{align*}
+    \alp&= m_t^{\dot Y} - \vrp_0 k_1^{-1} = m_t^{\dot Y} - 
+    \fr{3+( m_t^{\dot Y})^2/ D_t^{\dot Y}}{3 \lk 1+( m_t^{\dot Y})^2/ D_t^{\dot Y}\rk}\,;
+   \\
+    \beta&= \gamma=k_1^{-1}=  \fr{1}{3 D_t^{\dot Y}\lk 1+( m_t^{\dot Y})^2/ 
+    D_t^{\dot Y}\rk}\,.
+    %\eqno(\hbox{П}.3.5)
+\end{align*}
+
+Система~(\ref{p3.4-s2}) при $\alp\hm=0$, $\beta\hm=\gamma\hm=1$ МОР и~МКМ подробно 
+изучена в~\cite{9-s2, 10-s2}. Обобщая~\cite{9-s2, 10-s2} на случай $\beta\hm= 
+\gamma \hm\ne 1$ с~точностью до вероятностных моментов третьего порядка, 
+придем к~следующим взаимосвязанным уравнениям для $m_t^Y$, $D_t^Y$ и~$c_{3t}$:
+    $$
+    \dot m^Y_t = \alp - \beta m_t^Y \lk \left(m_t^Y\right)^2 +3D_t^Y\rk - c_{3t}\,, 
+    \enskip m^Y \left(t_0\right) = m_0^Y\,; 
+    %\eqno(\hbox{П}.3.6)
+    $$
+    $$
+    \dot D_t^Y = \beta^2 \lk \nu(\Theta) - 6 D_t^Y\rk \lk \left(m_t^Y\right)^2 + 
+    D_t^Y\rk - 6\beta m_t^Y c_{3t}\,, \enskip D^Y \left(t_0\right) = D_0^Y\,;
+    %\eqno(\hbox{П}.3.7)
+    $$
+    $$
+    \dot c_{3t} = 6\beta^2 \lk \nu(\Theta) - 3 D_t^Y\rk m_t^Y D_t^Y + 
+    3 \beta^2 \lk \nu(\Theta) - 3 \left(m_t^Y\right)^2 - 9 D_t^Y\rk c_{3t}\,,\enskip 
+    c_3\left(t_0\right) = c_{30}\,.
+    %\eqno(\hbox{П}.3.8)
+    $$
+
+Аналогично~\cite{9-s2, 10-s2} выписываются уравнения для функций чувствительности 
+на основе уравнения~(\ref{p3.4-s2}).
+
+}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-s2}
+\Au{Пугачёв~В.\,С., Синицын~И.\,Н.}
+Стохастические дифференциальные системы. Анализ и~фильтрация.~--- М.:
+Наука,  1990.  632~с. %(Stochastic differential systems.
+%Analysis and filtering.~--- Chichester, New York, NY, USA: Jonh Wiley, 1987.
+%549~p.)??
+
+\bibitem{2-s2}
+\Au{Пугачёв~В.\,С., Синицын~И.\,Н.}
+Теория стохастических систем.~--- М.: Логос, 2000; 2004. 1000~с.
+%(\Au{Pugachev~V.\,S., Sinitsyn~I.\,N.} Stochastic systems. Theory and  applications.~---
+%Singapore: World Scientific, 2001. 908~p.)
+
+\bibitem{3-s2}
+\Au{Синицын И.\,Н. }
+Канонические представления случайных функций и~их применение 
+в~задачах компьютерной поддержки научных исследований.~--- М.: ТОРУС
+ПРЕСС, 2009. 768~с.
+
+
+\bibitem{4-s2}
+\Au{Синицын И.\,Н.,  Синицын~В.\,И.}
+Лекции по нормальной и~эллипсоидальной аппроксимации распределений 
+в~стохастических системах.~--- М.: ТОРУС ПРЕСС, 2013. 488~с.
+
+\bibitem{5-s2}
+\Au{Синицын И.\,Н. }
+Параметрическое статистическое и~аналитическое моделирование распределений 
+в~нелинейных стохастических системах на многообразиях~/\!\!/ Информатика и~её 
+применения, 2013. Т.~7. Вып.~2. С.~4--16.
+
+\bibitem{6-s2}
+\Au{Синицын И.\,Н., Синицын~В.\,И. }
+Аналитическое моделирование нормальных процессов в~стохастических системах со 
+сложными нелинейностями~/\!\!/ Информатика и~её применения, 2014. Т.~8. Вып.~3. С.~2--4.
+
+\bibitem{7-s2}
+\Au{Синицын~И.\,Н., Синицын~В.\,И., Сергеев~И.\,В., Корепанов~Э.\,Р., 
+Белоусов~В.\,В., Шоргин~В.\,С.}
+Математическое обеспечение аналитического моделирования стохастических систем 
+со сложными нелинейностями~/\!\!/ Системы и~средства информатики, 2014. Т.~24. №\,3. С.~4--29.
+
+\bibitem{8-s2}
+\Au{Синицын И.\,Н.}
+Аналитическое моделирование широкополосных процессов в~стохастических системах, 
+не разрешенных относительно производных~/\!\!/ Информатика и~её применение, 2017. 
+Т.~11. Вып.~1. С.~\pageref{stsin-1}--\pageref{endsin-1}.
+
+\bibitem{9-s2}
+\Au{Синицын И.\,Н.}
+Аналитическое моделирование распределений методом ортогональных разложений в~нелинейных 
+стохастических системах на многообразиях~/\!\!/ Информатика и~её применения, 2015. 
+Т.~9. Вып.~3. С.~17--24.
+
+\bibitem{10-s2}
+\Au{Синицын И.\,Н.}
+Применение ортогональных разложений для аналитического моделирования многомерных 
+распределений в~нелинейных стохастических системах на многообразиях~/\!\!/ 
+Системы и~средства информатики, 2015. Т.~25. №\,3. С.~4--23.
+
+\bibitem{14-s2} %11
+\Au{Евланов А.\,Г., Константинов~В.\,М. }
+Системы со случайными параметрами.~--- М.: Наука, 1976. 568~с.
+
+\bibitem{15-s2} %12
+Справочник по теории автоматического управления~/ Под ред.\ А.\,А.~Красовского.~--- 
+М.: Наука, 1987. 712~с.
+
+
+
+
+
+\bibitem{13-s2}
+ГОСТ 23743-88. Изделия авиационной техники. Номенклатура показателей 
+без\-опас\-ности полета, надежности, контролепригодности, эксплуатационной и~ремонтной 
+технологичности.
+\bibitem{12-s2} %14
+\Au{Болотин В.\,В.}
+Теория надежности машин~/\!\!/ Машиностроение: Энциклопедия.  Т.~IV-3.
+Надежность машин.~--- М.: Машиностроение, 1998.
+
+\bibitem{11-s2} %15
+\Au{Александровская Л.\,Н., Аронов~И.\,З., Круглов~В.\,И. и~др.} 
+Безопасность и~надежность технических систем.~--- 
+М.: Университетская книга, Логос, 2008. 376~с.
+
+
+       \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 12.12.16}}
+
+
+
+
+%\vspace*{9pt}
+
+%\hrule
+
+\newpage
+
+%\vspace*{2pt}
+
+%\hrule
+
+\vspace*{-28pt}
+
+
+
+\def\tit{PARAMETRIC ANALYTICAL MODELING  OF~WIDE~BAND~PROCESSES 
+  IN~STOCHASTIC SYSTEMS  WITH~UNSOLVED~DERIVATIVES}
+
+\def\titkol{Parametric analytical modeling  of~wide band processes 
+  in~stochastic systems} %  with~unsolved derivatives}
+
+
+\def\aut{I.\,N.~Sinitsyn}
+\def\autkol{I.\,N.~Sinitsyn}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+Institute of Informatics Problems, Federal 
+Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow
+119333, Russian Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2017 vol~27 no\,1}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2017   vol~27   no\,1
+\hfill \textbf{\thepage}}} 
+
+\Abste{Methods of parametric analytical modeling (AMM) of stochastic processes 
+in finite dimensional nonlinear stationary  and nonstationary stochastic\linebreak\vspace*{-12pt}}
+
+\Abstend{systems 
+with unsolved derivatives are presented. Such models describe technical systems in 
+control and informatics if one neglects transient processes. For analytical 
+modeling and accuracy and sensitivity analysis, the author developed autocorrelated 
+methods based on normal approximation and statistical linearization (NAM  and SLM), 
+orthogonal expansions (OEM), and other parametric methods for one- and 
+multidimensional densities. Special attention is paid to AMM for discrete systems 
+by OEM based on the Poisson distribution.  
+Typical nonlinearities with unsolved derivatives and statistical linearization 
+coefficients are given. Test examples are discussed. 
+Algorithms are the basis of experimental software tools for safety and reliability 
+analysis of technical systems that are being developed by the authors.}
+
+
+\KWE{accuracy and sensitivity analysis;
+analytical modeling method; normal approximation method (NAM);
+one- and multidimensional densities; orthogonal expansions method (OEM);
+statistical linearization method (SLM); stochastic process (StP);
+stochastic system (StS); stochastic system with unsolved derivatives}
+
+\DOI{10.14357\!/\!08696527170102} 
+
+ \Ack
+ \noindent
+The work was supported by the Russian Foundation for Basic Research
+(project 15-07-02244).
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{\baselineskip=12pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-s2-1}
+\Aue{Pugachev, V.\,S., and I.\,N.~Sinitsyn.} 
+1987. \textit{Stochastic differential systems. Analysis and filtering}. 
+Chichester, New York, NY: Jonh Wiley. 549~p.
+
+\bibitem{2-s2-1}
+\Aue{Pugachev, V.\,S., and I.\,N.~Sinitsyn}. 2001. 
+\textit{Stochastic systems. Theory and applications}. 
+Singapore: World Scientific. 908~p.
+
+\bibitem{3-s2-1}
+\Aue{Sinitsyn,~I.\,N.}   2009.    
+\textit{Kanonicheskie   predstavleniya sluchaynykh  funktsiy i~ ikh primenenie v~zadachakh 
+komp'yuternoy podderzhki nauchnykh issledovaniy} 
+[Canonical expansions of random functions and their application to scientific
+computer-aided support]. Moscow: TORUS PRESS. 768~p.
+
+
+\bibitem{4-s2-1}
+\Aue{Sinitsyn, I.\,N., and V.\,I.~Sinitsyn}. 2013. 
+\textit{Lektsii po normal'noy i~ellipsoidal'noy approksimatsii raspredeleniy 
+v~stokhasticheskikh sistemakh} [Lectures on normal and ellipsoidal approximation 
+of distributions in stochastic systems). Moscow: TORUS PRESS. 488~p.
+
+\bibitem{5-s2-1}
+\Aue{Sinitsyn,~I.\,N.}  2013.  Parametricheskoe statisticheskoe
+i~analiticheskoe   modelirovanie   raspredeleniy   v~nelineynykh stokhasticheskikh 
+sistemakh na mnogoobraziyakh [Parametric statistical and analytical modeling of
+distributions in stochastic systems on manifolds]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 7(2):4--16.
+
+\bibitem{6-s2-1}
+\Aue{Sinitsyn,~I.\,N., and V.\,I.~Sinitsyn}. 2014. Analiticheskoe
+modelirovanie normal'nykh protsessov v~stokhasticheskikh sistemakh so slozhnymi 
+nelineynostyami [Analytical
+modeling of normal processes in stochastic systems with
+complex nonlinearities]. \textit{Informatika i~ee Primeneniya~--- 
+Inform. Appl.} 8(3):2--4.
+
+\bibitem{7-s2-1}
+\Aue{Sinitsyn, I.\,N., V.\,I.~Sinitsyn, I.\,V.~Sergeev, E.\,R.~Korepanov, 
+V.\,V.~Belousov, and V.\,S.~Shorgin}. 2014. Matematicheskoe obespechenie
+analiticheskogo modelirovaniya stokhasticheskikh sistem so slozhnymi 
+nelineynostyami [Mathematical software for analytical modeling of stochastic systems 
+with complex nonlinearities]. \textit{Sistemy i~Sredstva Informatiki~--- 
+Systems and Means of Informatics} 24(3):4--29.
+
+\bibitem{8-s2-1}
+\Aue{Sinitsyn,~I.\,N.}  2017.
+Analiticheskoe modelirovanie shirokopolosnykh protsessov 
+v~stokhasticheskikh sistemakh, nerazreshennykh otnositel'no proizvodnykh 
+[Analytical modeling of wide band processes in stochastic systems with unsolved
+ derivatives]. \textit{Informatika i~ee primenenie~--- Inform. Appl.}  
+ 11(1):\pageref{stsin-1}--\pageref{endsin-1}.
+
+\bibitem{9-s2-1}
+\Aue{Sinitsyn, I.\,N.}  2015.
+Analiticheskoe modelirovanie raspredeleniy metodom ortogonal'nykh razlozheniy
+ v~nelineynykh stokhasticheskikh sistemakh na mnogoobraziyakh [Analytical modeling 
+ of destributions in nonlinear stochastic systems on manifolds by method of 
+ orthogonal expansions]. \textit{Informatika i~ee primenenie~--- Inform. Appl.}  
+ 9(3): 17--24.
+
+\bibitem{10-s2-1}
+\Aue{Sinitsyn, I.\,N.} 2015.
+Primenenie ortogonal'nykh razlozheniy dlya analiticheskogo mo\-de\-li\-ro\-va\-niya 
+mnogomernykh raspredeleniy v nelineynykh stokhasticheskikh sistemakh na mnogoobraziyakh 
+[Applications of orthogonal expansions for analytical modeling of multidimensional 
+distributions in stochastic systems on manifold]. 
+\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics}
+ 25(3):4--23.
+ 
+ \bibitem{14-s2-1} %11
+\Aue{Evlanov, A.\,G., and V.\,M.~Konstantinov}. 1976
+\textit{Sistemy so slozhnymi parametrami} [Systems with random parameters]. 
+Moscow: Nauka. 568~p.
+
+\bibitem{15-s2-1} %12
+Krasovskiy, A.\,A., ed. 1987.
+\textit{Spravochnik po teorii avtomaticheskogo upravleniya} [Handbook 
+for automatic control].    Moscow: Nauka. 712~p.
+
+
+
+
+
+
+
+\bibitem{13-s2-1}
+GOST 23743-88. Izdeliya aviatsionnoy tekhniki. Nomenklatura pokazateley 
+bezopasnosti poleta, nadezhnosti, kontroleprigodnosti, ekspluatatsionnoy 
+i~remontnoy tekhnologichnosti [Aircraft products. 
+Nomenclature of flight safety indicators, reliability, controllability,
+operational and repair processability].
+
+\bibitem{12-s2-1} %14
+\Aue{Bolotin, V.\,V.}  1998.
+Teoriya nadezhnosti mashin  [Theory of machine realiability]. 
+\textit{Mashinostroenie: Entsiklopetsiya.
+Nadezhnost' mashin} [Mechanical engineering: Encyclopedia. Reliability
+of machines]. Moscow:  Mashinostroenie. Vol.~IV-3. 
+
+\bibitem{11-s2-1} %15
+\Aue{Aleksandrovskaya, L.\,N., I.\,Z.~Aronov, 
+V.\,I.~Kruglov, \textit{et al.}}  2008.
+\textit{Bezopasnost' i~nadezhnost' tekhnicheskikh sistem} [Security 
+and reliability of technical systems].  
+Moscow:  Universitetskaya kniga, Logos.  376~p.
+
+
+
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received December 12, 2016}}
+
+
+
+
+\Contrl
+
+\noindent
+\textbf{Sinitsyn Igor N.} (b.\ 1940)~--- 
+Doctor of Science in technology, professor, Honored scientist of RF, 
+principal scientist, Institute of Informatics Problems, Federal Research 
+Center ``Computer Science and Control'' 
+of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, 
+Russian Federation; \mbox{sinitsin@dol.ru}
+
+
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

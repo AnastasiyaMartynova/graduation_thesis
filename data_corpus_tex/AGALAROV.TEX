@@ -1,0 +1,962 @@
+\def\stat{agalarov}
+
+\def\tit{МАКСИМИЗАЦИЯ ДОХОДА СИСТЕМЫ МАССОВОГО ОБСЛУЖИВАНИЯ ТИПА 
+{\boldmath{$G/M/1$}} НА~МНОЖЕСТВЕ 
+ПОРОГОВЫХ СТРАТЕГИЙ С~ДВУМЯ~ТОЧКАМИ ПЕРЕКЛЮЧЕНИЯ$^*$}
+
+\def\titkol{Максимизация дохода СМО %системы массового обслуживания
+типа $G/M/1$ на множестве 
+пороговых стратегий} % с~двумя точками переключения}
+
+
+\def\aut{Я.\,М.~Агаларов$^1$, М.\,Я.~Агаларов$^2$, В.\,С.~Шоргин$^3$}
+
+\def\autkol{Я.\,М.~Агаларов, М.\,Я.~Агаларов, В.\,С.~Шоргин}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Агаларов Я.\,М.}
+\index{Агаларов М.\,Я.}
+\index{Шоргин В.\,С.}
+\index{Agalarov Ya.\,M.}
+\index{Agalarov M.\,Ya.}
+\index{Shorgin V.\,S.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проект 15-07-03406).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Федерального исследовательского
+  центра <<Информатика и~управление>> Российской академии наук, 
+\mbox{agglar@yandex.ru}}
+\footnotetext[2]{ПАО Промсвязьбанк, \mbox{murad-agalarov@yandex.ru}}
+\footnotetext[3]{Институт проблем информатики Федерального исследовательского
+  центра <<Информатика и~управление>> Российской академии наук, 
+\mbox{vshorgin@ipiran.ru}}
+
+
+\label{st\stat}
+
+                  \thispagestyle{headings}
+ 
+  \vspace*{-6pt}
+    
+  \Abst{Рассматривается задача максимизации среднего дохода сис\-те\-мы
+  массового обслуживания (СМО) типа $G/M/1$ 
+в~единицу времени на множестве стационарных пороговых стратегий ограничения доступа 
+с~двумя <<точками переключения>>. Целевая функция зависит от стоимости времени 
+задержки заявки, штрафа за отклонение заявки, платы за обслуживание заявки, стоимости 
+простоя прибора обслуживания, стоимости технического обслуживания системы. 
+Сформулированы условия существования конечного решения задачи на подмножестве 
+пороговых стратегий при фиксированном значении расстояния между верхним и~нижним 
+порогами и~получены необходимые и~достаточные условия оптимальности пороговой 
+стратегии на этом подмножестве. Разработан метод поиска оптимальной стратегии 
+и~алгоритм расчета параметров оптимальной стратегии и~соответствующего значения 
+целевой функции.}
+   
+  \KW{система массового обслуживания; пороговая стратегия; оптимизация}
+  
+\DOI{10.14357\!/\!08696527160407} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+      \vspace*{-18pt}
+  
+  \section{Введение}
+  
+  В настоящее время опубликовано множество статьей, в~которых с~помощью 
+математических моделей проведена оценка эффективности различных 
+модификаций пороговых стратегий, предназначенных для предотвращения 
+перегрузок каналов связи в~телекоммуникационных системах передачи пакетов. 
+Наиболее упоминаемыми в~этих работах являются модификации  
+Tail-Drop (<<отбрасывания хвоста>>)~[1--3], RED (Random Early 
+Detection)~\cite{1-ag, 4-ag}, 
+FRED (Flow Random Early Drop)~[5], WRED (Weighted RED)~[6], Blue~[6], 
+SFB (Stochastic Fair Blue)~[7], CBT (Class-Based Threshold)~[8], 
+CHOKe (CHOose and Keep for responsible flows, CHOose and Kill
+for unresponsible flows)~[9] и~др. Суть пороговых стра-\linebreak
+\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+тегий заключается 
+в~том, что для параметра текущей загруженности системы назначается одно 
+или несколько пороговых значений (контрольных точек переключения) и,~когда 
+загруженность достигает ка\-ко\-го-ли\-бо порогового значения, в~системе 
+меняются определенным образом правила сброса поступающих пакетов 
+с~целью предотвращения перегрузки системы и~обеспечения выполнения 
+требований к~качеству обслуживания (QoS~--- quality of service). Использование нескольких 
+пороговых значений вызвано необходимостью учета нескольких уровней 
+требований к~качеству обслуживания различных типов заявок и~попыткой 
+выхода из состояния перегрузки с~минимальными потерями качества 
+обслуживания. Например, стратегия Tail-Drop  
+имеет один порог и~отбрасывание пакетов происходит без учета их типа по 
+достижении длинной очереди этого порога; один из ее основных недостатков~--- 
+вызывает эффект глобальной синхронизации, что приводит к~неэффективному 
+использованию полосы пропускания и~увеличению задержек пакетов. 
+В~стратегии RED задается два порога~--- нижний 
+и~верхний; если средняя длина очереди (вычисляемая по заданной формуле) 
+в~текущий момент меньше нижнего порога, то поступивший пакет 
+принимается в~буфер; если средняя длина очереди в~текущий момент равна 
+верхнему порогу, то поступивший пакет отбрасывается, иначе пакет 
+принимается в~буфер с~заданной вероятностью (вычисляемой по заданной 
+формуле). Хотя RED значительно снижает эффект глобальной синхронизации, 
+она имеет несколько недостатков: полагается только на длину общей очереди, 
+не учитывает наличие разных уровней QoS. Необходимость обеспечения 
+нескольких уровней качества обслуживания привела к~разработке пороговых 
+стратегий с~более сложной структурой, таких как FRED, WRED, Blue, SFB и~др. 
+  
+  Множество исследований показывает, что простые стратегии (например, 
+RED) имеют ограниченную применимость при распределенном 
+взаимодействии коммутационных узлов (маршрутизаторов), в~то же время 
+сложные стратегии эффективны только при аккуратном выборе параметров 
+стратегии, что является задачей немалой сложности. Очевидно, эффект от 
+использования пороговой стратегии зависит от предъявляемых требований 
+к~качеству обслуживания, параметров стратегии (значения порогов, формулы 
+расчета вероятности отбрасывания пакетов, формулы расчета средней длины 
+очереди и~т.\,д.), внешних параметров (входного потока пакетов, 
+производительности каналов связи и~т.\,д.). Задача оптимизации пороговой 
+стратегии труднорешаемая, и~лишь для самых простых моделей каналов связи 
+предложены приемлемые для практических расчетов аналитические или 
+алгоритмические решения. Некоторые результаты по данной теме, полученные 
+отечественными исследователями, опубликованы в~работах~[10--14].
+  
+  Ниже проводится исследование задачи оптимизации управления очередью 
+канала связи на множестве пороговых стратегий с~двумя точками 
+переключения, представленной в~виде задачи максимизации дохода СМО типа 
+$G/M/1$ с~управляемой очередью, и~приводятся метод и~алгоритм оптимизации 
+пороговых значений.
+  
+  \section{Постановка задачи}
+  
+ % \vspace*{-2pt}
+  
+  Рассматривается СМО типа $G/M/1$ с~накопителем неограниченной емкости 
+и одним прибором обслуживания, на которую поступает рекуррентный поток 
+заявок с~функцией распределения вероятностей~$A(t)$. Время обслуживания 
+заявки прибором не зависит от приоритета и~распределено по 
+экспоненциальному закону с~параметром $\mu\hm>0$. Доступ в~накопитель 
+системы осуществляется с~помощью пороговой стратегии (порогового 
+алгоритма). Процесс приема заявок согласно пороговой стратегии доступа 
+происходит следующим образом: с~момента начала работы поступающие 
+заявки принимаются в~накопитель системы без ограничения доступа 
+пока $k\hm\leq h_1\hm-1$ ($k$~--- чис\-ло заявок в~сис\-те\-ме), 
+а~с~момента, когда $k\hm=h_1$, пока $k\hm\leq h_2\hm-
+1$, поступившая заявка принимается в~накопитель с~вероятностью~$\alpha$ 
+и~отклоняется (теряется) с~вероятностью $(1\hm-\alpha)$. 
+При $k\hm=h_2$ заявки в~систему не принимаются (теряются). 
+В~дальнейшем пару $(h_1,h_2)$ обозначим через~$H$ 
+и~назовем пороговой стратегией; множество таких стратегий обозначим 
+через~$\Omega$.
+  
+  Если заявка допущена в~накопитель, она занимает любое свободное место 
+в~накопителе и~обслуживается на приборе в~порядке поступления. Заявка 
+покидает систему только при завершении обслуживания, освободив 
+одновременно прибор и~накопитель, а на освободившийся прибор поступает 
+очередная заявка из накопителя (если такая есть). 
+  
+  Система получает доход, который определяется следу\-ющими 
+составля\-ющими:
+  \begin{description}
+\item[\,]  $C_0\geq0$~--- плата, получаемая системой, если поступившая заявка будет 
+обслужена системой (принята в~накопитель);
+\item[\,]  
+    $C_1\geq 0$~--- величина штрафа, который платит система, если 
+поступившая заявка отклонена;
+  \item[\,]
+  $C_2\geq 0$~---  стоимость единицы времени ожидания заявки в~системе;
+  \item[\,]
+  $C_3\geq 0$~---  стоимость единицы времени простоя прибора;
+  \item[\,]
+  $C_4\geq 0$~---  стоимость единицы времени технического обслуживания 
+системы.
+\end{description}
+  
+  Всюду ниже под доходом системы будем понимать суммарный доход 
+с~учетом всех вышеуказанных составляющих.
+  
+  Отметим, что процесс обслуживания заявок в~данной системе описывается 
+цепью Mаркова (см., например,~[15, 16]), где переходы цепи определяются 
+моментами поступления заявок, а состояние цепи~--- числом заявок, 
+находящихся в~системе в~момент поступления. Отметим также, что при 
+заданной стратегии~$H$ указанная цепь Маркова имеет один положительный 
+возвратный класс состояний $\{0,h_2\}$.
+
+  %\pagebreak
+  
+  
+  Введем следующие обозначения:
+  \begin{description}
+  \item[\,]
+  $\overline{v}$~--- первый момент функции распределения~$A(t)$, $0\hm< 
+\overline{v}\hm<\infty$;
+\item[\,]
+  $Q^H$~--- предельное среднее значение дохода системы в~единицу времени;
+  \item[\,]
+  $\{\pi_i^H, \ 0\leq i\leq h_2\}$~--- стационарное распределение вероятностей 
+цепи при стратегии~$H$ ($\pi_i^H$~--- стационарная вероятность того, что 
+цепь находится в~состоянии~$i$);
+  
+  \item[\,]
+  $g^H$~--- предельное среднее значение суммарного дохода системы, 
+усредненного по числу поступивших заявок;
+  \item[\,]
+  $q_i^H$~---  средний доход, получаемый системой в~состоянии~$i$ при 
+стратегии~$H$.
+  \end{description}
+  
+  Предельное среднее значение суммарного дохода системы, усредненного по 
+числу поступивших заявок при стратегии~$H$, равно пределу:
+  $$
+  g^H =\lim\limits_{T\to\infty}\sum\limits_{n=1}^{N_{\mathrm{вх}}(T)} 
+\fr{d_n^H}{N_{\mathrm{вх}}(T)}\,,
+  $$
+  где $d_n^H$~--- доход, полученный системой при стратегии~$H$ за $n$-ю 
+поступившую заявку; $ N_{\mathrm{вх}}(T)$~--- число поступивших за отрезок 
+времени $[0,T]$ заявок.
+  
+  Предельное среднее значение дохода системы в~единицу времени при 
+стратегии~$H$ равно пределу:
+  \begin{multline*}
+  Q^H =\lim\limits_{T\to\infty} \sum\limits_{n=1}^{N_{\mathrm{вх}}(T)} 
+\fr{d_n^H}{T} = \lim\limits_{T\to\infty} \fr{ N_{\mathrm{вх}}(T)}{T} 
+\sum\limits_{n=1}^{ N_{\mathrm{вх}}(T)} \fr{d_n^H}{ N_{\mathrm{вх}}(T)}= {}\\
+{}=
+  \lim\limits_{T\to\infty} \fr{ N_{\mathrm{вх}}(T)}{T} \lim\limits_{T\to\infty} 
+\sum\limits_{n=1}^{ N_{\mathrm{вх}}(T)} \fr{d_n^H}{ N_{\mathrm{вх}}(T)} = 
+\fr{g^H}{\overline{v}}\,.
+%  \label{e1-ag}
+  \end{multline*}
+  
+   Из определения вложенной цепи Маркова следует:
+  \begin{equation*}
+  g^H= \sum\limits_{i=0}^{h_2} \pi_i^H q_i^H\,.
+%  \label{e2-ag}
+  \end{equation*}
+  
+  Ставится задача максимизации функции~$Q^H$ на множестве 
+стратегий~$\Omega$, которая эквивалентна задаче: найти оптимальную 
+стратегию $H^*\hm\in \Omega$ такую, что
+  \begin{equation}
+  \max\limits_{H\in \Omega} g^H =g^{H^*}\,.
+  \label{e3-ag}
+  \end{equation}
+  
+  В дальнейшем для упрощения задачи рассматриваем только стратегии вида 
+$H\hm= (h_1,h_2)\hm\in \Omega$, где $h_2\hm= h_1\hm+a$, $h_1\hm\geq 1$, 
+$a\hm=const$, и~множество пороговых стратегий~$H$, удовлетворяющих этому 
+условию, обозначим через $\Omega^a\subseteq \Omega$. Как видно, стратегия 
+$H\hm\in \Omega^a$ однозначно задается одним из порогов~$h_1$ или~$h_2$. 
+Пусть $H_1\hm= (h^\prime_1,h_1^\prime+a)$, $H_2\hm= 
+(h_1^{\prime\prime},h_1^{\prime\prime}+a)$, $H\hm= (h_1,h_1+a)$, $k$~--- 
+целое положительное число. Введем следующие действия над значениями 
+порогов: $H\hm=k$, если $H\hm= (k,k+a)$; $H_1\hm>H_2$, если 
+$h_1^\prime\hm>h_1^{\prime\prime}$; $H_1\hm=H_2$, если 
+$h_1^\prime\hm=h_1^{\prime\prime}$; $H\hm+k\hm= (h_1\hm+k, 
+h_1\hm+k\hm+a)$, $H_1\hm+H_2\hm= (h_1^\prime \hm+ h_1^{\prime\prime}, 
+h_1^\prime\hm+h_1^{\prime\prime}\hm+a)$. 
+  
+  \section{Метод решения}
+  
+  Выпишем выражения для стационарных вероятностей~$\pi_i^H$, $H\hm= 
+(h_1,h_2)\hm\in \Omega^H$. Для вероятностей переходов~$p_{i,j}^H$ 
+вложенной цепи Маркова справедливы формулы~[15, 16]:
+  \begin{equation}
+  p_{i,j}^H= \begin{cases}
+  r_{i+1-j}, & 0\leq i\leq h_1-1,\ 1\leq j\leq i+1\,;\\[6pt]
+  \alpha r_{i+1-j} +(1-\alpha)r_{i-j}, & h_1\leq i\leq h_2-1,\ 1\leq j\leq i+1\,;\\[6pt]
+  r_{h_2-j}, & i=h_2,\ 1\leq j\leq h_2\,;\\
+  1-\displaystyle\sum\limits_{m=0}^i r_m, & i\leq h_1-1,\ j=0\,;\\
+ \displaystyle 1-\alpha \sum\limits_{m=0}^i r_m- (1-\alpha)\sum\limits_{m=0}^{i-1} r_m, & 
+h_1\leq i\leq h_2-1,\ j=0\,;\\
+  \displaystyle1-\sum\limits_{m=0}^{h_2-1} r_m, & i=h_2,\ j=0\,;\\
+  0 & \mbox{в\ остальных\ случаях},
+  \end{cases}
+  \label{e4-ag}
+  \end{equation}
+  где
+  $$
+  r_m= \int\limits_0^\infty \fr{(\mu t)^m}{m!}\,e^{-\mu t}\,dA(t)\enskip 
+\mbox{при}\enskip m\geq 0\,.
+  $$
+    Для рассматриваемой цепи Маркова при стратегии~$H$ стационарное 
+распределение вероятностей является единственным решением системы 
+уравнений~[15, 16]:
+  \begin{equation}
+  \left.
+  \begin{array}{rl}
+  \pi_0^H &= \displaystyle \sum\limits_{i=0}^{h_2-1} \pi_i^H p_{i,0}^H 
++\pi^H_{h_2} p^H_{h_2,0}\,;\\[12pt]
+  \pi_j^H &= \displaystyle \sum\limits_{i=j-1}^{h_2-1} \pi_i^H p_{i,j}^H 
++\pi^H_{h_2} p^H_{h_2,j}\,,\enskip 1\leq j\leq h_2-1\,;\\[18pt]
+  \pi^H_{h_2} &= \pi^H_{h_2-1} p^H_{h_2-1,h_2}+\pi^H_{h_2} 
+p^H_{h_2,h_2}\,;\\[6pt]
+  \displaystyle \sum\limits_{i=0}^{h_2} \pi_i^H&= 1\,,\enskip \pi_i^H>0,\enskip 
+0\leq i\leq h_2\,.
+  \end{array}
+  \right\}
+  \label{e5-ag}
+  \end{equation}
+  Отсюда, подставив~(\ref{e4-ag}), получим:
+  
+  \noindent
+  \begin{equation}
+  \hspace*{-5mm}\left.
+  \begin{array}{rl}
+  \pi_0^H &= \displaystyle \sum\limits_{i=0}^{h_1-1} \pi_i^H 
+\sum\limits_{m=i+1}^\infty r_m +\sum\limits_{i=h_1}^{h_2-1} \pi_i^H \left[ \alpha 
+\sum\limits_{m=i+1}^\infty r_m +(1-\alpha) \sum\limits_{m=i}^\infty r_m\right] 
++{}\\[6pt]
+&\displaystyle\hspace*{75mm}{}+\pi^H_{h_2}\sum\limits_{m=h_2}^\infty r_m\,;\\[1pt]
+  \pi_j^H &=
+  \begin{cases}
+  \displaystyle \sum\limits_{i=j-1}^{h_1-1} \pi_i^H r_{i+1-j} 
++\sum\limits_{i=h_1}^{h_2-1} \pi_i^H \left[ \alpha r_{i+1-j} +(1-\alpha) r_{i-
+j}\right] +{}\\
+\hspace*{50mm}{}+\pi^H_{h_2} r_{h_2-j}\,,\quad
+1\leq j\leq h_1\,;\\
+\displaystyle\alpha  \sum\limits_{i=j-1}^{h_2-1} \pi_i^H r_{i+1-j} 
++(1-\alpha) \sum\limits_{i=j}^{h_2-1} \pi_i^H r_{i-j} +{}\\
+\hspace*{48mm}{}+\pi^H_{h_2} r_{h_2-
+j}\,,\quad  h_1<j\leq h_2-1\,;\end{cases}\\[1pt]
+  \pi^H_{h_2} &= \alpha \pi^H_{h_2-1} r_0 +\pi^H_{h_2} r_0\,; %\\[6pt]
+  \qquad
+  \displaystyle \sum\limits_{i=0}^{h_2} \pi_i^H = 1\,,\enskip \pi_i^H>0\,,\enskip 
+0\leq i\leq h_2\,.
+  \end{array}
+  \right\}\!\!
+  \label{e6-ag}
+  \end{equation}
+  
+  Всюду по умолчанию полагаем равными нулю величины с~отрицательными 
+индексами и~суммы с~нижней границей суммирования больше, чем верхняя. 
+Исключив в~каждом уравнении в~(\ref{e6-ag}) (кроме первого) 
+переменную~$\pi_k^H$ с~наименьшим значением индекса~$k$, 
+уравнения~(\ref{e5-ag}) приводим к~виду:
+%  \begin{multline*}
+\begin{align*}
+  \hspace*{-5pt}\pi^H_{j-1} &= 
+  \begin{cases}
+  \fr{\pi^H_j(1-r_1)-\sum\nolimits_{i=j+1}^{h_1-1} 
+ \pi_i^H r_{i+1-j}}{r_0}-{}\\[-3pt]
+{} - \fr{\sum\nolimits_{i=h_1}^{h_2-1} \pi_i^H \left[ \alpha 
+r_{i+1-j}+(1-\alpha) r_{i-j}\right] -\pi^H_{h_2} r_{h_2-j}} {r_0}\,,\enskip 
+  1\leq j\leq h_1-1\,;\hspace*{-12pt}\\
+  \fr{\pi_j^H [1-\alpha r_1-(1-\alpha)r_0]}{\alpha r_0} - {}\\[-3pt]
+\!\!\!{}-\fr{\sum\nolimits_{i=j+1}^{h_2-1} \pi_i^H [ \alpha r_{i+1-j}+(1-\alpha)r_{i-j}] -
+\pi^H_{h_2} r_{h_2-j}} {\alpha r_0},\ \ 
+  h_1<j\leq h_2-1;\hspace*{-11pt}
+  \end{cases}\\
+    \hspace*{-5pt}\pi^H_{h_1-1} &= \fr{\pi^H_{h_1} [1-\alpha r_1 -(1-\alpha) r_0]}{r_0} -{}\\[-3pt]
+   \hspace*{-5pt} &{}- 
+\fr{\sum\nolimits_{i=h_1+1}^{h_2-1} \pi_i^H [ \alpha r_{i+1-h_1} +(1-\alpha) 
+r_{i-h_1}] -\pi^H_{h_2} r_{h_2-h_1}}{r_0}\,;\\
+  \pi^H_{h_2-1} &= \fr{1-r_0}{\alpha r_0}\,\pi^H_{h_2}\,.
+\end{align*}
+    Отсюда и~из последнего уравнения системы~(\ref{e6-ag}), подставив 
+в~уравнения $\pi_j^H\hm= R_j^H \pi^H_{h_2}$ и~исключив последовательно 
+в~порядке убывания индекса~$j$ из соответствующих уравнений 
+переменную~$R_j^H$, получим рекуррентные формулы для вычисления 
+стационарных вероятностей состояний~$\pi_j^H$, $0\hm\leq j\hm\leq h_2$:
+  \begin{align*}
+  R^H_{h_2} &= 1\,;\quad R^H_{h_2-1} = \fr{1-r_0}{\alpha r_0}\,;\\
+  R^H_{j-1} &= \displaystyle \fr{R_j^H [1-\alpha r_1 -(1-\alpha)r_0]}{\alpha r_0}- {}\\[6pt] 
+&\hspace*{-11mm}{}-\displaystyle 
+\fr{\sum\nolimits_{i=j+1}^{h_2-1} R_i^H [\alpha r_{i+1-j} +(1-
+\alpha)r_{i-j}] - R^H_{h_2} r_{h_2-j}}{\alpha r_0}\,,\ h_1+1\leq j\leq h_2-
+1\,;\\
+  R^H_{h_1-1} &=\displaystyle \fr{R^H_{h_1} [1-\alpha r_1 -(1-\alpha) 
+r_0]}{r_0} - {}\\
+&\hspace*{10mm}{}-\displaystyle\fr{\sum\nolimits_{i=h_1+1}^{h_2-1} R_i^H [\alpha r_{i+1-h_1} +(-
+\alpha) r_{i-h_1}] - R^H_{h_2} r_{h_2-h_1}} {r_0}\,;\\
+  R^H_{j-1} &= \displaystyle \fr{R_j^H (1-r_1) -
+  \sum\nolimits_{i=j+1}^{h_1-1} 
+R^H_i r_{i+1-j}}{r_0} -{}\\[6pt]
+&\hspace*{-6mm}{}- \fr{\sum\nolimits_{i=h_1}^{h_2-1} R_i^H [\alpha r_{i+1-
+j} +(1-\alpha) r_{i-j}] -R^H_{h_2} r_{h_2-j}} {r_0} \,,\  1\leq j\leq h_1-1\,.
+  %  \label{e7-ag}
+  \end{align*}
+  
+  Для стационарных вероятностей получаем формулы:
+  \begin{equation*}
+  \pi_j^H = \fr{R_j^H}{\sum\nolimits_{i=0}^{h_2} R_i^H}\,,\enskip 0\leq j\leq 
+h_2\,.
+%  \label{e8-ag}
+  \end{equation*}
+  
+  Приведем несколько вспомогательных лемм (доказательства лемм даны 
+в~приложении к~статье~[17]). Пусть $H\hm= (h_1,h_2)$.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Лемма~1.}\ \textit{Среднее значение дохода, получаемого системой 
+при стратегии~$H$ в~состоянии~$i$, равно}:
+  \begin{equation*}
+  q_i^H = \begin{cases}
+  d_i+C_0\,, & 0\leq i\leq h_1-1\,;\\
+  \alpha(d_i+C_0)+(1-\alpha) (d_{i-1}-C_1)\,, & h_1\leq i\leq h_2-1\,;\\
+  d_{h_2-1} -C_1\,, & i=h_2\,,
+  \end{cases}
+%  \label{e9-ag}
+  \end{equation*}
+  \textit{где}
+  \begin{multline*}
+  d_i=\fr{C_2}{\mu}\left[ \fr{1}{2}\sum\limits_{m=1}^{i+1} (m-1)mr_m -i 
+\sum\limits_{m=1}^{i+1} mr_m -\fr{1}{2}\,i(i+1) \sum\limits_{m=i+2}^\infty 
+r_m\right]-{}\\
+  {}- \fr{C_3}{\mu}\sum\limits_{m=i+2}^\infty (m-i-1) r_m -
+C_4\overline{v}\,,\quad 0\leq i\leq h_2-1\,.
+  \end{multline*}
+  
+  \noindent
+  \textbf{Лемма~2.}\ \textit{Справедливы следующие равенства}:
+  \begin{align*}
+  d_{k+1}&= d_k +\fr{C_3}{\mu}\sum\limits^\infty_{m=k+2} r_m-
+\fr{C_2}{\mu}\sum\limits_{m=1}^{k+1} mr_m-\fr{C_2(k+1)}{\mu} 
+\sum\limits_{m=k+2}^\infty r_m\,,\quad k\geq 0\,;
+  %\label{e10-ag}
+\\
+  \pi_{i+1}^{H+1} &= \left( 1-\pi_0^{H+1} \right) \pi_i^H\,,\quad 0\leq i\leq h_2\,.
+  \notag
+%  \label{e11-ag}
+  \end{align*}
+  Введем обозначения $\overline{W}(H)$, $B(H)$ и~$G(H)$:
+  \begin{multline}
+  \overline{W}(H) =\overline{v} -\fr{1}{\mu}\left\{ \sum\limits_{i=0}^{h_1-1} 
+\pi_i^H \sum\limits_{m=i+2}^\infty (m-i-1)r_m+{}\right.\\
+{}+ \sum\limits_{i=h_1}^{h_2-1} 
+\pi_i^H \left[ \alpha \sum\limits_{m=i+2}^\infty (m-i-1)r_m +(1-\alpha) 
+\sum\limits_{m=i+1}^\infty (m-i)r_m\right] + {}\\
+{}+\pi^H_{h_2} 
+\sum\limits_{m=h_2+1}^\infty 
+\left(m-h_2\right)r_m
+\left. \vphantom{\sum\limits_{i=0}^{h_1-1}} 
+\right\}\,;
+  \label{e12-ag}
+  \end{multline}
+  
+  \vspace*{-12pt}
+  
+  \noindent
+  \begin{multline*}
+  B(H) = \sum\limits_{i=0}^{h_1-1} \pi_i^H \sum\limits_{m=i+2}^\infty r_m 
++\sum\limits_{i=h_1}^{h_2-1} \pi_i^H \left[ \alpha \sum\limits_{m=i+2}^\infty r_m 
++(1-\alpha) \sum\limits_{m=i+1}^\infty r_m\right]+{}\\
+{}+ \pi^H_{h_2} 
+\sum\limits_{m=h_2+1}^\infty r_m\,;
+  \end{multline*}
+  \begin{equation}
+  G(H) =\fr{C_3 r_0}{\mu} -C_2r_0\fr{\overline{W}(H)}{B(H)}+q_0^{H+1}\,.
+  \label{e13-ag}
+  \end{equation}
+  
+  
+  Обратим внимание, что величина $(\overline{v}\hm- \overline{W}(H))$ 
+в~(\ref{e12-ag}) является средним временем простоя прибора (см.\ п.~4 
+в~\cite{17-ag}).
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Лемма~3.}\ \textit{Справедливо соотношение}:
+  \begin{equation}
+  g^H-g^{H+1} =\pi_0^{H+1} \left[ g^H-G(H)\right]\,.
+  \label{e14-ag}
+  \end{equation}
+  
+  \noindent
+  \textbf{Лемма~4.}\ \textit{Функция $G(H)$ возрастает по~$H$.}
+  
+  \smallskip
+  
+  Пусть $H^*$~---  решение задачи~(\ref{e3-ag}) (если оно существует). 
+Докажем следующую теорему.
+  
+  \smallskip
+  
+  \noindent
+  \textbf{Теорема.}\ \textit{Справедливы следующие утверждения}: 
+  \begin{enumerate}[(1)]
+  \item \textit{если $\mathop{\mathrm{inf}}\limits_{H>0} G(H) \hm< 
+\mathop{\mathrm{sup}}\limits_{H>0} g^H$, то при любых значениях параметров 
+$C_i\hm\geq 0$, $i\hm= 0,1,3,4$, $C_2\hm>0$ существует стратегия 
+$H^*\hm<\infty$; иначе, если $g^1\hm< G(1)$, то} $H^*\hm=\infty$; 
+  \item \textit{если $g^1\geq G(1)$, то} $H^*=1$; 
+  \item \textit{если $C_2=0$ и~$g^1<G(1)$, то} $H^*=\infty$; 
+  \item \textit{условия $g^{H-1}< g^H$ и~$g^{H+1} \hm\geq g^H$ являются 
+необходимыми и~достаточными для} $H\hm=H^*$, $1\hm< H^*\hm< \infty$.
+  \end{enumerate}
+  
+  \noindent
+  Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ 
+  Рассмотрим поведение функции $g^H$ при последовательном увеличении 
+значения $H\hm>0$. Как следует из~(\ref{e14-ag}), неравенства $g^H\hm\leq 
+g^{H+1}$ и~$g^H\hm\leq G(H)$ эквивалентны. Отсюда следует, что если при 
+значении $H\hm>0$ выполняется неравенство $g^H\hm< G(H)$, то при 
+значении $H\hm+1$ выполняется неравенство $g^{H+1}\hm>g^H$, и~наоборот: 
+если при значении $H\hm>0$ выполняется неравенство $g^H\hm> G(H)$, то при 
+значении $H\hm+1$ выполняется неравенство $g^{H+1}\hm\leq g^H$, а при 
+$g^H\hm= G(H)$ выполняется равенство $g^{H+1}\hm= g^H$. 
+  
+  Рассмотрим сначала случай $C_2>0$. Пусть $H_1\hm= (h_1^\prime, 
+h_2^\prime)$~--- произвольная стратегия, $1\hm\leq H_1\hm<\infty$. Рассмотрим 
+два альтернативных случая: 
+  \begin{enumerate}[(1)]
+  \item $g^{H_1}\geq G(H_1)$\,;
+  \item $g^{H_1}<G(H_1)$\,.
+  \end{enumerate}
+  
+  Пусть $g^{H_1}\geq G(H_1)$. Тогда если  $g^{H_1}\hm> G(H_1)$, то 
+согласно~(\ref{e14-ag}) (так как $0\hm< \pi_0^{H+1}\hm<1$) выполняется 
+$g^{H_1+1}\hm> G(H_1)$, а так как $G(H)$ не возрастает по $H\hm>0$ 
+(согласно лемме~4), выполняется $g^{H_1+1}\hm> G(H_1+1)$. Следовательно, 
+$g^H\hm> G(H)$, $H\hm\geq H_1$ и,~согласно рассуждениям в~начале 
+доказательства, последовательность $\{ g^H:\ H\hm= H_1,  H_1+1,\ldots\}$ 
+является убывающей, т.\,е.\ $g^H\hm< g^{H_1}$, $H\hm> H_1$, откуда следует, 
+что существует $H^*\hm= (h_1^*,h_2^*)\hm\leq H_1$. Если $g^{H_1}\hm= 
+G(H_1)$, то из~(\ref{e14-ag}) и~леммы~4 следует либо $g^H\hm=G(H)\hm= 
+g^{H_1}$, $H\hm>H_1$, либо существует $\infty \hm> H_2\hm= 
+(h_1^{\prime\prime},h_2^{\prime\prime})\hm> H_1$ такое, что $g^H\hm= G(H) 
+\hm= g^{H_1}$, $H_1\hm< H\hm\leq H_2$, $g^{H_2}\hm> G(H_2)$. Тогда 
+в~первом случае $H^*\hm\leq H_1$, во втором случае, как уже доказано, 
+существует $H^*\hm\leq H_2$ и,~так как $g^H\hm=  g^{H_1}$, $H_1\hm\leq 
+H\hm\leq H_2$, то $H^*\hm\leq H_1$, т.\,е.\ при $g^{H_1}\hm\geq G(H_1)$ 
+утверждение~1 в~формулировке теоремы справедливо. При этом если 
+$H_1\hm=1$, то $H^*\hm=1$ т.\,е.\ выполняется утверждение~2 
+в~формулировке теоремы. Заметим также, что при $H^*\hm>1$ выполняется 
+утверждение~4 теоремы.
+  
+  Пусть $g^{H_1}< G(H_1)$. Тогда согласно~(\ref{e14-ag}) из $g^{H_1}\hm< 
+G(H_1)$ следует $g^{H_1+1}\hm> g^{H_1}$ и~$g^{H_1+1}\hm< G(H_1)$ (так 
+как $0\hm< \pi_0^{k+1}\hm<1$). Так как $G(H)$ не возрастает по $H\hm>0$, то 
+либо $g^{H_1+1}\hm< G(H_1+1)$, либо $g^{H_1+1} \hm\geq G(H_1+1)$. 
+Следовательно, если $\mathop{\mathrm{inf}}\limits_{H>0} G(H) \hm < 
+\mathop{\mathrm{sup}}\limits_{H>0} g^H$, то существует $\infty\hm> H_2\hm> 
+H_1$ такое, что $g^{H_2}\hm\geq G(H_2)$, $g^H\hm< G(H)$, $H_1\hm\leq 
+H\hm\leq H_2\hm-1$. В~этом случае $H^*\hm=H_2$ (это следует из того, что 
+$H^*\hm\leq H_2$ и~$g^H\hm< G(H)$, $H_1\hm\leq H\hm\leq H_2\hm-1$), т.\,е.\ 
+утверждение~1 теоремы справедливо. Заметим также, что при $H^*\hm>1$ 
+выполняется и~утверждение~4 теоремы. Если 
+$\mathop{\mathrm{inf}}\limits_{H>0} G(H) \hm\geq 
+\mathop{\mathrm{sup}}\limits_{H>0} g^H$, то $g^H\hm< G(H)$, $H\hm\geq H_1$ 
+и~в~этом случае $H^*\hm=\infty$. 
+  
+  Рассмотрим теперь случай $C_2=0$. Из~(\ref{e13-ag}) следует 
+$G(H)\hm=const$, $H\hm>0$.\linebreak Рассуждая, как в~случае $C_2\hm>0$, легко 
+доказать, что последовательность\linebreak 
+$\{ g^{H_i}:\ H_i=H_i\hm+1,\ i\hm= 1,\ldots , 
+H_1=(1,a+1)\}$ удовлетворяет неравенствам $g^{H_1}\hm\geq g^{H_2}\geq 
+\cdots \geq g^{H_n} \geq \cdots \geq const$ при условии $g^{H_1}\hm\geq const$ 
+и~неравенствам $g^{H_1}\hm< g^{H_2}<\cdots < g^{H_n} < \cdots < const$ при 
+условии $g^{H_1}\hm<const$. Как видим, $H^*\hm=1$ при $g^{H_1}\hm\geq 
+const$ и~$H^*\hm=\infty$ при $g^{H_1}\hm<const$. Следовательно, 
+утверждение~3 теоремы верно.
+  
+Из теоремы вытекает следующий алгоритм поиска стратегии $H^*\hm= (h_1^*, 
+h_1^*\hm+a)$.
+\begin{enumerate}[1.]
+\item Вычислить  $c=g^1$ и~$b=G(1)$.
+\item Если $C_2=0$ и~$b>c$, то положить $h_1^*\hm=\infty$ и~перейти 
+к~п.~14.
+\item Если $c\geq b$, то положить $h_1^*\hm=1$ и~перейти к~п.~14.
+\item Положить $h_1=1$.
+\item Выбрать значение приращения $\Delta \geq 1$ ($\Delta$~--- целое 
+число).
+\item Положить $h_1=h_1+\Delta$.
+\item Вычислить $c=g^H$, $b=G(H)$, $H\hm= (h_1,h_1+a)$. 
+\item Если $b>c$, то перейти к~п.~6, иначе положить $h_1^\prime\hm= h_1\hm- 
+\Delta$, $h_1^{\prime\prime} \hm= h_1$.
+\item Вычислить $h_1= [(h_1^\prime+h_1^{\prime\prime})/2]$ где $[\cdot]$~--- 
+целая часть числа в~квадратных скобках.
+\item Положить $H=(h_1,h_1+a)$, вычислить $a=g^H$, $b\hm=G(H)$.
+\item Если $b>c$, то положить $h_1^\prime\hm= h_1$, иначе положить 
+$h_1^{\prime\prime} \hm=h_1$.
+\item Если $h_1^{\prime\prime} -h_1^\prime>1$, то перейти к~п.~9. 
+\item Если $b>c$, то положить $h_1^*\hm= h_1^{\prime\prime}$, иначе 
+положить $h_1^*\hm= h_1^\prime$. 
+\item Конец алгоритма.
+\end{enumerate}
+  
+  Трудоемкость алгоритма составляет $\sim ([h_1^*/\Delta] +\log_2\Delta)$ 
+вычислений функций~$g^H$ и~$G(H)$.
+  
+  \section{Пример}
+  
+  В качестве примера рассмотрим СМО $H_n/M/1$ с~функцией распределения 
+входного потока $A(t)\hm= f_1(1\hm-e^{-\lambda_1 t})+f_2(1\hm- e^{-\lambda_2 
+t})$, $f_i\hm> 0$, $\lambda_i\hm> 0$, $i\hm= 1,2$, $f_1\hm+f_2\hm=1$.
+  
+  На рис.~1 с~помощью графиков функций~$g^H$ и~$G(H)$ 
+проиллюстрировано отношение эквивалентности условий $g^{H+1}\hm> g^H$ 
+и~$g^H\hm< G(H)$, являющееся следствием соотношения~(\ref{e14-ag}). 
+Графики вычислены при значениях параметров 
+  $C_0\hm=20$; $C_1\hm=0$; $C_2\hm=0{,}1$; $C_3\hm=C_4\hm=0{,}01$; 
+$\mu\hm=1$; $n\hm=2$; $f_1\hm=0{,}3$; $f_2\hm=0{,}7$; $v_1\hm=2$; 
+$v_2\hm=1$; $a\hm=h_2\hm-h_1\hm=5$. Оптимальный порог на рис.~1 
+обозначен через~$H^*$.
+  
+  
+  
+  \begin{figure}[h] %fig1
+  \vspace*{1pt}
+  \begin{center}
+ \mbox{%
+ \epsfxsize=131mm
+\epsfbox{aga-1-2.eps}
+ }\hspace*{-3pt}
+\end{center}
+   \vspace*{-15pt}
+  \begin{minipage}[t]{64mm}
+  \Caption{Поведение функций $g^H$~(\textit{1}) и~$G(H)$~(\textit{2}) 
+  при изменении значения верхнего порога}
+%  \end{figure}
+\end{minipage}
+\hfill
+%  \begin{figure} %fig2
+   \begin{minipage}[t]{64mm}
+   \vspace*{1pt}
+  \Caption{Зависимость оптимального значения дохода~$g^{H^*}$~(\textit{1}) и~оптимального 
+значения верхнего порога~$h_2^*$~(\textit{2}) от $a\hm= h_2\hm-h_1$}
+\end{minipage}
+  \end{figure}
+  
+  На рис.~2 при указанных выше значениях параметров~$C_0$, $C_1$, $C_2$, 
+$C_3$, $C_4$, $\mu$, $n$ и~$A(t)$ приведены зависимости оптимального 
+верхнего порога~$h_2^*$ и~оптимального дохода~$g^{H^*}$ от значения 
+$a\hm= h_2\hm-h_1$. Как показали расчеты, длина отрезка состояний системы 
+$[h_1,h_2]$, введенного для раннего предупреждения перегрузки 
+(и~исключения эффекта глобальной синхронизации) при оптимальном выборе 
+верхнего порога почти не влияет на величину дохода системы, при этом 
+зависимость оптимального верхнего порога от длины этого отрезка близка 
+к~линейной.
+  
+  \section{Заключение}
+  
+  В результате исследования рассматриваемой задачи максимизации получены:
+  \begin{itemize}
+\item математическая постановка задачи максимизации дохода, задаваемого 
+в~виде стоимостной целевой функции, зависящей от времени задержки заявок, 
+интенсивности потока отклоняемых заявок, платы за обслуживание заявки, 
+простоя прибора обслуживания, платы за техническое обслуживание системы;
+\item необходимые и~достаточные условия существования глобального 
+оптимума целевой функции;
+\item метод решения задачи максимизации;
+\item алгоритм поиска решения задачи на множестве стратегий 
+типа~$\Omega^a$ (трудоемкость $\sim \vartheta h_1^*(a\hm+h_1^*), 
+\vartheta\hm=const$). 
+\end{itemize}
+
+  Результаты данной работы могут быть использованы для поиска 
+оптимальных пороговых стратегий управления потоками в~системах, 
+моделируемых с~помощью СМО типа $G/M/1$ ($G/M/1/r$). 
+  
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-ag}
+\Au{Floyd S., Jacobson V.} Random early detection gateways for congestion avoidance~/\!\!/ 
+IEEE ACM Trans. Network., 1993. Vol.~1. P.~397--413.
+
+\bibitem{3-ag} %2
+\Au{Kabra M., Saha S., Lin~B.} Fast buffer memory with deterministic packet departures~/\!\!/ 
+14th IEEE Symposium on High-Performance Interconnects Proceedings.~---  
+Stanford, CA, USA, 2006. P.~67--72. 
+\bibitem{2-ag} %3
+\Au{Zheng B., Atiquzzaman M.} A~framework to determine the optimal weight parameter of RED 
+in next-generation Internet routers~/\!\!/ Int. J.~Commun. Syst., 2008. Vol.~21. P.~987--1008.
+\bibitem{4-ag}
+\Au{Reddy T.\,B., Ahammed A., Banu~R.} Performance comparison of active queue management 
+techniques~/\!\!/ Int. J.~Computer Sci. Network Security, 2009. Vol.~9. No.\,2. P.~405--408.
+\bibitem{5-ag}
+\Au{Lin D., Morris R.} Dynamics of random early detection~/\!\!/ ACM 
+SIGCOMM '97 Conference on Applications, Technologies, Architectures, and Protocols for 
+Computer Communication Proceedings.~---  ACM, 1997. P.~127--137. 
+\bibitem{6-ag}
+\Au{Feng W.-C., Shin K.\,G., Kandlur~D.\,D., Saha~D.} 
+The BLUE active queue 
+management algorithms~/\!\!/ IEEE ACM Trans. Network., 2002. 
+Vol.~10. Iss.~4. P.~513--528. 
+\bibitem{7-ag}
+\Au{Feng W.-C., Kandlur D.\,D., Saha~D., Shin~K.\,G.} Stochastic Fair Blue: A~queue 
+management algorithm for enforcing fairness~/\!\!/ INFOCOM 2001: 20th Annual Joint 
+Conference of the IEEE Computer and Communications Societies Proceedings.~---
+Piscataway, NJ, USA: IEEE, 2001. Vol.~3. P.~1520--1529.
+\bibitem{8-ag}
+\Au{Parris M., Jeffay K., Smith F.\,D.} Lightweight active router queue management for 
+multimedia networking~/\!\!/ Multimedia computing and networking~/ 
+Eds. D.\,D.~Kandlur, K.~Jeffay, T.~Roscoe.~--- Proc. SPIE ser.~--- 
+San Jose, CA, USA: SPIE,
+1999. Vol.~3654. P.~162--174. doi: 10.1117/12.333807.
+
+\bibitem{9-ag}
+\Au{Pan R., Prabhakar B., Psounis~K.} CHOKe: 
+A~stateless active queue management scheme for 
+approximating fair bandwidth allocation~/\!\!/ INFOCOM 2000: 
+19th Annual Joint Conference 
+of the IEEE Computer and Communications Societies Proceedings.~---  Piscataway, NJ, USA: 
+IEEE, 2000. Vol.~2. P.~942--951.
+\bibitem{10-ag}
+\Au{Жерновый Ю.\,В.} Решение задач оптимального синтеза для некоторых марковских 
+моделей обслуживания~/\!\!/ Информационные процессы, 2010. Т.~10. №\,3. C.~257--274. 
+\bibitem{11-ag}
+\Au{Коновалов М.\,Г.} Об одной задаче оптимального управления нагрузкой на сервер~/\!\!/ 
+Информатика и~ее применения, 2013. Т.~7. Вып.~4. С.~34--43.
+\bibitem{12-ag}
+\Au{Агаларов Я.\,М.} Пороговая стратегия ограничения доступа к~ресурсам в~сис\-те\-ме
+массового обслуживания $M/D/1$ 
+с~функцией штрафов за несвоевременное обслуживание заявок~/\!\!/ Информатика и~её 
+применения, 2015. Т.~9. Вып.~3. С.~55--64.
+\bibitem{13-ag}
+\Au{Гришунина Ю.\,Б.} Оптимальное управление очередью в~системе $M/G/1/\infty$ 
+с~возможностью ограничения приема заявок~/\!\!/ Автоматика и~телемеханика, 2015. №\,3. 
+С.~79--93.
+\bibitem{14-ag}
+\Au{Агаларов Я.\,М., Агаларов~М.\,Я., Шоргин~В.\,С.} Об оптимальном пороговом значении 
+длины очереди в~одной задаче максимизации дохода системы
+массового обслуживания типа $M/G/1$~/\!\!/ Информатика и~её 
+применения, 2016. Т.~10. Вып.~ 2. С.~70--79.
+
+\bibitem{16-ag}
+\Au{Карлин С.} Основы теории случайных процессов~/ Пер. с~англ.~--- М.: Мир, 1971. 537~с.
+(\Au{Karlin~S.} A~first course in stochastic processes.~---  
+New York\,--\,London: Academic Press, 1968. 502~p.) 
+\bibitem{15-ag}
+\Au{Бочаров П.\,П., Печинкин А.\,В.} Теория массового обслуживания.~--- М.: РУДН, 1995. 529~с.
+\bibitem{17-ag}
+\Au{Агаларов Я.\,М., Агаларов М.\,Я., Шоргин~В.\,С.} Приложение к~статье <<Максимизация 
+дохода СМО типа $G/M/1$ на множестве пороговых стратегий с~двумя точками 
+переключения>>. {\sf http://www.ipiran.ru/publications/Pril\_Agalarov.docx}.
+       \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 29.04.16}}
+
+
+
+
+\vspace*{9pt}
+
+\hrule
+
+%\newpage
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{PROFIT MAXIMIZATION IN~{\boldmath{$G/M/1$}} QUEUING SYSTEM ON~A~SET 
+OF~THRESHOLD STRATEGIES WITH~TWO~SWITCH~POINTS}
+
+\def\titkol{Profit maximization in~$G/M/1$ queuing system on~a~set 
+of~threshold strategies} % with~two switch points}
+
+
+\def\aut{Ya.\,M.~Agalarov$^1$, M.\,Ya.~Agalarov$^2$, and V.\,S.~Shorgin$^1$}
+\def\autkol{Ya.\,M.~Agalarov, M.\,Ya.~Agalarov, and V.\,S.~Shorgin}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$Institute of Informatics Problems, Federal 
+Research Center ``Computer Science\linebreak
+$\hphantom{^1}$and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow\linebreak
+$\hphantom{^1}$119333, Russian Federation
+
+\noindent
+$^2$PromsvyazBank OJSC, 10~Smirnovskaya Str., Moscow 109052, Russian Federa-\linebreak
+$\hphantom{^1}$tion
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2016 vol~26 no\,4}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2016   vol~26   no\,4
+\hfill \textbf{\thepage}}} 
+  
+ 
+  
+  \Abste{The problem of maximizing the average profit per time in $G/M/1$ 
+  queuing system is 
+considered on a set of stationary access restriction threshold
+strategies with one 
+``switch point.'' The objective function depends on the following measures: service 
+fee, hardware maintenance fee, cost of service delay, 
+fine for unhandled requests, and fine for system idle. The authors 
+have formulated the necessary conditions of existence of finite 
+problem solution on a subset of\linebreak
+\vspace*{-12pt}}
+
+\Abstend{threshold strategies with fixed distance between the 
+upper and lower thresholds and have got necessary and sufficient conditions for optimality 
+of threshold strategy on this subset. The authors have also developed a method of finding 
+the optimal strategy and algorithm for calculating the parameters of the optimal 
+strategy and the corresponding value of the objective function.}
+  
+  \KWE{queuing system; threshold strategy; optimization}
+  
+\DOI{10.14357\!/\!08696527160407} 
+
+%\vspace*{-24pt}
+
+ \Ack
+ \noindent
+The work was supported by the Russian Foundation for Basic Research
+  (project 15-07-03406).
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99} 
+\bibitem{1-ag-1}
+\Aue{Floyd, S., and V. Jacobson}. 1993. Random early detection gateways 
+for congestion avoidance. \textit{IEEE ACM Trans. Network.} 
+1:397--413.
+
+\bibitem{3-ag-1} 
+\Aue{Kabra, M., S. Saha, and B.~Lin}. 2006. Fast buffer memory with 
+deterministic packet departures. \textit{14th IEEE 
+Symposium on High-Performance Interconnects Proceedings}. 
+ Stanford, CA. 67--72. 
+ \bibitem{2-ag-1}
+\Aue{Zheng, B., and M. Atiquzzaman}. 2008. A~framework to determine the 
+optimal weight parameter of RED in next-generation Internet routers. 
+\textit{Int. J.~Commun. Syst.} 21:987--1008.
+\bibitem{4-ag-1}
+\Aue{Reddy, T.\,B., A. Ahammed, and R.~Banu}. 2009. Performance 
+comparison of active queue management techniques. \textit{Int.
+J.~Computer Sci. Network Security} 9(2):405--408.
+\bibitem{5-ag-1}
+\Aue{Lin, D., and R. Morris}. 1997. Dynamics of random early detection. 
+\textit{ACM \mbox{SIGCOMM'97} Conference on 
+Applications, Technologies, Architectures, and Protocols for Computer 
+Communication Proceedings}. ACM. 127--137. 
+\bibitem{6-ag-1}
+\Aue{Feng, W.-C., K.\,G. Shin, D.\,D.~Kandlur, and D.~Saha}. 2002. The BLUE 
+active queue management algorithms. \textit{IEEE ACM 
+Trans. Network.} 10(4):513--528. 
+\bibitem{7-ag-1}
+\Aue{Feng, W.-C., D.\,D. Kandlur, D.~Saha, and K.\,G.~Shin}. 2001. Stochastic 
+Fair Blue: A~queue management algorithm for enforcing fairness. 
+\textit{INFOCOM 2001. 20th Annual Joint Conference of the IEEE 
+Computer and Communications Societies}. IEEE. 3:1520--1529.
+\bibitem{8-ag-1}
+\Aue{Parris, M., K. Jeffay, and F.\,D.~Smith}. 1999. Lightweight active 
+router-queue management for multimedia networking. 
+\textit{Multimedia computing and networking}.  
+Eds.\ D.\,D.~Kandlur, K.~Jeffay, and T.~Roscoe. 
+Proc. SPIE ser. San Jose, CA: SPIE.
+3654:162--174. doi: 10.1117/12.333807.
+
+\bibitem{9-ag-1}
+\Aue{Pan, R., B. Prabhakar, and K.~Psounis}. 2000. CHOKe: A~stateless 
+active queue management scheme for approximating fair bandwidth 
+allocation. \textit{INFOCOM 2000: 
+19th Annual Joint Conference 
+of the IEEE Computer and Communications Societies Proceedings}.  Piscataway, NJ: 
+IEEE. 2:942--951.
+\bibitem{10-ag-1}
+\Aue{Zhernovyj, Ju.\,V.} 2010. Reshenie zadach optimal'nogo sinteza dlya 
+nekotorykh markovskikh modeley obsluzhivaniya [Solution of 
+optimum synthesis problem for some Markov models of service]. 
+\textit{Informatsionnye Processy} [Information Processses] 10(3):257--274.
+\bibitem{11-ag-1}
+\Aue{Konovalov, M.\,G.} 2013. Ob odnoy zadache optimal'nogo upravleniya 
+nagruzkoy na server [About one task of overload control]. \textit{Informatika 
+i~ee Primeneniya~--- Inform. Appl.} 7(4):34--43.
+\bibitem{12-ag-1}
+\Aue{Agalarov, Ya.\,M.} 2015. Porogovaya strategiya ogranicheniya dostupa 
+k~resursam v~sisteme massovogo obsluzhivaniya $M/D/1$ s~funktsiey shtrafov za nesvoevremennoe 
+obsluzhivanie zayavok [The threshold strategy for restricting access in 
+the $M/D/1$ queueing system with penalty function for late service]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl}. 9(3):55--64.
+\bibitem{13-ag-1}
+\Aue{Grishunina, Yu.\,B.} 2015. Optimal'noe upravlenie ochered'yu 
+v~sisteme $M/G/1/\infty$ s~vozmozhnost'yu ogranicheniya priema 
+zayavok [Optimal control of queue in the $M/G/1/\infty$ system 
+with possibility of customer admission restriction]. \textit{Avtomatika 
+i~Telemekhanika}  [Automation and Remote Control] 3:79--93.
+\bibitem{14-ag-1}
+\Aue{Agalarov, Ya.\,M., M.\,Ya.~Agalarov, and V.\,S.~Shorgin}. 2016. Ob 
+optimal'nom porogovom znachenii dliny ocheredi v~odnoy zadache 
+maksimizatsii dokhoda sistemy massovogo obsluzhivaniya 
+tipa $M/G/1$ [About the optimal threshold 
+of queue length in particular problem of profit maximization in $M/G/1$ 
+queuing system]. \textit{Informatika i~ee Primeneniya~--- Inform. 
+Appl.} 10(2):70--79.
+\bibitem{16-ag-1}
+\Aue{Karlin, S.} 1968. \textit{A~first course in stochastic processes}. 
+New York\,--\,London: Academic Press. 502~p.
+\bibitem{15-ag-1}
+\Aue{Bocharov, P.\,P., and A.\,V.~Pechinkin}. 1995. \textit{Teoriya massovogo 
+obsluzhivaniya} [Queueing theory]. Moscow: RUDN. 529~p.
+
+\bibitem{17-ag-1}
+\Aue{Agalarov, Ya.\,M., M.\,Ya.~Agalarov, and V.\,S.~Shorgin}. Appendix to 
+the paper ``Profit maximization in $G/M/1$ queuing system on the set of 
+threshold strategies with two switch points.'' Available at: 
+{\sf http://www.ipiran.ru/publications/Pril\_Agalarov.docx} (accessed  
+August~29, 2016).
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received April 29, 2016}}
+
+\Contr
+
+\noindent
+\textbf{Agalarov Yaver M.} (b.\ 1952)~--- Candidate of Science (PhD) in technology, 
+associate professor; leading scientist, Institute of Informatics Problems, Federal 
+Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{agglar@yandex.ru}
+
+\vspace*{3pt}
+  
+  \noindent
+\textbf{Agalarov Murad Ya.} (b.\ 1987)~--- Head of System Analysis Department, 
+PromsvyazBank OJSC, 10~Smirnovskaya Str., Moscow 109052, Russian Federation;
+\mbox{murad-agalarov@yandex.ru}
+
+\vspace*{3pt}
+  
+  
+  \noindent
+\textbf{Shorgin Vsevolod S.} (b.\ 1978)~--- Candidate of Science (PhD) in technology, 
+senior scientist, Institute of Informatics Problems, Federal Research Center 
+``Computer Science and Control'' of Russian Academy of Sciences, 
+44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{VShorgin@ipiran.ru}
+
+  
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

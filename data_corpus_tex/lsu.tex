@@ -1,0 +1,816 @@
+%vsgtu709
+
+ \input{preamblw}
+%
+\usepackage{cite} 
+\usepackage{enumitem}
+
+\begin{document}
+ %\tableofcontents
+ %\newpage
+
+\renewcommand{\firstpage}{1}
+\renewcommand{\lastpage}{14}
+%\Partition{Математическое моделирование, численные методы и комплексы программ}{Mathematical Modeling, Numerical Methods and Software Complexes} % Раздел Вестника, в который подаётся статья
+% Названия разделов см. на сайте при подаче заявки
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Информация о статье и об авторах на русском и английском языках
+
+% Номер УДК
+\udk{517.958}%Обработка текста. Подготовка текстов : Языки программирования. Компьютерные языки
+\msc{35R11, 35B20, 70G65}% Коды MSC см. http://www.ams.org/msc/
+
+\title{Групповая классификация одного нелинейного приближенного уравнения субдиффузии}% Полный заголовок
+{Групповая классификация приближенного уравнения субдиффузии}% Заголовок, который идёт в верхний колонтитул
+
+\author{С.\,Ю.~Лукащук}% Автор(ы) для заголовка, если авторов несколько укать \inst
+{Л\,у\,к\,а\,щ\,у\,к~С.\,Ю.}% Автор(ы) для оглавления и колонтитула через \,
+
+\institute{ФГБОУ ВО <<Уфимский государственный авиационный технический университет>>}
+% Если несколько, то так  \institute{ Организация 1 \and Организация 2  \and Организация 3}
+
+\email{E-mail}{lsu@ugatu.su} %E-mail's авторов
+
+\otherinf{\fullauthor{Станислав Юрьевич Лукащук}\regalia{к.ф.-м.н., доцент}\position{доцент}
+\dept{каф. высокопроизводительных вычислительных технологий и систем УГАТУ}}
+
+\keywords{дробно-дифференциальное уравнение, субдиффузия, малый параметр, 
+приближенная группа точечных преобразований, групповая классификация}
+
+\workabstract{% Здесь должна быть краткая аннотация статьи, например такая:
+Решена задача групповой классификации нелинейного приближенного уравнения субдиффузии с малым параметром по приближенным допускаемым группам точечных преобразований относительно коэффициента аномальной диффузии, рассматриваемого как функция зависимой переменной. Приближенное уравнение получено из дробно-дифференциального уравнения субдиффузии с дробной производной  Римана--Лиувилля по времени в предположении о близости порядка дробного дифференцирования к единице. Показано, что рассматриваемое приближенное уравнение субдиффузии обладает более широкой группой точечных симметрий по сравнению с исходным дробно-дифференциальным уравнением. Результаты групповой классификации позволяют строить приближенно инвариантные решения приближенного уравнения субдиффузии для различных видов функциональной зависимости коэффициента аномальной диффузии от зависимой переменной. Такие решения также будут являться приближенными решениями исходного дробно-дифференциального уравнения субдиффузии.}
+
+\engtitle{Approximate group classification of a perturbed subdiffusion equation}
+
+\engauthor{S.\,Yu.~Lukashchuk}{L\,u\,k\,a\,s\,h\,c\,h\,u\,k~S.\,Yu.}
+
+
+\enginstitute{Ufa State Aviation Technical University}% Место работы каждого из авторов на англ. языке
+% Если несколько, то так  \enginstitute{ Организация 1 \and Организация 2  \and Организация 3}
+
+\otherenginfm{\fullauthor{Stanislav Yu. Lukashchuk} \regalia{Ph.\,D. (Phys. \& Math.)} \position{Associate Prof.}
+\dept{Dept. of High Performance Computing Technologies and Systems}}
+
+\engabstract{A problem of the Lie point approximate symmetry group classification for a perturbed subdiffusion equation with a small parameter is solved. The classification is performed with respect to anomalous diffusion coefficient which is considered as a function of an independent variable. The perturbed subdiffusion equation is derived from a fractional subdiffusion equation with the Riemann-Liouville time-fractional derivative under an assumption that the order of fractional differentiation is closed to unity. As it is follow from the classification results, the perturbed subdiffusion equation admits a more general Lie point symmetry group than the initial fractional subdiffusion equation. The obtained results permit to construct approximate invariant solutions for the perturbed subdiffusion equation corresponding to different functions of the anomalous diffusion coefficient. These solutions will also be approximate solutions of the initial fractional subdiffusion equation.}    
+
+\engkeywords{fractional differential equation, subdiffusion, small parameter, approximate transformation group, group classification}
+
+\date{X/X/2016} % Дата поступления статьи в редакцию.
+\revisiondate{X/X/2016} % В окончательном виде
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+%Каждый пункт статьи должен начинаться с команды Название пункта
+%после названия точку ставить не нужно. Пункты автоматически нумеруются.
+%Если пункт нумеровать не нужно, то следует использовать в команде
+% \Section необязательный параметр [n]:
+%   \Section[n]{Имя пункта}
+% Введение и заключение обычно не нумеруются.
+
+\Section[n]{Введение}
+Разработка методов исследования качественных свойств нелинейных дроб\-но-диф\-фе\-рен\-ци\-аль\-ных уравнений, то есть дифференциальных уравнений, содержащих производные дробных порядков различных типов, становится все более актуальной задачей в связи с активным внедрением теории интегро-дифференцирования дробного порядка \cite{LSU:SKM, LSU:KST} в практику математического моделирования \cite{LSU:Nah, LSU:Uch, LSU:Mai, LSU:GKMKD,LSU:Tar, LSU:BDST, LSU:US}. Одним из эффективных подходов к исследованию нелинейных дифференциальных уравнений с производными целого порядка и построению их точных решений является групповой анализ дифференциальных уравнений \cite{LSU:Ovs, LSU:Ibr}. В работах \cite{LSU:GKL_VU_07, LSU:GKL_PS_09, LSU:GKL_UMJ_12} базовые методы группового анализа были успешно распространены на дробно-дифференциальные уравнения с дробными производными Римана--Лиувилля и Капуто. Были предложены алгоритмы нахождения групп точечных перобразований, допускаемых такими уравнениями, решен ряд задач групповой классификации, найдены новые инвариантные решения некоторых классов нелинейных дробно-дифференциальных уравнений. Тем не менее, даже в случае двух независимых переменных задача построения инвариантного решения нелинейного уравнения с частными дробными производными по его известной допускаемой однопараметрической группе в результате процедуры симметрийной редукции часто сводится к нелинейному обыкновенному дроб\-но-диф\-фе\-рен\-ци\-аль\-но\-му уравнению, решение которого остается нетривальной задачей. 
+
+В ряде случаев для дробно-дифференциальных уравнений возможно построение приближенных аналитических решений. Характерной особенностью таких уравнений является возможность выделить малый параметр из порядка дробного дифференцирования в том случае, если он оказывается близок к целому числу. Такой подход был использован, в частности, в работах \cite{LSU:TZ_PA_06, LSU:TG_PA_08, LSU:Tof_IJSM_13}. В результате дробно-дифференциальное уравнение заменяется приближенным уравнением с малым параметром. При этом в нулевом порядке по малому параметру такое уравнение является классическим дифференциальным уравнением в целых производных. 
+
+К уравнениям с малым параметром могут быть применены методы теории возмущений \cite{LSU:Nay}, позволяющие строить различные виды приближенных решений. Исследование симметрийных свойств таких уравнений может быть выполнено с использованием методов теории приближенных групп преобразований, основы которой были заложены в работах \cite{LSU:BGI_MSb_88, LSU:BGI_INT_89, LSU:BGI_DU_93}. По известной группе преобразований, приближенно допускаемой уравнением с малым параметром, могут быть построены приближенно инвариантные решения этого уравнения. 
+
+Среди дробно-дифференциальных уравнений, используемых в настоящее время на практике, особое место занимают уравнения диффузионного типа. Эти уравнения представляют собой различные математические модели процессов аномальной диффузии, то есть диффузионных процессов, кинетика протекания которых не подчиняется нормальной (гауссовой) статистике \cite{LSU:MK_PR_00, LSU:Uch_UFN_03, LSU:GKMKD, LSU:US}. Линейные дробно-дифференциальные уравнения аномальной диффузии в настоящее время являются одним из наиболее хорошо изученных классов дробно-дифференциальных моделей \cite{LSU:Psh, LSU:Luc, LSU:Hus_VS_15}. 
+
+Вместе с тем, проблема построения решений и исследования качественных свойств нелинейных дроб\-но-диф\-фе\-рен\-ци\-аль\-ных диффузионных моделей остается мало исследованной. Вопросы построения точных решений таких уравнений обсуждаются, в частности, в работах \cite{LSU:BTG_PRE_00, LSU:LLEMM_JSM_09, LSU:BV_NA_16}. В работах \cite{LSU:GKL_PS_09, LSU:LM_AMC_15} проведено исследование симметрийных свойств некоторых классов нелинейных уравнений аномальной диффузии с дробными производными Римана--Лиувилля и Капуто по времени.  
+
+В данной статье рассматривается нелинейное уравнение субдиффузии с дробной производной Римана--Лиувилля по времени в котором порядок дробного дифференцирования близок к единице, а коэффициент аномальной диффузии является функцией зависимой переменной. Для этого уравнения строиться соответствующее приближенное уравнение с малым параметром и проводится его групповая классификация по допускаемым группам приближенных точечных преобразований относительно коэффициента аномальной диффузии, являющегося функцией зависимой переменной. 
+
+\Section{Приближенное уравнение субдиффузии}
+Рассмотрим нелинейное дроб\-но-диф\-фе\-рен\-ци\-аль\-ное уравнение субдиффузии
+\begin{equation}
+\label{LSU:FSDE}
+{}^{}_{0}D^{\alpha}_t u = (k_{\alpha}(u) u_x)_x, \quad u=u(t,x), \quad \alpha \in (0,1)
+\end{equation}
+где 
+\begin{equation}
+\label{LSU:RLFD}
+{}^{}_{0}D^{\alpha}_t u = \dfrac{1}{\Gamma(1-\alpha)} \dfrac{\partial}{\partial t} \int_0^t \dfrac{u(\tau,x) d\tau}{(t-\tau)^{\alpha}}
+\end{equation}
+--- левосторонняя дробная производная Римана--Лиувилля порядка $\alpha \in (0,1)$ по переменной $t$ \cite{LSU:SKM, LSU:KST}. Групповая классификация уравнения \eqref{LSU:FSDE} по группам точечных преобразований относительно элемента $k_{\alpha}(u)$ выполнена в работе \cite{LSU:GKL_PS_09}.
+
+Рассмотрим случай, когда свойства субдиффузионного процесса таковы, что порядок дробного дифференцирования $\alpha$ оказывается близок к единице, то есть $\alpha=1-\varepsilon$, где $\varepsilon>0$~--- малый параметр. Тогда дробная производная в уравнении \eqref{LSU:FSDE} может быть разложена в ряд по $\varepsilon$, а само уравнение заменено на приближенное уравнение с малым параметром.
+
+\begin{lemma} Пусть функция $u(t)$ является аналитической при $t>0$ и параметр $\alpha=1-\varepsilon$, где $\varepsilon>0$ и $\varepsilon<<1$. Тогда при всех $t$ удовлетворяющих условию $|\varepsilon \ln(t)|=O(\varepsilon)$ для дробной производной Римана--Лиувилля \eqref{LSU:RLFD} справедливo разложение 
+\begin{multline} 
+\label{LSU:ARLFD} 
+{}^{}_{0}D^{1-\varepsilon}_t u = u_t+\varepsilon \left[(\ln t + \gamma-1)u_t + \dfrac{u}{t} + \sum_{n=1}^{\infty} \dfrac{(-1)^n t^n}{n(n+1)!} D^{n+1}_t u \right]+O(\varepsilon^2). 
+\end{multline} 
+\end{lemma}
+
+\begin{proof}
+Воспользуемся известным (см., например, \cite[формула (15.4)]{LSU:SKM}) разложением дробной производной Римана--Лиувилля от аналитической функции в ряд по производным целого порядка, которое для дробной производной \eqref{LSU:RLFD} имеет вид
+$$
+{}^{}_{0}D^{\alpha}_t u =\sum_{n=0}^\infty \binom{\alpha}{n} \dfrac{t^{n-\alpha}}{\Gamma(1-\alpha+n)} D^n_t u.
+$$
+С использованием определения биномиальных коэффициентов и известных свойств гамма-функции (см., например, \cite{LSU:AS}) это разложение преобразуется к виду
+\begin{equation}
+\label{LSU:Ser}
+{}^{}_{0}D^{\alpha}_t u =\Gamma(1+\alpha)\sum_{n=0}^\infty \dfrac{\sin(\pi(\alpha-n))}{\pi(\alpha-n)}\dfrac{t^{n-\alpha}}{n!} D^n_t u.
+\end{equation}
+
+Выполним формальное разложение правой части этого равенства по $\varepsilon$ при $\alpha=1-\varepsilon$. Для отдельных множителей справедливы следующие разложения:
+$$
+\Gamma(1+\alpha) \equiv \Gamma(2- \varepsilon)= \Gamma(2) - \Gamma'(2) \varepsilon + O(\varepsilon^2) =
+1 - \varepsilon (1-\gamma) + O(\varepsilon^2), 
+$$
+где $\gamma \approx 0.577216$~--- постоянная Эйлера;
+\begin{multline*}
+\dfrac{\sin(\pi(\alpha-n))}{\pi(\alpha-n)} \equiv \dfrac{\sin(\pi (1-n - \varepsilon))}{\pi (1-n - \varepsilon)}=
+ \dfrac{\sin(\pi (1-n))  - \pi \varepsilon \cos(\pi (1-n))}{\pi (1-n - \varepsilon)}+  \\[2ex]
++ O(\varepsilon^2) 
+= -\dfrac{(-1)^{1-n} \varepsilon }{1-n - \varepsilon}+O(\varepsilon^2)=
+\left\{
+\begin{array}{ll}
+	1+O(\varepsilon^2),   & n=1; \\[2ex]
+	-\dfrac{(-1)^{1-n}}{1-n}\varepsilon + O(\varepsilon^2), & n \neq 1.
+\end{array}
+\right.
+\end{multline*}
+
+При выполнении условия $|\varepsilon \ln(t)|=O(\varepsilon)$ справедливо также разложение 
+$$
+t^{1-\alpha} \equiv t^{\varepsilon} = 1 + \varepsilon \ln(t) + O(\varepsilon^2).
+$$
+
+Подстановка полученных разложений в \eqref{LSU:Ser} дает, после элементарных преобразований, искомое разложение \eqref{LSU:ARLFD}.
+\end{proof}
+
+Подставляя разложение \eqref{LSU:ARLFD} в уравнение \eqref{LSU:FSDE}, с точностью до $O(\varepsilon^2)$ получаем уравнение с малым параметром
+\begin{equation}
+\label{LSU:AFSDE0}
+u_t+\varepsilon \left[(\ln t + \gamma-1)u_t + \dfrac{u}{t} + \sum_{n=1}^{\infty} \dfrac{(-1)^n t^n}{n(n+1)!} D^{n+1}_t u \right]  = (k_{\alpha}(u) u_x)_x.
+\end{equation}
+Уравнение \eqref{LSU:AFSDE0} будем называть \textit{приближенным уравнением субдиффузии}.
+
+При решении задачи групповой классификации коэффициент аномальной диффузии $k_{\alpha}(u)$ должен рассматриваться зависящим от $\alpha$, то есть в рассматриваемом случае он будет являться функцией малого параметра $\varepsilon$. Будем полагать, что справедливо разложение
+\begin{equation}
+\label{LSU:K_u_app}
+k_{\alpha}(u) \equiv k_{1-\varepsilon}(u) = k_{(0)}(u)+\varepsilon k_{(1)}(u)+O(\varepsilon^2).
+\end{equation}
+Тогда уравнение \eqref{LSU:AFSDE0} принимает вид
+\begin{multline}
+\label{LSU:AFSDE}
+u_t+\varepsilon \left[(\ln t + \gamma-1)u_t + \dfrac{u}{t} + \sum_{n=1}^{\infty} \dfrac{(-1)^n t^n}{n(n+1)!} D^{n+1}_t u \right]  = \\
+=k_{(0)}(u) u_{xx} + k'_{(0)}(u) u_x^2 +\varepsilon [k_{(1)}(u) u_{xx} + k'_{(1)}(u) u_x^2].
+\end{multline}
+
+
+\Section{Групповая классификация уравнения \eqref{LSU:AFSDE}}
+Проведем классификацию уравнения \eqref{LSU:AFSDE} по группам приближенных точечных преобразований, определяемых инфинитезимальным оператором
+\begin{equation}
+\label{LSU:AppSym_SD}
+X=(\xi^0_{(0)}+\varepsilon \xi^0_{(1)}) \dfrac{\partial}{\partial t}  + 
+(\xi^1_{(0)}+\varepsilon \xi^1_{(1)}) \dfrac{\partial}{\partial x} +
+(\eta_{(0)}+\varepsilon \eta_{(1)}) \dfrac{\partial}{\partial u}.
+\end{equation}
+Координаты $\xi^i_{(j)}, \ \eta_{(j)} \ (i,j=0,1)$ данного оператора являются функциями переменных $t, \ x, \ u$. Оператор \eqref{LSU:AppSym_SD} продолжается на все переменные, входящие в уравнение \eqref{LSU:AFSDE}:
+\begin{equation}
+\label{LSU:Prod_X}
+\begin{array}{c}
+\tilde{X}=X+(\zeta_{0 (0)}^1+\varepsilon \zeta_{0  (1)}^1) \dfrac{\partial}{\partial u_t}+
+(\zeta_{1 (0)}^1+\varepsilon \zeta_{1 \, (1)}^1) \dfrac{\partial}{\partial u_x}+ 
+\\[1ex]
++(\zeta_{1 (0)}^2+\varepsilon \zeta_{1 (1)}^2) \dfrac{\partial}{\partial u_{xx}}+
+\displaystyle\sum_{n=2}^{\infty} \zeta^{n}_{0(0)} \ \dfrac{\partial}{\partial \left(D^{n}_t u \right)},
+\end{array}
+\end{equation}
+где координаты $\zeta_{i(j)}^k$ продолженного оператора определяются по классическим формулам продолжения (см., например, \cite{LSU:Ovs, LSU:Ibr}).
+
+При $\varepsilon=0$ уравнение \eqref{LSU:AFSDE} переходит в классическое нелинейное уравнение теплопроводности $u_t=(k_{(0)}(u)u_x)_x$, результаты групповой классификации которого по элементу $k_{(0)}(u)$ хорошо известны \cite{LSU:Ovs}. А именно, в случае произвольного $k_{(0)}(u)$ допускаемая уравнением группа является трехмерной, при $k_{(0)}(u)=e^u$ и $k_{(0)}(u)=u^{\sigma} \ (\sigma \neq -4/3$) группа расширяется до четырехмерной, при $k_{(0)}(u)=u^{-4/3}$ является пятимерной и в случае линейного уравнения ($k_{(0)}(u)=1$) является бесконечномерной. На основе этой классификации проводится групповая классификация приближенного уравнения субдиффузии \eqref{LSU:AFSDE} по группам приближенных точечных преобразований относительно элемента $k_{(1)}(u)$.
+
+\vspace{2mm}
+\textit{Случай I.} Пусть $k_{(0)}(u)$~--- произвольная функция. Тогда (см. \cite{LSU:Ovs})
+\begin{equation}
+\label{LSU:X0_k}
+\xi^0_{(0)} = C_{1(0)}+2C_{3(0)}t, \quad  \xi^1_{(0)} = C_{2(0)}+C_{3(0)}x, \quad \eta_{(0)} = 0
+\end{equation}
+и координаты продолженного оператора \eqref{LSU:Prod_X} в нулевом по $\varepsilon$ порядке имеют вид
+\begin{equation}
+\label{LSU:P14_E41}
+\begin{array}{l}
+\zeta_{0(0)}^n =-2n C_{3(0)} D^n_t u \ \ (n=1,2,\ldots), \\[1ex]
+\zeta_{1(0)}^1 = -C_{3(0)} u_x, \quad
+\zeta_{1(0)}^2 = -2C_{3(0)} u_{xx}.
+\end{array}
+\end{equation}
+
+Координаты $\xi^0_{(1)}$, $\xi^1_{(1)}$ и $\eta_{(1)}$ находятся из определяющего уравнения, получающегося в результате действия на уравнение \eqref{LSU:AFSDE} продолженным оператором \eqref{LSU:Prod_X} с учетом исходного уравнения \eqref{LSU:AFSDE} и уже известных координат \eqref{LSU:X0_k} и \eqref{LSU:P14_E41}. В результате расщепления этого определяющего уравнения по степеням $D^{n}_t u$ $(n \ge 2)$, находим
+$$
+C_{1(0)}=0, \quad \xi^0_{(1)u}=0. 
+$$
+Таким образом, оператор группы переносов по времени $X=\partial/{\partial t}$, допускаемый классическим уравнением теплопроводности и соответствующий постоянной $C_{1(0)}$, не наследуется уравнением \eqref{LSU:AFSDE}. В работе \cite{LSU:GKL_PS_09} показано, что этот оператор не допускается и исходным дробно-дифференциальным уравнением субдиффузии \eqref{LSU:FSDE}. 
+
+Расщепление определяющего уравнения по переменным $u_t u_x$, $u_t u_x^2$, $u_{tx}$, $u_{tx} u_x$ приводит, в силу произвольности функции $k_{(0)}(u)$, к уравнениям
+$$
+\xi^1_{(1)u}=0, \quad \xi^0_{(1)x}=0. 
+$$
+Дальнейшее расщепление по $u_t$ дает
+$$
+k_{(0)} (2 \xi^1_{(1)x}-\xi^0_{(1)t}+2C_{3(0)})-k'_{(0)} \eta_{(1)}=0
+$$
+или, с учетом произвольности $k_{(0)}(u)$, 
+$$
+\eta_{(1)}=0, \quad 2 \xi^1_{(1)x}-\xi^0_{(1)t}+2C_{3(0)}=0.
+$$
+Расщепление по $u_{x}$ приводит к уравнениям
+$$
+\xi^1_{(1)t}=0, \quad \xi^1_{(1)xx}=0. 
+$$
+Оставшаяся после указанных расщеплений часть определяющего уравнения выполнена тождественно для любой функции $k_{(1)}(u)$. 
+
+Решение полученных в результате расщепления уравнений имеет вид
+$$
+\xi^0_{(1)} = C_{1(1)}+2C_{3(1)}t+2C_{3(0)}t, \quad  \xi^1_{(0)} = C_{2(1)}+C_{3(1)}x, \quad \eta_{(1)} = 0, \quad C_{1(0)}=0, 
+$$
+где $C_{1(1)}, \, C_{2(1)}, \, C_{3(1)}$~--- произвольные постоянные.
+
+\vspace{2mm}
+\textit{Случай II. $k_{(0)}(u)=e^u$.}
+
+Из известной \cite{LSU:Ovs} классификации нелинейного уравнения теплопроводности в нулевом порядке по $\varepsilon$ имеем
+\begin{equation}
+\label{LSU:X0_eu}
+\xi^0_{(0)} = C_{1(0)}+(2C_{3(0)}-C_{4(0)})t, \quad  \xi^1_{(0)} = C_{2(0)}+C_{3(0)}x, \quad \eta_{(0)} = C_{4(0)}. 
+\end{equation}
+
+Расщепление соответствующего определяющего уравнения по $u_t u_x$, $u_t u_x^2$, $u_{tx}$, $u_{tx} u_x$ и $D^{n}_t u$ $(n \ge 2)$ дает
+$$
+C_{1(0)}=0, \quad \xi^0_{(1)u}=0, \quad \xi^0_{(1)x}=0, \quad \xi^1_{(1)u}=0.
+$$
+С учетом этих уравнений, дальнейшее расщепление определяющего уравнения по $u_t$, $u_x$, $u_x^2$ приводит к следующей системе: 
+\begin{align*}
+& 2 \xi^1_{(1)x}-\xi^0_{(1)t}-\eta_{(1)}=C_{4(0)}-2C_{3(0)}+C_{4(0)}(k_{(1)}e^{-u})_u, \\
+& e^{u}(2 \eta_{(1)xu}+2 \eta_{(1)x}-\xi^1_{(1)xx})+\xi^1_{(1)t}=0, \\
+& \eta_{(1)uu}+\eta_{(1)u}=-C_{4(0)}(k_{(1)}e^{-u})_{uu}, \\
+& \eta_{(1)t}-e^u \eta_{(1)xx}=- C_{4(0)} t^{-1}.
+\end{align*}
+
+Так как $C_{4(0)} \neq 0$ (иначе \eqref{LSU:X0_eu} совпадает с \eqref{LSU:X0_k} и получаем уже разобранный выше Случай I), то из первого, третьего и четвертого уравнений этой системы вытекает следующее классифицирующее соотношение для $k_{(1)}(u)$: 
+$$
+(e^{-u}k_{(1)})_{uu} = 2 A_2,
+$$
+где $A_2$~--- произвольная постоянная. Решение этого уравнения имеет вид 
+$$
+k_{(1)}(u)=e^{u} \left(A_0+A_1 u + A_2 u^2 \right), 
+$$
+где $A_0$ и $A_1$~--- также произвольные постоянные. Только при таком виде функции $k_{(1)}(u)$ будет иметь место расширение группы. Подставляя найденный вид $k_{(1)}(u)$ в исходную систему и разрешая ее, находим
+\begin{align*}
+& \xi^0_{(1)} = C_{1(1)}+(2C_{3(1)}-C_{4(1)})t+2C_{3(0)}t+C_{4(0)}t (\ln t-2)-A_1 C_{4(0)}t, \\
+& \xi^1_{(0)} = C_{2(1)}+C_{3(1)}x, \\
+& \eta_{(1)} = C_{4(1)}-C_{4(0)} \ln t -2 A_2 C_{4(0)} u,
+\end{align*}
+где $C_{i(1)} \ (i=1,2,3,4)$~--- произвольные постоянные.
+
+\vspace{2mm}
+\textit{Случай III. $k_{(0)}(u)=u^{\sigma} \ (\sigma \neq 0).$}
+
+Из классификации \cite{LSU:Ovs} уравнения теплопроводности имеем
+\begin{align*}
+& \xi^0_{(0)} = C_{1(0)}+2C_{3(0)}t, \nonumber \\
+& \xi^1_{(0)} = C_{2(0)}+C_{3(0)}x+C_{4(0)} \sigma x-C_{5(0)}x^2, \label{LSU:X0_us}\\
+& \eta_{(0)} = 2C_{4(0)} u + 3C_{5(0)} xu, \nonumber
+\end{align*}
+где $C_{5(0)} \neq 0$ только при $\sigma=-4/3$.
+
+Аналогично предыдущим случаям, расщепление соответствующего определяющего уравнения по $D^{n}_t u$ $(n \ge 2)$, $u_t u_x$, $u_t u_x^2$, $u_{tx}$, $u_{tx} u_x$ дает уравнения
+$$
+C_{1(0)}=0, \quad \xi^0_{(1)u}=0, \quad \xi^0_{(1)x}=0, \quad \xi^1_{(1)u}=0, 
+$$
+с учетом которых дальнейшее расщепление по $u_t$, $u_x$, $u_x^2$ приводит к системе 
+\begin{align*}
+& 2 \xi^1_{(1)x}-\xi^0_{(1)t}-\sigma u^{-1}\eta_{(1)}=-2C_{3(0)}+(2C_{4(0)}+3C_{5(0)}x)[u(u^{-\sigma}k_{(1)})_u], \\
+& 2 (u^{\sigma} \eta_{(1)x})_u -u^{\sigma} \xi^1_{(1)xx}+\xi^1_{(1)t}=-2C_{5(0)}(4k_{(1)}+3k'_{(1)}u), \\
+& \eta_{(1)uu}+\sigma u^{-1}\eta_{(1)u}-\sigma u^{-2} \eta_1=-(2C_{4(0)}+3C_{5(0)x}) \left[u (u^{-\sigma} k_{(1)})_u \right]_u, \\
+& \eta_{(1)t}-u^{\sigma} \eta_{(1)xx}=0.
+\end{align*}
+
+Из первого и третьего уравнений имеем $\eta_{(1)uu}=0$. Тогда из первого уравнения получаем классифицирующее соотношение на функцию $k_{(1)}(u)$ в виде
+$$
+(2C_{4(0)}+3C_{5(0)}x)[u^2(u^{-\sigma}k_{(1)})_u]_{uu}=0. 
+$$
+Так как постоянные $C_{4(0)}$ и $C_{5(0)}$ одновременно не равны нулю (иначе имеем случай I), то расширение группы возможно только при 
+\begin{equation}
+\label{LSU:P14_E2}
+k_{(1)}(u)=u^{\sigma}\left[A_0+\sigma \dfrac{A_1}{u}+A_2 \ln u \right],
+\end{equation}
+где $A_0$, $A_1$, $A_2$~--- произвольные постоянные. 
+
+Подставляя \eqref{LSU:P14_E2} в приведенную выше систему и разрешая ее, приходим к следующим результатам. 
+
+Для $k_{(0)}(u)=u^{\sigma}$ $(\sigma \neq 0)$, $k_{(1)}(u)$ вида \eqref{LSU:P14_E2} и $C_{5(0)}=0$ имеем
+\begin{align*}
+& \xi^0_{(1)} = C_{1(1)}+2C_{3(1)}t+2C_{3(0)}t-2 A_2 C_{4(0)}t,  \\
+& \xi^1_{(1)} = C_{2(1)}+C_{3(1)}x+C_{4(1)} \sigma x, \\
+& \eta_{(1)} = 2C_{4(1)} u + 2 A_1 C_{4(0)}.
+\end{align*}
+
+Для $k_{(0)}(u)=u^{-\frac{4}{3}}$ и $C_{5(0)} \neq 0$ система имеет решение только если в функции $k_{(1)}(u)$ вида \eqref{LSU:P14_E2} $A_2=0$: 
+%, то есть
+%$$
+%k_{(1)}(u)=u^{-\frac{4}{3}}\left[A_0-\dfrac{4A_1}{3u}\right].
+%$$
+%Решение рассматриваемой системы в этом случае имеет вид
+\begin{align*}
+& \xi^0_{(1)} = C_{1(1)}+2C_{3(1)}t+2C_{3(0)}t,  \\
+& \xi^1_{(1)} = C_{2(1)}+C_{3(1)}x-2C_{4(1)} x-C_{5(1)} x^2, \\
+& \eta_{(1)} = 3C_{4(1)} u + 3 C_{5(1)} xu+A_1 \left(2C_{4(0)}+3C_{5(0)}x\right).
+\end{align*}
+
+\vspace{2mm}
+\textit{Случай IV. Возмущение линейного уравнения $(k_{(0)}(u)=1).$}
+
+В этом случае из \cite{LSU:Ovs} имеем 
+\begin{align}
+& \xi^0_{(0)} = C_{1(0)}+2C_{3(0)}t-4C_{5(0)}t^2, \nonumber \\
+& \xi^1_{(0)} = C_{2(0)}+C_{3(0)}x-2C_{4(0)}t-4C_{5(0)}xt, \label{LSU:X0_k1}\\
+& \eta_{(0)} = (C_{6(0)}+C_{4(0)} x +C_{5(0)} x^2 +2 C_{5(0)} t)u+g(t,x), \nonumber
+\end{align}
+где $g(t,x)$~--- произвольное решение уравнения $g_t=g_{xx}$ и $C_{i(0)} \ (i=1,\ldots, 6)$~--- произвольные постоянные.
+
+С учетом \eqref{LSU:X0_k1} для координат продолженного оператора имеем
+\begin{align*}
+& \zeta^1_{1(0)} =(C_{6(0)}-C_{3(0)}+C_{4(0)} x +C_{5(0)} x^2 +6 C_{5(0)} t)u_x+(C_{4(0)}+2C_{5(0)} x)u +g_x, \\
+& \zeta^2_{1(0)} =(C_{6(0)}-2C_{3(0)}+C_{4(0)} x +C_{5(0)} x^2 +10 C_{5(0)} t)u_{xx}+\\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \quad  +2(C_{4(0)}+2C_{5(0)} x)u_x +C_{5(0)} u +g_{xx}, \\
+& \zeta^n_{0(0)} = (C_{6(0)}+C_{4(0)} x +C_{5(0)} x^2 +2 C_{5(0)} t - 2kC_{3(0)}+8C_{5(0)}t) D^{n}_t u + \\
+& \qquad \qquad \qquad  \quad  +2k(2k-1)C_{5(0)} D^{n-1}_t u +2k(C_{4(0)}+2C_{5(0)} x)D^{n-1}_t u_x +D^{n}_t g.
+\end{align*}
+
+Расщепление соответствующего определяющего уравнения по переменным $D^{n}_t u$ и $D^{n}_t u_x$ $(n \ge 2)$ дает
+$$
+C_{1(0)}=0, \quad C_{4(0)}=0, \quad C_{5(0)}=0, \quad \xi^1_{(1)u}=0. 
+$$
+Дальнейшее расщепление по $u_t u_x$, $u_t u_x^2$, $u_{tx}$, $u_{tx} u_x$ приводит к уравнениям
+$$
+\xi^0_{(1)u}=0, \quad \xi^0_{(1)x}=0. 
+$$
+С учетом приведенных уравнений, расщепление оставшейся части определяющего уравнения по $u_t$, $u_x$, $u_x^2$ дает систему
+\begin{align*}
+& 2 \xi^1_{(1)x}-\xi^0_{(1)t}=-2C_{3(0)}+(C_{6(0)} u+g)k'_{(1)}, \\
+& 2 \eta_{(1)xu}-\xi^1_{(1)xx}+\xi^1_{(1)t}=-2g_x k'_{(1)}, \\
+& \eta_{(1)uu}=-C_{6(0)} (u k'_{(1)})_{u} - g k''_{(1)}, \\
+& \eta_{(1)t}-\eta_{(1)xx}=k_{(1)}g_{xx}-[(\ln t+\gamma-1)g]_t-\sum_{n=1}^{\infty} \dfrac{(-1)^n t^n}{n(n+1)!}D^{n+1}_t g.
+\end{align*}
+
+Дифференцирование по $u$ первого уравнения данной системы приводит к классифицирующему соотношению для $k_{(1)}(u)$:
+$$
+C_{6(0)} k'_{(1)} + (C_{6(0)} u + g)k''_{(1)}=0. 
+$$
+Возможны следующие четыре случая:
+\begin{enumerate}[label={\alph*)}]
+	\item $k_{(1)}(u)$~--- произвольная функция и $g(t,x)=0, \ C_{6(0)}=0$;
+	\item $k_{(1)}(u)=A_0+A_1 u$, $C_{6(0)}=0$;
+	\item $k_{(1)}(u)=A_0+A_1 \ln u$, $g(t,x)=0$;
+	\item $k_{(1)}(u)=A_0$,
+\end{enumerate}
+где $A_0$ и $A_1$~--- произвольные постоянные. Для каждого из этих случаев было получено решение приведенной выше системы. 
+
+a) Для произвольной $k_{(1)}(u)$:
+\begin{align*}
+& C_{1(0)}=C_{4(0)}=C_{5(0)}=C_{6(0)}=g(t,x)=0, \\
+& \xi^0_{(1)} = C_{1(1)}+2C_{3(1)}t-4C_{5(1)} t^2+2C_{3(0)}t, \\
+& \xi^1_{(1)} = C_{2(1)}+C_{3(1)} x -2C_{4(1)} t-4C_{5(1)} xt, \\
+& \eta_{(1)} = (C_{6(1)}+C_{4(1)} x +C_{5(1)} x^2 +2 C_{5(1)} t)u+h(t,x), \quad h_t=h_{xx}.
+\end{align*}
+
+b) Для $k_{(1)}(u)=A_1 u+A_0$:
+\begin{align*}
+& C_{1(0)}=C_{4(0)}=C_{5(0)}=C_{6(0)}=0, \\
+& g(t,x)=G_1\left(t^2+tx^2+\dfrac{x^4}{12}\right)+G_2 \left(tx+\dfrac{x^3}{6}\right)+G_3 (2t+x^2)+G_4x+G_5; \\
+& \xi^0_{(1)} = C_{1(1)}+2C_{3(1)}t-4C_{5(1)} t^2+2C_{3(0)}t-\dfrac{4}{3}A_1 G_1 t^3, \\
+& \xi^1_{(1)} = C_{2(1)}+C_{3(1)} x -2C_{4(1)} t-4C_{5(1)} xt+ A_1 \left[ G_1 \left(-\dfrac{3t^2x}{2}+\dfrac{tx^3}{6}+\dfrac{x^5}{120} \right)+ \right. \\ 
+& \qquad \left.+G_2 \left(-\dfrac{3t^2}{4}+\dfrac{tx^2}{4}+\dfrac{x^4}{48} \right)+
+   G_3 \left(tx+\dfrac{x^3}{6} \right) +G_4 \dfrac{x^2}{4}+G_5 \dfrac{x}{2} \right],\\
+& \eta_{(1)} = (C_{6(1)}+C_{4(1)} x +C_{5(1)} x^2 +2 C_{5(1)} t)u+\\
+& \qquad + A_1 \left[G_1\left(t^2-\dfrac{x^4}{12}\right)-G_2 \dfrac{x^3}{6} -G_3 x^2 -\dfrac{3}{4}G_4 x  \right]u+ \\
+& \qquad +G_1 \left[\left(2A_0-3\ln t-2\gamma+\dfrac{9}{2}\right)t^2+(A_0-2\ln t-\gamma+2)tx^2-\dfrac{x^4}{12}\ln t \right]+\\
+& \qquad + G_2 \left[(A_0-2\ln t-\gamma+2)xt-\dfrac{x^3}{6} \ln t \right]+ \\
+& \qquad + G_3 \left[2(A_0-2 \ln t -\gamma+2)t-x^2 \ln t \right]+ G_4 \dfrac{t}{4}(t+x^2)-G_5 \ln t + h(t,x),\\
+& \qquad h_t=h_{xx}.
+%+\left(A_0-\ln t -\gamma+1\right)[G_1(2t+x^2)+G_2x+2G_3]-\\
+%& \qquad \qquad -G_1\left(x^2+\dfrac{x^4}{12t}\right)-G_2 \left(x+\dfrac{x^3}{6t}\right)-G_3 \left(2+\dfrac{x^2}{t}\right)-G_4 \dfrac{x}{t}-G_5 \dfrac{1}{t}.
+\end{align*} 
+
+c) Для $k_{(1)}(u)=A_1 \ln u+A_0$:
+\begin{align*}
+& C_{1(0)}=C_{4(0)}=C_{5(0)}=g(t,x)=0, \\
+& \xi^0_{(1)} = C_{1(1)}+2C_{3(1)}t-4C_{5(1)} t^2+2C_{3(0)}t-A_1 C_{6(0)}t, \\
+& \xi^1_{(1)} = C_{2(1)}+C_{3(1)} x -2C_{4(1)} t-4C_{5(1)} xt, \\
+& \eta_{(1)} = (C_{6(1)}+C_{4(1)} x +C_{5(1)} x^2 +2 C_{5(1)} t)u+h(t,x), \\
+& \qquad \ \ h_t=h_{xx}.
+\end{align*}
+
+d) Для $k_{(1)}(u)=A_0$:
+\begin{align*}
+& C_{1(0)}=C_{4(0)}=C_{5(0)}=0, \\
+& \xi^0_{(1)} = C_{1(1)}+2C_{3(1)}t-4C_{5(1)} t^2+2C_{3(0)}t, \\
+& \xi^1_{(1)} = C_{2(1)}+C_{3(1)} x -2C_{4(1)} t-4C_{5(1)} xt, \\
+& \eta_{(1)} = (C_{6(1)}+C_{4(1)} x +C_{5(1)} x^2 +2 C_{5(1)} t)u+h(t,x), \\
+& h_t=h_{xx}+A_0g_{xx}-[(\ln t+\gamma-1)g]_t-\sum_{n=1}^{\infty} \dfrac{(-1)^n t^n}{n(n+1)!}D^{n+1}_t g.
+\end{align*}
+
+%Таким образом, всюду, кроме последнего случая $k_{(1)}(u)=A_0$, бесконечная группа невозмущенного уравнения, порождаемая оператором $X_{\infty}=g(t,x) \frac{\partial}{\partial x}$ $(g_t=g_{xx})$, разрушается. 
+
+В результате доказана следующая
+
+\begin{theorem}
+Приближенное уравнение субдиффузии \eqref{LSU:AFSDE} в случае произвольной функции $k(u)=k_{(0)}(u)+\varepsilon k_{(1)}(u)$ допускает пятипараметрическую группу приближенных точечных преобразований, порождаемую операторами
+\begin{eqnarray*}
+& X_1=\dfrac{\partial}{\partial x}, \quad
+X_2=2t\dfrac{\partial}{\partial t}+(1-\varepsilon)x\dfrac{\partial}{\partial x}, \\
+& X_3=\varepsilon \dfrac{\partial}{\partial t}, \quad 
+X_4=\varepsilon \dfrac{\partial}{\partial x}, \quad
+X_5=2\varepsilon t\dfrac{\partial}{\partial t}+\varepsilon x\dfrac{\partial}{\partial x}.
+\end{eqnarray*}
+
+Расширение группы имеет место в следующих случаях.
+
+\noindent $\mathbf{I.}$ $k(u)=e^u [1+\varepsilon(A_0+A_1 u +A_2 u^2)].$
+
+Группа является семипараметрической и расширяется операторами
+$$
+X_6=[1-\varepsilon (\ln t-2-A_1)]t\dfrac{\partial}{\partial t}-[1-\varepsilon(\ln t+2A_2 u)]\dfrac{\partial}{\partial u}, \quad
+X_7=\varepsilon t\dfrac{\partial}{\partial t}-\varepsilon \dfrac{\partial}{\partial u}.
+$$
+
+\noindent $\mathbf{II.}$ $k(u)=u^{\sigma}\left[1+\varepsilon\left(A_0+\sigma \dfrac{A_1}{u}+A_2 \ln u \right)\right]$ $(\sigma \neq 0)$.
+
+Группа является семипараметрической и расширяется операторами
+$$
+X_6=-2A_2 \varepsilon t\dfrac{\partial}{\partial t}+\sigma x \dfrac{\partial}{\partial x} + 2(u+\varepsilon A_1) \dfrac{\partial}{\partial u}, \quad
+X_7=\varepsilon \sigma x \dfrac{\partial}{\partial x} + 2 \varepsilon u \dfrac{\partial}{\partial u}.
+$$
+
+\noindent $\mathbf{III.}$ $k(u)=u^{-\frac{4}{3}}\left[1+\varepsilon\left(A_0-\dfrac{4A_1}{3u}\right)\right]$.
+
+Группа является девятипараметрической и расширяется операторами
+\begin{align*}
+& X_6=2 x \dfrac{\partial}{\partial x} - 3(u+\varepsilon A_1) \dfrac{\partial}{\partial u}, \quad
+& & X_7=x^2 \dfrac{\partial}{\partial x} - 3x(u+\varepsilon A_1) \dfrac{\partial}{\partial u}, \\
+& X_8=2 \varepsilon x \dfrac{\partial}{\partial x} - 3 \varepsilon u \dfrac{\partial}{\partial u}, \quad
+& & X_9=\varepsilon x^2 \dfrac{\partial}{\partial x} - 3 \varepsilon xu \dfrac{\partial}{\partial u}. 
+\end{align*}
+
+\noindent $\mathbf{IV.}$ $k(u)=1+\varepsilon k_1(u)$.
+
+$\mathrm{IV}.1.$ $k_1(u)$~--- произвольная функция.
+
+Группа является бесконечномерной и расширяется операторами
+\begin{eqnarray*}
+& X_6=2\varepsilon t\dfrac{\partial}{\partial x}-\varepsilon x u\dfrac{\partial}{\partial u}, \quad
+X_7=-4\varepsilon t^2 \dfrac{\partial}{\partial t}-4\varepsilon tx\dfrac{\partial}{\partial x}+\varepsilon (2t+x^2) u \dfrac{\partial}{\partial u}, \quad \\
+& X_8=\varepsilon u\dfrac{\partial}{\partial u}, \quad
+X_{\infty}=\varepsilon h(t,x) \dfrac{\partial}{\partial u},
+\end{eqnarray*}
+где $h(t,x)$~--- произвольное решение уравнения $h_t=h_{xx}$.
+
+$\mathrm{IV}.2.$ $k_1(u)=A=const$.
+
+Группа является бесконечномерной и расширяется операторами
+\vspace{-2mm}
+\begin{eqnarray*}
+& X_6=u\dfrac{\partial}{\partial u}, \quad
+X_7=-4\varepsilon t^2 \dfrac{\partial}{\partial t}-4\varepsilon tx\dfrac{\partial}{\partial x}+\varepsilon (2t+x^2) u \dfrac{\partial}{\partial u}, \quad \\
+& X_8=2\varepsilon t\dfrac{\partial}{\partial x}-\varepsilon x u\dfrac{\partial}{\partial u}, \ \
+X_{9}=\varepsilon u\dfrac{\partial}{\partial u}, \ \
+X_{1\infty}=g(t,x) \dfrac{\partial}{\partial u}, \ \
+X_{2\infty}=\varepsilon h(t,x) \dfrac{\partial}{\partial u},
+\end{eqnarray*}
+где $g(t,x)$ и $h(t,x)$~--- соответственно произвольные решения уравнений
+\vspace{-2mm}
+$$
+g_t=g_{xx}, \quad h_t=h_{xx}+A g_{xx}-[(\ln t+\gamma-1)g]_t-\sum_{n=1}^{\infty} \dfrac{(-1)^n t^n}{n(n+1)!}D^{n+1}_t g.
+$$
+
+$\mathrm{IV}.3.$ $k_1(u)=A_0+A_1 \ln u$.
+
+Группа является бесконечномерной и расширяется операторами
+\begin{eqnarray*}
+& X_6 = \varepsilon A_1 t\dfrac{\partial}{\partial t}-u\dfrac{\partial}{\partial u}, \quad
+X_7=-4\varepsilon t^2 \dfrac{\partial}{\partial t}-4\varepsilon tx\dfrac{\partial}{\partial x}+\varepsilon (2t+x^2) u \dfrac{\partial}{\partial u}, \\
+& X_8=\varepsilon u\dfrac{\partial}{\partial u}, \quad
+X_9=2\varepsilon t\dfrac{\partial}{\partial x}-\varepsilon x u\dfrac{\partial}{\partial u}, \quad
+X_{\infty}=\varepsilon h(t,x) \dfrac{\partial}{\partial u},
+\end{eqnarray*}
+где $h(t,x)$~--- произвольное решение уравнения $h_t=h_{xx}$.
+
+$\mathrm{IV}.4.$ $k_1(u)=A_0+A_1 u$.
+
+Группа является бесконечномерной и расширяется операторами
+\begin{eqnarray*}
+%\begin{multline*}
+& X_6=2\varepsilon t\dfrac{\partial}{\partial t}+\varepsilon x\dfrac{\partial}{\partial x}, \quad
+X_7=-4\varepsilon tx\dfrac{\partial}{\partial x}-4\varepsilon t^2 \dfrac{\partial}{\partial t}+\varepsilon (2t+x^2) u \dfrac{\partial}{\partial u}, \\
+& X_8=\varepsilon u\dfrac{\partial}{\partial u}, \quad
+X_9=-\varepsilon \dfrac{4}{3} A_1 t^3\dfrac{\partial}{\partial t} + \varepsilon A_1 \left(-\dfrac{3t^2x}{2}+\dfrac{tx^3}{6}+\dfrac{x^5}{120} \right)\dfrac{\partial}{\partial x} + \\
+& +\left\{ \left[1+\varepsilon \left(2A_0-3\ln t-2\gamma+\dfrac{9}{2}+ A_1 u\right)\right]t^2+ \right. \\
+& \left. +\left[1+\varepsilon (A_0-2\ln t-\gamma+2) \right] tx^2 + [1-\varepsilon (A_1 u+\ln t)]\dfrac{x^4}{12} \right\}
+\dfrac{\partial}{\partial u}, \\
+& X_{10}=\varepsilon A_1 \left(-\dfrac{3t^2}{4}+\dfrac{tx^2}{4}+\dfrac{x^4}{48} \right) \dfrac{\partial}{\partial x}+\\
+& +\left\{\left[1+\varepsilon(A_0-2\ln t-\gamma+2)\right]tx+ [1-\varepsilon (A_1 u +\ln t)] \dfrac{x^3}{6} \right\}\dfrac{\partial}{\partial u},\\
+& X_{11}=\varepsilon A_1 \left(tx+\dfrac{x^3}{6} \right) \dfrac{\partial}{\partial x}+ 
+\left\{[1+\varepsilon (A_0-2 \ln t -\gamma+2)]2t + \right. \\
+& \left. +[1-\varepsilon (A_1 u + \ln t)]x^2 \right\}\dfrac{\partial}{\partial u},\\
+& X_{12}=\varepsilon A_1 \dfrac{x^2}{4} \dfrac{\partial}{\partial x}+\left[x-\dfrac{\varepsilon}{4}(3 A_1 x u- t^2 -tx^2) \right] \dfrac{\partial}{\partial u},  \\
+& X_{13}=\varepsilon A_1 \dfrac{x}{2} \dfrac{\partial}{\partial x}+(1-\varepsilon \ln t)\dfrac{\partial}{\partial u}, \qquad 
+X_{\infty}=\varepsilon h(t,x) \dfrac{\partial}{\partial u}.
+\end{eqnarray*}\vspace{-4mm}
+%\end{multline*}
+\end{theorem}
+
+Сравнение полученных результатов с результатами групповой классификации уравнения \eqref{LSU:FSDE} из работы \cite{LSU:GKL_PS_09} показывает, что приближенное уравнение субдиффузии \eqref{LSU:AFSDE} обладает более широкой группой симметрий по сравнению с исходным дробно-дифференциальным уравнением субдиффузии \eqref{LSU:FSDE}. В частности, имеет место наследование группы в случае $k_{(0)}(u)=e^u$ (см. п.~I расширения группы в доказанной теореме). При групповой классификации дробно-дифференциального уравнения субдиффузии \eqref{LSU:FSDE} было показано, что случай $k_{\alpha}(u)=e^u$ не приводит к расширению допускаемой группы точечных преобразований. 
+
+С другой стороны, в \cite{LSU:GKL_PS_09} получено расширение допускаемой группы уравнения \eqref{LSU:FSDE} в случае $k_{\alpha}(u)=u^{-\frac{2\alpha}{\alpha-1}}$, который при $\alpha=1-\varepsilon$ переходит в $k_{1-\varepsilon}(u)=u^{-2+\frac{2}{\varepsilon}}$. Для приближенного уравнения субдиффузии \eqref{LSU:AFSDE0} этот случай является особым, поскольку данная функция $k_{1-\varepsilon}(u)$ не допускает разложения вида \eqref{LSU:K_u_app} по малому параметру $\varepsilon$ и не приводит, таким образом, к уравнению \eqref{LSU:AFSDE}.
+
+
+\Section[n]{Заключение}
+Проведенная в работе групповая классификация приближенного уравнения субдиффузии дает возможность построения приближенно инвариантных решений этого уравнения, которые будут являться приближенными решениями исходного дробно-дифференциального уравнения субдиффузии \eqref{LSU:FSDE}. Поскольку допускаемая группа приближенного уравнения оказалась более широкой, чем группа исходного уравнения, не все такие приближенные решения могут быть получены из точных инвариантных решений уравнения \eqref{LSU:FSDE} путем разложения по малому параметру $\varepsilon=1-\alpha$, то есть ряд таких решений будут новыми. Для нахождения всех таких неподобных приближенно инвариантных решений требуется построение оптимальной системы подалгеб алгебр Ли приближенных инфинитезимальных оператров, соответствующих отдельно каждому случаю групповой классификации из доказанной в данной работе теоремы, что представляет собой самостоятельную задачу для продолжения исследований.  
+
+%{\thanks{Работа выполнена при поддержке РФФИ $($проект \rm \No~$07{-}01{-}00478{-}a).$}}
+
+\vspace{5mm}
+\textbf{ORCID \\
+Станислав Юрьевич Лукащук http://orcid.org/0000-0001-9209-5155 \\
+Stanislav Yu. Lukashchuk  http://orcid.org/0000-0001-9209-5155
+}
+%% Благодарности, гранты и прочее
+
+\begin{thebibliography}{9}
+
+\RBibitem{LSU:SKM}  
+\by Самко~С.\,Г., Килбас~А.\,А., Маричев~О.\,И.
+\book Интегралы и производные дробного порядка и некоторые их приложения
+\publaddr Минск
+\publ Наука и техника
+\yr 1987
+\finalinfo 688~с	
+
+\RBibitem{LSU:KST}
+\by Kilbas~A.\,A., Srivastava~H.\,M., Trujillo~J.\,J.
+\book Theory and applications of fractional differential equations
+\publaddr Amsterdam
+\publ Elsevier
+\yr 2006
+\finalinfo 523~с
+	
+\RBibitem{LSU:Nah}
+\by Нахушев~А.\,М.
+\book Дробное исчисление и его применение
+\publaddr М.
+\publ ФИЗМАТЛИТ
+\yr 2003
+\finalinfo 272~с
+	
+\RBibitem{LSU:Uch}
+\by	Учайкин~В.\,В.
+\book Метод дробных производных
+\publaddr Ульяновск
+\publ Изд-во <<Артишок>>
+\yr 2008
+\finalinfo 512~с
+	
+\RBibitem{LSU:Mai}
+\by Mainardy~F.
+\book Fractional calculus and waves in linear viscoelasticity. An introduction to mathematical models
+\publaddr Singapore
+\publ  Imperial College Press
+\yr 2010
+\finalinfo 367~с
+	
+\RBibitem{LSU:GKMKD}
+\by Головизнин~В.\,М., Кондратенко~П.\,С., Матвеев~Л.\,В., Короткин~И.\,А., Драников~И.\,Л.
+\book Аномальная диффузия радионуклидов в сильнонеоднородных геологических формациях
+\publaddr М.
+\publ Наука
+\yr 2010
+\finalinfo 342~с
+
+\RBibitem{LSU:Tar}
+\by Tarasov~V.\,E.
+\book Fractional dynamics: application of fractional calculus to dynamics of particles, fields and media
+\publaddr Heidelberg
+\publ Springer
+\yr 2011
+\finalinfo 504~с
+	
+\RBibitem{LSU:BDST}
+\by Baleanu~D., Diethelm~K., Scalas~E., Trujillo~J.\,J.
+\book Fractional calculus: models and numerical methods
+\publaddr Singapore
+\publ World Scientific
+\yr 2012
+\finalinfo 400~с
+	
+\RBibitem{LSU:US}
+\by	Uchaikin~V., Sibatov~R.
+\book Fractional kinetics in solids: Anomalous charge transport in semicon\-ductors, dielectrics and nanosystems
+\publaddr Singapore
+\publ World Scientific
+\yr 2013
+\finalinfo 276~с
+	
+\RBibitem{LSU:Ovs}
+\by Овсянников~Л.\,В.
+\book Групповой анализ дифференциальных уравнений
+\publaddr М.
+\publ Наука
+\yr 1978
+\finalinfo 400~с
+	
+\RBibitem{LSU:Ibr}
+\by Ибрагимов~Н.\,Х.
+\book Группы преобразований в математической физике
+\publaddr М.
+\publ Наука
+\yr 1983
+\finalinfo 280~с
+	
+\RBibitem{LSU:GKL_VU_07}
+\by Газизов~Р.\,К., Касаткин~А.\,А., Лукащук~С.\,Ю.
+\paper Непрерывные группы преобразований дифференциальных уравнений дробного порядка
+\jour Вестник УГАТУ
+\yr 2007
+\issue 3 (21)
+\pages 125--135
+	
+\RBibitem{LSU:GKL_PS_09}
+\by Gazizov~R.\,K., Kasatkin~A.\,A., Lukashchuk~S.\,Yu.
+\paper Symmetry properties of fractional diffusion equations
+\jour  Physica Scripta
+\yr 2009
+\issue T~136
+\pages 014016
+	
+\RBibitem{LSU:GKL_UMJ_12}
+\by Газизов~Р.\,К., Касаткин~А.\,А., Лукащук~С.\,Ю.
+\paper Уравнения с производными дробного порядка: замены переменных и нелокальные симметрии
+\jour Уфимский математический журнал
+\yr 2012
+\issue 4
+\pages 54--63
+
+\RBibitem{LSU:TZ_PA_06}
+\by Tarasov~V.\,E., Zaslavsky~G.\,M
+\paper Dynamics with low-level fractionality
+\jour Physica~A
+\yr 2006
+\issue 2
+\pages 399--415
+	
+\RBibitem{LSU:TG_PA_08}
+\by Tofighi~A., Golestani~A.
+\paper A perturbative study of fractional relaxation phenomena
+\jour Physica~A
+\yr 2008
+\issue 8-9
+\pages 1807--1817
+	
+\RBibitem{LSU:Tof_IJSM_13}
+\by Tofighi~A.
+\paper An especial fractional oscillator
+\jour Int. J. Stat. Mech.
+\yr 2013
+\issue 175273
+\pages 1--5
+
+\RBibitem{LSU:Nay}
+\by Найфэ~А.\,Х.
+\book Методы возмущений
+\publaddr М.
+\publ Мир
+\yr 1976
+\finalinfo 446~с
+	
+\RBibitem{LSU:BGI_MSb_88}
+\by Байков~В.\,А., Газизов~Р.\,К., Ибрагимов~Н.\,Х.
+\paper Приближенные симметрии
+\jour Матем. сб.
+\yr 1988
+\issue 4
+\pages 435--450
+	
+\RBibitem{LSU:BGI_INT_89}
+\by Байков~В.\,А., Газизов~Р.\,К., Ибрагимов~Н.\,Х.
+\paper Методы возмущений в групповом анализе
+\jour Итоги науки и техники. Современные проблемы математики. Новейшие достижения
+\issue 34
+\yr 1989
+\pages 85--147
+
+\RBibitem{LSU:BGI_DU_93}
+\by Байков~В.\,А., Газизов~Р.\,К., Ибрагимов~Н.\,Х.
+\paper Приближенные группы преобразований
+\jour Дифференциальные уравнения
+\yr 1993
+\issue 10
+\pages 1712--1732
+
+\RBibitem{LSU:MK_PR_00}
+\by Metzler~R., Klafter~J.
+\paper The random walk's guide to anomalous diffusion: a fractional dynamics approach
+\jour Phys. Rep.
+\yr 2000
+\issue 339
+\pages 1--77
+
+\RBibitem{LSU:Uch_UFN_03}
+\by Учайкин~В.\,В.
+\paper Автомодельная аномальная диффузия и устойчивые законы
+\jour УФН
+\yr 2003
+\issue 8
+\pages 847--876
+	
+\RBibitem{LSU:Psh}
+\by Псху~А.\,В.
+\book Уравнения в частных производных дробного порядка
+\publaddr М.
+\publ Наука
+\yr 2005
+\finalinfo 199~с
+
+\RBibitem{LSU:Luc}
+\by Luchko~Yu.
+\paper Anomalous diffusion: models, their analysis, and interpretation
+\inbook Advances in applied analysis
+\publaddr Boston
+\publ Birkhauser Verlag
+\yr 2012
+\pages 115--145
+
+\RBibitem{LSU:Hus_VS_15}
+\by Хуштова~Ф.~Г.
+\paper Фундаментальное решение модельного уравнения аномальной диффузии дробного порядка
+\jour Вестн. Сам. гос. техн. ун-та. Сер. Физ.-мат. науки
+\yr 2015
+\issue 4
+\pages 722--735
+	
+\RBibitem{LSU:BTG_PRE_00}
+\by Bologna~M., Tsallis~C., Grigolini~P.
+\paper Anomalous diffusion associated with nonlinear fractional derivative fokker-planck-like equation: exact time-dependent solutions
+\jour Phys. Rev. E
+\yr 2000
+\issue 62:2
+\pages 2213--2218
+	
+\RBibitem{LSU:LLEMM_JSM_09}
+\by Lenzi~E.\,K., Lenzi~M.\,K., Evangelista~L.\,R., Malacarne~L.\,C., Mendes~R.\,S.
+\paper Solutions for a fractional nonlinear diffusion equation with external force and absorbent term
+\jour J. Stat. Mech.: Theory and Exper.
+\yr 2009
+\issue 2
+\pages P02048
+	
+\RBibitem{LSU:BV_NA_16}
+\by Bonforte~M., Vazquez~J.\,L.
+\paper Fractional nonlinear degenerate diffusion equations on bounded domains part I. Existence, uniqueness and upper bounds
+\jour Nonlin. Anal.: Theory, Methods and Appl.
+\yr 2016
+\issue 131
+\pages 363--398
+	
+\RBibitem{LSU:LM_AMC_15}
+\by Lukashchuk~S.\,Yu., Makunin~A.\,V.
+\paper Group classification of nonlinear time-fractional diffusion equation with a source term
+\jour Applied Mathematics and Computation
+\yr 2015
+\issue 257
+\pages 335--343
+
+\RBibitem{LSU:AS}
+\by Абрамовиц~М.,  Стиган~И.
+\book Справочник по специальным функциям
+\publaddr М.
+\publ Наука
+\yr 1979
+\finalinfo 832~с
+	
+\end{thebibliography}
+
+
+
+\newpage
+
+\chead[\fancyplain{}{\scriptsize \sl L\,u\,k\,a\,s\,h\,c\,h\,u\,k~S.\,Yu.}]{\fancyplain{}{\scriptsize \sl  Approximate Group Classification for a Perturbed Subdiffusion Equation}}
+
+\makeengtitlem
+
+
+
+\newpage
+
+%
+%\tableofengcontents
+%
+\end{document}

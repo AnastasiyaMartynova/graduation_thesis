@@ -1,0 +1,1060 @@
+%
+%
+%\input{../preamblw}
+%
+%\newcommand{\totop}[1]{\raisebox{6pt}[1pt][2pt]{#1}} 
+%
+%%\samgtupubl % для генерации pdf, отдаваемого в типографию СамГТУ
+%\pdfcrop % обрезка pdf для размещения на math-net.ru
+%\draft % На корректуре
+\nofilllastpage % Последняя страница не заполнена не полностью
+%\briefcomm % Статья является кратким сообщением
+
+\vsgtu{1284} % Номер статьи по базе Math-Net.ru
+
+\FirstPage{64}
+\LastPage{81}
+%
+%
+%\begin{document}
+%
+%\Partition{Механика деформируемого твёрдого тела}{}
+
+\renewcommand{\baselinestretch}{0.94}
+
+
+
+
+\udk{539.3}%Обработка текста. Подготовка текстов : Языки программирования. Компьютерные языки
+\msc{74S05}% Коды MSC см. http://www.ams.org/msc/
+
+\rutitle{Исследование напряженно"=деформированного состояния резинометаллической сейсмоопоры}% Полный заголовок
+{Исследование напряженно-деформированного состояния \dots}% Заголовок, который идёт в верхний колонтитул
+
+\ruauthor{С.~И.~Гоменюк, С.~Н.~Гребенюк, А.~А.~Бова, В.~З.~Юречко}
+{С.~И.~Г\,о\,м\,е\,н\,ю\,к,\ С.~Н.~Г\,р\,е\,б\,е\,н\,ю\,к,\ А.~А.~Б\,о\,в\,а,\ В.~З.~Ю\,р\,е\,ч\,к\,о}% 
+
+\ruaffil{\ruzap.}
+
+
+
+\email{4}{\mem{serega@znu.edu.ua} (S.I.~Gomenjuk), \mem{bova-anna@mail.ru} (A.A.~Bova, \linebreak \CAut), \mem{gsm1212@ukr.net} (S.N.~Grebenjuk), \mem{iuriechko@i.ua} (V.Z.~Jurechko)} 
+
+\ruauthordetails{2}{\fullauthor{\rupid{90701}{Сергей Иванович Гоменюк}}\regalia{д.т.н., проф.} \position{профессор} \dept{каф. математического моделирования}
+\fullauthor{\rupid{90702}{Сергей Николаевич Гребенюк}}\regalia{к.т.н., доц.} \position{доцент} \dept{каф. математического анализа}
+\fullauthor{\rupid{87676}{Анна Анатольевна Бова}} \position{аспирант} \dept{каф. математического анализа}
+\fullauthor{\rupid{90703}{Василий Зиновьевич Юречко}} \position{аспирант} \dept{каф. математического анализа}}
+
+\enauthordetails{2}{\fullauthor{\enpid{90701}{Sergej I. Gomenjuk}} \regalia{Dr. Techn. Sci.} \position{Professor} \dept{Dept. of Mathematic Modeling}
+\fullauthor{\enpid{90702}{Sergej N. Grebenjuk}} \regalia{Cand. Techn. Sci.} \position{Associate Professor} \dept{Dept. of Mathematical Analysis}
+\fullauthor{\enpid{87676}{Anna A. Bova}} \position{Postgraduate Student} \dept{Dept. of Mathematical Analysis}
+\fullauthor{\enpid{90703}{Vasilij Z. Jurechko}} \position{Postgraduate Student} \dept{Dept. of Mathematical Analysis}}
+
+\rukeywords{резинометаллическая сейсмоопора, моментная схема конечного элемента, кубическая аппроксимация, пористость, вязкоупругость}
+
+
+\ruabstract{Разработан конечно"=элементный подход для численного анализа параметров напряжённо"=деформированного состояния резинометаллической сейсмоопоры в условиях вязкоупругого деформирования при наличии слоев из пористой резины. Упругие характеристики пористой резины определялись методом самосогласования для пор сферической формы. Для моделирования вязкоупругого поведения использовались интегральные соотношения на основе наследственной теории Больцмана--Вольтерра. В качестве ядра релаксации используется экспоненциальное ядро, содержащее мгновенные и длительные упругие характеристики материала. На основе вариационного принципа строится конечно"=элементная модель деформирования конструкции с пространственной дискретизацией и дискретизацией по времени. Полученная система разрешающих уравнений содержит вектор дополнительной нагрузки, моделирующий реологические составляющие процесса деформирования; для ее решения использовался модифицированный метод Ньютона--Канторовича. Для повышения точности получаемых результатов применялась уточненная моментная схема конечного элемента с кубической аппроксимацией перемещений. Исследована численная сходимость конечно"=элементных схем на примере решения задачи Ляме для полого вязкоупругого цилиндра из пористой резины. Проведен расчёт резинометаллической сейсмоопоры в предположении о релаксации только модуля сдвига пористой резины. Получены основные параметры напряжённо"=деформированного состояния в зависимости от времени и марок применяемых резин.}
+
+\entitle{The Stress-strain State of the Rubber-metal Seismic Bearing}
+
+\enauthor{S.~I.~Gomenjuk, S.~N.~Grebenjuk, A.~A.~Bova, V.~Z.~Jurechko}{S.~I.~G\,o\,m\,e\,n\,j\,u\,k, S.~N.~G\,r\,e\,b\,e\,n\,j\,u\,k, A.~A.~B\,o\,v\,a, V.~Z.~J\,u\,r\,e\,c\,h\,k\,o}
+%
+%
+\enaffil{\enzap.}
+
+
+
+\enabstract{This work is devoted to elaboration of finite element approach for the numerical analysis of parameters of the stress-strain state of the rubber-metal seismic bearing under viscoelastic deformation in the presence of layers of porous rubber. Elastic characteristics of porous rubber were determined by self-consistency method for the spherical pores. The integral relations on the basis of Boltzmann--Volterra  hereditary theory have been used for viscoelastic behavior modeling. The exponential core containing instant and long elastic characteristics of the material has been used as core of relaxation. The finite element model of deforming the construction with spatial discretization and time discretization was built on the basis of the variational principle. The resulting system of resolving equations contains the additional load vector modeling the rheological constituents of the deformation process; a modified Newton--Kantorovich method has been used to solve this system. For increasing the accuracy of numerical results the precise finite element moment scheme with cubic approximation of displacements has been applied. The numerical convergence of the finite element schemes has been studied on the example of solution of Lame problem for hollow viscoelastic cylinder made of porous rubber. The rubber-metal seismic bearing was calculated on the assumption of the relaxation of the shift module of porous rubber only. The basic parameters of the stress-strain state have been obtained depending on the time and the applicable stamps of rubber.}
+
+\enkeywords{rubber-metal seismic bearing, finite element moment scheme, cubic approximation, porosity, relaxation core, viscoelasticity}
+
+\date{20/XII/2013} % Дата поступления статьи в редакцию.
+\revisiondate{29/I/2014} % В окончательном виде
+\accepteddate{21/II/2014}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+\makerutitle
+
+
+\newpage
+
+
+Анализ конструктивных особенностей сейсмоизоляции зданий, сооружений, инфраструктурных объектов показывает, что наиболее перспективным считается применение вибросейсмоизоляторов на основе резинометаллических конструкций. 
+Это позволяет защитить машины и сооружения при сейсмических колебаниях не только от воздействия в горизонтальной и вертикальной плоскостях, но и от кручения. Кроме того, применение резинометаллических слоистых виброизоляторов позволяет защитить здания и находящихся в них людей от вибрационных воздействий метрополитена, автомобильного и железнодорожного транспорта [\citen{gomenjukbovajurechko:bib:Dyrda}]. 
+
+Вибросейсмоизоляции зданий, сооружений посвящен ряд работ. 
+В работе А.~А.~Чылбак [\citen{gomenjukbovajurechko:bib:Chilbak}] предложена методика оценки сейсмопрочности сооружений, расположенных на системе сейсмоизоляции. Усовершенствованию инженерного метода расчёта многослойных силовых виброизоляторов для массового строительства виброизолированных зданий посвящена работа В.~В.~Моторина [\citen{gomenjukbovajurechko:bib:Motorin}]. В работе О.~А.~Ковальчука [\citen{gomenjukbovajurechko:bib:Koval}] рассмотрена эффективность работы резинометаллических виброизоляторов в каркасных зданиях. Подходы к решению задач о напряжённо"=деформированном состоянии  резинометаллических виброизоляторов рассмотрены в работе Ю.~Г.~Козуба [\citen{gomenjukbovajurechko:bib:Kozub}]. 
+Задача определения осадки резиновых элементов, работающих на сжатие, решалась в работах Э.~Э.~Лавендела [\citen{gomenjukbovajurechko:bib:Lavendel}], С.~И.~Дымникова [\citen{gomenjukbovajurechko:bib:Dymnikov}], В.~Л.~Бидермана, Н.~А.~Суховой [\citen{gomenjukbovajurechko:bib:Biderman}], В.~И.~Дырды [\citen{gomenjukbovajurechko:bib:Lisitsa}]. В работе В.~М.~Малькова [\citen{gomenjukbovajurechko:bib:Mal'kov}] даётся изложение теории и методов расчёта эластомерного слоя и многослойных конструкций.
+
+Растущая сложность резинометаллических виброизоляторов предусматривает учёт специфических свойств материала: слабой сжимаемости, реологических свойств, а также наличия пористости, что обусловлено широким внедрением пористых резин в различные отрасли науки и техники. 
+Исходя из особенностей деформирования актуальным является решение задачи о нахождении напряжённо"=деформированного состояния вибросейсмоизолятора с позиций теории вязкоупругости.
+
+Изучению вязкоупругих свойств материалов посвящены работы В.~В.~Киричевского [\citen{gomenjukbovajurechko:bib:Kirichevskij}], В.~Л.~Нарусберга [\citen{gomenjukbovajurechko:bib:Narusberg}]. 
+В работах [\citen{gomenjukbovajurechko:bib:Koval'chenko, gomenjukbovajurechko:bib:Lewis}] предлагаются различные подходы к описанию поведения упругих пористых сред. Вязкоупругое поведение пористых сред исследовалось в работах [\citen{gomenjukbovajurechko:bib:Bemer, gomenjukbovajurechko:bib:Chateau, gomenjukbovajurechko:bib:Coussy}]. 
+
+
+
+
+\smallskip
+
+\Section[]{Постановка задачи} 
+Решается статическая задача вязкоупругости в трёхмерной постановке для двухслойной цилиндрической резинометаллической сейсмоопоры. 
+Такой вибросейсмоопорой, предназначенной для сейсмозащиты многоэтажных жилых домов, является двухслойная сейсмоопора, разработанная Институтом геотехнической механики им. Н.~С.~Полякова НАН Украины и Государственным научно"=исследовательским институтом строительных конструкций (рис.~\ref{gom:fig1}).
+
+Первоначально резинометаллическая сейсмоопора выполнялась из сплошной резины. Улучшить жесткостные характеристики данной сейсмоопоры можно путём введения промежуточного слоя из композиционного материала. Однако такое конструктивное решение будет иметь недостаток "--- повышенную жёсткость на сдвиг, что не всегда удовлетворяет критериям виброизоляции зданий и сооружений. 
+Другим возможным развитием сейсмоопоры является введение слоев из пористой резины, что позволяет варьировать жесткостными характеристиками и снизить материалоёмкость конструкции.
+
+На рис. \ref{gom:fig2} приведена расчётная схема комбинированного резинового слоя: 1,~3 "--- пористая резина, 2 "--- сплошная резина; $R$ "--- радиус сейсмоопоры, $h$ "--- высота резинового слоя, $h_{1}=h_{2}=0.25h$, $P$ "--- распределённая поверхностная нагрузка, $Q$ "--- сдвиговая нагрузка. 
+резинометаллическая сейсмоопора снизу опирается на абсолютно жёсткую основу. 
+Боковая поверхность свободна от защемлений и нагрузок. 
+Граничные условия задачи записываются в следующем виде: 
+$$
+\bar{u}|_{x_{1}=0}=0, \quad  
+\sigma_{11}|_{x_{1}=h}=-P, \quad
+\sigma_{12}|_{x_{1}=h}=-Q,$$ 
+где $\bar{u}$ "--- вектор перемещений, $\sigma_{11}$ и $\sigma_{12}$ "--- нормальное и~касательное напряжения соответственно. 
+
+\begin{figure}[h!]
+\vspace{-3mm}
+\centering \footnotesize
+~~~~\includegraphics[scale=0.55]{gom-fig1} \hfill \includegraphics[scale=0.55]{gom-fig2}~~~~ \\
+
+\parbox[t]{.47\textwidth}{\centering 
+\caption{\label{gom:fig1}Двухслойная сейсмоопора}
+[Figure \ref{gom:fig1}. The bilayer seismic bearing]
+}
+\hfill
+\parbox[t]{.49\textwidth}{\centering 
+\caption{\label{gom:fig2}Cхема резинового слоя}
+[Figure \ref{gom:fig2}. The scheme for the rubber layer. \scriptsize
+Designations: 1, 3~-- a porous rubber; 2~-- a~solid rubber; $R$~-- a radius of the seismic bearing; $h$~-- a~rubber layer height; $h_1= h_2=0.25h$; $P$~-- distributed surface load; $Q$~-- shear load]
+}
+\end{figure}
+
+
+
+\smallskip
+
+\Section[]{Построение конечно"=элементной модели вязкоупругого деформирования резинометаллической сейсмоопоры на основе уточненной моментной схемы конечного элемента} 
+При решении задач механики деформируемого твёрдого тела для слабосжимаемых материалов возникают проблемы математического характера, когда коэффициент Пуассона $\nu\to 0.5$. Тогда в процессе формирования матрицы жёсткости  возникает необходимость в вычислении коэффициента ${E}/{(1-2\nu)}$, где $E$ "--- модуль упругости материала. 
+При $\nu\to 0.5$ данная величина стремится к бесконечности, и расчёт конструкций приводит к~неопределенностям.
+
+Одним из путей разрешения указанных трудностей является применение моментной схемы конечного элемента (МСКЭ) [\citen{gomenjukbovajurechko:bib:Kirichevskij1, gomenjukbovajurechko:bib:Jurechko}], которая, кроме того, позволяет получать матрицу жёсткости конечного элемента,  учитывающую эффект <<ложного>> сдвига и абсолютные смещения конечного элемента как жёсткого целого.
+
+Рассмотрим шестигранный конечный элемент. Введём две системы координат "--- базисную $Oz^{1'}z^{2'}z^{3'}$ и местную криволинейную $O_{1}x^{1}x^{2}x^{3}$, связанную с конечных элементом (рис.~\ref{gom:fig3}).
+
+\begin{figure}[t!]
+\centering \footnotesize
+\includegraphics[scale=0.55]{gom-fig3} 
+\caption{Криволинейный конечный элемент \label{gom:fig3}} 
+
+[Figure \ref{gom:fig3}. The curvilinear finite element]
+\end{figure}
+
+Для построения конечно"=элементной модели воспользуемся вариационным принципом. Рассмотрим вариацию полной потенциальной энергии системы:
+\begin{equation}
+\delta \Pi=\delta \widetilde W-\delta A.
+\label{gom:eq1}
+\end{equation}
+Здесь $\delta \widetilde W$ "--- вариация внутренней энергии вязкоупругого деформирования:
+\begin{equation}
+\delta \widetilde W=\iiint_{V}\widetilde\sigma^{ij}(t)\delta\varepsilon_{ij}dV; \label{gom:eq2}
+\end{equation}
+$\delta A$ "--- вариация работы распределенных объемных $P^{i}$ и поверхностных $F^{i}$ сил:
+$$\delta A=\iiint_{V} P^{i}\delta u_{i}dV+\iint_{S} F^{i}\delta u_{i}dS.$$
+
+Тензор вязкоупругих напряжений на основе наследственной теории Больцмана"--~Вольтерра запишется в виде
+\begin{equation}
+\widetilde{\sigma}^{ij}(t)=C_{0}^{ijkl}\varepsilon_{kl}(t)-\int_{0}^t(C_{0}^{ijkl}-{C}_{\infty}^{ijkl})e^{-(t-\tau)}\varepsilon_{kl}(\tau)d\tau, 
+\label{gom:eq3}
+\end{equation}
+где ${C}_{0}^{ijkl}$ и ${C}_{\infty}^{ijkl}$ "--- компоненты тензора мгновенных и~длительных упругих постоянных, которые определяются соотношением
+\begin{equation}
+C^{ijkl}=Bg^{ij}g^{kl}+G\Bigl(g^{ik}g^{jl}+g^{il}g^{jk}-\frac{2}{3}g^{ij}g^{kl}\Bigr), \label{gom:eq4}
+\end{equation}
+где $g^{ij}$ "--- компоненты метрического тензора, $B$ и $G$ "--- мгновенные или длительные модули объёмного сжатия и сдвига соответственно.
+
+Выражение \eqref{gom:eq3} с~учётом симметричности тензора напряжений и с~учётом выражения \eqref{gom:eq4} можно представить в виде
+\begin{multline}
+\label{gom:eq5}
+\widetilde{\sigma}^{ij}(t)=B_{0}g^{ij}\theta(t)+2G_{0}\Bigl(g^{ik}g^{jl}\varepsilon_{kl}(t)-\frac{1}{3}g^{ij}\theta(t)\Bigr)-
+\\
+-\int_{0}^t\Bigl((B_{0}-B_{\infty})g^{ij}\theta(\tau)+ \\ +2(G_{0}-  G_{\infty})\Bigl(g^{ik}g^{jl}\varepsilon_{kl}(\tau)-
+\frac{1}{3}g^{ij}\theta(\tau)\Bigr)\Bigr)e^{-(t-\tau)}d\tau, 
+\end{multline}
+где $\theta(t)=\varepsilon_{11}(t)+\varepsilon_{22}(t)+\varepsilon_{33}(t)$ "--- функция изменения объёма.
+
+Для определения упругих постоянных пористой резины в выражении \eqref{gom:eq5} воспользуемся методом самосогласования для пор сферической формы, в~рамках которого зависимость модуля объёмного сжатия $B_{p}$ и модуля сдвига $G_{p}$ пористой резины от их относительной плотности $\rho=1-p$ запишется в виде~[\citen{gomenjukbovajurechko:bib:Koval'chenko}]
+\begin{equation}
+\frac{B_{p}}{B}=1-\frac{1-\rho}{1-\alpha\rho}, \quad  \frac{G_{p}}{G}=1-\frac{1-\rho}{1-\beta\rho}, 
+\label{gom:eq6}
+\end{equation}
+где $$\alpha=\frac{1+\nu}{3(1-\nu)}, \quad  \beta=\frac{2}{15}\frac{4-5\nu}{1-\nu},$$ $\nu$ "--- коэффициент Пуассона матрицы, $p$ "--- пористость.
+
+Для построения конечно"=элементной модели представим интегральные соотношения \eqref{gom:eq5} в конечно"=разностной форме. 
+Допуская релаксацию только модуля сдвига $G_{p}$ пористой резины, получим $B_{0}=B_{\infty}$. 
+Полагая, что перемещения $u(t)$ и деформации $\varepsilon(t)$ изменяются линейно внутри каждого интервала времени, выражение для компонентов тензора напряжений \eqref{gom:eq5} запишем в виде
+\begin{multline}
+\widetilde{\sigma}^{ij}(t)=B_{p}g^{ij}\theta(t_{n})+2G_{p}
+\Bigl(g^{ik}g^{jl}\varepsilon_{kl}(t_{n})-\frac{1}{3}g^{ij}\theta(t_{n})\Bigr)-
+\\
+-\sum_{m=0}^{n-1}R_{m}\Bigl(g^{ik}g^{jl}\varepsilon_{kl}(t_{m})-\frac{1}{3}g^{ij}\theta(t_{m})\Bigr), 
+\label{gom:eq7}
+\end{multline}
+где $R_{m}=2(G_{p0}-G_{p\infty})(e^{t_{m+1}-t_{m}})$; $G_{p0}$, $G_{p\infty}$ "--- мгновенный и длительный модули сдвига пористой резины.
+
+Подставим компоненты тензора напряжений \eqref{gom:eq7} в вариацию энергии деформирования \eqref{gom:eq2}. В этом случае вариация полной потенциальной энергии \eqref{gom:eq2} запишется в виде
+\begin{equation}
+\delta \Pi=\delta W+\delta W^{*}-\delta A, 
+\label{gom:eq8}
+\end{equation}
+где
+\begin{gather}
+\delta W=\iiint_{V}\Bigl(B_{p0}g^{ij}\delta\theta(t_{n})+2G_{p0}\Bigl(g^{ik}g^{jl}\delta\varepsilon_{kl}(t_{n})-
+\frac{1}{3}g^{ij}\delta\theta(t_{n})\Bigr)\Bigr) dV,\\
+\delta W^{*}=-\iiint_{V}\biggl(\sum_{m=0}^{n-1}R_{m}\Bigl(g^{ik}g^{jl}\delta\varepsilon_{kl}(t_{m})-
+\frac{1}{3}g^{ij}\delta\theta(t_{m})\Bigr)\biggr)dV.
+\end{gather}
+
+Для традиционного конечно"=элементного представления \eqref{gom:eq8} через вектор перемещений аппроксимацию перемещений для линейного параллелепипедного конечного элемента (согласно МСКЭ) представим в виде
+\begin{multline}
+\label{gom:eq9}
+\widetilde{u}_{k'}=\sum_{pqr}^{lmn} \omega_{k'}^{pqr}\psi^{pqr} = \omega_{k'}^{000}+
+\omega_{k'}^{100}\psi^{100}+ \omega_{k'}^{010}\psi^{010}+\omega_{k'}^{001}\psi^{001}+ \\
++\omega_{k'}^{110}\psi^{110}+ \omega_{k'}^{101}\psi^{101} +\omega_{k'}^{011}\psi^{011}+\omega_{k'}^{111}\psi^{111}, 
+\end{multline}
+где $\omega_{k'}^{pqr}$ "--- коэффициенты разложения перемещений; $\psi^{pqr}$ "--- степенные координатные функции:
+$$\psi^{pqr}=\frac{(x^1)^p}{p!}\frac{(x^2)^q}{q!}\frac{(x^3)^r}{r!}.$$
+
+Непосредственное применение МСКЭ для получения матрицы жёсткости по заданным интерполяционным полиномам для аппроксимации перемещений конечного элемента в ряде случаев приводит к отбрасыванию значительного числа членов разложения деформаций, особенно для конечных элементов с высокой степенью аппроксимирующих полиномов.
+
+Решить эту проблему можно с помощью уточненной моментной схемы конечного элемента (УМСКЭ) [\citen{gomenjukbovajurechko:bib:Sakharov, gomenjukbovajurechko:bib:Grebenjuk}], которая, по сути, является модификацией МСКЭ. Этот подход предполагает получение выражений для деформаций на базе дополнения исходных аппроксимирующих полиномов конечного элемента до полных с последующим исключением <<лишних>> коэффициентов при дополнительных слагаемых.
+
+Для уточнения решений приведём \eqref{gom:eq9} к полному кубическому полиному:
+\begin{equation}
+\label{gom:eq10}
+u_{k'}=\widetilde{u}_{k'}+\Delta u_{k'}, 
+\end{equation}
+где 
+\begin{multline}
+\Delta u_{k'}=\frac{1}{2}\bigl(\omega_{k'}^{200}\psi^{200}+\omega_{k'}^{020}\psi^{020}+\omega_{k'}^{002}\psi^{002}+\omega_{k'}^{210}\psi^{210}+
+\omega_{k'}^{201}\psi^{201} + \\
++\omega_{k'}^{120}\psi^{120} +\omega_{k'}^{102}\psi^{102}+\omega_{k'}^{021}\psi^{021}+\omega_{k'}^{012}\psi^{012}\bigr)+
+\\ 
++ \frac{1}{6}\bigl(\omega_{k'}^{300}\psi^{300}+\omega_{k'}^{030}\psi^{030}+\omega_{k'}^{003}\psi^{003}\bigr).
+\end{multline}
+
+Разложим компоненты тензора деформаций в ряд Тейлора в окрестности начала координат:
+\begin{equation}
+\label{gom:eq11}
+\varepsilon_{ij}=\sum_{stg}^{ij} e_{ij}^{stg}\psi^{stg}
+\end{equation}
+либо в матричной форме:
+\begin{gather}
+\label{gom:eq12}
+\{\varepsilon_{ij}\}=\{e_{ij}\}^\top\{\psi_{ij}\}, \\
+\label{gom:eq13}
+\{e_{ij}\}=[F_{ij}^{k'}]\{\omega_{k'}\}.
+\end{gather}
+
+Построим матрицу $[F_{ij}^{s'}]$. Для этого вычислим коэффициенты разложения $e_{ij}^{pqr}$, входящие в \eqref{gom:eq11}, \eqref{gom:eq12}, согласно МСКЭ по формулам [\citen{gomenjukbovajurechko:bib:Sakharov}]:
+\begin{gather}
+e_{11}^{pqr}=\sum_{\mu\nu\eta}^{pqr}\omega_{k'}^{\mu+1\ \nu\ \eta}b_{p+1-\mu\ q-\nu\ r-\eta}^{k'},
+\\
+e_{22}^{pqr}=\sum_{\mu\nu\eta}^{pqr}\omega_{k'}^{\mu\ \nu+1\ \eta}b_{p-\mu\ q+1-\nu\ r-\eta}^{k'},
+\\
+e_{33}^{pqr}=\sum_{\mu\nu\eta}^{pqr}\omega_{k'}^{\mu\ \nu\ \eta+1}b_{p-\mu\ q-\nu\ r+1-\eta}^{k'};
+\\
+e_{12}^{pqr}=\frac{1}{2}\sum_{\mu\nu\eta}^{pqr}(\omega_{k'}^{\mu\ \nu+1\ \eta}b_{p+1-\mu\ q-\nu\ r-\eta}^{k'}+\omega_{k'}^{\mu+1\ \nu\ \eta}b_{p-\mu\ q+1-\nu\ r-\eta}^{k'}),
+\\
+e_{13}^{pqr}=\frac{1}{2}\sum_{\mu\nu\eta}^{pqr}(\omega_{k'}^{\mu\ \nu\ \eta+1}b_{p+1-\mu\ q-\nu\ r-\eta}^{k'}+\omega_{k'}^{\mu+1\ \nu\ \eta}b_{p-\mu\ q-\nu\ r+1-\eta}^{k'}),
+\label{gom:eq14}
+\\
+e_{23}^{pqr}=\frac{1}{2}\sum_{\mu\nu\eta}^{pqr}(\omega_{k'}^{\mu\ \nu\ \eta+1}b_{p-\mu\ q+1-\nu\ r-\eta}^{k'}+\omega_{k'}^{\mu\ \nu+1\ \eta}b_{p-\mu\ q-\nu\ r+1-\eta}^{k'}), 
+\end{gather}
+где 
+$$b_{\mu\nu\eta}^{k'}=\frac{\partial ^{(\mu+\nu+\eta)}z^{k'}}{(\partial x^1)^{\mu}(\partial x^2)^{\nu}(\partial x^3)^{\eta}} \Bigl|_{x^1=x^2=x^3=0}.$$
+
+Проанализировав все компоненты $e_{ij}^{pqr}$, легко заметить, что некоторые коэффициенты $\omega_{k'}^{pqr}$ из \eqref{gom:eq14} не входят в разложение для аппроксимации перемещений \eqref{gom:eq10} с учётом дополнительных коэффициентов. 
+Поэтому коэффициенты разложения деформаций $e_{ij}^{pqr}$, содержащие  хотя бы один из невходящих членов, необходимо опустить в разложении \eqref{gom:eq11}. 
+
+Таким образом, в развёрнутом виде все компоненты деформаций $\varepsilon_{ij}$, получаемые на основе \eqref{gom:eq10}, представляются в виде полных квадратичных полиномов:
+\begin{multline}
+\varepsilon_{ij}=e_{ij}^{000}+e_{ij}^{100}\psi^{100}+e_{ij}^{010}\psi^{010}+e_{ij}^{001}\psi^{001}+\frac{1}{2}e_{ij}^{200}\psi^{200}+
+e_{ij}^{110}\psi^{110}+
+\\
++\frac{1}{2}e_{ij}^{020}\psi^{020}+e_{ij}^{101}\psi^{101}+e_{ij}^{011}\psi^{011}+\frac{1}{2}e_{ij}^{002}\psi^{002}, 
+\label{gom:eq15}
+\end{multline}
+где все моменты деформаций $e_{ij}^{pqr}$ удовлетворяют условиям МСКЭ.
+
+С другой стороны, применяя соотношения Коши для выражения \eqref{gom:eq10} и сравнивая с \eqref{gom:eq15}, определим те компоненты, которые содержат дополнительные коэффициенты, входящие в разложение для $\Delta u_{k'}$:
+\begin{gather}
+e_{11}^{100}=\omega_{1'}^{200}, \quad  e_{11}^{110}=\omega_{1'}^{210}, \quad  
+e_{11}^{101}=\omega_{1'}^{201}, \quad  e_{11}^{020}=\omega_{1'}^{120}, \quad  
+e_{11}^{002}=\omega_{1'}^{102}, \\  
+e_{11}^{200}=\omega_{1'}^{300}, \quad  e_{22}^{010}=\omega_{2'}^{020}, \quad  
+e_{22}^{200}=\omega_{2'}^{210}, \quad  e_{22}^{110}=\omega_{2'}^{120}, \quad 
+e_{22}^{011}=\omega_{2'}^{021}, \\ 
+e_{22}^{002}=\omega_{2'}^{012}, \quad  e_{22}^{020}=\omega_{2'}^{030}, \quad 
+e_{33}^{001}=\omega_{3'}^{002}, \quad  e_{33}^{200}=\omega_{3'}^{201}, \quad 
+e_{33}^{101}=\omega_{3'}^{102}, \\ 
+e_{33}^{020}=\omega_{3'}^{021}, \quad  e_{33}^{011}=\omega_{3'}^{012}, \quad  
+e_{33}^{002}=\omega_{3'}^{003}, \\  
+e_{12}^{100}=\frac{1}{2}(\omega_{1'}^{110}+\omega_{2'}^{200}), \quad  
+e_{12}^{010}=\frac{1}{2}(\omega_{2'}^{110}+\omega_{1'}^{020}), \quad  
+e_{12}^{101}=\frac{1}{2}(\omega_{1'}^{111}+\omega_{2'}^{201}),
+\\
+e_{12}^{011}=\frac{1}{2}(\omega_{2'}^{111}+\omega_{1'}^{021}), \quad  
+e_{12}^{002}=\frac{1}{2}(\omega_{1'}^{012}+\omega_{2'}^{102}), \quad  
+e_{12}^{200}=\frac{1}{2}(\omega_{1'}^{210}+\omega_{2'}^{300}),
+\\
+e_{12}^{110}=\frac{1}{2}(\omega_{1'}^{120}+\omega_{2'}^{210}), \quad  
+e_{12}^{020}=\frac{1}{2}(\omega_{1'}^{030}+\omega_{2'}^{120}), \quad  
+e_{13}^{100}=\frac{1}{2}(\omega_{1'}^{101}+\omega_{3'}^{200}),
+\\
+e_{13}^{001}=\frac{1}{2}(\omega_{3'}^{101}+\omega_{1'}^{002}), \quad 
+e_{13}^{110}=\frac{1}{2}(\omega_{1'}^{111}+\omega_{3'}^{210}), \quad 
+e_{13}^{011}=\frac{1}{2}(\omega_{1'}^{012}+\omega_{3'}^{111}),
+\\
+e_{13}^{020}=\frac{1}{2}(\omega_{1'}^{021}+\omega_{3'}^{120}), \quad  
+e_{13}^{200}=\frac{1}{2}(\omega_{1'}^{201}+\omega_{3'}^{300}), \quad  
+e_{13}^{101}=\frac{1}{2}(\omega_{1'}^{102}+\omega_{3'}^{201}),
+\\
+e_{13}^{002}=\frac{1}{2}(\omega_{1'}^{003}+\omega_{3'}^{102}), \quad  
+e_{23}^{010}=\frac{1}{2}(\omega_{2'}^{011}+\omega_{3'}^{020}), \quad  
+e_{23}^{001}=\frac{1}{2}(\omega_{2'}^{002}+\omega_{3'}^{011}),
+\\
+e_{23}^{110}=\frac{1}{2}(\omega_{2'}^{111}+\omega_{3'}^{120}), \quad  
+e_{23}^{101}=\frac{1}{2}(\omega_{3'}^{111}+\omega_{2'}^{102}), \quad  
+e_{23}^{200}=\frac{1}{2}(\omega_{2'}^{201}+\omega_{3'}^{210}),
+\\
+e_{23}^{011}=\frac{1}{2}(\omega_{2'}^{012}+\omega_{3'}^{021}), \quad  
+e_{23}^{020}=\frac{1}{2}(\omega_{2'}^{021}+\omega_{3'}^{030}), \quad  
+e_{23}^{002}=\frac{1}{2}(\omega_{2'}^{003}+\omega_{3'}^{012}).
+\end{gather}
+
+Уточнение МСКЭ сводится к минимизации тех коэффициентов разложения деформаций, которые, согласно МСКЭ, должны отбрасываться. На основе метода наименьших квадратов из моментов деформаций, которые представлены через коэффициенты разложения перемещений и имеют <<лишние>> коэффициенты, составляется сумма квадратов. 
+Путём её минимизации получаем систему уравнений, решая которую, определим дополнительные коэффициенты:
+\begin{gather}
+\omega_{1'}^{200}=\omega_{1'}^{210}=\omega_{1'}^{201}=\omega_{1'}^{120}=\omega_{1'}^{102}=\omega_{1'}^{300}=\omega_{1'}^{030}=0,
+\\
+\omega_{1'}^{003}=\omega_{2'}^{020}=\omega_{2'}^{021}=\omega_{2'}^{012}=\omega_{2'}^{030}=\omega_{2'}^{210}=\omega_{2'}^{120}=0,
+\\
+\omega_{2'}^{300}=\omega_{2'}^{003}=\omega_{3'}^{003}=\omega_{3'}^{021}=\omega_{3'}^{002}=0,
+\\
+\label{gom:eq16}
+\omega_{3'}^{300}=\omega_{3'}^{030}=\omega_{3'}^{201}=\omega_{3'}^{102}=\omega_{3'}^{012}=0,
+\\
+\omega_{1'}^{021}=\omega_{3'}^{120}=-\omega_{2'}^{111}/3, \quad  
+\omega_{1'}^{020}=-\omega_{2'}^{110}, \quad 
+\omega_{3'}^{200}=-\omega_{1'}^{101},
+\\
+\omega_{1'}^{012}=\omega_{2'}^{102}=-\omega_{3'}^{111}/3, \quad 
+\omega_{1'}^{002}=-\omega_{3'}^{101}, \quad  
+\omega_{2'}^{200}=-\omega_{1'}^{110},
+\\
+\omega_{2'}^{201}=\omega_{3'}^{210}=-\omega_{1'}^{111}/3, \quad 
+\omega_{2'}^{002}=-\omega_{3'}^{011}, \quad 
+\omega_{3'}^{020}=-\omega_{2'}^{011}. 
+\end{gather}
+
+На основе формул \eqref{gom:eq10} и \eqref{gom:eq16} получаем вспомогательный закон распределения перемещений трёхмерного конечного элемента:
+\begin{gather}
+u_{1'}=\sum_{p=0}^{1}\sum_{q=0}^{1}\sum_{r=0}^{1}\omega_{1'}^{pqr}\psi^{pqr}-\frac{1}{2}(\omega_{2'}^{110} \psi^{020}+\omega_{3'}^{101} \psi^{002})-\frac{1}{6}(\omega_{2'}^{111} \psi^{021}+\omega_{3'}^{111} \psi^{012}),
+\\
+u_{2'}=\sum_{p=0}^{1}\sum_{q=0}^{1}\sum_{r=0}^{1}\omega_{2'}^{pqr}\psi^{pqr}-\frac{1}{2}(\omega_{1'}^{110} \psi^{200}+\omega_{3'}^{011} \psi^{002})-\frac{1}{6}(\omega_{1'}^{111} \psi^{201}+\omega_{3'}^{111} \psi^{102}),
+\\
+u_{3'}=\sum_{p=0}^{1}\sum_{q=0}^{1}\sum_{r=0}^{1}\omega_{3'}^{pqr}\psi^{pqr}-\frac{1}{2}(\omega_{1'}^{101} \psi^{200}+\omega_{2'}^{011} \psi^{020})-\frac{1}{6}(\omega_{1'}^{111} \psi^{210}+\omega_{2'}^{111} \psi^{120})
+\end{gather}
+или в матричной форме
+\begin{equation}
+\label{gom:eq17}
+\{u_{k'}\}=\{\omega_{k'}\}^\top\{\psi\}.
+\end{equation}
+Матрицы $[F_{ij}^{k'}]$ получаются на основе выражений \eqref{gom:eq13} и известного теперь числа и вида коэффициентов $e_{ij}^{pqr}$ по формуле \eqref{gom:eq15} с учётом \eqref{gom:eq16}.
+
+Функция изменения объёма, ответственная за слабую сжимаемость эластомера, представляется разложением
+\begin{equation}
+\label{gom:eq18}
+\theta=\sum_{\alpha=0}^{m-1}\sum_{\beta=0}^{n-1}\sum_{\gamma=0}^{l-1} \xi^{\alpha\beta\gamma}\psi^{\alpha\beta\gamma}, 
+\end{equation}
+где $\xi^{\alpha\beta\gamma}$ "--- коэффициенты разложения, определяемые соотношением
+\begin{equation}
+\label{gom:eq19}
+\xi^{\alpha\beta\gamma}=\frac{\partial^{(\alpha+\beta+\gamma)}\varepsilon_{ij}g^{ij}}{(\partial x^1)^{\alpha}(\partial x^2)^{\beta}(\partial x^3)^{\gamma}} \Big|_{x^1=x^2=x^3=0},
+\end{equation}
+или в векторной форме:
+\begin{gather}
+\label{gom:eq20}
+\{\theta\}=\{\xi\}^\top\{\psi_{\theta}\}, \\
+\label{gom:eq21}
+\{\xi\}=[F_{\theta}^{k'}]\{\omega_{k'}\}. 
+\end{gather}
+
+Воспользовавшись формулами \eqref{gom:eq16}, \eqref{gom:eq18} и \eqref{gom:eq19}, проанализируем выражения для компонент $\xi^{\alpha\beta\gamma}$, опуская при этом те слагаемые, которые содержат наряду с~коэффициентами разложения для $\theta$ коэффициенты разложения для деформаций, т.~е. те, для которых не выполняется условие
+$$\xi^{\alpha\beta\gamma}=e_{11}^{\alpha\beta\gamma}g^{11}+e_{22}^{\alpha\beta\gamma}g^{22}+e_{33}^{\alpha\beta\gamma}g^{33}.$$
+
+Легко заметить, что необходимо учитывать только коэффициент $\xi^{000}$. 
+Таким образом, получим приближенное значение функции изменения объёма:
+$$\theta=\xi^{000}=e_{11}^{000}g^{11}+e_{22}^{000}g^{22}+e_{33}^{000}g^{33}.$$
+
+С учётом \eqref{gom:eq12} и \eqref{gom:eq20} $\delta W$ в выражении \eqref{gom:eq8} примет вид
+\begin{multline}
+\label{gom:eq22}
+\delta W=2G_{p0}\iiint_{V}\{\delta e_{ij}\}^\top\{\psi_{ij}\}g^{ik}g^{jl}\{e_{kl}\}^\top\{\psi_{kl}\}\,dV+
+\\
++\Bigl(B_{p0}-\frac{2}{3}G_{p0}\Bigr)\iiint_{V}\{\xi\}^\top\{\psi_{\theta}\}\delta \{\xi\}\{\psi_{\theta}\}\,dV=
+\\
+=\{\delta e_{ij}\}^\top[H^{ijkl}]\{e_{kl}\}+\delta \{\xi\}^\top[H^{\theta}]\{\xi\},
+\end{multline}
+где
+$$[H^{ijkl}]=\int_{-1}^{1}\int_{-1}^{1}\int_{-1}^{1}2G_{p0}g^{ik}g^{jl}\{\psi_{ij}\}\{\psi_{kl}\}^\top \surd g \, dx^1 dx^2 dx^3;$$
+$$[H^{\theta}]=\int_{-1}^{1}\int_{-1}^{1}\int_{-1}^{1}\Bigl(B_{p0}-\frac{2}{3}G_{p0}\Bigr) \{\psi_{\theta}\}\{\psi_{\theta}\}^\top \surd g \, dx^1 dx^2 dx^3.$$
+
+На основе \eqref{gom:eq13} и \eqref{gom:eq21} выражение \eqref{gom:eq22} можно записать в следующем виде:
+\begin{equation}
+\label{gom:eq23}
+\delta W=\delta \{\omega_{s'}\}^\top[F_{ij}^{s'}]^\top[H^{ijkl}][F_{kl}^{t'}]\{\omega_{t'}\}+\delta \{\omega_{s'}\}^\top[F_{\theta}^{s'}]^\top[H^{\theta}][F_{\theta}^{t'}]\{\omega_{t'}\}. 
+\end{equation}
+
+Принимая во внимание \eqref{gom:eq17} и представление перемещений точек конечного элемента через функцию Лагранжа $\{N\}$ и узловые значения перемещений  $$\{u_{k'}\}=\{u_{i}\}^\top\{N\},$$ 
+запишем связь между степенными и аппроксимирующими функциями Лагранжа:
+$$\{\omega_{k'}\}=[A]\{u_{k'}\},$$
+с учётом которой, выражение \eqref{gom:eq23} можем представить в таком виде:
+\begin{multline}
+\delta W=\delta \{u_{s'}\}^\top[A]^\top[F_{ij}^{s'}]^\top[H^{ijkl}][F_{kl}^{t'}][A]\{u_{t'}\}+
+\\
++\delta \{u_{s'}\}^\top[A]^\top[F_{\theta}^{s'}]^\top[H^{\theta}][F_{\theta}^{t'}][A]\{u_{t'}\}=
+\\
+=\delta \{u_{s'}\}[G^{s't'}]\{u_{t'}\}+\delta \{u_{s'}\}^\top[G_{\theta}^{s't'}]\{u_{t'}\},
+\end{multline}
+где 
+$$[G^{s't'}]=[A]^\top[F_{ij}^{s'}]^\top[H^{ijkl}][F_{kl}^{t'}][A], \quad  [G_{\theta}^{s't'}]=[A]^\top[F_{\theta}^{s'}]^\top[H^{\theta}][F_{\theta}^{t'}][A].$$
+
+Матрица жёсткости конечного элемента окончательно вычисляется по формуле
+\begin{equation}
+\label{gom:eq24}
+[K^{s't'}]=[A]^\top[F_{ij}^{s'}]^\top[H^{ijkl}][F_{kl}^{t'}][A]+[A]^\top[F_{\theta}^{s'}]^\top[H^{\theta}][F_{\theta}^{t'}][A]. \end{equation}
+
+В выражении \eqref{gom:eq8} $\delta W$ является вариацией энергии упругого деформирования, которая зависит от истории нагружения, но не зависит от закона изменения деформации во времени и служит основой формирования матрицы жёсткости конечных элементов $[K^{s't'}]$ для фиксированного момента времени $t$. 
+Можно записать:
+\begin{multline}
+\label{gom:eq25}
+\iiint_{V}\left(2G_{p0}g^{ik}g^{jl}\delta\varepsilon_{kl}(t_{n})+\Bigl(B_{p0}-\frac{2}{3}G_{p0}\Bigr) g^{ij}\delta\theta(t_{n})\right)\, dV= \\ =
+K^{s't'}(t_{n})u_{s'}(t_{n})\delta u_{t'}.
+\end{multline}
+
+Величина $\delta W^{*}$ в выражении \eqref{gom:eq8} является наследственной составляющей матрицы жёсткости; её подынтегральное выражение  представим в виде 
+\begin{multline}
+\label{gom:eq26}
+-\sum_{m=0}^{n-1}R_{m}\left(g^{ik}g^{jl}\delta\varepsilon_{kl}(t_{m})-\frac{1}{3}g^{ij}\delta\theta(t_{m})\right)\,dV= \\ =
+-\sum_{m=0}^{n-1}R_{m}M^{s't'}(t_{m})u_{s'}(t_{m})\,\delta u_{t'}. 
+\end{multline}
+
+Предполагая, что на тело действует только распределённая поверхностная нагрузка, которую можно свести к сосредоточенным силам в~каждом узле, и используя соотношения \eqref{gom:eq25} и \eqref{gom:eq26}, вариацию потенциальной энергии можно записать в виде
+$$\biggl(K^{s't'}(t_{n})u_{s'}(t_{n})-\sum_{m=0}^{n-1}R_{m}M^{s't'}(t_{m})u_{s'}(t_{m})-F^{t'}(t_{n})\biggr)\,\delta u_{t'}=0.$$
+
+Поскольку $\delta u_{t'}\neq 0$, нулю должно равняться выражение в скобках, которое представляет собой линеаризованную систему разрешающих уравнений наследственной вязкоупругости:
+\begin{equation}
+K_{(n)}\bar{u}^{(n)}=\sum_{m=0}^{n-1}\bar{P}_{m}+\bar{Q}_{(n)},
+\label{gom:eq27}
+\end{equation}
+где $\bar{u}^{(n)}=u_{s'}(t_{n})$ "--- вектор перемещений; 
+$\bar{P}_{m}={R_{m}}M^{s't'}(t_{m})u_{s'}(t_{m})$ "--- вектор дополнительной нагрузки, моделирующий вязкоупругое поведение пористой резины; 
+$\bar{Q}_{(n)}=F^{t'}(t_{n})$ "--- вектор распределённых поверхностных нагрузок, действующих на момент времени $t_{n}$.
+
+Решение системы \eqref{gom:eq27} строится на основе модифицированного метода Ньютона"--~Канторовича для решения задачи вязкоупругости [\citen{gomenjukbovajurechko:bib:Kirichevskij1}].
+
+В общем виде теоретическое доказательство сходимости МСКЭ для степенного закона аппроксимации перемещений, в~том числе и для предложенного выше, изложены в [\citen{gomenjukbovajurechko:bib:Sakharov}]. Построение матрицы жёсткости, рассмотренной выше, и~итерационного алгоритма \eqref{gom:eq27} реализовано в программном комплексе {\tt МІРЕЛА+} [\citen{gomenjukbovajurechko:bib:Dohnjak}].
+
+\smallskip
+
+\Section[]{Исследование численной сходимости конечно"=элементных схем и результаты расчётов} 
+Исследуем сходимость решений, полученных численно при использовании УМСКЭ, путём сравнения их с аналитическим решением задачи Ляме в~условиях вязкоупругого деформирования [\citen{gomenjukbovajurechko:bib:Samul}].
+
+Рассмотрим напряжённо"=деформированное состояние полого цилиндра из пористого материала в условиях вязкоупругого деформирования под внутренним давлением $Q$ при жёстком защемлении по внешнему контуру. 
+Пусть $a$ "--- внутренний радиус, $b$ "--- внешний радиус, $r$ "--- полярный радиус, $t$ "--- время. 
+Аналитическая зависимость радиальных перемещений в условиях вязкоупругого поведения от упругих модулей пористого материала имеет следующий вид [\citen{gomenjukbovajurechko:bib:Kirichevskij1}]:
+$$
+\widetilde{u}(t,r)=f(1+\lambda K^{*}(t))\Bigl(r-\frac{b^2}{r}\Bigr),
+$$
+где
+$$
+f=-\frac{Q}{2B_{p0}+2G_{p0}\left({1}/{3}+{b^2}/{a^2}\right)},
+\quad
+\lambda=\frac{G_{p0}\left({1}/{3}+{b^2}/{a^2}\right)}{B_{p0}+G_{p0}\left({1}/{3}+{b^2}/{a^2}\right)},$$
+$$K^{*}(t)=\int_{0}^{t}K(t-\tau)d\tau=\frac{G_{p0}-G_{p\infty}}{2G_{p0}-G_{p\infty}}\left(1-
+\exp\Bigl(-\frac{2G_{p0}-G_{p\infty}}{G_{p0}}t\Bigr)\right);$$
+$K(t-\tau)$ "--- разностное ядро ползучести для пористого материала.
+
+
+
+
+Сравним перемещения внутренней точки полого цилиндра, получаемые численно с использованием традиционного МКЭ и УМСКЭ, с~аналитическим решением (см. \hyperlink{gom:table}{таблицу}) для следующих исходных данных: внутренний радиус $a=0.025$~м, 
+внешний радиус $b=0.1$~м, модуль упругости $B_{p0}=64.567 \times 10^6$~Па, 
+мгновенный модуль сдвига резины $G_{p0}=1.3 \times 10^6$~Па, 
+длительный модуль сдвига резины $G_{p\infty}=0.93 \times 10^6$~Па, 
+коэффициент Пуассона $\nu=0.49$, 
+внутреннее давление $Q=1.3 \times 10^6$~Па, пористость $p=0.4$.
+
+
+
+\begin{table}[h!]
+\hypertarget{gom:table}{}
+\small \centering
+\begin{tabular}{c|c|c|c|c}
+\multicolumn{5}{c}{\textbf{Cходимость численных решений}}\\
+\multicolumn{5}{c}{\textbf{[The convergence of the numerical  solutions]}}\\
+\hline
+\text{\footnotesize Размеры сетки} & \multicolumn{2}{c|}{\text{\footnotesize МКЭ [FEM]}} & \multicolumn{2}{c}{\text{\footnotesize УМСКЭ [RMFES]}} \\
+\cline{2-5}
+\text{\footnotesize [The mesh sizes]} & \text{$u$, m} & \text{$\varepsilon$, \%} & \text{$u$, m} & \text{$\varepsilon$, \%} \\
+\hline
+\multicolumn{5}{c}{\text{\footnotesize \rule{0mm}{12pt} Упругий случай [The elasticity]}}\\
+\hline
+\text{\rule{0mm}{12pt}$3\times 3\times 3$} & \text{0.01631} & \text{16.7} & \text{0.01882} & \text{3.9} \\
+\text{$5\times 5\times 3$} & \text{0.01821} & \text{7.1} & \text{0.01922} & \text{1.9} \\
+\text{$7\times 7\times 3$} & \text{0.01887} & \text{3.6} & \text{0.01939} & \text{0.98} \\
+\text{$9\times 9\times 3$} & \text{0.01916} & \text{2.2} & \text{0.01947} & \text{0.6} \\
+\text{$11\times 11\times 3$} & \text{0.01930} & \text{1.5} & \text{0.01951} & \text{0.4} \\
+\hline
+\text{Аналитическое решение} &  \multicolumn{4}{c}{}\\
+\text{[The analytical solution]} & \multicolumn{4}{c}{\totop{\text{0.019581}}} \\
+\hline
+\multicolumn{5}{c}{\text{\footnotesize \rule{0mm}{12pt} Вязкоупругость [The  viscoelasticity], $t=1$~sec}}\\
+\hline
+\text{\rule{0mm}{12pt}$3\times 3\times 3$} & \text{0.01712} & \text{22.6} & \text{0.01998} & \text{9.6}\\
+\text{$5\times 5\times 3$} & \text{0.01942} & \text{12.1} & \text{0.02073} & \text{6.2}\\
+\text{$7\times 7\times 3$} & \text{0.02024} & \text{8.5} & \text{0.02092} & \text{5.3}\\
+\text{$9\times 9\times 3$} & \text{0.02059} & \text{6.9} & \text{0.02102} & \text{4.9}\\
+\text{$11\times 11\times 3$} & \text{0.02078} & \text{6.0} & \text{0.02107} & \text{4.7}\\
+\hline
+\text{Аналитическое решение} &  \multicolumn{4}{c}{}\\
+\text{[The analytical solution]} & \multicolumn{4}{c}{\totop{\text{0.022105}}} \\
+\hline
+\end{tabular}
+
+\smallskip
+
+RMFES is the refined moment  finite element scheme.
+\end{table}
+
+\begin{figure}[p!]
+\centering \footnotesize
+\includegraphics[scale=0.8]{gom-fig4} 
+\caption{Распределение перемещений $u_1$ по высоте резинового слоя сейсмоопоры для резины марки 51--1562 (1) и резины марки 51--1714 (2) при $\nu=0.49$ (штриховые линии),  $\nu=0.499$ (штрих-пунктирные линии),  $\nu=0.49999$  (сплошные линии); здесь $Q=0$ \label{gom:fig4}}
+\smallskip
+
+[Figure \ref{gom:fig4}. The distribution of displacements $u_1$  along  the height of the rubber layer of seismic bearing for 51--1562 rubber  (1) and 51--1714 rubber (2) when  $\nu=0.49$ (dashed lines),  $\nu=0.499$ (dot-dashed lines), and $\nu=0.49999$  (solid lines); there is $Q=0$]
+
+%\end{figure}
+%
+
+\bigskip
+
+\bigskip
+%
+%
+%\begin{figure}[h!]
+\centering \footnotesize
+\includegraphics[scale=0.8]{gom-fig5} 
+\caption{Распределение нормальных напряжений $\sigma^{ii}$ по высоте резинового слоя сейсмоопоры: \scriptsize 1 "--- $\sigma^{11}$, 2 "--- $\sigma^{22}$, 3 "--- $\sigma^{33}$; здесь $Q=0$ \label{gom:fig5}}
+
+
+
+\smallskip
+
+[Figure \ref{gom:fig5}. The distribution of normal stresses $\sigma^{ii}$  along the height of the rubber layer of seismic bearing: {\scriptsize 1 "--- $\sigma^{11}$, 2 "--- $\sigma^{22}$, 3 "--- $\sigma^{33}$; there is $Q=0$}]
+
+\end{figure}
+
+
+\begin{figure}[p!]
+\centering \footnotesize 
+\includegraphics[scale=0.8]{gom-fig6} 
+
+\caption{Зависимость перемещений $u_1$ от времени: \scriptsize 1 "--- сплошная резина марки 51--1562, 2 "--- сплошная резина марки 51--1714, 3 "--- пористая резина с пористостью $p=0.5$, 4 "--- пористая резина с пористостью $p=0.55$; здесь $Q=0.5P$ \label{gom:fig6}}
+
+\smallskip
+
+%Dependence of reaction time and movement speed on task complexity and age.
+
+[Figure \ref{gom:fig6}. The dependence of displacements $u_1$ on time $t$: 
+{\scriptsize 1~--- 51--1562 solid rubber, 2~--- 51--1714 solid rubber, 3~--- porous rubber with a porosity $p=0.5$, 
+4~--- porous rubber with a porosity $p=0.55$; there is $Q=0.5P$}]
+
+
+\bigskip
+\bigskip
+
+\includegraphics[scale=0.8]{gom-fig7} 
+
+
+\caption{Зависимость нормальных напряжений $\sigma^{11}$ от времени:  \scriptsize 1 "--- сплошная резина марки 51--1562,  3 "--- пористая резина с пористостью $p=0.5$,  4 "--- пористая резина с пористостью $p=0.55$; здесь $Q=0.5P$ \label{gom:fig7}}
+
+\smallskip
+
+[Figure \ref{gom:fig7}. The dependence of normal stresses $\sigma^{ii}$ on time $t$: 
+{\scriptsize 1~--- 51--1562 solid rubber,  3~--- porous rubber with a porosity $p=0.5$, 
+4~--- porous rubber with a porosity $p=0.55$; there is $Q=0.5P$}]
+
+
+\end{figure}
+
+Как видно из \hyperlink{gom:table}{таблицы}, УМСКЭ имеет устойчивую сходимость при сгущении сетки дискретизации и даёт предпочтительные результаты по сравнению с традиционным МКЭ, приближая их к аналитическим.
+
+Таким образом, предложенная конечно"=элементная модель на основе УМСКЭ с тройной аппроксимацией компонент вектора перемещений, компонент тензора деформаций и функции изменения объема позволяет получать приемлемые результаты при расчёте конструкций из пористой резины в условиях вязкоупругого деформирования.
+
+
+
+ 
+
+Выполним расчёт для резинового слоя сейсмоопоры при следующих исходных данных: 
+радиус $R=0.2$~м, высота $h=0.12$~м, $h_{1}=h_{2}=0.03$~м, нагрузка $P=100$~кН; 
+модули упругости резины марки 51--1562 "--- $G_{0}=0.78$~МПа, $G_{\infty}=0.51$~МПа;
+модули упругости  резины марки 51--1714 "--- $G_{0}=2$~МПа, $G_{\infty}=1.1$~МПа.
+ 
+Распределение перемещений $u_{1}$ при различных значениях коэффициента Пуассона $\nu$ и распределение нормальных напряжений при коэффициенте Пуассона $\nu=0.49$ по высоте сплошного резинового слоя сейсмоопоры при $Q=0$ представлены на рис.~\ref{gom:fig4} и~\ref{gom:fig5} соответственно.
+
+
+
+
+
+Зависимость перемещений $u_{1}(t)$ и нормальных напряжений  $\sigma^{11}(t)$ от времени при $Q=0.5P$ представлены на рис.~\ref{gom:fig6} и~\ref{gom:fig7} соответственно. Здесь  1 "--- сплошная резина марки 51--1562;  2 "--- сплошная резина марки 51--1714, 3 "--- пористая резина с пористостью $p=0.5$, 4 "--- пористая резина с пористостью $p=0.55$.
+
+Следует отметить, что осадка сплошной резинометаллической сейсмоопоры из резины марки 51--1562 практически совпадает с осадкой сейсмоопоры из резины марки 51--1714 с~пористыми слоями ($p=0.50\div0.55$). 
+Таким образом, варьируя пористыми слоями и марками резины, можно получить ряд резинометаллических сейсмоопор с практически одинаковыми жесткостными свойствами.
+
+
+
+
+\smallskip
+
+
+\Section[n]{Выводы} В статье представлен численный подход к решению статической задачи упругости в трехмерной постановке для вибросейсмоопоры, выполненной из сплошной и комбинированной резины, на основе уточненной моментной схемы конечного элемента. 
+С~помощью предложенного метода получены основные параметры напряжённо"=деформированного состояния резинометаллической сейсмоопоры.
+
+При расчёте резинометаллической сейсмоопоры из сплошной резины продольная деформация снижается с увеличением коэффициента Пуассона (см. рис.~\ref{gom:fig4}). 
+Сжимающие напряжения увеличиваются в середине конструкции и значительно ослабевают в месте приложения нагрузки (см. рис.~\ref{gom:fig5}).
+
+
+При расчёте резинометаллической сейсмоопоры  из комбинированной резины в условиях вязкоупругого деформирования осадка верхней поверхности увеличивается на 10--11\,\% (см. рис.~\ref{gom:fig6}). 
+Сжимающие напряжения в пористой резине слабо проявляют реологические свойства и увеличиваются на 7--10\,\% при увеличении пористости материала (см. рис.~\ref{gom:fig7}).
+
+Полученные результаты позволяют точнее судить о характере напряжённо"=деформированного состояния резинометаллической сейсмоопоры.
+
+\begin{thebibliography}{99}
+
+\RBibitem{gomenjukbovajurechko:bib:Dyrda}
+\paper Обоснование и выбор параметров резинометаллических сейсмоопор
+\by В.~И.~Дырда, Н.~И.~Лисица, Н.~Г.~Марьенков, Т.~Е.~Твердохлеб, Е.~Ю.~Заболотная, Н.~Н.~Лисица, Н.~В.~Тымко
+\jour Геотехническая механика
+\yr 2009
+\issue 84
+\pages 17--23
+\misctransl
+\lang In Russian
+\paper The justification and the choice of the rubber-metall seismic bearing parameters
+\by V.~I.~Dyrda, N.~I.~Lisitsa, N.~G.~Maryenkov, T.~E.~Tverdokhleb, E.~Yu.~Zabolotnaya, N.~N.~Lisitsa, N.~V.~Tymko
+\jour Geotekhnicheskaya Mekhanika
+\yr 2009
+\issue 84
+\pages 17--23
+
+\RBibitem{gomenjukbovajurechko:bib:Chilbak}
+\paper  Методика оценки прочности сейсмоизолированного здания при сейсмическом воздействии
+\by А.~А.~Чылбак
+\jour Вестник Тувинского госуниверситета
+\yr 2013
+\issue 3
+\issueinfo Технические и физико-математические науки
+\pages 65--70
+\elib{http://elibrary.ru/item.asp?id=20860642}
+\misctransl
+\lang In Russian
+\by A.~A.~Chylbak
+\jour Vestnik Tuvinskogo gosuniversiteta
+\yr 2013
+\issue 3
+\issueinfo Tekhnicheskie i fiziko-matematicheskie nauki
+\pages 65--70
+\paper The technique of evaluating strength structure located on the seismic isolation system
+
+
+\RBibitem{gomenjukbovajurechko:bib:Motorin}
+\by В.~В.~Моторин
+\thesis Разработка, исследование и реализация метода виброзащиты зданий с применением многослойных резинометаллических заменяемых виброизоляторов
+\thesisinfo Автореф. дис.~\dots\ канд. техн. наук; спец. 05.23.17 <<Строительная механика>>
+\publaddr М.
+\yr 2005
+\totalpages 19
+\misctransl
+\lang In Russian
+\by V.~V.~Motorin
+\thesis Development, research and implementation of vibration protection method for buildings using replaceable multilayer rubber isolators
+\thesisinfo Thesis of Cand. Sci. Dissertation
+\publaddr Moscow
+\yr 2005
+\totalpages 19
+
+
+\RBibitem{gomenjukbovajurechko:bib:Koval}
+\paper Исследование эффективности резинометаллических виброизоляторов фирмы <<Вибросейсмозащита>> применительно к каркасным зданиям, возведенным вблизи тоннелей метро мелкого заложения
+\by О.~А.~Ковальчук, Д.~А.~Зубков, П.~И.~Андреева
+\jour Вестник МГСУ
+\yr 2011
+\issue 6
+\pages 335--340
+\elib{http://elibrary.ru/item.asp?id=17649307}
+\misctransl
+\lang In Russian
+\paper A study of the efficiency of rubber-and-metal vibroisolators produced by the ``Vibroseismozashtshita'' company with respect to the frame buildings erected near shallow underground railway tunnels
+\by O.~A.~Kovalchuk, D.~A.~Zubkov, P.~I.~Andreeva
+\jour  Vestnik MGSU
+\yr 2011
+\issue 6
+\pages 335--340
+
+
+\RBibitem{gomenjukbovajurechko:bib:Kozub}
+\eprint Напряженно-деформированное состояние резинометаллических виброизоляторов
+\by Ю.~Г.~Козуб
+\eprintinfo Modern Problems and Ways of Their Solution in Science, Transport, Production and Education'2012
+\yr 2012
+\procinfo 8--27 December, 2012
+\totalpages 10
+\elink \url{http://www.sworld.com.ua/konfer29/1109.pdf}
+\misctransl
+\lang In Russian
+\by Yu.~G.~Kozub
+\eprint Stress-strain state of rubber-metal vibration and seismic isolators 
+\eprintinfo Modern Problems and Ways of Their Solution in Science, Transport, Production and Education'2012
+\yr 2012
+\procinfo 8--27 December, 2012
+\totalpages 10
+\elink \url{http://www.sworld.com.ua/konfer29/1109.pdf}
+
+\RBibitem{gomenjukbovajurechko:bib:Lavendel}
+\by Э.~Э.~Лавендел
+\book Расчет резинотехнических изделий
+\publaddr М.
+\publ Машиностроение
+\yr 1976
+\totalpages 232
+\misctransl
+\by E.~E.~Lavendelis
+\book Design of Rubber-Technical Construction Elements
+\yr 1976
+\publaddr Moscow
+\publ Mashinostroenie  
+\totalpages 232
+\lang In Russian
+
+\RBibitem{gomenjukbovajurechko:bib:Dymnikov}
+\paper Расчет резино-технических деталей при средних деформациях
+\by С.~И.~Дымников
+\jour Механика полимеров
+\yr 1968
+\issue 2
+\pages 271--275
+\transl
+\jour Polymer Mechanics
+\yr 1968
+\vol 4
+\issue 2
+\pages 206--210
+\paper Calculation of rubber engineering components for average deformations
+\by S.~I.~Dymnikov 
+\crossref{10.1007/BF00855620}
+
+\RBibitem{gomenjukbovajurechko:bib:Biderman}
+\paper Расчет цилиндрических и прямоугольных длинных резиновых амортизаторов сжатия
+\by В.~Л.~Бидерман, Н.~А.~Сухова
+\jour Расчеты на прочность
+\yr 1968
+\issue 13
+\pages 55--72
+\misctransl
+\lang In Russian
+\by V.~L.~Biderman, N.~.A.~Sukhova
+\paper Calculation of cylindrical and rectangular long rubber shock compression
+\jour Raschety na prochnost'
+\yr 1968
+\issue 13
+\pages 55--72
+
+\RBibitem{gomenjukbovajurechko:bib:Lisitsa}
+\paper Определение напряжённо"=деформированного состояния резинометаллических сейсмоопор
+\by  В.~И.~Дырда, Н.~И.~Лисица, А.~В.~Новикова, С.~Н.~Гребенюк, Ю.~Г.~Козуб, А.~А.~Бова
+\inbook Методи розв'язування прикладних задач механіки деформівного твердого тіла
+\bookinfo Збiрник наукових праць
+\publaddr Днiпропетровьск
+\publ Лiра
+\yr 2012
+\bookvol 13
+\pages 152--158
+\elink \url{http://dspace.luguniv.edu.ua/jspui/handle/123456789/441}
+\misctransl
+\lang In Russian
+\by V.~I.~Dyrda, N.~I.~Lisitsa, A.~V.~Novikova, S.~N.~Grebenjuk, Yu.~G.~Kozub, A.~A.~Bova
+\paper  Determination of the stress-strain state of rubber-metal seismic bearing
+\inbook Metodi rozv'yazuvannya prikladnikh zadach mekhaniki deformivnogo tverdogo tila \rm [Methods of Solving Applied Problems in Solids Mechanics]
+\publaddr Dnipropetrovsk
+\publ Lira
+\yr 2012
+\bookvol 13
+\pages 152--158
+\elink \url{http://dspace.luguniv.edu.ua/jspui/handle/123456789/441}
+
+
+
+
+\RBibitem{gomenjukbovajurechko:bib:Mal'kov}
+\by В.~М.~Мальков
+\book Механика многослойных эластомерных конструкций
+\publaddr СПб.
+\publ \mbox{СПбГУ}
+\yr 1998
+\totalpages 320
+\misctransl
+\lang In Russian
+\by V.~M.~Malkov
+\book Mekhanika mnogosloynykh elastomernykh konstruktsiy \rm [Mechanics of Multilayers Elastomeric Structures]
+\publ St. Petersburg University Press
+\publaddr St. Petersburg
+\yr 1998
+\totalpages 320
+
+
+\RBibitem{gomenjukbovajurechko:bib:Kirichevskij}
+\by В.~В.~Киричевский
+\book Метод конечных элементов в механике эластомеров
+\publaddr Киев
+\publ Наукова думка
+\yr 2002
+\totalpages 655
+\misctransl
+\lang In Russian
+\by V.~V.~Kirichevskiy 
+\yr 2002
+\book Metod konechnykh elementov v mekhanike elastomerov \rm [Finite Element Method in Mechanics of Elastomers]
+\publaddr Kiev
+\publ Naukova Dumka
+\yr 2002
+\totalpages 655
+
+\RBibitem{gomenjukbovajurechko:bib:Narusberg}
+\by В.~Л.~Нарусберг, Г.~А.~Тетерс
+\book Устойчивость и~оптимизация оболочек из композитов
+\publaddr Рига
+\publ Зинатне
+\yr 1988
+\totalpages 299
+\misctransl
+\lang In Russian
+\by V.~L.~Narusberg, G.~A.~Teters
+\book  Ustoychivost' i optimizatsiya obolochek iz kompozitov  \rm [Stability and Optimization of a Shell Made of Composite Materials]
+\publaddr Riga
+\publ Zinatne 
+\yr 1988
+\totalpages 299
+
+
+\RBibitem{gomenjukbovajurechko:bib:Koval'chenko}
+\paper Механические свойства изотропных пористых материалов. I. Упругие и~реологические свойства
+\by М.~С.~Ковальченко
+\jour Порошковая металлургия
+\yr 1993
+\issue 3(363)
+\pages 89--96
+\transl
+\jour Powder Metallurgy and Metal Ceramics
+\yr 1993
+\vol 32
+\issue 3
+\pages 268--273
+\paper Mechanical properties of isotropic porous materials. I.~Elastic and rheological properties
+\by M.~S.~Koval'chenko 
+\crossref{10.1007/BF00559762}
+
+
+
+\Bibitem{gomenjukbovajurechko:bib:Lewis}
+\by  R.~W.~Lewis, B.~A.~Schrefler
+\book  The Finite Element Method in the Static and Dynamic Deformation and Consolidation of Porous Media
+\publ Wiley 
+\publaddr Chichester
+\yr 1998
+
+\Bibitem{gomenjukbovajurechko:bib:Bemer}
+\paper Poromechanics: from linear poroelasticity to non-linear poroelasticity and poroviscoelasticity
+\by E.~Bemer, M.~Bout\'eca, O.~Vinck\'e, N.~Hoteit, O.~Ozanam
+\jour Oil \& Gas Science and Technology -- Rev. IFP
+\vol 56 
+\yr 2001
+\issue 6
+\pages 531--544
+\crossref{10.2516/ogst:2001043}
+
+\Bibitem{gomenjukbovajurechko:bib:Chateau}
+\paper Micromechanics of saturated and unsaturated porous media
+\by X.~Chateau, L.~Dormieux
+\jour Int. J. Numer. Anal. Meth. Geomech.
+\yr 2002
+\vol 26
+\issue 8
+\pages 831--844
+\crossref{10.1002/nag.227}
+
+\Bibitem{gomenjukbovajurechko:bib:Coussy}
+\paper Non-Linear Binding and the Diffusion–Migration Test
+\by O.~Coussy, R.~Eymard
+\jour Transport in Porous Media
+\yr 2003
+\issue 1
+\vol 53
+\pages 51--74
+\crossref{10.1023/A:1023529906079}
+    
+
+\RBibitem{gomenjukbovajurechko:bib:Kirichevskij1}
+\by В.~В.~Киричевский, А.~С.~Сахаров
+\book Нелинейные задачи термомеханики конструкций из слабосжимаемых эластомеров
+\publaddr Киев
+\publ Будівельник
+\yr 1992
+\totalpages 216
+\misctransl
+\lang In Russian
+\by V.~V.~Kirichevskii, A.~S.~Sakharov
+\book Nelineynyye zadachi termomekhaniki konstruktsiy iz slaboszhimayemykh elastomerov \rm [Nonlinear Problems of the Thermomechanics of Structures of Weakly Compressible Elastomers]
+\publ Budivel'nyk
+\publaddr Kiev 
+\yr 1992
+\totalpages 216
+
+
+\RBibitem{gomenjukbovajurechko:bib:Jurechko}
+\paper Визначення напружено-деформованого стану конструкцій із пористих матеріалів
+\by  С.~М.~Гребенюк, В.~З.~Юречко
+\inbook Проблеми обчислювальної механіки і міцності конструкцій
+\bookinfo Збірник наукових праць
+\publaddr Дніпропетровськ
+\publ Ліра
+\yr 2011
+\bookvol 15
+\pages 60--69
+\misctransl
+\lang In Ukrainian
+\by S.~M.~Grebenjuk, V.~Z.~Yurechko
+\paper Definition of stress-strain state for constructions made of porous materials
+\inbook Problemi obchislyuval'noi mekhaniki i mitsnosti konstruktsiy \rm [Problems of Computational Mechanics and Strength of Structures]
+\publaddr Dnipropetrovsk
+\publ Lira
+\yr 2011
+\bookvol 15
+\pages 60--69
+
+
+\RBibitem{gomenjukbovajurechko:bib:Sakharov}
+\by А.~С.~Сахаров, В.~Н.~Кислоокий, В.~В.~Киричевский, И.~Альтенбах, У.~Габберт, Ю.~Данкерт, Х.~Кепплер, З.~Кочык
+\book Метод конечных элементов в механике твёрдых тел
+\publaddr Киев
+\publ Вища школа
+\yr 1982
+\totalpages 480
+\misctransl
+\lang In Russian
+\by A.~S.~Sakharov, V.~N.~Kislookiy, V.~V.~Kirichevskiy, I.~Al'tenbakh, U.~Gabbert, J.~Dankert, Kh.~Keppler, Z.~Kochyk
+\book Metod konechnykh elementov v mekhanike tvordykh tel \rm [Finite Elements Method in Solid Mechanics]
+\publaddr Kiev
+\publ Vishcha shkola
+\yr 1982
+\totalpages 480 
+ 
+
+
+\RBibitem{gomenjukbovajurechko:bib:Grebenjuk}
+\paper Повышение точности моментной схемы конечного элемента для слабосжимаемых материалов
+\by С.~Н.~Гребенюк, А.~А.~Бова
+\inbook Современные проблемы и пути их решения в науке, транспорте, производстве, образовании
+\bookinfo  Сборник научных трудов по материалам международной научно-практической конференции
+\yr 2009
+\bookvol 22
+\volinfo  Физика и математика, География
+\publaddr Одесса
+\publ Черноморье
+\pages 55--64
+\misctransl
+\lang In Russian
+\paper Improving the accuracy of moment finite element schemes for slightly compressible materials 
+\by S.~N.~Grebenjuk, A.~A.~Bova
+\inbook Sovremennyye problemy i puti ikh resheniya v nauke, transporte, proizvodstve, obrazovanii \rm [Modern Problems and Their Solutions in Science, Transportation, Manufacturing, Education]
+\bookinfo Collection of Scientific Papers Based on International Scientific and Practical Conference 
+\yr 2009
+\bookvol 22
+\publaddr Odessa
+\publ Chernomor'ye
+\pages 55--64
+
+\RBibitem{gomenjukbovajurechko:bib:Dohnjak}
+\by В.~В.~Киричевский, Б.~М.~Дохняк, Ю.~Г.~Козуб,  С.~И.~Гоменюк, Р.~В.~Киричевский, С.~Н.~Гребенюк
+\book Метод конечных элементов в вычислительном комплексе «МІРЕЛА+»
+\publaddr Киев
+\publ Наукова думка
+\yr 2005
+\totalpages 416
+\misctransl
+\lang In Russian
+\book  Metod konechnykh elementov v vychislitel'nom komplekse ``MIRELA+'' \rm [Finite element method in obtained complex ``MIRELA+'']
+\by V.~V.~Kirichevskiy, B.~M.~Dokhnyak, YU.~G.~Kozub, S.~I.~Gomenjuk, R.~V.~Kirichevskiy, S.~N.~Grebenjuk
+\publaddr Kiev
+\publ Naukova dumka
+\yr 2005
+\totalpages 416
+
+
+
+\RBibitem{gomenjukbovajurechko:bib:Samul}
+\by В.~И.~Самуль
+\book Основы теории упругости и пластичности
+\publaddr М.
+\publ Высшая школа
+\yr 1982
+\totalpages 264
+\misctransl
+\lang In Russian
+\by  V.~I.~Samul
+\book Osnovy teorii uprugosti i plastichnosti \rm [Fundamentals of the theory of elasticity and plasticity]
+\publaddr Moscow
+\publ Vysshaya shkola
+\yr 1982
+\totalpages 264
+
+
+\end{thebibliography}
+
+
+
+
+
+\renewcommand{\correctvfill}{\newpage}
+
+
+\makeentitle
+
+
+\chead[\fancyplain{}{\scriptsize \sl S.~I.~G\,o\,m\,e\,n\,j\,u\,k, S.~N.~G\,r\,e\,b\,e\,n\,j\,u\,k, A.~A.~B\,o\,v\,a, V.~Z.~J\,u\,r\,e\,c\,h\,k\,o}]{\fancyplain{}{\scriptsize \sl  The Stress-strain State of the Rubber-metall Seismic Bearing}}
+%
+
+\renewcommand{\baselinestretch}{0.9}
+
+
+ \newpage
+%%
+%% \tableofengcontents
+%%
+%\end{document}

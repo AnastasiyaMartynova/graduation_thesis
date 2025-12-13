@@ -1,0 +1,798 @@
+%\def\mytheorem#1#2{\begin{my_the} #1 \end{my_the} \begin{proof} #2 \end{proof} }
+%\def\mylemma#1#2{\begin{my_lem} #1 \end{my_lem} \begin{proof} #2 \end{proof} }
+%\def\mystatement#1#2{\begin{my_state} #1 \end{my_state} \begin{proof} #2 \end{proof} }
+%\def\mydefinition#1{\begin{my_def} #1 \end{my_def}}
+%\def\mysample#1{\begin{my_sam} #1 \end{my_sam}}
+
+
+\def\Set#1#2{\{{#1\ \colon\ #2 \}}}
+\def\SetA#1#2{\{{#1\ \mid\ #2 \}}}
+
+\def\sigmaF{\mathscr{F}}
+\def\sigmaB{\mathscr{B}}
+\def\classT{\mathbb {T}}
+\def\divers{\succcurlyeq}
+
+
+\newcommand{\Expect}{\mathsf{E}}
+
+%\renewcommand{\ge}{\geqslant}
+%\renewcommand{\le}{\leqslant}
+
+\def\stat{yakovenko}
+
+\def\tit{ДИВЕРСИФИКАЦИЯ И ЕЕ СВЯЗЬ С МЕРАМИ РИСКА}
+
+\def\titkol{Диверсификация и ее связь с мерами риска}
+
+\def\autkol{Д.\,О.~Яковенко, М.\,А.~Целищев}
+\def\aut{Д.\,О.~Яковенко$^1$, М.\,А.~Целищев$^2$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnotetext[1]
+%{Работа выполнена при финансовой поддержке РФФИ (гранты 11-01-00515а и 11-01-12026-офи-м).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Гроссмейстер ФИДЕ, ms@cs.msu.su}
+\footnotetext[2]{Московский государственный университет им.\ М.\,В.~Ломоносова, 
+кафедра математической статистики факультета вычислительной математики и кибернетики; 
+ms@cs.msu.su}
+
+\Abst{Предложен новый подход к понятию
+диверсификации инвестиционных портфелей, которое определяется как
+бинарное отношение во множестве портфелей с конечным первым
+моментом. Показано, что это бинарное отношение является (в
+определенном смысле) частичной упорядоченностью. Рассмотрены важные
+свойства этого определения, а также необходимое и достаточное
+условия срав\-ни\-мости портфелей, важнейшую роль в которых играет
+когерентная мера риска \textit{Expected Shortfall} (ожидаемый
+дефицит). В~качестве примера приводится интерпретация диверсификации
+информационного риска.}
+
+\KW{диверсификация; инвестиционные портфели;
+сравнение портфелей; когерентные меры риска; \textit{Expected
+Shortfall}; информационный риск}
+
+  \vskip 14pt plus 9pt minus 6pt
+
+      \thispagestyle{headings}
+
+      \begin{multicols}{2}
+      
+            \label{st\stat}
+
+\section{Введение}
+
+Диверсификация является одним из основных способов управления
+рисками практически во всех областях экономической деятельности. 
+В~основе диверсификации лежит идея распределения риска по различным
+источникам, недопущение ситуации, когда одно неблагоприятное событие~--- 
+резкое изменение цены какого-либо товара, нарушение контрагентом
+графика поставок и~т.\,п. --- может привести к катастрофическим
+последствиям. В~статье предложено формальное определение
+диверсификации и рассмотрены свойства этого определения. В~качестве
+примера рассматривается диверсификация информационных сис\-тем как
+способ управления информационными рисками, под которыми понимаются
+риски возникновения убытков из-за неправильной организации или
+умышленного нарушения информационных потоков и сис\-тем организации.
+
+
+\section{Формализация понятия диверсификации}
+
+Введем вероятностное пространство $(\Omega,\sigmaF,\mu)$, где
+$\Omega=[0;1)$, $\sigmaF$~--- сиг\-ма-ал\-геб\-ра борелевских множеств на
+$[0;1)$, $\mu$ --- мера Лебега. $\Omega$~интерпретируется как
+пространство возможных вариантов развития событий (траекторий) на
+рынке. Под инвестиционным портфелем в этой статье понимается не
+набор ценных бумаг, а некая стратегия, которой придерживается
+инвестор. Стратегия представляет собой случайную величину~$\xi$,
+определенную на введенном выше вероятностном пространстве и такую,
+что на траектории $\omega \hm\in \Omega$ инвестор \textbf{несет
+потери}, равные $\xi(\omega)$ (если $\xi(\omega) \hm< 0 $, то инвестор
+получает прибыль в размере $ - \xi(\omega)$). Класс всех
+рассматриваемых стратегий полагаем таким: $V\hm=\Set{\xi}{\exists\
+\Expect|\xi|< \infty}$.
+
+Будем использовать следующие обозначения:
+\begin{enumerate}
+\item $\xi_1 \sim \xi_2 \Leftrightarrow F_{\xi_1}(x) \equiv F_{\xi_2}(x)$, т.\,е.\ 
+$\xi_1$ и $\xi_2$ одинаково распределены.
+\item $\xi^{(\alpha)} = \inf \Set{x}{F_{\xi}(x) \hm> \alpha}$, $\alpha \hm\in [0,1]$,~--- 
+верхняя квантиль порядка~$\alpha$.
+\end{enumerate}
+
+В дальнейшем потребуются две операции над портфелями: сложение двух
+портфелей и умножение портфеля на константу. Под суммой двух
+портфелей~$\xi_1$ и~$\xi_2$ понимается портфель, который на
+траектории $\omega \hm\in \Omega$ дает потери
+$\xi_1(\omega)\hm+\xi_2(\omega)$, а под умножением на константу $\alpha
+\hm\in [0,1]$ (другие константы не понадобятся) портфеля~$\xi$
+понимается портфель, который на траектории $\omega \hm\in \Omega$ дает
+потери $\alpha \xi(\omega)$. С~экономической точки зрения стратегия
+$\xi_1\hm+\xi_2$ подразумевает параллельное исполнение стратегий~$\xi_1$ и~$\xi_2$, 
+а стратегия $\alpha \xi$ заключается в выполнении
+всех финансовых операций стратегии~$\xi$, но только <<в доле>> с
+другими инвесторами (так, чтобы собственная доля во всех операциях
+составляла~$\alpha$).
+
+\medskip
+
+\noindent
+\textbf{Определение 1.} Будем говорить, что портфель~$\xi_2 \hm\in V$ является
+\textbf{результатом диверсификации} портфеля~$\xi_1 \hm\in V$
+(обозначается~$\xi_2 \divers \xi_1$), если $\forall\eps\hm>0$
+существуют портфели $\eta_0, \ldots , \eta_n, \eta_0', \ldots,
+\eta_{n-1}'\hm \in V$ и числа $\alpha_1, \ldots, \alpha_n, 0 \hm\le
+\alpha_i \hm\le 1$, такие~что $\eta_0 \hm= \xi_1$, $\eta_i \hm\sim \eta_i'$,
+$\eta_i \hm= \alpha_i \eta_{i-1} \hm+ (1 \hm- \alpha_i)\eta_{i-1}'$ и $\eta_n
+\hm\ge \xi_2 \hm- \eps$ почти всюду (п.\,в).
+
+\medskip
+
+\noindent
+\textbf{Пример 1.} Пусть $X_1$, $X_2$, $X_3$~--- независимые одинаково
+распределенные случайные величины (портфели). Рассмотрим портфель
+вида $\xi_1 \hm= p_1 X_1 \hm+ p_2 X_2 \hm+ p_3 X_3$, $p_i \hm\ge 0$,
+$p_1\hm+p_2\hm+p_3\hm=1$, и покажем, что портфель $\xi_2 \hm= (1/3)X_1 \hm+
+(1/3) X_2 \hm+ (1/3) X_3$ является результатом диверсификации
+портфеля~$\xi_1$. Без ограничения общности считаем, что $0 \hm\le p_1
+\hm\le p_2 \hm\le p_3 \hm\le 1$ и $p_1 \hm< 1/3$ (случай, когда все $p_i \hm=
+1/3$, не интересен в силу его тривиальности). Определим $\eta_0 \hm=
+\xi_1 \hm= p_1 X_1 \hm+ p_2 X_2 \hm+ p_3 X_3$ , $\eta_0' \hm= p_3 X_1 \hm+ p_2 X_2
+\hm+ p_1 X_3$ ($\eta_0 \hm\sim \eta_0'$, так как $X_1$, $X_2$, $X_3$
+независимы и одинаково распределены), $\alpha_1 \hm= (p_3 \hm-
+1/3)/(p_3 \hm- p_1)$ ($0 \hm< \alpha_1 \hm< 1$ в силу предположений на
+$p_1$, $p_2$, $p_3$). Тогда 
+
+\noindent
+$$
+\eta_1 = \alpha_1 \eta_0 + (1 - \alpha_1) \eta_0' 
+= \fr{1}{3}\, X_1 + p_2 X_2 + \left(\fr{2}{3}- p_2\right) X_3\,.
+$$ 
+Теперь определим 
+$$
+\eta_1' = \fr{1}{3}\, X_1 + \left(\fr{2}{3}- p_2\right) X_2 + p_2 X_3
+$$ и
+$\alpha_2 \hm= 1/2 $. 
+Тогда 
+
+
+
+\noindent
+\begin{multline*}
+\eta_2 = \alpha_2 \eta_1 + (1 - \alpha_2) \eta_1' = 
+\fr{1}{3}\, X_1 + \fr{1}{3}\, X_2 + \fr{1}{3}\, X_3 ={}\\
+{}=
+    \xi_2 > \xi_2 - \eps\,,\enskip \forall \eps\hm>0\,.
+    \end{multline*} 
+    Тем самым, согласно введенному определению, $\xi_2 \divers \xi_1$.
+
+\vspace*{-3pt}
+
+\section{Свойства введенного определения}
+
+\vspace*{-1pt}
+
+Введем класс отображений $ \classT \hm= \Set {T}{\Omega \rightarrow
+\Omega} $, так чтобы $T \hm\in \classT $ тогда и только тогда, когда
+$\exists A,B \hm\in \sigmaF$, $\mu(A)\hm=\mu(B)=1$, $\exists T' \colon B
+\hm\rightarrow A$ такое, что $T'$ измеримо, обратимо и $\forall
+G\hm\in\sigmaF\cap B$ $\exists \mu(T'(G)) \hm= \mu(G)$, причем
+$T(\omega)\hm=T'(\omega)$  для  $\omega \hm\in B$ (на множестве
+нулевой меры $\Omega \backslash B$ отображение~$T$ принимает
+произвольные значения из~$\Omega$).
+
+\medskip
+
+\noindent
+\textbf{Лемма~1.} \textit{$\forall \xi \in V $, $\forall T \in \classT $
+выполняется: $\xi \sim \xi(T) $.} 
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е,л\,ь\,с\,т\,в\,о.\  
+Пусть $\ T \hm\in \classT$.
+Тогда $\forall G \hm\in \sigmaB$ ($\sigmaB$~--- сиг\-ма-ал\-геб\-ра
+борелевских множеств на прямой) в силу того, что
+$\mu(A)\hm=\mu(B)\hm=1$, имеем:
+
+\noindent
+\begin{multline*}
+\p(\xi(T) \in G) = \mu( \Set{\omega}{T(\omega) \in \xi^{-1}(G)} ) = {}\\
+{}=\mu(\Set{\omega}{T(\omega) \in \xi^{-1}(G)} \cap B)={} \\
+{}=\mu(\Set{\omega}{T(\omega) \in \xi^{-1}(G)\cap A} \cap B)={} \\
+{}=\mu(\Set{\omega \in B}{T'(\omega) \in \xi^{-1}(G)\cap A})={} \\
+{}=\mu(B\cap (T')^{-1}(\xi^{-1}(G)\cap A))={}\\
+{}= \mu((T')^{-1}(\xi^{-1}(G)\cap A))={}\\
+{}= \mu(\xi^{-1}(G)\cap A)= \mu(\xi^{-1}(G)) = \p(\xi \in G)\,.
+\end{multline*}
+Лемма доказана.\hfill$\square$
+
+\columnbreak
+%\medskip
+
+\noindent
+
+\textbf{Лемма~2.}
+\textit{Пусть $\xi_1, \xi_2 \hm\in V $ и $\xi_1 \hm\sim \xi_2$. Тогда
+$ \forall \eps \hm> 0$ $\exists  T \hm\in \classT$ такое, что $
+|\xi_1(T)\hm-\xi_2|\hm<\eps $ почти наверное.} 
+
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ Фиксируем произвольное
+$\eps \hm> 0 $. Обозначим
+$$
+A_i = \xi_1^{-1}\left(  \left[  i \eps ; (i+1) \eps \right) \right )\,,  \\
+B_i = \xi_2^{-1}\left( \left [  i \eps ; (i+1) \eps \right ) \right )\,.
+$$
+Поскольку $\xi_1 \hm\sim \xi_2$, то $\forall i$  $\mu(A_i) \hm=
+\mu(B_i)$. Согласно~[1, с. 74], $\forall i$ $\exists
+A_i'$, $B_i' \hm\in \sigmaF$, $A_i' \subseteq A_i$,
+$B_i' \hm\subseteq B_i$, $\mu(A_i') \hm= \mu(A_i)$, $\mu(B_i')\hm =
+\mu(B_i)$ и $\exists T_i \colon B_i' \hm\to A_i'$ такое, что $T_i$
+измеримо, $\exists T_i^{-1}$ и $\forall G \hm\in \sigmaF \cap B_i': 
+\mu(T_i(G)) \hm= \mu(G)$. Определим $T(\omega) \hm= T_i(\omega)$ для 
+$\omega \hm\in B_i'$. На множестве нулевой меры $\Omega
+\backslash (\bigsqcup\limits_{-\infty}^\infty B_i')$ доопределим~$T$ 
+произвольно. Обозначим $B \hm= \bigsqcup\limits_{-\infty}^\infty
+B_i'$, $A \hm= \bigsqcup\limits_{-\infty}^\infty A_i'$. В~этом случае
+$\mu(A) = \mu(B) = 1$. Таким образом, $T \hm\in \classT$ и $\forall i
+\ \forall \omega \hm\in B_i' $:
+\begin{multline*}
+| \xi_1(T(\omega)) - \xi_2(\omega) | = | \xi_1(T_i(\omega)) -
+\xi_2(\omega) | <{}\\
+{}< (i+1) \varepsilon - i \varepsilon =
+\varepsilon\,.
+\end{multline*} 
+Лемма доказана.\hfill$\square$ 
+
+\medskip
+
+\noindent
+\textbf{Определение 2.}
+\textbf{Оператором диверсификации} назовем оператор
+$D_{\alpha,T} : V \hm\rightarrow V$, $\alpha \hm\in [0;1]$, $T \hm\in \classT$,
+такой что $D_{\alpha,T}(\xi) \hm= \alpha \xi \hm+ ( 1 \hm- \alpha ) \xi(T)$.
+
+Важные свойства операторов диверсификации:
+\begin{enumerate}
+\item Если $\xi_1 \hm= \xi_2$ ($\xi_1 \hm\le \xi_2$) почти наверное, то
+$D_{\alpha,T}(\xi_1) \hm= D_{\alpha,T}(\xi_2)$ 
+($D_{\alpha,T}(\xi_1) \hm\le D_{\alpha,T}(\xi_2)$  соответственно)
+ почти наверное.
+\item Если $\xi,\eta\hm\in\,V$, $\eta\hm=const$ п.\,в., 
+то $D_{\alpha,T}(\xi+\eta) \hm= D_{\alpha,T}(\xi) \hm+ \eta$.
+\end{enumerate}
+
+\medskip
+
+\noindent
+\textbf{Лемма 3.} \textit{$\xi_2 \divers \xi_1$ тогда и только тогда, когда $
+\forall \eps\hm>0 $ существует последовательность операторов
+диверсификации $ D_1=D_{\alpha_1,T_1},\, \ldots\, ,
+D_n\hm=D_{\alpha_n,T_n} $ такая, что $ D_n(\ldots(D_1(\xi_1))\ldots)
+\ge \xi_2 \hm- \eps $ почти наверное.}
+
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\
+%$\phantom{hello,world}$\\
+
+\noindent
+\fbox{$\Leftarrow$} Непосредственно вытекает из определений~1, 2 и леммы~1.
+
+\noindent
+\fbox{$\Rightarrow$} Пусть $\xi_2 \divers \xi_1$. Фиксируем $\eps
+\hm> 0$ и строим $\eta_0, \ldots , \eta_n, \eta_0', \ldots,
+\eta_{n-1}', \alpha_1, \ldots, \alpha_n$ из определения~1, так чтобы
+$ \eta_n \hm\ge \xi_2 \hm- \eps/2 $ почти наверное. Пользуясь
+леммой~2, построим $ T_i \hm\in \classT $ так, что $ | \eta_{i-1}' \hm-
+\eta_{i-1}(T_i) | \hm\le \eps/(2n) $ почти наверное. Определим
+$D_i \hm= D_{\alpha_i,T_i}$, $i \hm=1,\ldots,n,$ и покажем, что эта
+последовательность операторов диверсификации будет искомой.
+Определим $\zeta_0 \hm= \xi_1$, $\zeta_k \hm= D_k(\zeta_{k-1})$, $k \hm=
+1,\ldots,n$. Если доказать, что $ | \zeta_n \hm- \eta_n | \hm\le
+\eps/2$ почти наверное, то в силу того, что $ \eta_n \hm\ge
+\xi_2 \hm- \eps/2 $ почти наверное, получим $ \zeta_n \hm\ge \xi_2
+\hm- \eps $ почти наверное, и лемма будет доказана. Обоснуем
+необходимое неравенство по индукции: будем доказывать, что $\forall
+k=0,\dots,n$ $| \zeta_k \hm- \eta_k | \hm\le k \eps/(2n)$ почти
+наверное. При $k\hm=0$ утверждение справедливо: $|\zeta_0 \hm- \eta_0| \hm=
+|\xi_1 \hm- \xi_1| \hm= 0 $. Пусть утверждение справедливо для некоторого
+$k<n$, докажем его для $k+1$:
+\begin{multline*}
+\left\vert \zeta_{k+1} - \eta_{k+1} \right\vert = 
+\left\vert\alpha_{k+1}\zeta_k + (1-\alpha_{k+1})\zeta_k(T_{k+1}) -{}\right.\\
+\left.{}-  \alpha_{k+1}\eta_k -                  (1-\alpha_{k+1})\eta_k' \right\vert \le \\
+\le \alpha_{k+1} \left\vert \zeta_k - \eta_k \right\vert 
++ \left(1-\alpha_{k+1}\right) \left\vert\zeta_k(T_{k+1}) - \eta_k'\right\vert \le {}\\
+\!{}\le \alpha_{k+1} \left| \zeta_k - \eta_k \right| + \left(1-\alpha_{k+1}\right) 
+\left\vert\zeta_k(T_{k+1}) - \eta_k(T_{k+1})\right\vert +{}\\
+{}+    \left(1-\alpha_{k+1}\right) \left\vert\eta_k\left(T_{k+1}\right) - \eta_k'\right\vert \le{} \\
+{}\le \fr{(k+1)\eps}{2n} 
+\end{multline*}
+почти наверное.
+
+Тем самым лемма доказана.\hfill$\square$
+
+
+\section{Необходимое условие диверсифицируемости}
+
+В теории управления рисками хорошо известна когерентная мера риска
+под названием \textit{Expected Shortfall} (ожидаемый дефицит):
+
+\noindent
+$$
+{ES}_\gamma(\xi) = \fr{1}{\gamma} \int\limits_{1-\gamma}^1 \xi^{(t)} \,dt\,,\enskip
+\gamma \in  (0,1]\,.
+$$
+Согласно~\cite{es}, \textit{Expected Shortfall} обладает следующими
+свойствами:
+\begin{enumerate}
+\item $\xi\in V$, $\xi\hm\le0$  \textit{почти наверное} ${}\Rightarrow {ES}_\gamma(\xi)\hm\le0$, 
+$\forall \gamma\hm \in (0;1]$;
+\item ${ES}_\gamma(\xi_1+\xi_2) \le {ES}_\gamma(\xi_1) \hm+ {ES}_\gamma(\xi_2)$, 
+$\forall \xi_1,\xi_2\hm\in V$;
+\item ${ES}_\gamma(a\xi) = a {ES}_\gamma(\xi)$, $\forall \xi\hm\in V$, $a\hm\ge 0$;
+\item ${ES}_\gamma(\xi+a) = {ES}_\gamma(\xi)\hm+a$, $\forall \xi\in V$, $a\hm\in\mathbb{R}$;
+\item $\xi_1,\xi_2\in V$, $\xi_1\hm\sim\xi_2 \hm\Rightarrow{ES}_\gamma(\xi_1)\hm={ES}_\gamma(\xi_2)$.
+\end{enumerate}
+
+Простым следствием из свойств~1 и~2 является свойство монотонности:
+\begin{enumerate}[6.]
+\item $\xi_1,\xi_2\in V$, $\xi_1 \hm\le \xi_2$ \textit{почти наверное} $
+{}\Rightarrow {ES}_\gamma(\xi_1) \hm\le {ES}_\gamma(\xi_2)$, $\forall \gamma \in (0;1]$.
+\end{enumerate}
+
+\medskip
+
+\noindent
+\textbf{Утверждение 1.} \textit{$\forall \xi \in V$ $\forall \alpha \in [0;1] 
+\forall T \hm\in \classT$ справедливо неравенство 
+${ES}_\gamma ( D_{\alpha , T}(\xi)) \hm\le {ES}_\gamma (\xi)$  для $\forall
+\gamma \hm\in (0;1]$. }
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ В~силу леммы~1 \ $\xi \hm\sim \xi(T)$. По
+указанным выше свойствам \textit{Expected Shortfall} имеем
+
+\noindent
+\begin{multline*}
+{ES}_\gamma ( D_{\alpha , T}(\xi)) =
+{ES}_\gamma ( \alpha \xi + (1 - \alpha) \xi(T)) \stackrel{\text{св.2}}{\le}{} \\
+{}\le {ES}_\gamma ( \alpha \xi ) + {ES}_\gamma  ( (1 - \alpha) \xi(T)) \stackrel{\text{св.3}}{=}{}\\
+{}=\alpha {ES}_\gamma ( \xi ) + (1 - \alpha) {ES}_\gamma ( \xi(T)) \stackrel{\text{св.5}}{=}  \\
+= \alpha {ES}_\gamma ( \xi ) + (1 - \alpha) {ES}_\gamma ( \xi ) =
+{ES}_\gamma ( \xi )\,.
+\end{multline*}
+Утверждение доказано.\hfill$\square$
+
+\columnbreak 
+
+%\medskip
+
+\noindent
+\textbf{Теорема 1.}
+\textit{Если $\xi_2 \divers \xi_1 $, то ${ES}_\gamma(\xi_2) \hm\le
+{ES}_\gamma(\xi_1)$ для всех $ \gamma \hm\in (0;1] $.} 
+
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ По лемме~3
+для любого $\eps\hm>0$ существует последовательность операторов
+диверсификации $ D_1,\, \ldots\, , D_n $ такая, что
+$D_n(\ldots(D_1(\xi_1))\ldots) \hm\ge \xi_2 \hm- \eps$ почти наверное.
+Используя свойства \textit{Expected Shortfall} и утверждение~1, получим
+цепочку неравенств
+\begin{multline*}
+{ES}_\gamma (\xi_2) - \eps \stackrel{\text{св.4}}{=} {ES}_\gamma (\xi_2 - \eps)
+ \stackrel{\text{св.6}}{\le}{}\\
+ {}\le {ES}_\gamma ( D_n(\ldots(D_1(\xi_1))\ldots) ) \stackrel{\text{утв.1}}{\le}{} \\
+{}\le {ES}_\gamma( D_{n-1}(\ldots(D_1(\xi_1))\ldots) ) \stackrel{\text{утв.1}}{\le}\! \ldots
+\! \stackrel{\text{утв.1}}{\le} {ES}_\gamma (\xi_1).\hspace*{-4.50763pt}
+\end{multline*}
+Так как это справедливо для всех $\eps \hm> 0$, то, переходя к пределу
+при $\eps \hm\to +0$, получим ${ES}_\gamma(\xi_2) \hm\le
+{ES}_\gamma(\xi_1)$. Теорема доказана.\hfill$\square$
+
+\medskip
+
+\noindent
+\textbf{Теорема~2.}
+\textit{Бинарное отношение <<$\divers$>> является час\-тич\-ной
+упорядоченностью на множестве~$V$ (антисимметричность при этом
+понимается в том смысле, что из $\xi_1 \divers \xi_2$, $\xi_2
+\divers \xi_1$ следует, что $\xi_1 \hm\sim \xi_2$).} 
+
+\medskip
+
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ 
+\textit{Рефлексивность} очевидна.
+
+\textit{Транзитивность.} Пусть $\xi_2 \divers \xi_1$, $\xi_3 \divers
+\xi_2$. По лемме~3 существуют последовательности операторов
+диверсификации $D_1, \ldots , D_n, D_1', \ldots, D_m'$ такие, что
+\begin{align*}
+D_n(\ldots(D_1(\xi_1))\ldots) &\ge \xi_2 - \fr{\eps}{2}\ \mbox{п.\,в.}\,;
+\\
+D_m'(\ldots(D_1'(\xi_2))\ldots) &\ge \xi_3 - \fr{\eps}{2}\ \mbox{п.\,в.}
+\end{align*}
+Тогда 
+\begin{multline*}
+D_m'(\ldots(D_1'(   D_n(\ldots(D_1(\xi_1))\ldots) ))\ldots)
+\ge{}\\
+{}\ge D_m'(\ldots\left(D_1'\left(  \xi_2 - \fr{\eps}{ 2}\right )\right)\ldots) ={}\\
+{}=
+D_m'(\ldots(D_1'(  \xi_2 ))\ldots) - \fr{\eps}{2}\ge  \xi_3 - \fr{\eps}{2}
+- \fr{\eps}{2}= \xi_3 - \eps\,. 
+\end{multline*}
+По лемме~3 $\xi_3 \divers \xi_1$.
+
+\textit{Антисимметричность.} Пусть $\xi_1 \divers \xi_2$, $\xi_2
+\hm\divers \xi_1$. Тогда по теореме~1 $\forall \gamma \hm\in (0,1]$
+справедливо ${ES}_\gamma(\xi_1)\hm = {ES}_\gamma(\xi_2)$, т.\,е.\
+$$
+\fr{1}{\gamma} \int\limits_{1-\gamma}^1 \xi_1^{(t)} \,dt = \fr{1}{\gamma}
+\int\limits_{1-\gamma}^1 \xi_2^{(t)} \,dt\,.
+$$ 
+Отсюда вытекает, что
+$\xi_1^{(t)} \hm= \xi_2^{(t)}$ почти наверное и, следовательно, $\xi_1
+\hm\sim \xi_2$. Теорема доказана.\hfill$\square$
+
+
+\section{Достаточное условие диверсифицируемости}
+
+\noindent
+\textbf{Лемма~4.} \textit{Пусть $[a;b),[c;d) \subset \Omega$,
+$[a;b)\cap[c;d)=\varnothing$, $b-a\hm=d\hm-c$; $\xi\hm\in V$,
+$\xi(\omega) \hm= y_1$  при $\omega \hm\in [a;b)$, $\xi(\omega)\hm =
+y_2$ при $\omega \in [c;d)$; числа $y_1'$, $y_2'$ таковы, что
+$0 \hm\le y_1 \hm\le y_1' \hm\le y_2' \hm\le y_2$ и $y_1\hm+y_2 \hm= y_1'\hm+
+y_2'$. Тогда существует оператор диверсификации $D \hm= D_{\alpha,T}$
+такой, что $D(\xi) \hm= y_1'$ при $\omega \hm\in [a;b)$, $D(\xi) \hm= y_2'$
+при $\omega \hm\in [c;d)$,  $D(\xi) \hm= \xi$ при остальных~$\omega $.}
+
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ 
+Построим~$T(\omega)$:  $T(\omega) \hm= c \hm+ (\omega \hm- a)$ при $\omega
+\hm\in [a;b)$, $T(\omega) \hm= a \hm+ (\omega \hm- c)$ при $\omega \hm\in [c;d)$,
+$T(\omega) \hm= \omega$ при остальных~$\omega$. Ясно, что $T \hm\in
+\classT$. Возьмем $\alpha \hm= (y_2-y_1')/(y_2-y_1)$. Оператор
+$D_{\alpha,T}$ и будет искомым. Лемма доказана.\hfill$\square$
+
+\medskip
+
+\noindent
+\textbf{Лемма~5.} \textit{Пусть $[a;b),[c;d) \subset \Omega$,
+$[a;b)\cap[c;d)\hm=\varnothing$; $\xi\hm\in V$, $\xi(\omega) \hm= y_1$ при
+$\omega\hm\in[a;b)$, $\xi(\omega)\hm = y_2$ при $\omega\hm\in[c;d)$. Тогда
+если $ 0 \hm\le y_1 \hm\le y_1' \hm\le y_2' \hm\le y_2 $ и 
+$(y_2 \hm- y_2')(d-c) \hm > (y_1' \hm- y_1)(b-a)$, 
+то существует конечная последовательность
+операторов диверсификации $D_n,\,\ldots\,,D_1$ такая, что
+$\xi'(\omega) \hm= D_n(\ldots(D_1(\xi(\omega)))\ldots) \hm= y_1'$ при  
+$\omega \hm\in [a;b)$, $\xi'(\omega) \hm\ge y_2'$  при 
+$\omega \hm\in [c;d)$ и  $\xi'(\omega) \hm= \xi(\omega)$ при
+остальных~$\omega$.} 
+
+\medskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\  Так как 
+$(y_2 \hm- y_2')(d-c) \hm> (y_1' \hm- y_1)(b-a)$, то существует $d' \hm\in [c,d)$ такое, что 
+$(y_2 \hm- y_2')(d'-c)\hm>(y_1' \hm- y_1)(b-a)$ и $(d'-c)/(b-a)$ рационально, т.\,е.\ 
+$(d'-c)/(b-a) \hm=m/n$, $m,n \hm\in \mathbb{N}$.
+Разделим полуинтервалы $[a;b)$ и $[c;d')$ на $n$ и~$m$ равных
+полуинтервалов, т.\,е.\
+$a\hm=a_0\hm<a_1<\ldots$\linebreak $\ldots<a_n\hm=b$; $c\hm=c_0\hm<c_1\hm<\ldots\hm<c_m\hm=b$ и 
+$\forall i,j:
+a_i\hm-a_{i-1}\hm=c_j\hm-c_{j-1}$.
+Укажем теперь алгоритм построения искомой последовательности операторов диверсификации.
+
+\smallskip
+
+\noindent
+\fbox{Шаг 1.} Пусть $y_2-y_2' \hm\ge y_1'-y_1$ (если это не так, то
+переходим к следующему шагу). Тогда по предыдущей лемме существует~$D_1$ 
+такой, что $\xi_1 \hm\equiv D_1(\xi) \hm= y_1'$ при $\omega \hm\in [a;a_1)$, 
+$\xi_1 \hm= z \hm= y_2\hm-(y_1'\hm-y_1) \hm\ge y_2'$ при $\omega \hm\in [c;c_1)$, 
+$\xi_1 \hm= \xi$ при остальных~$\omega$. Далее, если
+$z-y_2' \hm\ge y_1'\hm-y_1$, то таким же образом строим (с заменой~$y_2$
+на~$z$ и $[a;a_1)$ на $[a_1;a_2)$) оператор~$D_2$, получим случайную величину
+$\xi_2 \hm\equiv D_2(\xi_1)$, которая равна~$y_1'$ уже на полуинтервале
+$[a;a_2)$. Затем перейдем к полуинтервалу $[a_2;a_3)$ и~т.\,д.
+
+\smallskip
+
+\noindent
+\fbox{Шаг 2.} Когда же выполнится неравенство $z-y_2' \hm< y_1'\hm-y_1$
+(пусть это произойдет после применения оператора~$D_k$), построим
+оператор~$D_{k+1}$ такой, что случайная величина $\xi_{k+1}(\omega)
+\hm\equiv D_{k+1}(\xi_k(\omega)) \hm= y_2'$ при $\omega \hm\in [c;c_1)$,
+$\xi_{k+1}(\omega) \hm= y_1\hm+(z\hm-y_2') \hm< y_1'$ при $\omega \hm\in [a_k;a_{k+1})$, 
+$\xi_{k+1}(\omega) \hm= \xi_k(\omega)$ при остальных~$\omega$ 
+($\xi_{k+1}\hm=y_1'$ на $[a;a_k)$). Теперь переходим от
+$[c;c_1)$ к $[c_1;c_2)$ и продолжаем процесс c шага~1 (с заменой~$y_1$ 
+на $y_1+(z-y_2')$, $[a;a_1)$ на $[a_k;a_{k+1})$, $[c;c_1)$ на
+$[c_1;c_2)$) и~т.\,д.
+
+Так как $(y_2 \hm- y_2')(d'\hm-c)>(y_1'\hm -
+y_1)(b-a)$, или $(y_2 \hm- y_2')m>(y_1' \hm- y_1)n$, то через $l \hm\le m+n$
+шагов получим случайную величину~$\xi_l$ такую, что
+$\xi_l(\omega)\hm=y_1'$ при $\omega \hm\in [a;b)$, $\xi_l(\omega) \hm\ge
+y_2'$ при $\omega \hm\in [c;d)$ и $\xi_l(\omega)\hm=\xi(\omega)$ при
+остальных~$\omega$. Лемма доказана.\hfill$\square$
+
+\smallskip
+
+\noindent
+\textbf{Лемма~6.}
+\textit{Пусть $[a;b)\in \Omega$, $C = \bigsqcup\limits_{i=1}^n
+[c_i;d_i) \hm\in \Omega$, $[a;b) \cap C=\varnothing$
+$\xi\hm\in V$, $\xi(\omega)=x$ при $\omega \hm\in [a;b)$,
+$\xi(\omega)\hm=y_i$  при  $\omega \hm\in
+[c_i;d_i)$, $i\hm=\overline{1,n}$. Пусть чис\-ла~$x'$ и
+$y'_i$, $i=\overline{1,n},$ таковы, что $\forall i$ $0 \hm\le x \hm\le x'
+\hm\le y_i' \hm\le y_i$ и $\sum\limits_{i=1}^n(d_i-c_i)(y_i-y_i') \hm>
+(b-a)(x'-x)$. Тогда существует последовательность операторов
+диверсификации $D_n,\ldots,D_1$ такая, что $\xi'(\omega) \hm\equiv
+D_n(\ldots(D_1(\xi(\omega)))\ldots) \hm= x'$ при $\omega \hm\in [a;b)$,
+$\xi'(\omega) \hm\ge y_i'$ при $\omega \hm\in
+[c_i;d_i)$, $i\hm=\overline{1,n}$, и $\xi'(\omega) \hm= \xi(\omega)$ при
+остальных~$\omega$.} 
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ 
+Обозначим
+$\delta\hm=\sum\limits_{i=1}^n(d_i\hm-c_i)(y_i-y_i')\hm-(b\hm-a)(x'\hm-x) \hm>0$.
+Построим последовательность $x_0\hm=x$, $x_i\hm=x_{i-1} \hm+((d_i-c_i)(y_i-y_i')\hm-\delta / n)/
+(b-a)$, $i\hm=\overline{1,n}$.
+
+Тогда $x_n\hm=x'$ и $(d_i\hm-c_i)(y_i\hm-y_i') \hm> (x_i\hm-x_{i-1})(b\hm-a)$. По
+предыдущей лемме существуют последовательности операторов
+диверсификации $D_{ik_i},\ldots,D_{i1}$, $i\hm=\overline{1,n},$ и
+случайные величины $\xi_i\hm=D_{ik_i}(\ldots(D_{i1}(\xi_{i-1}))\ldots)$
+такие, что $\xi_i(\omega) \hm= x_i$ при $\omega \hm\in [a;b)$,
+$\xi_i(\omega) \hm\ge y_i'$ при $\omega \hm\in [c_i;d_i)$,
+$\xi_i(\omega) \hm= \xi_{i-1}(\omega)$ при остальных~$\omega$,
+$i\hm=\overline{1,n}$. Последовательность
+$D_{nk_n},\ldots,D_{n1},\ldots,D_{1k_1},\ldots,D_{11}$ и будет
+искомой. Лемма доказана.\hfill$\square$
+
+\medskip
+
+\noindent
+\textbf{Теорема~3.}
+\textit{Пусть $\xi_1,\xi_2 \in V$~--- почти наверное
+ограниченные случайные величины. Тогда если $\forall
+\gamma \hm \in (0;1]$ выполняется ${ES}_\gamma(\xi_2) \hm\le
+{ES}_\gamma(\xi_1)$, то $\xi_2 \divers \xi_1$.}
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\  \fbox{I}~Сначала
+докажем теорему для простых, монотонно неубывающих и непрерывных
+справа случайных величин~$\xi_1$ и~$\xi_2$. В~этом случае $\forall
+\omega \hm\in \Omega\hm=[0;1)$ имеем
+$\xi_i(\omega)\hm\equiv\xi_i^{(\omega)}$, $i\hm=1,2,$ и
+
+\noindent
+$$
+{ES}_\gamma(\xi_i) = \fr{1}{\gamma} 
+\int\limits_{1-\gamma}^1{\xi_i(\omega)\,d\omega}\,,\enskip \gamma\in (0;1]\,.
+$$
+Разобьем множество $\Omega\hm=[0;1)$ на конечное число непересекающихся
+интервалов, на каждом из которых~$\xi_1$ и~$\xi_2$ постоянны:
+$0{=}x_0\hm<x_1\hm<\ldots\hm<x_n{=}1$;
+$\xi_1(\omega)\hm=a_i$, $\xi_2(\omega)\hm=b_i$ при
+$\omega\hm\in [x_{i-1};x_i)$; $a_i\hm\le a_{i+1}$, $b_i \hm\le b_{i+1}$.
+Пусть $1\le k_m \hm< \ldots \hm< k_1\le n$~--- номера, такие что $a_{k_i}
+\hm< b_{k_i}$ (если таких номеров нет, то $\xi_1\hm\ge\xi_2$ и теорема
+верна). Обозначим $p_i\hm=x_i\hm-x_{i-1}$,
+$A\hm=\Set{\omega\hm\in\Omega}{\xi_1(\omega)\ge\xi_2(\omega)}\hm=\Omega
+\backslash \bigsqcup\limits_{i=1}^m [x_{k_i-1};x_{k_i})$.
+Множество~$A$ можно представить в виде объединения непересекающихся полуинтервалов.
+
+По условию
+\begin{multline*}
+{ES}_{1-\gamma}(\xi_1) \ge {ES}_{1-\gamma}(\xi_2) \forall \gamma\in [0;1) \Rightarrow{}\\
+{}\Rightarrow
+\int\limits_\gamma^1 \xi_1(\omega)\,d\omega \ge \int\limits_\gamma^1 \xi_2(\omega)\,d\omega \Rightarrow {}\\
+{}
+\Rightarrow \int\limits_\gamma^1 (\xi_1(\omega)-\xi_2(\omega))\,d\omega \ge 0 \; \ \ \forall \gamma \in [0;1)\,.
+\end{multline*}
+Подставляя в последнее неравенство $x_{k_i-1}$ вмес\-то~$\gamma$ и используя равенство
+$$
+[x_{k_i-1};1) \backslash A = \bigsqcup\limits_{j=1}^{i} [x_{k_j-1};x_{k_j})\,,\enskip
+i=\overline{1,m}\,,
+$$
+получим, что $\forall i \hm\in \overline{1,m}$ верно:
+\begin{multline*}
+\int\limits_{[x_{k_i-1};1)\cap A}(\xi_1(\omega)-\xi_2(\omega))\,d\omega \ge{}\\
+{}\ge
+-\!\!\! \int\limits_{[x_{k_i-1};1)\backslash A}\!\!\!(\xi_1(\omega)-\xi_2(\omega))\,d\omega =
+\sum\limits_{j=1}^{i} p_{k_j}(b_{k_j} - a_{k_j})\,.
+\end{multline*}
+Отсюда по индукции легко получить, что существует
+последовательность чисел
+$0\hm \le c_m \hm\le \ldots \hm\le c_1 \hm\le c_0 \hm= 1$ такая, что $c_i\hm\ge
+x_{k_i}$ и 
+$$
+\int\limits_{[c_i;c_{i-1})\cap A}(\xi_1(\omega)-\xi_2(\omega))\,d\omega
+=p_{k_i}(b_{k_i} - a_{k_i})\,.
+$$
+
+Обозначим $A_i \hm= [c_i;c_{i-1}) \cap A$. Заметим, что
+$A_i\cap A_j \hm= \varnothing$ при $i\hm\neq j$ и каждое из множеств~$A_i$ 
+можно представить в виде объединения конечного чис\-ла
+непересекающихся полуинтервалов, на каждом из которых~$\xi_1$ и~$\xi_2$ постоянны.
+
+Фиксируем произвольное $\eps\hm>0$. Обозначим $\eta_0 \hm\equiv \xi_1$. Поскольку
+$$
+\int\limits_{[c_i;c_{i-1})\cap A}(\eta_0(\omega)-(\xi_2(\omega)-\eps))\,d\omega>p_{k_i}( (b_{k_i} - \eps) - a_{k_i})\,,
+$$
+то согласно лемме~6 существуют последовательности операторов
+диверсификации $D_{il_i},\ldots,D_{i1}$ (обозначим через~$D_i'$ их
+суперпозицию), $i\hm=\overline{1,m}$, и случайные величины
+$\eta_i\hm=D_i'(\eta_{i-1})$, $i\hm=\overline{1,m}$, такие, что
+$\eta_i(\omega)\hm=b_{k_i}\hm-\eps\hm=\xi_2(\omega)\hm-\eps$ при
+$\omega \hm\in [x_{k_i-1};x_{k_i})$,
+$\eta_i(\omega)\hm\ge\xi_2(\omega)\hm-\eps$ при $\omega \hm\in A_i$,
+$\eta_i(\omega)\hm=\eta_{i-1}(\omega)$ при остальных~$\omega$. Легко
+видеть, что построена последовательность операторов диверсификации
+такая, что $\eta_m\hm\ge\xi_2\hm-\eps$. По лемме~3 $\xi_2 \divers \xi_1$.
+
+\smallskip
+
+\noindent
+\fbox{II} Теперь докажем теорему для ограниченных, монотонно
+неубывающих и непрерывных справа~$\xi_1$ и~$\xi_2$. Пусть $M\hm>0$
+таково, что $|\xi_1| \hm< M$, $|\xi_2|\hm<M$. Фиксируем произвольные
+$\eps\hm>0$ и $n\hm\in\mathbb{N}$ такие, что $n\hm\ge 8M/\eps$.
+Разобьем отрезок $[-M;M]$ на $n$~равных частей точками
+$-M\hm=a_0\hm<a_1\hm<\ldots$\linebreak $\ldots<a_n\hm=M$. Введем новые случайные величины
+$\xi_1'(\omega)\hm=a_i$, если $a_{i-1}\hm\le\xi_1(\omega)\hm<a_i$,
+$\xi_2'(\omega)\hm=a_{i-1}$, если $a_{i-1}\hm\le\xi_2(\omega)\hm<a_i$.
+$\xi_1'$, $\xi_2'$~--- простые монотонно неубывающие случайные величины,
+причем $\xi_1'\hm\ge\xi_1$, $\xi_2'\hm\le\xi_2$. Поэтому
+${ES}_\gamma(\xi_2')\hm\le{ES}_\gamma(\xi_2)\hm\le{ES}_\gamma(\xi_1)\hm
+\le{ES}_\gamma(\xi_1')$
+$\forall \gamma\hm\in(0;1]$. По построению~$\xi_1'$ и~$\xi_2'$
+непрерывны справа. Следовательно, по первой части доказательства,
+существует последовательность операторов диверсификации
+$D_n,\ldots,D_1$ такая, что $D_n(\ldots(D_1(\xi_1'))\ldots) \hm\ge
+\xi_2' \hm- \eps / 2$. В~силу того что $n\hm\ge 8M/\eps$, имеем:
+$|\xi_1'\hm-\xi_1|\hm\le M/n \hm\le \eps/4$ и аналогично $|\xi_2'\hm-\xi_2|\hm\le
+\eps/4$. Таким образом, $D_n(\ldots(D_1(\xi_1))\ldots) \hm\ge \xi_2 \hm- \eps $. 
+По лемме~3 $\xi_2 \divers \xi_1$.
+
+\smallskip
+
+\noindent
+\fbox{III} Докажем теорему в общем виде. Пусть $\xi_1$, $\xi_2$~---
+почти наверное ограниченные случайные величины и
+${ES}_\gamma(\xi_2)\hm\le{ES}_\gamma(\xi_1)\ \forall
+\gamma\hm\in(0;1]$. Фиксируем произвольное $\eps\hm>0$. Введем
+$\xi_i'(\omega) \hm\equiv \xi_i^{(\omega)}$, $i\hm=1,2$. $\xi_i'$~---
+ограниченные монотонно неубывающие непрерывные справа случайные
+величины. В~то же время $\xi_i'\hm\sim\xi_i$, поэтому
+${ES}_\gamma(\xi_2') \hm= {ES}_\gamma(\xi_2) \hm\le {ES}_\gamma(\xi_1) \hm=
+{ES}_\gamma(\xi_1')$. Согласно второму пункту доказательства
+существует последовательность операторов диверсификации
+$D_n,\ldots,D_1$ такая, что
+$D_n(\ldots(D_1(\xi_1'))\ldots)\hm\ge\xi_2'\hm-\eps/2$. Так как
+$\xi_i'\hm\sim\xi_i$, то по лемме~2 существуют
+$T_0,T_{n+1} \hm\in \classT$ такие, что $|\xi_1'\hm-\xi_1(T_0)| \hm\le
+\eps/4$ почти наверное и $|\xi_2'\hm-\xi_2(T_{n+1})| \hm\le \eps/4$ почти
+наверное. Обозначим $D_0\hm=D_{0,T_0}$, $D_{n+1}\hm=D_{0,T_{n+1}}$. Тогда
+$D_{n+1}(D_n(\ldots(D_0(\xi_1))\ldots)) \hm\ge \xi_2 \hm- \eps$ и по лемме~3 
+$\xi_2 \divers \xi_1$. Теорема дока-\linebreak зана.\hfill$\square$
+
+\smallskip
+
+Последняя теорема дает возможность про любые два портфеля с
+ограниченными возможными потерями и прибылями сказать, является ли
+один из них результатом диверсификации другого. Заметим, что на
+практике большинство финансовых инструментов предполагает
+неограниченную возможность потерь.
+
+
+Определим последовательности
+
+\noindent
+$$
+x_n=(n+1)!\,;\quad y_n=(n+2)n!\,;\quad
+\mu_n=\fr{\nu_n}{\sum\limits_{i=1}^\infty \nu_i}\,,
+$$ 
+где 
+
+\noindent
+$$
+\nu_n=\fr{\delta^{n^2}}{(n+2)!}\,,\quad \delta\in (0;1)\,.
+$$
+Разобьем множество $\Omega\hm=[0;1)$ на полуинтервалы точками
+$0\hm=a_1\hm<a_2\hm=b_1\hm<b_2\hm=a_3\hm<a_4\hm=b_3\hm<\ldots$, так что
+$a_{2i}\hm-a_{2i-1}\hm=b_{2i}\hm-b_{2i-1}\hm=\mu_i/2$, $i\hm\ge1$. Пронумеровав
+произвольным способом все рациональные числа из интервала (0;\,0,5),
+получим последовательность $\hat{\alpha}_1,\ldots$ Определим теперь
+$\xi(\omega)\hm=x_i$ при $\omega\hm\in[a_{2i-1};\,a_{2i})$,
+                                 $\xi(\omega)\hm=y_i$ при $\omega\hm\in[b_{2i-1};b_{2i})$,
+                                 $\xi'(\omega)\hm=x_i+\hat{\alpha}_i(y_i-x_i)$ при $\omega\hm\in[a_{2i-1};a_{2i})$,
+                                 $\xi'(\omega)\hm=y_i-\hat{\alpha}_i(y_i-x_i)$ при $\omega\hm\in[b_{2i-1};b_{2i})$.
+Можно показать, что ${ES}_\gamma(\xi') \hm\le {ES}_\gamma(\xi)$,
+$\forall \gamma \hm\in(0;1]$, но в то же время~$\xi'$ не является
+результатом диверсификации портфеля~$\xi$. Таким образом,
+полностью отказаться от требования ограниченности портфелей в
+теореме~3 нельзя.
+
+
+\section{Диверсификация и~информационные риски}
+
+Информационным риск~--- риск возникновения убытков из-за неправильной
+организации или умышленного нарушения информационных потоков и
+систем организации. Можно применить предложенное понятие
+диверсификации к информационным рискам. Под информационной системой
+предприятия будем понимать систему взаимосвязанных информационных
+объектов, которые реализуют информационный процесс в целях
+эффективного функционирования предприятия. Будем рассматривать ее
+как набор неких компонент, подсистем, каждая из которых
+характеризуется случайной величиной $\xi(\omega)$ ($\Expect|\xi|\hm<
+\infty$), определенной на вероятностном пространстве
+$(\Omega=[0;1),\sigmaF,\mu)$ и отражающей убытки, которые несет
+подсистема на траектории $\omega \hm\in \Omega$. Под сложением двух
+подсистем $\xi_1(\omega)\hm+\xi_2(\omega)$ понимается система,
+состоящая из совокупности подсистем~$\xi_1$ и~$\xi_2$, а под
+умножением подсистемы~$\xi$ на константу $a\hm\in [0;1]$ понимается
+информационная система, использующая $a\cdot 100\%$ ресурсов
+подсистемы~$\xi$. Информационную систему~$\xi_2$ будем называть
+результатом диверсификации системы~$\xi_1$, если систему~$\xi_1$
+можно <<пересобрать>> (согласно правилам, указанным в определении~1)
+так, чтобы $\forall \eps \hm> 0$ \  $\eta_n \hm\ge \xi_2 \hm- \eps$ почти
+наверное.
+
+Преобразуем пример~1 для случая информационного риска. Пусть имеется
+три вычислительных машины, характеризующихся независимыми одинаково
+распределенными убытками $X_1$, $X_2$, $X_3$, и имеется возможность
+построить систему вида $p_1 X_1 \hm+ p_2 X_2 \hm+ p_3 X_3$, $p_i \hm\ge 0$,
+$p_1\hm+p_2\hm+p_3\hm=1$ (это можно интерпретировать как факт огра\-ни\-чен\-ности
+суммарной мощности системы). Рассуждения, приведенные в примере~1,
+показывают, что система $(1/3) X_1 + (1/3) X_2 + (1/3) X_3$
+является результатом диверсификации любой системы указанного выше
+вида.
+
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{9}
+
+%\bibitem{halmosh}
+%\Au{Halmos P.\,R.} Lectures on ergodic theory.~---- N.Y.: Chelsea Publishing Company, 1956.
+
+\label{end\stat}
+
+\bibitem{es}
+\Au{Acerbi C., Tasche D.} On the coherence of expected Shortfall~//
+J.~Banking Finance, 2002. Vol.~26. No.\,7. P.~1487--1503.
+%{\sf http://www-m4.ma.tum.de/pers/ tasche/shortfall.pdf}.
+ \end{thebibliography}
+}
+}
+
+
+\end{multicols}       

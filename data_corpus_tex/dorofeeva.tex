@@ -1,0 +1,669 @@
+
+\def\stat{dorofeeva}
+
+\def\tit{О ТОЧНОСТИ НОРМАЛЬНОЙ АППРОКСИМАЦИИ
+ПРИ~ОТСУТСТВИИ НОРМАЛЬНОЙ СХОДИМОСТИ$^*$}
+
+\def\titkol{О точности нормальной аппроксимации
+при~отсутствии нормальной сходимости}
+
+\def\aut{В.\,Ю.~Королев$^1$,  А.\,В.~Дорофеева$^2$}
+
+\def\autkol{В.\,Ю.~Королев,  А.\,В.~Дорофеева}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Королев В.\,Ю.}
+\index{Дорофеева А.\,В.}
+\index{Korolev V.\,Yu.}
+\index{Dorofeeva A.\,V.}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проект 18-07-01405).
+  }}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Факультет вычислительной математики и~кибернетики Московского государственного университета имени
+ М.\,В.~Ломоносова; Институт проб\-лем информатики Федерального исследовательского цент\-ра 
+ <<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{vkorolev@cs.msu.ru}}
+\footnotetext[2]{Факультет вычислительной математики и~кибернетики Московского государственного 
+ университета имени М.\,В.~Ломоносова, \mbox{alex.dorofeyeva@gmail.com}}
+
+%\vspace*{-12pt}
+
+  
+
+\Abst{При решении прикладных задач в~самых разных областях принято использовать 
+нормальное распределение в~качестве модели статистических закономерностей в~наблюдаемых 
+данных с~аддитивной структурой. В~качестве критерия степени адекватности такой 
+модели можно использовать оценки ско\-рости сходимости в~центральной предельной теореме (ЦПТ) 
+тео\-рии вероятностей, устанавливающей, что при определенных условиях (например, 
+при условии Линдеберга) суммарное воздействие большого числа случайных факторов проявляется в~виде 
+случайной величины с~нормальным распределением. 
+Классические оценки скорости сходимости в~ЦПТ 
+типа неравенства Бер\-ри--Эс\-се\-ена доказаны при условии конечности третьих моментов слагаемых.
+ Известны также оценки скорости сходимости при существовании моментов порядка $2\hm+\delta$ с~$0<\delta\hm<1$. 
+ Если существуют моменты лишь второго порядка, то сходимость в~ЦПТ может быть как угодно медленной. 
+ Если же у слагаемых моменты второго порядка не существуют, то сходимость распределений сумм 
+ независимых случайных величин к~нормальному закону не имеет места. 
+ Условия, гарантирующие 
+ справедливость ЦПТ, практически невозможно достоверно проверить 
+ при ограниченном объеме наблюдаемой выборки. Поэтому вопрос о том, какой может быть 
+ реальная точ\-ность нормальной аппроксимации, когда она теоретически не применима, 
+ но используется в~практических вычислениях, представляет большой интерес. Более того, в~некоторых 
+ ситуациях при имитационном моделировании, когда распределения слагаемых принадлежат об\-ласти 
+ притяжения устойчивого закона с~характеристическим показателем, меньшим двух, при увеличении числа 
+ слагаемых сначала наблюдается убывание расстояния между распределением нормированной суммы и~нормальным 
+ законом и~лишь при довольно большом числе слагаемых это расстояние начинает увеличиваться. 
+ В~данной заметке предпринята попытка дать ответ на сформулированный выше вопрос и~привести 
+ некоторые теоретические объяснения указанному эффекту.}
+
+\KW{центральная предельная теорема; точ\-ность нормальной аппроксимации; тяжелые хвос\-ты; 
+равномерное расстояние}
+
+\DOI{10.14357/19922264210116}
+
+\vspace*{3pt}
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+
+При решении прикладных задач в~самых разных областях принято использовать нормальное 
+распределение в~качестве модели статистических закономерностей в~наблюдаемых данных с~аддитивной структурой. 
+В~качестве критерия степени адекватности такой модели можно использовать оценки ско\-рости 
+сходимости в~ЦПТ тео\-рии вероятностей, устанавливающей, 
+что при определенных условиях (например, при условии Линдеберга) суммарное воздействие 
+большого числа случайных факторов проявляется в~виде случайной величины с~нормальным распределением. 
+
+Классические оценки скорости сходимости в~ЦПТ типа неравенства Бер\-ри--Эс\-се\-ена доказаны при 
+условии конечности третьих моментов сла\-га\-емых. 
+
+Известны также оценки ско\-рости сходимости при 
+существовании моментов порядка $2\hm+\delta$ с~$0\hm<\delta\hm<1$ (см.\ подробный обзор в~[1]).
+ Если существуют моменты лишь второго порядка, то сходимость в~ЦПТ может быть как угодно медленной~[2, 3]. 
+ Если же у слагаемых моменты второго порядка не существуют, то сходимость распределений 
+ сумм независимых случайных величин к~нормальному закону не имеет места. 
+ 
+ Условия, 
+ гарантирующие справедливость ЦПТ, практически 
+ невозможно достоверно проверить при ограниченном объеме наблюдаемой выборки. 
+ В~част\-ности, гистограмма, построенная по выборке из имеющего очень тяжелые хвосты 
+ распределения Коши (у~которого отсутствует даже математическое ожидание), при умеренном 
+ объеме выборки может быть визуально практически неотличимой от нормального распределения. 
+ Поэтому вопрос о том, какой может быть реальная точность нормальной аппроксимации, когда 
+ она теоретически не применима, но используется в~практических вычислениях, представляет 
+ большой интерес. Более того, в~некоторых ситуациях при имитационном моделировании, 
+ когда распределения слагаемых принадлежат области притяжения устойчивого закона с~характеристическим 
+ показателем, меньшим двух, при увеличении числа слагаемых сначала наблюдается убывание 
+ расстояния между распределением нормированной суммы и~нормальным законом и~лишь при довольно 
+ большом числе слагаемых это расстояние начинает увеличиваться. 
+ 
+ В~данной заметке предпринята 
+ попытка дать ответ на сформулированный выше вопрос и~привести некоторые теоретические объяснения 
+ указанному эффекту.
+
+
+\section{Обозначения и~вспомогательные результаты}
+
+
+Пусть $n\hm\in\mathbb{N}$, $\xi_1,\ldots,\xi_n$~--- независимые необязательно одинаково 
+распределенные случайные величины, заданные на вероятностном пространстве 
+$(\Omega,\mathfrak{A},{\sf P})$. Обозначим $F_j(x)\hm={\sf P}(\xi_j<x)$, $x\hm\in\mathbb{R}$, 
+$j\hm\in\mathbb{N}$. Без существенного ограничения общ\-ности для удобства будем считать, 
+что все функции распределения~$F_j(x)$ непрерывны.
+
+Обозначим $S_n=\xi_1+\cdots+\xi_n$. Индикатор множества (события)~$A$ обозначим $\mathbb{I}(A)$. 
+Пусть $u\hm>0$. Очевидно, 
+$$
+\xi_j=\xi_j\mathbb{I}\left(|\xi_j|\le u\right)+\xi_j\mathbb{I}\left(|\xi_j|> u\right)\,.
+$$
+ Тогда
+\begin{multline*}
+S_n=\sum\limits_{j=1}^n \xi_j\mathbb{I}(|\xi_j|\le u)+\sum\limits_{j=1}^n \xi_j\mathbb{I}(|\xi_j|> u)\equiv{}\\
+{}\equiv
+S_n^{(\le u)}+S_n^{(> u)}.
+\end{multline*}
+Если условиться считать равенство единице индикатора $\mathbb{I}(|\xi_j|\hm\le u)$ <<успехом>>, 
+а~противоположное событие~--- <<неудачей>>, то число~$N_n(u)$ ненулевых слагаемых в~сумме 
+$S_n^{(\le u)}$ будет случайной величиной, имеющей пуас\-сон-би\-но\-ми\-аль\-ное распределение 
+с~па\-ра\-мет\-ра\-ми~$n$ и~$p_j\hm=p_j(u)\hm={\sf P}(|\xi_j|\hm\le u)\hm=F_j(u)\hm-F_j(-u)$, 
+$j\hm=1,\ldots,n$. Заметим, что при неограниченном увеличении~$u$ параметры~$p_j$ стремятся к~единице.
+
+\smallskip
+
+\noindent
+\textbf{Лемма~1.}\ \textit{Пусть $A,B\hm\in\mathfrak{A}$. Тогда} 
+$$
+{\sf P}(A\bigcap B)\ge{\sf P}(A) -{\sf P}\left(\overline{B}\right).
+$$
+
+%\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\  элементарно.
+
+\smallskip
+
+Равномерное расстояние между функциями распределения~$F_{\xi}$ и~$F_{\eta}$ случайных величин~$\xi$ 
+и~$\eta$ будем обозначать $\rho(F_{\xi},\,F_{\eta})$: 
+$$
+\rho(F_{\xi},\,F_{\eta})= \sup\limits_x\left\vert F_{\xi}(x)-F_{\eta}(x)\right\vert\,.
+$$
+
+ Нормальную функцию распределения со средним $a\hm\in\mathbb{R}$ и~дисперсией 
+$\sigma^2\hm>0$ обозначим~$\Phi_{a,\sigma}$:
+\begin{multline*}
+\Phi_{a,\sigma}(x)=\fr{1}{\sigma\sqrt{2\pi}}
+\int\limits_{-\infty}^{x}\exp\left\{-\fr{(z-a)^2}{2\sigma^2}\right\}dz={}\\
+{}=
+\Phi_{0,1}\left(\fr{x-a}{\sigma}\right)=
+\Phi_{0,\sigma}(x-a)\,,\enskip x\in\mathbb{R}\,.
+\end{multline*}
+
+\smallskip
+
+\noindent
+\textbf{Лемма~2.}\ \textit{Для любых $a\hm\in\mathbb{R}$, $\sigma\hm>0$, $b\hm\in\mathbb{R}$}
+$$
+\rho\left(\Phi_{a+b,\sigma},\,\Phi_{a,\sigma}\right)= 
+2\Phi_{0,\sigma}\left(\fr{|b|}{2}\right)-1\,.
+$$
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
+ Заметим, что если $H(x)$ и~$G(x)$~--- дифференцируемые функции распределения, то $\rho(H,G)$ 
+ реализуется (т.\,е.\ точная верхняя грань $\sup_x|H(x)\hm-G(x)|$ по~$x$ достигается) в~одной из точек~$x$, 
+ где $F'(x)\hm=G'(x)$. Действительно,
+\begin{multline*}
+\rho(H,G)=\sup\limits_x|H(x)-G(x)|={}\\
+{}=\max\left\{\max\limits_x\left[H(x)-G(x)\right], 
+\max\limits_x\left[G(x)-H(x)\right]\right\}
+\end{multline*}
+и экстремум каждого из выражений в~фигурных скобках достигается в~такой точке, где производная 
+соответствующего выражения равна нулю, что равносильно равенству производных функций 
+распределения~$H$ и~$G$, т.\,е.\ равенству соответствующих плотностей. 
+В~рассматриваемом случае нормальных плотностей последнее условие эквивалентно тому, что
+\begin{multline*}
+\fr{1}{\sigma\sqrt{2\pi}}\exp\left\{-\fr{1}{2}\left(\fr{x-a-b}{\sigma}\right)^2\right\}={}\\
+{}=
+\fr{1}{\sigma\sqrt{2\pi}}\exp\left\{-\fr{1}{2}\left(\fr{x-a}{\sigma}\right)^2\right\},
+\end{multline*}
+или $\big(x-(a+b)\big)^2\hm=(x-a)^2$. Решая данное уравнение, получаем $x\hm-a\hm={b}/{2}$, 
+откуда с~учетом соотношения $\Phi_{0,\sigma}(-|b|)\hm=1-\Phi_{0,\sigma}(|b|)$ вытекает требуемое утверждение.
+
+\smallskip
+
+Используя формулу Лагранжа, из леммы~2 легко получить известное неравенство:
+$$
+\rho\left(\Phi_{a+b,\sigma},\Phi_{a,\sigma}\right)\le \fr{|b|}{\sigma\sqrt{2\pi}}
+$$
+(см., например, неравенство~(3.4) в~книге~[4]).
+
+\smallskip
+
+\noindent
+\textbf{Лемма~3.}\ \textit{Пусть $n\hm\in\mathbb{N}$, $\xi_1,\ldots,\xi_n$~--- случайные величины, 
+$a_1,\ldots,a_n$~--- положительные числа, такие что
+$a_1+\cdots+a_n\hm=1$. Тогда для любого $x\hm>0$
+$$
+{\sf P}\left(\left|\sum\limits_{j=1}^n\xi_j\right|\ge x\right)\le\sum\limits_{j=1}^n{\sf P}\left(|\xi_j|\ge a_jx\right).
+$$
+Если дополнительно случайные величины $\xi_1,\ldots,\xi_n$ одинаково распределены, то}
+$$
+{\sf P}\left(\left|\sum\limits_{j=1}^n\xi_j\right|\ge x\right)\le n{\sf P}\left(\left\vert \xi_1\right\vert \ge 
+\fr{x}{n}\right).
+$$
+
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ Заметим, что
+$$
+{\sf P}\left(\left|\sum\limits_{j=1}^n\xi_j\right|\ge x\right)\le{\sf P}\left(\sum\limits_{j=1}^n|\xi_j|
+\ge x\right).
+$$
+Из геометрических соображений вытекает, что
+\begin{multline*}
+\left\{\omega:\, \sum\limits_{j=1}^n|\xi_j(\omega)|\ge x\right\}\subseteq
+\left\{\omega:\,\left\vert \xi_1(\omega)\right\vert \ge a_1x\right\}\bigcup{}\\
+{}\bigcup
+\left\{\omega:\, \sum\limits_{j=2}^n \left\vert \xi_j(\omega)\right\vert \ge 
+\left(1-a_1\right)x\right\}\subseteq
+{}\\
+{}
+\subseteq\left\{\omega:\,\left\vert \xi_1(\omega)\right\vert \ge a_1x\right\}\bigcup
+\left\{\omega:\,\left\vert \xi_2(\omega)\right\vert \ge a_2x\right\}\bigcup{}\\
+{}\bigcup
+\left\{\omega:\, \sum\limits_{j=3}^n\left\vert \xi_j(\omega)\right\vert
+\ge \left(1-a_1-a_2\right)x\right\}\subseteq\cdots
+\\
+\cdots\subseteq\bigcup\limits_{j=1}^n\left\{\omega:\,\left\vert \xi_j(\omega)\right\vert
+\ge a_jx\right\}.
+\end{multline*}
+Поэтому
+\begin{multline*}
+{\sf P}\left(\left\vert \sum\nolimits_{j=1}^n\xi_j\right\vert \ge x\right)
+\le{\sf P}\left(\sum\limits_{j=1}^n\left\vert \xi_j\right\vert \ge x\right)\le
+{}\\
+{}
+\le{\sf P}\!\!\left(\bigcup\limits_{j=1}^n\left\{\omega:\,\left\vert \xi_j(\omega)\right\vert
+\ge a_jx\right\}\!\right)\!
+\le\!\sum\limits_{j=1}^n{\sf P}\left(\left\vert \xi_j\right\vert \ge a_jx\right).\hspace*{-0.93279pt}
+\end{multline*}
+Лемма доказана.
+
+
+\section{Основные результаты}
+
+
+Рассмотрим оценку равномерного расстояния между распределением суммы $S_n\hm=S_n^{(\le u)}
+\hm+S_n^{(>u)}$ и~нормальным законом с~соответствующими математическим ожиданием 
+$a\hm\in\mathbb{R}$ и~дисперсией $\sigma\hm>0$, конкретный выбор которых прокомментируем \mbox{ниже}.
+
+\smallskip
+
+\noindent
+\textbf{Теорема~1.} \textit{ Пусть $\epsilon\hm>0$, $u\hm>0$~--- произвольны. 
+Тогда для любых $a\hm\in\mathbb{R}$, $\sigma\hm>0$}
+\begin{multline}
+\rho\left(F_{S_n},\Phi_{a,\,\sigma}\right)\le
+\rho\left(F_{S_n^{(\le u)}},\Phi_{a,\,\sigma}\right)+{}\\
+{}+
+\sum\limits_{j=1}^n\left[F_j(-u)+1-F_j(u)\right].
+\label{e1-dor}
+\end{multline}
+
+\smallskip
+
+\noindent
+Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
+ Пусть $\epsilon\hm>0$ произвольно. На основании леммы~1 имеем:
+\begin{multline}
+{\sf P}\left(S_n<x\right)={\sf P}\left(S_n<x;\,\left\vert S_n^{(>u)}\right\vert
+\le\epsilon\right)+{}\\
+{}+{\sf P}\left(S_n<x;\,\left\vert S_n^{(>u)}\right\vert >\epsilon\right)\ge{}
+\\
+{}\ge{\sf P}\left(S_n^{(\le u)}<x-S_n^{(>u)};\,|S_n^{(>u)}|\le\epsilon\right)\ge{}\\
+{}\ge
+{\sf P}\left(S_n^{(\le u)}<x-\epsilon;\,\left\vert S_n^{(>u)}\right\vert \le\epsilon\right)\ge
+{}\\
+{}\ge{\sf P}\left(S_n^{(\le u)}<x-\epsilon\right)-{\sf P}\left(
+\left\vert S_n^{(>u)}\right\vert \ge\epsilon\right).
+\label{e2-dor}
+\end{multline}
+С другой стороны, очевидно:
+\begin{multline}
+{\sf P}\left(S_n<x\right)={\sf P}\!\left(S_n^{(\le u)}<x-S_n^{(>u)};\,\left\vert S_n^{(>u)}\right\vert
+\le\epsilon\right)+{}\\
+{}+
+{\sf P}\left(S_n<x;\,\left\vert S_n^{(>u)}\right\vert >\epsilon\right)\le
+{}\\
+{}
+\le{\sf P}\left(S_n^{(\le u)}<x+\epsilon;\,\left\vert S_n^{(>u)}\right\vert \le\epsilon\right)+{}\\
+{}+
+{\sf P}(S_n<x;\,\left\vert S_n^{(>u)}\right\vert >\epsilon)\le
+{}\\
+{}\le{\sf P}\left(S_n^{(\le u)}<x+\epsilon\right)+{\sf P}\left(\left\vert S_n^{(>u)}\right\vert
+>\epsilon\right).
+\label{e3-dor}
+\end{multline}
+Легко видеть, что
+\begin{multline}
+\hspace*{-9.96pt}\left\vert {\sf P}\left(S_n<x\right)-\Phi_{a,\sigma}(x)\right\vert\!=\!
+\max\left\{{\sf P}\left(S_n<x\right)-\Phi_{a,\sigma}(x),\right.\\
+\left.\Phi_{a,\sigma}(x)-{\sf P}\left(S_n<x\right)\right\}.
+\label{e4-dor}
+\end{multline}
+Используя~(\ref{e3-dor}) и~лемму~2, получим:
+\begin{multline}
+{\sf P}\left(S_n<x\right)-\Phi_{a,\sigma}(x)\le 
+{\sf P}\left(\left\vert S_n^{(>u)}\right\vert>\epsilon\right)+{}\\
+{}+
+\left[{\sf P}\left(S_n^{(\le u)}<x+\epsilon\right)-\Phi_{a,\sigma}(x+\epsilon)\right]+{}
+\\
+{}+\left[\Phi_{a,\sigma}(x+\epsilon)-\Phi_{a,\sigma}(x)\right]\le
+{\sf P}\left(\left\vert S_n^{(>u)}\right\vert >\epsilon\right)+{}\\
+{}+
+\rho\left(F_{S_n^{(\le u)}},\Phi_{a,\,\sigma}\right)+
+\left[2\Phi_{0,\sigma}\left({\fr{\epsilon}{2}}\right)-1\right].
+\label{e5-dor}
+\end{multline}
+Используя~(\ref{e2-dor}) и~лемму~2, получим
+\begin{multline}
+\Phi_{a,\sigma}(x)-{\sf P}\left(S_n<x\right)\le 
+\Phi_{a,\sigma}(x)-{}\\
+{}-{\sf P}\left(S_n^{(\le u)}<x-\epsilon\right)+{\sf P}\left(\left\vert S_n^{(>u)}\right\vert
+>\epsilon\right)={}
+\\
+{}=\left[\Phi_{a,\sigma}(x)-\Phi_{a,\sigma}(x-\epsilon)\right]-
+\left[{\sf P}\left(S_n^{(\le u)}<x-\epsilon\right)-{}\right.\\
+\left.{}-\Phi_{a,\sigma}(x-\epsilon)
+\vphantom{\left(S_n^{(\le u)}<x-\epsilon\right)}
+\right]+ 
+{\sf P}\left(\left\vert S_n^{(>u)}\right\vert>\epsilon\right) \le
+{}\\
+{}\le\left[2\Phi_{0,\sigma}\left({\fr{\epsilon}{2}}\right)-1\right]+
+\rho(F_{S_n^{(\le u)}},\Phi_{a,\sigma})+{}\\
+{}+{\sf P}\left(\left\vert S_n^{(>u)}\right\vert>\epsilon\right).
+\label{e6-dor}
+\end{multline}
+Подставив оценки~(\ref{e5-dor}) и~(\ref{e6-dor}) в~(\ref{e4-dor}), получим
+\begin{multline}
+\rho(F_{S_n},\Phi_{a,\sigma})\le\rho\left(F_{S_n^{(\le u)}},\Phi_{a,\sigma}\right)+{}\\
+{}+
+\left[2\Phi_{0,\sigma}\left({\fr{\epsilon}{2}}\right)-1\right]+
+{\sf P}\left(\left\vert S_n^{(>u)}\right\vert >\epsilon\right).
+\label{e7-dor}
+\end{multline}
+Рассмотрим третье слагаемое в~правой части~(\ref{e7-dor}). На основании леммы~3 
+по формуле полной ве\-ро\-ят\-ности, принимая во внимание тот факт, что 
+${\epsilon}/{n}\hm>0$ и~$|\xi_j(\omega)|\mathbb{I}(|\xi_j(\omega)|>u)\hm=0$ для тех~$\omega$, 
+для которых $|\xi_j(\omega)|\hm\le u$, $j\hm=1,\ldots,n$, имеем:
+\begin{multline}
+{\sf P}\left(\left\vert S_n^{(>u)}\right\vert > \epsilon\right)=
+{\sf P}\left(\left\vert \sum\limits_{j=1}^n\xi_j\mathbb{I}
+\left(\left\vert \xi_j\right\vert >u\right)\right\vert>\epsilon\right)\le{}\\
+{}\le
+\sum\limits_{j=1}^n{\sf P}\left(
+\left\vert \xi_j\right\vert \mathbb{I}\left(\left\vert \xi_j\right\vert >u\right)>
+{\fr{\epsilon}{n}}\right)=
+{}\\
+{}=\!\sum\limits_{j=1}^n\!\left[ {\sf P}\left(\!|\xi_j|\mathbb{I}(|\xi_j|>u)>
+{\fr{\epsilon}{n}}\!\left\vert\!
+\vphantom{\fr{\epsilon}{n}} \right.
+|\xi_j|>u\!\right)\!{\sf P}(|\xi_j|>u)+{}\right.
+\\
+\left.{}+{\sf P}\!\left(\left\vert \xi_j\right\vert
+\mathbb{I}\left(\left\vert \xi_j\right\vert >u\right)>{\fr{\epsilon}{n}}\!\left\vert\!
+\vphantom{\fr{\epsilon}{n}}\right.\,\left\vert \xi_j\right\vert 
+\le u\right)
+{\sf P}\left(\left\vert \xi_j\right\vert \le u\right)\right]={}
+\\
+{}=\sum\limits_{j=1}^n\left[1-p_j(u)\right]
+{\sf P}\!\left(\!|\xi_j|\mathbb{I}\left(\left\vert \xi_j\right\vert>u\right)>
+\left.{\fr{\epsilon}{n}}
+\right\vert
+\left\vert \xi_j\right\vert >u\right)\le{}\\
+{}\le
+\sum\limits_{j=1}^n\left[F_j(-u)+1-F_j(u)\right].
+\label{e8-dor}
+\end{multline}
+Подставив~(\ref{e8-dor}) в~(\ref{e7-dor}) и~устремив~$\epsilon$ к~нулю, получим требуемое. Теорема доказана.
+
+\smallskip
+
+
+На практике в~качестве параметров~$a$ и~$\sigma$ можно брать, например,
+\begin{multline*}
+a=a(u)={\sf E}S_n^{(\le u)}={\sf E}\sum\limits_{j=1}^n \xi_j\mathbb{I}\left(\left\vert \xi_j\right\vert 
+\le u\right)={}\\
+{}= \sum\limits_{j=1}^n {\sf E}\left[\xi_j\mathbb{I}\left(\left\vert \xi_j\right\vert
+\le u\right)\right]=\sum\limits_{j=1}^np_j(u)\int\limits_{-u}^{u}x\,dF_j(x);
+\end{multline*}
+
+%\vspace*{-12pt}
+
+\noindent
+\begin{multline*}
+\sigma^2=\sigma^2(u)={\sf D}S_n^{(\le u)}={\sf D}\sum\limits_{j=1}^n 
+\xi_j\mathbb{I}\left(\left\vert \xi_j\right\vert \le u\right)={}\\
+{}=
+\sum\limits_{j=1}^n {\sf D}\left[\xi_j\mathbb{I}\left(\left\vert \xi_j\right\vert \le u\right)\right]=
+{}\\
+{}=\sum\limits_{j=1}^n\left[p_j(u)\!\int\limits_{-u}^{u}\!x^2\,dF_j(x)-
+\left(\! p_j(u)\!\int\limits_{-u}^{u}\!x\,dF_j(x)\!
+\right)^{\!\!2\,}\!\right].
+\end{multline*}
+
+При фиксированном $u\hm>0$ первое слагаемое в~правой части~(\ref{e1-dor}) 
+убывает с~увеличением~$n$, тогда как второе возрастает. При этом существует $n_0\hm\ge1$ такое, что при
+ $1\hm\le n\hm\le n_0$ вся правая часть~(\ref{e1-dor}) убывает, а~при $n\hm\ge n_0$ воз\-рас\-та\-ет. 
+ В~случае одинаково распределенных слагаемых второе слагаемое воз\-рас\-та\-ет как~$kn$, где $k\hm>0$. 
+ При этом за счет выбора очень большого~$u$ можно добиться произвольной малости коэффициента~$k$ 
+ и,~как следствие, очень медленного роста второго слагаемого. Поэтому параметр~$n_0$ может 
+ принимать довольно большие значения.
+
+Задачу определения указанного~$n_0$ конкретизируем для частного случая. Предположим, что
+\begin{equation}
+\rho\left(F_{S_n^{(\le u)}},\Phi_{a,\sigma}\right)\le C n^{-\gamma}, \label{e9-dor}
+\end{equation}
+где $\gamma>0$, а коэффициент $C\hm=C(u)$ определяется свойствами распределений слагаемых 
+в~сумме $S_n^{(\le u)}$. Некоторые критерии справедливости~(\ref{e9-dor}) 
+приведены, например, в~[5]. Предположим также, что
+\begin{equation}
+\sum\limits_{j=1}^n\left[F_j(-u)+1-F_j(u)\right]\le kn\,,
+\label{e10-dor}\end{equation}
+где $k=k(u)\hm>0$. Несложно убедиться, что минимум функции
+$$
+g(x)=\fr{C}{x^{\gamma}}+kx
+$$
+достигается в~точке
+$$
+x_0=\left(\fr{C\gamma}{k}\right)^{{1}/({1+\gamma})},
+$$
+причем
+\begin{equation}
+\min\limits_{x\ge0}g(x)=g(x_0)=
+(\gamma+1)\left(\fr{Ck^{\gamma}}{\gamma^{\gamma}}\right)^{{1}/({\gamma+1})}.
+\label{e11-dor}
+\end{equation}
+Таким образом, в~качестве~$n_0$ выступает либо $[x_0]$, либо $[x_0]+1$. 
+При этом правую часть~(\ref{e11-dor}) можно рассматривать как приближенное значение наилучшей 
+верхней оценки точности нормальной аппроксимации при справедливости условий~(\ref{e9-dor}) и~(\ref{e10-dor}).
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+%\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{9}
+\bibitem{Shevtsova2016}
+\Au{Шевцова И.\,Г.} Точность нормальной аппроксимации: 
+методы оценивания и~новые результаты.~--- М.: Аргамак-Медиа, 2016. 380~с.
+
+\bibitem{Mackevicius1983}
+\Au{Мацкявичюс В.\,К.} О~нижней оценке скорости сходимости в~центральной предельной теореме~// 
+Теория вероятностей и~ее применения,
+1983. Т.~28. Вып.~3. С.~565--569.
+
+\bibitem{KorolevDorofeeva2017}
+\Au{Korolev V.\,Yu., Dorofeeva~A.\,V.} Bounds of the accuracy of 
+the normal approximation to the distributions of random sums under relaxed moment conditions~// 
+Lith. Math.~J., 2017. Vol.~57. No.\,1. P.~38--58.
+
+\bibitem{Petrov1972}
+\Au{Петров В.\,В.} Суммы независимых случайных величин.~--- М.: Наука, 1972. 414~с.
+
+%\bibitem{Klebanov1999}
+%{\it L. B. Klebanov, S. T. Rachev, G. J. Szekely.} Pre-limit theorems and their applications // Acta Applicandae Mathematicae, 1999. Vol 58. P. %159--174.
+
+\bibitem{Ibragimov1966}
+\Au{Ибрагимов И.\,А.} О~точ\-ности аппроксимации функций распределения сумм 
+независимых случайных величин нормальным распределением~// Теория вероятностей и~ее применения, 1966. 
+Т.~11. Вып.~4. С.~632--655.
+\end{thebibliography}
+
+}
+}
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 13.10.2020}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{ON THE ACCURACY OF~THE~NORMAL APPROXIMATION UNDER~THE~VIOLATION OF~THE~NORMAL CONVERGENCE}
+
+\def\titkol{On the accuracy of~the~normal approximation under~the~violation of~the~normal convergence}
+
+\def\aut{V.\,Yu.~Korolev$^{1,2}$ and~A.\,V.~Dorofeeva$^1$}
+
+\def\autkol{V.\,Yu.~Korolev and~A.\,V.~Dorofeeva}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+\noindent
+$^1$Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov Moscow State University, GSP-1,\linebreak
+$\hphantom{^1}$Leninskie Gory, Moscow 119991, Russian Federation
+
+\noindent
+$^2$Institute of Informatics Problems, Federal Research Center ``Computer Sciences and Control'' 
+of the Russian\linebreak
+$\hphantom{^1}$Academy of Sciences; 44-2~Vavilov Str., Moscow 119133, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 1}
+}%
+\def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 1
+\hfill \textbf{\thepage}}}
+
+\vspace*{6pt}
+
+
+
+
+
+\Abste{When solving applied problems in various fields, it is conventional 
+to use the normal approximation to the distribution of data with additive structure. 
+As a~criterion of the adequacy of such a~model, it is possible to use bounds for the convergence 
+rate in the central limit theorem (CLT) of the probability theory stating that under certain 
+conditions (say, under the Lindeberg condition), the total effect of very many random factors acts as 
+a~random variable with the normal distribution. The classical bounds for the convergence 
+rate in the CLT such as the Berry--Esseen inequality are proved under the condition 
+that the third moments of the summands exist. Also, bounds are known that require the
+ existence of the moments of orders $2+\delta$ with $0< \delta <1$. 
+ If only the moments of the second order exist, then the convergence in the CLT can 
+ be arbitrarily slow. But if the moments of the summands of the second order do 
+ not exist, then the convergence of the distributions of sums of independent 
+ random variables to the normal law does not take place. It is practically impossible 
+ to reliably check the conditions of the central limit theorem with the limited size 
+ of the available sample. Therefore, the question of what is the real accuracy 
+ of the normal approximation if it is theoretically impossible is of great interest. 
+ Moreover, in some situations, in computer simulation of sums of 
+ random variables whose distributions belong to the domain of attraction of the stable 
+ distribution with the characteristic exponent less than two, as the number of summands grows, 
+ first, the distance between the distribution of the normalized sum and the normal law 
+ decreases and starts to increase only when the number of summands becomes sufficiently large. 
+ In this paper, an attempt is undertaken to give some theoretical explanation of this 
+ effect and to give an answer to the question posed above.}
+
+       
+\KWE{central limit theorem; accuracy of normal approximation; heavy tails; uniform distance}
+
+
+
+\DOI{10.14357/19922264210116}
+
+%\vspace*{-15pt}
+
+\Ack
+\noindent
+Research supported by the Russian Foundation for Basic Research, project 18-07-01405.
+
+\vspace*{4pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{9}
+\bibitem{1-dor}
+\Aue{Shevtsova, I.\,G.} 2016. \textit{Tochnost' normal'noy approksimatsii: metody otsenivaniya 
+i~novye resul'taty} [The accuracy of the normal approximation: 
+Methods of estimation and new results]. Moscow: Argamak-Media. 380~p.
+{\looseness=1
+
+}
+
+\columnbreak
+
+
+\bibitem{2-dor}
+\Aue{Mackevicius, V.\,K.} 1984. A~lower bound for the convergence rate in the central limit theorem. 
+\textit{Theor. Probab. Appl.} 28(3):596--601.
+
+\vspace*{-2pt}
+
+\bibitem{3-dor}
+\Aue{Korolev, V.\,Yu., and A.\,V.~Dorofeeva.}
+ 2017. Bounds of the accuracy of the normal approximation to the distributions of random 
+ sums under relaxed moment conditions. \textit{Lith. Math.~J.} 57(1):38--58.
+\bibitem{4-dor}
+\Aue{Petrov, V.\,V.} 1972. \textit{Summy nezavisimykh sluchaynykh velichin} 
+[Sums of independent random variables]. Moscow: Nauka. 416~p.
+\bibitem{5-dor}
+\Aue{Ibragimov, I.\,A.} 1966. On the accuracy of Gaussian approximation to the distribution functions 
+of sums of independent variables. \textit{Theor. Probab. Appl.} 11(4):559--579.
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+  \hfill{\small\textit{Received October~13, 2020}}
+
+
+%\pagebreak
+
+%\vspace*{-8pt}     
+
+\Contr
+
+\noindent
+\textbf{Korolev Victor Yu.} (b.\ 1954)~--- 
+Doctor of Science in physics and mathematics, professor, Head of Department, Faculty of 
+Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University, 
+GSP-1, Leninskie Gory, Moscow 119991, Russian Federation; leading scientist, 
+Federal Research Center ``Computer Science and Control'' 
+of the Russian Academy of Sciences, 44-2~Vavilov Str.,Moscow 119333, Russian Federation; 
+\mbox{vkorolev@cs.msu.ru}
+
+\vspace*{6pt}
+
+\noindent
+\textbf{Dorofeeva Alexandra V.} (b.\ 1991)~--- 
+graduate PhD student, Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov Moscow State University, GSP-1, Leninskie Gory, Moscow 119991, 
+Russian Federation; \mbox{alex.dorofeyeva@gmail.com}
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}

@@ -1,0 +1,1056 @@
+%\newcommand{\Var}{\ensuremath{{\rm\mathbb{V}ar}}}
+
+\renewcommand{\figurename}{\protect\bf Figure}
+\renewcommand{\tablename}{\protect\bf Table}
+
+\def\stat{lukashenko}
+
+
+\def\tit{A~GAUSSIAN APPROXIMATION OF THE DISTRIBUTED COMPUTING PROCESS}
+
+\def\titkol{A~Gaussian approximation of the distributed computing process}
+
+\def\autkol{O.\,V.~Lukashenko, E.\,V.~Morozov,  and~M.~Pagano}
+
+\def\aut{O.\,V.~Lukashenko$^{1}$, E.\,V.~Morozov$^2$,  and~M.~Pagano$^{3}$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%\footnotetext[1] {The study was carried out under state order to the Karelian Research 
+%Centre of the Russian Academy of Sciences (Institute of Applied Mathematical 
+%Research KarRC RAS) and supported by the Russian Foundation for Basic Research, 
+%projects 18-07-00187, 18-07-00147, 18-07-00156, 19-07-00303.}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Institute of  Applied Mathematical Research of Karelian Research Centre of RAS, 
+11~Pushkinskaya Str.,  Petrozavodsk 185910, Republic of Karelia, Russian Federation; 
+Petrozavodsk State University, 33~Lenin Str., Petrozavodsk 185910, Republic of Karelia, 
+Russian Federation,  \mbox{lukashenko@krc.karelia.ru}}
+\footnotetext[2]{Institute of  Applied Mathematical Research of Karelian Research Centre of RAS, 
+11~Pushkinskaya Str.,  Petrozavodsk 185910, Republic of Karelia, Russian Federation; 
+Petrozavodsk State University, 33~Lenin Str., Petrozavodsk 185910, Republic of Karelia, 
+Russian Federation, \mbox{emorozov@karelia.ru}}
+\footnotetext[3]{University of Pisa, 43~Lungarno Pacinotti, Pisa 56126, Italy, \mbox{m.pagano@iet.unipi.it}}
+
+
+\index{Lukashenko O.\,V.}
+\index{Morozov E.\,V.}
+\index{Pagano M.}
+\index{Лукашенко О.\,В.}
+\index{Морозов Е.\,В.}
+\index{Пагано М.}
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+%\vspace*{-2pt}
+
+
+
+ 
+\Abste{The authors propose a~refinement of the stochastic model 
+describing the dynamics of the Desktop Grid (DG) project with many hosts and many
+ workunits to be performed, originally proposed  by Morozov \textit{et al.}\ in 2017.
+The target performance measure  is the mean  duration of the runtime of the project. 
+To this end,  the authors derive  an asymptotic expression for the  amount 
+of the accumulated work to be done by means of 
+    limit theorems for  superposed on-off sources that   lead to a~Gaussian 
+    approximation. In more detail, depending on the distribution of active 
+    and idle periods, Brownian  or fractional Brownian processes are obtained.
+    The authors present the analytic results related to the hitting time of 
+    the considered processes (including the case in which the overall amount of
+work is only known in a~probabilistic way), and highlight how the 
+     runtime tail distribution could be estimated by simulation. Taking 
+     advantage of the properties of Gaussian processes and the Conditional 
+     Monte-Carlo (CMC) approach, the authors present a~theoretical framework for 
+     evaluating the runtime tail distribution.}
+
+
+\KWE{Gaussian approximation; distributed computing; fractional Brownian motion}
+
+ \DOI{10.14357/19922264190215}
+
+
+%\vspace*{8pt}
+
+
+\vskip 12pt plus 9pt minus 6pt
+
+ \thispagestyle{myheadings}
+
+ \begin{multicols}{2}
+
+ \label{st\stat}
+
+
+
+\section{Introduction}
+
+\vspace*{-4pt}
+
+\noindent
+Gaussian processes are widely used in the performance analysis of telecommunication 
+systems for their analytic tractability and arguments based on the central-limit 
+theorem that make them suitable in case of a~large number of independent contributions.  For instance, these  models are able to capture, in a simple and parsimonious way,
+the properties of self-similarity and long-range dependence, inherent to multimedia
+network traffic~\cite{2-luk-1, 3-luk-1}. 
+These properties dramatically increase the difficulty of the probabilistic 
+analysis and, as a consequence, in many cases only Monte-Carlo simulation can be used.
+The \textit{fractional Brownian motion} (FBM) is one of the most studied 
+self-similar long-range dependent Gaussian processes due to its simplicity. 
+Its use as traffic model is supported  by the following theoretical analysis~\cite{4-luk-1}: 
+the sum of an increasing  number of the so-called on-off inputs,
+with either on-times or off-times having a~heavy-tailed distribution
+with infinite variance, converges weakly to an~FBM, after an
+appropriate time  scaling.
+
+
+In this paper,  the applicability of FBM for high-performance computing is considered. 
+In that framework, computing clusters and computational Grid systems are the 
+main tools: computing clusters are based on computing nodes connected by 
+a~high-speed network, while computational Grid systems include geographically 
+dispersed computing nodes connected by a relatively slow network. 
+
+Desktop Grid belongs to the latter class. The DG combines nondedicated 
+\textit{hosts} (typically, desktops/laptops owned by volunteers) over the Internet 
+to process loosely coupled \textit{workunits} (computational tasks). 
+Desktop Grids utilize the idle host resources, providing  potentially huge, although highly 
+variable, computing power. (For example, the DG project Einstein\@HOME aggregates 
+peak performance at about~1~PetaFLOPS~[4].) Typically,  DGs are 
+managed by a scientific community that utilizes the resources to complete 
+a~\textit{DG project} which consists of a~(usually finite) number of workunits.
+ Thus, the \textit{runtime} of the DG project  is the time to complete all the 
+ workunits and it is desirable to minimize it.
+
+Minimization of the DG project runtime may be performed by means of 
+scheduling optimization~\cite{6-luk-1, 7-luk-1, 8-luk-1}. Additional information on the hosts, 
+such as reliability and availability, can be used to improve the efficiency of
+ DGs~\cite{9-luk-1, 10-luk-1}, In~\cite{11-luk-1, 12-luk-1}, the focus is placed on the so-called 
+ workunit replication mechanism for reliability purposes. However,  to the 
+ best of our knowledge, the estimation of the runtime of a~DG project remains
+  generally an unsolved issue, and it is the main motivation of this paper.
+
+Desktop Grids have several important distinctive  features 
+when compared to computational Grids or computing clusters. First of all, 
+hosts, being nondedicated, possess individual availability periods. Moreover, 
+the management server of a~DG is not able to obtain information on the current 
+state of the hosts (such as ``computing,'' ``suspended,'' etc.). 
+These two issues  make the estimation of the runtime of a~DG project a~hard problem. 
+
+The execution of a~DG project can be divided into two stages. 
+During the first phase, the number of work\-units is greater than the number of 
+hosts and, thus,  each host will receive at least one workunit. 
+In the second stage, all the available workunits are dispatched and
+ there are available (idle) hosts. In this paper, the focus is on the duration of  
+ the first phase  which is studied by means of a Gaussian approximation of the 
+ overall work.  The   study of the second stage requires a completely different 
+ probabilistic technique, which relies on  the theory of order statistics and the 
+ asymptotic properties of renewal processes, and is postponed for a future work.
+Thus, in what follows, runtime will relate to the first stage of the project solely.
+
+
+We describe the availability patterns of the hosts by treating each of them as an 
+individual on-off source which processes workunits during on periods.  
+Our approach  is based on the asymptotics of the (properly scaled) superposition 
+of a large number of independent on-off sources. It is well-known~\cite{4-luk-1} that 
+after an appropriate scaling, the limiting process describing the summary workload 
+in the system turns out to be \textit{Brownian motion} (BM), when the sojourn times 
+are light-tailed, while it becomes \textit{fractional Brownian motion} 
+in case of heavy-tailed sojourn times.  
+Then, the problem reduces to the calculation of the hitting time of the given
+ threshold~$D$ by the process of accumulated work which is a~well-known topic 
+ in probability theory.
+
+The paper is organized as follows. Section 2 presents the theoretical background 
+related to  FBM, including functional limit theorems for the cumulative  work 
+performed  by an increasing  number of on-off sources.    
+Then, Section~3 describes the model and summarizes the available analytic results, 
+while Section~4 is devoted to the evaluation of the runtime tail distribution 
+by means of the CMC method which potentially leads to variance 
+reduction of the estimate of the runtime. Finally, in Section~5, the main 
+contributions of the paper are presented and some future research issues are discussed. 
+
+\section{Theoretical Background}
+
+\noindent
+In this section, let us recall the basic definitions about FBM and how it is 
+related to the limiting theorems for the superposition of independent 
+\textit{on-off sources}.
+
+\subsection{Fractional Brownian motion}
+
+\noindent
+The FBM $\left\{B_H(t), t \in \mathbb{R} \right\}$ is a~Gaussian centered process 
+with $B_H(0)=0$, stationary increments, and the following covariance function:
+  \begin{multline*}
+       K_H(t,s) := \mathbb{E} \left[ B_H(t) \: B_H(s) \right]\\
+       {}=
+       \fr{1}{2} \left[
+       |t|^{2H} - |t-s|^{2H} + |s|^{2H} \right],\enskip s,\,t\ge 0 
+     \end{multline*}
+where $H \in (0,1)$ is the so-called \textit{Hurst parameter}. 
+It is easy to verify that~$B_H(t)$  is a self-similar process with 
+self-similarity parameter~$H$, i.\,e., for each $c>0$,
+$$
+  c^{-H}B_H(ct) \stackrel{d}{=} B_H(t)
+$$
+where  $\stackrel{d}{=}$  denotes equality in distribution.
+
+Fractional Brownian motion is widely used for modeling purposes due to its 
+Gaussianity (that typically arises under aggregation conditions) 
+and parsimonious description (apart from mean and variance, its behavior 
+is unambiguously determined by~$H$).
+
+When $H>1/2$,  FBM is a long-range dependent process since the
+ autocorrelation of the corresponding increment process is nonsummable. 
+ For more details on FBM and its properties, see~\cite{13-luk-1}.
+
+
+\subsection{Limit theorems for distributed computing processes}
+
+
+
+\noindent
+Let us assume that the DG consists of~$N$ heterogeneous hosts which can be 
+considered as  independent \textit{on-off sources}. In more detail, let us suppose 
+that there are~$n$~types of hosts ($n<N$) and denote by~$N_i$ the number of  
+$i$-type hosts, i.\,e., $\sum\nolimits_{i=1}^n N_i=N$. 
+Moreover, let~$R_i$ denote the amount of processed work per unit time for $i$-type 
+hosts and let $\left\{I^{(i)}(t),\ t\geq0\right\}$,
+\begin{equation*}
+I^{(i)}(t)=\begin{cases}
+ R_i\,, &t\in \mbox{on-period}\,; \\
+ 0\,, & t\in \mbox{off-period}\,, 
+\end{cases}
+ %\label{taq1}
+\end{equation*}
+be the  \textit{on-off} process that characterizes the activity/silent 
+periods of the corresponding hosts (Fig.~1).
+For sake  of simplicity, it is assumed that for each host, both \textit{on} 
+and  \textit{off} periods are sequences of i.i.d.\ (independent
+and identically distributed)
+random variables (RVs) and mutually independent.
+Moreover, as already stated, the\linebreak\vspace*{-12pt}
+
+{ \begin{center}  %fig1
+ \vspace*{9pt}
+   \mbox{%
+ \epsfxsize=79mm 
+ \epsfbox{luk-1.eps}
+ }
+
+
+\vspace*{6pt}
+
+
+\noindent
+{{\figurename~1}\ \ \small{On-off model}}
+\end{center}
+}
+
+%\vspace*{9pt}
+
+\addtocounter{figure}{1}
+
+
+\noindent
+on-off processes modeling the contribution of 
+different hosts are assumed to be independent.
+
+
+
+The \textit{cumulative processed work}, i.\,e., the aggregated amount of  
+work provided by all $N$ hosts, during the time interval $[0,t]$ is given by
+$$
+A(t)=\int\limits_0^{t} \left( {\sum\limits_{i=1}^n\sum\limits_{k=1}^{N_i} 
+{I_{k}^{(i)}(u)} } \right)\,du
+$$
+where $I_k^{(i)}$ are the independent copies of~$I^{(i)}$, $i=1,\ldots\linebreak \ldots,n$. 
+Moreover, for the $i$-type ($i=1,\dots,n$) hosts, let us denote by
+$\mu_{\mathrm{on}}^i$, $\sigma_{\mathrm{on}}^i$, $\mu_{\mathrm{off}}^i$, 
+and~$\sigma_{\mathrm{off}}^i$
+the mean length and  standard deviation (that may be infinite) of 
+the duration of the  on and  off periods, respectively.
+
+
+The statistical behavior of~$A(t)$ is determined by the distributions~$F_{\mathrm{on}}^i$ 
+and~$F_{\mathrm{off}}^i$ of the on and off periods for each type of hosts, namely,
+ by their tail. 
+In more detail, in case of infinite variance, let us assume that as $x \to \infty$,
+\begin{align*}
+1-F_{\mathrm{on}}^i(x)& \sim  \ell_{\mathrm{on}}^i x^{-\alpha_{\mathrm{on}}^i}L_{\mathrm{on}}^i(x)\,;\\
+1-F^i_{\mathrm{off}}(x)& \sim  \ell_{\mathrm{off}}^i x^{-\alpha_{\mathrm{off}}^i}L_{\mathrm{off}}^i(x)
+%  \label{3}
+\end{align*}
+where   $a \sim b$  means that $a/b\to 1$;    
+$\ell_{\mathrm{on}}^i$ and~$\ell_{\mathrm{off}}^i$ are the positive constants; the 
+exponents~$\alpha_{\mathrm{on}}^i$ and~$\alpha_{\mathrm{off}}^i\in (1,\,2)$; 
+and the functions~$L_{\mathrm{on}}^i$ 
+and~$L_{\mathrm{\mathrm{off}}}^i$ are slowly varying at infinity, i.\,e., for any $t >0$,
+$$
+\lim_{x \to \infty} \fr{L^i(tx)}{L^i(x)}=1\,,\enskip i=1,\ldots,n\,.
+$$
+Instead, if $\sigma_{\mathrm{on}}^i$ and~$\sigma_{\mathrm{off}}^i <\infty$, we  set 
+$\alpha_{\mathrm{on}}^i=\alpha_{\mathrm{off}}^i=2$. 
+
+It has been  shown in~\cite{4-luk-1} that the scaled process of cumulative  
+work arrived during interval  $[0,\,Tt]$ converges weakly to a sum of the i.i.d.\
+ FBM's,  provided that 
+\begin{enumerate}[(1)]
+    \item $N_i\to \infty$ such that
+$\lim\nolimits_{N\to \infty}N_i/N>0$, $i=1,\ldots\linebreak \ldots , n$; and
+\item  the scaling factor $T\to \infty$.
+\end{enumerate}
+
+This \textit{functional limit theorem} leads to the following approximation:
+\begin{multline*}
+A(tT)\approx T\left( \sum\limits_{i=1}^n R_i N_i
+\fr{\mu_{\mathrm{on}}^i}{\mu_{\mathrm{on}}^i+\mu_{\mathrm{off}}^i} \right)t \\
+{}+ \sum\limits_{i=1}^n
+T^{H_i}R_i \sqrt{L_i(T)N_i}c_i B_{H_i}(t) 
+%\label{approx1}    
+\end{multline*}
+where $c_i$ are the positive constants; $L_i$ are the slowly varying at
+infinity functions (expressed in terms of the given  parameters); and
+$B_{H_i}$ are the independent FBMs with the Hurst parameters~$H_i$ given by
+$$
+H_i=\fr{3-\min(\alpha_{\mathrm{on}}^i,\,\alpha_{\mathrm{off}}^i)}{2}\in
+\left(\fr{1}{2},\,1 \right),\enskip i=1,\ldots, n\,.
+$$
+Thus, the cumulative work processed by a~large number of independent hosts 
+(with heavy-tailed distributions of the on-off periods) is approximated by 
+a~superposition of independent FBMs  $\{B_{H_i}(t)\}$, 
+$i=1,\dots,n$,  with a~linear drift that depends on the rates~$R_i$ and 
+the average duty cycle.
+
+Instead, if for all types of hosts the variances of the sojourn times 
+are finite (i.\,e., $\sigma_{\mathrm{on}}^i,\,\sigma_{\mathrm{off}}^i<\infty$ 
+$\forall i=1,\dots,n$), then the limiting (scaled) process becomes
+\begin{equation*}
+T\left( \sum\limits_{i=1}^n \fr{R_i N_i \mu_{\mathrm{on}}^i}{\mu_{\mathrm{on}}^i+\mu_{\mathrm{off}}^i}
+\right)t + \left(\sqrt{T}\sum\limits_{i=1}^n R_i \sqrt{N_i}c_i \right)W(t)
+%\label{bm-l1}
+\end{equation*}
+where $W(t)$ is the Wiener process, and the constants~$c_i$ are given by
+$$
+c_i = \sqrt{ \fr{ (\mu_{\mathrm{off}}^i\sigma_{\mathrm{on}}^i)^2 + 
+\left(\mu_{\mathrm{on}}^i\sigma_{\mathrm{off}}^i\right)^2 }{\left(\mu_{\mathrm{on}}^i+\mu_{\mathrm{off}}^i\right)^3}}\,.
+$$
+Finally, it is worth mentioning that taking the limits in reverse order, 
+the (scaled) process of cumulative work converges to a~\textit{Levy stable motion}, 
+an infinite variance process with stationary and independent increments~\cite{14-luk-1}; 
+however, such  model is beyond the scope of this paper as in DG, the experimental 
+data confirmed the convergence to processes with finite variance.
+
+
+\section{Model Description and~Performance Measures}
+
+
+\noindent
+The above functional limit theorems provide a~theoretical motivation to 
+consider the following model for the cumulative processed work: 
+\begin{equation}
+    A(t) = m t + X(t)
+    \label{6}
+\end{equation}
+where $X$ is the centered Gaussian process with stationary increments 
+(FBM or the sum of independent FBM, in case of heterogeneous systems),
+ which describes random fluctuations around the linearly  increasing mean. 
+ Such type of stochastic process was previously suggested as the model of 
+ network traffic (see~\cite{15-luk-1} for more details). 
+
+
+Let us denote  by~$\tau_D$ the  runtime of the  DG project where~$D$ 
+denotes the required amount of work. Thus,~$\tau_D$ represents the  
+\textit{hitting time} of  the process~$\{A(t)\}$:  
+\begin{equation*}
+\tau_D = \min\{t:\,\, A(t)\ge D \} \, ,
+\end{equation*}
+i.\,e., the first time the process~$\{A(t)\}$ hits the threshold~$D$.
+Then, the original problem is reduced to the calculation (or estimation)
+ of some useful performance characteristics, such as the mean  hitting time.
+
+\subsection{Available analytic results}
+
+\noindent
+Let us recall the available analytic results for different types 
+of Gaussian processes, corresponding to the different limiting cases. 
+
+\vspace*{-4pt}
+
+\subsubsection{Wiener case}
+
+\noindent
+When $X$ is a Wiener process (i.\,e., $X = \sigma B_{1/2}$), 
+the  density of~$\tau_D$ is available in  explicit form~\cite{16-luk-1}:
+\begin{multline}
+\mathbb{P}(\tau_D \in dt)= \fr{D}{\sqrt{2\pi}\sigma t^{3/2}} 
+\exp \left( -\fr{(D-mt)^2}{2\sigma^2 t} \right)\,dt\\
+{=:} f_\tau(t|D)\,dt\,.
+\label{8}
+\end{multline}
+In this case, the corresponding expected value $\mathbb{E} [\tau_D ]$ 
+is  the ratio between the given  amount of the work~$D$ and the mean processing 
+rate~\cite{16-luk-1}:
+$$
+\mathbb{E} \left[\tau_D\right] = \fr{D}{m}\,.
+$$
+
+\vspace*{-12pt}
+
+
+\subsubsection{Fractional Brownian motion case}
+
+
+
+\noindent
+When the limiting process is an FBM,  only asymptotic results and some bounds
+ for the  distribution of~$\tau_D$ are available.
+
+In~\cite{17-luk-1}, the following bounds (quite inaccurate when~$H$ is close to~1, 
+see Fig.~2)
+ for the moments of the hitting time were obtained for $1/2 \le H < 1$:
+\begin{multline*}
+\fr{1}{\sqrt{2\pi}} \left( \fr{2 H D}{n-H}\, L_n (D,H,m)\right.\\ - 
+\left.\fr{(2H-1)m}{n+1-H} \,L_{n+1}(D,H,m) \right) \le \mathbb{E} \left[\tau_D^n\right]\\
+   \le \fr{1}{\sqrt{2\pi}} \left( \fr{ H D}{n-H} \,L_n (D,H,m)\right.\\
+   \left.{} + 
+   \fr{(1-H)m}{n+1-H}\, L_{n+1}(D,H,m) \right)
+\end{multline*}
+
+{ \begin{center}  %fig2
+% \vspace*{9pt}
+   \mbox{%
+ \epsfxsize=79mm 
+ \epsfbox{luk-2.eps}
+ }
+
+
+\end{center}
+
+
+\noindent
+{{\figurename~2}\ \ \small{Bounds for the mean hitting time ($D=10$, $m=3$): 
+\textit{1}~--- $D/m$;
+\textit{2}~--- lower bound;
+and \textit{3}~--- upper bound}}
+}
+
+%\vspace*{9pt}
+
+\addtocounter{figure}{1}
+
+
+\noindent
+where
+\begin{multline*}
+L_n(D,H,m) \\
+{}=\!\! \int\limits_0^\infty \!\exp\left\{ -\fr{1}{2} \!
+\left(\!Dt^{-H/(n-H)}-mt^{(1-H)/(n-H)} \right)^2 \!\right\}dt.\hspace*{-3.80858pt}
+\end{multline*}
+Additionally, the following asymptotic was derived for the large values of level~$D$:
+\begin{equation*}
+    \lim\limits_{D \to \infty} \fr{\mathbb{E} \left[\tau_D^n\right]}{D^n} = m^{-n}
+\end{equation*}
+for all $n \ge 1$, $m>0$, from which it is quite straightforward to show that 
+for all $n \ge 1$, 
+\begin{equation*}
+     \fr{\tau_D}{D} \overset{L_n}{\longrightarrow} \fr{1}{m}\enskip 
+     \mbox{as} \enskip D \to \infty
+\end{equation*}
+where $\overset{L_n}{\longrightarrow}$ means convergence in~$L_n$~space.
+
+\subsubsection{General case}
+
+\noindent
+In the general case,  to derive asymptotic (for large values of~$D$) 
+for the distribution of~$\tau_D$,  it is possible to take advantage of the 
+following identity: 
+\begin{equation*}
+\mathbb{P}\left(\tau_D \le  T\right) = 
+\mathbb{P}\left(\sup\limits_{t \in [0,T]}A(t)\ge D\right)\,.
+\end{equation*}
+
+The distribution of the maximum of Gaussian processes over a~finite interval is 
+a~well-studied  problem. In more detail, for any Gaussian process with stationary 
+increments and strictly monotonically increasing and
+convex variance such that $\lim\nolimits_{t\to 0} \mathrm{Var}(X(t))/t=0$, the following asymptotic 
+holds~\cite{18-luk-1}:
+\begin{multline*}
+\mathbb{P}\left(\sup\limits_{t \in [0,T]}A(t)\ge D\right) \sim 
+\Phi \left( \fr{D-mT}{\sqrt{\mathrm{Var}(X(T))}} \right)\\
+ \mbox{ as } D \to \infty
+\end{multline*}
+where~$\Phi$ denotes the tail distribution of the standard normal RV~$N(0,1)$.
+
+\subsection{A~possible  generalization} 
+
+
+
+ \noindent
+ It seems quite natural to consider the setting in which the threshold~$D$  
+ is an~RV which is independent of the process~$X$ in~(\ref{6}). 
+ Such a~setting seems to be highly motivated by practice because it is more 
+ realistic that the exact value of   the quantity~$D$ is not available, 
+ and it is known in part. This incomplete information can be reflected by  
+ introducing the probability density
+ function (PDF)~$f_D$ of~$D$, which is assumed to be predefined.   
+ Provided that~$X$ in~(\ref{6}) is  a~Wiener process and, hence, the conditional 
+ density $f_\tau(t|D)$ in~(\ref{8}) is known, one can write  the density of the RV~$\tau_D$ as
+$$
+f_\tau(x)=\int\limits_{y=0}^\infty 
+f_\tau(x|y)f_D(y)\,dy\,.
+$$
+In general, one
+can calculate this density only by numerical methods 
+but for some cases, it is possible to derive its expression in terms of special
+ functions. For example, when~$D$  is  exponential with parameter~$\lambda$, 
+ one can obtain the following expression:
+\begin{multline}
+f_\tau(x) = \fr{\lambda}{\sqrt{2\pi}\sigma x^{3/2}}\exp
+\left( -\fr{m^2 x}{2\sigma^2} +\fr{\gamma^2}{8\beta(x)}\right)\\
+ \times
+(2\beta(x))^{-1/2} D_{-1}\left( \fr{\gamma}{\sqrt{2\beta(x)}} \right) 
+\label{dens}
+\end{multline}
+where 
+$$
+\gamma=\lambda-\fr{m}{\sigma^2}\,;\qquad \beta(x) = \fr{1}{2\sigma^2 x}\,;
+$$
+and $D_p$, $\mathrm{Re}\, p <0$, is the parabolic cylinder function~\cite{19-luk-1}. 
+Numeric calculation of the expression~\eqref{dens} is shown in 
+Fig.~3.
+
+{ \begin{center}  %fig3
+ \vspace*{6pt}
+  \mbox{%
+ \epsfxsize=78.984mm 
+ \epsfbox{luk-3.eps}
+ }
+
+
+\end{center}
+
+
+\noindent
+{{\figurename~3}\ \ \small{Probability density function of~$\tau_D$ for different values of~$m$ 
+($\lambda=1$): \textit{1}~--- $m=1$; \textit{2}~--- $2$;  and \textit{3}~--- $m=3$}}
+}
+
+\vspace*{-3pt}
+
+\addtocounter{figure}{1}
+
+
+\section{Estimation via Monte Carlo}
+
+\noindent
+A more flexible alternative to analytic results is represented  by simulation 
+that in our case can be used to estimate 
+\begin{equation*}
+\pi(T):=\mathbb{P} \left(\tau_D > T\right)\,.
+\end{equation*}
+Such probability could be extremely small for large values of~$T$; 
+thus, its estimation with a~given accuracy requires to generate a~large number of 
+sample paths of the process~$X$. However, for such type of rare events, it is 
+possible to apply a special case of the well-known CMC 
+method which always leads to variance reduction.
+
+The method, originally proposed by some of the authors 
+in~\cite{20-luk-1, 21-luk-1, 22-luk-1} and named Bridge Monte Carlo (BMC), 
+is based on the idea of expressing the target probability as the
+expectation of a function of the {Bridge} $Y:=\{Y_t\}$ of the
+Gaussian process~$X$, i.\,e.,  the process obtained by
+conditioning~$X$ to reach a certain level at some prefixed time instant~$\tau$:
+\begin{equation*}
+Y(t) = X(t) - \psi(t) X(\tau)
+\end{equation*}
+where $\psi$ can be easily  expressed in terms of the the covariance 
+function~$\Gamma(s,t)$ of the process~$X$ 
+$$
+\psi(t)   :=
+\fr{\Gamma(t,\tau)}{\Gamma(\tau, \tau)} \,.  
+$$
+Since the variance of~$X$ is an increasing function of~$t$ in all models we consider,
+it is easy to see that  $\psi(t)>0$ for all $t \ge 0$.
+Moreover, for any~$t$, $Y(t)$ is
+independent of~$X(\tau)$ since
+$$
+\mathbb{E} \left[X(\tau)Y(t)\right]=
+\Gamma(\tau,t)-
+\fr{\Gamma(t,\tau)}{\Gamma(\tau,\tau)}\,\Gamma(\tau, \tau)=0
+$$
+and $(X(\tau),Y(t))$ has bivariate normal distribution.
+
+
+
+
+
+Let $\mathbb{T} = [0,T]$, then the target probability can 
+be expressed in the following way:
+\begin{multline*}
+\pi(T)\, =\mathbb{P}\left(\sup\limits_{t \in [0,T]}A(t)\ge D\right)\\
+{}=\mathbb{P}\left(\forall t \in \mathbb{T}:\,\,mt+X(t) \le D\right)\\
+{}=\mathbb{P}\left( \forall t \in \mathbb{T}:\,\, X(\tau) \le \fr{D-Y(t)-mt}{\psi(t)}\right)\\
+{}=\mathbb{P}\left( X(\tau)\le \inf_{t \in T} \fr{D-Y(t)-mt}{\psi(t)}\right)\\
+{}=\mathbb{P}\left( X(\tau)\le\overline{Y} \right)
+\end{multline*}
+where
+\begin{equation*}
+\overline{Y}:=\inf\limits_{t \in \mathbb{T}}\fr{D-Y(t)-mt}{\psi(t)}\,. 
+%\label{BMC_4}
+\end{equation*}
+
+Finally, the  considered probability can be rewritten as follows:
+
+\begin{equation*}
+\pi(T)=\mathbb{P}\left(X_{\tau}\le\overline{Y}\right)=
+\mathbb{E}\left[\Psi\left(\fr{\overline{Y}}{ \sqrt{\Gamma(\tau,\,\tau)}}\right)\right]
+\end{equation*}
+where independence between~$\overline{Y}$ and~$X_{\tau}$ is used and~$\Psi$ denotes 
+the cumulative distribution function of a~standard normal variable.
+
+Hence, given $N$ samples $\{\overline{Y}^{(n)},\,\,n=1,\ldots,N\}$  of~~$\overline{Y}$,
+the estimator of~$\pi(T)$ is defined as follows:
+\begin{equation*}
+\widehat{\pi}_N^{\mathrm{BMC}} \: := \: \fr{1}{N}\sum\limits_{n=1}^N
+\Psi
+\left(\fr{\overline{Y}^{(n)}}{\sqrt{\Gamma(\tau,\tau)}}\right).
+%\label{estimator}
+\end{equation*}
+
+
+Note that
+\begin{equation*}
+\Psi\left(\fr{\overline{Y}}{ \sqrt{\Gamma(\tau,\,\tau)}}\right)=
+\mathbb{E} \left[ I(X(\tau) \le \overline{Y}) | \overline{Y}\right]
+%\label{BMC-5}
+\end{equation*}
+and, therefore, the BMC approach is actually a special case of the  
+CMC method;
+so, one can expect that the BMC estimator implies variance reduction  (with
+regard to crude 
+Monte-Carlo simulation) in   the estimation of the target probability~$\pi(T)$ as also 
+justified by the previous experience when such a~method was successfully applied for 
+estimation some other rare-event probabilities related to Gaussian 
+processes~\cite{23-luk-1}.  
+
+
+\section{Concluding Remarks and~Future~Research}
+
+\noindent
+ In this paper,   a~stochastic model describing the dynamics of 
+ a~DG project with many hosts and many work\-units to be performed, originally
+ proposed in~\cite{1-luk-1},  is presented. 
+ It is assumed that the project  can be   described by the so-called on-off model 
+ where the hosts are on-off  sources of the work\-units  and the basic process is the 
+ completed work. It is assumed that  the hosts' working sessions can have both 
+  light- and heavy-tailed distributions.
+ Then, an approximation of the  basic process, based on  the asymptotics of 
+ the superposed on-off sources, is applied.    
+ The suggested approach   leads to a~Gaussian approximation of the process of the 
+ completed work. Finally,  a~simulation framework for the evaluation 
+ of the runtime of the project, using the properties of Gaussian processes and 
+ CMC simulation, is presented. 
+
+Although  this note is focused on estimation of the runtime related to the 
+1st stage of the project completion when the number of workunits is bigger 
+than the number of hosts,  the 2nd  stage 
+could also be relevant.
+In more detail, it can be considered as a~collection of the ``tails''  
+of the  workunit remaining times. From this point of view, the completion time of the 
+2nd stage of the project  can be interpreted as  the \textit{longest} remaining time 
+and analyzed by means of the asymptotic results of \textit{renewal theory}.
+ Moreover, since the workunits are assumed to be independent, to evaluate the  
+ duration of the  2nd stage, it seems promising to  apply the theory of 
+ \textit{order statistics} and interpret the completion  time as the maximal 
+ order statistics. 
+
+
+\Ack
+\noindent
+The study was carried out under state order to the Karelian Research 
+Centre of the Russian Academy of Sciences (Institute of Applied Mathematical 
+Research KarRC RAS) and supported by the Russian Foundation for Basic Research, 
+projects 18-07-00187, 18-07-00147, 18-07-00156, and 19-07-00303.
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+
+
+%\vspace*{-6pt}
+
+{\small\frenchspacing
+{ %\baselineskip=10.35pt
+\begin{thebibliography}{99}
+
+
+\bibitem{2-luk-1} %1
+\Aue{Leland, W.\,E., M.\,S.~Taqqu, W.~Willinger., and D.\,V.~Wilson.}
+ 1994. On the self-similar nature of ethernet traffic (extended version). 
+ \textit{IEEE ACM~T. Network.} 2(1):1--15.
+\bibitem{3-luk-1} %2
+\Aue{Willinger, W., M.\,S.~Taqqu, W.\,E.~Leland, and D.~Wilson.}
+1995. Self-similarity in high-speed packet traffic: Analysis and modeling of Ethernet 
+traffic measurements. \textit{Stat. Sci.} 10(1):67--85.
+\bibitem{4-luk-1}  %3
+\Aue{Taqqu, M.\,S., W.~Willinger, and R.~Sherman.} 1997. 
+Proof of a~fundamental result in self-similar traffic modeling. 
+\textit{Comp. Comm.~R.} 27:5--23.
+\bibitem{5-luk-1} %4
+BOINCstats. 2017. Available at: {\sf https://boincstats.com} (accessed May~7, 2019).
+
+\bibitem{7-luk-1} %5
+\Aue{Kondo, D., D.\,P.~Anderson, and J.~McLeod~VII.} 
+2007. Performance evaluation of scheduling policies for volunteer computing.  
+\textit{3rd IEEE Conference (International) on e-Science and Grid Computing 
+Proceedings}. IEEE. 221--227.
+\bibitem{6-luk-1} %6
+\Aue{Estrada, T., and M.~Taufer.} 2012. Challenges in 
+designing scheduling policies in volunteer computing. 
+\textit{Desktop grid computing}. Eds C.~C$\acute{\mbox{e}}$rin and G.~Fedak. 
+CRC Press. 167--190.
+
+\bibitem{8-luk-1} %7
+\Aue{Durrani, N., and J.~Shamsi.} 2014. Volunteer computing: 
+Requirements, challenges, and solutions. \textit{J.~Netw. Comput. Appl.} 39:369--380.
+\bibitem{9-luk-1} %8
+\Aue{Sonnek, J., M.~Nathan, A.~Chandra, and J.~Weissman.}
+ 2006. Reputation-based scheduling on unreliable distributed infrastructures in 
+ distributed computing systems. \textit{26th IEEE Conference 
+ (International) on Distributed Computing Systems Proceedings}. IEEE. Art.~No.\,30. P.~1--8.
+\bibitem{10-luk-1} %9
+\Aue{Watanabe, K., M.~Fukushi, and M.~Kameyama.}
+ 2011. Adaptive group-based job scheduling for high performance and reliable 
+ volunteer computing.  \textit{J.~Information Processing} 19:39--51.
+ 
+ \bibitem{12-luk-1} %10
+\Aue{Xavier, E., R.~Peixoto, and J.~da~Silveira.}
+ 2013. Scheduling with task replication on desktop grids: 
+ Theoretical and experimental analysis.  \textit{J.~Comb. Optim.}
+ 30(3):520--544.
+\bibitem{11-luk-1} %11
+\Aue{Chernov, I.\,A., and N.\,N.~Nikitina.}
+2015. Virtual screening in a~Desktop Grid: Replication and the optimal quorum. 
+\textit{Parallel computing technologies}. Ed. V.~Malyshkin.
+Lecture notes in computer science ser. Springer.  9251:258--267.
+
+\bibitem{13-luk-1} %12
+\Aue{Samorodnitsky, G., and M.\,S.~Taqqu.} 1994.  \textit{Stable non-Gaussian random processes: 
+Stochastic models with infinite variance}. Chapman \& Hall. 632~p.
+\bibitem{14-luk-1} %13
+\Aue{Mikosch, T., S.~Resnick, H.~Rootz$\acute{\mbox{e}}$n, and A.~Stegeman.}
+2002. Is network traffic approximated by stable Levy motion or fractional Brownian 
+motion? \textit{Ann. Appl. Probab.} 12(1):23--68.
+\bibitem{15-luk-1} %14
+\Aue{Norros, I.} 1994. A~storage model with self-similar input.  
+\textit{Queueing Syst.} 16:387--396.
+\bibitem{16-luk-1} %15
+\Aue{Borodin, A.\,N., and P.~Salminen.} 2002.  \textit{Handbook of Brownian motion~--- 
+facts and formulae}. Birkh$\ddot{\mbox{a}}$user. 685~p.
+\bibitem{17-luk-1} %16
+\Aue{Michna, Z.} 1999. On tail probabilities and first passage times for fractional 
+Brownian motion.  \textit{Math. Method. Oper. Res.} 49(2):335--354.
+\bibitem{18-luk-1} %17
+\Aue{Caglar, M., and C.~Vardar.} 2013. Distribution of maximum loss of fractional 
+Brownian motion with drift.  \textit{Stat. Probabil. Lett.} 83:2729--2734.
+\bibitem{19-luk-1} %18
+Gradshtein, I.\,S., I.\,M.~Ryzhik, and A.~Jeffrey, eds.
+%D.~Zwillinger, associate ed. 
+2015. 
+\textit{Table of integrals, series and products}. 8th ed. 
+San Diego, CA: Academic Press. 1220~p.
+\bibitem{20-luk-1} %19
+\Aue{Giordano, S., M.~Gubinelli, and M.~Pagano.}
+ 2005. Bridge Monte-Carlo: A~novel approach to rare events of Gaussian processes. 
+ \textit{5th St. Petersburg Workshop on Simulation Proceedings}. St.\ Petersburg: 
+ St. Petersburg State University. 281--286.
+\bibitem{21-luk-1} %20
+\Aue{Giordano, S., M.~Gubinelli, and M.~Pagano.}
+ 2007. Rare events of Gaussian processes: A~performance comparison between 
+ bridge Monte-Carlo and importance sampling. 
+ \textit{Next generation teletraffic and wired/wireless advanced networking}.
+ Eds.\ Y.~Koucheryavy, J.~Harju, and A.~Sayenko.
+ Lecture notes in computer science ser.
+ Springer. 4712:269--280.
+\bibitem{22-luk-1} %21
+\Aue{Lukashenko, O.\,V., E.\,V.~Morozov, and M.~Pagano.} 
+2012. Performance analysis of Bridge Monte-Carlo estimator. 
+\textit{Transactions of KarRC RAS} 5:54--60.
+\bibitem{23-luk-1} %22
+\Aue{Lukashenko, O.\,V., E.\,V.~Morozov, and M.~Pagano.}
+ 2017. On the efficiency of bridge Monte-Carlo estimator.  
+ \textit{Informatika i~ee Primeneniya~--- Inform.  Appl.} 11(2):16--24.
+ 
+ \bibitem{1-luk-1} %23
+\Aue{Morozov, E., O.~Lukashenko, A.~Rumyantsev, and E.~Ivashko.}
+2017. A~Gaussian approximation of runtime estimation in a desktop grid project. 
+\textit{9th  Congress (International) on Ultra Modern Telecommunications and 
+Control Systems and Workshops}. IEEE. 107--111.
+
+
+\end{thebibliography} } }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received April 15, 2019}}
+
+\vspace*{-18pt}
+
+\Contr
+
+%\vspace*{-3pt}
+
+\noindent
+\textbf{Lukashenko Oleg  V.} (b.\ 1986)~--- 
+Candidate of Science (PhD) in physics and mathematics, scientist, 
+Institute of  Applied Mathematical Research of Karelian Research Centre of 
+the Russian Academy of Sciences, 
+11~Pushkinskaya Str.,  Petrozavodsk 185910, Republic of Karelia, 
+Russian Federation; associate professor, Petrozavodsk State University, 33~Lenin Str., 
+Petrozavodsk 185910, Republic of Karelia, Russian Federation; 
+\mbox{lukashenko@krc.karelia.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Morozov  Evsei  V.} (b.\ 1947)~--- 
+Doctor of Science in physics and mathematics, professor, leading scientist,
+ Institute of  Applied Mathematical Research of Karelian Research Centre of 
+ the Russian Academy of Sciences, 11~Pushkinskaya Str.,  Petrozavodsk 185910, 
+ Republic of Karelia, Russian Federation; professor, Petrozavodsk State University, 
+ 33~Lenin Str., Petrozavodsk 185910, Republic of Karelia, Russian Federation; 
+ \mbox{emorozov@karelia.ru}
+ 
+ \vspace*{3pt}
+ 
+ \noindent
+ \textbf{Pagano Michele} (b.\ 1968)~--- 
+ PhD in Information Engineering, associate professor, University of Pisa, 
+ 43~Lungarno Pacinotti, Pisa 56126, Italy; \mbox{m.pagano@iet.unipi.it}
+
+ 
+
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-7pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\def\tit{ГАУССОВСКАЯ АППРОКСИМАЦИЯ ПРОЦЕССА РАСПРЕДЕЛЕННЫХ ВЫЧИСЛЕНИЙ$^*$}
+
+\def\titkol{Гауссовская аппроксимация процесса распределенных вычислений}
+
+\def\aut{О.\,В.~Лукашенко$^{1,2}$, Е.\,В.~Морозов$^{1,2}$,
+М.~Пагано$^3$}
+
+\def\autkol{О.\,В.~Лукашенко, Е.\,В.~Морозов,
+М.~Пагано}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Финансовое обеспечение исследований осуществлялось из 
+средств федерального бюджета на выполнение государственного задания 
+КарНЦ РАН (Институт прикладных математических исследований КарНЦ РАН) 
+и~при финансовой поддержке РФФИ (проекты 18-07-00187, 18-07-00147, 18-07-00156
+и~19-07-00303).}}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+\noindent
+$^1$Институт прикладных математических исследований Карельского научного центра 
+Российской акаде-\linebreak
+$\hphantom{^1}$мии наук 
+
+\noindent
+$^2$Петрозаводский государственный университет
+
+\noindent
+$^3$Университет г.\ Пиза, Италия
+%, danielkh@post.bgu.ac.il 
+
+\vspace*{1pt}
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill ИНФОРМАТИКА И ЕЁ ПРИМЕНЕНИЯ\ \ \ том\ 13\ \ \ выпуск\ 2\ \ \ 2019}
+}%
+ \def\rightfootline{\small{ИНФОРМАТИКА И ЕЁ ПРИМЕНЕНИЯ\ \ \ том\ 13\ \ \ выпуск\ 2\ \ \ 2019
+\hfill \textbf{\thepage}}}
+
+\vspace*{-1pt}
+
+
+ 
+\Abst{Продолжено изучение стохастической модели процесса динамики 
+выполнения задачи в~сис\-те\-ме Desktop Grid при наличии многих пользователей, 
+предложенной в~2017~г.\ Морозовым с~соавт. Тре\-бу\-емой характеристикой 
+выступает средняя 
+про\-дол\-жи\-тель\-ность времени выполнения проекта. Гауссовская аппроксимация искомого 
+процесса производится на основе предельных тео\-рем для суперпозиции on-off 
+источников. Приведен обзор известных аналитических результатов для 
+тре\-бу\-емой характеристики, вклю\-чая результаты для броуновского 
+и~дроб\-но\-го броуновского движения. Также показывается, как с~по\-мощью условного метода 
+Мон\-те-Кар\-ло оценить хвост распределения времени выполнения проекта.}
+
+
+\KW{гауссовская аппроксимация; распределенные вычисления; дробное броуновское движение}
+
+ \DOI{10.14357/19922264190215}
+
+
+
+%\vspace*{-3pt}
+
+
+ \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily Литература}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{\baselineskip=10.5pt
+\begin{thebibliography}{99}
+%\vspace*{-3pt}
+
+
+\bibitem{2-luk} %1
+\Au{Leland W.\.E., Taqqu~M.\,S., Willinger~W., Wilson~D.\,V.}
+On the self-similar nature of Ethernet traffic (extended version)~// 
+IEEE ACM~T. Network., 1994. Vol.~2. Iss.~1. P.~1---15.
+\bibitem{3-luk} %2
+\Au{Willinger W., Taqqu~M.\,S., Leland~W.\,E., Wilson~D.}
+ Self-similarity in high-speed packet traffic: Analysis and modeling of Ethernet 
+ traffic measurements~// Stat. Sci., 1995. Vol.~10. Iss.~1. P.~67--85.
+\bibitem{4-luk} %3
+\Au{Taqqu M.\,S., Willinger~W., Sherman~R.} 
+Proof of a~fundamental result in self-similar traffic modeling~// 
+Comp. Comm.~R., 1997. Vol.~27. P.~5--23.
+\bibitem{5-luk} %4
+ BOINCstats, 2017. {\sf https://boincstats.com}.
+
+\bibitem{7-luk} %5
+\Au{Kondo D., Anderson~D.\,P., McLeod~VII~J.}
+Performance evaluation of scheduling policies for volunteer computing~// 
+3rd IEEE  Conference (International) 
+on e-Science and Grid Computing Proceedings.~--- IEEE, 2007. P.~221--227.
+
+\bibitem{6-luk} %6
+\Au{Estrada T., Taufer~M.}
+Challenges in designing scheduling policies in volunteer computing~// 
+Desktop grid computing~/ Eds. C.~C$\acute{\mbox{e}}$rin, G.~Fedak.~--- 
+CRC Press, 2012. P.~167--190.
+\bibitem{8-luk} %7
+\Au{Durrani N., Shamsi~J.} 
+Volunteer computing: Requirements, challenges, and solutions~// 
+J.~Netw. Comput. Appl., 2014. Vol.~39. P.~369--380.
+\bibitem{9-luk} %8
+\Au{Sonnek J., Nathan~M., Chandra~A., Weissman~J.}
+ Reputation-based scheduling on unreliable distributed infrastructures in 
+ distributed computing systems~// 26th IEEE Conference (International)
+ on Distributed Computing Systems Proceedings.~--- IEEE, 2006. Art. No.\,30. P.~1--8.
+\bibitem{10-luk} %9
+\Au{Watanabe K., Fukushi~M., Kameyama~M.}
+Adaptive group-based job scheduling for high performance and reliable volunteer 
+computing~// J.~Information Processing, 2011. Vol.~19. P.~39--51.
+
+\bibitem{12-luk} %10
+\Au{Xavier E., Peixoto R., da~Silveira~J.}
+ Scheduling with task replication on desktop grids: Theoretical and experimental 
+ analysis~// J.~Comb. Optim., 2013.  Vol.~30. Iss.~3. P.~520--544.
+ 
+ \bibitem{11-luk} %11
+\Au{Chernov I.\,A., Nikitina~N.\,N.}
+ Virtual screening in a desktop grid: Replication and the optimal quorum~// 
+  Parallel computing technologies~/ Ed. V.~Malyshkin.~---
+ Lecture notes in computer science ser.~---  Springer, 2015.  
+ Vol.~9251. P.~258--267.
+ 
+\bibitem{13-luk} %12
+\Au{Samorodnitsky G., Taqqu~M.\,S.} Stable non-Gaussian random processes: Stochastic 
+models with infinite variance.~--- Chapman \& Hall, 1994. 632~p.
+\bibitem{14-luk} %13
+\Au{Mikosch T., Resnick~S., Rootz$\acute{\mbox{e}}$n~H., Stegeman~A.}
+Is network traffic approximated by stable Levy motion or fractional Brownian motion?~// 
+Ann. Appl. Probab., 2002. Vol.~12. Iss.~1. P.~23--68.
+\bibitem{15-luk} %14
+\Au{Norros I.} A~storage model with self-similar input~// Queueing Syst., 1994. 
+Vol.~16. P.~387--396.
+\bibitem{16-luk} %15
+\Au{Borodin A.\,N., Salminen~P.}
+ Handbook of Brownian motion~--- facts and formulae.~--- Birkh$\ddot{\mbox{a}}$user, 2002. 685~p.
+\bibitem{17-luk} %16
+\Au{Michna Z.} On tail probabilities and first passage times for fractional 
+Brownian motion~// Math. Method. Oper. Res., 1999. Vol.~49. Iss.~2. 
+P.~335--354.
+\bibitem{18-luk} %17
+\Au{Caglar M., Vardar~C.} Distribution of maximum loss of fractional 
+Brownian motion with drift~// Stat. Probabil. Lett., 2013. Vol.~83. P.~2729--2734.
+\bibitem{19-luk} %18
+Table of integrals, series and products~/
+Eds.  I.\,S.~Gradshtein, I.\,M.~Ryzhik, A.~Jeffrey.~--- 8 ed.~---
+%; associate editor D.~Zwillinger.   
+San Diego, CA, USA: Academic Press, 2015. 1220~p.
+\bibitem{20-luk} %19
+\Au{Giordano S., Gubinelli~M., Pagano~M.} Bridge Monte-Carlo: 
+A~novel approach to rare events of Gaussian processes~// 5th St.\ 
+Petersburg Workshop on Simulation Proceedings.~--- St.\ Petersburg: St. Petersburg 
+State University, 2005. P.~281--286.
+\bibitem{21-luk} %20
+\Au{Giordano S., Gubinelli~M., Pagano~M.} Rare events of Gaussian processes: 
+A~performance comparison between bridge Monte-Carlo and importance sampling~// 
+Next generation teletraffic and wired/wireless advanced networking~/
+ Eds.\ Y.~Koucheryavy, J.~Harju, A.~Sayenko.~--- 
+ Lecture notes in computer science ser.~--- Springer, 2007.
+Vol.~4712. P.~269--280.
+\bibitem{22-luk} %21
+\Au{Lukashenko O.\,V., Morozov~E.\,V., Pagano~M.}
+Performance analysis of bridge Monte-Carlo estimator~// 
+Труды Карельского научного центра Российской академии наук, 
+2012. Т.~5. С.~54--60.
+\bibitem{23-luk} %22
+\Au{Lukashenko O.\,V., Morozov~E.\,V., Pagano~M.}
+ On the efficiency of bridge Monte-Carlo estimator~// Информатика и её применения,
+  2017.  Т.~11. Вып.~2. С.~16--24.
+
+\bibitem{1-luk} %23
+\Au{Morozov E., Lukashenko~O., Rumyantsev~A., Ivashko~E.}
+A~Gaussian approximation of runtime estimation in a~desktop grid project~// 
+9th  Congress (International) on Ultra Modern Telecommunications and Control Systems 
+and Workshops.~--- IEEE, 2017. P.~107--111.
+
+\end{thebibliography}
+} }
+
+\end{multicols}
+
+ \label{end\stat}
+
+ \vspace*{-9pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.04.2019}}
+
+
+%\renewcommand{\bibname}{\protect\rm Литература}
+\renewcommand{\figurename}{\protect\bf Рис.}
+\renewcommand{\tablename}{\protect\bf Таблица}

@@ -1,0 +1,1080 @@
+\documentstyle[% 
+righttag% 
+,11pt% 
+,amssymb% 
+,russian%               remove in Eng. 
+,izvru%                 Set izven% in Eng. 
+]{amsart} 
+
+%       Math definitions 
+
+\newcommand{\A}{{\cal A}} 
+\newcommand{\col}{\operatorname{col}} 
+\newcommand{\const}{\operatorname{const}} 
+\newcommand{\vraisup}{\operatorname{vrai~sup}} 
+\newcommand{\tts}[1]{}
+\newcommand{\req}[1]{\rm{(\ref{#1})}}
+\newcommand{\PR}{\bf{Pr}}
+\newcommand{\I}{i=1,\dotsc,n}
+\newcommand{\n}{i=1,\dotsc,n}
+\newcommand{\LW}{w=1,\dotsc,W}
+\newcommand{\LH}{h=1,\dotsc,H}
+\newcommand{\LL}{\lambda=1,\dotsc,\Lambda}
+\newcommand{\MI}{^n_{i=1}}
+\newcommand{\MW}{^W_{w=1}}
+\newcommand{\MH}{^H_{h=1}}
+\newcommand{\ML}{^\Lambda_{\lambda=1}}
+\newcommand{\SI}{\sum\limits\MI}
+\newcommand{\SW}{\sum\limits\MW}
+\newcommand{\SH}{\sum\limits\MH}
+\newcommand{\SL}{\sum\limits\ML}
+\newcommand{\SWH}{\SW\SH}
+\newcommand{\SWHL}{\SW\SH\SL}
+\newcommand{\eps}{\varepsilon}
+ 
+\theoremstyle{definition} 
+\theorembodyfont{\rm} 
+\newtheorem{notenonum}{\hskip\parindent Замечание} 
+\renewcommand{\thenotenonum}{} 
+ 
+ 
+%\hoffset=-15mm%                  For Eng. 
+ 
+\setcounter{page}{34} 
+\god{1997} 
+\nomer{12~(427)} %                Remove in Eng. 
+%\nomer{Vol.\,41, No.\,12}%        Set in Eng. 
+% \str{75--81}%                    Set in Eng. 
+\udk{519.852} 
+\author{\it Э.Х.\,Гимади, В.В.\,Залюбовский, П.И.\,Шарыгин} 
+\title{Задача упаковки в полосу:\\
+асимптотически точный подход} 
+ 
+\thanks{Работа выполнена при финансовой поддержке Российского фонда
+фундаментальных исследований (код проектов 96-01-01591 и 97-01-00890).}
+\date{} 
+% \pagestyle{myheadings}%         Set in Eng. 
+ 
+\pagestyle{plain} %              Remove in Eng. 
+\begin{document} 
+ 
+% \thispagestyle{plain}%          Set in Eng. 
+ 
+\maketitle 
+ 
+\section{Введение}
+
+Задача упаковки в полосу (ЗУП) формулируется следующим образом.
+Пусть имеется полубесконечная полоса ширины $W$ и список прямоугольных
+предметов $S=\{a_{i}\mid i=1,\dotsc,n\}$. Предмет $a_{i}\in S$ имеет
+ширину $w_{i}\le W$ и высоту $h_{i}$. Требуется упаковать все предметы
+из списка $S$ в полосу минимальной высоты. Упакованные предметы не должны
+перекрывать друг друга, их стороны должны быть параллельны сторонам полосы,
+вращение предметов не допускается. В литературе эта задача встречается
+также под названием ``двумерная ортогональная задача упаковки''.
+
+Нетрудно заметить, что частными случаями рассматриваемой задачи являются
+известные $NP$-трудные задачи упаковки в контейнеры 
+(при $h_{i} \equiv \const,\ \n $)
+и задача многопроцессорного расписания 
+(при $w_{i} \equiv \const,\ \n $).
+В силу этого задача упаковки в полосу также $NP$-трудна.
+
+Имеется множество работ, посвященных анализу наихудшего поведения 
+приближенных алгоритмов для решения ЗУП \cite{CGJ}. Гораздо меньшее 
+количество статей содержит анализ среднего поведения таких алгоритмов. 
+В настоящей статье для исследования поведения приближенного алгоритма 
+на списках со случайными значениями $w_{i}$ и $h_{i}$ применяется 
+асимптотически точный подход, предложенный в \cite{GGP}.
+Предполагается знакомство читателя с работой \cite{GZ}.
+
+В разделе 2 приводятся основные определения, обозначения и формулируются 
+некоторые предварительные утверждения. Раздел~3 содержит формулировку и 
+доказательство основных утверждений, касающихся условий асимптотической 
+точности предложенного алгоритма для ЗУП. В разделе~4 рассматривается
+обобщение ЗУП, связанное с введением частичного порядка на множестве
+предметов. Раздел~5 посвящен исследованию связи ЗУП с задачей календарного
+планирования с нескладируемым ограниченным ресурсом.
+
+\section{Основные определения и предварительные сведения}
+
+Напомним ряд определений, содержащихся в \cite{GZ}.
+
+Пусть имеется некоторый алгоритм ${\cal A}$
+для решения оптимизационной задачи на минимум. Обозначим через
+$F_{{\cal A}}(S)$, $F^{*}(S)$ значения целевых функций на решении
+индивидуальной задачи $S$, получаемом с помощью алгоритма ${\cal A}$, и 
+оптимальном решении соответственно. Будем говорить, что алгоритм ${\cal A}$ 
+{\em удовлетворяет оценкам} $(\varepsilon_{n},\delta_{n})$ на классе задач 
+${\cal K}_{n}$ размерности $n$, если для всех $S\in {\cal K}_{n}$ выполнено 
+неравенство
+$$
+\PR\{F_{{\cal A}}(S) > (1+\varepsilon _{n})F^{*}(S)\} \le \delta_{n}.
+$$
+Алгоритм ${\cal A}$ называется {\em асимптотически точным} на
+классе задач ${\cal K}$, если существуют такие последовательности 
+$(\varepsilon_{n})$, $(\delta_{n})$, что для любого $n$ алгоритм 
+${\cal A}$ удовлетворяет оценкам $(\varepsilon_{n},\delta_{n})$ на
+подмножестве ${\cal K}_{n}\subset{\cal K}$ задач размерности $n$ и
+при этом $\varepsilon_{n}\to 0$, $\delta_{n}\to 0$, когда $n\to \infty$.
+	
+Параметры $\varepsilon_{n}$ и $\delta_{n}$ можно рассматривать 
+как оценки {\em относительной погрешности} и {\em вероятности несрабатывания}
+алгоритма соответственно.
+
+Неотрицательную функцию $f$ целочисленного аргумента 
+$r \in I_{b}=\{1,2,\dotsc,B\}$
+будем называть {\em $b$-асимметричной $(b$--симметричной}), если
+$f(r)\le f(b-r)$
+(соответственно $f(r)=f(b-r))$
+при $r=1,\dotsc,\lfloor b/2 \rfloor$ и $f(r)=0$ при $r>b$.
+
+Нетрудно заметить, что класс $B$-асимметричных функций включает 
+в себя $B$-симметричные функции, неубывающие функции, функции с
+постоянным значением на сегменте $[1,B]$.
+ 
+Функцию $f$ будем назвать {\em $B$-регулярной}
+при $B=2^{Q}$, $Q$ целое, если она представима в виде суммы
+$2^{k}$-симметричных функций $f^{(k)}$, $k \in I_{Q}$,
+$$
+f(r)=\sum_{k=1}^{Q} f^{(k)}(r),\quad r \in I_{B}.
+$$
+
+В \cite{GZ} показано, что разложение $B$-регулярной функции $f$ на
+$2^{k}$-симметричные составляющие может быть записано в виде
+$$
+f(r)=\sum_{k=k_{r}}^{Q} f^{(k)}(r),\quad r \in I_{B},
+$$
+где
+$$
+k_{B}=Q;\quad
+k_{r}=\min \{k\mid r<2^{k}\}=\lceil \log_{2}{(r+1)} \rceil,
+\quad 1 \le r<B.
+$$
+Такое разложение будем называть {\em каноническим}.
+
+Будем называть {\em $b$-связкой} предмет веса $b$ либо
+пару предметов с весами $r$ и $b-r$ при $r=1,\dotsc,\lfloor b/2 \rfloor$.
+
+В \cite{GZ} предложен приближенный алгоритм ${\cal A}_{1}$
+упаковки предметов в контейнеры. В случае $B=2^{Q}$,
+$Q$ целое, алгоритм ${\cal A}_{1}$ последовательно для
+$k=Q,Q-1,\dotsc,1$ образует список $2^{k}$-связок и упаковывает этот 
+список в контейнеры по принципу алгоритма $NFD$ (``следующий пригодный с 
+предварительным упорядочением по невозрастанию''). Предметы подсписка
+$S'\subset S$, не вошедшие в полностью заполненные контейнеры,
+алгоритм $\cal A_1$ упаковывает
+с помощью $NF$--алгоритма (``следующий пригодный''). Описание алгоритмов
+$NFD$ и $NF$ можно найти в \cite{CGJ}.
+
+В случае $B$-асимметричных списков, а также при $B \ne 2^{Q}$, $Q$
+целое, используется упрощенная версия алгоритма ${\cal A}_{1}$: 
+сначала заполняем контейнеры $B$-связками, а оставшиеся предметы 
+$a_{i} \in S'$ размещаем с помощью $NF$-алгоритма.
+
+Для решения задач упаковки в контейнеры со случайными весами предметов
+в \cite{GZ} применяется {\em модифицированный приближенный алгоритм} 
+$\widetilde {\cal A}_{1}$, который использует решение, полученное с помощью 
+алгоритма ${\cal A}_{1}$ для некоторого {\em оценочного} списка 
+$\widetilde S$ при условии, что он мажорирует исходный список $S$.
+
+Далее считаем, что класс ${\cal K}_{n}^{2}$ состоит из задач упаковки 
+двумерных предметов (прямоугольников) в полосу со следующей моделью 
+формирования случайного списка $S$: производится серия $n$ 
+независимых испытаний, в каждом из которых очередной предмет 
+$a_{i}$, $i=1,\dotsc,n$, принимает свои размеры --- ширину $w_{i}$ 
+и высоту $h_{i}$ --- в соответствии с одинаковой дискретной функцией 
+распределения
+$$
+p_{wh}=Pr\{w_i=w,\; h_{i}=h\} \ge 0,\quad
+\LW,\quad \LH,
+\qquad
+\SWH p_{wh}=1.
+$$
+
+Введем обозначения:
+
+$S_{h} =\{a_{i}\mid h_{i}=h,\; \I\}$
+--- подсписок, состоящий из предметов высоты $h$, $\LH$;
+
+$(\Delta_{wh})$ --- матрица с компонентами
+$\Delta_{wh} = 2(n \ln n p_{wh}(1-p_{wh}))^{1/2}$, где
+$\LW$, $\LH$;
+
+$\widetilde {\cal A}_{2}$
+--- алгоритм, состоящий в последовательном применении к подспискам
+$S_{1},\dotsc,S_{H}$ описанного ранее алгоритма $\widetilde {\cal A}_{1}$
+решения одномерной задачи упаковки в контейнеры (при этом под
+весом предмета понимается его ширина);
+
+$\beta_{p}=\frac{1}{WH}\SWH whp_{wh}$
+--- отношение математического ожидания площади прямоугольника, задаваемого 
+размерами предмета, к максимально возможной площади предмета;
+
+$F_{\widetilde {\cal A}_{1}}^{h} $
+--- количество контейнеров, полученное в результате применения алгоритма
+$\widetilde {\cal A}_{1}$ к списку $S_{h}$, $\LH$;
+
+$F_{\widetilde {\cal A}_{2}}=
+\SH hF_{\widetilde {\cal A}_{1}}^{h} $
+--- высота полосы, полученная в результате упаковки предметов
+списка $S$ с помощью алгоритма $\widetilde {\cal A}_{2}$.
+
+Говорим, что алгоритм $\widetilde {\cal A}_{2}$ срабатывает 
+применительно к конкретной реализации случайного списка $S$, если для всех
+$\LW$, $\LH$ выполнено неравенство
+\begin{equation}
+\label{e15}
+|\chi_S(w,h)-np_{wh}|\le \Delta_{wh},
+\end{equation}
+где $\chi_S(w,h)$ --- число предметов ширины $w$ и высоты
+$h$ в списке $S$.
+
+Матрицу назовем $W$-регулярной ($W$-асимметричной,
+$W$-симметричной, неубывающей), если $W$-регулярна ($W$-асимметрична, 
+$W$-симметрична, неубывающая) каждая строка матрицы. Напомним, что
+в случае $W$-регулярной матрицы предполагаем, что $W=2^{Q}$, $Q$ целое.
+
+\section{Условия асимптотической точности}
+
+\begin{lem} 
+\label{lm1}
+Если $WH=o(n/ \ln n)$, 
+то вероятность несрабатывания алгоритма
+$\widetilde {\cal A}_{2}$
+ограничена величиной
+$o\Bigl(\frac {1}{n \ln n}\Bigr)$.
+\end{lem}
+
+{\bf Доказательство.}
+Обозначив через $\Bar {A}_{wh}$ событие, противоположное \req{e15},
+имеем
+$$
+\delta_{\widetilde{\cal A}_{2}}=Pr \Bigl\{
+\bigcup\MW \bigcup\MH \Bar {A}_{wh} 
+\Bigr \} \le \SWH Pr(\Bar {A}_{wh}).
+$$
+
+При оценивании вероятности несрабатывания алгоритма понадобятся
+неравенства для вероятностей больших отклонений суммы 
+$S_{n}=\sum\limits_{i=1}^{n} \xi_{i} $ независимых случайных величин
+$\xi_{1},\dotsc,\xi_{n}$, распределенных по закону Бернулли
+$$ 
+\PR \{\xi_{i}=1\} =p;\quad
+\PR \{\xi_{i}=0\} =1-p,\quad i=1,\dotsc,n.
+$$
+
+При $\Delta = o(n^{2/3})$ справедливо неравенство \cite{GZ}
+$$
+\PR \{|S_{n}-np|\ge \Delta\} 
+\le c\exp \Bigl(-\frac {\Delta^{2}}{2np(1-p)} \Bigr),
+$$
+где $c=2(1+o(1))$.
+Воспользовавшись этим неравенством (поскольку
+$\Delta_{wh}=o(n^{2/3})$), с учетом условия леммы получим
+\begin{gather*}
+\delta_{\widetilde{\cal A}_{2}} \le
+c \SWH
+\exp \biggl(- \frac {\Delta_{wh}^{2}}
+{2np_{w h} (1-p_{w h})}\biggr) = 
+%
+c \SWH \exp \biggl(
+- \frac {4n\ln n p_{w h} (1-p_{w h})}
+{2np_{w h} (1-p_{w h})}\biggr) = \\
+%
+= c \SWH \frac {1}{n^{2}}=
+\frac {CWH}{n^{2}}= \frac {o(n/ \ln n)}{n^{2}}=
+o\biggl(\frac {1}{n\ln n} \biggr).\quad\square
+\end{gather*}
+
+\begin{thm}
+\label{th1}
+Если матрица $(p_{wh})\;$ $W$--асимметрична, то при 
+$WH = o(n /\ln n)$
+алгоритм $ \widetilde {\cal A}_{2}$ приводит к асимптотически точному
+решению ЗУП из класса ${\cal K}_{n}^{2};$
+при этом справедливы следующие оценки вероятности несрабатывания
+и относительной погрешности:
+$$
+\delta_{\widetilde{\cal A}_{2}}=o\biggl(\frac {1}{n \ln n}\biggr), \quad
+\eps_{\widetilde{\cal A}_{2}}=
+O\Biggl(\sqrt {\frac {W}{n/\ln n}}\,\Biggr).
+$$
+\end{thm}
+
+\begin{pf}
+Оценка 
+$\delta_{\widetilde{\cal A}_{2}}=
+o\Bigl(\frac {1}{n \ln n}\Bigr) \to 0$ при 
+$n \to \infty $ следует из леммы~1.
+Отсюда с вероятностью, стремящейся к 1 при $n \to \infty $, 
+$ \widetilde {\cal A}_{2}$ имеет дело со списком $S$, в котором 
+для всяких $\LW$ и $\LH$ выполнены неравенства 
+\begin{equation}
+\label{e3}
+\lceil np_{wh} + \Delta_{wh} \rceil \le
+\chi_{_{\scriptstyle S}}(w,h) \le
+\lfloor np_{wh} + \Delta_{wh} \rfloor 
+\end{equation}
+и в качестве оценочного может быть взят список $\widetilde S$
+с характеристической функцией
+$\chi_S(w,h) =\lfloor np_{wh} + \Delta_{wh} \rfloor$. 
+Взятый в таком виде оценочный список является $W$-асимметричным
+\cite{GZ}.
+
+Для вычисления относительной погрешности 
+$\eps_{\widetilde{\cal A}_{2}}=
+F_{\widetilde{\cal A}_{2}}/F_{S}^{*}-1$
+понадобятся оценки величин $F_{S}^{*}$ и 
+$F_{\widetilde{\cal A}_{2}}$ соответственно снизу и сверху.
+
+Оптимальное значение целевой функции $F_{S}^{*}$ для ЗУП со списком
+$S$ не меньше, чем \linebreak
+$\SH h\sum\limits_{w>B/2}\chi_S(w,h)$ плюс 
+(в случае четных $W$) 
+$\SH h \chi_S(B/2,h)/2$.
+Отсюда 
+$$
+F_{S}^{*}\ge \SH h 
+\biggl(\sum_{w>W/2}\chi_S(w,h) +
+\chi_S
+\biggl(\biggl\lfloor \frac {W}{2}\biggr\rfloor,h \biggr)
+\biggl\{\frac {W+1}{2}\biggr\}\biggr)
+$$
+и с учетом \req{e3}
+$$
+F_{S}^{*}\ge \SH h 
+\biggl(\sum_{w>W/2} (np_{wh}-\Delta_{wh})+
+(np_{\lfloor W/2\rfloor,h}-
+\Delta_{\lfloor W/2 \rfloor,h}
+\biggr)
+\biggl\{\frac {W+1}{2}\biggr\}\biggr).
+$$
+
+Для оценивания сверху величины $F_{\widetilde{\cal A}_{2}}$ воспользуемся
+свойствами оценочности списка $\widetilde S$ и его $W$--асимметричности
+\begin{gather*}
+F_{\widetilde{\cal A}_{2}}= 
+\SH h F_{\widetilde{\cal A}_{2}}^{h}\le
+\SH h \biggl(\,\sum_{w>W/2}\chi_{\widetilde S}(w,h) +
+\Bigl\lceil \chi_{\widetilde S}
+\Bigl( \Bigl\lfloor \frac {W}{2} \Bigr\rfloor,h\Bigr)
+\Bigl\{\frac {W+1}{2}\Bigr\}\Bigr\rceil\biggr) \le \\
+%
+\le \SH h \biggl(\sum_{w>W/2}(np_{wh}+\Delta_{wh}) +
+(np_{\lfloor W/2 \rfloor,h}+
+\Delta_{\lfloor W/2 \rfloor,h})
+\biggl\{\frac {W+1}{2}\biggr\}\biggr) +1.
+\end{gather*}
+
+Для величины $\eps_{\widetilde{\cal A}_{2}}$ имеем
+\begin{gather*}
+\eps_{\widetilde{\cal A}_{2}}=
+\frac{F_{\widetilde{\cal A}_{2}}}{F_{S}^{*}} -1\le
+\frac{2 \SH h \Bigl(\sum\limits_{w>W/2} \Delta_{wh} + 
+\Delta_{\lfloor W/2 \rfloor,h}
+\Bigl\{\frac {W+1}{2}\Bigr \} +\frac {1}{2}\Bigr)}
+{\SH h \Bigl(\sum_{w>W/2} (np_{wh}-\Delta_{wh})+
+(np_{\lfloor W/2 \rfloor h}-\Delta_{\lfloor W/2 \rfloor h})
+\Bigl\{\frac {W+1}{2}\Bigr\}
+\Bigr)} \le \\
+%
+\le \frac{\SH h \Bigl(2\sum\limits_{w\ge W/2} \Delta_{wh} + 1\Bigr)}
+{\SH h \Bigl(n \Bigl(
+\sum\limits_{w>W/2} p_{wh} + 
+p_{\lfloor W/2 \rfloor h}
+\Bigl\{\frac {W+1}{2}\Bigr\}
+\Bigr) - \sum\limits_{w\ge W/2} \Delta_{wh}\Bigr)}.
+\end{gather*}
+
+В силу $W$--асимметричности функции $p_{wh}$ для всякого 
+$h=1, \dotsc, H$ справедливы неравенства
+$$
+\sum_{w>W/2} p_{wh} + 
+p_{\lfloor \frac {W}{2}\rfloor h}
+\biggl\{\frac {W+1}{2}\biggr\} \ge \frac {1}{2}.
+$$
+Кроме того, 
+$$
+\sum_{w\ge W/2} \Delta_{wh} \le \SW \Delta_{wh} =
+2\sqrt {n\ln n} \SW \sqrt {p_{wh}(1-p_{wh})}\le
+2\sqrt {Wn\ln n}.
+$$
+
+С учетом последних соотношений имеем
+$$
+\eps_{\widetilde{\cal A}_{2}}\le
+\frac{\SH (4\sqrt {Wn\ln n} +1)h}
+{ \SH \bigl(\frac {n}{2}-2\sqrt {Wn\ln n}\bigr)h} =
+\frac{8\sqrt {\frac {W}{n/\ln n}}
+\bigl(1 +\frac {1}{4\sqrt {Wn\ln n}}\bigr)}
+{1- 4 \sqrt {\frac {W}{n/\ln n}}} \le \\
+\frac{8\sqrt {\frac {W}{n/\ln n}}
+\bigl(1 +\frac {1}{\sqrt {Wn\ln n}}\bigr)}
+{1- 4 \sqrt {\frac {W}{n/\ln n}}}.
+$$
+
+Таким образом, 
+$\eps_{\widetilde{\cal A}_{2}}=O\Bigl(\sqrt {\frac {W}{n/\ln n}} \Bigr)$.
+По условию теоремы имеем
+$$
+\frac {W}{n/\ln n} \le \frac {WH}{n/\ln n}\to 0
+\text{ при } n \to \infty,
+$$
+т.\,е. $W=o(n/\ln n)$ и $\eps_{\widetilde{\cal A}_{2}}\to 0$ при
+$n \to \infty$.
+\end{pf}
+
+\begin{thm}
+\label{th2}
+Если матрица $(p_{wh})\;$ $W$--регулярна, то при 
+\begin{equation}
+\label{e16}
+WH/ \beta_{p} = o(n/ \ln n)
+\end{equation}
+алгоритм $ \widetilde {\cal A}_{2}$ приводит к асимптотически точному
+решению задачи упаковки предметов в полосу из класса ${\cal K}_{n}^{2};$
+при этом справедливы оценки качества алгоритма
+$$
+\delta_{\widetilde{\cal A}_{2}}=o\biggl(\frac {1}{n \ln n}\biggr),\quad
+\eps_{\widetilde{\cal A}_{2}}=
+O\biggl(\sqrt {\frac {WH/ \beta_{p}}{n/\ln n}} \biggr).
+$$
+\end{thm}
+
+{\bf Доказательство.}
+С учетом соотношения \req{e16} и леммы 1 для вероятности несрабатывания 
+$\widetilde {\cal A}_{2}$ имеем
+$$
+\delta_{\widetilde{\cal A}_{2}}=o\biggl(\frac {1}{n \ln n}\biggr)\to 0
+\text { при } n\to \infty.
+$$
+Итак, с вероятностью, стремящейся к 1 при $n \to \infty$, алгоритм 
+$\widetilde {\cal A}_{2}$ имеет дело со списком $S$, в котором 
+для всяких $\LW$ и $\LH$ 
+$$
+\lceil np_{wh} - \Delta_{wh} \rceil \le 
+\chi_S(w,h) \le
+\lfloor np_{wh} + \Delta_{wh} \rfloor.
+$$
+
+Определим список $\widetilde S$ по его характеристической функции
+$$
+\chi_{\widetilde S}(w,h) =
+\lfloor \varphi \bigl(p_{wh}^{(Q)}\bigr) \rfloor +
+\sum_{k=k_{w}}^{Q-1}
+\lceil \varphi \bigl(p_{wh}^{(k)}\bigr) \rceil,\quad\LW,\quad \LH,
+$$
+где 
+$$
+\varphi (x) = nx+2(nx\ln x)^{1/2},
+$$
+$$
+k_{w}= 
+\begin{cases}
+\min \{k\mid w<2^k\} = \lceil \log_{2} (w+1)\rceil
+& \text{при } 1\le w<W, \\
+Q & \text{при } w=W,
+\end{cases}
+$$ 
+а 
+$\{p_{wh}^{(k)},\; \LW\}$, $k=1,\dotsc,Q$,
+--- совокупность $2^{k}$-симметричных составляющих в каноническом разложении 
+$W$-регулярной строки матрицы $(p_{wh})$.
+
+Убеждаемся, что список $\widetilde S$ является оценочным:
+\begin{gather*}
+\chi_S(w,h) \le
+\lfloor np_{wh} + \Delta_{wh} \rfloor \le
+\lfloor np_{wh} + 2(n\ln n p_{wh})^{1/2} \rfloor = 
+\biggl\lfloor
+n \sum_{k=k_{w}}^{Q}p_{wh}^{k} +
+2\biggl(n\ln n \sum_{k=k_{w}}^{Q}p_{wh}^{k}\biggr)^{1/2}
+\biggr\rfloor \le \\
+%
+\le \biggl\lfloor
+n \sum_{k=k_{w}}^{Q}p_{wh}^{k} +2(n\ln n)^{1/2} 
+\sum_{k=k_{w}}^{Q}(p_{wh}^{k})^{1/2}
+\biggr\rfloor =
+\biggl\lfloor
+\, \sum_{k=k_{w}}^{Q} \varphi \bigl(p_{wh}^{(Q)}\bigr) 
+\biggr\rfloor \le
+\chi_{\widetilde S}(w,h).
+\end{gather*}
+
+\begin{lem} 
+\label{lm6}
+В условиях доказываемой теоремы справедливы оценки
+\begin{align*}
+F_{S}^{\ast} & \ge nH\beta_{p} (1-2\widehat {\eps}_{n}),\\
+%
+F_{\widetilde {\cal A}_{2}} & \le 
+nH\beta_{p} (1+2\widehat {\eps}_{n}+
+{\widehat {\eps}_{n}}^{{\,}2}/\ln n),
+\end{align*}
+где
+$\widehat {\eps}_{n} = 
+\Bigl(\frac {WH/\beta_{p}}{n/\ln n}\Bigr)^{1/2}$.
+\end{lem}
+
+{\bf Доказательство.}
+Оценка снизу
+\begin{gather*}
+F_{S}^{\ast} \ge \frac {1}{W} \SWH
+wh\chi_{S}(w,h) > \frac {1}{W} \SWH
+wh(np_{wh}-\Delta_ {wh}) \ge \\
+%
+\ge nH\beta_{p} - \frac {2\sqrt {n \ln n}}{W}
+\SWH wh\sqrt {p_{wh}} \ge \\
+%
+\ge nH\beta_{p} - \frac {2\sqrt {n \ln n}}{W}
+\biggl(\SWH wh \cdot \SWH whp_{wh}\biggr)^{1/2} \ge \\
+%
+\ge nH\beta_{p} - 2H\sqrt {n \ln n} \sqrt {WH\beta_{p}}=
+nH\beta_{p} (1-2\widehat {\eps}_{n}).
+\end{gather*}
+Оценка сверху
+\begin{gather*}
+F_{\widetilde {\cal A}_{2}} =
+\SH F_{\widetilde {\cal A}_{1}}^{h} \le
+\SH h \biggl\lceil \frac {1}{W} 
+\SW w \chi_{\widetilde S}(w,h)
+\biggr\rceil \le \\
+%
+\le \SH h\biggl(1 + \frac {1}{W} \SW w \biggl(\sum_{k=k_{w}}^{Q}
+\varphi \bigl(p_{wh}^{(k)}\bigr)
++ Q - k_{w}\biggr)\biggr) = \\
+%
+= \SH h\biggl(1 + \frac {S_{1}}{W} +
+\frac {1}{W} \SW w \sum_{k=k_{w}}^{Q}
+\Bigl(n p_{wh}^{(k)} +
+2\bigl(n\ln n p_{wh}^{(k)}(1-p_{wh}^{(k)})\bigr)^{1/2}
+\Bigr)\biggr) \le \\
+%
+\le \SH h\biggl(W + \frac {n}{W} \SW w p_{wh} +
+\frac {2 \sqrt {n\ln n}}{W} \SW
+w \sqrt {(Q-k_{w}+1)p_{wh}}\biggr) \le \\
+%
+\le WH^{2} + nH\beta{p} + \frac {2 \sqrt {n\ln n}}{W} S,
+\end{gather*}
+где
+$S_{1}= \SW w(Q-k_{w}) \le W^{2}/4$;
+\begin{gather*}
+S = \SWH wh \sqrt {(Q-k_{w}+1)p_{wh}} \le \\
+%
+\le \biggl(\SWH whp_{wh} \cdot \SWH wh(Q-k_{w}+1) 
+\biggr)^{1/2} \le WH \sqrt {WH\beta_{p}},
+\end{gather*}
+откуда
+$$
+F_{\widetilde {\cal A}_{2}} \le
+nH\beta_{p} + 2\sqrt {n\ln n}H\sqrt {WH\beta_{p}} + WH^{2} =
+nH\beta_{p} (1+2\widehat {\eps}_{n}+
+{\widehat {\eps}_{n}}^{{\,}2}/\ln n).\quad\square
+$$
+
+Продолжим доказательство теоремы.
+Оценим относительное отклонение значения целевой функции
+$F_{\widetilde {\cal A}_{2}}$, полученного в результате работы алгоритма 
+$\widetilde {\cal A}_{2}$, от оптимального значения $F_{S}^{\ast}$,
+$$
+\eps_{\widetilde{\cal A}_{2}}=
+\frac {F_{\widetilde {\cal A}_{2}}}{F_{S}^{\ast}} - 1 \le
+\frac 
+{nH\beta_{p} (1+2\widehat {\eps}_{n}+
+{\widehat {\eps}_{n}}^{{\,}2}/\ln n)}
+{nH\beta_{p} (1-2\widehat {\eps}_{n})} - 1 =
+\frac {4\widehat {\eps}_{n}+
+{\widehat {\eps}_{n}}^{{\,}2}/\ln n)}
+{1-2\widehat {\eps}_{n}} =
+O (\widehat {\eps}_{n}).
+$$
+Поскольку
+$\widehat {\eps}_{n} = 
+\sqrt {\frac {WH/\beta_{p}} {n/ \ln n}}$,
+то
+$\eps_{\widetilde{\cal A}_{2}}=
+O \Bigl(\sqrt {\frac {WH/\beta_{p}} {n/ \ln n}} \, \Bigr)\to 0$
+при $n\to \infty .\quad\square$.
+
+\section{Учет частичного порядка}
+
+Рассмотрим теперь класс задач упаковки в полосу двумерных предметов, 
+на множестве которых задан частичный порядок $\prec$ в виде ориентированного
+графа без контуров. Пусть алгоритм ${\cal A}_{2}^{\prec}$ состоит в 
+последовательном применении алгоритма $\widetilde {\cal A}_{2}$ к 
+подмножествам правильного разбиения списка 
+$S=\{a_{i}\mid \I\} $, т.\,е. такого разбиения
+$(S^{\lambda})$, $\LL$,
+что из $a_{i}\prec a_{j}$, $a_{i} \in S^{\lambda'}$,
+$a_{j} \in S^{\lambda''}$ следует
+$1 \le \lambda' < \lambda'' \le \Lambda$.
+Класс ${\cal K}_{n}^{\prec}$ случайных списков образуем с помощью схемы 
+$n$ последовательных независимых испытаний: на $i$-м шаге предмет $a_{i}$ 
+принимает вес $w_{i}=w$, длину $h_{i}=h$ и помещается в подмножество
+$S^{\lambda_{i}}$ согласно дискретному распределению
+\begin{gather*}
+p_{wh\lambda}=Pr\{w_i=w,\; h_{i}=h,\;
+\lambda_{i}= \lambda \} \ge 0,\\
+%
+\LW;\quad \LH;\quad \LL;\quad \SWHL p_{wh\lambda}=1.
+\end{gather*}
+
+Будем говорить, что список $S$ обладает некоторым свойством, если им 
+обладает вектор 
+$(p_{1h\lambda},p_{2h\lambda},\dotsc,p_{Wh\lambda})$ 
+для всех $\LH$; $\LL$.
+
+Проведем вероятностный анализ алгоритма ${\cal A}_{2}^{\prec}$
+для $W$-регулярных списков. Обозначим
+$$
+\delta_{wh\lambda} = 2 (n p_{wh\lambda}
+(1- p_{wh\lambda}) \ln n )^{1/2}.
+$$
+
+Считаем, что алгоритм $ {\cal A}_{2}^{\prec}$ срабатывает на
+конкретной реализации случайного списка $S$, если для всякой тройки
+индексов $w$, $h$, $\lambda$ осуществилось событие $A_{wh\lambda}$, 
+т.е. выполнено неравенство
+\begin{equation}
+\label{e17}
+|\chi_S(w,h,\lambda)-np_{wh\lambda}| < \Delta_{wh\lambda}.
+\end{equation}
+
+В алгоритме $ {\cal A}_{2}^{\prec}$ будем использовать
+оценочный список с характеристической функцией вида
+$$
+\chi_{\widetilde S}(w,h,\lambda) =
+\lfloor \varphi (p_{wh\lambda}^{(Q)}) \rfloor +
+\sum_{k=k_{w}}^{Q-1}
+\lceil \varphi (p_{wh\lambda}^{(k)}) \rceil,
+$$
+$\LW$; $\LH$; $\LL$;
+где выделенные для любой пары $(h,\; \lambda)$ векторы
+$(p_{1h\lambda}^k,p_{2h\lambda}^k,\dotsc,p_{Wh\lambda}^k)$,
+$k=1, \dotsc,Q$, --- суть 
+$2^{k}$-симметричные составляющие в каноническом разложении
+$W$-регулярного вектора 
+$(p_{1h\lambda},p_{2h\lambda},\dotsc,p_{Wh\lambda})$.
+
+\begin{thm}
+\label{th3}
+Алгоритм ${\cal A}_{2}^{\prec}$ на классе ${\cal K}_{n}^{\prec}$
+c $W$-регулярными случайными списками предметов при 
+\begin{equation}
+\label{e17p}
+WH\Lambda / \beta_{p} = o(n/ \ln n)
+\end{equation}
+асимптотически точен с оценками
+$$
+\delta_{{\cal A}_{2}^{\prec}}
+=o\biggl(\frac {1}{n \ln n}\biggr),\quad
+\eps_{{\cal A}_{2}^{\prec}}=
+O\biggl(\sqrt {\frac {WH\Lambda / \beta_{p}}{n/\ln n}} \biggr), 
+$$
+где
+$$
+\beta_{p}=\frac {1}{WH} 
+\SWH whp_{wh},
+\quad p_{wh}= \SL p_{wh\lambda}.
+$$
+\end{thm}
+
+{\bf Доказательство}
+проводим по той же схеме, что и в теореме \ref{th2}.
+\begin{gather*}
+\delta_{{\cal A}_{2}^{\prec}} = 
+Pr \Bigl\{\bigcup_{w,h,\lambda} \Bar {A}_{wh\lambda} \Bigr\} \le
+\SWHL Pr(\Bar {A}_{wh\lambda}) \le \\
+%
+\le C_{1}\SWHL \exp \biggl(
+-\frac {4n\ln n p_{wh\lambda}(1-p_{wh\lambda})}
+{2n p_{wh\lambda}(1-p_{wh\lambda})}
+\biggr) \le \frac {C_{1}WH\Lambda}{n^{2}} \le \\
+%
+\le \frac {C_{1}WH\Lambda}{n^{2}\beta_{p}} =
+o\biggl(\frac {1}{n \ln n}\biggr) \to 0  \text{ при }
+n \to \infty,
+\end{gather*}
+где $\Bar {A}_{wh\lambda}$ --- событие, противоположное \req{e17}.
+\begin{gather*}
+F_{S}^{\ast} \ge \frac {1}{W} \SWHL wh\chi_{S}(w,h,\lambda) >
+\frac {1}{W} \SWHL wh(np_{wh\lambda}-\Delta_ {wh\lambda}) \ge \\
+%
+\ge nH\beta_{p} - \frac {2\sqrt {n \ln n}}{W}
+\SWHL wh\sqrt {p_{wh\lambda}} \ge \\
+%
+\ge nH\beta_{p} - \frac {2\sqrt {n \ln n}}{W}
+\biggl(\SWHL wh \cdot \SWHL whp_{wh\lambda} \biggr)^{1/2} \ge \\
+%
+\ge nH\beta_{p} - \frac {2\sqrt {n \ln n}}{W}
+\biggl(WH\beta_{p}\frac {\Lambda W^{2}H^{2}}{2}\biggr)^{1/2} =
+nH\beta_{p} (1-\sqrt{2} \eps_{n}^{\prec}),
+\end{gather*}
+где
+\begin{gather*}
+\eps_{n}^{\prec} = \biggl(\frac {WH\Lambda /\beta_{p}} {n/\ln n}
+\biggr)^{1/2} \to 0  \text{ при } n\to \infty,\\
+%2
+F_{{\cal A}_{2}^{\prec}} \le
+\SL \SH h \biggl\lceil \frac {1}{W} 
+\SW w \chi_{\widetilde S}(w,h,\lambda) \biggr\rceil \le \\
+%3
+\le \SL \SH h
+\biggl(\frac {1}{W} \SW w \biggl(\,\sum_{k=k_{w}}^{Q-1}
+\lceil \varphi (p_{wh\lambda}^{(k)})\rceil +
+\lfloor \varphi (p_{wh\lambda}^{(Q)}) \rfloor
+\biggr) + 1\biggr) \le \\
+%4
+\le \SL \SH h \biggl( \frac {1}{W} \SW w 
+\biggl(\,\sum_{k=k_{w}}^{Q}\varphi (p_{wh\lambda}^{(k)}) 
++ Q - k_{w}\biggr) + 1\biggr) \le \\
+%5
+\le \SL \SH h\biggl(\frac {1}{W} \SW w 
+\biggl(n p_{wh\lambda}^{(k)} +\sum_{k=k_{w}}^{Q}
+2(n\ln n p_{wh\lambda}^{(k)})^{1/2} 
+\biggr)\biggr) +\SL \SH h\biggl(1 + \frac {S_{1}}{W}\biggr) \le \\
+%6
+\le \frac {n}{W} \SWH whp_{wh} + \frac {2}{W} \sqrt {n\ln n}\SL\SWH 
+wh\bigl((Q-k_{w}+1)p_{wh\lambda}\bigr)^{1/2} + \\
+%7
++ \frac {\Lambda H(H+1)}{2}\biggl(1+\frac {W}{4}\biggr) 
+\le nH\beta_{p} + \Lambda WH^{2} +
+%8
+\frac {2\sqrt {n\ln n}}{W}\SWH
+whp_{wh} ((Q-k_{w}+1)\Lambda p_{wh})^{1/2}= \\
+%9
+= nH\beta_{p} + \Lambda WH^{2} +
+\frac {2\sqrt {\Lambda n\ln n}}{W} \cdot S \le
+%10
+nH\beta_{p} + \Lambda WH^{2} +2H\sqrt {\Lambda WH\beta_{p} n\ln n} =\\
+%11
+= nH\beta_{p}(1 + 2 \eps_{n}^{\prec} +
+(\eps_{n}^{\prec})^{2}/\ln n),
+\end{gather*}
+\begin{gather*}
+\eps_{{\cal A}_{2}^{\prec}}=
+\frac {F_{{\cal A}_{2}^{\prec}}}
+{F_{S}^{\ast}} -1 =
+\frac{nH\beta_{p}(1 + 2 \eps_{n}^{\prec} +
+(\eps_{n}^{\prec})^{2}/\ln n)}
+{1-\sqrt{2} \eps_{n}^{\prec}} \le \\
+%
+\le \frac{3.5 \eps_{n}^{\prec}
+(1+ (\eps_{n}^{\prec})^{2} /(3.5\ln n))}
+{1-1.5\eps_{n}^{\prec}} =
+O(\eps_{n}^{\prec}) \to 0 
+\text{ при } n \to \infty.\quad\square
+\end{gather*}
+
+\begin{notenonum}
+Скорректируем условие асимптотической точности алгоритма
+${\cal A}_{2}^{^{\prec}}$ на случай весов, принимающих значения в 
+целочисленном сегменте $[1,R]$, $R \le W$. Условие \req{e17p}
+заменяется на менее жесткие соотношения
+$$
+\frac {\Lambda HR}{\beta_{p}} = o \biggl(\frac {n}{\ln n}\biggr),
+\quad \frac {\Lambda HW}{R\beta_{p}} = o(n),
+$$
+или
+\begin{equation}
+\label{e18}
+\Lambda HR/ \beta_{p} = o(n/\mu_{n}),
+\end{equation}
+где
+$\mu_{n} = \max \bigl\{ \frac {1}{R},\; \frac {R\ln n}{W} \bigr\}$.
+При этом 
+$\eps_{{\cal A}_{2}^{^{\prec}}}=
+O\bigl(\sqrt {\frac {RH\Lambda / \beta_{p}}{n/\ln n}} \bigr)$.
+
+Понятно, что при $R=W$ условия \req{e17p} и \req{e18} совпадают, 
+а при $R<W$ класс асимптотически точно решаемых задач становится шире. 
+Действительно, при $R \le \sqrt {W/\ln n}$ имеем 
+$\gamma_{n} = 1/R \ge \sqrt {\ln n/W}$, а при $R \ge \sqrt {W/\ln n}$ имеем
+$\gamma_{n} = (R\ln n)/W \ge \sqrt {\ln n/W}$ и, таким образом, если $R<W$,
+то $\sqrt {W/\ln n} \le \gamma_{n}< \ln n$.
+\end{notenonum}
+
+Приведем без доказательства аналог теоремы \ref {th1} для класса
+${\cal K}_{n}^{\prec}$.
+
+\begin{thm}
+\label{th4}
+Алгоритм ${\cal A}_{2}^{\prec}$ на классе ${\cal K}_{n}^{\prec}$
+c $W$-асимметричными случайными списками предметов при 
+$$
+WH\Lambda = o(n/ \ln n)
+$$
+асимптотически точен с оценками
+$$
+\delta_{{\cal A}_{2}^{\prec}}
+=o\biggl(\frac {1}{n \ln n}\biggr),\quad
+\eps_{{\cal A}_{2}^{\prec}}=
+O\biggl(\sqrt {\frac {W}{n/\ln n}} \biggr).
+$$
+\end{thm}
+
+\section {Связь с задачей календарного планирования}
+
+Рассмотрим частный случай задачи календарного планирования (ЗКП) 
+в условиях ограниченных ресурсов, формулировку которой можно найти
+в \cite{G}. Предполагаем, что выполнены следующие условия:
+
+--- имеется ограниченный нескладируемый ресурс одного вида,
+интенсивность выделения которого постоянна на всем протяжении времени
+выполнения проекта;
+
+--- на множестве работ не задано отношение предшествования;
+
+--- начальные и директивные сроки выполнения работ отсутствуют,
+интенсивность потребляемого работой ресурса постоянна на всем протяжении
+времени выполнения работы.
+
+Если каждой работе сопоставить прямоугольник, ширина и высота которого
+равны соответственно интенсивности потребления ресурса и длительности
+выполнения работы, то задачу нахождения допустимого расписания можно
+интерпретировать как укладку прямоугольников в полубесконечную
+полосу, ширина которой равна интенсивности выделения ресурса.
+При этом каждый исходный прямоугольник разрешается разрезать 
+горизонтальными линиями на полосы, которые будем называть 
+{\it ломтиками}. Во всякой допустимой укладке совокупность
+вертикальных проекций ломтиков образует отрезок, равный высоте
+прямоугольника. Допускаются также горизонтальные смещения ломтиков.
+Очевидно, эта задача является $NP$-трудной. Действительно,
+если мы рассмотрим ЗКП, в которой длительности всех работ
+равны, то полученная задача будет эквивалентна задаче
+упаковки в контейнеры.
+
+Из приведенной постановки легко заметить, что без разбиения
+прямоугольников на ломтики предложенная ЗКП в точности совпадает
+с ЗУП. Разрешение перемещения ломтиков позволяет в ряде случаев
+построить из оптимального решения ЗУП (которое, очевидно, является
+допустимым решением ЗКП) еще более короткое расписание для ЗКП.
+Следовательно, решение ЗКП можно рассматривать как нижнюю оценку для
+ЗУП. Решение ЗУП в свою очередь является верхней оценкой для ЗКП.
+Представляет несомненный интерес отношение оптимальных значений целевых
+функций ЗУП и ЗКП.
+
+Обозначим оптимальные значения функционалов ЗУП и ЗКП на списке предметов
+$S$ через ЗУП$(S)$ и ЗКП$(S)$ соответственно. Пусть
+$$
+\rho = \sup_{S} \frac {ЗУП(S)}{ЗКП(S)}.
+$$
+%%%%%% attn for eng.   ^^^^^^^^^^^^
+
+Из доказательства верхней оценки для ЗУП$(S)$, 
+полученной в \cite{CGJT} с помощью алгоритма NFDH,
+имеем оценку $\rho \le 3$.
+
+С другой стороны, в \cite{G} содержится пример списка работ, в котором
+$\rho \ge 6/5$. В работе \cite{SH} этот результат усилен следующим
+образом. Рассмотрим список из 9 предметов, представленных в 
+нижеследующей таблице при упаковке их
+в полосу с шириной $W=12$.
+В \cite{SH} доказано, что минимальные высоты
+полос в ЗКП и ЗУП равны соответственно 4 и 5. Отличие минимальных значений 
+целевых функций обеих задач для рассматриваемого списка составляет 
+25 процентов. 
+На рисунке представлены точные решения обеих задач.
+
+Таким образом, справедливы неравенства
+$$
+\frac {5}{4} \le \rho \le 3.
+$$
+\medskip
+
+%\begin{table}[htbp]
+\begin{center}
+%\begin{tabular}[t]{*{4}{|c}|}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Предмет & Ширина & Высота & Время\\
+\hline
+1 & 3 & 2 & 0\\ \hline
+2 & 2 & 1 & 2\\ \hline
+3 & 5 & 1 & 3\\ \hline
+4 & 2 & 2 & 1\\ \hline
+5 & 8 & 1 & 0\\ \hline
+6 & 5 & 1 & 1\\ \hline
+7 & 6 & 2 & 2\\ \hline
+8 & 1 & 3 & 0\\ \hline
+9 & 1 & 3 & 1\\ \hline
+\end{tabular}
+\end{center}
+\label{tab1}
+%\end{table}
+\medskip
+
+Обозначим через $\widetilde {\cal K}_{n}^{2}$ класс задач календарного 
+планирования с постоянным по времени однотипным нескладируемым ограниченным 
+ресурсом и работами --- прямоугольниками в случае отсутствия директивных 
+событий. Если на множестве работ дополнительно задано отношение частичного
+порядка, то такой класс задач будем обозначать через 
+${\cal K}_{n}^{\prec}$. Соответствующие приближенные алгоритмы
+обозначим через $ \widetilde {\cal A}_{2}$ и 
+${\cal A}_{2}^{\prec}$.
+
+
+%%***
+\begin{figure}[htbp]
+\unitlength=1.00mm
+\special{em:linewidth 0.6pt}
+\linethickness{1.2pt}
+\newcounter{HT}
+
+% \begin{picture}(150.00,80.00)
+\begin{picture}(150.00,65.00)
+
+\put(10,50){\line(1,0){60}}
+\put(10,40){\line(1,0){25}}
+\put(15,30){\line(1,0){15}}
+\put(35,30){\line(1,0){30}}
+\put(30,20){\line(1,0){40}}
+\put(10,10){\line(1,0){60}}
+
+\put(10,10){\line(0,1){40}}
+\put(15,10){\line(0,1){30}}
+\put(25,30){\line(0,1){10}}
+\put(30,10){\line(0,1){20}}
+\put(35,30){\line(0,1){20}}
+\put(40,20){\line(0,1){10}}
+\put(65,20){\line(0,1){30}}
+\put(70,10){\line(0,1){40}}
+
+\put(22.50,20.00){\makebox(0,0)[cc]{1}}
+\put(20.00,35.00){\makebox(0,0)[cc]{2}}
+\put(22.50,45.00){\makebox(0,0)[cc]{3}}
+\put(32.50,30.00){\makebox(0,0)[cc]{4}}
+\put(50.00,15.00){\makebox(0,0)[cc]{5}}
+\put(52.50,25.00){\makebox(0,0)[cc]{6}}
+\put(50.00,40.00){\makebox(0,0)[cc]{7}}
+\put(12.50,25.00){\makebox(0,0)[cc]{8}}
+\put(67.50,35.00){\makebox(0,0)[cc]{9}}
+
+\setcounter{HT}{0}
+\multiput(10.00,10.00)(5,0){13}{\line(0,-1){2}}
+\multiput(10.00,07.00)(5,0){13}{\makebox(0,0)[ct]{\theHT}\stepcounter{HT}}
+\multiput(70.00,10.00)(0,10){5}{\line(1,0){2}}
+
+\put(10,0){\makebox(60,0)[cc]{Оптимальное расписание: ЗКП($S$)=4}}
+
+\put(125,60){\line(1,0){25}}
+\put(105,50){\line(1,0){45}}
+\put(90,40){\line(1,0){5}}
+\put(95,30){\line(1,0){20}}
+\put(115,30){\line(1,0){30}}
+\put(110,20){\line(1,0){40}}
+\put(90,10){\line(1,0){60}}
+
+\put(90,10){\line(0,1){50}}
+\put(95,10){\line(0,1){30}}
+\put(105,30){\line(0,1){20}}
+\put(110,10){\line(0,1){20}}
+\put(115,30){\line(0,1){20}}
+\put(120,20){\line(0,1){10}}
+\put(125,50){\line(0,1){10}}
+\put(145,20){\line(0,1){30}}
+\put(150,10){\line(0,1){50}}
+
+\put(102.50,20.00){\makebox(0,0)[cc]{1}}
+\put(115.00,25.00){\makebox(0,0)[cc]{2}}
+\put(137.5,55.00){\makebox(0,0)[cc]{3}}
+\put(110.00,40.00){\makebox(0,0)[cc]{4}}
+\put(130.00,15.00){\makebox(0,0)[cc]{5}}
+\put(132.50,25.00){\makebox(0,0)[cc]{6}}
+\put(130.00,40.00){\makebox(0,0)[cc]{7}}
+\put(92.50,25.00){\makebox(0,0)[cc]{8}}
+\put(147.50,35.00){\makebox(0,0)[cc]{9}}
+
+\setcounter{HT}{0}
+\multiput(90.00,10.00)(5,0){13}{\line(0,-1){2}}
+\multiput(90.00,07.00)(5,0){13}{\makebox(0,0)[ct]{\theHT}\stepcounter{HT}}
+\multiput(90.00,10.00)(0,10){6}{\line(-1,0){2}}
+
+\put(90,0){\makebox(60,0)[cc]{Оптимальная упаковка: ЗУП($S$)=5}}
+
+\setcounter{HT}{0}
+\multiput(80.00,10.00)(0,10){6}{\makebox(0,0)[cc]{\theHT}\stepcounter{HT}}
+
+\end{picture}
+
+% \caption{} 
+\label{pic1}
+\end{figure}
+\vskip 3mm
+
+Непосредственно из формулировок задач следует
+
+\begin{lem} 
+\label{lm7}
+Задача упаковки в полосу является оценочной сверху для ЗКП
+из класса ${\cal K}_{n}^{\prec}$.
+\end{lem}
+
+Тем не менее, из теорем \ref{th2} и \ref{th3}, полученных для
+ЗУП с $W$-регулярными случайными списками, вытекают следующие
+утверждения для упомянутого частного случая ЗКП.
+
+\begin{thm}
+\label{th5}
+В случае $W$-регулярных случайных списков из класса
+${\cal K}_{n}^{2}$ алгоритм $ \widetilde {\cal A}_{2}$ при 
+$$
+WH/ \beta_{p} = o(n/ \ln n)
+$$
+приводит к асимптотически точному решению ЗКП.
+\end{thm}
+
+\begin{thm}
+\label{th6}
+В случае $W$--регулярных случайных списков из класса
+${\cal K}_{n}^{\prec}$ алгоритм $ {\cal A}_{2}^{\prec}$ при 
+$$
+WH\Lambda / \beta_{p} = o(n/ \ln n)
+$$
+приводит к асимптотически точному решению ЗКП.
+\end{thm}
+
+\begin{thebibliography}{99}
+\bibitem{CGJ}
+Coffman E.G., Garey M.R., Johnson D.S.
+{\em Approximation algorithms for bin-packing. --- An updated survey}
+// Algorithm Design for Computer System Design. CISM courses and lectures. --
+1984. -- \No\,284. -- P.\,49--106.
+\bibitem{GGP}
+Гимади Э.Х., Глебов Н.И., Перепелица В.А. {\em Алгоритмы с оценками
+для задач дискретной оптимизации} // Проблемы кибернетики. --
+М.: Наука, 1975. -- Вып.\,31. -- С.\,35--42.
+\bibitem{GZ}
+Гимади Э.Х., Залюбовский В.В. {\em Задача упаковки в контейнеры}:
+{\em асимптотически точный подход} // Изв. вузов. Математика. --
+1997. -- \No\,12. -- C.\,25--33.
+\bibitem{F}
+Frederickson G.N.
+{\em Probabilistic analysis for simple one- and two-dimensional bin packing
+algorithms} // Information Processing Letters. -- 1980. --
+V.\,11. -- \No\,4--5. -- P.\,156--161.
+\bibitem{G}
+Гимади Э.Х. {\em О некоторых математических моделях и методах планирования
+крупномасштабных проектов} //Тр. Ин-та математики СО АН СССР. -- 
+Новосибирск: ИМ СО АН СССР, 1988. -- Т.\,10. -- С.\,89--115.
+\bibitem{SH}
+Шарыгин П.И. {\em Оценки приближенного решения одной задачи
+календарного планирования} // Дискретный анализ и исследование операций. --
+1995. -- T.\,2. -- \No\,1. -- С.\,57--67.
+\bibitem{CGJT}
+Coffman E.G., Garey M.R., Johnson D.S., Tarjan R.E. 
+{\em Performance bounds for level-oriented two-dimensional packing algorithms}
+// SIAM J. Comput. -- 1980. -- V.\,9. -- \No\,4. -- P.\,808--826.
+
+\end{thebibliography} 
+ 
+\vskip 2cm 
+ 
+\post{\it Институт математики Сибирского отделения}{\it Поступила}
+\post{\it Российской Академии наук}{23.09.1997}
+\medskip
+\post{\it Новосибирский государственный университет}{} 
+ 
+\end{document} 
+

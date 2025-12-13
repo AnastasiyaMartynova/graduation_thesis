@@ -1,0 +1,1420 @@
+\documentstyle[%
+righttag%
+,11pt%
+,amssymb%
+,russian%
+,izvru%
+]{amsart}
+
+%       Math definitions
+
+\newcommand{\A}{{\cal A}}
+\newcommand{\col}{\operatorname{col}}
+\newcommand{\ctg}{\operatorname{ctg}}
+\newcommand{\vraisup}{\operatorname{vrai~sup}}
+%
+\newcommand{\qk}{\bold k}
+\newcommand{\norma}{\|\cdot\|}
+\newcommand{\ver}{\|}
+\newcommand{\ma}{ {\text{max}\,}_{0\le m\le M}\ver}
+\newcommand{\hm}{h_{\text{min}}}
+\newcommand{\po}{\sqrt\tau+\vert h\vert}
+\newcommand{\nord}[4]{{\ver D(#1-#2)[#3,#4]\ver}_{L_2(Q)}}
+\newcommand{\ei}{e^{i_\ast\mu t}}
+%// \newcommand{\si}{\sin_\xi\vec x}
+%// \newcommand{\pom}{\tau\over\hm}
+%// \newcommand{\ppoo}{\ppo_{1\le l\le n,l\ne i}}
+%
+\newcommand{\ld}{\lambda_d^{1/2}}
+\newcommand{\wdd}{\omega_d^{1/2}}
+\newcommand{\er}{\overline E}
+\newcommand{\bbb}{\widehat B}
+\newcommand{\aaa}{\widehat A}
+\numberwithin{equation}{section}
+
+\setcounter{page}{51}
+\god{1997}
+\nomer{4~(419)}
+\udk{519.633}
+\author{\it С.Б. ЗАЙЦЕВА, А.А. ЗЛОТНИК}
+\title{ТОЧНЫЕ ОЦЕНКИ ГРАДИЕНТА ПОГРЕШНОСТИ\\
+ЛОКАЛЬНО-ОДНОМЕРНЫХ МЕТОДОВ ДЛЯ МНОГОМЕРНОГО\\
+УРАВНЕНИЯ ТЕПЛОПРОВОДНОСТИ}
+
+\thanks{Работа выполнена при финансовой поддержке Российского фонда
+фундаментальных исследований (проект 97--01--00214).}
+\date{}
+\pagestyle{plain}
+\begin{document}
+
+\maketitle
+
+% ==============================
+ 
+Локально-одномерные разностные методы составляют важное семейство
+методов решения эволюционных задач. Их построению и исследованию посвящена
+обширная литература \cite{Yan}--\cite{Kov}. Однако вопрос вывода точных оценок
+погрешности и тесно связанный с ним вопрос оптимальности этих методов 
+оказались плохо изученными даже для параболических задач. В то же время для
+чисто неявных методов и методов с расщепляющимся оператором эти вопросы
+уже хорошо разработаны \cite{Ba}--\cite{Z7}.
+
+В данной статье изучаются два локально-одномерных разностных
+метода --- ставший уже классическим ``последовательный'' метод и метод с 
+распараллеливанием вспомогательных шагов.
+Оптимальные оценки погрешности в $L_2(Q)$ для  первого метода получены 
+еще в \cite{Z2},
+а для второго --- совсем недавно в \cite{Za}.  Здесь  мы выводим
+оценки сверху и снизу погрешности в энергетической норме и
+градиента погрешности в $L_2(Q)$ на классе правых частей из $L_2(Q)$
+(и начальных функций из $\overset{\circ}{W}{}^1_2(\Omega)$). 
+Полученные оценки только при жестком условии $\tau=O(h^2)$
+совпадают с известными для других методов \cite{Z3}.
+Вообще же говоря, они существенно проигрывают известным;
+в частности, если $\tau\ge \varepsilon h$, 
+то просто {\it отсутствует сходимость} к нулю градиента
+погрешности в $L_2(Q)$ на указанном классе данных. 
+Кроме того, выведены оценки порядка $O(\sqrt\tau+h)$
+при  нестандартных условиях на $f$.
+Результаты статьи доказаны 
+при помощи оригинальной техники, развивающей предложенную в
+\cite{Z2}, \cite{Z6}, \cite{Za}.
+
+Основные результаты сформулированы в \S1.
+В \S\,2 содержатся вспомогательные утверждения. Доказательство оценок
+погрешности сверху дано в \S\,3, а снизу --- в \S\,4.
+
+\section{Формулировка основных результатов}
+
+Рассмотрим первую начально-краевую задачу для уравнения теплопроводности
+\begin{equation}
+\frac{\partial u}{\partial t}-a^2\triangle u= f(x,t)\quad\text{ в } 
+Q=\Omega\times(0,T),
+\end{equation}
+%
+\begin{equation}
+{u\vert}_{\partial\Omega\times(0,T)}=0,\quad {u\vert}_{t=0}=u_0(x)
+\quad\text{ на }\Omega=(0,X_1)\times\dotsb\times(0,X_n),
+\end{equation}
+%
+где $x=(x_1,\dotsc,x_n),$ $n\ge 2$, $\triangle =\sum_{i=1}^n
+\partial^2 /\partial x_i^2$ --- оператор Лапласа, $\partial\Omega$ --- граница $\Omega$.
+Пусть ниже $f={\sum}^n_{i=1}f_{(i)}$, а $a=1$ (что не ограничивает общности).
+Пусть $f\in L_2(Q)$ и $u_0\in \overset{\circ}{W}{}^1_2(\Omega)$.
+
+Введем  шаги $h_1=X_1/N_1,\dotsc,h_n=X_n/N_n$ и $\tau=T/M$,
+где $N_m\ge 2,$ $m=\overline{1,n},$ и $M\ge 2$. 
+Пусть $h=(h_1,\dotsc,h_n)$, $|h|=(h_1^2+\dotsb+h_n^2)^{1/2}$.
+В $\overline\Omega$ введем равномерную сетку
+$\overline{\omega}{}^h=\{x_{\qk}=(k_1h_1,\dotsc,k_nh_n),\;
+k_1=\overline{0,N_1},\dotsc,k_n=\overline{0,N_n}\}$, 
+где ${\bold k}=(k_1,\dotsc,k_n)$, а на $[0,T]$
+--- равномерную сетку 
+$\overline{\omega}^\tau=\{t_m=m\tau,\; m=\overline{0,M}\}$. 
+Обозначим  $\omega^h=\overline{\omega}{}^h\cap\Omega$,
+$\partial\omega^h=\overline{\omega}{}^h\cap\partial\Omega$ и 
+$\omega^\tau=\overline{\omega}{}^\tau\setminus\{0\}$. 
+
+Будем использовать сеточные операторы 
+$\overline\partial_t\eta_m=(\eta_m-\eta_{m-1})/\tau$ и 
+$\Check\eta_m=\eta_{m-1}$ с $\eta_m=\eta(t_m)$, а
+также операторы 
+$\delta^2_i\varphi_{\qk}=(\varphi_{\qk+\chi_i}-
+2\varphi_{\qk}+\varphi_{\qk-\chi_i})/h^2_i$, где
+$\varphi_{\qk}=\varphi(x_{\qk})$, а
+$\chi_1,\dotsc,\chi_n$ --- координатный базис в $R^n$.
+Определим усреднения: для $w\in L_1(\Omega)$ положим
+$$
+w^h_{\qk}=\int_{-h_n}^{h_n}\idotsint\int_{-h_1}^{h_1}w(x_{\qk}+\xi)
+\prod\limits^n_{i=1}h_i^{-1}(1-h_i^{-1}\vert{\xi}_i\vert)\,d\xi,\quad
+\text{где}\quad \xi=({\xi}_1,\dotsc,{\xi}_n);
+$$
+для $g\in L_1(0,T)$  положим
+$g^{\tau}_m=\tau^{-1}\int\limits_0^\tau g(t_{m-1}+\theta)d\theta$.
+Ниже считаем, что $f^{h,\tau}_{(i)}=(f^h_{(i)})^\tau$, $i=\overline{1,n}$.
+
+Изучим два известных локально-одномерных метода различной конструкции
+для задачи (1.1), (1.2).
+В стандартном последовательном локально-одномерном методе 
+приближенное решение $y$ (которое определено на сетке 
+$\overline{\omega}^h\times\overline{\omega}^\tau$) 
+и вспомогательные функции $y_{(i)}$, $i=\overline{0,n}$ 
+(которые определены на сетке 
+$\overline{\omega}^h\times\omega^\tau$)
+удовлетворяют для $m=\overline{1,M}$ уравнениям
+\begin{gather}
+(y_{(i)m}-y_{(i-1)m})/{\tau}-\delta_i^2y_{(i)m}=
+f_{(i)m}^{h,\tau}\quad\text{на}\quad\omega^h,\\
+%
+y_{(i)m}\vert_{\partial\omega^h}=0,\quad i={\overline {1,n}},\\
+%
+y_{(0)m}=y_{m-1},\quad y_m=y_{(n)m};\quad y_0=u_0^h.
+\end{gather}
+
+В локально-одномерном методе с распараллеливанием функции
+$y$ и $y_{(i)}$ ($i=\overline{1,n}$) 
+удовлетворяют для $m=\overline{1,M}$ уравнениям
+\begin{gather}
+\alpha_i(y_{(i)m}-y_{m-1})/{\tau}-\delta^2_iy_{(i)m}=
+f^{h,\tau}_{(i)m}\quad\text{на}\quad\omega^h,\\
+%
+y_{(i)m}\vert_{\partial\omega^h}=0,\qquad i={\overline {1,n}},\\
+%
+y_m=\sum_{i=1}^n\alpha_iy_{(i)m};\quad y_0=u_0^h.
+\end{gather}
+Здесь $\alpha_i>0$ --- постоянные (не зависящие от $\tau$ и $h$), 
+$\sum_{i=1}^n\alpha_i=1$.
+
+Пусть $S_h$ --- пространство функций, заданных на сетке $\omega^h$ и 
+доопределенных нулем на $\partial\omega^h$, а $S_{h,\tau}$ --- пространство 
+функций, заданных на сетке $\omega^h\times\overline\omega^\tau$ и 
+доопределенных нулем на $\partial\omega^h\times\overline\omega^\tau$.
+Введем пространство $S^{(1)}$ полилинейных восполнений функций из $S_h$,
+т.е. восполнений,
+линейных по $x_i$ на каждом сегменте $[(l-1)h_i,lh_i]$, $l=\overline{1,N_i}$,
+при фиксированных значениях остальных переменных (для всех $i=\overline{1,n}$). 
+Введем также пространство $S$ восполнений функций из $S_{h,\tau}$,
+принадлежащих $S^{(1)}$ при $t=t_m$, $m=\overline{0,M}$, и постоянных по $t$ 
+на каждом полусегменте $(t_{m-1},t_m]$, $m=\overline{1,M}$.
+Ниже считаем, что $y\in S$ в методах (1.3)--(1.5) и (1.6)--(1.8).
+
+Сформулируем оценки погрешности. Пусть
+$\norma_{\overset{\circ}{W}{}^1_2(\Omega)}=\ver\,
+\vert D\cdot\vert\,\ver_{L_2(\Omega)}$, а
+$\norma_{V_2(Q)}=
+\ver\,\|\cdot\nolinebreak\|_{L_2(\Omega)}\ver_{L_{\infty}(0,T)}+
+\ver\,\vert D\cdot\vert\,\ver_{L_2(Q)}$
+--- энергетическая норма. Здесь
+$D=(D_1,\dotsc,D_n)$ --- градиент, $D_i=\partial/\partial x_i$.
+Введем норму данных 
+$d={\ver f\ver}_{L_2(Q)}+{\ver u_0\ver}_{\overset{\circ}{W}{}_{2}^1(\Omega)}$.
+
+Положим 
+$\beta_k(\tau, h)={\Bigl(\sum_{i=1}^k\prod_{1\le j\le i}
+\tfrac{\tau}{h_{l_j,k}^2}\Bigr)}^{1/2}$, где
+$h_{l_1,k}\le \dotsb\le h_{l_k,k}$
+--- упорядоченная по неубыванию перестановка шагов $h_1,\dotsc,h_k$, а
+$k=\overline{1,n-1}$. Пусть
+$h_{\min}^{(k)}={\min}_{1\le j\le k}h_j$,
+$h_{\min,\langle i\rangle}={\min}_{1\le j\le n,\,j\ne i}h_j$. 
+
+\begin{thm} Для последовательного метода {\em (1.3)--(1.5)}
+верны оценки погрешности
+\begin{align}
+{\ver u-y\ver}_{V_2(Q)} &\le c\bigl[(\po)d+
+\sqrt\tau\sum_{i=2}^n\beta_{i-1}(\tau,h)
+{\ver f_{(i)}\ver}_{L_2(Q)}\bigr],\\
+%
+{\ver D(u-y)\ver}_{L_2(Q)} &\le c\bigl[(\po)d+
+\sum_{i=2}^n\frac{\tau}{h_{\min}^{(i-1)}}
+{\ver f_{(i)}\ver}_{L_2(Q)}\bigr].
+\end{align}
+\end{thm}
+
+\begin{note} При $n=2$ правые части оценок (1.9) и (1.10) 
+совпадают.
+Если  же $n\ge 3$, то оценка (1.10) является, вообще говоря,
+существенно лучшей оценкой градиента погрешности,
+чем та, которая следует из (1.9).
+\end{note}
+
+\begin{thm} Для метода с распараллеливанием {\em (1.6)--(1.8)}
+верна оценка погрешности
+\begin{equation}
+{\ver u-y \ver}_{V_2(Q)}\le c\bigl[(\po)d+
+\sum_{i=1}^n\frac{\tau}{h_{\min,\langle i\rangle}}
+{\ver f_{(i)}\ver}_{L_2(Q)}\bigr].
+\end{equation}
+\end{thm}
+
+В указанных оценках погрешности и ниже постоянные $c>0$ и $c_i>0$
+могут зависеть лишь от $n$ и 
+$\underline\alpha=\min{}_{1\le i\le n}\alpha_i$ 
+(и, таким образом, не зависят ни от $X_1,\dotsc,X_n$, ни от $T$).
+
+Для сравнения отметим, что как для чисто неявного, так и с расщепляющимся
+оператором проекционно-разностных методов известны \cite{Z3} оценки погрешности
+вида
+\begin{equation}
+{\ver u-y\ver}_{V_2(Q)}\le K(\po)d.
+\end{equation}
+%
+Такие оценки точны по порядку на классе $f\in L_2(Q)$ и,
+более того, оптимальны на указанном классе для широкого семейства методов
+решения задачи (1.1), (1.2) \cite{Z5}, \cite{Z7}.
+
+Пусть
+$\sum_{i=1}^n\ver f_{(i)}\ver_{L_2(Q)}\le N\ver f\ver_{L_2(Q)}$.
+Если выполнено жесткое условие 
+$\tau\le N_0h^2_{\min}$, где $h_{\min}={\min}_{1\le j\le n}h_j$,
+то оценки (1.9) и (1.11) перейдут в оценку (1.12) (предполагается, что
+$N$ и $N_0$ --- постоянные, не зависящие от $\tau$ и $h$).
+В общем же случае оценки (1.9)--(1.11) существенно отличны от (1.12).
+
+Рассмотрим вопрос точности по порядку оценок (1.10) и (1.11).
+Ограничимся типичным случаем, когда
+$f_{(i)}=\gamma_if$ при $i=\overline{1,n}$, $\sum_{i=1}^n\gamma_i=1$,
+причем $\gamma_i$ --- постоянные (не зависящие от $\tau$ и $h$). 
+Положим ${\Vec\gamma}=(\gamma_1,\dotsc,\gamma_n)$, 
+$X_{\min}={\min}_{1\le i\le n}X_i$, а также 
+$\vert Q\vert=\vert\Omega\vert T$, $\vert\Omega\vert=X_1\dotsc X_n$
+и $c^{(0)}=\bigl[2^{n+1}/\vert Q\vert\bigr]^{1/2}$.
+Пусть $\overset{\circ}{C}(\overline\Omega)$ --- пространство непрерывных в 
+$\overline\Omega$ функций $g$, равных 0 на $\partial\Omega$, с
+нормой ${\ver g\ver}_{\overset{\circ}{C}(\overline\Omega)}=
+{\max}_{x\in\overline\Omega}\vert g(x)\vert$.
+
+Положим 
+$\widetilde{\cal K}=\{1\le i\le n-1 \,\vert\,
+\sum_{k=i+1}^n\gamma_i\ne 0\}$, 
+$\widetilde h_{\min}={\min}_{i\in\widetilde{\cal K}}h_i$.
+Ясно, что если $\Vec\gamma\ne (1,0,\dotsc,0)$, 
+то $\widetilde{\cal K}\ne\varnothing$.
+
+\begin{thm} Пусть $u_0=0$. Предположим, что 
+$\Vec\gamma\ne (1,0,\dotsc,0)$, а
+$\varepsilon_0^{-1}\vert h\vert^2\le \tau\le X^2_{\min}\varepsilon_0$
+при достаточно малом $\varepsilon_0=\varepsilon_0(n,\Vec\gamma)>0$.
+Тогда для последовательного метода {\em (1.3)--(1.5)}
+верна оценка погрешности снизу
+\begin{multline}
+\sup_{{\ver f\ver}_{L_2(Q)}=1}{\ver u-y\ver}_{V_2(Q)}\ge 
+c^{(0)}\sup_{f=g\sin\tfrac{\pi}{T}t,\,
+{\ver g\ver}_{\overset{\circ}{C}(\overline\Omega)}=1}
+{\ver\,\vert D(u-y)\vert\, \ver}_{L_2(Q)}\ge \\
+\ge \widetilde c\tau/\widetilde h_{\min},\quad
+\text{где}\quad \widetilde c=\widetilde c(n,\Vec\gamma)>0.
+\end{multline}
+\end{thm}
+
+\begin{note} При $\Vec\gamma=(1,0,\dotsc,0)$
+оценка (1.9) переходит в оценку (1.12),
+а сам метод (1.3)--(1.5) эквивалентен одному из методов с 
+расщепляющимся оператором (подробнее см. \S\,3).
+\end{note}
+
+\begin{cor} В условиях теоремы 3 и при 
+$\widetilde h_{\min}\le N_0 h^{(n-1)}_{\min}$
+оценка (1.10) точна по порядку, т.к. 
+$\sqrt\tau+\vert h\vert\le (\varepsilon_0^{1/2}+\varepsilon_0)
+\tau/\widetilde h_{\min}$ и
+$$
+1\le \biggl.
+\sum_{i=2}^n(\tau/h_{\min}^{(i-1)}){\ver f_{(i)}\ver}_{L_2(Q)}
+\biggr/
+\biggl[\biggl(\sum_{i=2}^n\vert\gamma_i\vert\biggr)(\tau/\widetilde h_{\min})
+{\ver f\ver}_{L_2(Q)}\biggr]\le N_0.
+$$
+\end{cor}
+
+\begin{cor} Если дополнительно 
+$\varepsilon_1 \widetilde h^{1+\delta}_{\min}\le\tau$ 
+при некоторых $0\le \delta<1$ и $\varepsilon_1>0$, то 
+правая часть оценки (1.13) не меньше величины
+$\widetilde c\varepsilon_1^{1/(1+\delta)}\tau^{\delta/(1+\delta)}$;
+это хуже по порядку, чем дает оценка (1.12).
+В частности, в важном случае, когда 
+$\varepsilon_1 \widetilde h_{\min}\le \tau$, правая часть оценки (1.13)
+не меньше константы $\widetilde c\varepsilon_1$,
+т.е. отсутствует сходимость к 0 погрешности 
+${\ver\,\vert D(u-y)\vert\,\ver}_{L_2(Q)}$ на классе \linebreak
+% -------------------------------------------------join in eng.
+$f=g\sin(\pi t/T)$, 
+${\ver g\ver}_{\overset{\circ}{C}(\overline\Omega)}=1$.
+\end{cor}
+
+Положим 
+$\widehat{\cal K}=\{1\le i\le n\,\vert\,\gamma_i\ne 1\}$, 
+$\widehat h_{\min}={\min}_{i\in\widehat{\cal K}}h_i$.
+
+\begin{thm} Пусть $u_0=0$.  Предположим, что 
+$\varepsilon_0^{-1}\vert h\vert^2\le 
+\tau\le\min\{X_{\min}^2,T\}\varepsilon_0$
+при достаточно малом $\varepsilon_0=\varepsilon_0(n,\underline\alpha,
+\Vec\gamma)>0$.
+Тогда для метода с распараллеливанием {\em (1.6)--(1.8)}
+верна оценка погрешности снизу в форме {\em (1.13)}
+\begin{multline}
+\sup_{{\ver f\ver}_{L_2(Q)}=1}{\ver u-y\ver}_{V_2(Q)}\ge
+c^{(0)}\sup_{
+f=g\sin\tfrac{\pi}{T}t,\,
+{\ver g\ver}_{\overset{\circ}{C}(\overline\Omega)}=1
+}
+{\ver\,\vert D(u-y)\vert\, \ver}_{L_2(Q)}\ge \\
+%
+\ge \widehat c\tau/\widehat h_{\min},\quad\text{где}\quad
+\widehat c=\widehat c(n,\underline\alpha,\Vec\gamma)>0.
+\end{multline}
+\end{thm}
+
+Для метода (1.6)--(1.8) справедливы аналоги следствий 1, 2 (в роли
+$\widetilde h_{\min}$, $h_{\min}^{(n-1)}$ выступают $\widehat h_{\min}$, 
+$h_{\min}$).
+
+\begin{note} В правых неравенствах (1.13) и (1.14)
+функция $f$ является {\it аналитической} по $t$, но это ничего не дает в плане 
+улучшения порядка погрешности по сравнению со случаем $f\in L_2(Q)$. 
+Для чисто неявных методов дело
+обстоит иначе (\cite{Z3}, \S\,1).
+\end{note}
+
+Дополним оценки (1.10) и (1.11), указав условия на функции $f_{(i)}$,
+гарантирующие справедливость оценок порядка $O(\sqrt\tau+\vert h\vert)$.
+Естественно, эти условия предполагают определенную гладкость $f_{(i)}$,
+но нужна она не по всем переменным и, более того,
+по части переменных может быть ``негативной''.
+
+Пусть ${\bold l}=(l_1,\dotsc,l_n)$ --- вектор с компонентами, равными 0 или 1, 
+причем ${\bold l}\ne 0$.
+Введем гильбертовы пространства
+$\overset{\circ}{W}{}_2^{{\bold l},0}(Q)=\{F\in L_2(Q)\,\vert
+D_i F\in L_2(Q)$ и $ F\vert_{x_i=0,X_i}=0$ для таких $i$, что $l_i=1\}$
+с нормой 
+${\ver F\ver}_{\overset{\circ}{W}{}_2^{{\bold l},0}(Q)}=\biggl(
+\sum_{i\,:\, l_i=1}{\ver D_iF\ver}^2_{L_2(Q)}\biggr)^{1/2}$. 
+Напомним \cite{Z1}, \cite{Za}, что усреднения $f^{h,\tau}$ (введенные выше для
+$f\in L_1(Q)$)
+естественно распространяются на обобщенные функции вида
+$f=\sum_{j=1}^nD_jf_j$,
+где $f_1,\dotsc,f_n\in L_2(Q)$.
+
+Пусть $\chi^{(k)}$ -- вектор из $R^n$, у которого первые $k$ компонент 
+равны 1, а остальные равны 0.
+Пусть $\chi_{\langle i\rangle}$ --- вектор
+из $R^n$, у которого $i$-я компонента равна 0, 
+а остальные равны 1.
+
+\begin{thm} Для последовательного метода {\em (1.3)--(1.5)}
+в предположении, что $f_{(i)}=\sum\limits_{j=i}^nD_jF_{(i)j}$ при
+$i=\overline{2,n}$, верна оценка погрешности
+\begin{equation}
+{\ver D(u-y)\ver}_{L_2(Q)}\le c\bigl[(\po)d
++\sqrt\tau\sum_{i=2}^n\sum_{j=i}^n
+{\ver F_{(i)j}\ver}_{\overset{\circ}{W}{}_2^{{\chi^{(i-1)}},0}(Q)}\bigr].
+\end{equation}
+
+Для метода с распараллеливанием {\em (1.6)--(1.8)} в предположении, что
+$f_{(i)}=D_iF_{(i)}$ {\it при} $i=\overline{1,n}$, 
+верна оценка погрешности
+\begin{equation}
+{\ver u-y\ver}_{V_2(Q)}\le c\bigl[(\po)d
++\sqrt\tau\sum_{i=1}^n
+{\ver F_{(i)}\ver}_{\overset{\circ} {W}{}_2^{{\chi_{\langle i\rangle}},0}(Q)}\bigr].
+\end{equation}
+\end{thm}
+
+\begin{note} Всякую функцию $f\in L_2(Q)$ можно представить суммой
+$f=\sum_{i=1}^nf_{(i)}$, в которой $f_{(i)}=D_iF_{(i)}$ и 
+$\sum_{i=1}^n{\ver f_{(i)}\ver}_{L_2(Q)}+{\ver F_{(i)}\ver
+}_{\overset{\circ}{W}{}_2^{{\chi_{\langle i\rangle}},0}(Q)}\le c{\ver f\ver
+}_{L_2(Q)}$.
+Для этого достаточно предварительно разложить $f$ в сходящийся в $L_2(Q)$ ряд
+$f(x,t)=\sum_{{\bold k}>0}f^{({\bold k})}(t)s^{(\bold k)}(x)$, где 
+$s^{(\bold k)}(x)=\sin\tfrac{\pi k_1x_1}{X_1}\dotsb\sin\tfrac{\pi k_nx_n}{X_n}$,
+и положить, например,
+$f_{(i)}(x,t)=\sum_{{\bold k}\in \cal M_i}f^{(\bold k)}
+(t)s^{(\bold k)}(x)$.
+Здесь $\cal M_i$ --- множество таких мультииндексов ${\bold k}>0$, что 
+$k_i/X_i={\max}_{1\le j\le n}k_j/X_j$, причем (для определенности)
+если $k_{i'}/X_{i'}=k_i/X_i$ для некоторого $i'\ne i$, то
+$i'<i$. (Ясно, что $\cal M_i\cap \cal M_j=\varnothing$ при $i\ne j$, а 
+$\cal M_1\cup\dotsb\cup\cal M_n=\{{\bold k}>0\}$;
+кроме того, можно считать, что $F_{(i)}(x,t)=-\sum_{\bold k\in\cal M_i}
+\bigl(\tfrac{\pi k_i}{X_i}\bigr)^{-1}f^{(\bold k)}(t)\cos\tfrac{\pi k_ix_i}{X_i}
+\prod_{1\le j\le n,\, j\ne i}\sin\tfrac{\pi k_jx_j}{X_j}$.)
+Конечно, практическая реализуемость такого разложения $f$ оставляет желать
+лучшего.
+\end{note}
+
+\section{Вспомогательные утверждения}
+
+Введем в пространстве $S_h$ скалярное произведение и норму
+$$
+{(\varphi ,\psi)}_h=\sum_{k_1=1}^{N_1-1}\dotsb\sum_{k_n=1}^{N_n-1}
+\varphi_{\qk}\psi_{\qk}h_1\dotsc h_n,
+\quad {\ver\varphi\ver}_h={(\varphi,\varphi)}_h^{1/2}.
+$$
+Положим также
+$$
+{(\eta,\zeta)}_{h,\tau}=\sum_{m=1}^M{(\eta_m,\zeta_m)}_h\tau,
+\qquad {\ver\eta\ver}_{h,\tau}={(\eta,\eta)}_{h,\tau}^{1/2}.
+$$
+
+Пусть $L[S_h]$ --- пространство линейных операторов,
+действующих в $S_h$, а $\cal S[S_h]$ --- класс операторов $\cal A\in L[S_h]$
+таких, что $\cal A=\cal A^*>0$.
+Пусть $E$ --- единичный оператор, а операторы $B_i$ и $\Lambda_i$ таковы,
+что
+$B_i\varphi_{\qk}=(1/6)\varphi_{{\qk}+\chi_i}+
+(2/3)\varphi_{\qk}+(1/6)\varphi_{{\qk}-\chi_i}$
+и
+$\Lambda_i\varphi_{\qk}=-\delta_i^2\varphi_{\qk}$ при $x_{\qk}\in\omega^h$
+(для всех $\varphi\in S_h$).
+Введем операторы
+$$
+B=\prod_{i=1}^n B_i,\quad B_{\langle i\rangle}=\prod_{1\le j\le n, j\ne i}
+B_j,\quad\Lambda_d=\sum_{i=1}^n\Lambda_i,\quad
+\Lambda=\sum_{i=1}^nB_{\langle i\rangle}\Lambda_i;
+$$
+таким образом, $\Lambda_d$ и $\Lambda$ --- это конечно- и проекционно-разностный аналоги
+оператора $(-\triangle)$. Введем также операторы (с параметрами
+$\varkappa_i=\alpha_i^{-1}$)
+\begin{gather*}
+\overline E=\prod_{i=1}^n(E+\tau\varkappa_i\Lambda_i),\quad
+\overline E_{\langle i\rangle}=\prod_{1\le j\le n, j\ne i}
+(E+\tau\varkappa_j\Lambda_j), \\
+%
+\bbb=\sum_{i=1}^n\alpha_i\overline E_{\langle i\rangle},\quad
+\aaa=\sum_{i=1}^n\Lambda_i\overline E_{\langle i\rangle},
+\quad\Dot\Lambda_E=\frac{1}{\tau}(\overline E-E).
+\end{gather*}
+Нетрудно видеть, что $\aaa=\tau^{-1}(\overline E-\bbb)$.
+Справедливо разложение 
+\begin{equation}
+\Dot\Lambda_E=\sum_{i=1}^n\varkappa_i\Lambda_i+\sum_{k=2}^n\tau^{k-1}
+\sum_{1\le i_1<\dotsb<i_k\le n}\varkappa_{i_1}\dotsc\varkappa_{i_k}
+\Lambda_{i_1}\dotsc\Lambda_{i_k}.
+\end{equation}
+Все введенные операторы принадлежат  классу $\cal S[S_h]$ и имеют общую систему
+собственных функций. Нам потребуется набор связывающих их неравенств.
+
+\begin{lem} Справедливы операторные неравенства
+\begin{align}
+&3^{-n}E\le B\le E,
+\qquad 3^{1-n}\Lambda_d\le\Lambda\le\Lambda_d,\\
+%
+&E-B\le (1/6){\vert h\vert}^2\Lambda_d,\qquad
+\Lambda_d-\Lambda\le(1/6){\vert h\vert}^2\Lambda^2_d,\notag\\
+%
+&\bbb\le{\overline E},\qquad\aaa\le\Lambda_d {\overline E},\\
+%
+&\aaa\le{\underline \alpha}^{-1}\Lambda_d\bbb,\\
+%
+&{\underline \alpha}\Dot\Lambda_E\le\aaa\le n
+{\overline \alpha}\Dot\Lambda_E\quad\text{c}\quad\overline\alpha=
+\max_{1\le i\le n}\alpha_i,\\
+%
+&\Dot\Lambda_E\le{\underline \alpha}^{-1}\Lambda_d{\overline E},\\
+%
+&R_B\equiv\bbb-E\le{\underline \alpha}^{-1}\tau\Lambda_d\bbb,\qquad 
+ R_A\equiv\aaa-\Lambda_d\le{\underline \alpha}^{-1}\tau\Lambda_d\aaa.
+\end{align}
+\end{lem}
+
+Неравенства (2.2) следуют из неравенств $(1/3)E\le B_i\le E$.
+Остальные неравенства доказаны в (\cite{Za}, лемма 1).
+
+\begin{cor} Справедливы операторные неравенства
+\begin{gather}
+E-B\le(1/\sqrt 6)\vert h\vert \Lambda_d^{1/2},\quad
+ \Lambda_d-\Lambda\le(1/\sqrt 6)\vert h\vert\Lambda_d^{3/2},\\
+%
+R_B\le ({\underline\alpha}^{-1}\tau\Lambda_d)^{1/2}\bbb,\quad
+ R_A\le ({\underline \alpha}^{-1}\tau\Lambda_d)^{1/2}\aaa,\\
+%
+\sqrt{\tau}\Dot\Lambda_E\le ({\underline\alpha}^{-1}\Lambda_d)^{1/2}
+{\overline E},\\
+%
+(\aaa^{-1}\bbb)^{1/2}\sqrt{\tau}\Dot\Lambda_E\le\underline\alpha^{-1/2}
+\overline E.
+\end{gather}
+\end{cor}
+
+Неравенства (2.8)--(2.11) сравнительно просто следуют из 
+указанных в лемме 1;
+они выведены и уже использовались в \cite{Za}.
+
+Введем операторы $\Lambda_{d,\langle i\rangle}=\sum_{1\le j\le n,\,j\ne i}
+\Lambda_j$, $i=\overline{1,n}$, а также 
+$\overline E^{(k)}=\prod_{j=1}^k(E+\tau\varkappa_j\Lambda_j)$, 
+$\Dot\Lambda_E^{(k)}=\tau^{-1}(\overline E^{(k)}-E)$, 
+$\Lambda_d^{(k)}=\sum_{j=1}^k\Lambda_j$, $k=\overline{1,n}$
+(являющиеся $k$-мерными вариантами операторов $\overline E$, 
+$\Dot\Lambda_E$, $\Lambda_d$).
+Пусть $\overline E^{(0)}=E$.
+
+\begin{lem} Справедливы операторные неравенства
+\begin{gather}
+\Lambda_d^{1/2}(\overline E_{\langle i\rangle}-E)\le \underline\alpha^{-1}\tau
+\Lambda_{d,\langle i\rangle}^{1/2}\aaa,\quad i=\overline{1,n},\\
+%
+\Lambda^{1/2}_i\Lambda_d^{1/2}(\overline E_{\langle i\rangle}-E)\le
+\underline\alpha^{-1/2}\sqrt{\tau}\Lambda_{d,\langle i\rangle}^{1/2}\aaa,
+\quad i=\overline{1,n},\\
+%
+\Lambda_d^{1/2}\Dot\Lambda_E^{(k)}\le(n\overline\alpha/
+\underline\alpha)^{1/2}(\Lambda_d^{(k)})^{1/2}\Dot\Lambda_E,\quad
+k=\overline{1,n},\\
+%
+\sqrt\tau(\Lambda_d-\Lambda_d^{(k)})^{1/2}
+\Lambda_d^{1/2}\Dot\Lambda_E^{(k)}\le(n\overline\alpha)^{1/2}
+\underline\alpha^{-1}(\Lambda_d^{(k)})^{1/2}\Dot\Lambda_E,\quad
+k=\overline{1,n}.
+\end{gather}
+\end{lem}
+
+\begin{pf} 1. Неравенства (2.12), (2.13) достаточно
+доказать при $i=n$. В силу $(n-1)$-мерного варианта левого  
+неравенства (2.5) имеем
+\begin{equation}
+\underline\alpha\tau^{-1}(\overline E_{\langle n\rangle}-E)=\underline\alpha
+\Dot\Lambda_E^{(n-1)} \le \sum_{i=1}^{n-1}\Lambda_i
+\prod_{1\le j\le n-1,\, j\ne i}(E+\tau\varkappa_j\Lambda_j)\le\aaa.
+\end{equation}
+Как следствие получаем
+\begin{gather}
+\Lambda_d(\overline E_{\langle n\rangle}-E)=
+ \Lambda_{d,\langle n\rangle}(\overline E_{\langle n\rangle}-E)+
+ \Lambda_n(\overline E_{\langle n\rangle}-E)\le \notag\\
+\le\underline\alpha^{-1}\tau \biggl(\Lambda_{d,\langle n\rangle}
+ \sum_{i=1}^{n-1}\Lambda_i \overline E_{\langle i\rangle}+
+ \Lambda_n\sum_{i=1}^{n-1}\Lambda_i\overline E_{\langle n\rangle}\biggr)
+=\underline\alpha^{-1}\tau\Lambda_{d,\langle n\rangle}\aaa.
+\end{gather}
+Из этого неравенства в сочетании с неравенством
+$\overline E_{\langle i\rangle}-E\le\underline\alpha^{-1}\tau\aaa$, см. (2.16),
+следует (2.12) при $i=n$, а в сочетании с очевидным неравенством 
+$\Lambda_n(\overline E_{\langle i\rangle}-E)\le\aaa$ следует (2.13) при $i=n$.
+
+2. При $k=n$ неравенства (2.14), (2.15) очевидны. Пусть $k<n$.
+По аналогии с доказательством неравенства (2.17), используя $k$-мерный
+вариант левого неравенства (2.5), получаем
+\begin{gather*}
+\Lambda_d\Dot\Lambda^{(k)}_E=\Lambda_d^{(k)}\tau^{-1}
+(\overline E^{\,(k)}-E)+(\Lambda_d-\Lambda_d^{(k)})\tau^{-1}
+(\overline E^{\,(k)}-E)\le \\
+%
+\le\underline\alpha^{-1}\biggl(\Lambda_d^{(k)}\sum_{i=1}^k\Lambda_i
+\overline E_{\langle i\rangle}+\sum_{j=k+1}^n\Lambda_j\sum_{i=1}^k\Lambda_i
+\overline E_{\langle j\rangle}\biggr )=\underline\alpha^{-1}\Lambda_d^{(k)}\aaa\le \\
+%
+\le n(\overline\alpha/\underline\alpha)\Lambda_d^{(k)}\Dot\Lambda_E;
+\end{gather*}
+здесь учтено также правое неравенство (2.5).
+
+Отсюда в сочетании с очевидным неравенством
+$\Dot\Lambda^{(k)}_E\le\Dot\Lambda_E$ следует (2.14), а в 
+сочетании с неравенством 
+$\tau(\Lambda_d-\Lambda_d^{(k)})\Dot\Lambda_E^{(k)}\le
+\underline\alpha^{-1}\dot\Lambda_E$
+(которое вытекает из разложений
+$\Dot\Lambda_E^{(k)}$ и $\Dot\Lambda_E$ по степеням $\tau$, см. (2.1))
+следует неравенство (2.15).
+\end{pf}
+
+\begin{note} Для справедливости неравенств (2.4)--(2.6),
+(2.10), (2.12)--(2.15) и правых неравенств (2.3), (2.7), (2.9)
+свойство $\sum_{i=1}^n\alpha_i=1$ (см. \S\,1)
+несущественно; ниже это используется.
+\end{note}
+
+Важную роль играет следующий результат об оценках решений 
+абстрактной двуслойной разностной схемы.
+Пусть $\cal P=\cal B{\overline\partial}_t+\cal A $,
+где $\cal A,\cal B\in\cal S[S_h]$.
+
+\begin{lem} {\em 1.} Если оператор $\cal C\in\cal S[S_h]$
+перестановочен с $\cal A$ и $\cal B$, то верно неравенство 
+\begin{gather}
+{\ma {(\cal B\cal C)}^{1/2}\eta_m\ver}_h+
+{\ver{(\cal A\cal C)}^{1/2}\eta\ver}_{h,\tau}\le\notag \\
+%
+\le(\sqrt 2+1)(
+{\ver{({\cal A}^{-1}\cal C)}^{1/2}\cal P\eta\ver}_{h,\tau}+\frac{1}{\sqrt 2}
+{\ver{(\cal B\cal C)}^{1/2}\eta_0\ver}_h)
+ \quad \forall\eta\in S_{h,\tau}.
+\end{gather}
+%
+В частности {\em (}случай $\cal C=E),$ верно неравенство
+\begin{gather}
+{\ma {\cal B}^{1/2}\eta_m\ver}_h+{\ver{\cal A}^{1/2}\eta\ver}_{h,\tau}
+\le \notag \\
+%
+\le(\sqrt 2+1)(
+{\ver{\cal A}^{-1/2}\cal P\eta\ver}_{h,\tau}+
+ \frac{1}{\sqrt 2}{\ver{\cal B}^{1/2}\eta_0\ver}_h)
+ \quad\forall\eta\in S_{h,\tau}.
+\end{gather}
+
+{\em 2.} Если операторы $\cal A$ и $\cal B$ перестановочны, то верно 
+неравенство
+\begin{equation}
+\max\{ {\ver \cal B{\overline\partial}_t\eta\ver}_{h,\tau},
+{\ver \cal A\eta\ver}_{h,\tau}\}
+\le{\ver\cal P\eta\ver}_{h,\tau}+\frac{1}{\sqrt 2}
+{\ver{(\cal A\cal B)}^{1/2}\eta_0\ver}_h \quad\forall
+\eta\in S_{h,\tau}.
+\end{equation}
+\end{lem}
+
+\begin{pf} 1. Справедливы соотношения
+\begin{gather*}
+\overline{\partial}_t( \frac12 {\ver{(\cal B\cal C)}^{1/2}\eta\ver}_h^2)+
+\frac{\tau}{2}{\ver\overline{\partial}_t{(\cal B\cal C)}^{1/2}\eta\ver}_h^2+
+{\ver{(\cal A\cal C)}^{1/2}\eta\ver}_{h}^2= \\
+%
+=(\cal B\overline\partial_t\eta+\cal A\eta,\cal C\eta)_h\le
+{\ver{({\cal A}^{-1}\cal C)}^{1/2}\cal P\eta \ver}_h\,
+{\ver{(\cal A\cal C)}^{1/2}\eta\ver}_{h} \quad\forall\eta\in S_{h,\tau}.
+\end{gather*}
+Как следствие имеем
+\begin{gather*}
+\max\{ \frac{1}{\sqrt 2}\ma {(\cal B\cal C)}^{1/2}\eta_m\ver_h,\,
+{\ver{(\cal A\cal C)}^{1/2}\eta\ver}_{h,\tau}\}\le \\
+%
+\le {\ver{({\cal A}^{-1}\cal C)}^{1/2}\cal P\eta\ver}_{h,\tau}
++\frac{1}{\sqrt 2}{\ver{(\cal B\cal C)}^{1/2}\eta_0\ver}_h.
+\end{gather*}
+
+2. Неравенство (2.20) \cite{Z7}, \cite{Za} получается аналогичным
+образом из рассмотрения
+${(\cal P\eta,\cal B\overline\partial_t\eta)}_{h,\tau}$ и
+${(\cal P\eta,\cal A\eta)}_{h,\tau}$. 
+\end{pf}
+
+При оценке погрешности снизу существенна
+
+\begin{lem} Пусть операторы $\cal A$ и $\cal B$ имеют
+общую собственную функцию $s$, так что 
+$\cal A s=\lambda_{\cal A}s$ и $\cal B s=\lambda_{\cal B}s$. Пусть 
+также $\psi^h=a_hs$ для некоторой $\psi\in L_1(\Omega)$.
+Тогда уравнению $\cal P\eta=f^{h,\tau}$ на 
+$\omega^h\times\omega^\tau$ с 
+$f(x,t)=\psi(x)e^{i_\ast\mu t}$
+{\em (}где $\mu\ne 0$, а $i_\ast$ --- мнимая единица{\em )} удовлетворяет 
+комплекснозначная сеточная функция
+$\eta(x,t)=\varkappa_{\cal P}s(x)\ei$ с множителем
+\begin{equation}
+\varkappa_{\cal P}=a_h \left/
+\bigl[\mu\bigl(\frac{\tau}{2}\ctg\frac{\mu\tau}{2}
+\lambda_{\cal A}+i_\ast(\lambda_{\cal B}
++\frac{\tau}{2}\lambda_{\cal A})\bigr)\bigr].\right.
+\end{equation}
+\end{lem}
+
+\begin{pf} Подставляя в уравнение функции $\eta$ и $f$ 
+указанного вида, имеем 
+$$
+\varkappa_{\cal P}\bigl[\lambda_{\cal B}\frac{1}{\tau}(1-e^{-i_\ast\mu \tau}
+)+\lambda_{\cal A}\bigr]=\frac{1}{i_\ast\mu\tau}(1-e^{-i_\ast\mu \tau}
+)a_h.
+$$
+Отсюда при помощи формулы 
+$1-e^{-i_\ast \mu\tau}=2i_\ast\sin\frac{\mu\tau}{2}e^{-i_\ast
+\frac{\mu\tau}{2}}$ получается (2.21).
+\end{pf}
+
+\section{Доказательство оценок погрешности сверху}
+
+1. В данном параграфе широко используются обозначения и результаты 
+из \S\,2. Рассмотрим сначала последовательный метод (1.3)--(1.5); 
+для него полагаем $\alpha_i=\varkappa_i=1$, $i=\overline{1,n}$.
+Исключение вспомогательных функций в уравнениях (1.3)--(1.5) дает
+$$
+\overline Ey=\check y+\tau\sum_{i=1}^n\overline E^{\,(i-1)}f_{(i)}^{h,\tau}
+$$
+(уравнения переписываются в операторном виде
+$(E+\tau\Lambda_i)y_{(i)}=y_{(i-1)}+\tau f_{(i)}^{h,\tau}$, к ним
+применяются операторы $\overline E^{\,(i-1)}$ и результаты суммируются по 
+$i=\overline{1,n}$). Преобразуем теперь полученный двуслойный метод к
+следующей удобной для нас канонической форме записи
+\begin{equation}
+\overline\partial_ty+\Dot\Lambda_E y=\sum_{i=1}^n\overline E^{\,(i-1)}
+f_{(i)}^{h,\tau},\quad y_0=u_0^h.
+\end{equation}
+
+Для доказательства теоремы 1 введем три вспомогательных метода 
+(считаем, что $v,v_d,w\in S$)
+\begin{alignat}{2}
+B{\overline\partial}_t v+\Lambda v &=f^{h,\tau}, &\qquad Bv_0&=u_0^h,\\
+%
+{\overline\partial}_t v_d+\Lambda_d v_d &=f^{h,\tau},&\qquad v_{d,0}&=u_0^h,\\
+%
+{\overline\partial}_t w+\dot\Lambda_E w &=f^{h,\tau},
+&\qquad {\overline E}w_0&=u_0^h.
+\end{alignat}
+Методы (3.2) и (3.3) --- это проекционно- и конечно-разностная чисто 
+неявные схемы. Метод (3.4) --- конечно-разностная схема с расщепляющимся 
+оператором.
+Он отличается от метода (3.1) стандартным видом правой части
+уравнения и наличием оператора ${\overline E}$ в начальном условии.
+
+Для метода (3.2) в силу \S\,1 и доказательства леммы 4 из \cite{Z3}
+следует оценка
+\begin{equation}
+{\ver u-v\ver}_{V_2(Q)}\le c_0(\po)d.
+\end{equation}
+Постоянная $c_0$ в ней абсолютная (т.е. конкретное число), в чем можно 
+убедиться, проследив за доказательством в \cite{Z3}.
+
+Сведем оценки $u-y$ к (3.5), дав оценки разностей $v-v_d$,
+$v_d-w$ и $w-y$.
+Положим 
+${\|r\|}_{\overset{\circ}{V}{}_2^{h,\tau}}={\ma r_m\ver}_h
++{\ver\Lambda^{1/2}r\ver}_{h,\tau}$ для $r\in S_{h,\tau}$.
+
+\begin{lem} Верна оценка
+${\ver v-v_d \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le c\vert h\vert
+({\ver f^{h,\tau}\ver}_{h,\tau}+{\ver\Lambda_d^{1/2}u_0^h\ver}_{h})$.
+\end{lem}
+
+\begin{pf} Разность $r=v-v_d$ удовлетворяет уравнениям
+$$
+B\overline\partial_t r+\Lambda r=\overline\partial_t(E-B)v_d+
+(\Lambda_d-\Lambda)v_d,\quad Br_0=(E-B)v_{d,0}.
+$$
+Учитывая, что $E\le 3^nB$ (см. (2.2)), и применяя неравенство (2.19)
+для $\cal P=B\overline\partial_t+\Lambda$, получаем
+\begin{gather*}
+{\ver r \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le 3^{n/2}(\sqrt 2+1)
+({\ver\Lambda^{-1/2}(E-B)\overline{\partial}_t v_d\ver}_{h,\tau}+\\
++{\ver\Lambda^{-1/2}(\Lambda_d-\Lambda) v_d\ver}_{h,\tau}
++{\ver(E-B)v_{d,0}\ver}_h).
+\end{gather*}
+
+В силу неравенств $\Lambda^{-1}\le 3^{n-1}\Lambda_d^{-1}$ и 
+(2.8), а также равенства $v_{d,0}=u_0^h$ имеем
+$$
+{\ver r \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le c\vert h\vert
+({\ver\overline{\partial}_t v_d\ver}_{h,\tau}+
+{\ver\Lambda_d v_d\ver}_{h,\tau}+{\ver\Lambda_d^{1/2}u_0^h\ver}_{h}).
+$$
+Остается воспользоваться оценкой (2.20) для 
+$\cal P=\overline\partial_t+\Lambda_d$.
+\end{pf}
+
+\begin{lem} Верна  оценка
+${\ver v_d-w \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le c\sqrt\tau
+({\ver f^{h,\tau}\ver}_{h,\tau}+{\ver\Lambda_d^{1/2}u_0^h\ver}_{h})$.
+\end{lem}
+
+\begin{pf}
+Разность $r=v_d-w$ удовлетворяет уравнениям
+$$
+\overline{\partial}_t r+\Lambda_d r=(\Dot\Lambda_E-\Lambda_d)w,
+\qquad r_0=\tau{\Dot\Lambda}_Ew_0.
+$$
+Учитывая, что $\Lambda\le\Lambda_d$, и применяя неравенство (2.19)
+для $\cal P=\overline\partial_t+\Lambda_d$,
+получаем
+$$
+{\ver r \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le(\sqrt 2+1)
+({\ver\Lambda_d^{-1/2}(\Dot\Lambda_E-\Lambda_d) w\ver}_{h,\tau}+
+{\ver \tau{\Dot\Lambda}_Ew_0\ver}_{h}).
+$$
+Поскольку $\Dot\Lambda_E-\Lambda_d\le \aaa-\Lambda_d=R_A$ и 
+$\aaa\le n\Dot\Lambda_E$ (см. (2.5)), а $\overline E w_0=u_0^h$, то 
+из неравенств (2.9) и (2.10) следует оценка
+$$
+{\ver r \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le(\sqrt 2+1)
+n\sqrt\tau(
+{\ver\Dot\Lambda_Ew\ver}_{h,\tau}+{\ver \Lambda_d^{1/2}u_0^h\ver}_{h}).
+$$
+Применяя сначала неравенство (2.20) для
+$\cal P=\overline\partial_t+\Dot\Lambda_E$, а затем неравенства (2.6) и
+$E\le\overline E$, имеем
+$$
+{\ver\Dot\Lambda_E w\ver}_{h,\tau}\le {\ver f^{h,\tau}\ver}_{h,\tau}+
+\frac{1}{\sqrt 2}{\ver \Dot\Lambda_E^{1/2}w_0\ver}_h
+\le c({\ver f^{h,\tau}\ver}_{h,\tau}+{\ver\Lambda_d^{1/2}u_0^h\ver}_h),
+$$
+что и завершает доказательство.
+\end{pf}
+
+\begin{lem} Справедливы оценки
+\begin{align}
+{\ver w-y\ver}_{\overset{\circ}{V}{}_2^{h,\tau}} &\le
+ c\sqrt\tau\biggl(\sum_{i=2}^n\beta_{i-1}(\tau,h)
+ {\ver f^{h,\tau}_{(i)}\ver}_{h,\tau}+
+ {\ver\Lambda_d^{1/2}u_0^h\ver}_h\biggr),\\
+%
+{\ver \Lambda^{1/2}(w-y)\ver}_{h,\tau} &\le
+ c\biggl(\sum_{i=2}^n\frac{\tau}{h_{\min}^{(i-1)}}
+ {\ver f^{h,\tau}_{(i)}\ver}_{h,\tau}
+ +\sqrt\tau{\ver\Lambda_d^{1/2}u_0^h\ver}_h
+ \biggr), \\
+%
+{\ver \Lambda^{1/2}(w-y)\ver}_{h,\tau} &\le 
+ c\sqrt\tau\biggl(\sum_{i=2}^n{\ver(\Lambda_d^{(i-1)})^{1/2}
+ (\Lambda_d-\Lambda_d^{(i-1)}
+)^{-1/2}f_{(i)}^{h,\tau}\ver}_{h,\tau}+\notag \\
+%
+&\quad+{\ver\Lambda_d^{1/2}u_0^h\ver}_h\biggr).
+\end{align}
+\end{lem}
+
+\begin{pf} Разность $r=y-w$ удовлетворяет уравнениям
+$$
+\overline\partial_t r+\Dot\Lambda_E r =\Psi\equiv\sum_{i=2}^n
+({\overline E}^{\,(i-1)}-E)
+f_{(i)}^{h,\tau},\qquad r_0=\tau\Dot\Lambda_Ew_0.
+$$
+Учитывая, что $\Lambda\le\Dot\Lambda_E$, и применяя
+неравенство (2.19) для $\cal P=\overline\partial_t+\Dot\Lambda_E$, получаем 
+$$
+{\ver r\ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le(\sqrt 2+1) 
+({\ver\Dot\Lambda_E^{-1/2}\Psi\ver}_{h,\tau}+
+{\ver\tau\Dot\Lambda_Ew_0\ver}_h).
+$$
+Применяя же неравенство (2.18) с $\cal C=\Lambda_d\Dot\Lambda_E^{-1}
+\le E$,  имеем
+$$
+{\ver \Lambda^{1/2}r\ver}_{h,\tau}\le (\sqrt 2+1)
+({\ver\Lambda_d^{1/2}\Dot\Lambda_E^{-1}\Psi\ver}_{h,\tau}
++{\ver\tau\Dot\Lambda_Ew_0\ver}_h).
+$$
+При помощи неравенств $\Dot\Lambda_E^{(k)}\le \Dot\Lambda_E$ 
+и (2.14) можно записать
+\begin{align*}
+{\ver\Dot\Lambda_E^{-1/2}\Psi\ver}_{h,\tau} &\le \sum_{i=2}^n\tau
+{\ver {(\Dot\Lambda_E^{\,(i-1)})}^{1/2}f_{(i)}^{h,\tau}\ver}_{h,\tau}, \\
+%
+{\ver\Lambda_d^{1/2}\Dot\Lambda_E^{-1}\Psi\ver}_{h,\tau} &\le \sqrt n
+\sum_{i=2}^n\tau{\ver {(\Lambda_d^{(i-1)})}^{1/2}f_{(i)}^{h,\tau}
+\ver}_{h,\tau}.
+\end{align*}
+
+Нетрудно видеть, что 
+${\ver(\tau\Dot\Lambda_E^{(k)})^{1/2}\ver}_{L[S_h]}\le c\beta_k(\tau,h)$
+(в силу формулы типа (2.1) для $\Dot\Lambda^{(k)}_E$) и
+${\ver(\Lambda_d^{(k)})^{1/2}\ver}_{L[S_h]}\le 2 \sqrt n/h_{\min}^{(k)}$ 
+при $k=\overline{1,n}$.
+А поскольку слагаемое ${\ver \tau\Dot\Lambda_Ew_0\ver}_h$ оценено в 
+доказательстве леммы 6, то оценки (3.6) и
+(3.7) установлены.
+
+Оценка (3.8) получается, если для оценки слагаемого
+${\ver\Lambda_d^{1/2}\Dot\Lambda_E^{-1}\Psi\ver}_{h,\tau}$
+вместо неравенства (2.14) применить неравенство (2.15).
+\end{pf}
+
+\begin{lem}
+Справедливы оценки {\em (1.9)} и {\em (1.10).}
+\end{lem}
+
+\begin{pf} По неравенству треугольника имеем
+$$
+{\ver u-y\ver}_{V_2(Q)} \le {\ver u-v\ver}_{V_2(Q)}+
+{\ver v-v_d\ver}_{\overset{\circ}{V}{}_2^{h,\tau}}+{
+\ver v_d-w\ver}_{\overset{\circ}{V}{}_2^{h,\tau}}
++{\ver w-y\ver}_{\overset{\circ}{V}{}_2^{h,\tau}}.
+$$
+Здесь учтено, что 
+${\ver \eta\ver}_{V_2(Q)}=\max_{1\le m\le M}
+{\ver B^{1/2}\eta_m\ver}_h+{\ver\Lambda^{1/2}\eta\ver}_{h,\tau}\le
+{\ver \eta\ver}_{\overset{\circ}{V}{}_2^{h,\tau}}$
+для любой $\eta\in S$.
+Поэтому при использовании хорошо известнх неравенств 
+${\ver f^{h,\tau}\ver}_{h,\tau}\le {\ver f\ver}_{L_2(Q)}$ 
+и ${\ver \Lambda_d^{1/2}u_0^h\ver}_{h}\le 
+{\ver u_0^h\ver}_{\overset{\circ}{W}{}^1_ 2(\Omega)}$
+оценка (1.9) следует из оценки (3.5) и лемм 5--7.
+
+Вывод оценки (1.10) отличается только использованием оценки (3.7)
+вместо (3.6).
+\end{pf}
+
+2. Перейдем теперь к методу с распараллеливанием (1.6)--(1.8). 
+Исключение вспомогательных функций в уравнениях (1.6)--(1.8) дает
+$$
+\overline Ey=\bbb\Check y+\tau\sum_{i=1}^n
+\overline E_{\langle i\rangle}f_{(i)}^{h,\tau}
+$$
+(уравнения переписываются в операторном виде
+$(E+\tau\varkappa_i\Lambda_i)\alpha_iy_{(i)}=
+\alpha_i\Check y+\tau f_{(i)}^{h,\tau}$, 
+к ним применяются операторы $\overline E_{\langle i\rangle}$
+и результаты суммируются по 
+$i=\overline{1,n}$). Преобразуем метод к канонической форме записи
+типа (3.1)--(3.4)
+\begin{equation}
+\bbb\,\overline\partial_ty+\aaa y=\sum_{i=1}^n\overline E_{\langle i\rangle}
+f_{(i)}^{h,\tau},\qquad y_0=u_0^h.
+\end{equation}
+
+Введем вспомогательный метод с расщепляющимся оператором
+(считаем, что $z\in S$)
+\begin{equation}
+{\bbb\,\overline\partial}_t z+\aaa z=f^{h,\tau},\qquad 
+{\overline E}z_0=u_0^h,
+\end{equation}
+отличающийся от метода (3.9) стандартным видом правой части
+уравнения и наличием оператора ${\overline E}$ в начальном условии.
+
+Сведем оценку $u-y$ к (3.5), использовав
+лемму 5 и дав оценки $v_d-z$ и $z-y$.
+
+\begin{lem} Верна оценка
+${\ver v_d-z \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le c\sqrt\tau
+({\ver f^{h,\tau}\ver}_{h,\tau}+{\ver\Lambda_d^{1/2}u_0^h\ver}_{h}).$
+\end{lem}
+
+\begin{pf} Разность $r=v_d-z$ удовлетворяет уравнениям
+$$
+\overline{\partial}_t r+\Lambda_d r=R_B\overline{\partial}_t z+R_Az,
+\qquad r_0=\tau{\Dot\Lambda}_Ez_0.
+$$
+Учитывая, что $\Lambda\le\Lambda_d$, и применяя неравенство (2.19)
+для $\cal P=\overline\partial_t+\Lambda_d$, получаем
+$$
+{\ver r \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le (\sqrt 2+1)
+({\ver\Lambda_d^{-1/2}R_B\overline{\partial}_t z\ver}_{h,\tau}+
+{\ver\Lambda_d^{-1/2}R_A z\ver}_{h,\tau}+
+{\ver \tau{\Dot\Lambda}_Ez_0\ver}_{h}).
+$$
+Используя неравенства (2.9), (2.10) и равенство $\overline E z_0=u_0^h$,
+выводим
+$$
+{\ver r \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le (\sqrt 2+1)
+\underline\alpha^{-1/2}\sqrt\tau
+({\ver{\bbb}\,\overline{\partial}_t z\ver}_{h,\tau}+
+{\ver\aaa z\ver}_{h,\tau}+{\ver \Lambda_d^{1/2}u_0^h\ver}_{h}).
+$$
+Остается применить неравенство (2.20) для
+$\cal P=\bbb\,\overline\partial_t+\aaa$
+и учесть, что 
+$(\aaa\bbb)^{1/2}\le \Lambda_d^{1/2}\overline E$,
+см. (2.3).
+\end{pf}
+
+\begin{lem} Верны оценки
+\begin{align}
+{\ver z-y \ver}_{\overset{\circ}{V}{}_2^{h,\tau}} &\le c\biggl(
+\sum_{i=1}^n\frac{\tau}{h_{\min,\langle i\rangle}}
+{\ver f_{(i)}^{h,\tau}\ver}_{h,\tau}+\sqrt\tau{\ver\Lambda_d^{1/2}
+u_0^h\ver}_{h}\biggr),\\
+%
+{\ver z-y \ver}_{\overset{\circ}{V}{}_2^{h,\tau}} &\le c\sqrt\tau
+\biggl(
+\sum_{i=1}^n{\ver\Lambda_{d,\langle i \rangle}^{1/2}\Lambda_i^{-1/2}f_{(i)}^{h,\tau}
+\ver}_{h,\tau}+{\ver\Lambda_d^{1/2}u_0^h\ver}_{h}\biggr).
+\end{align}
+\end{lem}
+
+\begin{pf} Разность $r=z-y$ удовлетворяет уравнениям 
+$$
+\bbb\,\overline{\partial}_t r+\aaa r=\Phi\equiv \sum_{i=1}^n
+(\overline E_{\langle i \rangle}-E)f_{(i)}^{h,\tau},
+\qquad r_0=\tau{\Dot\Lambda}_Ez_0.
+$$
+Применяя  неравенство (2.18) 
+с $\cal P=\bbb\,\overline\partial_t+\aaa$ и
+$\cal C=\Lambda_d\aaa^{-1}$ и неравенство (2.4) , получаем
+\begin{gather*}
+\underline\alpha{\ver r\ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le 
+{\ma{(\Lambda_d\aaa^{-1}\bbb)}^{1/2}r_m\ver}_h+{\ver\Lambda_d^{1/2}r
+\ver}_{h,\tau}\le \\
+\le (\sqrt 2+1)
+({\ver\aaa^{-1}\Lambda_d^{1/2}\Phi\ver}_{h,\tau}+
+{\ver{(\Lambda_d\aaa^{-1}\bbb)}^{1/2}\tau\Dot\Lambda_Ez_0\ver}_h).
+\end{gather*}
+С учетом неравенств (2.12) и (2.11) имеем
+$$
+{\ver r \ver}_{\overset{\circ}{V}{}_2^{h,\tau}}\le c
+\biggl(\sum_{i=1}^n\tau{\ver \Lambda_{d,\langle i\rangle}^{1/2}f_{(i)}^{h,\tau}
+\ver}_{h,\tau}+\sqrt\tau{\ver\Lambda_d^{1/2}u_0^h\ver}_h\biggr).
+$$
+В силу того, что ${\ver\Lambda_{d,\langle i\rangle}^{1/2}\ver}_{L[S_h]}\le
+2\sqrt{n-1}/h_{\min,\langle i\rangle}$, оценка (3.11)
+получена.
+
+Для вывода оценки (3.12)  вместо неравенства (2.12)
+нужно применить неравенство (2.13).
+\end{pf}
+
+\begin{lem}
+Справедлива оценка погрешности {\em (1.11).}
+\end{lem}
+
+Доказательство оценки (1.11) отличается от доказательства оценки (1.9), 
+см. лемму 8, 
+только применением лемм 9, 10 вместо лемм 6, 7.
+
+\begin{note} Из лемм 5, 6 и 9 ясно, что оценка (3.5) сохраняет 
+силу при
+замене $v$ на $v_d$, $w$ или $z$, а также $c_0$ на $c$,
+т.е. оценка типа (3.5) верна и для методов (3.3), (3.4) и 
+(3.10).
+Это представляет самостоятельный интерес (и будет существенно использовано
+ниже в \S\,4). Становится понятно, что различие в оценках погрешности (3.5) и 
+из теорем 1, 2 обусловлено не столько конструкцией операторов
+локально-одномерных методов, сколько ``генерируемой'' в них аппроксимацией
+$f$.
+\end{note}
+
+3. Обратимся к доказательству теоремы 5. 
+Вывод оценок (1.15) и (1.16)
+отличается от вывода оценок (1.10) и (1.11) тем, что, во-первых, надо
+использовать оценки (3.8) и (3.12) вместо (3.7) и (3.11) соответственно.
+Во-вторых, надо применить неравенства
+\begin{gather*}
+{\ver (\Lambda_d^{(i-1)})^{1/2}(\Lambda_d-\Lambda_d^{(i-1)})^{-1/2}
+{(D_jF_{(i)j})}^{h,\tau}\ver}_{h,\tau}\le \\
+%
+\le{\ver F_{(i)j}
+\ver}_{\overset{\circ}{W}{}^{\chi^{(i-1)},0}_2(Q)},
+\quad j=\overline{i,n},\\
+%
+{\ver \Lambda_{d,\langle i\rangle}^{1/2}\Lambda_i^{-1/2}(D_iF_{(i)})^{h,\tau}
+\ver}_{h,\tau}\le{\ver F_{(i)}
+\ver}_{\overset{\circ}{W}{}^{\chi_{<i>},0}_2(Q)},\quad i=\overline{1,n},
+\end{gather*}
+которые получаются при помощи $k$-мерных вариантов
+известных неравенств ${\ver \Lambda_j^{-1/2}(D_jF)^{h,\tau}
+\ver}_{h,\tau}\le{\ver F\ver}_{L_2(Q)},$
+$j=\overline{1,n}$, и ${\ver \Lambda_d^{1/2}w^h\ver}_{h}\le
+{\ver w\ver}_{\overset{\circ}{W}{}^1_2(\Omega)}$
+с подходящими $k$ и с учетом 
+перестановочности сеточных и непрерывных $L_2$-норм по различным
+координатным направлениям.
+
+\section{Доказательство оценок погрешности снизу}
+
+Пусть снова  $s(x)=s^{(\bold k)}(x)=\sin\tfrac{\pi k_1x_1}{X_1}\dotsb
+\sin\tfrac{\pi k_nx_n}{X_n}$, где $k_1=\overline{1,N_1-1},\dotsc,
+k_n=\overline{1,N_n-1}$. Значение $\bold k$
+будет выбрано по ходу доказательства.
+Положим $\lambda_i=\bigl(\tfrac{2}{h_i}\sin\tfrac{\pi k_ih_i}{2X_i}\bigr)^2$,
+$\omega_i=\tau\varkappa_i\lambda_i$.
+Величины $\lambda_d=\sum_{i=1}^n\lambda_i$, 
+$\overline\lambda=\prod_{i=1}^n(1+\omega_i)$, 
+$\overline\lambda^{\,(k)}=\prod_{i=1}^k(1+\omega_i)$,
+$\overline\lambda_{\langle i\rangle}=\prod_{1\le j\le n,\, j\ne i}(1+\omega_j)$
+и $a_h=\prod_{i=1}^n\lambda_i/(\frac{\pi k_i}{X_i})^2$
+являются отвечающими функции $s$ собственными числами операторов 
+$\Lambda_d$, $\overline E$, $\overline E^{\,(k)}$, $\overline E_{\langle i\rangle}$
+(см. \S\,2) и $(\cdot)^h$ соответственно. Будем считать
+$\overline\lambda^{\,(0)}=1$.
+
+Пусть $f_{(i)}=\gamma_if$, $i=\overline{1,n}$, а $\sum_{i=1}^n\gamma_i=1$.
+Выберем $f(x,t)=s(x)\sin\mu t$, где $\mu=\pi/T$.
+Обозначим решение задачи (1.1), (1.2) с правой частью $f$ и
+начальной функцией $u_0$ через $u[f,u_0]$, решение задачи
+(1.3)--(1.5) --- через $y[f,u_0]$ и т.д.
+
+Ниже используется стандартная запись комплексного числа:
+$\zeta=\text{Re\,} \zeta+i_*\text{Im\,}\zeta$.
+
+1. Рассмотрим метод (3.1); при этом снова положим 
+$\alpha_i=\varkappa_i=1$ при $i=\overline{1,n}$.
+Будем исходить из неравенства
+\begin{gather}
+\nord u y f 0\ge\ver D(y[f,u_0]-w[f,u_0'])\ver_{L_2(Q)}-\notag \\
+-(\nord u w f 0 +\ver D(y[0,u_0]-w[0,u_0'])\ver_{L_2(Q)}),
+\end{gather}
+следующего из неравенства треугольника. Здесь $w$ --- решение
+разностной схемы (3.4).
+
+Воспользуемся леммой 4 для $\cal P=\overline\partial_t+\Dot\Lambda_E$. 
+Положим
+$$
+\widetilde\varkappa=2a_h/\{\mu[(\ctg\frac{\mu\tau}{2})
+(\overline\lambda-1)+i_*(\overline\lambda+1)]\},\quad
+\widetilde\rho_\gamma=\sum_{i=1}^n\gamma_i\overline\lambda^{\,(i-1)}.
+$$
+Функции 
+$y(x,t)=s(x)\text{\,Im\,}(\widetilde\varkappa\widetilde\rho_\gamma e^{i_*\mu t})$ 
+и $w(x,t)=s(x)\text{\,Im\,}(\widetilde\varkappa e^{i_*\mu t})$
+из $S_{h,\tau}$ являются решениями 
+уравнений (3.1) и (3.4) с выбранной выше $f$ и с начальными функциями 
+$u_0(x)=\widetilde u_0s(x)$ и $u_0'(x)=\widetilde u_0's(x)$
+соответственно
+(явный вид $\widetilde u_0$ и $\widetilde u_0^\prime$ несуществен).
+
+В силу замечания 6 имеем
+\begin{equation}
+\nord u w f 0\le c_1\vert Q\vert^{1/2}(\sqrt\tau+\vert h\vert).
+\end{equation}
+С помощью неравенства $\ver D\eta\ver_{L_2(Q)}\le 
+\ver \dot\Lambda_E^{1/2}\eta\ver_{h,\tau}$ для любой $\eta\in S$ и
+неравенства (2.19) для $\cal P=\overline\partial_t+\Dot\Lambda_E$ получаем
+\begin{gather*}
+\ver D(y[0,u_0]-w[0,u_0'])\ver_{L_2(Q)}\le(1+
+1/\sqrt 2)\ver (y-w)\vert_{t=0}\ver_h= \\
+%
+=(1+1/\sqrt 2)\vert\Omega\vert^{1/2}2^{-n/2}\vert
+(\text{\,Im\,}\widetilde\varkappa)(\widetilde\rho_\gamma-1)\vert.
+\end{gather*}
+Используя также формулу 
+\begin{equation}
+\widetilde\rho_\gamma-1=\sum_{i=2}^n\gamma_i(\overline\lambda^{\,(i-1)}-1)
+\end{equation}
+и неравенства $0<\overline\lambda^{\,(i-1)}-1\le\overline\lambda-1$,
+$\vert\text{\,Im\,}(\zeta^{-1})\vert\le(2\vert\text{\,Re\,}\zeta\vert)^{-1}$,
+выводим
+\begin{equation}
+\ver D(y[0,u_0]-w[0,u_0^\prime])\ver_{L_2(Q)}\le c_2
+\widetilde\gamma\vert\Omega\vert^{1/2}
+\tau,\quad\text{где}\quad \widetilde\gamma=
+{\max}_{2\le i\le n}\vert\gamma_i\vert.
+\end{equation}
+
+Справедливы неравенство и формула
+$$
+{\ver D\eta\ver}_{L_2(Q)}\ge 3^{(1-n)/2}{\ver\Lambda_d^{1/2}\eta
+\ver}_{h,\tau}\; \forall \eta\in S,\quad
+\sum_{m=1}^M\tau\text{\,Im}^2(\widetilde\varkappa
+e^{i_*\mu t_m})=(T/2)\vert\widetilde\varkappa\vert^2
+$$
+(мы учли правое неравенство (2.2), а также  равенство
+$\text{Im}^2(\widetilde\varkappa e^{i_*\mu t})=
+\text{Re}^2\widetilde\varkappa\cdot\sin^2\mu t+\text{Re\,}
+\widetilde\varkappa\cdot
+\text{Im}\widetilde\varkappa\cdot\sin 2\mu t+
+\text{Im}^2\widetilde\varkappa\cdot\cos^2 \mu t$).
+Поэтому
+\begin{equation}
+\ver D(y[f,u_0]-w[f,u_0^\prime])\ver_{L_2(Q)}\ge c_3\vert Q\vert^{1/2}
+\lambda_d^{1/2}\vert\widetilde\varkappa\vert\,\vert
+\widetilde\rho_\gamma-1\vert.
+\end{equation}
+Заметим, что $\vert\widetilde\varkappa\vert\ge c_4\tau/
+[\overline\lambda-1+\mu\tau(\overline\lambda+1)]\ge c_4\pi^{-1}\tau/
+\overline\lambda$.
+
+Из неравенств (4.1) и (4.5), (4.2), (4.4) следует
+\begin{equation}
+\nord u y f 0\ge \vert Q\vert^{1/2}\{c_5\tau\lambda_d^{1/2}
+\vert\widetilde\rho_\gamma-1\vert/\overline\lambda-
+c_6(1+\widetilde\gamma)(\sqrt\tau+
+\vert h\vert)\}.
+\end{equation}
+Для любого $i_0=\overline{1,n-1}$ справедлива оценка снизу
+(см. формулу (4.3))
+\begin{gather*}
+\vert\widetilde\rho_\gamma-1\vert/\overline\lambda\ge
+\biggl\vert\sum_{i=i_0+1}^n\gamma_i\biggr\vert-\sum_{i=2}^{i_0}
+\vert\gamma_i\vert(\overline\lambda^{\,(i-1)}-1)/\overline\lambda- \\
+%
+-\sum_{i=i_0+1}^n\vert\gamma_i\vert\,\vert 1-(\overline\lambda^{\,(i-1)}-1)/
+\overline\lambda\vert \ge \biggr\vert\sum_{i=i_0+1}^n\gamma_i\biggl\vert- \\
+%
+-c_7 \widetilde\gamma(\omega_{i_0}^{-1}+
+{\max}_{i_0<j\le n}\omega_j);
+\end{gather*}
+мы учли, что
+$1-(\lambda^{(i-1)}/\overline\lambda)\le
+1-(1+{\max}_{i\le j\le n}\omega_j)^{-(n-i+1)}\le
+c_8{\max}_{i_0< j\le n}\omega_j$ при $i_0< i\le n$. 
+Выберем $i_0\in\widetilde{\cal K}$ так, чтобы $h_{i_0}=\widetilde h_{\min}$.
+Положим $k_i=N_i-1$ при $i=i_0$ либо $k_i=1$ при $i\ne i_0$;
+тогда $\lambda_d^{1/2}\ge \sqrt 2/\widetilde h_{\min}$.
+Пусть также $\varepsilon_0^{-1}\vert h\vert^2\le\tau\le
+X_{\min}^2\varepsilon_0$; тогда $\omega_{i_0}^{-1}+
+{\max}_{i_0<j\le n}\omega_j\le (1/2+\pi^2)
+\varepsilon_0$
+и при достаточно малом $\varepsilon_0=\varepsilon_0(n,\Vec\gamma)$ 
+имеем 
+$\vert\widetilde\rho_\gamma-1\vert/\overline\lambda
+\ge (1/2)\vert\sum_{i=i_0+1}^n\gamma_i\vert>0$.
+Поскольку $\sqrt\tau+\vert h\vert\le (\varepsilon_0^{1/2}+\varepsilon_0)
+\tau/\widetilde h_{\min}$, то теперь из оценки (4.6) следует
+${\ver D(u-y)[f,0]\ver}_{L_2(Q)}\ge \widetilde c(n,\Vec\gamma)
+\vert Q\vert^{1/2}2^{-(n+1)/2}\tau/\widetilde h_{\min}$.
+Оценка (1.13) доказана.
+
+2. Рассмотрим теперь метод (3.9). Будем исходить из неравенства
+типа (4.1), но с $z$ в роли $w$.
+
+Воспользуемся леммой 4 для $\cal P=\bbb\,\overline\partial_t+\aaa$. 
+Положим
+$$
+\widehat\varkappa=2a_h \left/ \biggl\{\mu\sum_{i=1}^n\alpha_i[(\ctg
+\frac{\mu\tau}{2})\omega_i+i_*(2+\omega_i)]\overline
+\lambda_{\langle i\rangle}\biggr\},\right.
+\quad
+\widehat\rho_\gamma=\sum_{i=1}^n\gamma_i\overline\lambda_{\langle i\rangle}.
+$$
+Функции 
+$y(x,t)=s(x)\text{\,Im\,}(\widehat\varkappa\widehat\rho_\gamma e^{i_*\mu t})$ 
+и $z(x,t)=s(x)\text{\,Im\,}(\widehat\varkappa e^{i_*\mu t})$ из
+$S_{h,\tau}$
+являются решениями уравнений (3.9) и (3.10) с выбранной $f$ и с начальными 
+функциями 
+$u_0(x)=\widehat u_0(x)s(x)$ и $u_0'(x)=\widehat u_0's(x)$
+соответственно
+(при некоторых $\widehat u_0$ и $\widehat u_0'$).
+
+Пусть $\widehat\lambda_\tau=\sum_{i=1}^n\alpha_i\omega_i
+\overline\lambda_{\langle i\rangle}$ --- собственное число оператора $\tau\aaa$.
+С помощью неравенств (2.18) (для 
+$\cal P=\bbb\,\overline\partial_t+\aaa$ и $\cal C=\Lambda_d\aaa^{-1}$)
+и $\bbb\le\overline E$ получаем
+\begin{gather*}
+\ver D(y[0,u_0]-z[0,u_0'])\ver_{L_2(Q)} \le (1+
+1/\sqrt 2)\ver(\Lambda_d\bbb\aaa^{-1})^{1/2} (y-z)\vert_{t=0}\ver_h \le\\
+%
+\le(1+1/\sqrt 2)\vert\Omega\vert^{1/2}2^{-n/2}\vert
+(\text{Im\,}\widehat\varkappa)(\widehat\rho_\gamma-1)\vert(\tau\lambda_d
+\overline\lambda/\widehat\lambda_\tau)^{1/2}.
+\end{gather*}
+Используя формулу 
+$\widehat\rho_\gamma-1=\sum_{i=1}^n\gamma_i(\overline\lambda_{\langle i\rangle}-1)$
+и неравенства $\overline\lambda_{\langle i\rangle}-1\le
+\underline\alpha^{-1}\widehat\lambda_\tau$ (см. (2.16)),
+$\vert\text{Im\,}\widehat\varkappa\vert\le 4\mu\tau^2 n\overline\alpha
+\overline\lambda/\widehat\lambda^2_\tau$, 
+выводим
+\begin{equation}
+\ver D(y[0,u_0]-z[0,u_0'])\ver_{L_2(Q)}\le c_1
+\widehat\gamma\vert\Omega\vert^{1/2}\mu
+\tau^2(\tau\lambda_d)^{1/2}(\overline\lambda/
+\widehat\lambda_\tau)^{3/2},
+\end{equation}
+где $\widehat\gamma={\max}_{1\le i\le n}\vert\gamma_i\vert$.
+
+Аналогично неравенству (4.5) имеем
+\begin{equation}
+\ver D(y[f,u_0]-z[f,u_0'])\ver_{L_2(Q)}\ge c_2\vert Q
+\vert^{1/2}\lambda_d^{1/2}\vert\widehat\varkappa\vert\,
+\vert\widehat\rho_\gamma-1\vert.
+\end{equation}
+Заметим, что 
+$\vert\widehat\varkappa\vert\ge c_3\tau/[\widehat\lambda_\tau+
+\mu\tau\sum_{i=1}^n\alpha_i(1+\omega_i)\overline\lambda_{\langle i\rangle}]
+\ge c_4\tau/\beta$, где 
+$\beta=\sum_{i=1}^n(\omega_i+M^{-1})\overline\lambda_{\langle i\rangle}$.
+
+Учитывая, что оценки (4.1) и (4.2) сохраняют силу при замене $w$ на $z$, 
+и применяя также оценки (4.7) и (4.8), получаем
+\begin{equation}
+\nord u y f 0\ge\vert Q\vert^{1/2}[c_5\tau\lambda_d^{1/2}
+\vert\widehat\rho_\gamma-1\vert/\beta-
+c_6(\sqrt\tau+\vert h\vert+M^{-3/2}\tau
+\lambda_d^{1/2}(\overline\lambda/\widehat\lambda_\tau)^{3/2})].
+\end{equation}
+Для любого $i_0=\overline{1,n}$ справедливы оценки $\overline\lambda/
+\widehat\lambda_\tau\le\underline\alpha^{-1}(1+\omega_{i_0}^{-1})$ и
+\begin{gather*}
+\vert\widehat\rho_\gamma-1\vert/\beta\ge\biggr\vert
+\sum_{1\le i\le n,\,i\ne i_0}\gamma_i\biggr\vert-\vert\gamma_{i_0}
+\vert(\overline\lambda_{\langle i_0\rangle}-1)/\beta- \\
+%
+-\sum_{1\le i\le n,\,i\ne i_0}\vert\gamma_i\vert\bigl[\vert 1-
+(\overline\lambda_{\langle i\rangle}/\beta)\vert+1/\beta\bigr]\ge
+\vert 1-\gamma_{i_0}\vert- \\
+-c_7\widehat\gamma[\omega_{i_0}^{-1}+(1+\omega_{i_0}^{-1})({\max}_{i\ne i_0}
+\omega_i+M^{-1})(1+{\max}_{i\ne i_0}\omega_i)^{n-2}];
+\end{gather*}
+мы использовали равенство 
+\begin{gather*}
+\beta-\overline\lambda_{\langle i \rangle}=
+(\omega_{i_0}+M^{-1})(\overline\lambda_{\langle i_0\rangle}-1)+ \\
++\sum_{i\ne i_0}(\omega_i+M^{-1})
+\overline\lambda_{\langle i \rangle}-(1+\omega_{i_0})
+\biggl(\prod_{j\ne i,i_0}(1+\omega_j)-1\biggr)-1+M^{-1} 
+\end{gather*}
+и оценки $\overline\lambda_{\langle i_0\rangle}-1\le (n-1){\max}_{i\ne i_0}
+\omega_i(1+{\max}_{i\ne i_0}\omega_i)^{n-2}$,
+$\overline\lambda_{\langle i\rangle}\le(1+\omega_{i_0})
+(1+{\max}_{i\ne i_0}\omega_i)^{n-2}$ при $i\ne i_0$,
+$\beta\ge\omega_{i_0}+M^{-1}$.
+
+Выберем $i_0\in\widehat{\cal K}$ так, чтобы $h_{i_0}=\widehat h_{\min}$, и
+положим $k_i=N_i-1$ при $i=i_0$ либо $k_i=1$ при $i\ne i_0$.
+Пусть также $\varepsilon_0^{-1}\vert h\vert^2\le\tau\le
+\min\{X_{\min}^2,T\}\varepsilon_0$. Тогда $\omega_{i_0}^{-1}+
+{\max}_{i\ne i_0}\omega_i\le (1/2+\pi^2)\varepsilon_0$, 
+$M^{-1}\le\varepsilon_0$
+и при достаточно малом 
+$\varepsilon_0=\varepsilon_0(n,\underline\alpha,\Vec\gamma)$ 
+имеем 
+$\vert\widehat\rho_\gamma-1\vert/\beta
+\ge (1/2)\vert 1-\gamma_{i_0}\vert>0$. Из оценки (4.9) теперь
+выводим
+${\ver D(u-y)[f,0]\ver}_{L_2(Q)}\ge \widehat c(n,\underline\alpha,
+\Vec\gamma)\vert Q\vert^{1/2}2^{-(n+1)/2}\tau/\widehat h_{\min}$.
+Оценка (1.14) доказана.
+
+В заключение несколько слов о результатах численных экспериментов,
+проведенных нами при $n=2$.
+Уже в случае кусочно-постоянных $f$ наблюдается преимущество 
+чисто неявного метода (3.3)
+в точности 
+вычисления градиента  над методами из \S\,1
+(для не слишком малого шага $\tau$). Обнаруживается также падение
+точности методов из \S\,1 при нарушении условий $\gamma_1,\gamma_2\in [0,1]$ или 
+$\alpha_1=\alpha_2=0.5$
+(более того, при $\alpha_1\ne\alpha_2$ 
+может теряться симметрия решения при симметричных данных).
+Последнее обстоятельство, на наш взгляд,
+естественно, но почему-то не нашло отражения в литературе.
+
+\begin{thebibliography}{99}
+
+\bibitem{Yan}
+Яненко Н.Н. {\em Метод дробных шагов решения многомерных задач
+математической физики.} -- Новосибирск: Наука, 1967. -- 195 c.
+
+\bibitem{Sam}
+Самарский А.А. {\em Теория разностных схем.} Учебное пособие. --
+М.: Наука, 1977. -- 656 с.
+
+\bibitem{Mar}
+Марчук Г.И. {\em Методы расщепления.} -- М.: Наука, 1988. -- 264 с.
+
+\bibitem{Kov}
+Ковеня В.М., Яненко Н.Н. {\em Метод расщепления в задачах газовой 
+динамики.} -- Новосибирск: Наука, 1981. -- 304 с.
+
+\bibitem{Ba}
+Бахвалов Н.С. {\em О свойствах оптимальных методов решения задач 
+математической физики} // Журн. вычисл. матем. и матем. физ.
+-- 1970. -- Т.\,10. -- \No\,3. -- С.\,555-568.
+
+\bibitem{Z1}
+Злотник А.А. {\em Оценка скорости сходимости в $L_2$ проекционно-разностных
+схем для параболических уравнений} // Журн. вычисл. матем. и матем. физ.
+-- 1978. -- Т.\,18. -- \No\,6. -- С.\,1454-1465.
+
+\bibitem{Z2}
+Злотник А.А. {\em Проекционно-разностные схемы для нестационарных
+задач с негладкими данными}:
+Дис.\;$\dotsc$ канд. физ.-матем. наук. -- М., 1979. --- 146 с.
+
+\bibitem{Oga}
+Оганесян Л.А., Руховец Л.А. {\em Вариационно-разностные методы решения
+эллиптических уравнений.} -- Ереван: Изд-во АН Арм\,ССР, 1979. -- 235 с.
+
+\bibitem{Z3}
+Злотник А.А. {\em Оценка скорости сходимости  в $V_2(Q_{\text{т}})$ 
+проекционно-разностных схем для параболических уравнений} //
+Вестн. Моск. ун-та. Сер. вычисл. матем. и кибернет. -- 1980. -- \No\,1. -- С.\,27-35.
+
+\bibitem{Z4}
+Злотник А.А. {\em О скорости сходимости проекционно-разностной схемы с
+расщепляющимся оператором для параболических уравнений} //
+Журн. вычисл. матем. и матем. физ.
+-- 1980. -- Т.\,20. -- \No\,2. -- С.\,422-432.
+
+\bibitem{Z5}
+Злотник А.А. {\em О скорости сходимости проекционно-разностных схем
+для параболических уравнений} // Докл. 5 Всесоюзн. конф.
+``Вариационно-разностные методы  в матем. физ.'' Ч.\,1. -- М., 1984. --
+С.\,72-80.
+
+\bibitem{Z6}
+Злотник А.А., Туретаев И.Д. {\em Точные оценки погрешности 
+некоторых двухслойных методов решения трехмерного уравнения
+теплопроводности} // Матем. сб. -- 1985. -- Т.\,128. -- \No\,4. -- С.\,530-544. 
+
+\bibitem{Z7}
+Злотник А.А. {\em К теории проекционно-сеточных методов решения задач 
+математической физики на классах негладких данных}:
+Дис.\,$\dotsc$ докт. физ.-матем. наук. -- М., 1992. -- 376 с.
+
+\bibitem{Za}
+Зайцева С.Б., Злотник А.А. {\em Оптимальные оценки погрешности одного
+локально-одномерного метода для многомерного уравнения 
+теплопроводности} //
+Матем. заметки. -- 1996. -- Т.\,60. -- \No\,2. -- С.\,185-197.
+
+\end{thebibliography}
+
+\vskip 2cm
+
+\post{\it Московский энергетический институт}{\it Поступила}
+\post{({\it технический университет})}{23.07.1996}
+
+\end{document}
+

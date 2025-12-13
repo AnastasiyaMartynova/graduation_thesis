@@ -1,0 +1,1079 @@
+\def\stat{ogaltsov}
+
+\def\tit{АВТОМАТИЧЕСКОЕ ИЗВЛЕЧЕНИЕ МЕТАДАННЫХ\\ ИЗ НАУЧНЫХ PDF-ДОКУМЕНТОВ$^*$}
+
+\def\titkol{Автоматическое извлечение метаданных из научных PDF-документов}
+
+\def\aut{А.\,В.~Огальцов$^{1}$, О.\,Ю. Бахтеев$^{2}$}
+
+\def\autkol{А.\,В.~Огальцов, О.\,Ю. Бахтеев}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Огальцов А.\,В.}
+\index{Бахтеев О.\,Ю.}
+\index{Ogaltsov A.\,V.}
+\index{Bakhteev O.\,Y.}
+
+
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проект 18-07-01441).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Высшая школа экономики; ЗАО <<Антиплагиат>>, 
+\mbox{ogaltsov@ap-team.ru}}
+\footnotetext[2]{Московский физико-технический институт; 
+ЗАО <<Антиплагиат>>, \mbox{bahteev@ap-team.ru}}
+
+%\vspace*{-6pt}
+
+
+
+\Abst{Исследуется извлечение метаданных документа. 
+Рас\-смат\-ри\-ва\-ют\-ся научные PDF-до\-ку\-мен\-ты на русском языке. 
+Особенностью формата PDF 
+является раз\-но\-об\-ра\-зие рас\-по\-ло\-же\-ния текста на 
+страницах документа. Это создает 
+труд\-ности для автоматического извлечения метаданных. Предложенный метод 
+извлечения метаданных основан на рас\-смот\-ре\-нии текстовых блоков, полученных при 
+помощи PDF-пар\-се\-ра, как объектов в~задаче машинного обучения. Признаковое 
+пространство содержит не только текс\-то\-вые признаки, но и~признаки, связанные 
+с~форматированием и~расположением блока, которые получены из PDF-пар\-се\-ра. В~работе 
+измерено качество классификации предложенного алгоритма и~проведено срав\-не\-ние 
+с~базовым алгоритмом.}
+
+
+\KW{извлечение метаданных; обработка естественного языка; признаки форматирования; 
+извлечение информации; метаописания}
+
+\DOI{10.14357/19922264180211}
+  
+\vspace*{2pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+
+\section{Введение}
+
+\vspace*{-2pt}
+
+Метаданные~--- это информация об объекте, рас\-по\-ло\-жен\-ном в~ка\-ком-ли\-бо репозитории. 
+Репозитории, такие как электронные биб\-лио\-те\-ки, Semantic Web или Open Archives, 
+могут содержать миллионы документов. Авторы достаточно ред\-ко предоставляют 
+метаданные, а~электронные документы, со\-бран\-ные в~сети Интернет автоматически, 
+име\-ют метаданные еще реже; извлечение метаданных из документов вруч\-ную 
+пред\-став\-ля\-ет собой труд\-ную задачу. По этой причине возникает не\-об\-хо\-ди\-мость 
+в~сис\-те\-мах автоматического извлечения метаданных из самих документов. В~данной 
+статье рас\-смат\-ри\-ва\-ет\-ся извлечение \textit{Заголовка, Автора, Аннотации, 
+Содержания, Библиографии.}
+
+Задача извлечения метаданных может быть решена с~помощью правил. Преимущество 
+этого подхода в~том, что его достаточно легко реализовать без размеченного 
+корпуса. Однако ни правила, ни регулярные выражения не могут обеспечить 
+до\-ста\-точ\-но\-го покрытия все\-воз\-мож\-ных стилей форматирования, 
+так как сам процесс 
+со\-зда\-ния правил содержит в~себе предположение о~схо\-жести форматирования 
+ис\-сле\-ду\-емых документов~[1--3]. Недостатки правил за\-клю\-ча\-ют\-ся также 
+в~не\-об\-хо\-ди\-мости экспертных знаний и~до\-ста\-точ\-но большого времени, необходимого для 
+их создания.
+
+Помимо правил существуют еще несколько подходов к~решению задачи извлечения 
+метаданных. Основной из них~--- рас\-смат\-ри\-вать текстовые блоки, полученные из 
+pdf-пар\-се\-ра, как объекты. Ставится задача классификации рас\-смат\-ри\-ва\-емо\-го блока 
+с~признаковым про\-стран\-ст\-вом, содержащим информацию о~форматировании и~расположении 
+блока, а~так\-же текс\-то\-вую и~кон\-текст\-ную информацию.
+{\looseness=1
+
+}
+
+Наиболее известные алгоритмы обуче\-ния с~учителем, при\-ме\-ня\-емые в~данной задаче: 
+Support Vector Machine (SVM)~\cite{Han, Kovacevic}, Hidden Markov Models (HMMs)~\cite{Seymore} 
+и~Conditional Random Fields (CRFs)~\cite{Councill}.
+
+Существует семейство подходов, основанных на нейронных 
+сетях~\cite{Rangoni, Rangoni_1}. Здесь объектом является изображение PDF-до\-ку\-мен\-та. 
+Для обработки 
+изображения применяются OCR (Optical Character Recognition) сис\-те\-мы, но они показывают низкую скорость 
+и~точ\-ность работы, поэтому в~данной \mbox{статье} этот подход не используется.
+
+Качество работы алгоритмов извлечения метаданных час\-то измеряется на небольшой 
+коллекции достаточно однотипных документов, например из одной об\-ласти знания 
+или одного журнала~\cite{Kovacevic, Tao}.
+
+\begin{table*}[b]\small %tabl1
+%\vspace*{-12pt}
+    \begin{center}
+\Caption{Описание признаков}
+\label{tab:table1}
+\vspace*{2ex}
+
+
+    \begin{tabular}{|c|l|l|} %\multicolumn{1}{|c|}{\raisebox{-6pt}[0pt][0pt]{
+        \hline
+\multicolumn{2}{|c|}{Признаки} & \multicolumn{1}{c|}{Описание} \\
+\hline
+
+\multicolumn{1}{|c|}{\raisebox{-60pt}[0pt][0pt]
+{\tabcolsep=0pt\begin{tabular}{c}Текстовые\\ признаки\end{tabular}}}& isUpper & Написан ли 
+весь текст в~верхнем регистре \\
+%\cline{2-3}
+        & blockLen & Число токенов в~блоке \\
+        %\cline{2-3}
+        & hasDigit & Есть ли в~блоке  цифра \\
+        %\cline{2-3}
+        &NumOfPoints & Число точек\\
+        %\cline{2-3}
+        &NumOfCommas & Число  запятых \\
+        %\cline{2-3}
+        & NumOfUpCase & Число  символов в~верхнем регистре \\
+        %\cline{2-3}
+        & UpcaseFraction & Доля  символов в~верхнем регистре \\
+        %\cline{2-3}
+        & NumOfDigits & Число цифр\\
+        %\cline{2-3}
+        & NumOfBibSymbols & Число  символов из словаря частых слов библиографии \\
+        %\cline{2-3}
+        & hasYear & Есть ли год\\
+        %\cline{2-3}
+        & hasAnno & Есть ли слово аннотация \\
+        %\cline{2-3}
+        &isEmpty & Является ли пустым  (без текста) \\
+        %\cline{2-3}
+        & hasKeyW & Есть ли слова  из словаря ключевых слов \\
+        %\cline{2-3}
+            \hline
+   \multicolumn{1}{|c|}{\raisebox{-16pt}[0pt][0pt]
+   { \tabcolsep=0pt\begin{tabular}{c}Признаки\\ форматирования\end{tabular} }}& 
+Max/Mean/MedianAdv & 
+\tabcolsep=0pt\begin{tabular}{l}Максимальное, среднее и~медианное значение толщины\\ 
+символов блока\end{tabular} \\
+\cline{2-3}
+        & Max/Mean/MedianCharH & 
+\tabcolsep=0pt\begin{tabular}{l}Максимальное, среднее и~медианное значение высоты\\ 
+символов блока\end{tabular} \\
+\cline{2-3}
+        & fontIndex & Индекс семейства шрифтов \\
+        %\cline{2-3}
+            \hline
+      \multicolumn{1}{|c|}{\raisebox{-22pt}[0pt][0pt]
+      { \tabcolsep=0pt\begin{tabular}{c}Признаки\\ расположения\end{tabular} }}& normBlockH/W/A & 
+Нормированные высота, ширина и~площадь блока\\
+%\cline{2-3}
+ & verticalPos & Позиция сверху  страницы \\
+% \cline{2-3}
+        & leftIndent & Левый отступ\\
+   %     \cline{2-3}
+        & rightIndent & Правый отступ\\
+     %   \cline{2-3}
+        &relativeBlockCenter & Позиция  центра блока \\
+        %\cline{2-3}
+            \hline
+                  \multicolumn{1}{|c|}{\raisebox{-38pt}[0pt][0pt]
+{    \tabcolsep=0pt\begin{tabular}{c}Контекстные\\ признаки\end{tabular} }}&  
+    sameFontAbove/Below &  Блок сверху/снизу имеет такой же индекс шрифта\\
+    \cline{2-3}
+        & sameCenterAbove/Below & 
+Блок сверху/снизу имеет такой же центр \\
+\cline{2-3}
+        &{sameLeftIndentAbove/Below} & 
+Блок сверху/снизу имеет такой же левый отступ\\
+\cline{2-3}
+        &{hasYearInNeigh} & В фиксированном окне вокруг блока есть год \\
+        \cline{2-3}
+        &{isEmptyAbove/Below} & Блок  сверху/снизу пуст \\
+        \cline{2-3}
+        &{hasAnnoInNeigh} & \tabcolsep=0pt\begin{tabular}{l}В~фиксированном окне вокруг блока 
+        есть слова из словаря\\ аннотации\end{tabular} \\
+        \cline{2-3}
+        &{isCharHSmallerThanInNeigh} & 
+\tabcolsep=0pt\begin{tabular}{l}Средний размер шрифта блока меньше, чем средний размер\\ 
+шрифта в~фиксированном окне\end{tabular} \\
+%\cline{2-3}
+         \hline
+ \end{tabular}
+ \end{center}
+ \end{table*}   
+
+Научная новизна данной работы заключается в~том, что авторы не ограничиваются 
+типом \mbox{\textit{Статья}}, а~работают с~документами различных типов (\textit{Статья, 
+Автореферат, Диссертация, Монография, Учебное пособие}) на рус\-ском языке. Оценка\linebreak 
+качества алгоритмов производится при помощи\linebreak
+ таких мет\-рик, как точ\-ность, полнота 
+и~F-ме\-ра, на коллекции PDF-до\-ку\-мен\-тов различных жанров, полученной авторами из 
+открытых источников. Проведено сравнение результатов с~базовым SVM-ал\-го\-рит\-мом~\cite{Kovacevic}. 
+По сравнению с~базовым алгоритмом использовалось больше 
+небинарных при\-зна\-ков и~расширенная информация о~расположении блока.
+
+
+\section{Формальная постановка задачи}
+
+Задана выборка 
+$$
+\mathfrak{D} = \left\{({\bf{x}}_i, y_i)\right\}\,, \enskip i = 1,\dots,m\,,
+$$ 
+состоящая из множества пар <<объ\-ект--класс>>, $\mathbf{x}_i \hm\in  \mathbb{R}^n$. 
+Каждый объект~$\mathbf{x}_i$ принадлежит одному из~$Z$~классов с~меткой $y_i \hm\in 
+\mathbb{Y} \hm= \{1,\dots,Z\}.$
+
+Пусть также задано множество моделей~$\mathfrak{F}$, среди которых производится 
+поиск подходящей модели классификации объектов выборки~$\mathfrak{D}$.
+Требуется найти отоб\-ра\-же\-ние $\hat{f} \hm\in \mathfrak{F}: \mathbb{R}^d \hm\to 
+\mathbb{Y}$, которое бы минимизировало эмпирический риск на вы\-бор\-ке~$\mathfrak{D}$:
+{\looseness=1
+
+}
+
+\noindent
+$$
+\hat{f} = \underset{f \in \mathfrak{F}}{\argmin}\sum\limits_{\mathbf{x}_i, y_i \in 
+\mathfrak{D}}\left[f({\bf{x}}_i) \ne y_i\right].
+$$
+
+
+\section{Описание метода и~признаков}
+
+Для получения блоков документ был обработан парсером. Был выбран парсер Apache 
+PDFBox~\cite{PDFBox}, так как он показал наилучшую ско\-рость работы и~воз\-мож\-ность 
+на\-строй\-ки. Парсер возвращает текс\-то\-вый блок, который является прямоугольником 
+с~текс\-том внут\-ри. Все признаки блока можно раз\-де\-лить на четыре группы (описание 
+всех признаков содержится в~табл.~\ref{tab:table1}):
+\begin{enumerate}[(1)]
+\item \textbf{текстовые признаки.} Данная группа извлекалась из текс\-та 
+напрямую. Признаки этой группы проверяют наличие в~строке клю\-че\-вых слов 
+и~собирают различные текс\-то\-вые статистики;
+\item \textbf{признаки форматирования}. В~эту группу входят такие 
+при\-зна\-ки, как размер шриф\-та, семейство шриф\-тов и~др.;
+
+\item \textbf{признаки расположения}. В~этой группе содержится информация 
+о~положении блока на странице, такая как правый и~левый отступ, координата 
+цент\-ра блока и~др.;
+\item \textbf{контекстные признаки}. Эти признаки описывают контекст 
+рас\-смат\-ри\-ва\-емо\-го блока, как пред\-ло\-же\-но в~\cite{Tao}.
+\end{enumerate}
+
+\vspace*{-12pt}
+
+\section{Эксперимент}
+
+\subsection{Описание коллекции}
+
+Коллекция содержит 550 размеченных PDF-до\-ку\-мен\-тов из различных областей знаний 
+и~разных типов (табл.~2).
+
+
+  
+Одна из основных характеристик задачи~--- сильная несбалансированность классов 
+(табл.~3). Видно, что общее чис\-ло блоков в~табл.~3 
+варьируется для категорий метаданных. Это связано с~эвристиками, примененными на 
+этапе обработки документа. Например, для заголовка, автора и~аннотации 
+обрабатывалась только первая и~вторая страницы документа, так как обработка 
+занимает достаточно много времени и~нет не\-об\-хо\-ди\-мости обрабатывать всю 
+диссертацию, чтобы извлечь данные категории. Для библиографии извлекались 
+последние $k = \max(0{,}1p, 1)$ стра\-ниц документа, для содержания~--- первые $n\hm = 
+\max(0{,}1p, 4)$ стра\-ниц документа, где $p$~--- чис\-ло стра\-ниц в~документе. 
+Количество блоков с~автором меньше, чем чис\-ло работ. Это вызвано ошибками работы 
+пар\-се\-ра, когда блок с~именем автора не извлекался.
+
+%\begin{table*}
+{\small %tabl2
+    \begin{center}
+    \vspace*{6pt}
+    
+    \noindent
+{{\tablename~2}\ \ \small{Распределение жанров}}
+
+%    \label{tab:table2}  
+\vspace*{2ex}
+
+    \begin{tabular}{|l|c|}
+        \hline
+       \multicolumn{1}{|c|}{Жанр} & Число документов \\ 
+        \hline
+        Статья & 148 \\ 
+       % \hline
+        Автореферат & 161 \\ 
+       % \hline
+        Диссертация & 196 \\ 
+        %\hline
+        Монография, пособие & \hphantom{9}45 \\
+        \hline
+    \end{tabular}
+    \end{center}}
+%\end{table*}
+%\begin{table*}
+{\small %tabl3
+\vspace*{3pt}
+\begin{center}
+  \noindent
+{{\tablename~3}\ \ \small{Распределение блоков по категориям}}
+
+    \vspace*{2ex}
+    
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \multicolumn{1}{|c|}{Категория} & 
+        \tabcolsep=0pt\begin{tabular}{c}Число блоков\\ данной\\ категории\end{tabular} & 
+        \tabcolsep=0pt\begin{tabular}{c}Полное число\\ извлеченных\\ 
+блоков\end{tabular} \\ 
+\hline
+        Заголовок & 957 & 76\,986 \\ %\hline
+        Автор & 432 & 76\,986 \\ %\hline
+        Аннотация & 1386\hphantom{9} & 76\,986 \\ %\hline
+        Библиография & 45\,323\hphantom{\,99} & 316\,015\hphantom{9} \\ %\hline
+        Содержание &  5866\hphantom{9} & 309\,681\hphantom{9} \\
+        \hline
+    \end{tabular}
+    \end{center}
+    }
+%    \end{table*}
+
+\setcounter{table}{3}
+
+
+\subsection{Описание эксперимента}
+
+Для обоснованного выбора алгоритма была снижена раз\-мер\-ность данных 
+с~по\-мощью t-SNE~\cite{Maaten}. Визуализация пред\-став\-ле\-на на рис.~1. 
+Видно, что в~про\-стран\-ст\-ве сниженной раз\-мер\-ности данные не 
+являются линейно разделимыми, но есть однородные клас\-те\-ры. Этот факт по\-слу\-жил 
+одним из обос\-но\-ва\-ний применения ан\-самб\-ля ре\-ша\-ющих деревьев. Также этот алгоритм 
+показал наилучшее качество во время экспериментов.
+
+
+Для проведения экспериментов выборка была разделена на обуча\-ющую и~тес\-то\-вую 
+в~пропорции~80/20 стратифицированно в~соответствии с~табл.~3. 
+Качество измерялось стандартными мет\-ри\-ка\-ми бинарной классификации: точ\-ность, 
+пол\-но\-та и~F-ме\-ра. Результаты приведены в~табл.~\ref{tab:table4}.\linebreak Качество работы 
+алгоритма в~данной работе срав\-ни\-ва\-лось с~базовым алгоритмом, взятым из 
+\mbox{статьи}~\cite{Kovacevic}. Отличия признакового про\-стран\-ст\-ва базового алгоритма от 
+предложенного:
+\begin{itemize}
+\item
+в базовом алгоритме есть признаки, со\-би\-ра\-ющие раз\-лич\-ные html-те\-ги, так как 
+использовался другой pdf-пар\-сер. В~проведенном эксперименте такие признаки не 
+собирались;
+
+\item
+в отличие от базового, в~предложенном алгоритме использовались небинарные 
+текстовые статистики, больше признаков расположения и~кон\-текст\-ные признаки.
+\end{itemize}
+
+
+В базовом алгоритме использовался SVM и~извлекалась только первая страница 
+статей узкой на\-прав\-лен\-ности. Базовый алгоритм показал низ-\linebreak\vspace*{-12pt}
+
+ { \begin{center}  %fig1
+ \vspace*{9pt}
+  \mbox{%
+ \epsfxsize=74.724mm 
+ \epsfbox{oga-1.eps}
+ }
+
+
+\end{center}
+
+
+\noindent
+{{\figurename~1}\ \ \small{Визуализация данных при помощи t-SNE: 
+    \textit{1}~--- заголовок;
+        \textit{2}~--- автор;  \textit{3}~--- биб\-лио\-гра\-фия;
+            \textit{4}~--- содержание;
+        \textit{5}~--- другое}}
+}
+
+%\vspace*{9pt}
+
+\setcounter{figure}{1}
+
+\begin{table*}\small %tabl4
+\begin{center}
+\Caption{Результаты эксперимента
+    \label{tab:table4}}
+\vspace*{2ex}
+
+    \begin{tabular}{|l|l|c|c|c|}
+        \hline
+\multicolumn{1}{|c|}{Категория}&\multicolumn{1}{c|}{Метод} &
+{P} &
+{R} &
+{F} \\
+\hline
+      & 
+                  {Предложенный} & \textbf{0,74}&
+\textbf{0,79} &
+        \textbf{0,76} \\
+        %\cline{2-5}
+     {Заголовок}   & Предложенный только на текстовых 
+признаках & 0,67 &
+        0,66 &
+        0,66 \\
+       % \cline{2-5}
+        & Базовый & 0,20 &
+0,77 &
+    0,32 \\
+        \hline
+ & {Предложенный} & \textbf{0,78}&
+0,71 &
+    \textbf{0,74} \\
+    %\cline{2-5}
+       {Автор}  & Предложенный только на текстовых 
+признаках & 0,45 &
+        0,74 &
+        0,56 \\
+       % \cline{2-5}
+        & Базовый & 0,33 &
+        \textbf{0,75} &
+        0,46 \\
+                \hline
+ &  
+        {Предложенный} & \textbf{0,76} 
+&\textbf{0,85} &
+\textbf{0,80} \\
+%\cline{2-5}
+              Библиография  & Предложенный только на текстовых 
+признаках & 0,59 &
+        \textbf{0,85} &
+0,69 \\
+%\cline{2-5}
+        & {Базовый} & ---& ---&    --- \\
+           \hline
+& Предложенный & \textbf{0,72} 
+&
+\textbf{0,74} &
+        \textbf{0,73} \\
+       % \cline{2-5}
+         {Содержание}    & Предложенный только на текс\-то\-вых 
+признаках & 0,71 & 0,69 & 0,70 \\
+%\cline{2-5}
+        & Базовый & --- & --- &--- \\
+        \hline
+ &  {Предложенный} & \textbf{0,73}  &
+\textbf{0,71} & \textbf{0,72} \\
+%\cline{2-5}
+     Аннотация   & Предложенный только на текс\-то\-вых 
+признаках & 0,22 & 0,54 & 0,31 \\
+%\cline{2-5}
+        & Базовый & 0,09 & 0,63 & 0,16 \\
+                \hline
+            \end{tabular}
+    \end{center}
+    \vspace*{-6pt}
+\end{table*}
+
+
+{ \begin{center}  %fig2
+ %\vspace*{0.5pt}
+  \mbox{%
+ \epsfxsize=78.254mm 
+ \epsfbox{oga-2.eps}
+ }
+
+
+\end{center}
+
+
+\noindent
+{{\figurename~2}\ \ \small{Кривые полнота--точ\-ность:
+           \textit{1}~--- заголовок;
+               \textit{2}~--- автор; 
+           \textit{3}~--- биб\-лио\-гра\-фия; \textit{4}~--- содержание;
+    \textit{5}~--- аннотация}}
+}
+
+\vspace*{9pt}
+
+\setcounter{figure}{2} 
+
+
+
+\noindent
+кое качество, так как 
+в~текущей по\-ста\-нов\-ке 
+эксперимента стиль форматирования документов очень сильно 
+варьируются.
+
+
+В табл.~\ref{tab:table4} приведены результаты эксперимента, в~котором 
+признаковое пространство со\-сто\-яло только из текстовых статистик. Вид\-но, что 
+расширение признакового про\-стран\-ст\-ва информацией о~расположении и~форматировании 
+блока заметно повышает качество классификации.
+
+Из-за несбалансированности классов была проведена редукция блоков, относящихся 
+к~классу \textit{Прочее}. Если~150~элементов до и~после блока \textit{Прочее} не 
+содержали других классов, то такой блок удалялся. Проводились эксперименты 
+с~порогом ве\-ро\-ят\-ности классификации и~весами классов. Эксперименты показали, что 
+порог классификации~0,5 и~вес редкого класса, равный двум, демонстрирует 
+наилучший результат для  \textit{Содержания, Библиографии, Аннотации}. Для 
+\textit{Заголовка} и~\textit{Автора} перенос порога классификации в~0,6 и~0,65 
+соответственно в~ком\-би\-на\-ции с~весом редкого класса, равным~20, дали 
+повышение точ\-ности ($+0{,}05$ и~$+0{,}18$) с~падением пол\-но\-ты ($-0{,}02$ и~$-0{,}16$), 
+но с~небольшим повышением F-ме\-ры. 
+Кривая пол\-но\-та--точ\-ность изоб\-ра\-же\-на на 
+рис.~2.
+
+ 
+
+
+
+
+
+
+
+Был проведен анализ значимости признаков, которая была получена стандартным для 
+алгоритма Random Forest способом~\cite{Breiman}. Три первых по значимости 
+при\-зна\-ка для каж\-до\-го класса приведены в~табл.~5. 
+Видно, что почти в~каждом классе\linebreak\vspace*{-12pt}
+
+%\begin{table*}
+{\small %tabl5
+\vspace*{1pt}
+    \begin{center}
+    \noindent
+{{\tablename~5}\ \ \small{Результаты анализа значимости признаков}}
+    \vspace*{2ex}
+    
+    \begin{tabular}{|l|l|c|}
+        \hline
+ \multicolumn{1}{|c|}{Категория}& \multicolumn{1}{c|}{Признак} &
+        \multicolumn{1}{c|}{Значимость} \\
+        \hline
+        & {NumOfUpCase} & 0,65 \\
+%\cline{2-3}
+{Заголовок}        & {verticalPos} & 0,06 
+\\
+%\cline{2-3}
+        & {MeanAdv} & 0,06 \\
+          \hline
+&  {UpcaseFraction} & 0,34 \\
+%\cline{2-3}
+    Автор     & {NumOfUpCase} & 0,23\\
+%\cline{2-3}
+        & {verticalPos} & 0,11\\
+        %\cline{2-3}
+                \hline
+ &  NumOfPoints & 0,41\\
+        %\cline{2-3}
+        Содержание        & blockLen & 0,18 
+\\
+%\cline{2-3}
+        & {NumOfDigits} & 0,08\\
+        %\cline{2-3}
+                \hline
+&  {blockLen} & 0,14\\
+        %\cline{2-3}
+        Библиография  & {relativeBlockCenter} & 
+0,12 \\
+%\cline{2-3}
+        & {normBlockW} & 0,10\\
+        %\cline{2-3}
+                \hline
+ & {verticalPos} & 0,10\\
+        %\cline{2-3}
+               Аннотация & normBlockA & 0,10\\
+        %\cline{2-3}
+        & MeanAdv & 0,09\\
+        %\cline{2-3}
+        \hline  
+     \end{tabular}
+               \vspace*{1pt}   
+   \end{center}
+   }
+%\end{table*}
+
+\setcounter{table}{5}
+
+\end{multicols}
+
+\begin{figure*} %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=165.062mm 
+ \epsfbox{oga-3.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+    \Caption{Визуализация данных для заголовка
+    (\textit{1}~--- заголовок; \textit{2}~--- прочее)
+     в~проекции на про\-стран\-ст\-во 
+значимых при\-зна\-ков }
+    \label{fig:figure3}
+\end{figure*}
+
+\begin{multicols}{2}
+
+\noindent
+ признаки расположения и~форматирования вошли в~число значимых. 
+Данные были визуализированы в~проекции на про\-стран\-ст\-во значимых при\-зна\-ков. На 
+рис.~\ref{fig:figure3} и~\ref{fig:figure4} показаны примеры таких визуализаций 
+для категорий \textit{Заголовок} и~\textit{Автор}. На рисунках видны сегменты, 
+где преимущественно расположен целевой класс.
+
+
+
+
+
+    
+\vspace*{-6pt}
+
+
+\subsection{Анализ ошибок}
+
+С целью выявления основных ошибок предложенного алгоритма был произведен анализ 
+результатов.
+
+\vspace*{-12pt}
+
+\paragraph*{Заголовок.}
+В~табл.~5 видно, что для категории \textit{Заголовок} самым 
+значимым признаком является число символов в~верхнем регистре. Поэтому 
+лож\-но-по\-ло\-жи\-тель\-ные примеры наблюдаются вбли\-зи заголовка по расположению 
+и~с~большим 
+количеством символов в~верхнем ре\-гистре.
+
+\textbf{Примеры:}
+
+\begin{itemize}
+\item[$\bullet$]
+\textit{ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ УПРАВ\-ЛЕ\-НИЯ}
+
+\item[$\bullet$]
+\textit{05.13.11 МАТЕМАТИЧЕСКОЕ И ПРО\-ГРАМ\-МНОЕ ОБЕСПЕЧЕНИЕ}
+\end{itemize}
+
+Основной причиной лож\-но-от\-ри\-ца\-тель\-ных примеров оказались длинные заголовки 
+с~форматированием, близким к~обыкновенному тексту. 
+Примеры:
+
+\begin{itemize}
+\item[$\bullet$]
+\textit{Французское органное искусство Барокко: музыка, органостроение, 
+исполнительство}\\[-14.5pt]
+
+\item[$\bullet$]
+\textit{Нейтральный внешнеполитический курс Нидерландов: от Мюнстерского мира 
+1648~г.\ до конца Первой мировой войны}\\[-14.5pt]
+
+\item[$\bullet$]
+\textit{Музыкальная жизнь Москвы XIX столетия и~ее отражение в~фортепианной 
+практике}
+\end{itemize}
+
+\vspace*{-13pt}
+
+\paragraph*{Автор.}
+
+Если извлеченный блок располагался вверху страницы и~содержал имя и~фамилию, то 
+наблюдался лож\-но-по\-ло\-жи\-тель\-ный пример. Примеры такого рода наблюдались, когда 
+блок содержал комбинацию точек и~символов в~верх\-нем регистре, схожую с~именем 
+и~фамилией.
+
+\textbf{Примеры:}
+
+\begin{itemize}
+\item[$\bullet$]
+\textit{им.\ М.\,В.~Келдыша РАН}\\[-15pt]
+
+\item[$\bullet$]
+\textit{(ПЖ). Одним}
+
+Ложно-отрицательные примеры возникали, когда блок с~автором находился в~очень 
+нетипичном месте.\\[-15pt]
+\end{itemize}
+
+\end{multicols}
+
+\begin{figure*} %fig4
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=165.459mm 
+ \epsfbox{oga-4.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+       \Caption{Визуализация данных для автора 
+       (\textit{1}~--- автор; \textit{2}~--- прочее)
+       в~проекции на про\-стран\-ст\-во 
+значимых при\-зна\-ков
+}
+    \label{fig:figure4}
+\end{figure*}
+
+\begin{multicols}{2}
+
+\begin{itemize}
+\item[$\bullet$]
+\textit{Огальцов А.\,В.} (если находится где-то в~очень нетипичном месте 
+страницы)
+\end{itemize}
+
+\vspace*{-10pt}
+
+\paragraph*{Аннотация.}
+
+Самые частые ошибки обоих типов в~этой категории возникали в~связи с~тем, что 
+блоки с~аннотацией легко спутать с~обычным текс\-том.
+
+\vspace*{-10pt}
+
+\paragraph*{Содержание.}
+
+Ложно-положительные примеры~--- это в~основном блоки с~большим чис\-лом точек, 
+скорее всего вызванных ошибками обработки.
+
+\textbf{Примеры:}
+
+\begin{itemize}
+
+\item[$\bullet$]
+\textit{В ТОМСКОЙ ОБЛАСТИ ............}
+
+\item[$\bullet$]
+\textit{Случай d(k)=0 ...........................}
+
+Ложно-отрицательные примеры вызваны форматированием, близким к~обычному тексту.
+
+\item[$\bullet$]
+\textit{Функции ввода, вывода и~работы с~символами}
+
+\item[$\bullet$]
+\textit{Циклы, блоки и~присваивания}
+\end{itemize}
+
+\vspace*{-10pt}
+
+\paragraph*{Библиография.}
+
+Ложно-положительные примеры этой категории похожи на биб\-лио\-гра\-фию 
+расположением и~форматированием.
+
+\textbf{Примеры:}
+
+\begin{itemize}
+\item[$\bullet$]
+\textit{Тел.: (3472) 1234567, 1234567}
+
+\item[$\bullet$]
+\textit{Печать офсетная. Гарнитура NewtonC. Бумага офсетная}
+
+\item[$\bullet$]
+\textit{как отмечают А.\,Я.~Гаев и~др. 2005, нереально.}
+
+
+Ложно-отрицательные примеры были вызваны сильной схо\-жестью с~обычным текс\-том.
+\end{itemize}
+
+
+Большое число блоков с~обычным текст\-ом делает возможным ситуацию сходства этих 
+блоков с~целевыми по ряду признаков, поэтому одним из на\-прав\-ле\-ний улуч\-ше\-ния 
+является снижение несбалансированности выборки различными методами.
+    
+    
+\section{Заключение}
+
+В работе была исследована возможность применения методов машинного обучения 
+к~задаче извлечения метаданных. Использовано расширенное признаковое про\-стран\-ст\-во, 
+вклю\-ча\-ющее не только текс\-то\-вые признаки, но также признаки форматирования 
+и~расположения, которые оказались важ\-ны\-ми в~решении проб\-ле\-мы большой вариативности 
+стилей форматирования документа. Измерено качество предлагаемого алгоритма на 
+коллекции научных PDF-до\-ку\-мен\-тов на рус\-ском языке, взятых из открытых 
+источников. Проведен анализ ошибок. Показано, что предложенный алгоритм 
+значительно превосходит базовый на документах различных типов.
+
+Будущие исследования будут направлены на расширение признакового пространства 
+и~на обзор возможностей новых PDF-пар\-се\-ров. Также будет исследована воз\-мож\-ность 
+применения графических моделей, таких как услов\-ные случайные поля.
+
+\bigskip
+
+Авторы выражают свою благодарность к.ф.-м.н.\ Чеховичу~Ю.\,В.\ за ценные советы 
+при планировании исследования и~рекомендации по оформлению статьи.
+
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{Bergmark}
+  \Au{Bergmark D.} Automatic extraction of reference linking information 
+from online documents.~--- Ithaca, NY, USA: Cornell University, 2000. 20~p.
+
+\bibitem{Klink}
+\Au{Klink S., Dengel~A., Kieninger~T. } Document structure analysis 
+based on layout and textual features~//  Workshop (International) on 
+Document Analysis Systems Proceedings.~---
+        Boston, MA, USA, 2000. P.~99--111.
+
+\bibitem{Mao}
+    \Au{Mao S., Kim J.\,W., Thoma~G.\,R.} A~dynamic feature generation 
+system for automated metadata extraction in preservation of digital materials~// 
+1st  Workshop (International) on Document Image Analysis for 
+Libraries Proceedings.~--- Palo Alto, CA, USA: IEEE Computer Society, 2004. P.~225--232.
+    
+\bibitem{Han}
+\Au{Han H., Giles C.\,L., Manavoglu~E., Zha~H., Zhang~Z., Fox~E.\,A.} 
+Automatic document metadata extraction using support vector machines~// 
+3rd ACM/IEEE-CS Joint Conference on Digital Libraries Proceedings, 2003. 
+P.~37--48.
+
+\bibitem{Kovacevic}
+\Au{Kovacevi$\acute{\mbox{c}}$~A., Ivanovi$\acute{\mbox{c}}$~D., Milosavljevi$\acute{\mbox{c}}$~B., 
+Konjovi$\acute{\mbox{c}}$~Z., Surla~D.} 
+Automatic extraction of metadata from scientific publications for CRIS systems~// 
+Program, 2011. Vol.~45. Iss.~4. P.~376--396.
+
+\bibitem{Seymore}
+\Au{Seymore K., McCallum~A., Rosenfeld~R.} Learning hidden Markov model 
+structure for information extraction~// AAAI~99 Workshop on 
+Machine Learning for Information Extraction Proceedings, 1999. P.~37--42.
+
+\bibitem{Councill}
+\Au{Councill I., Giles~C.\,L., Kan~M.-Y.} ParsCit: An open-source CRF 
+reference string parsing package~// 6th Conference 
+(International) on Language Resources and Evaluation Proceedings.~---
+Marrakech, Morocco, 2008. P.~661--667.
+
+
+\bibitem{Rangoni}
+\Au{Rangoni Y., \mbox{Bela$\ddot{\mbox{\!\hspace*{-0.2pt}{\ptb{\!\i}}}}$d~A.}} Document logical structure analysis based on 
+perceptive cycles~// IAPR Workshop on Document Analysis Systems, 2006. P.~117--128.
+
+\bibitem{Rangoni_1}
+\Au{Rangoni Y., Bela$\ddot{\mbox{\!\hspace*{-0.2pt}{\ptb{\!\i}}}}$d~A., Vajda~S.} Labelling logical structures of 
+document images using a~dynamic perceptive neural network~// Int. 
+J.~Doc. Anal. Recog., 2012. Vol.~15. Iss.~1. P.~45--55.
+
+\bibitem{Tao}
+\Au{Tao X., Tang~Z., Xu~C.} Document page structure learning for fixed-layout 
+e-books using conditional random fields~// 
+ Document Recognition and Retrieval XXI:
+ Proc. SPIE, 2014. 
+Vol.~9021. P.~1--9.
+
+\bibitem{PDFBox}
+Apache PDFBox. {\sf http://pdfbox.apache.org}.
+
+\bibitem{Maaten}
+\Au{Van der Maaten L.\,J.\,P., Hinton~G.\,E.} Visualizing 
+high-dimensional data using t-SNE~// J.~Mach. Learn. Res., 2008. 
+Vol.~9. P.~2579--2605.
+
+\bibitem{Breiman}
+\Au{Breiman L.} Random forests~// Mach. Learn., 2001. Vol.~45. P.~5--32.
+
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 20.12.17}}
+
+\vspace*{6pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{8pt}
+
+
+\def\tit{AUTOMATIC METADATA EXTRACTION FROM SCIENTIFIC\\ PDF DOCUMENTS}
+
+\def\titkol{Automatic metadata extraction from scientific PDF documents}
+
+\def\aut{A.\,V.~Ogaltsov$^{1,2}$ and~O.\,Y.~Bakhteev$^{2,3}$}
+
+\def\autkol{A.\,V.~Ogaltsov and~O.\,Y.~Bakhteev}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+$^1$National Research University Higher School of Economics, 
+20~Myasnitskaya Str., Moscow 101000, Russian\linebreak
+$\hphantom{^1}$Federation
+
+\noindent
+$^2$Antiplagiat JSC, 33~Varshavskoe Shosse, Moscow 117105, Russian Federation
+
+\noindent
+$^3$Moscow Institute of Physics and Technology, 9~Institutskiy Per., Dolgoprudny, 
+Moscow Region 141700, Russian\linebreak
+$\hphantom{^1}$Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2018\ \ \ volume~12\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2018\ \ \ volume~12\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+
+
+
+\Abste{The authors investigate the task of metadata extraction. The authors consider 
+scientific PDF documents in Russian. One of the features of PDF is a~rich layout. 
+It is difficult to extract metadata due to this fact. The authors propose 
+a~method based on considering blocks from pdf-parser as objects in 
+a~machine learning task. The feature space is constructed not only of text 
+statistics but also of formatting and positioning features of the block. 
+The authors performed computational experiments and compared their approach 
+with the baseline.}
+
+\KWE{metadata extraction; natural language processing; layout features; 
+information retrieval; metadescriptions} 
+
+\DOI{10.14357/19922264180211} %
+
+%\vspace*{-14pt}
+
+  \Ack
+   \noindent
+   The paper was supported by the Russian Foundation 
+   for Basic Research (project 18-07-01441).
+
+
+
+%\vspace*{-3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+        \bibitem{Bergmark-1}
+        \Aue{Bergmark, D.} 2000. Automatic extraction of reference 
+        linking information from online documents.  Ithaca, NY: Cornell University.  20~p.
+        
+        \bibitem{Klink-1}
+        \Aue{Klink, S., A.~Dengel, and T.~Kieninger. } 2010. 
+        Document structure analysis based on layout and textual features. 
+        \textit{Workshop (International) on Document Analysis Systems Proceedings}. 
+        Boston, MA. 99--111.
+        
+        \bibitem{Mao-1}
+        \Aue{Mao, S., J.\,W.~Kim, and G.\,R.~Thoma.} 2004. 
+        A~dynamic feature generation system for automated metadata extraction in 
+        preservation of digital materials. 
+        \textit{1st  Workshop (International) on Document Image Analysis for Libraries
+        Proceedings}. Palo Alto, CA: IEEE Computer Society. 225-232.
+        
+        \bibitem{Han-1}
+        \Aue{Han,~H., C.\,L.~Giles, E.~Manavoglu, H.~Zha, Z.~Zhang, and E.\,A.~Fox.} 
+        2003. Automatic document metadata extraction using support vector machines. 
+        \textit{3rd ACM/IEEE-CS Joint Conference on Digital Libraries Proceedings}. 
+        37--48.
+        
+        \bibitem{Kovacevic-1}
+        \Aue{Kovacevi$\acute{\mbox{c}}$, A., D.~Ivanovi$\acute{\mbox{c}}$, 
+        B.~Milosavljevi$\acute{\mbox{c}}$, Z.~Konjovi$\acute{\mbox{c}}$, and D.~Surla.} 
+        2011. Automatic extraction of metadata from scientific publications 
+        for CRIS systems. \textit{Program}  45(4):376--396.
+        
+        \bibitem{Seymore-1}
+        \Aue{Seymore, K., A.~McCallum, and R.~Rosenfeld.} 1999. 
+        Learning hidden Markov model structure for information extraction. 
+        \textit{AAAI~99 Workshop on Machine Learning for Information Extraction
+        Proceedings}. 37--42.
+        
+        \bibitem{Councill-1}
+        \Aue{Councill, I., C.\,L.~Giles, and M.-Y.~Kan.} 2008. ParsCit: An 
+        open-source CRF reference string parsing package. 
+        \textit{6th  Conference (International) on Language Resources and Evaluation 
+        Proceedings}. Marrakech, Morocco. 661--667.
+        
+        
+        \bibitem{Rangoni-1}
+        \Aue{Rangoni, Y., and A.~\mbox{Bela$\ddot{\mbox{{\ptb{\!\i}}}}$d.}} 2006. 
+        Document logical structure analysis based on perceptive cycles.
+         \textit{IAPR Workshop on Document Analysis Systems}. 117--128.
+        
+        \bibitem{Rangoni_1-1}
+        \Aue{Rangoni, Y., A.~\mbox{Bela$\ddot{\mbox{\ptb{\!\i}}}$d}, and S.~Vajda.} 
+        2012. Labelling logical structures of document images using a~dynamic 
+        perceptive neural network \textit{Int. J.~Doc. Anal. Recog.} 
+        15(1):45--55.
+        
+        \bibitem{Tao-1}
+        \Aue{Tao, X., Z.~Tang, and C.~Xu.} 2013. Document page structure learning 
+        for fixed-layout e-books using conditional random fields. 
+        \textit{Document Recognition and Retrieval XXI: Proc. SPIE} 9021:1--9.
+        
+        \bibitem{PDFBox-1}
+        {Apache PDFBox}. Available at: {\sf http://pdfbox.apache.\linebreak org/}
+        (accessed June~19, 2018).
+        
+        \bibitem{Maaten-1}
+        \Aue{Van der Maaten, L.\,J.\,P., and G.\,E.~Hinton.} 
+        2008. Visualizing high-dimensional data using t-SNE. \textit{J.~Mach. 
+        Learn. Res.} 9:2579--2605.
+        
+        \bibitem{Breiman-1}
+        \Aue{Breiman, L.} 2001. Random forests. \textit{Mach. Learn.} 45:5--32.
+        
+        \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received December 20, 2017}}
+
+%\vspace*{-24pt}
+        
+\Contr
+
+\noindent
+\textbf{Ogaltsov Alexander V.} (b.\ 1993)~--- 
+student, National Research University Higher School of Economics, 
+20~Myasnitskaya Str., Moscow 101000, Russian Federation; researcher, 
+Antiplagiat JSC, 33~Varshavskoe Shosse, Moscow 117105, Russian Federation; 
+\mbox{avogaltsov@edu.hse.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Bakhteev  Oleg Y.} (b.\ 1993)~--- PhD student, 
+Moscow Institute of Physics and Technology, 9~Institutskiy Per., Dolgoprudny, 
+Moscow Region 141700, Russian Federation; 
+researcher, Antiplagiat JSC, 33~Varshavskoe Shosse, Moscow 117105, Russian Federation; 
+\mbox{bakhteev@phystech.edu}
+
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература} 

@@ -1,0 +1,870 @@
+\def\stat{yadrintsev}
+
+\def\tit{ВЫБОР СЕРВЕРНОГО РЕШЕНИЯ ДЛЯ ЦИФРОВОЙ ПЛАТФОРМЫ ПОИСКА И~АНАЛИЗА ТЕКСТОВ$^*$}
+
+\def\titkol{Выбор серверного решения для цифровой платформы поиска и~анализа текстов}
+
+
+\def\aut{В.\,В.~Ядринцев$^1$, К.\,В.~Клюбина$^2$, И.\,А.~Тихомиров$^3$, 
+А.\,Ф.~Гершельман$^4$}
+
+\def\autkol{В.\,В.~Ядринцев, К.\,В.~Клюбина, И.\,А.~Тихомиров, 
+А.\,Ф.~Гершельман}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Ядринцев В.\,В.}
+\index{Клюбина К.\,В.}
+\index{Тихомиров И.\,А.}
+\index{Гершельман А.\,Ф.}
+\index{Yadrintsev V.}
+\index{Klyubina K.}
+\index{Tikhomirov I.} 
+\index{Gershel'man A.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Работа выполнена при частичной поддержке РФФИ (проект 17-29-07016).}}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук; 
+Российский университет дружбы народов, \mbox{vvyadrincev@gmail.com}}
+\footnotetext[2]{IBM East Europe\!/\!Asia, KKlyubina@ru.ibm.com}
+\footnotetext[3]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{tih@isa.ru}}
+\footnotetext[4]{IBM East Europe\!/\!Asia, Andrey\_Gershelmann@ru.ibm.com}
+ \label{st\stat}
+
+                  \thispagestyle{headings}
+                  
+  \vspace*{-12pt}
+
+
+
+\Abst{Предложен способ выбора аппаратного обеспечения для циф\-ро\-вой платформы 
+поиска и~анализа текстов на основе расчета сто\-и\-мости жизненного цикла 
+(ТСО~--- Total Cost of Ownership) серверного 
+решения. 
+Способ учитывает такие параметры, как тип задач, решаемых циф\-ро\-вой платформой, 
+необходимая производительность, качество обслуживания и~др. Предложенный способ 
+апробирован на двух современных серверных решениях в~условиях различных требований 
+и~ограничений. Описаны конфигурации аппаратного обеспечения, осо\-бен\-ности 
+решаемых задач и~па\-ра\-мет\-ры, которые использовались при расчете TCO. Пред\-став\-лен\-ный 
+способ расчета может найти широкое применение при решении практических задач выбора 
+аппаратного обеспечения для циф\-ро\-вых платформ и~вы\-чис\-ли\-тель\-ных центров, для которых 
+известен перечень требований и~ограничений.}
+
+\KW{цифровая экономика; цифровые платформы; выбор серверного решения; стоимость 
+жизненного цик\-ла, TCO; расчет TCO; анализ текстов; IBM Power8; Intel Xeon}
+
+\DOI{10.14357\!/\!08696527180302} 
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+      
+      \vspace*{-16pt} 
+
+\section{Введение}
+
+\vspace*{-2pt}
+
+    Экономическая эффективность и~це\-ле\-со\-об\-раз\-ность выступают 
+основополагающими факторами при выборе серверных решений для циф\-ро\-вых 
+платформ и~вычислительных центров, ра\-бо\-та\-ющих с~большими данными. Здесь и~далее под цифровой платформой будем понимать некую строительную 
+основу, на базе которой другие компании, свободно организованные 
+в~инновационной экосистеме, могут создавать их собственные продукты, 
+технологии и~сервисы~[1]. Неверный выбор аппаратного обеспечения может 
+повлечь за собой серьезные проб\-ле\-мы при эксплуатации цифровой платформы 
+или сделать ее попросту неэффективной и~ненужной. 
+    
+    Как правило, задача выбора серверного решения сводится к~оценке 
+множества критериев, среди которых функциональная и~эксплуатационная 
+эффективность, стоимость владения, отказоустойчивость и~др.~[2, 3]. Также 
+существует подход на основе агрегированных критериев, таких как стоимость, 
+про\-из\-во\-ди\-тель\-ность, воз\-мож\-ность модернизации, слож\-ность эксплуатации~[4]. 
+Важно заметить, что актуален вопрос выбора серверного решения также и~на 
+основании оценки стоимости жизненного цикла (TCO). 
+    
+    В настоящей работе рассматривается задача выбора серверного решения, 
+которое удовлетворяет определенным требованиям и~ограничениям. Задача 
+в~такой постановке подразумевает, что требования к~циф\-ро\-вой платформе 
+известны и~определяются ее спецификой. Таким образом, задача выбора 
+серверного решения сводится к~оценке стоимости жизненного цик\-ла с~учетом 
+требований к~производительности, качеству обслуживания и~других 
+параметров. Расчет TCO основывается на актуальных данных рынка 
+и~учитывает следующие параметры: закупочная сто\-и\-мость серверов, сто\-и\-мость 
+обслуживания, энергопотребление, сто\-и\-мость гарантии. Также учитывается 
+продолжительность жизненного цик\-ла, так как она напрямую влияет на TCO.
+    
+    Важной особенностью предлагаемого в~статье способа расчета TCO 
+является то, что он учитывает данные о~производительности: среднее время 
+выполнения запроса, чис\-ло пользователей и~ряд других. В~качестве 
+демонстрационной программной системы, представляющей собой циф\-ро\-вую 
+платформу поиска и~анализа текст\-ов, использован продукт TextAppliance~[5]. 
+Предложенный способ расчета продемонстрирован на двух современных 
+серверных решениях на базе процессоров Intel Xeon и~IBM Power8. Выбор Intel 
+Xeon обусловлен его распространенностью и~наличием промышленных 
+серверных решений~[6], в~то время как Power8, по мнению ряда экспертов, 
+выступает в~качестве серьезной альтернативы архитектуре x86~[7--9].
+
+\section{Исходные данные}
+     
+\subsection{Данные о производительности серверных решений}
+     
+  В качестве данных о производительности серверных решений для 
+проведения расчета TCO использованы результаты экспериментов, 
+выполненных авторами в~работе~[10], в~которой предложена методика 
+сравнения производительности и~проведено сравнение серверов на базе IBM 
+Power8 и~Intel Xeon. Особенность методики сравнения заключается 
+в~использовании высокоуровневых тестовых задач, отсутствии специальных 
+настроек и~оптимизаций программного кода под определенную архитектуру. 
+Эксперименты проведены на сравнимом оборудовании в~час\-ти оперативной 
+памяти, дисковых массивов, операционной сис\-те\-мы и~тес\-ти\-ру\-емой циф\-ро\-вой 
+платформы; существенным различием серверных решений являются только 
+процессоры из серий Intel Xeon и~IBM Power8.
+  
+  Эксперименты проведены для задач поиска по запросу и~поиска текстовых 
+заимствований на больших коллекциях текстовых документов (суммарно 
+более~9~млн) для русского и~английского языка. Поиск по запросу представляет собой 
+полнотекстовый поиск документов по ключевым словам или предложениям, 
+сформулированным на естественном языке с~возможностью задания 
+ограничений на поля метаданных документа (автор, заглавие, дата публикации и~др.)~[5]. 
+Поиск работает на основе многокритериальной оценки сходства 
+предложений. Учитываются статистические, синтаксические и~семантические 
+критерии.
+  
+  Поиск текстовых заимствований основан на поиске тематически похожих 
+документов~[11]. Для предложений из множества тематически похожих 
+документов осуществляется их многокритериальное сопоставление с~наиболее 
+значимыми предложениями проверяемого документа~[12]. 
+  
+  В табл.~1 представлены данные о производительности серверных решений 
+при выполнении задач поиска и~анализа текс\-тов~[10], а~именно о~сред\-нем 
+времени выполнения запросов. Для выполнения расчетов были использованы 
+ресурсы ЦОД ФИЦ ИУ РАН~[13].
+  
+  Опишем используемые в~табл.~1 обозначения: Users~--- чис\-ло 
+одновременных пользователей; power8\_ru и~power8\_en~--- данные 
+о~производительности Power8 на русскоязычной и~английской коллекции 
+соответственно; x86\_ru и~x86\_en~--- данные о~про\-из\-во\-ди\-тель\-ности~x86 на 
+русскоязычной и~английской коллекции соответственно.
+  
+  \begin{table}\small %tabl1
+  \begin{center}
+  \Caption{Данные о производительности серверных решений}
+  \vspace*{2ex}
+  
+ \tabcolsep=3pt
+  \begin{tabular}{|c|l|l|l|l|l|l|l|l|}
+  \hline
+\multicolumn{1}{|c|}{\raisebox{-6pt}[0pt][0pt]{Users}} &\multicolumn{4}{c|}{Среднее время поиска по запросу, 
+с}&\multicolumn{4}{c|}{Среднее время поиска заимствований, с}\\
+     \cline{2-9}
+     &&&&&&&\\[-9pt]
+&power8\_ru&power8\_en&x86\_ru&x86\_en&power8\_ru&power8\_en&x86\_ru&x86\_en\\
+     \hline
+\hphantom{9}1&\hspace*{3mm}0,3&\hspace*{3mm}0,3&\hspace*{2mm}0,43&\hspace*{2mm}0,39&\hspace*{1.5mm}\hphantom{9}2,06&\hspace*{1.5mm}\hphantom{9}3,73&\hphantom{9}4,3\hphantom{9}&\hphantom{9}5,43\\
+10&\hspace*{3mm}0,34&\hspace*{3mm}0,38&\hspace*{2mm}0,44&\hspace*{2mm}0,43&\hspace*{1.5mm}\hphantom{9}2,8\hphantom{9}&\hspace*{1.5mm}\hphantom{9}3,08&\hphantom{9}7,46&\hphantom{9}8,14\\
+20&\hspace*{3mm}0,45&\hspace*{3mm}0,51&\hspace*{2mm}0,57&\hspace*{2mm}0,59&\hspace*{1.5mm}\hphantom{9}2,91&\hspace*{1.5mm}\hphantom{9}4,04&{\bfseries\textit{12,32}}&{\bfseries\textit{13,77}}\\
+30&\hspace*{3mm}0,58&\hspace*{3mm}0,62&\hspace*{2mm}{\bfseries\textit{0,81}}&\hspace*{2mm}{\bfseries\textit{0,84}}&\hspace*{1.5mm}\hphantom{9}3,44&\hspace*{1.5mm}\hphantom{9}5,16&\textbf{18,7}\hphantom{9}& 
+\textbf{20,4}\hphantom{9}\\
+40&\hspace*{3mm}0,71&\hspace*{3mm}0,78&\hspace*{2mm}\textbf{1,08}&\hspace*{2mm}\textbf{1,12}&\hspace*{1.5mm}\hphantom{9}4,66&\hspace*{1.5mm}\hphantom{9}6,94&25,42&27,3\hphantom{9}\\
+50&\hspace*{3mm}{\bfseries\textit{0,8}}&\hspace*{3mm}{\bfseries\textit{0,88}}&\hspace*{2mm}1,37&\hspace*{2mm}1,4&\hspace*{1.5mm}\hphantom{9}4,92&\hspace*{1.5mm}\hphantom{9}8\hphantom{99,}&31,35&29,75\\
+60&\hspace*{3mm}\textbf{1,01}&\hspace*{3mm}\textbf{1,08}&\hspace*{2mm}1,65&\hspace*{2mm}1,66&\hspace*{1.5mm}\hphantom{9}6,29&\hspace*{1.5mm}10,09&37,35&36,74\\
+70&\hspace*{3mm}1,2&\hspace*{3mm}1,28&\hspace*{2mm}1,91&\hspace*{2mm}1,94&\hspace*{1.5mm}\hphantom{9}7,57&\hspace*{1.5mm}10,85&39,5\hphantom{9}&39,09\\
+80&\hspace*{3mm}1,19&\hspace*{3mm}1,31&\hspace*{2mm}2,2&\hspace*{2mm}2,23&\hspace*{1.5mm}\hphantom{9}9,21&\hspace*{1.5mm}12,89&49,51&51,29\\
+90&\hspace*{3mm}1,25&\hspace*{3mm}1,43&\hspace*{2mm}2,47&\hspace*{2mm}2,47&\hspace*{1.5mm}\hphantom{9}{\bfseries\textit{9,88}}&\hspace*{1.5mm}{\bfseries\textit{14,68}}&53,13&54,85\\
+100\hphantom{9}&\hspace*{3mm}1,36&\hspace*{3mm}1,48&\hspace*{2mm}2,73&\hspace*{2mm}2,74&\hspace*{1.5mm}\textbf{11,14}&\hspace*{1.5mm}\textbf{16,51}&58,46&58,04\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-6pt}
+\end{table}
+
+\subsection{Конфигурации серверных решений }
+     
+  На производительность и~стоимость серверных решений влияют практически 
+все параметры оборудования: центральный процессор, оперативная память, 
+дисковая подсистема и~др. В~рамках настоящей работы для срав\-не\-ния 
+используются серверные решения на базе IBM Power8 и~Intel Xeon, их 
+подробные технические характеристики приведены в~работе~[10], а~основные, 
+вли\-я\-ющие на проводимые экономические расчеты, приведены в~табл.~2. 
+
+\begin{table}\small %tabl2
+\begin{center}
+\Caption{Основные характеристики ис\-поль\-зу\-емых серверных решений}
+\vspace*{2ex}
+     
+     \tabcolsep=3pt
+     \begin{tabular}{|l|c|c|c|c|c|c|}
+     \hline
+\multicolumn{1}{|c|}{\tabcolsep=0pt\begin{tabular}{c}Семейство\\ процессора\end{tabular}}&
+\tabcolsep=0pt\begin{tabular}{c}Архи-\\ тектура\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Число\\ процес-\\ соров\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}Число\\ ядер на\\ процессор\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Общее\\ число\\ виртуальных\\ процессоров\\ (потоков)\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Базовая\\ тактовая\\ частота,\\ ГГц\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{c}Потребляемая\\ мощность, Вт\end{tabular}\\
+\hline
+Intel Xeon&  x86\_64 & 2& \hphantom{9}8& \hphantom{9}32& 2,1\hphantom{9}& 317\\
+IBM Power8& POWER8& 2& 10& 160& 2,86& 742\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-12pt}
+\end{table}
+
+\subsection{Данные для расчета стоимости жизненного цикла}
+
+\vspace*{-2pt}
+     
+  В качестве экономических данных используется информация о~ценах 
+поставщиков, работающих на российском рынке. Общая стоимость решения 
+включает в~себя сле\-ду\-ющие со\-став\-ля\-ющие:
+  \begin{itemize}
+\item стоимость потребления энергии за~5~лет;\\[-13.5pt]
+\item стоимость серверов при закупке;\\[-13.5pt]
+\item стоимость дополнительной гарантии с~4-го года владения.
+\end{itemize}
+  
+  В табл.~3 указаны статьи расходов владельца серверного решения, которые 
+используются для расчета TCO в~на\-сто\-ящей работе.
+  
+  \begin{table}[h]\small %tabl3
+  \vspace*{-9pt}
+  \begin{center}
+  \Caption{Экономические параметры для расчета TCO}
+  \vspace*{2ex}
+  
+  \tabcolsep=2.5pt
+  \begin{tabular}{|l|c|c|c|}
+  \hline
+\multicolumn{1}{|c|}{Сервер}& \tabcolsep=0pt\begin{tabular}{c}Стоимость\\ 
+1 сервера\\
+ при покупке\\ (включая\\ 3 года гарантии),\\ долл.\ США\end{tabular} &
+ \tabcolsep=0pt\begin{tabular}{c}Стоимость\\ электроэнергии,\\
+ потребляемой\\ 1~сервером\\ в~течение 5~лет,\\
+ долл.\ США\end{tabular} &
+ \tabcolsep=0pt\begin{tabular}{c}Стоимость\\ постгарантийного\\
+ обслуживания\\ 1~сервера с~4-го года\\ владения (в~год), \\
+ долл.\ США\end{tabular}\\
+ \hline
+На базе Intel Xeon&\hphantom{9}8950& 2250& \hphantom{9}895\\
+На базе IBM Power8& 11200& 5265& 3714\\
+     \hline
+\end{tabular}
+\end{center}
+\vspace*{-15pt}
+\end{table}
+
+\section{Способ расчета стоимости жизненного цикла}
+
+\vspace*{-2pt}
+     
+  Общий подход к~оценке стоимости серверного решения заключается 
+в~анализе требований заказчика к~разворачиваемой циф\-ро\-вой платформе 
+и~расчете TCO в~зависимости от этих требований. Такой подход позволяет 
+оценить, какое решение является более выгодным с~учетом требований 
+заказчика. В~основе экономических расчетов лежат сле\-ду\-ющие шаги:
+  \begin{itemize}
+\item выбор набора параметров: требования к~производительности, 
+отказоустойчивости и~др., про\-дол\-жи\-тель\-ность жизненного цик\-ла (как 
+правило, 5--7~лет~[4]) и~др.;
+\item определение необходимого чис\-ла серверов ($N$) для выполнения 
+требований заказчика;
+\item расчет стоимости жизненного цик\-ла для~$N$~серверов.
+\end{itemize}
+  
+  Далее под <<гарантированным выполнением запроса>> будет 
+подразумеваться гарантированное успешное выполнение запроса. Назовем 
+запросы по поиску текс\-то\-вых заимствований, вне зависимости от языка, 
+<<тяжелыми>> (ресурсозатратными) запросами, а~поисковые запросы~--- 
+<<лег\-кими>>.
+  
+  Путем перебора различных распределений по процентному соотношению 
+запросов были выявлены ключевые из них, а~именно: когда решение на базе 
+платформы Power экономически более выгодно, когда выгоднее~x86 и~случай, 
+когда решения экономически равнозначны.
+  
+  В рамках настоящей работы рассматриваются три типа требований:
+  \begin{enumerate}[(1)]
+\item обработка потока <<тяжелых>> запросов при гарантированном 
+среднем времени исполнения запросов;
+\item обработка потока <<легких>> запросов при гарантированном среднем 
+времени исполнения запросов;
+\item гарантированное выполнение запросов всех типов за заданное время.
+\end{enumerate}
+  
+  Для каждого из трех типов требований рассчитываются необходимый объем 
+ресурсов (число серверов) и~TCO для серверных решений на 
+базе Power8 и~x86.
+  
+  При расчете TCO учитываются следующие па\-ра\-метры:  
+\begin{enumerate}[(1)]
+  \item число одновременно обслуживаемых пользователей (активных);
+\item процентное соотношение различных типов нагрузки;
+\item среднее время гарантированного выполнения запроса (установлено во 
+время проведения экспериментов в~[10]).
+\end{enumerate}
+  
+  В рамках данной работы ограничимся единственным параметром 
+производительности~--- средним временем выполнения (см.\ табл.~1). Отметим, что 
+пред\-ла\-га\-емый способ расчета TCO может учитывать любой  
+па\-ра\-метр/на\-бор параметров про\-из\-во\-ди\-тель\-ности.
+  
+  Требования к~серверному решению формируются на основе проведенных 
+экспериментов в~работе~[10] для четырех типов запросов при условии, что 
+число пользователей на один сервер не больше~100. Отметим, что ограничение 
+по числу пользователей связано с~появлением отказов в~обслуживании (deny out 
+of service) при решении рассматриваемых задач для обоих серверных решений, 
+когда число пользователей превышает~100. Отказы связаны с~тем, что при 
+<<тяжелых>> запросах сервер оказывается перегружен. Как правило, эта 
+проблема решается путем организации очереди запросов, однако 
+в~рассматриваемой постановке интерес представляет как раз <<чистое>> время 
+выполнения запросов без учета времени нахождения в~очереди. Исследование 
+характера отказов и~учет отказов~--- это перспективная тема для дальнейших 
+исследований. 
+  
+  Таким образом, представленные далее расчеты TCO подразумевают 
+сле\-ду\-ющее:
+  \begin{itemize}
+\item число одновременных пользователей не более~100 на физический 
+сервер;\\[-13pt]
+\item гарантированное выполнение 100\% запросов.
+\end{itemize}
+    
+    Для упрощения расчетов зададим чис\-ло пользователей не больше~100 ко 
+всему решению, а~не к~физическому серверу, так как при увеличении числа 
+активных пользователей все расчеты и~параметры стоимости могут быть 
+определены путем умножения на кратный коэффициент.
+
+\section{Экономический расчет стоимости серверных решений}
+     
+  Далее представлены расчеты TCO для трех случаев (наборов требований):
+  \begin{enumerate}[(1)]
+  \item
+выполнение ресурсозатратных (<<тяжелых>>) запросов;
+\item выполнение <<легких>> запросов;
+\item выполнение запросов всех типов с~минимальным средним временем 
+выполнения (желаемое время или время выполнения~--- ключевой фактор).
+\end{enumerate}
+
+    Отметим, что для всех случаев существуют требования по умолчанию 
+(далее они не дублируются):
+    \begin{itemize}
+\item число одновременных пользователей~--- 100;\\[-13pt]
+\item гарантированное выполнение всех запросов;\\[-13pt]
+\item продолжительность жизненного цикла~--- 5~лет. 
+\end{itemize}
+  
+  Далее на графиках для указания статей расходов используются следующие 
+обозначения (ввиду очевидности, формулы для расчета не приводятся):
+  \begin{itemize}
+\item стоимость потребляемой энергии решением в~течение~5~лет (Energy);\\[-13pt]
+\item стоимость постгарантийного обслуживания решения начиная 
+с~4-го года (HW OPEX);\\[-13pt]
+\item первоначальная стоимость решения, включая гарантию на~3~года (HW 
+CAPEX).
+\end{itemize}
+  
+  В первом и~втором случаях отражено изменение процентного соотношения 
+каждого типа нагрузки с~определенными требованиями к~среднему времени 
+выполнения в~зависимости от типа запросов. 
+  
+  Рассмотрим первый случай со следующими требованиями:
+  \begin{itemize}
+\item <<тяжелые>> запросы занимают все время;\\[-13pt]
+\item <<легкие>> запросы отсутствуют;
+\item среднее время выполнения запросов~--- менее~21~с (см.\ табл.~1: 
+один сервер на базе~x86 справляется с~этим требованием лишь при~30 
+одновременных пользователях, а~один Power8~--- при~100).
+\end{itemize}
+
+ 
+  
+  Масштабируя решение на базе x86 путем увеличения числа серверов, 
+получаем, что даже два сервера x86 не справляются с~вышеуказанными 
+требованиями (справляются при~60~одновременных пользователях, но не 
+при~100), три сервера~--- при 90 пользователях, но не при 100. 
+\begin{figure} %fig1
+  \vspace*{1pt}
+  \begin{minipage}[c]{62mm}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=61mm %63.041mm 
+ \epsfbox{yad-1.eps}
+ }
+\end{center}
+\end{minipage}
+\hfill
+\vspace*{1pt}
+\begin{minipage}[c]{66mm}
+{\footnotesize
+\begin{center}
+ \tabcolsep=1pt
+ \begin{tabular}{|l|c|c|c|}
+  \hline
+ &\multicolumn{3}{c|}{Стоимость, долл.\ США}\\
+  \cline{2-4}
+  \multicolumn{1}{|c|}{\tabcolsep=0pt\begin{tabular}{c}Сервер\\ \ \end{tabular}}  &\tabcolsep=1pt\begin{tabular}{c}\textit{1}~---\\ Energy\end{tabular} &
+  \tabcolsep=1pt\begin{tabular}{c}\textit{2}~---\\ HW OPEX\end{tabular} &
+    \tabcolsep=1pt\begin{tabular}{c}\textit{3}~---\\ HW CAPEX
+ \end{tabular}\\
+  \hline
+   Intel x86 &  8997& 7160& 35\,800\\
+   IBM Power8&5265& 7428& 11\,200\\
+  \hline
+  \end{tabular}
+  \end{center}}
+  \end{minipage}
+  \Caption{Стоимость жизненного цикла при выполнении ресурсозатратных запросов}
+  %\vspace*{-12pt}
+  \end{figure}
+  Следовательно, 
+решение на базе x86 справляется с~нагрузкой при~100~пользователях только 
+в~случае использования четырех серверов. Таким образом, для выполнения 
+вышеперечисленных требований необходимо приобрести или четыре сервера 
+на базе~x86, или один сервер на базе Power8 (рис.~1).
+  
+  Используя значения из табл.~3, получаем следующие результаты расчета 
+TCO для четырех серверов на базе x86 и~для одного сервера на базе Power8 
+(см.\ рис.~1).
+
+ 
+  
+  При большом числе ресурсозатратных запросов (см.\ рис.~1) расчет ТСО на срок 
+до~5~лет с~учетом вышеуказанных характеристик показал, что решение на базе 
+Power экономически более выгодно, чем на базе~x86. 
+  
+  Далее рассмотрим второй случай: 
+  \begin{itemize}
+\item <<тяжелые>> запросы отсутствуют;
+\item <<легкие>> запросы занимают все время;
+\item среднее время выполнения запросов~--- менее~1,2~с (см.\ табл.~1: 
+один сервер на базе~x86 справляется с~этим требованием лишь 
+при~40~одновременных пользователях, а~один Power8~--- при~60).
+\end{itemize}
+
+  Масштабируя решения путем увеличения числа серверов, получаем, что для 
+выполнения вышеперечисленных требований необходимо приобрести 
+либо~3~сервера на базе x86, либо~2~сервера на базе Power8 (рис.~2).
+  
+  \begin{figure} %fig2
+   \vspace*{1pt}
+   \begin{minipage}[c]{62mm}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=61mm %63.041mm 
+ \epsfbox{yad-2.eps}
+ }
+\end{center}
+\end{minipage}
+\hfill
+\vspace*{1pt}
+\begin{minipage}[c]{66mm}
+{\footnotesize
+\begin{center}
+ \tabcolsep=1pt
+ \begin{tabular}{|l|c|c|c|}
+  \hline
+ &\multicolumn{3}{c|}{Стоимость, долл.\ США}\\
+  \cline{2-4}
+  \multicolumn{1}{|c|}{\tabcolsep=0pt\begin{tabular}{c}Сервер\\ \ \end{tabular}}  &\tabcolsep=1pt\begin{tabular}{c}\textit{1}~---\\ Energy\end{tabular} &
+  \tabcolsep=1pt\begin{tabular}{c}\textit{2}~---\\ HW OPEX\end{tabular} &
+    \tabcolsep=1pt\begin{tabular}{c}\textit{3}~---\\ HW CAPEX
+ \end{tabular}\\
+  \hline
+  Intel x86 & \hphantom{9}6748& \hphantom{9}5370& 26\,850\\
+  IBM Power8 & 10530& 14856& 22\,400\\
+  \hline
+  \end{tabular}
+  \end{center}}
+    \end{minipage}
+  \Caption{Стоимость жизненного цикла при выполнении <<легких>> запросов }
+   %\vspace*{-12pt}
+  \end{figure}
+  
+
+
+  Очевидно, что в~данном случае (см.\ рис.~2) решение на базе x86 экономически 
+более выгодно; и~это наблюдается до тех пор, пока ресурсозатратных запросов 
+не станет больше примерно~30\% от общего числа. Когда число 
+ресурсозатратных запросов превышает~30\%, соотношение TCO меняется 
+в~пользу решения на Power8. Крайний случай, когда~100\% запросов~--- 
+<<тяжелые>>, представлен на рис.~1, на котором видно экономическое 
+преимущество решения на Power8.
+  
+  Далее рассмотрим случай с~одинаковым числом запросов разных типов за 
+минимальное время (3-й случай, рис.~3) со следующими требованиями:
+  \begin{itemize}
+\item <<тяжелые>> запросы занимают половину времени;
+\item <<легкие>> запросы занимают половину времени;
+\item среднее время выполнения <<тяжелых>> запросов~--- менее 15~с;
+\item среднее время выполнения <<легких>> запросов~--- менее~1~с.
+\end{itemize}
+  
+  Рассуждая аналогично предыдущим случаям, получаем, что для выполнения 
+требований необходимо приобрести либо~5~серверов на базе~x86, 
+либо~2~сервера на базе Power8 (см.\ рис.~3).
+
+  
+  \begin{figure} %fig3
+   \vspace*{1pt}
+    \begin{minipage}[c]{62mm}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=61mm %63.041mm 
+ \epsfbox{yad-3.eps}
+ }
+\end{center}
+\end{minipage}
+\hfill
+\vspace*{1pt}
+\begin{minipage}[c]{66mm}
+{\footnotesize
+\begin{center}
+ \tabcolsep=1pt
+ \begin{tabular}{|l|c|c|c|}
+  \hline
+ &\multicolumn{3}{c|}{Стоимость, долл.\ США}\\
+  \cline{2-4}
+  \multicolumn{1}{|c|}{\tabcolsep=0pt\begin{tabular}{c}Сервер\\ \ \end{tabular}}  &\tabcolsep=1pt\begin{tabular}{c}\textit{1}~---\\ Energy\end{tabular} &
+  \tabcolsep=1pt\begin{tabular}{c}\textit{2}~---\\ HW OPEX\end{tabular} &
+    \tabcolsep=1pt\begin{tabular}{c}\textit{3}~---\\ HW CAPEX
+ \end{tabular}\\
+  \hline
+  Intel x86 & 11\,247& \hphantom{9}8\,950& 44\,750\\
+  IBM Power8 & 10\,530& 14\,856& 22\,400\\
+    \hline
+  \end{tabular}
+  \end{center}}
+     \end{minipage}
+  \Caption{Стоимость жизненного цикла при выполнении запросов всех типов за минимальное время }
+  \vspace*{-3pt}
+     \end{figure}
+  
+  
+  Представленный на рис.~3 расчет TCO является индикатором того, что для 
+достижения желаемого времени выполнения запросов на платформе~x86 
+требуется большее число серверов, чем на основе Power8. 
+
+\vspace*{-4pt}
+
+\section{Заключение}
+
+\vspace*{-4pt}
+     
+  В настоящем исследовании предложен способ выбора серверного решения 
+для цифровой платформы на основе расчета TCO с~учетом требований 
+и~ограничений. Предложенный способ основывается на данных о~сто\-и\-мости 
+и~про\-из\-во\-ди\-тель\-ности серверов при решении известной задачи. Предложенный 
+способ апробирован путем сравнения сто\-и\-мости серверных решений 
+с~процессорами IBM~Power8 и~Intel~Xeon для задач поиска и~анализа текстов. 
+  
+  Проведенное исследование показало, что, учитывая основное требование~--- 
+гарантированное выполнение всех запросов, решения на обеих серверных 
+платформах способны на успешное выполнение поставленной задачи при 
+условии разного числа серверов и,~как следствие, сто\-и\-мости решения. При 
+увеличении числа пользователей, чис\-ла запросов и~уменьшении времени 
+выполнения запросов серверное решение на базе Power8 имеет экономическое 
+преимущество. Однако в~случае выполнения задач, не тре\-бу\-ющих 
+значительного потребления ресурсов, преимущество остается за~x86.
+  
+  Отметим, что предложенный способ расчета TCO применим для любых 
+серверных решений и~цифровых платформ, данные о~производительности 
+и~стоимостных характеристик которых известны. В~классическом случае 
+в~за\-ви\-си\-мости от типов запросов, необходимых для выполнения на той или 
+иной циф\-ро\-вой платформе, первостепенная задача~--- определить требования, 
+которые являются наиболее значимыми для решения в~целом. Отметим, что 
+предложенный способ расчета TCO также позволяет оценить эффективность 
+серверных решений в~целом, а~также сравнить модели серверов меж\-ду собой, 
+что может быть полезно в~практических задачах выбора аппаратного 
+обеспечения для циф\-ро\-вых плат\-форм и~вы\-чис\-ли\-тель\-ных цент\-ров.
+  
+  {\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-ya}
+\Au{Gawer A.} Platforms, markets and innovation: An introduction~/\!\!/ Platforms, markets and 
+innovation.~--- Cheltenham, Northampton: Edward Elgar, 2009. Сh.~1. P.~1--16.
+
+\bibitem{3-ya}
+\Au{Климанов В.\,П., Сутягин~М.\,В., Быстрикова~В.\,А.} Задачи ка\-таст\-ро\-фо\-устой\-чи\-вости 
+кластерных вы\-чис\-ли\-тель\-ных сис\-тем~/\!\!/ Новости искусственного интеллекта, 2002. 
+№\,3(51). С.~22--30.
+\bibitem{2-ya}
+\Au{Иванилов Е.\,И.} Некоторые аспекты выбора серверов~/\!\!/ Корпоративные сис\-те\-мы, 
+2003. №\,18(83). С.~34--36.
+\bibitem{4-ya}
+\Au{Ройзензон Г.\,В.} Многокритериальный выбор вы\-чис\-ли\-тель\-ных клас\-те\-ров~/\!\!/ Труды 
+ИСА РАН, 2005. Т.~12. С.~68--94.
+\bibitem{5-ya}
+\Au{Ананьева М.\,И., Девяткин Д.\,А., Зубарев~Д.\,В., Осипов~Г.\,С., Смирнов~И.\,В., 
+Соченков~И.\,В., Тихомиров~И.\,А., Швец~А.\,В., Шелманов~А.\,О.} TextAppliance: поиск 
+и~анализ больших массивов текстов~/\!\!/ Тр. 15-й национальной конф. по искусственному 
+интеллекту с~международным учас\-ти\-ем.~--- Смоленск: Универсум, 2016. 
+С.~220--228.
+\bibitem{6-ya}
+Top 500. Highlights~--- November 2017. {\sf https://www.top500.org/lists/2017/11/\linebreak highlights}.
+\bibitem{7-ya}
+POWER8 hits the merchant market. {\sf  
+https://www-03.ibm.com/systems/power/\linebreak advantages/smartpaper/memory-bandwidth.html.}
+
+\bibitem{9-ya} %8
+\Au{Adinetz A.\,V., Baumeister~P.\,F., B$\ddot{\mbox{o}}$ttiger~H., Hater~T., Maurer~T., 
+Pleiter~D., Schenck~W., Schifano~S.\,F.} Performance evaluation of scientific applications on 
+\mbox{POWER8}~/\!\!/ High performance 
+computing systems. Performance modeling, benchmarking, and simulation~/
+Eds. S.\,A.~Jarvis, S.\,A.~Wright, S.\,D.~Hammond.~---
+Lecture notes in computer science ser.~--- Springer, 2015. Vol.~8966.   
+P.~24--45.
+\bibitem{8-ya} %9
+\Au{Reguly I.\,Z., Keita A.-K., Giles~M.\,B.} Benchmarking the IBM Power8 processor~/\!\!/ 25th 
+Annual Conference (International) on Computer Science and Software Engineering
+Proceedings.~--- Toronto, Canada: IBM\!/\!ACM, 2015. P.~61--69.
+\bibitem{10-ya}
+\Au{Ядринцев В.\,В., Зубарев Д.\,В., Мальковский~С.\,И., Тихомиров~И.\,А.} Сравнение 
+про\-из\-во\-ди\-тель\-ности серверных платформ в~задачах поиска и~анализа текстов~/\!\!/ 
+Информационные технологии и~вы\-чис\-ли\-тель\-ные сис\-те\-мы, 2018. №\,1. С.~37--45.
+\bibitem{11-ya}
+\Au{Соченков И.\,В., Зубарев Д.\,В., Тихомиров~И.\,А.} Эксплоративный патентный 
+поиск~/\!\!/ Информатика и~её применения, 2018. Т.~12. Вып.~1. C.~89--94.
+\bibitem{12-ya}
+\Au{Zubarev D., Sochenkov I.} Using sentence similarity measure for plagiarism source 
+retrieval~/\!\!/ CEUR Workshop Proceedings, 2014. Vol.~1180. P.~1027--1034.
+\bibitem{13-ya}
+Федеральный исследовательский центр <<Информатика и~управ\-ле\-ние>> Российской 
+академии наук. {\sf http://frccsc.ru.}
+        \end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Поступила в~редакцию 19.03.18}}
+
+
+
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+%\vspace*{9pt}
+
+
+
+\def\tit{CHOOSING SERVER SOLUTION FOR~DIGITAL PLATFORM OF~TEXT 
+SEARCH AND~ANALYSIS}
+
+\def\titkol{Choosing server solution for~digital platform of~text 
+search and~analysis}
+
+
+\def\aut{V.~Yadrintsev$^{1,2}$, K.~Klyubina$^3$, I.~Tikhomirov$^1$, 
+and~A.~Gershel'man$^3$}
+\def\autkol{V.~Yadrintsev, K.~Klyubina, I.~Tikhomirov, 
+and~A.~Gershel'man}
+
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+\noindent
+    $^1$Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy\linebreak
+$\hphantom{^1}$of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
+       
+       \noindent
+       $^2$Peoples' Friendship University of Russia (RUDN University), 
+ 6~Miklukho-\linebreak
+ $\hphantom{^1}$Maklaya Str., Moscow 117198, Russian Federation
+       
+       \noindent
+       $^3$IBM East Europe\!/\!Asia, 10~Presnenskaya Nab., Moscow 123112, Russian 
+Fed-\linebreak
+$\hphantom{^1}$eration
+
+
+ \noindent
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2018 vol~28 no\,3}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2018   vol~28   no\,3
+\hfill \textbf{\thepage}}}
+
+
+    
+
+ 
+\Abste{The method of choosing a~server solution for a~digital 
+platform of text search and analysis 
+based on calculation of the total cost of ownership (TCO) is proposed. 
+The method takes into account such 
+parameters as the type of tasks solved by the digital platform, 
+the required performance, the quality 
+of service, etc. The proposed method is tried out on two modern 
+server solutions in the face of 
+various requirements and restrictions. The paper describes 
+the hardware configurations, the features 
+of the tasks to be solved and the parameters that were 
+used in the calculation of TCO. The presented 
+method of calculation can be widely applicable in solving 
+practical problems of choosing hardware 
+for digital platforms and data centers with known requirements and restrictions.}
+  
+  
+  \KWE{digital economy; digital platforms; choosing of server solution; total cost of 
+ownership, TCO; TCO calculation; text analysis; IBM Power8; Intel Xeon}
+
+\DOI{10.14357/08696527180302} 
+
+%\vspace*{-24pt}
+
+\Ack
+\noindent
+The work was partly supported
+by the Russian Foundation for Basic Research (project 17-29-07016).
+
+ 
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{1-ya-1}
+\Aue{Gawer, A.} 2009. Platforms, markets and innovation: An introduction. \textit{Platforms, 
+markets and innovation}. Cheltenham, Northampton:
+Edward Elgar. 1--16.
+
+\bibitem{3-ya-1}
+\Aue{Klimanov, V.\,P., M.\,V.~Sutyagin, and V.\,A.~Bystrikova.} 2002. Zadachi 
+ka\-ta\-st\-ro\-fo\-ustoy\-chi\-vosti klas\-ter\-nykh vy\-chis\-li\-tel'\-nykh sis\-tem [Problems of catastrophic stability of 
+cluster computing systems]. \textit{Novosti iskusstvennogo intellekta} [News of Artificial 
+Intelligence] 3(51):22--30.
+\bibitem{2-ya-1}
+\Aue{Ivanilov, E.\,I.} 2003. Nekotorye aspek\-ty vy\-bo\-ra ser\-ve\-rov 
+[Several aspects of server 
+choosing]. \textit{Intelligent Enterprise} 18(83):34--36.
+
+\bibitem{4-ya-1}
+\Aue{Royzenzon, G.\,V.} 2005. Mnogokriterial'nyy vy\-bor vy\-chis\-li\-tel'\-nykh 
+klas\-te\-rov [Multicriteria 
+choice of computing clusters]. \textit{Trudy ISA RAN} [Works of ISA RAS] 12:68--94.
+\bibitem{5-ya-1}
+\Aue{Anan'eva, M.\,I., D.\,A.~Devyatkin, D.\,V.~Zubarev, G.\,S.~Osipov, I.\,V.~Smirnov, 
+I.\,V.~So\-chen\-kov, I.\,A.~Tikhomirov, A.\,V.~Shvets, and A.\,O.~Shelmanov.} 2016. 
+\mbox{TextAppliance}: poisk i~analiz bol'\-shikh mas\-si\-vov teks\-tov [TextAppliance: Search and analysis of 
+large arrays of texts]. \textit{Tr.\ 15-y natsional'noy konf. po iskusstvennomu intellektu 
+s~mezhdunarodnym uchastiem} [15th National Conference on Artificial Intelligence with 
+International Participation Proceedings]. Smolensk: Universum. 220--228. 
+\bibitem{6-ya-1}
+Top 500. Highlights~--- November 2017. Available at: {\sf 
+https://www.top500.org/lists/\linebreak 2017/11/highlights/} (accessed December~18, 2017).
+\bibitem{7-ya-1}
+POWER8 hits the merchant market. Available at: {\sf  
+https://www-03.ibm.com/\linebreak systems/power/advantages/smartpaper/memory-bandwidth.html} 
+(accessed January~22, 2018).
+
+\bibitem{9-ya-1}
+\Aue{Adinetz, A.\,V., P.\,F.~Baumeister, H.~B$\ddot{\mbox{o}}$ttiger, T.~Hater, T.~Maurer, 
+D.~Pleiter, W.~Schenck, and S.\,F.~Schifano.} 2015. 
+Performance evaluation of scientific 
+applications on POWER8. \textit{High performance computing systems. performance modeling, 
+benchmarking, and simulation}. Eds.\
+S.\,A.~Jarvis, S.\,A.~Wright, and S.\,D.~Hammond.
+Lecture notes in computer science ser. Springer.  8966:24--45.
+\bibitem{8-ya-1}
+\Aue{Reguly, I.\,Z., A.-K.~Keita, and M.\,B.~Giles.} 2015. Benchmarking the IBM Power8 
+processor. \textit{25th Annual Conference (International) 
+on Computer Science and Software 
+Engineering Proceedings}. Toronto, Canada: IBM\!/\!ACM. 61--70. 
+
+\bibitem{10-ya-1}
+\Aue{Yadrintsev, V.\,V., D.\,V. Zubarev, S.\,I.~Mal'kovskiy, and I.\,A.~Tikhomirov.} 2018. 
+Srav\-ne\-nie pro\-iz\-vo\-di\-tel'\-nosti ser\-ver\-nykh plat\-form v~za\-da\-chakh 
+poiska i~ana\-li\-za teks\-tov 
+[Performance comparison of server platforms in search and text analysis tasks]. 
+\textit{Informatsionnye tekhnologii i~vychislitel'nye sistemy} [Information Technologies and 
+Computing Systems] 1:37--45.
+\bibitem{11-ya-1}
+\Aue{Sochenkov, I.\,V., D.\,V.~Zubarev, and I.\,A.~Tikhomirov.} 2018. 
+Eksplorativnyy patentnyy 
+poisk [Exploratory patent search]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl}. 
+12(1):89--94.
+
+\pagebreak
+
+\bibitem{12-ya-1}
+\Aue{Zubarev, D., and I.~Sochenkov.} 2014. Using sentence similarity measure for plagiarism 
+source retrieval. \textit{CEUR Workshop Proceedings}. 
+1180:1027--1034.
+\bibitem{13-ya-1}
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences. 
+Available at: {\sf http://frccsc.ru} (accessed January~22, 2018).
+\end{thebibliography}
+} }
+
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received March 19, 2018}}         
+     
+\Contr
+
+\noindent
+\textbf{Yadrintsev Vasiliy  V.} (b.\ 1993)~--- researcher, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences,  
+44-2~Vavilov Str., Moscow 119333, Russian Federation; PhD student, Peoples' 
+Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
+Moscow 117198, Russian Federation; \mbox{vvyadrincev@gmail.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Klyubina Katerina V.} (b.\ 1994)~--- technical consultant, IBM East 
+Europe\!/\!Asia, 10~Presnenskaya Nab., Moscow 123112, Russian Federation; 
+\mbox{KKlyubina@ru.ibm.com}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Tikhomirov Ilya A.} (b.\ 1980)~--- Candidate of Science (PhD) in technology, 
+Head of Laboratory, 
+Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{tih@isa.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Gershelman Andrey F.} (b.\ 1959)~--- consultant in IT Strategy and IT Economics, 
+IBM East Europe\!/\!Asia, 10~Presnenskaya Nab., Moscow 123112, Russian 
+Federation;  \mbox{Andrey\_Gershelmann@ru.ibm.com}
+
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература}

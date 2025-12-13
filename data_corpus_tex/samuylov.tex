@@ -1,0 +1,732 @@
+\def\stat{samouylov}
+
+\def\tit{К МОДЕЛИРОВАНИЮ ЭФФЕКТОВ ОБСЛУЖИВАНИЯ МНОГОАДРЕСНОГО 
+ТРАФИКА В~СЕТЯХ 5G NR$^*$}
+
+\def\titkol{К моделированию эффектов обслуживания многоадресного 
+трафика в~сетях 5G NR}
+
+\def\aut{А.\,К.~Самуйлов$^1$, А.\,А.~Платонова$^2$, В.\,С.~Шоргин$^3$, 
+Ю.\,В.~Гайдамака$^4$}
+
+\def\autkol{А.\,К.~Самуйлов, А.\,А.~Платонова, В.\,С.~Шоргин, Ю.\,В.~Гайдамака}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Самуйлов А.\,К.}
+\index{Платонова А.\,А.}
+\index{Шоргин В.\,С.}
+\index{Гайдамака Ю.\,В.}
+\index{Samouylov A.\,K.}
+\index{Platonova A.\,A.}
+\index{Shorgin V.\,S.} 
+\index{Gaidamaka Yu.\,V.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Исследование выполнено за счет Российского научного фонда (грант №\,21-79-00142).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Российский университет дружбы народов, samuylov-ak@rudn.ru}
+\footnotetext[2]{Российский университет дружбы народов, platonova-aa@rudn.ru}
+\footnotetext[3]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
+\mbox{vshorgin@ipiran.ru}}
+\footnotetext[4]{Российский университет дружбы народов; Федеральный исследовательский 
+центр <<Информатика и~управ\-ле\-ние>> Российской академии наук, 
+\mbox{gaydamaka-yuv@rudn.ru}}
+
+\vspace*{-12pt}
+ 
+ 
+     
+  
+  \Abst{Многоадресная передача данных в~сетях беспроводного доступа поз\-во\-ля\-ет 
+эффективно предостав\-лять услугу группе абонентов и~оказывается полезной для сокращения 
+ресурса, необходимого для обслуживания пользователей, за\-пра\-ши\-ва\-ющих одни и~те же 
+данные. Поддержка этой функции в~современной технологии 5G~New Radio (NR) и~будущих 
+субтерагерцевых сис\-те\-мах~6G сталкивается с~особенностями, связанными с~использованием 
+фазированных антенных решеток (ФАР), фор\-ми\-ру\-ющих на\-прав\-лен\-ные лучи. Пред\-став\-лен\-ная 
+ модель обслуживания многоадресного и~одноадресного трафика поз\-во\-ля\-ет 
+исследовать области значений па\-ра\-мет\-ров сети связи~5G/6G для снижения плот\-ности 
+размещения базовых станций (БС) при поддержании качества предостав\-ле\-ния услуг абонентам.}
+   
+  \KW{5G; 6G; многоадресная передача; мил\-ли\-мет\-ро\-вые волны; терагерцевые час\-то\-ты; 
+фазированные антенные решетки; технологии радиодоступа; математическое 
+моделирование}
+
+\DOI{10.14357/19922264230210}{SLMGZU} 
+  
+\vspace*{3pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+  
+\section{Введение}
+
+  Приложения недалекого будущего, такие как дополненная (AR, augmented reality) и~виртуальная 
+реальность (VR, virtual reality), телеприсутствие, видео~8/16~K, требуют резкого 
+увеличения ско\-рости передачи по радиоинтерфейсу~[1]. Значительное 
+увеличение ско\-рости до~20~Гбит/с на БС ожидается 
+в~сис\-те\-мах 5G~NR за счет использования мил\-ли\-мет\-ро\-во\-го 
+диапазона длин волн (mmWave) (с~час\-то\-та\-ми~24--52,6~ГГц), а~для сотовых 
+сис\-тем~6G планируется использовать ниж\-нюю часть диапазона 
+мил\-ли\-мет\-ро\-вых волн (с~час\-то\-та\-ми~52,6--100~ГГц) и~даже субтерагерцевый 
+диапазон час\-тот (100--300~ГГц)~[2], потенциально повышая ско\-рость доступа 
+до~100~Гбит/с на одну БС.
+
+\begin{figure*}[b] %fig1
+\vspace*{-6pt}
+\begin{center}
+   \mbox{%
+\epsfxsize=106.848mm 
+\epsfbox{sam-1.eps}
+}
+
+\end{center}
+\vspace*{-9pt}
+\Caption{Схема СМО для модели совместного обслуживания многоадресного 
+и~одноадресного трафика в~сетях 5G/6G}
+\end{figure*}
+  
+  Многоадресная передача является важ\-ной возможностью сетей 
+беспроводного доступа, по\-вы\-ша\-ющей эф\-фек\-тив\-ность использования ресурсов 
+при обслуживании абонентов сети, за\-пра\-ши\-ва\-ющих одни и~те же данные~[3]. 
+Если для предоставления услуги одноадресной передачи необходимо 
+организовать отдельную сессию для каждого абонента, то для одновременного 
+предоставления услуги многоадресной передачи нескольким абонентам из 
+группы многоадресной до\-став\-ки информации достаточно организовать одну 
+многоадресную сессию. Под сессией понимается процесс непрерывной 
+передачи данных от БС, ини\-ци\-иро\-ван\-ный запросом абонента на 
+предостав\-ле\-ние со\-от\-вет\-ст\-ву\-ющей услуги и~завершающийся освобождением 
+выделенного на БС радиоресурса~[4]. По сравнению с~проводными сетями 
+в~беспроводных сис\-те\-мах одновременная передача данных нескольким 
+абонентским устройствам (АУ) за\-труд\-не\-на не только из-за от\-ли\-ча\-ющих\-ся 
+условий распространения радиосигнала до разных АУ, но и~вследствие 
+использования ФАР, фор\-ми\-ру\-ющих 
+несколько вы\-со\-ко\-на\-прав\-лен\-ных лучей, что приводит к~не\-воз\-мож\-ности 
+обслуживания всех АУ из группы многоадресной до\-став\-ки 
+одним лучом. Преимущество вы\-со\-ко\-на\-прав\-лен\-ных лучей при этом заключается 
+в~увеличении радиуса по\-кры\-ва\-емо\-го лучом сек\-то\-ра, что поз\-во\-ля\-ет размещать 
+БС на большем расстоянии друг от друга и~снижает капительные затраты 
+оператора сети. Таким образом, возникает задача исследования особенностей 
+обслуживания многоадресного трафика в~сетях 5G~NR с~точ\-ки зрения баланса 
+для оператора сети между эф\-фек\-тив\-ностью использования радиоресурсов, 
+качеством предостав\-ле\-ния услуг и~за\-тра\-та\-ми на развертывание сети.
+
+\vspace*{-6pt}
+  
+\section{Формализация модели}
+
+  Рассмотрим сценарий с~одной БС, предоставляющей $M\hm= \vert 
+\mathcal{M}\vert$ услуг, тре\-бу\-ющих многоадресную, и~$K\hm= 
+\vert\mathcal{K}\vert$ услуг, тре\-бу\-ющих одноадресную доставку информации. 
+Абонент формирует запрос на услугу многоадресной передачи с~ве\-ро\-ят\-ностью~$p_M$ 
+  и~на услугу одноадресной передачи с~ве\-ро\-ят\-ностью~$p_U$, 
+$p_M\hm+p_U\hm=1$. Назовем\linebreak $({I}, m)$-сес\-си\-ей многоадресную 
+сессию класса~$m$, со\-от\-вет\-ст\-ву\-ющую услуге~$m$, и~будем считать, что 
+по\-сту\-пив\-ший от абонента запрос с~ве\-ро\-ят\-ностью~$p_{M,m}$ пред\-став\-ля\-ет 
+собой запрос на предостав\-ле\-ние услуги~$m$, $m\hm= 1,2,\ldots , M$. 
+Аналогично $({II}, k)$-сес\-сия~--- одноадресная сессия класса~$k$, 
+со\-от\-вет\-ст\-ву\-ющая услуге~$k$ и~ве\-ро\-ят\-ности~$p_{U,k}$, $k\hm= 1,2,\ldots, K$. 
+При этом $\sum\nolimits^M_{m=1} p_{M,m} \hm= p_M$, 
+$\sum\nolimits^K_{k=1} p_{U,k} \hm= p_U$.
+  
+  Пусть $\lambda_{UE}$~--- интенсивность поступления запросов на 
+установление сессии от абонента, запрашивающего одну из~$M$ 
+многоадресных или одну из~$K$ одноадресных услуг. Тогда $\Lambda\hm= 
+\lambda_{UE}N_{UE}$~--- общая ин\-тен\-сив\-ность по\-ступ\-ле\-ния запросов 
+от~$N_{UE}$ абонентов в~зоне покрытия БС. Для оценки числа~$N_{UE}$ при 
+заданной плот\-ности абонентов~$\lambda_B$ делаем предположение 
+о~равномерном распределении АУ в~зоне покрытия антенны БС, 
+об\-слу\-жи\-ва\-ющей сектор 120$^\circ$ с~радиусом~$r$~[5]. В~этом случае 
+$N_{UE}\hm= \lambda_B \pi r^2/3$, а~интенсивности по\-ступ\-ле\-ния на БС 
+запросов на предостав\-ле\-ние услуги класса~$m$ и~класса~$k$ равны 
+$\lambda_m\hm= p_{M,m}\Lambda$ и~$\nu_k\hm= p_{U,k}\Lambda$ 
+соответственно. Кроме этого, для всех классов заданы сред\-ние длительности 
+предостав\-ле\-ния услуги абоненту~$\mu_m^{-1}$ и~$\kappa_k^{-1}$, а~так\-же 
+объем требуемого ресурса~$b_m$ и~$d_k$ в~первичных ресурсных блоках (РБ), причем два 
+последних па\-ра\-мет\-ра, а~так\-же общее чис\-ло~$V$ доступных РБ 
+на БС зависят от размера блока, спект\-раль\-ной эф\-фек\-тив\-ности, полосы 
+пропускания БС и~могут быть вы\-чис\-ле\-ны, как показано в~[6].
+
+
+  Описанный сценарий моделируется мультисервисной сис\-те\-мой массового 
+обслуживания (СМО) с~потерями~[7], схема которой пред\-став\-ле\-на на рис.~1. Сис\-те\-ма 
+поз\-во\-ля\-ет моделировать предостав\-ле\-ние двух типов услуг многоадресной 
+передачи: услуг передачи хранимых данных (например, мультимедийное 
+оповещение для целей общественной безопас\-ности, массовые обновления 
+программного обеспечения и~про\-шив\-ки в~интернете вещей) и~услуг \mbox{передачи} 
+данных в~реальном времени (например, средства массовой информации, 
+развлечения, включая вещание в~дополненной и~виртуальной ре\-аль\-ности, 
+создание профессионального \mbox{контента} в~беспроводной студии с~несколькими 
+камерами, иммерсивное видеопроизводство в~реальном времени)~[8--10]. 
+Ключевое отличие заключается в~дли\-тель\-ности сессии для предостав\-ле\-ния 
+многоадресной услуги на стороне БС, т.\,е.\ \mbox{интервала} за\-ня\-тости ресурса, 
+выделенного на БС для непрерывного предостав\-ле\-ния услуги абонентам из 
+группы многоадресной до\-став\-ки информации. Про\-дол\-жи\-тель\-ность интервала 
+за\-ня\-тости отражает\linebreak особенности многоадресной передачи хранимых данных 
+и~данных в~реальном времени и~моделируется в~СМО двумя дис\-цип\-ли\-на\-ми 
+<<прозрачного>> обслуживания~[11]~--- Tr$_1$ для многоадресной передачи 
+хранимых данных и~Tr$_2$ для многоадресной передачи данных в~реальном 
+времени. Изменение чис\-ла абонентов $\xi^{(1)}(t)$ для~Tr$_1$ и~$\xi^{(2)}(t)$ 
+для~Tr$_2$, об\-слу\-жи\-ва\-емых в~течение одной многоадресной сессии, показано 
+на рис.~2.
+
+
+
+
+ 
+  
+  Для обеих дисциплин запрос абонента на предостав\-ле\-ние услуги класса 
+$({I}, m)$ принимается к~обслуживанию, когда при по\-ступ\-ле\-нии он не 
+находит на обслуживании запросов такого же класса и~свободны не 
+менее~$b_m$ РБ. В~этом случае $({I}, m)$-за\-прос ини\-ци\-иру\-ет 
+интервал за\-ня\-тости ресурса запросами класса $({I}, m)$ и~занимает~$b_m$ РБ в~течение случайного интервала времени, не зависящего от 
+моментов по\-ступ\-ле\-ния и~длительностей обслуживания многоадресных 
+и~одноадресных запросов других классов. Все $({I}, m)$-за\-про\-сы, 
+по\-сту\-пив\-шие в~течение этого интервала за\-ня\-тости, т.\,е.\ в~период, когда на 
+обслуживании находится один или несколько запросов класса $({I}, 
+m)$, принимают-\linebreak\vspace*{-12pt}
+
+{ \begin{center}  %fig2
+ \vspace*{-1pt}
+   \mbox{%
+\epsfxsize=79mm 
+\epsfbox{sam-2.eps}
+}
+
+\end{center}
+
+
+
+\noindent
+{{\figurename~2}\ \ \small{Интервалы за\-ня\-тости при передаче хранимых данных (Tr$_1$)~(\textit{а}) 
+и~при передаче данных в~реальном времени (Tr$_2$)~(\textit{б})
+}}}
+
+\vspace*{9pt}
+
+\addtocounter{figure}{1}
+
+\noindent
+ся в~сис\-те\-му и~получают обслуживание без выделения 
+дополнительных РБ. Для обеих дис\-цип\-лин до\-ступ в~сис\-те\-му  
+$({I}, m)$-за\-про\-са блокируется, если в~сис\-те\-ме нет запросов этого 
+класса, а~свободного ресурса недостаточно для начала этой сессии.
+
+
+
+
+  
+  Существует принципиальное различие в~моделировании момента окончания 
+интервала за\-ня\-тости для дис\-цип\-лин~Tr$_1$ и~Tr$_2$. Для дис\-цип\-ли\-ны~Tr$_1$\linebreak 
+все об\-слу\-жи\-ва\-ющи\-еся $({I}, m)$-за\-про\-сы покидают\linebreak сис\-те\-му 
+одновременно в~момент окончания обслуживания первого запроса, 
+ини\-ци\-иро\-вав\-ше\-го период за\-ня\-тости~[12]. Для дис\-цип\-лины~Tr$_2$ 
+об\-слу\-жи\-ва\-ющи\-еся $({I}, m)$-за\-про\-сы покидают сис\-те\-му 
+в~\mbox{произвольные} моменты, а~интервал за\-ня\-тости заканчивается, когда все 
+выделенные РБ осво\-бож\-да\-ют\-ся при окончании обслуживания последнего 
+$({I}, m)$-за\-про\-са, не оставившего после себя в~сис\-те\-ме запросов 
+того же класса~[13]. Под ниж\-ни\-ми горизонтальными стрелками на схемах 
+рис.~2 указаны сред\-ние значения дли\-тель\-ности интервала за\-ня\-тости для 
+обеих дис\-цип\-лин. Здесь $\rho_m\hm= (1\hm+ \rho_{UE,m})^{p_{M,m}N_{UE}} 
+\hm-1$ со\-от\-вет\-ст\-ву\-ет пред\-ла\-га\-емой нагрузке запросами класса $({I}, m)$ 
+от всех АУ в~секторе покрытия антенны, при этом $\rho_{UE,m}\hm= p_{M,m} 
+\lambda_{UE}/\mu_m$~--- пред\-ла\-га\-емая на\-груз\-ка запросами класса 
+$({I}, m)$ от одного абонента, $m\hm\in \mathcal{M}$.
+
+
+  Обслуживание запросов абонентов на предо\-став\-ле\-ние одноадресной услуги 
+класса $({II}, k)$ моделируется классической СМО с~потерями~[14], для которой задана ин\-тен\-сив\-ность~$\nu_k$ 
+входящего пуассоновского потока, экспоненциальное случайное время 
+обслуживания запроса $\kappa_k^{-1}$ и~требование к~ресурсу для 
+обслуживания запроса~$d_k$ РБ. Пред\-ла\-га\-емая на\-груз\-ка класса $({II}, k)$ 
+обозначена $a_k\hm= \nu_k/\kappa_k$, $k\hm\in \mathcal{K}$.
+  
+\section{Метрики качества предоставления услуг}
+
+  Функционирование СМО описывается марковским процессом (МП) 
+$$
+\mathbf{Z}(t)= \left(Y_1(t), \ldots , Y_M(t),N_1(t),\ldots , N_K(t)\right),\enskip 
+t\geq 0\,. 
+$$
+Здесь $Y_m(t)$, $t\hm\geq 0$, $m\hm\in \mathcal{M}$,~--- индикатор наличия в~сис\-те\-ме 
+$({I},m)$-за\-про\-сов в~момент~$t$: 
+$$
+Y_m(t)=\begin{cases}
+1, & \mbox{если\ в~момент\ $t$\ обслуживается}\\
+&\mbox{хотя\ бы\ один\ $({I}, m)$-за\-прос};\\
+0 & \mbox{иначе}.
+\end{cases}
+$$
+ Марковский процесс $N_k(t)$, 
+$t\hm\geq0$, отражает чис\-ло  
+$({II}, k)$-за\-про\-сов в~момент~$t$, $N_k(t)\hm\in \{ 0,1,2,\ldots , \lfloor 
+V/d_k\rfloor\}$. Со\-сто\-яние МП $\mathbf{Z}(t)$ имеет вид 
+$(\mathbf{y},\mathbf{n})$, а~пространство со\-сто\-яний опре\-де\-ля\-ет\-ся~как 
+  \begin{multline*}
+  \mathcal{Z}= \left\{
+  \vphantom{\sum\limits^M_{m=1}}
+  (\mathbf{y},\mathbf{n})\in \{0,1\}^M \times 
+\{0,1,2,\ldots\}^K :\right.\\ 
+\left.  \sum\limits^M_{m=1} b_m y_m +\sum\limits^K_{k=1} d_k n_k\leq V\right\}.
+  \end{multline*}
+  
+  \begin{figure*}[b] %fig3
+\vspace*{-3pt}
+\begin{center}
+   \mbox{%
+\epsfxsize=160.643mm 
+\epsfbox{sam-4.eps}
+}
+
+\end{center}
+\vspace*{-11pt}
+\Caption{Вероятность блокировки доступа в~сис\-те\-му многоадресных~(\textit{а}) 
+и~одноадресных~(\textit{б}) запросов в~за\-ви\-си\-мости от ISD: \textit{1}~--- 
+$\mathrm{ISD}\hm= 321$; \textit{2}~--- 446; \textit{3}~--- 620; \textit{4}~--- 
+$\mathrm{ISD}\hm= 863$}
+\end{figure*}
+  
+  В~[15] показано, что стационарное распределение МП $\mathbf{Z}(t)$ имеет 
+мультипликативное пред\-став\-ление
+
+\noindent
+  \begin{equation}
+  p(\mathbf{y},\mathbf{n}) =G^{-1}(\mathcal{Z}) \!\prod\limits^M_{m=1} 
+\gamma_m^{y_m} \prod\limits^k_{k=1} \fr{a_k^{n_k}}{n_k!}\,, \\
+  (\mathbf{y},\mathbf{n})\in \mathcal{Z}\,,
+  \label{e1-sam}\!\!
+  \end{equation}
+  
+    \vspace*{-2pt}
+    
+    \noindent
+с нормировочной константой $G(\mathcal{Z})$, пред\-став\-лен\-ной в~виде
+
+\vspace*{1pt}
+
+\noindent
+$$
+G(\mathcal{Z}) =\sum\limits_{\mathbf{z}\in\mathcal{Z}} \prod\limits^M_{m=1} 
+\gamma_m^{y_m} \prod\limits^K_{k=1} \fr{a_k^{n_k}}{n_k !}\,.
+$$
+
+  \vspace*{-1pt}
+
+\noindent
+Здесь $\gamma_m$ имеет смысл загрузки БС многоадресными 
+сессиями, которая различается для услуг передачи хранимых данных и~услуг 
+передачи данных в~реальном времени и~опре\-де\-ля\-ет\-ся~как 
+$$
+\gamma_m= \begin{cases}
+\rho_m & \mbox{для}\ \mathrm{Tr}_1\,;\\
+e^{\rho_m}-1 &\mbox{для}\ \mathrm{Tr}_2\,.
+\end{cases}
+$$
+
+  \vspace*{-2pt}
+  
+  Основные характеристики качества предостав\-ле\-ния услуг мож\-но найти 
+суммированием стационарных вероятностей~(\ref{e1-sam}) по со\-от\-вет\-ст\-ву\-ющим 
+подмножествам~$\Omega$ пространства со\-сто\-яний~$\mathcal{Z}$:
+  \begin{equation}
+  {\sf P}\{ (\mathbf{y},\mathbf{n})\in \Omega\} =\!\!\!\!\sum\limits_{(\mathbf{y},\mathbf{n}) 
+\in \Omega} \!\!\! p(\mathbf{y},\mathbf{n})= \fr{G(\Omega)}{G(\mathcal{Z})}\,,\enskip 
+\Omega\subseteq \mathcal{Z}\,.\!\!
+\label{e2-sam}
+  \end{equation}
+  
+  \vspace*{-2pt}
+
+  Так, множество состояний блокировки доступа в~сис\-те\-му для 
+многоадресного запроса класса~$({I},m)$ определяется выражением
+
+\vspace*{-6pt}
+
+\noindent
+  \begin{multline*}
+  \hspace*{-8pt}\mathcal{B}_m^I= \!\left\{ (\mathbf{y},\mathbf{n})\in\mathcal{Z} : 
+\sum\limits^M_{m=1}\! b_my_m +\!\sum\limits^K_{k=1} \!d_k n_k+b_m > V\,,\right.\\  
+\left.y_m=0
+\vphantom{\sum\limits^M_{m=1}}
+\right\},\enskip m\in \mathcal{M}\,,
+ % \label{e3-sam}
+  \end{multline*}
+а~для одноадресного запроса класса $({II},k)$~--- выражением
+
+\vspace*{-2pt}
+
+\noindent
+\begin{multline*}
+\hspace*{-7pt}\mathcal{B}_k^{II} =\!\left\{ (\mathbf{y},\mathbf{n}) \in\mathcal{Z} : 
+\sum\limits^M_{m=1} \!b_m y_m +\sum\limits^K_{k=1}\! d_k n_k +d_k 
+\!>\!V\!\right\},\hspace*{-1.89pt}\\
+ k\in\mathcal{K}\,.
+%\label{e4-sam}
+\end{multline*}
+  
+  Соответствующие вероятности $B_m^I\hm= {\sf P}\{ (\mathbf{y}, 
+\mathbf{n})\hm\in \mathcal{B}^I_m\}$ и~$B_k^{II} \hm= {\sf P}\{ 
+(\mathbf{y},\mathbf{n})\hm\in \mathcal{B}_k^{II}\}$ можно найти  
+с~по\-мощью~(\ref{e2-sam}).
+
+\section{Результаты численного эксперимента}
+
+\vspace*{-3pt}
+
+  Для иллюстрации эффектов обслуживания многоадресного трафика при 
+использовании час\-тот мил\-ли\-мет\-ро\-во\-го диапазона длин волн 
+и~субтерагерцевого диапазона час\-тот рас\-смот\-ре\-на сота сети 5G~NR 
+с~техническими па\-ра\-мет\-ра\-ми из~[16], радиус которой в~за\-ви\-си\-мости от ФАР 
+(от $4\times4$ до~$32\times 4$) может варь\-и\-ро\-вать\-ся от~107 до~288~м. 
+Абоненты получают одну одноадресную услугу и~одну услугу многоадресной 
+передачи данных в~реальном времени, при этом для по\-след\-ней высокая 
+на\-прав\-лен\-ность лучей в~технологии 5G~NR может привести к~не\-об\-хо\-ди\-мости 
+поддерживать одновременно несколько многоадресных сессий, чис\-ло которых 
+ограничено чис\-лом антенных элементов ФАР. 
+  
+  На рис.~3 приведены графики ве\-ро\-ят\-ности блокировки доступа в~сис\-те\-му 
+для многоадресного и~одноадресного трафика при $p_M\hm= 0{,}5$ 
+в~за\-ви\-си\-мости от плот\-ности~$\lambda_B$ абонентов в~зоне покрытия БС 
+для~4~значений рас\-сто\-яния меж\-ду БС (ISD, inter-site distance). 
+  
+
+  Заметим, что увеличение ин\-тен\-сив\-ности по\-ступ\-ле\-ния запросов от 
+абонентов из зоны покры-\linebreak тия сначала приводит к~увеличению ве\-ро\-ят\-ности\linebreak 
+блокировки доступа в~сис\-те\-му запросов обоих классов. Однако начиная 
+с~определенной ин\-тен\-сив\-ности ве\-ро\-ят\-ность блокировки многоадресных 
+запросов начинает уменьшаться, как показано на рис.~3,\,\textit{а}. Объяснение 
+заключается в~том, что воз\-рас\-та\-ет ве\-ро\-ят\-ность обслуживания в~сис\-те\-ме\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\noindent
+ многоадресной сессии, которая занимает ресурс,
+ в~том чис\-ле для обслуживания 
+в~рамках текущей сессии всех сле\-ду\-ющих по\-сту\-па\-ющих запросов на эту 
+многоадресную услугу. Вышеупомянутый эффект
+ приводит к~резкому 
+увеличению ве\-ро\-ят\-ности блокировки доступа для одноадресных запросов, как 
+показано на рис.~3,\,\textit{б}, вплоть до момента, когда сис\-те\-ма начинает 
+обслуживать почти исключительно многоадресные запросы. Подобный эффект 
+обычно наблюдается, когда пред\-ла\-га\-емая нагрузка многоадресных запросов 
+увеличивается или когда падает пред\-ла\-га\-емая нагрузка одноадресных запросов, 
+и~усиливается для ФАР с~большим чис\-лом элементов, со\-от\-вет\-ст\-ву\-ющих 
+большим значениям рас\-сто\-яния между БС соседних сот сети.
+  
+  Проиллюстрированная неявная приоритизация многоадресных сессий не 
+всегда может быть предпочтительной для оператора сети, поскольку она может 
+блокировать запросы на одноадресные услуги с~более высоким приоритетом. 
+Однако фактический баланс между вероятностями блокировки доступа 
+одноадресных и~многоадресных запросов существенно зависит от функции 
+по\-лез\-ности сетевого оператора. Последний может обеспечить соблюдение 
+необходимого баланса,  введя, например, приоритеты на этапе приема запросов 
+на обслуживание.
+  
+\section{Заключение}
+
+  В работе предложена математическая модель обслуживания 
+  многоадресного и~одноадресного трафика на БС в~сис\-те\-мах~5G/6G при использовании 
+вы\-со\-ко\-на\-прав\-лен\-ных антенных решеток, характерных для сетей 5G~NR. 
+Показано, что со\-вмест\-ная передача многоадресного и~одноадресного трафика 
+на радиоинтерфейсе приводит к~ряду эффектов, связанных с~использованием 
+ресурсов этими классами трафика. Предложенная модель поз\-во\-ля\-ет 
+анализировать области значений па\-ра\-мет\-ров технической сис\-те\-мы для 
+эффективного применения ФАР при обслуживании многоадресного трафика, 
+в~том чис\-ле оценивать ограничения на рас\-сто\-яние между БС
+в~таких сетях.
+  
+{\small\frenchspacing
+ {\baselineskip=11.5pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-sam}
+\Au{David K., Berndt~H.} 6G vision and requirements: Is there any need for beyond 5G?~// IEEE 
+Veh. Technol. Mag., 2018. Vol.~13. Iss.~3. P.~72--80. doi: 10.1109/MVT.2018. 2848498.
+\bibitem{2-sam}
+\Au{Petrov V., Kurner~T., Hosako~I.} IEEE 802.15. 3d: First standardization efforts for  
+sub-terahertz band communications toward~6G~// IEEE Commun. Mag., 2020. Vol.~58. Iss.~11. 
+P.~28--33. doi: 10.1109/MCOM.001.2000273. 
+\bibitem{3-sam}
+\Au{Kompella V.\,P., Pasquale~J.\,C., Polyzos~G.\,C.} Multicasting for multimedia applications~// 
+Conference on Computer Communications.~--- IEEE, 1992. P.~2078--2085. doi: 
+10.1109/INFCOM.1992.263480. 
+\bibitem{4-sam}
+Multimedia Broadcast/Multicast Service (MBMS); Stage~1 (Release~16): Technical Specification 
+22.146 V16.0.0.~--- 3GPP, 2020. {\sf  
+https://www.3gpp.org/ftp/ Specs/archive/22\_series/22.146/22146-g00.zip}.
+\bibitem{5-sam}
+\Au{Moltchanov D.} Distance distributions in random networks~// Ad Hoc Netw., 2012. 
+Vol.~10. Iss.~6. P.~1146--1166. doi: 10.1016/j.adhoc.2012.02.005.
+\bibitem{6-sam}
+\Au{Kovalchukov R., Moltchanov~D., Gai\-da\-ma\-ka~Y., Bob\-ri\-ko\-va~E.} An accurate approximation 
+of resource request distributions in millimeter wave 3GPP New Radio systems~// Internet of 
+things, smart spaces, and next generation networks and systems~/
+Eds.\ O.~Galinina, S.~Andreev, S.~Balandin, Y.~Koucheryavy.~--- Lecture notes in computer science ser.~--- 
+Springer, 2019. Vol.~11660. P.~572--585. doi: 10.1007/978-3-030-30859-9\_50.
+\bibitem{7-sam}
+\Au{Basharin G., Gaidamaka~Y., Samouylov~K.} Mathematical theory of teletraffic and its 
+application to the analysis of multiservice communication of next generation networks~// Autom. 
+Control Comp.~S., 2013. Vol.~47. P.~62--69. doi:  10.3103/S0146411613020028.
+
+\bibitem{9-sam} %8
+\Au{Araniti G., Condoluci~M., Scopelliti~P., Mo\-li\-na\-ro~A., Iera~A.} Multicasting over emerging 
+5G Networks: Challenges and perspectives~// IEEE Network, 2017. Vol.~31. No.\,2. P.~80--89. 
+doi: 10.1109/MNET.2017.1600067NM.
+
+\bibitem{8-sam} %9
+Study on architectural enhancements for 5G multicast-broadcast services (Release~17): Technical 
+Report 23.757 V1.2.0.~--- 3GPP, 2020. {\sf 
+https://www.3gpp.org/ftp/ Specs/archive/23\_series/23.757/23757-120.zip}.
+
+\bibitem{10-sam}
+\Au{Tran T., Navr$\acute{\mbox{a}}$til~D., Sanders~P., Hart~J., Odar\-chen\-ko~R., Barjau~C., 
+Altman~B., Burdinat~C., Gomez-Barquero~D.} Enabling multicast and broadcast in the 5G core for 
+converged fixed and mobile networks~// IEEE T. Broadcast., 2020. Vol.~66. No.\,2.  
+P.~428--439. doi: 10.1109/ TBC.2020.2991548.
+\bibitem{11-sam}
+\Au{Рыков В.\,В., Самуйлов~К.\,Е.} К~анализу вероятностей блокировок ресурсов сети 
+с~динамическими многоадресными со\-еди\-не\-ни\-ями~// Электросвязь, 2000. №\,10. С.~27--30.
+\bibitem{12-sam}
+\Au{Karvo J., Martikainen~O., Virtamo~J., Aalto~S.} Blocking of dynamic multicast 
+connections~// Telecommun. Syst., 2001. Vol.~16. P.~467--481. doi: 10.1023/A:1016631431617.
+\bibitem{13-sam}
+\Au{Boussetta K., Belyot~A.-L.} Multirate resource sharing for unicast and multicast connections~// 
+Broadband communications~/ Eds.\ D.\,H.\,K.~Tsang, P.\,J.~K$\ddot{\mbox{u}}$hn.~--- Boston, MA, USA: Springer, 2000. Vol.~30. P.~561--570. doi: 
+10.1007/978-0-387-35579-5\_47.
+
+\pagebreak
+
+\bibitem{14-sam}
+\Au{Kelly F.\,P.} Loss networks~// Ann. Appl. Probab., 1991. Vol.~1. Iss.~3.  
+P.~319-- 378.  doi: 
+10.1214/aoap/1177005872.
+\bibitem{15-sam}
+\Au{Naumov V., Gaidamaka~Y., Yar\-ki\-na~N., Sa\-mouy\-lov~K.} Matrix and analytical methods for 
+performance analysis of telecommunication systems.~--- Springer Nature, 2021. 308~p.
+\bibitem{16-sam}
+\Au{Samuylov A., Moltchanov~D., Ko\-val\-chu\-kov~R., Pir\-ma\-go\-me\-dov~R., Gai\-da\-ma\-ka~Y., 
+And\-re\-ev~S., Kou\-che\-rya\-vy~Y., Samouylov~K.} Characterizing resource allocation trade-offs in 5G 
+NR serving multicast and unicast traffic~// IEEE T. Wirel. Commun., 2020. Vol.~19. No.\,5. 
+P.~3421--3434. doi: 10.1109/TWC.2020.2973375.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.04.23}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{ON MODELING THE EFFECTS OF~MULTICAST TRAFFIC SERVICING IN~5G~NR 
+NETWORKS}
+
+
+\def\titkol{On modeling the effects of multicast traffic servicing in 5G NR 
+networks}
+
+
+\def\aut{A.\,K.~Samouylov$^1$, A.\,A.~Platonova$^1$, V.\,S.~Shorgin$^2$, 
+and~Yu.\,V.~Gaidamaka$^{1,2}$}
+
+\def\autkol{A.\,K.~Samouylov, A.\,A.~Platonova, V.\,S.~Shorgin, 
+and~Yu.\,V.~Gaidamaka}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-10pt}
+
+
+\noindent
+    $^1$RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation
+    
+    \noindent
+    $^2$Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
+Sciences; 44-2~Vavilov\linebreak
+$\hphantom{^1}$Str., Moscow 119133, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+  
+  
+    
+  \Abste{Multicasting in wireless access networks allows efficient provision of a~service to 
+  a~group of subscribers and is useful for reducing the resource required to serve user equipments 
+requesting the same data. The support of this feature in current 5G New Radio (NR) technology and 
+future subterahertz (sub-THz) 6G systems faces challenges associated with the use of the 
+directional beamforming phased array antennas. The presented multicast and unicast traffic service model 
+allows one to explore the range of 5G/6G network parameters to reduce the 
+density of base stations while maintaining the quality of services provided to subscribers.}
+  
+  \KWE{5G; 6G; multicasting; millimeter wave; terahertz; multibeam antennas; 
+ multi-RAT; numerical simulation}
+  
+  
+  
+\DOI{10.14357/19922264230210}{SLMGZU} 
+
+\vspace*{-14pt}
+
+\Ack
+  \noindent
+  The reported study was funded by the Russian Science Foundation, project No.\,21-79-00142.
+
+\vspace*{4pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+  \bibitem{1-sam-1}
+  \Aue{David, K., and H.~Berndt.} 2018. 6G vision and requirements: Is there any need for 
+beyond 5G? \textit{IEEE Veh. Technol. Mag.} 13(3):72--80. doi: 10.1109/MVT.2018.2848498.
+  \bibitem{2-sam-1}
+  \Aue{Petrov, V., T.~Kurner, and I.~Hosako.} 2020. IEEE 802.15. 3d: First standardization 
+efforts for sub-terahertz band communications toward 6G. \textit{IEEE Commun. Mag.} 
+58(11):28--33. doi: 10.1109/MCOM.001.2000273. 
+  \bibitem{3-sam-1}
+  \Aue{Kompella, V.\,P., J.\,C.~Pasquale, and G.\,C.~Polyzos.} 1992. Multicasting for multimedia 
+applications. \textit{Conference on Computer Communications}. IEEE. 2078--2085. doi: 
+10.1109/INFCOM.1992.263480. 
+  \bibitem{4-sam-1}
+Multimedia broadcast/multicast service (MBMS); Stage~1 (Release~16): Technical specification 
+22.146 V16.0.0. 3GPP. Available at:  {\sf 
+https://www.3gpp.org/ftp/Specs/ archive/22\_series/22.146/22146-g00.zip} (accessed May~20, 2023).
+  \bibitem{5-sam-1}
+\Aue{Moltchanov, D.} 2012. Distance distributions in random networks. \textit{AD Hoc Netw.} 
+10(6):1146--1166. doi: 10.1016/ j.adhoc.2012.02.005.
+  \bibitem{6-sam-1}
+  \Aue{Kovalchukov, R., D.~Moltchanov, Y.~Gai\-da\-ma\-ka, and E.~Bob\-ri\-ko\-va.} 2019. An accurate 
+approximation of resource request distributions in millimeter wave 3GPP New Radio systems. 
+\textit{Internet of things, smart spaces, and next generation networks and systems}. Eds.\ O.~Galinina, S.~Andreev, S.~Balandin,
+and Y.~Koucheryavy. Lectures notes 
+in computer science ser. Springer. 11660:572--585. doi: 10.1007/978-3-030-30859-9\_50.
+  \bibitem{7-sam-1}
+  \Aue{Basharin, G., Y.~Gai\-da\-ma\-ka, and K.~Sa\-mouy\-lov.} 2013. Mathematical theory of 
+teletraffic and its application to the analysis of multiservice communication of next generation 
+networks. \textit{Autom. Control Comp.~S.}  47:62--69. doi:  10.3103/S0146411613020028.
+  
+  \bibitem{9-sam-1} %8
+  \Aue{Araniti, G., M.~Condoluci, P.~Scopelliti, A.~Mo\-li\-na\-ro, and A.~Iera.} 2017. Multicasting 
+over emerging 5G networks: Challenges and perspectives. \textit{IEEE Network} 31(2):80--89. doi: 
+10.1109/MNET.2017.1600067NM.
+
+\bibitem{8-sam-1} %9
+  Study on architectural enhancements for 5G multicast-broadcast services (Release 17): Technical 
+Report 23.757 V1.2.0. 3GPP. Available at:  {\sf 
+https://www.3gpp.org/ ftp/Specs/archive/23\_series/23.757/23757-120.zip} (accessed May~20, 2023).
+  \bibitem{10-sam-1}
+  \Aue{Tran, T., D.~Nav$\acute{\mbox{a}}$til, P.~Sanders, J.~Hart, R.~Odar\-chen\-ko, C.~Barjau, 
+B.~Altman, C.~Burdinat, and D.~Gomez-Barquero.} 2020. Enabling multicast and broadcast in the 
+5G core for converged fixed and mobile networks. \textit{IEEE T. Broadcast.} 66(2):428--439. doi: 
+10.1109/ TBC.2020.2991548.
+  \bibitem{11-sam-1}
+  \Aue{Rykov, V.\,V., and K.\,E.~Samuylov.} 2000. K~analizu ve\-ro\-yat\-no\-stey blokirovok 
+resursov seti s~dinamicheskimi mno\-go\-ad\-res\-ny\-mi so\-edi\-ne\-ni\-yami [To the analysis of blocking 
+probabilities in a~network with dynamic multicast connections]. \textit{Elektrosvyaz'}  
+[Electrosvyaz Magazine] 10:\linebreak 27--30.
+  \bibitem{12-sam-1}
+  \Aue{Karvo, J., O.~Martikainen, J.~Virtamo, and S.~Aalto.} 2001. Blocking of dynamic 
+multicast connections. \textit{Telecommun. Syst.} 16:467--481. doi: 10.1023/A:1016631431617.
+  \bibitem{13-sam-1}
+  \Aue{Boussetta, K., and A.-L.~Belyot.} 2000. Multirate resource sharing for unicast and 
+multicast connections. \textit{Broadband communications}. Eds. D.\,H.\,K.~Tsang and P.\,J.~K$\ddot{\mbox{u}}$hn.
+Boston, MA: Springer. 30:561--570. doi: 10.1007/978-0-387-35579-5\_47.
+  \bibitem{14-sam-1}
+  \Aue{Kelly, F.\,P.} 1991. Loss networks. \textit{Ann. Appl. Probab.} 1(3):319--378. doi: 
+10.1214/aoap/1177005872.
+  \bibitem{15-sam-1}
+  \Aue{Naumov, V., Y.~Gaidamaka, N.~Yar\-ki\-na, and K.~Sa\-mouy\-lov.} 2021. \textit{Matrix and 
+analytical methods for performance analysis of telecommunication systems}. Springer Nature. 
+308~p.
+  \bibitem{16-sam-1}
+  \Aue{Samuylov, A., D.~Moltchanov, R.~Ko\-val\-chu\-kov, R.~Pir\-ma\-go\-me\-dov, Y.~Gai\-da\-ma\-ka, 
+S.~And\-re\-ev, Y.~Kou\-che\-rya\-vy, and K.~Sa\-mouy\-lov.} 2020. Characterizing resource allocation 
+trade-offs in 5G NR serving multicast and unicast traffic. \textit{IEEE T. Wirel. Commun.}  
+19(5):3421--3434. doi: 10.1109/TWC.2020.2973375.
+  \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received April 15, 2023}} 
+  
+  \Contr
+  
+  \noindent
+  \textbf{Samuylov Andrey K.} (b.\ 1988)~--- Candidate of Science (PhD) in physics and 
+mathematics, associate professor, Department of Applied Probability and Informatics, RUDN 
+University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation;  
+\mbox{samuylov-ak@rudn.ru}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Platonova Anna A.} (b.\ 1996)~--- PhD student, Department of Applied Probability and 
+Informatics, RUDN University, 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
+\mbox{platonova-aa@rudn.ru}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Shorgin Vsevolod S.} (b.\ 1978)~--- Candidate of Science (PhD) in technology, senior 
+scientist, Institute of Informatics Problems, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian 
+Federation; \mbox{vshorgin@ipiran.ru}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Doctor of Science in physics and mathematics, 
+professor, Department of Applied Probability and Informatics, RUDN University,  
+6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; senior scientist, Institute of 
+Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation;  
+\mbox{gaydamaka-yuv@rudn.ru}
+  
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 

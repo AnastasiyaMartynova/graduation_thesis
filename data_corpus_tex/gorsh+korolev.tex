@@ -1,0 +1,865 @@
+\def\stat{gorsh+korolev}
+
+\def\tit{ОПРЕДЕЛЕНИЕ ЭКСТРЕМАЛЬНОСТИ ОБЪЕМОВ ОСАДКОВ НА~ОСНОВЕ МОДИФИЦИРОВАННОГО 
+МЕТОДА ПРЕВЫШЕНИЯ ПОРОГОВОГО ЗНАЧЕНИЯ$^*$}
+
+\def\titkol{Определение экстремальности объемов осадков на~основе %модифицированного 
+метода превышения порогового значения}
+
+\def\aut{А.\,К.~Горшенин$^1$, В.\,Ю.~Королев$^2$}
+
+\def\autkol{А.\,К.~Горшенин, В.\,Ю.~Королев}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Горшенин А.\,К.}
+\index{Королев В.\,Ю.}
+\index{Gorshenin A.\,K.}
+\index{Korolev V.\,Yu.}
+
+
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{Работа выполнена при поддержке РФФИ (проект 17-07-00851) 
+и~Стипендии Президента Российской Федерации молодым ученым и~аспирантам 
+(СП-538.2018.5).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Федерального исследовательского
+центра <<Информатика и~управ\-ле\-ние>> Российской академии наук; факультет
+вычислительной математики и~кибернетики Московского государственного университета 
+им.\ М.\,В.~Ломоносова,
+\mbox{agorshenin@frccsc.ru}}
+\footnotetext[2]{Факультет вычислительной математики и~кибернетики
+Московского государственного университета им.\ М.\,В.~Ломоносова;
+Институт проб\-лем информатики Федерального исследовательского
+центра <<Информатика и~управ\-ле\-ние>> Российской академии наук,
+\mbox{vkorolev@cs.msu.ru}}
+
+
+\vspace*{-8pt}
+
+\Abst{Задача корректного определения того, какие наблюдения следует признавать 
+экстремальными, чрезвычайно важна при изучении метеорологических явлений. 
+Предложены восходящий и~нисходящий методы определения порогового (экстремального) 
+уровня на основе использования теорем Реньи для редеющих потоков и~результатов 
+Пи\-канд\-са\,--\,Бал\-ке\-мы\,--\,Де Хаана. На примере данных за~60~лет 
+наблюдений в~Потсдаме и~Элисте продемонстрировано, что восходящий метод 
+показывает отличные результаты для суточных объемов осадков, однако для 
+дождливых периодов необходимо использовать нисходящий метод. 
+Приведено сравнение результатов подобного непараметрического подхода с~параметрическим 
+критерием, который был предложен авторами в~предшествующих работах.}
+
+\KW{осадки; дождливые периоды; экстремальные наблюдения; пороговые значения; 
+теорема Реньи; теорема Пи\-канд\-са\,--\,Бал\-ке\-мы\,--\,Де Хаана; 
+проверка статистических гипотез; анализ данных}
+
+\DOI{10.14357/19922264180403}
+  
+\vspace*{-4pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+Оценки закономерностей и~тенденций в~наблюдениях аномально
+экстремальных метеорологических явлений важны для понимания
+процесса изменения климата. Однако известно, что различные методы
+оценки экстремальных осадков в~применении к~разным моделям дают
+существенно отличающиеся результаты. Чаще всего решение основано
+на выборе порогового значения, определяемого как квантиль 
+некоторого распределения~\cite{Groisman1999}. Однако изменения 
+в~максимальных значениях объемов осадков (и,~соответственно, большее число 
+превышений порога) не всегда
+ведут к~качественному изменению того, какие именно события
+действительно должны быть признаны экстремальными. В~частности,
+увеличение доли осадков подобного рода может быть связано 
+с~изменениями суммарного объема или с~увеличением интенсивности
+осадков в~сочетании с~уменьшением числа дождливых дней~\cite{Zolina2008}.
+
+Для решения задачи определения аномальных наблюдений в~климатологических
+ задачах часто используется подход теории экстремальных значений, 
+ называемый \verb"Peaks over Threshold" (\verb"PoT"; пики, превышающие 
+ порог)~\cite{Leadbetter1991}. В~частности, известно использование подобного 
+ подхода в~задачах, связанных со штормовыми волнами~\cite{Mendez2006}, 
+ дневными температурами~\cite{Kysely2010}, 
+ осадками~\cite{Begueria2006,Begueria2011,Roth2012}. 
+ Для выявления кри\-ти\-че\-ских/экстре\-маль\-ных наблюдений в~информационных 
+ потоках различной природы авторами данной статьи ранее была предложена 
+ методология поиска порогового значения на основе модификации \verb"PoT"-ме\-то\-да 
+ с~использованием результатов теоремы Реньи для редеющих потоков~\cite{Gorshenin2016a}. 
+ В~настоящей работе подобный подход будет развит для определения аномально 
+ экстремальных значений объемов осадков, в~том числе выпавших в~течение так 
+ называемого дождливого периода (подряд идущих дней, в~которые наблюдались осадки). 
+ Кроме того, приведено сравнение результатов указанного непараметрического 
+ подхода с~параметрическим критерием, который был ранее предложен авторами 
+ в~статье~\cite{Gorshenin2018as} для решения подобного класса задач.
+ 
+ \begin{figure*}[b] %fig1
+\vspace*{9pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=161.412mm 
+ \epsfbox{gok-1.eps}
+ }
+ \end{center}
+\vspace*{-6pt}
+\Caption{Пороговый уровень, полученный для дневных объемов восходящим методом, 
+Потсдам: (\textit{а})~распределение интервалов между превышениями порога;
+(\textit{б})~распределение превышений порога; (\textit{в})~суточные объемы;
+\textit{1}~--- гистограмма; \textit{2}~--- экспоненциальное распределение 
+с~параметром~0,002;
+\textit{3}~--- обобщенное распределение Парето с~параметрами~0,226,
+9,196 и~30,2;
+\textit{4}~--- данные; \textit{5}~--- порог~30,2~мм}\label{FigPotsdamPOT}
+\end{figure*}
+
+\vspace*{-18pt}
+
+\section{Использование PoT-методологии для~суточных~объемов~осадков}
+\label{DailyData}
+
+\vspace*{-1pt}
+
+Воспользуемся подходом на основе двух фундаментальных результатов~--- 
+тео\-ре\-мы Реньи для редеющих потоков~\cite{Gnedenko1996} и~классического 
+результата тео\-рии экстремальных значений, связанного с~именами Пикандса, 
+Балкемы и~Де Хаана~\cite{Balkema1974,Pickands1975}, которые позволяют 
+избегать априорных предположений о~данных~\cite{Gorshenin2017a}. 
+Из указанных выше тео\-рем следует, что распределение разностей моментов 
+превышения порогового значения должно соответствовать экспоненциальному закону, 
+а~величины превышений данного порога~--- обобщенному распределению Парето, 
+которое имеет следующий вид ($\xi\hm\in\mathbb{R}$~--- параметр формы,  
+$\mu\hm\in\mathbb{R}$~--- сдвига,  $\sigma\hm>0$~--- масштаба):
+\begin{equation*}
+F_{\xi, \sigma, \mu}(y)=
+\begin{cases}
+1-\left(1+\fr{\xi(y-\mu)}{\sigma}\right)^{-1/\xi}\,,& \!\!\mbox{если }\xi\neq 0\,;\\
+1-e^{-({y-\mu})/{\sigma}}& \!\!\mbox{иначе.}
+\end{cases}
+\end{equation*}
+
+Таким образом, пороговое значение может быть определено в~рамках статистической 
+процедуры, в~которой для каждого уровня, начиная с~некоторого значения, 
+например минимума в~данных, с~заранее заданным шагом должны проверяться 
+последовательно две гипотезы об экспоненциальности и~паретовости описанных 
+выше объектов. В~случае\linebreak\vspace*{-12pt}
+
+\columnbreak
+
+\noindent
+ принятия обеих текущий уровень может считаться 
+экстремальным пороговым значением. Назовем данный метод, следуя 
+статьям~\cite{Gorshenin2016a,Gorshenin2017a}, \textit{восходящим} 
+(в~соответствии с~направлением сдвига порогового значения в~процессе анализа данных).
+
+Продемонстрируем описанный подход на примере наблюдений за объемом дневных 
+осадков за почти 60-летний период (1950--2008~гг.)\ 
+в~городах Потсдаме и~Элисте. Процедура поиска автоматизирована с~помощью 
+программного решения, созданного на встроенном языке программирования 
+пакета \verb"MATLAB". Получено, что для Потсдама критический уровень 
+составляет~30{,}2~мм (шаг изменения уровня~--- 0{,}01~мм, 
+уровень значимости статистического критерия при проверке по  $\chi^2$-тес\-ту 
+выбран равным~0{,}01). Для экспоненциального распределения 
+$p_{\mathrm{знач}}\hm=0{,}07$ (параметр оценивается значением~0{,}002), 
+для обобщенного Парето  $p_{\mathrm{знач}}\hm=0{,}29$ (параметры: 0{,}226, 
+9{,}196 и~30{,}2).
+
+
+На рис.~\ref{FigPotsdamPOT} продемонстрировано визуальное соответствие 
+между экспериментальными данными и~подогнанными распределениями (см.\
+ гистограммы и~аппроксимирующие кривые на рис.~1,\,\textit{а} и~1,\,\textit{б}).\linebreak\vspace*{-12pt}
+ 
+ \pagebreak
+ 
+ \end{multicols}
+ 
+ \begin{figure*} %fig2
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=160.191mm 
+ \epsfbox{gok-2.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Пороговый уровень, полученный для дневных объемов восходящим методом, 
+Элиста:
+(\textit{а})~распределение интервалов между превышениями порога;
+(\textit{б})~распределение превышений порога; (\textit{в})~суточные объемы;
+\textit{1}~--- гистограмма; \textit{2}~--- экспоненциальное распределение 
+с~параметром~0,002;
+\textit{3}~--- обобщенное распределение Парето 
+с~параметрами~0,038, 9,009 и~26,5;
+\textit{4}~--- данные; \textit{5}~--- порог 26,5~мм
+}\label{FigElistaPOT}
+%\vspace*{3pt}
+\end{figure*}
+
+ 
+ \begin{multicols}{2}
+ 
+ \noindent 
+ На рис.~1,\,\textit{в} продемонстрировано, что полученное
+ пороговое значение превышается относительно небольшое число раз за весь 
+ период наблюдений; таким образом, данные пики могут  рассматриваться как 
+ <<подозрительные на экстремальность>>.
+
+
+
+
+
+Для Элисты критический уровень составляет~26{,}5~мм. 
+Для экспоненциального распределения $p_{\mathrm{знач}}\hm=0{,}84$ 
+(параметр оценивается значением~0{,}002), для обобщенного Парето 
+ $p_{\mathrm{знач}}\hm=0{,}6$\linebreak
+  (параметры: 0{,}038, 9{,}009 и~36{,}5). 
+ На рис.~\ref{FigElistaPOT} отоб\-ра\-же\-но соответствие между экспериментальными 
+ данными и~подогнанными распределениями (рис.~2,\,\textit{а} и~2,\,\textit{б}). 
+ На рис.~2,\,\textit{в} продемонстрировано, что полученное 
+ пороговое значение снова превышается относительно небольшое число раз за весь 
+ период наблюдений.
+ 
+ %\vspace*{-12pt}
+
+\section{Использование PoT-методологии для~объемов осадков за~дождливые периоды}
+
+Отметим, что описанный в~разд.~\ref{DailyData} восходящий метод может быть 
+реализован и~в~обратном на\-прав\-ле\-нии (с~точки зрения смещения уровня в~процессе 
+анализа данных). Для этого необходимо задать верхнюю границу (например, совпадающую 
+с~максимумом наблюдений) и~последовательно проверять гипотезы об 
+экспоненциальности и~па\-ре\-то\-вости. 
+
+В~начале работы метода число превышений поро\-га 
+будет недостаточным для построения гис\-то\-грамм и~корректного оценивания параметров, 
+поэтому необходимо обеспечить минимально приемлемый объем соответствующей выборки. 
+
+В~работе~\cite{Gorshenin2016a} описана схожая процедура, однако в~качестве 
+примера рассмотрены кумулятивные данные. 
+В~данном разделе откажемся от ограничения на тип рассматриваемых данных и~будем 
+считать \textit{нисходящим} методом описанный выше алгоритм. 
+
+В~качестве примера рассмотрим суммарные объемы осадков, зарегистрированные в~течение 
+дождливого периода, однако данный метод может быть использован и~для исходных 
+суточных на\-блю\-де\-ний.
+{\looseness=1
+
+}
+
+
+Для объемов осадков за дождливые периоды в~Потсдаме верхний критический уровень 
+(полу-\linebreak\vspace*{-12pt}
+
+\pagebreak
+
+\end{multicols}
+
+\begin{figure*} %fig3
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=157.261mm 
+ \epsfbox{gok-3.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Нисходящий, восходящий и~параметрический методы определения экстремальности:
+ (\textit{а})~распределение интервалов между превышениями порога;
+(\textit{б})~распределение превышений порога; (\textit{в})~объемы осадков за 
+дождливые периоды, Потсдам; \textit{1}~--- гистограмма; 
+\textit{2}~--- экспоненциальное распределение с~параметром~0,216;
+\textit{3}~--- обобщенное распределение Парето 
+с~параметрами~0,076,
+13,406 и~14,41;
+\textit{4}~--- данные; \textit{5}~--- порог~14,41~мм;
+\textit{6}~--- порог~57,2~мм; \textit{7}~--- абсолютно экстремальные значения;
+\textit{8}~--- промежуточные; \textit{9}~--- относительно экстремальные значения}
+\label{FigPotsdamVolWet}
+\vspace*{-6pt}
+\end{figure*}
+
+\begin{multicols}{2}
+
+\noindent
+чен нисходящим методом) составляет~57{,}2~мм (шаг
+ изменения уровня~--- 0{,}01~мм, 
+уровень зна\-чи\-мости
+ статистического критерия при проверке по  $\chi^2$-тес\-ту 
+выбран равным~0{,}01). Для экспоненциального\linebreak распределения $p_{\mathrm{знач}}\hm=0{,}1$ 
+(параметр оценивается значением~0{,}014), для обобщенного Парето 
+$p_{\mathrm{знач}}\hm=0{,}03$ (параметры: 0{,}097, 16{,}95 и~57{,}2). 
+Нижний критический уровень (получен восходящим методом) составляет~14{,}41~мм. 
+Для экспоненциального распределения $p_{\mathrm{знач}}\hm=0{,}058$ 
+(параметр оценивается значением~0{,}216), для обобщенного Парето 
+$p_{\mathrm{знач}}\hm=0{,}29$ (параметры: 0{,}076, 13{,}406 и~14{,}41).
+{\looseness=1
+
+}
+
+На рис.~\ref{FigPotsdamVolWet} продемонстрировано визуальное соответствие 
+между экспериментальными данными и~подогнанными распределениями (см.\
+ гистограммы и~аппроксимирующие кривые на рис.~3,\,\textit{а}
+ и~3,\,\textit{б}) для восходящего 
+ метода. Рисунок~3,\,\textit{в} демонстрирует разницу пороговых значений, 
+ полученных двумя способами. Очевидно, что в~отличие от случая разд.~\ref{DailyData} 
+ (исходные данные) восходящий метод устанавливает критическую планку слишком низко 
+ и~в~рассмотрении окажется избыточное количество пиков.
+
+Для объемов осадков за дождливые периоды в~Элисте верхний критический уровень 
+(получен нисходящим методом) составляет~28~мм (шаг изменения уровня~--- 0{,}01~мм, 
+уровень значимости статистического критерия при проверке по  $\chi^2$-тес\-ту 
+выбран равным~0{,}01). Для экспоненциального 
+распределения $p_{\mathrm{знач}}\hm=0{,}082$ 
+(параметр оценивается значением~0{,}029), для обобщенного 
+Парето $p_{\mathrm{знач}}\hm=0{,}44$ 
+(параметры: $-$0{,}095, 13{,}66 и~28). Нижний критический уровень 
+(получен восходящим методом) составляет~10{,}71~мм.
+ Для экспоненциального распределения $p_{\mathrm{знач}}\hm=0{,}062$ (параметр
+  оценивается значением~0{,}183), для обобщенного Парето $p_{\mathrm{знач}}\hm=0{,}21$ 
+  (параметры:  0{,}066, 9{,}586 и~10{,}71).
+
+
+
+На рис.~\ref{FigElistaVolWet} продемонстрировано визуальное соответствие между 
+экспериментальными данными и~подогнанными распределениями (см.\
+ гистограммы и~аппроксимирующие кривые на рис.~4,\,\textit{а}
+ и~4,\,\textit{б}) для восходящего метода. 
+ Рисунок~4,\,\textit{в} демонстрирует разницу пороговых значений, 
+ полученных двумя
+ способами. Снова восходящий метод устанавливает критическую 
+ планку слишком низко, и~более интересным представляется рассмотрение уровня 
+ для нисходящего метода.
+ 
+ \pagebreak
+ 
+ \end{multicols}
+ 
+ \begin{figure*} %fig4
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=157.761mm 
+ \epsfbox{gok-4.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+\Caption{Нисходящий, восходящий и~параметрический методы определения экстремальности:
+(\textit{а})~распределение интервалов между превышениями порога;
+(\textit{б})~распределение превышений порога; 
+(\textit{в})~объемы осадков за дождливые периоды, Элиста;
+\textit{1}~--- гистограмма; 
+\textit{2}~--- экспоненциальное распределение с~па\-ра\-мет\-ром~0,183;
+\textit{3}~--- обобщенное распределение Парето с~па\-ра\-мет\-ра\-ми~0,066,
+9,586 и~10,71;
+\textit{4}~--- данные; \textit{5}~--- порог~10,71~мм;
+\textit{6}~--- порог~28~мм; \textit{7}~--- абсолютно экстремальные значения;
+\textit{8}~--- промежуточные; \textit{9}~--- относительно 
+экстремальные значения}
+\label{FigElistaVolWet}
+%\vspace*{9pt}
+\end{figure*}
+
+\begin{multicols}{2}
+
+
+
+\begin{figure*}[b] %fig5
+\vspace*{4pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=106.504mm 
+ \epsfbox{gok-5.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+
+\Caption{Алгоритм определения экстремальных значений}\label{FigMethods}
+\end{figure*}
+
+
+\section{Статистический тест экстремальности объемов, основанный 
+на~распределении Снедекора--Фишера}
+\label{StatExtremes}
+
+На рис.~\ref{FigPotsdamVolWet},\,\textit{в} и~\ref{FigElistaVolWet},\,\textit{в} 
+нанесены дополнительные маркеры (треугольники, круги и~квадраты), 
+которыми отмечены экстремальные наблюдения, полученные в~соответствии 
+со статистическим критерием, описанным в~работе~\cite{Gorshenin2018as}. 
+
+Для перехода к~естественной временной шкале на со\-от\-вет\-ст\-ву\-ющие графики 
+наносятся пики, по величине совпадающие с~объемами осадков, выпавших за 
+дождливые периоды, а~их расположение на временн$\acute{\mbox{о}}$й шкале выбрано совпадающим с~днем 
+начала выпадения осадков. Используемый для разметки параметрический критерий 
+существенным образом использует установленные 
+в~статьях~\cite{Gorshenin2017a,Gorshenin2017b,Gorshenin2017c,Gorshenin2017d,Gorshenin2018bs,Gorshenin2018c} 
+факты о~соответствии распределений длительностей дождливых периодов отрицательному 
+биномиальному распределению, а~их объемов~--- гам\-ма-рас\-пре\-де\-ле\-нию. 
+%
+Ниже опишем соответствующую процедуру, предложенную в~работе~\cite{Gorshenin2018as}.
+
+Пусть $m\in\mathbb{N}$ и~$G^{(1)}_{r,\mu},G^{(2)}_{r,\mu},\ldots,G^{(m)}_{r,\mu}$~--- 
+независимые случайные величины с~общим гам\-ма-рас\-пре\-де\-ле\-ни\-ем 
+с~параметрами $r\hm>0$ и~$\mu\hm>0$. Рассмотрим статистику
+\begin{equation*}
+R_0=\fr{(m-1)G^{(1)}_{r,\mu}}{G^{(2)}_{r,\mu}+
+\cdots+G^{(m)}_{r,\mu}}\eqd
+\fr{k}{r}\,\fr{G_{r,\mu}}{G_{k,\mu}}\eqd\fr{k}{r}\,\fr{G_{r,1}}{G_{k,1}}\eqd
+Q_{r,k}\,,
+\end{equation*}
+где $k=(m-1)r$; $Q_{k,r}$~---  случайная величина с~распределении 
+Сне\-де\-ко\-ра--Фи\-ше\-ра с~параметрами $k\hm>0$ и~$r\hm>0$. Предположим, что 
+$V_1,\ldots,V_m$~--- суммарные объемы осадков, выпавших за~$m$~дождли\-вых периодов. 
+Рассмотрим следующий выборочный аналог величины~$R_0$:
+\begin{equation*}
+SR_{0,i}=\fr{(m-1)V_i}{\sum\nolimits_{j\neq i}V_j}\,.
+\end{equation*}
+
+
+
+Сформулируем гипотезу~$H_0$ в~следующем виде: <<объем осадков~$V_i$ 
+не является аномально большим относительно остальных $m\hm-1$ величин>>.
+ Тогда статистика~$SR_{0,i}$ имеет распределение Сне\-де\-ко\-ра--Фи\-ше\-ра 
+ с~параметрами $r\hm>0$ и~$k\hm=(m\hm-1)r$. Обозначим через $q_{r,k}(1\hm-\alpha)$ 
+ квантиль распределения Сне\-де\-ко\-ра--Фи\-ше\-ра уровня $(1\hm-\alpha)$, 
+ $\alpha\hm\in(0,1)$. В~случае, если $SR_{0,i}\hm>q_{r,k}(1\hm-\alpha)$, гипотеза~$H_0$ 
+ отвергается и~объем~$V_i$ должен быть признан экстремально большим. 
+ Уровень значимости критерия установлен на уровне~$\alpha$.
+
+Описанная процедура может быть расширена с~помощью метода скользящего окна. 
+Задавая его ширину (т.\,е.\ число элементов в~выборке объемов дождливых периодов) 
+равной~$m$ и~сдвигая каждый\linebreak
+ раз на один элемент вправо (направление астрономического 
+времени на графике с~экспериментальными данными), можно последовательно проверить, 
+является ли каждый конкретный объем экстремаль\-ным относительно других в~смысле 
+описанного выше критерия. Данная процедура может быть полезна в~ситуации, 
+когда в~одно окно попадают достаточно близкие по абсолютной величине объемы, 
+мало отличающиеся от максимального. 
+
+Таким образом, в~рамках данного подхода 
+каж\-дый элемент (начиная с~$m$) проверяется в~точ\-ности~$m$~раз. Тогда возможны 
+сле\-ду\-ющие вари-\linebreak анты:\\[-15pt]
+\begin{enumerate}[(1)]
+\item элемент признается аномальным во всех~$m$~случаях 
+и~соответствующее значение может считаться \textit{абсолютно} экстремальным;
+\item 
+элемент признается аномальным более чем в~половине случаев (т.\,е.\ 
+не меньше чем на $\lceil  m/2\rceil$ положениях окна)  и~соответствующее значение 
+может считаться \textit{промежуточным} экстремумом; 
+\item элемент признается 
+аномальным менее чем в~половине случаев и~соответствующее значение может 
+считаться \textit{относительно} экстремальным.
+\end{enumerate}
+
+ Для приведения к~астрономическому 
+времени необходимо найти среднюю продолжительность дождливых и~сухих периодов 
+(используется модель на основе отрицательного биномиального распределения) и~умножить 
+на размер окна. На рис.~\ref{FigPotsdamVolWet} и~\ref{FigElistaVolWet} 
+расчеты проводились для периода в~360~дней (при этом $m\hm=62$).
+
+\vspace*{-6pt}
+
+\section{Алгоритм определения экстремальности значений~объемов}
+
+Таким образом, алгоритм определения экстремальных значений 
+(и~сравнения результатов, полученных разными способами) может быть пред\-став\-лен в~виде 
+ блок-схе\-мы (рис.~\ref{FigMethods}).
+
+
+
+К данным $\mathrm{Data}$ последовательно применяются восходящий, 
+нисходящий и~параметрический методы поиска экстремальных значений. 
+Для первых двух из них задается начальное значение ($\mathrm{level}\hm=0$ для нисходящего 
+и~$\mathrm{LEVEL}\hm=\max(\mathrm{Data})$ для восходящего). Далее последовательно проверяются 
+условия для теорем Реньи и~Пи\-канд\-са\,--\,Бал\-ке\-мы\,--\,Де Хаана при 
+некотором заданном уровне зна\-чи\-мости~$\alpha$. Процедура \verb"StatExtremes()" 
+реализует метод, описанный в~разд.~\ref{StatExtremes}. 
+В~результате можно выявить наблюдения, которые признаются экстремальными с~помощью 
+каждого из этих методов, как продемонстрировано на рис.~\ref{FigPotsdamVolWet} 
+и~\ref{FigElistaVolWet}. Стоит отметить, что восходящий и~нисходящий методы 
+могут быть использованы для любых данных, а~па\-ра\-мет\-ри\-че\-ский подход ориентирован 
+на ряд дополнительных предположений о~распределениях характеристик наблюдений 
+(а~также неотрицательность исходных значений).
+
+%\vspace*{-6pt}
+
+\section{Заключение}
+
+\vspace*{-1pt}
+
+Итак, в~работе рассмотрены восходящий и~нисходящий методы определения 
+порогового (экстремального) уровня в~рамках идеологии \verb"PoT". 
+Восходящий метод показывает отличные результаты для суточных объемов осадков, 
+однако для дождливых периодов необходимо использовать нисходящий метод. 
+Кроме того, предложено сравнение результатов со статистическим критерием, 
+который построен в~рамках определенной (при этом весьма хорошо 
+согласующейся с~реальными данными) вероятностной модели. 
+Указанный метод позволяет улучшить полученные результаты, однако требует ряда 
+априорных предположений о~распределениях характеристик исследуемых данных.
+
+\vspace*{-6pt}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+ 
+% \vspace*{-1pt}
+ 
+\bibitem{Groisman1999} 
+\Au{Groisman~P.\,Y., Karl~T.\,R., Easterling~D.\,R., \textit{et al.}} Changes
+in the probability of heavy precipitation: Important indicators of climatic change~// 
+J.~Climate, 1999. Vol.~42. P.~243--285.
+
+\bibitem{Zolina2008} 
+\Au{Zolina~O., Simmer~C., Kapala~A., Bachner~S., Gulev~S., Maechel~H.} 
+Seasonally dependent changes of precipitation extremes over Germany since~1950 
+from a~very dense observational network~// J.~Geophys. Res., 2008. Vol.~113. Art. No.\,D06110.
+
+\bibitem{Leadbetter1991} 
+\Au{Leadbetter~M.\,R.} On a basis for ``Peaks over Threshold'' modeling~// 
+Stat. Probabil. Lett., 1991. Vol.~12. Iss.~4. P.~357--362.
+
+\bibitem{Mendez2006} 
+\Au{Mendez~F.\,J., Menendez~M., Luceno~A., Losada~I.\,J.} 
+Estimation of the long-term variability of extreme significant wave height 
+using a~time-dependent Peak over Threshold (PoT) model~// 
+J.~Geophys. Res. Oceans, 2006. Vol.~111. Iss.~C7. Art.\ No.\,C07024.
+
+\bibitem{Kysely2010}
+ \Au{Kysely~J., Picek~J., Beranova~R.} 
+Estimating extremes in climate change simulations using the 
+peaks-over-threshold method with a non-stationary threshold~// 
+Global Planet. Change, 2010. Vol.~72. Iss.~1-2. P.~55--68.
+
+\bibitem{Begueria2006} 
+\Au{Begueria~S., Vicente-Serrano~S.\,M.} 
+Mapping the hazard of extreme rainfall by peaks over threshold 
+extreme value analysis and spatial regression techniques~// 
+J.~Appl. Meteorol. Clim., 2006. Vol.~45. Iss.~1. P.~108--124.
+
+\bibitem{Begueria2011} 
+\Au{Begueria~S., Angulo-Martinez~M., Vicente-Serrano~S.\,M., 
+Lopez-Moreno~I.\,J., El-Kenawy~A.} Assessing trends in extreme precipitation 
+events intensity and magnitude using non-stationary peaks-over-threshold analysis: 
+A~case study in northeast Spain from 1930 to 2006~// 
+Int. J.~Climatol., 2011. Vol.~31. Iss.~142. P.~2102--2114.
+
+\bibitem{Roth2012} 
+\Au{Roth~M., Buishand~T.\,A., Jongbloed~G.,  Tank~A.\,M.\,G., 
+van Zanten~J.\,H.} A~regional peaks-over-threshold model in a~nonstationary climate~// 
+Water Resour. Res., 2012. Vol.~48. Art. No.\,W11533.
+
+\bibitem{Gorshenin2016a} 
+\Au{Gorshenin~A.\,K., Korolev~V.\,Yu.} 
+A~methodology for the identification of extremal loading in data flows in 
+information systems~// Comm. Com. Inf. Sc., 2016. Vol.~638. P.~94--103.
+
+\bibitem{Gorshenin2018as} 
+\Au{Korolev~V.\,Yu., Gorshenin~A.\,K., Belyaev~K.\,P.} 
+Statistical tests for extreme precipitation volumes~// \mbox{ArXiv}:\linebreak
+1802.02928v3 [stat.ME],  2018.
+
+\bibitem{Gnedenko1996} 
+\Au{Gnedenko~B.\,V., Korolev~V.\,Yu.} 
+Random summation: Limit theorems and applications.~--- 
+Boca Raton, FL, USA: CRC Press, 1996. 288~p.
+
+\bibitem{Balkema1974} 
+\Au{Balkema~A., de Haan~L.} 
+Residual life time at great age~// Annals Probability, 1974. Vol.~2. No.\,5.
+P.~792--804.
+
+\bibitem{Pickands1975} 
+\Au{Pickands~J.} 
+Statistical inference using extreme order statistics~// 
+Ann. Stat., 1975. Vol.~3. No.\,1. P.~119--131.
+
+\bibitem{Gorshenin2017a} 
+\Au{Горшенин~А.\,К.} О~некоторых математических
+и программных методах построения структурных моделей информационных
+потоков~// Информатика и~её применения, 2017. Т.~11. Вып.~1. C.~58--68.
+
+\bibitem{Gorshenin2017b}  
+\Au{Горшенин~А.\,К.} 
+Анализ ве\-ро\-ят\-но\-ст\-но-ста\-ти\-сти\-че\-ских характеристик осадков на 
+основе паттернов~// Информатика и~её применения, 2017. Т.~11. Вып.~4. C.~38--46.
+
+\bibitem{Gorshenin2017c} 
+\Au{Korolev~V.\,Yu., Gorshenin~A.\,K., Gulev~S.\,K.,
+Belyaev~K.\,P., Grusho~A.\,A.} Statistical analysis of precipitation events~// AIP
+Conf. Proc., 2017. Vol.~1863. P.~\mbox{090011-1}--\mbox{090011-4}.
+
+\bibitem{Gorshenin2017d} 
+\Au{Королев~В.\,Ю., Горшенин~А.\,К.} 
+О~распределении вероятностей экстремальных осадков~// Докл. РАН,
+2017. Т.~477. Вып.~5. C.~604--609.
+
+\bibitem{Gorshenin2018bs} 
+\Au{Gorshenin~A.\,K., Kuzmin~V.\,Yu.} Neural
+network forecasting of precipitation volumes using patterns~// Pattern 
+Recogn. Image
+Anal., 2018. Vol.~28. No.\,3. P.~450--461.
+
+\bibitem{Gorshenin2018c}
+\Au{Gorshenin~A.\,K., Korolev~V.\,Yu.} Scale mixtures of
+Frechet distributions as asymptotic approximations of extreme precipitation~// 
+J.~Math. Sci., 2018. Vol.~234. No.\,6. P.~886--903.
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-11pt}
+
+\hfill{\small\textit{Поступила в~редакцию 15.10.18}}
+
+\vspace*{5pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+\vspace*{-4pt}
+
+\def\tit{DETERMINING THE~EXTREMES OF~PRECIPITATION VOLUMES BASED ON~THE~MODIFIED 
+``PEAKS OVER THRESHOLD'' METHOD}
+
+\def\titkol{Determining the~extremes of~precipitation volumes based on~the~modified 
+``Peaks over Threshold'' method}
+
+
+\def\aut{A.\,K.~Gorshenin$^{1,2}$ and V.\,Yu.~Korolev$^{1,2}$}
+
+\def\autkol{A.\,K.~Gorshenin and V.\,Yu.~Korolev}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+
+
+\noindent
+$^1$Institute of Informatics Problems, Federal Research Center 
+``Computer Science and Control'' of the Russian\linebreak
+$\hphantom{^1}$Academy of Sciences,  44-2~Vavilov Str., Moscow 119333, Russian Federation
+
+\noindent
+$^2$Faculty of Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow
+State University,  Leninskie\linebreak
+$\hphantom{^1}$Gory,  Moscow 119991, GSP-1, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2018\ \ \ volume~12\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2018\ \ \ volume~12\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{2pt}
+
+
+
+\Abste{The problem of correct determination of extreme observations is 
+very important when studying meteorological phenomena. The paper proposes 
+ascending and descending methods for finding the threshold for extremes 
+based on the R$\acute{\mbox{e}}$nyi theorem for thinning flows and the 
+Pikands\,--\,Balkema\,--\,De Haan results. Using the observation data for~60~years 
+for Potsdam and Elista, it is demonstrated that the ascending method can 
+present excellent results for daily precipitation but for volumes 
+of wet periods, the descending method should be used. The results of 
+such nonparametric approaches are compared with the parametric criterion 
+proposed in the previous papers by the authors.}
+
+
+\KWE{precipitation; wet periods; extreme values; thresholds; R$\acute{\mbox{e}}$nyi theorem; 
+Pickands\,--\,Balkema\,--\,de Haan theorem; testing statistical hypotheses;
+ data analysis}
+
+
+\DOI{10.14357/19922264180403}
+
+\vspace*{-18pt}
+
+\Ack
+\noindent
+The research is supported by the Russian Foundation 
+for Basic Research (project~17-07-00851) and the 
+RF Presidential scholarship program (No.\,538.2018.5).
+
+
+%\vspace*{6pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-gorkor}
+\Aue{Groisman,~P.\,Y., T.\,R.~Karl, D.\,R.~Easterling, \textit{et al.}} 1999. Changes
+in the probability of heavy precipitation: Important indicators of climatic change. 
+\textit{J.~Climate} 42:243--285.
+
+\bibitem{2-gorkor}
+\Aue{Zolina,~O., C.~Simmer, A.~Kapala, S.~Bachner, S.~Gulev, and H.~Maechel.} 
+2008. Seasonally dependent changes of precipitation extremes over Germany 
+since 1950 from a~very dense observational network. 
+\textit{J.~Geophys. Res.} 113: D06110.
+
+\bibitem{3-gorkor}
+\Aue{Leadbetter, M.\,R.} 1991. 
+On a~basis for ``Peaks over Threshold'' modeling. 
+\textit{Stat. Probabil. Lett.} 12(4):357--362.
+
+\bibitem{4-gorkor}
+\Aue{Mendez,~F.\,J., M.~Menendez, A.~Luceno, and I.\,J.~Losada.}
+ 2006. Estimation of the long-term variability of extreme significant wave 
+ height using a time-dependent Peak over Threshold (PoT) model. \textit{J.~Geophys. 
+ Res. Oceans} 111(C7):C07024.
+
+\bibitem{5-gorkor}
+\Aue{Kysely,~J., J.~Picek, and R.~Beranova.} 2010. 
+Estimating extremes in climate change simulations using the peaks-over-threshold 
+method with a non-stationary threshold. 
+\textit{Global Planet. Change} 72(1--2):55--68.
+
+\bibitem{6-gorkor}
+\Aue{Begueria,~S., and S.\,M.~Vicente-Serrano.} 2006. Mapping the hazard 
+of extreme rainfall by peaks over threshold extreme value analysis and 
+spatial regression techniques. \textit{J.~Appl. Meteorol. Clim.} 
+45(1):108--124.
+
+\bibitem{7-gorkor}
+\Aue{Begueria,~S., M.~Angulo-Martinez, S.\,M.~Vicente-Serrano, 
+I.\,J.~Lopez-Moreno, and A.~El-Kenawy.} 2011. Assessing trends 
+in extreme precipitation events intensity and magnitude using non-stationary 
+peaks-over-threshold analysis: A~case study in northeast Spain from 1930 to~2006. 
+\textit{Int. J.~Climatol.} 31(142):2102--2114.
+
+\bibitem{8-gorkor}
+\Aue{Roth,~M., T.\,A.~Buishand, G.~Jongbloed,  A.\,M.\,G.~Tank, and J.\,H.~van Zanten.}
+ 2012. A~regional peaks-over-threshold model in a~nonstationary climate. 
+ \textit{Water Resour. Res.} 48:W11533.
+
+\bibitem{9-gorkor}
+\Aue{Gorshenin,~A.\,K., and V.\,Yu.~Korolev.} 2016. 
+A~methodology for the identification of extremal loading in data flows in 
+information systems. \textit{Comm. Com. Inf. Sc.} 638:94--103.
+
+\bibitem{10-gorkor}
+\Aue{Korolev,~V.\,Yu., A.\,K.~Gorshenin, and K.\,P.~Belyaev.} 
+2018. Statistical tests for extreme precipitation volumes. 
+1802.02928 [stat.ME]. Available at:
+{\sf https://arxiv.org/\linebreak abs/1802.02928v3} (accessed December~3, 2018).
+
+\bibitem{11-gorkor}
+\Aue{Gnedenko,~B.\,V., and V.\,Yu.~Korolev.} 1996. \textit{Random summation: Limit 
+theorems and applications}. Boca Raton, FL: CRC Press. 288~p.
+
+\bibitem{12-gorkor}
+\Aue{Balkema,~A., and L.~de Haan.} 1974. Residual life time at great age. 
+\textit{Ann. Probab.} 2(5):792--804.
+
+\bibitem{13-gorkor}
+\Aue{Pickands,~J.} 1975. Statistical inference using extreme order statistics. 
+\textit{Ann. Stat.} 3(1):119--131.
+
+\bibitem{14-gorkor}
+\Aue{Gorshenin,~A.\,K.} 2017. O~nekotorykh matematicheskikh i~programmnykh metodakh
+postroeniya strukturnykh modeley informatsionnykh potokov [On some mathematical and
+programming methods for construction of structural models of information flows]. 
+\textit{Informatika i~ee Primeneniya ~--- Inform. Appl.} 11(1):58--68.
+
+\bibitem{15-gorkor}
+\Aue{Gorshenin,~A.\,K.} 2017. 
+Analiz veroyatnostno-statisticheskikh kharakteristik osadkov 
+na osnove patternov [Pattern-based analysis of probabilistic and 
+statistical characteristics of precipitations]. 
+\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 11(4):38--46.
+
+\bibitem{16-gorkor}
+\Aue{Korolev,~V.\,Yu., A.\,K.~Gorshenin, S.\,K.~Gulev, K.\,P.~Belyaev, and A.\,A.~Grusho.}
+2017. Statistical analysis of precipitation events. \textit{AIP Conf. Proc.} 
+1863:\mbox{090011-1}--\mbox{090011-4}.
+
+\bibitem{17-gorkor}
+\Aue{Korolev,~V.\,Yu., and A.\,K.~Gorshenin.} 2017. 
+The probability distribution of extreme precipitation. \textit{Dokl. Earth Sci.} 
+477(2):1461--1466.
+
+\bibitem{18-gorkor}
+\Aue{Gorshenin,~A.\,K., and V.\,Yu.~Kuzmin.}
+ 2018. Neural network forecasting of precipitation volumes using patterns. 
+ \textit{Pattern Recogn. Image Anal.} 28(3):450--461.
+
+\bibitem{19-gorkor}
+\Aue{Gorshenin,~A.\,K., and V.\,Yu.~Korolev.} 2018. Scale mixtures of
+Frechet distributions as asymptotic approximations of extreme precipitation. 
+\textit{J.~Math. Sci.} 234(6):886--903.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Received October 15, 2018}}
+
+%\pagebreak
+
+%\vspace*{-18pt}
+
+
+
+\Contr
+
+\noindent
+\textbf{Gorshenin Andrey K.} (b.\ 1986)~--- Candidate of Science (PhD) in physics and
+mathematics, associate professor, leading scientist, Institute of Informatics Problems,
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of
+Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation;  leading scientist, 
+Faculty
+of Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University, 
+ Leninskie Gory,  Moscow 119991,  GSP-1, Russian Federation; \mbox{agorshenin@frccsc.ru}
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Korolev Victor Yu.} (b.\ 1954)~--- Doctor of Science (PhD) in physics and
+mathematics, professor, Head of Department, 
+Faculty of Computational Mathematics and Cybernetics, 
+M.\,V.~Lomonosov Moscow State University,  Leninskie Gory,  Moscow 119991,  GSP-1,
+Russian Federation; leading scientist, Institute of Informatics Problems, 
+Federal Research Center ``Computer Science and Control'' of the 
+Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+professor, Hangzhou Dianzi University, Xiasha Higher Education Zone, Hangzhou 310018, 
+China; \mbox{vkorolev@cs.msu.ru}
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}    

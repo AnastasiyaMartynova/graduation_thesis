@@ -1,0 +1,677 @@
+\documentstyle[% 
+righttag% 
+,11pt% 
+,amssymb% 
+,russian%               remove in Eng. 
+,izvru%                 Set izven% in Eng. 
+]{amsart} 
+ 
+%       Math definitions 
+ 
+\newcommand{\diag}{\operatorname{diag}} 
+\newcommand{\re}{\operatorname{Re}} 
+\newcommand{\tts}[1]{} 
+ 
+%\hoffset=-15mm%                  For Eng. 
+  
+\setcounter{page}{38} 
+\god{1999} 
+\nomer{3~(442)} %                        Remove in Eng. 
+%\nomer{Vol.\,43, No.\,3}%               Set in Eng. 
+%\str{\pageref{begin}--\pageref{end}}%  Set in Eng. 
+\udk{517.977} 
+ 
+\author{\it Ю.А.\,Коняев} 
+% NB:   ^^ remove in Eng. 
+\title{Итерационный метод анализа нелинейных\\ 
+сингулярно возмущенных начальных\\ 
+и краевых задач} 
+ 
+\date{} 
+% \pagestyle{myheadings}%         Set in Eng. 
+\pagestyle{plain} %              Remove in Eng. 
+\begin{document} 
+% \thispagestyle{plain}%          Set in Eng. 
+\maketitle 
+\label{begin} 
+ 
+Для одного класса регулярных и сингулярно возмущенных нелинейных 
+начальных и краевых задач (рассматриваемых с единой точки зрения путем 
+их сведения к квазилинейной системе и далее к однотипному 
+эквивалентному интегральному уравнению) доказаны теоремы о 
+существовании единственного и ограниченного решения, что дополняет или 
+уточняет известные ранее результаты \cite{1}--\cite{4}. С помощью 
+специальных матричных преобразований \cite{5}, \cite{6} итерационным 
+методом построено асимптотическое разложение решения сингулярно 
+возмущенной многоточечной краевой задачи со слабой нелинейностью, 
+справедливое как при отсутствии резонансных соотношений, так и при 
+наличии тождественных и нетождественных резонансов (в том числе и в 
+критическом случае, когда точки спектра предельного оператора могут 
+касаться мнимой оси). Отметим, что удобный для численной реализации 
+новый алгоритм выделяет сингулярности решения в замкнутой аналитической 
+форме, позволяя проводить не только качественный, но и количественный 
+анализ сингулярно возмущенных задач. 
+ 
+При изучении в $R^n$ регулярных краевых задач вида 
+\begin{equation} 
+\frac{dy}{dx}=G(y,x);\quad \sum^n_{j=1}F_j y(x_j)=\alpha;\quad 
+(x\in[a,b];\ \; a=x_1<\dotsb<x_n=b), 
+\end{equation} 
+где $F_j$ --- некоторые постоянные $n\times n$ матрицы ($j=\ov{1,n}$), 
+выделим вопрос о 
+существовании их решения в некоторой окрестности какого-либо решения 
+$\varphi(x)$ 
+исходной системы $\varphi'\equiv G(\varphi,x)$. В этом случае при 
+достаточной гладкости функции $G(y,x)$ 
+задача (1) может быть преобразована (после соответствующей замены) к 
+квазилинейной задаче 
+\begin{equation} 
+\frac{dz}{dx}=A(x)z\!+\!f(z,x);\ \; \sum^n_1 F_j z(x_j)\!=\!\beta;\ \;
+(A(x)=G_y(\varphi(x),x)\!\in\! C[a,b];\ \; f(0,x)\equiv 0; 
+\ \; |z|<k_0) 
+\end{equation} 
+и далее --- к эквивалентному интегральному уравнению \cite{5} 
+\begin{equation} 
+z(x)=\Phi(x)C+\sum^n_1\Phi_k(x)\int^x_{x_k}\Phi^{-1}(t) 
+f(z,t)dt\equiv L(z), 
+\end{equation} 
+где 
+$$ 
+C=F^{-1}\bigg(\beta-\sum^n_{j=1}F_j \sum^n_{k=1} 
+\Phi_k(x_j)\int^{x_j}_{x_k}\Phi^{-1}(t)f(z,t)dt\bigg);\quad 
+F=\sum^n_1 F_j\Phi(x_j) 
+$$ 
+(эквивалентность задачи (2) и уравнения (3) проверяется \cite{5} 
+непосредственным дифференцированием уравнения (3) в случае 
+$\det F\ne 0$); 
+$\Phi(x)=\sum\limits^n_{k=1}\Phi_k(x)=\{\varphi_{jq}(x)\}^n_1$ --- 
+фундаментальная матрица соответствующей однородной ($f\equiv 0$) 
+системы $\frac{dz}{dx}=A(x)z$; 
+$$ 
+\Phi_1(x)= 
+\begin{pmatrix} 
+\varphi_{11}(x) & 0 & \dots & 0 \\ 
+\hdotsfor{4} \\ 
+\varphi_{n1}(x) & 0 & \dots & 0 
+\end{pmatrix} 
+;\,\dotsc;\ \Phi_n(x)= 
+\begin{pmatrix} 
+0 & \dots & 0 & \varphi_{1n}(x) \\ 
+\hdotsfor{4} \\ 
+0 & \dots & 0 & \varphi_{nn}(x) 
+\end{pmatrix} 
+. 
+$$ 
+ 
+\begin{thm} 
+Пусть для интегрального уравнения $(3)$ 
+\begin{itemize} 
+\item[1.] имеет место оценка 
+$$ 
+\|L(z)\|\le C_0+C_1\max_{x\in[a,b]}\|f(z,x)\|\quad 
+(\|x\|=\max_j |x_j|); 
+$$ 
+\item[2.] для любого $x\in[a,b]$ функция $f(z,x)$ удовлетворяет 
+неравенству $\|f(z,x)\|\le\varphi(\|z\|)$, 
+где $\varphi(r)$ --- монотонно возрастающая на $[0,R]$ непрерывная 
+функция$;$ 
+\item[3.] уравнение $C_0+C_1\varphi(r)=r$ 
+имеет хотя бы одно решение $r_0\in(0,R)$ и при $0<r<r_0$ 
+не имеет решений $(r_0<K_0);$ 
+\item[4.] для любых $z_1$ и $z_2$, принадлежащих шару 
+$\ov S_{r_0}:\|z\|\le r_0$, для функции $f(z,x)$ 
+справедлива оценка 
+$$ 
+\|f(z_2,x)-f(z_1,x)\|\le M\|z_2-z_1\|,\quad x\in[a,b], 
+$$ 
+причем 
+$$ 
+C_1M<1;\quad \|\beta\|\le\sum^n_{j=1}\|F_j\|r_0\quad 
+\Big(\|F\|=\max_j\sum_k|f_{jk}|\Big). 
+$$ 
+\end{itemize} 
+Тогда при условии 
+$$ 
+\det F\ne 0 \quad \Big(F=\sum^n_{j=1}F_j\Phi(x_j)\Big) 
+$$ 
+уравнение $(3)$ и эквивалентная ему краевая задача $(2)$ однозначно 
+разрешимы в шаре $\ov S_{r_0}$. 
+\end{thm} 
+ 
+\begin{pf} 
+В условиях теоремы оператор $L$ переводит шар $\ov S_{r_0}$ 
+в себя, т.\,к. 
+$$ 
+\|L(z)\|\le C_0+C_1\varphi(\|z\|)\le C_0+C_1\varphi(r_0)=r_0. 
+$$ 
+Кроме того, из цепочки неравенств 
+$$ 
+\|L(z_2)-L(z_1)\|\le C_1M\|z_2-z_1\|\quad 
+(z_1,z_2\in\ov S_{r_0};\ \; C_1M<1) 
+$$ 
+следует, что оператор $L$ является в шаре $\ov S_{r_0}$ 
+сжимающим, что и обеспечивает 
+однозначную разрешимость интегрального уравнения (3) и краевой задачи 
+(2). 
+\end{pf} 
+ 
+\begin{note} 
+Для практического применения теоремы 1 систему (2) можно представить в 
+виде 
+$$ 
+\frac{dz}{dx}=Q(x)z+(A(x)-Q(x))z+f(z,x), 
+$$ 
+где матрица $(A(x)-Q(x))$ достаточно мала по норме, а фундаментальная 
+матрица $\Psi(x)$ 
+линейной системы $z'=Q(x)z$ имеет явное представление. При этом 
+приходим к интегральному уравнению 
+$$ 
+z(x)=\Psi(x)C+\sum^n_1\Psi_k(x)\int^x_{x_k} 
+\Psi^{-1}(t)[(A(t)-Q(t))z(t)+f(z,t)]dt, 
+$$ 
+исследование которого проводится по описанной выше схеме \cite{5}. 
+\end{note} 
+ 
+\begin{note} 
+В случае, когда только одна из матриц $F_j$ отлична от нуля и 
+невырождена, 
+выражение (3) совпадает с известным интегральным представлением решения 
+задачи Коши \cite{3}, \cite{7}. 
+\end{note} 
+ 
+При исследовании сингулярно возмущенных многоточечных краевых задач 
+вида 
+\begin{gather} 
+\varepsilon\frac{dy}{dx}=A(x)y+\varepsilon^r f(y,x);\quad 
+\sum^m_1 F_j y(x_j)=\alpha \\
+(x\in[a,b];\ \; a=x_1<\dotsb<x_m=b;\ \; 1\le m\le n; 
+\ \; |y|<K_0), \notag
+\end{gather} 
+где $A(x)$ и $f(y,x)$ --- достаточно гладкие функции, со слабой 
+($r\ge 1$) или сильной 
+($r=0$) нелинейностью, условия однозначной разрешимости и структура 
+решения 
+во многом определяются спектром $\{\lambda_{0j}(x)\}^n_1$ линейного 
+оператора $A(x)$. В случае, 
+когда матрица $A(x)$ имеет простой ненулевой стабильный спектр 
+$\{\lambda_{0j}(x)\}^n_1$, удовлетворяющий условиям 
+\begin{equation} 
+\sigma_{jk}(x)\equiv \lambda_{0j}(x)-\lambda_{0k}(x)\ne 0;\quad 
+\lambda_{0j}(x)\ne 0\quad 
+(j\ne k;\ \;j,k=\ov{1,n},\ \; x\in[a,b]). 
+\end{equation} 
+Необходимые результаты могут быть получены с помощью метода специальных 
+матричных преобразований \cite{5}, \cite{6}, для реализации которого 
+для произвольной квадратной матрицы $A$ понадобятся следующие 
+обозначения:
+$$ 
+A=\{a_{jk}\}^n_1;\quad \ov A=\diag\{a_{11},\dotsc,a_{nn}\};\quad 
+\ov{\ov A}=A-\ov A. 
+$$ 
+С помощью невырожденной при достаточно малых $|\varepsilon|$ замены 
+\cite{5} 
+\begin{equation} 
+y=S_0(x)(E+\varepsilon\ov{\ov H}_1(x))z\equiv  
+S(x,\varepsilon)z\quad (S^{-1}_0(x)A(x)S_0(x)= 
+\Lambda_0(x)=\diag\{\lambda_{01}(x),\dotsc,\lambda_{0n}(x)\}) 
+\end{equation} 
+система (4) приводится к более удобному для анализа виду 
+\begin{equation} 
+\varepsilon\frac{dz}{dx}=Q(x,\varepsilon)z+\varepsilon^r 
+h(z,x,\varepsilon)\quad (|z|<K_1), 
+\end{equation} 
+где 
+$Q(x,\varepsilon)=S^{-1}(x,\varepsilon) 
+(A(x)S(x,\varepsilon)-\varepsilon\tfrac{dS}{dx})= 
+\Lambda(x,\varepsilon)+\varepsilon^2G(x,\varepsilon)$; 
+$\Lambda(x,\varepsilon)=\Lambda_0(x)+\varepsilon\Lambda_1(x)= 
+\diag\{\lambda_1(x,\varepsilon),\dotsc,\lambda_n(x,\varepsilon)\}$. 
+ 
+Рассмотрим сначала для системы (4) с сильной нелинейностью ($r=0$) 
+двухточечную краевую задачу, при этом краевые условия 
+\begin{equation} 
+\sum^2_1 F_j y(x_j,\varepsilon)=\alpha\quad 
+(x_1=0;\ \; x_2=1;\ \; x\in[0,1]) 
+\end{equation} 
+с учетом замены (6) преобразуются к виду 
+\begin{equation} 
+\sum^2_1 T_j(\varepsilon)z(x_j,\varepsilon)=\alpha\quad 
+(T_j(\varepsilon)=F_j S(x_j,\varepsilon)= 
+(\Vec T_{1j}(\varepsilon),\Vec T_{2j}(\varepsilon))). 
+\end{equation} 
+При выполнении условия 
+\begin{equation} 
+\det T(0)\ne 0\quad (T(0)=(\Vec T_{11}(0),\Vec T_{22}(0)) 
+\end{equation} 
+и дополнительных ограничениях на спектр матрицы $A(x)$ 
+\begin{equation} 
+\begin{split} 
+\re\lambda_{0j}(x)&<0;\ \;j=\ov{1,p};\ \; x\in[0,1] 
+\ \; (1\le p\le n),\\ 
+\re\lambda_{0k}(x)&>0;\ \; k=\ov{p+1,\,n};\ \; x\in[0,1],
+\end{split} 
+\end{equation} 
+можно от задачи (7)--(9) перейти к нелинейному интегральному уравнению 
+\begin{gather} 
+z(x,\varepsilon)=\Phi(x,\varepsilon)C+\sum^2_1\Phi_k 
+(x,\varepsilon)\int^x_{x_k}\Phi^{-1}(t,\varepsilon) 
+(\varepsilon G(t,\varepsilon)z+\varepsilon^{-1}h(z,t,\varepsilon)) 
+dt\equiv L_1(z)\\
+(L_1:C[0,1]\to C[0,1]), \notag
+\end{gather} 
+где вектор $C$ определяется аналогично предыдущему с учетом неравенства 
+(10), с ограниченной по норме в силу (11) фундаментальной матрицей 
+\begin{gather*} 
+\Phi(x,\varepsilon)=\sum^2_1\Phi_k(x,\varepsilon);\quad 
+\Phi_1(x,\varepsilon)=\diag\{e^{\varphi_1(x,\varepsilon)},\dotsc, 
+e^{\varphi_p(x,\varepsilon)},0,\dotsc,0\}; \\ 
+%
+\Phi_2(x,\varepsilon)=\diag\{0,\dotsc,0,
+e^{\varphi_{p+1}(x,\varepsilon)},\dotsc, 
+e^{\varphi_n(x,\varepsilon)}\}; \\ 
+%
+\varphi_j(x,\varepsilon)=\varepsilon^{-1}\int^x_0 
+\lambda_j(t,\varepsilon)dt;\quad 
+\varphi_k(x,\varepsilon)=\varepsilon^{-1}\int^x_1 
+\lambda_k(t,\varepsilon)dt\quad 
+(j=\ov{1,p};\ \; k=\ov{p+1,\,n}). 
+\end{gather*} 
+В этом случае для оператора $L_1$ (12) имеет место оценка 
+\begin{equation} 
+\|L_1(z)\|\le C_0+\varepsilon C_1\|z\|+ 
+C_2\max_{x\in[0,1]}\|h(z,x,\varepsilon)\|\quad 
+(0<\varepsilon<\varepsilon_0). 
+\end{equation} 
+ 
+\begin{thm} 
+Пусть для интегрального уравнения $(12)$ 
+\begin{itemize} 
+\item[1.] выполнены условия $(5)$, $(10)$, $(11)$ и $(13);$ 
+\item[2.] для любого $x\in[0,1]$ и достаточно малых $\varepsilon$ 
+$(0<\varepsilon\le\varepsilon_1<\varepsilon_0)$ функция 
+$h(z,x,\varepsilon)$ удовлетворяет неравенству 
+$\|h(z,x,\varepsilon)\|\le\varphi(\|z\|)$, 
+где $\varphi(r)$ --- монотонно возрастающая на $[0,R]$ непрерывная 
+функция$;$ 
+\item[3.] уравнение $C_0+\varepsilon_1C_1 r+C_2\varphi(r)=r$ 
+имеет относительно $r$ хотя бы одно решение $r_0\in(0,R)$ и при 
+$0<r<r_0$ не имеет решений $(r_0<K_1);$ 
+\item[4.] для любых $z_1$ и $z_2$, принадлежащих шару 
+$\ov S_{r_0}:\|z\|\le r_0$, для функции $h(z,x,\varepsilon)$ 
+справедлива оценка 
+$\|h(z_2,x,\varepsilon)-h(z_1,x,\varepsilon)\|\le M 
+\|z_2-z_1\|$ $(x\in[0,1];$ $0\le\varepsilon\le\varepsilon_1)$,
+и при этом 
+$\varepsilon_1C_1+C_2M<1$,
+$\|\alpha\|\le\Big(\,\sum\limits^2_1\|T_j(\varepsilon)\|\Big)r_0$
+$(0\le\varepsilon\le\varepsilon_1)$. 
+\end{itemize} 
+Тогда при достаточно малых $\varepsilon>0$ уравнение $(12)$ и 
+эквивалентная ему 
+задача $(7)$--$(9)$ имеют в шаре $\ov S_{r_0}$ единственное и 
+ограниченное при $\varepsilon\to+0$ решение. 
+\end{thm} 
+ 
+\begin{pf} 
+В условиях теоремы 2 оператор $L_1$ (12) переводит шар 
+$\ov S_{r_0}$ в себя, т.\,к. 
+$$ 
+\|L_1(z)\|\le C_0+\varepsilon C_1\|z\|+ 
+C_2\varphi(\|z\|)\le C_0+\varepsilon_1C_1r_0+ 
+C_2\varphi(r_0)=r_0. 
+$$ 
+Кроме того, для любых $z_1,z_2\in\ov S_{r_0}$ справедливы неравенства 
+$$ 
+\|L_1(z_2)-L_1(z_1)\|\le\varepsilon C_1\|z_2-z_1\|+ 
+C_2M\|z_2-z_1\|\le(\varepsilon_1C_1+C_2M)\|z_2-z_1\|\quad 
+(\varepsilon_1C_1+C_2M<1). 
+$$ 
+Отсюда следует, что оператор $L_1$ является в шаре $\ov S_{r_0}$ 
+сжимающим. Это означает, что интегральное уравнение (12) и 
+эквивалентная ему краевая задача (7)--(9) имеют единственное и 
+ограниченное при $\varepsilon\to+0$ решение в шаре $\ov S_{r_0}$. 
+Следовательно, и эквивалентная 
+им двухточечная краевая задача (4)--(8) также однозначно разрешима в 
+некотором шаре $\ov S_{r_1}$. 
+\end{pf} 
+ 
+Для системы (4) со слабой нелинейностью ($r=1$) может быть рассмотрена и 
+более общая сингулярно возмущенная многоточечная краевая задача 
+\begin{equation} 
+\sum^n_1F_j y(x_j,\varepsilon)=\alpha\quad 
+(x\in[a,b]), 
+\end{equation} 
+при этом условие (14) с учетом замены (6) преобразуется к виду 
+\begin{equation} 
+\sum^n_1T_j(\varepsilon)z(x_j,\varepsilon)=\alpha\quad 
+(T_j(\varepsilon)=F_j S(x_j,\varepsilon)= 
+(\Vec T_{1j}(\varepsilon),\dotsc,\Vec T_{nj}(\varepsilon))), 
+\quad j=\ov{1,n}. 
+\end{equation} 
+При выполнении условия 
+\begin{equation} 
+\det T(0)\ne 0\quad (T(0)=(\Vec T_{11}(0),\dotsc,\Vec T_{nn}(0)))
+\end{equation} 
+и дополнительных ограничениях на спектр матрицы $A(x)$ 
+\begin{gather} 
+\re\lambda_{0k}(x)\le 0;\quad x\in[x_k,\beta]\quad 
+(k=\ov{2,\,n-1});\notag \\ 
+\re\lambda_{0k}(x)\ge 0;\quad x\in[a,x_k];\quad 
+\re\lambda_{01}(x)\le 0;\quad 
+\re\lambda_{0n}(x)\ge 0\quad (x\in[a,b]);\\ 
+\re\int^x_{x_j}\lambda_{0j}(t)dt<0;\quad x\in[a,b]\setminus x_j 
+\quad (j=\ov{1,n})\notag 
+\end{gather} 
+(которые в отличие от условий (11) допускают касание точками спектра 
+$\{\lambda_{0j}(x)\}^n_1$ оператора $A(x)$ мнимой оси) можно от задачи 
+(7), (15) перейти к эквивалентному нелинейному интегральному уравнению 
+\begin{equation} 
+z(x,\varepsilon)=\Phi(x,\varepsilon)C+\sum^n_1 
+\Phi_k(x,\varepsilon)\int^x_{x_k}\Phi^{-1}(x,\varepsilon) 
+(\varepsilon G(t,\varepsilon)z+h(z,t))dt\equiv L_2(z) 
+\end{equation} 
+с ограниченной по норме фундаментальной матрицей 
+$\Phi(x,\varepsilon)=\sum\limits^n_1\Phi_k(x,\varepsilon)$; 
+\begin{gather*} 
+\Phi_1(x,\varepsilon)=\diag\{e^{\varphi_1(x,\varepsilon)}, 
+0,\dotsc,0\},\,\dotsc,\ \Phi_n(x,\varepsilon)=\diag
+\{0,\dotsc,0,e^{\varphi_n(x,\varepsilon)}\};\\
+\varphi_k(x,\varepsilon)=\varepsilon^{-1}\int^x_{x_k}
+\lambda_k(t,\varepsilon)dt\quad
+(k=\ov{1,n};\ \; L_2:C[a,b]\to C[a,b])
+\end{gather*} 
+(постоянный вектор $C$ в силу (16) однозначно определяется аналогично 
+предыдущему краевыми условиями). При этом для оператора $L_2$ (18) 
+справедлива оценка (13). 
+ 
+\begin{thm} 
+Пусть для многоточечной краевой задачи $(7)$, $(15)$ и эквивалентного 
+ей интегрального уравнения $(18)$ выполнены соотношения $(5)$, $(16)$, 
+$(17)$ и условия теоремы $2$. Тогда при достаточно малых 
+$\varepsilon>0$ уравнение 
+$(18)$ и эквивалентная ему краевая задача $(7)$, $(15)$ имеют 
+единственное и ограниченное при $\varepsilon\to+0$ решение в шаре 
+$\ov S_{r_0}$ 
+$($при этом 
+эквивалентная им задача $(4)$, $(14)$ однозначно разрешима в некотором 
+шаре $\ov S_{r_1})$. 
+\end{thm} 
+ 
+Доказательство теоремы 3 во многом аналогично доказательству теоремы 2 
+и нами опускается. 
+ 
+\begin{thm} 
+Пусть для краевой задачи $(4)$, $(14)$ со слабой нелинейностью $(r=1)$ 
+выполнены условия теоремы $3$. Тогда в случае 
+$f(y,x)=\sum\limits^m_{|k|=2}f_k(x)y^k$ асимптотическое 
+разложение решения указанной задачи может быть при достаточно малых 
+$\varepsilon>0$ представлено в виде 
+$$ 
+y(x,\varepsilon)\sim y_{(N)}(x,\varepsilon)= 
+\sum^N_0 y_k(x,\varepsilon)\varepsilon^k\quad (N\ge 1), 
+$$ 
+где функции $y_{(q)}(x,\varepsilon)$ $(q=\ov{1,N})$ удовлетворяют 
+сингулярно возмущенным линейным краевым задачам 
+\begin{equation} 
+\begin{split} 
+\varepsilon\frac{dy_{(0)}}{dx}&=A(x)y_{(0)};\quad 
+l y_{(0)}\equiv\sum^n_1 F_j y_{(0)}(x_j)=\alpha;\\ 
+\dotsc&\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc \\ 
+\varepsilon\frac{dy_{(q)}}{dx}&=A(x)y_{(q)}+ 
+\varepsilon f(y_{(q-1)}(x,\varepsilon),x);\quad 
+l y_{(q)}=\alpha\quad (q=\ov{1,N}), 
+\end{split} 
+\end{equation} 
+причем оценка 
+\begin{equation} 
+\|y(x,\varepsilon)-y_{(N)}(x,\varepsilon)\|_{C[a,b]}\le 
+K \varepsilon^{N+1}\quad (\|y(x)\|_{C[a,b]}= 
+\max_{[a,b]}\|y(x)\|), 
+\end{equation} 
+где постоянная $K$ не зависит от $\varepsilon$, имеет место как при 
+отсутствии резонансных соотношений, когда 
+\begin{gather*} 
+(p,\lambda_0(x))\ne \lambda_{0j}(x)\quad 
+(j=\ov{1,n};\ \; x\in[a,b]),\quad 
+\lambda_0(x)=(\lambda_{01}(x),\dotsc,\lambda_{0n}(x));\\ 
+p=(p_1,\dotsc,p_n)\quad (p_k=0,1,2,\dotsc;\ \; k=\ov{1,n})\quad 
+\Big(2\le|p|\equiv\sum^n_1 p_k\le q(N)\Big), 
+\end{gather*} 
+так и при наличии тождественных и нетождественных резонансов, когда 
+$$ 
+(p_q,\lambda_0(x))\equiv\lambda_{0q}(x)\quad 
+\Big(x\in\Omega_q\subset[a,b];\quad 
+\sum_q|\Omega_q|<b-a;\ \; 1\le q\le n\Big) 
+$$ 
+для некоторых целочисленных векторов $p_q$ и номеров $q$. 
+\end{thm} 
+ 
+{\bf Доказательство.} Покажем, что каждая частичная сумма 
+$y_{(q)}(x,\varepsilon)= 
+\sum\limits^q_0 y_k(x,\varepsilon)\varepsilon^k$, 
+являющаяся решением краевой задачи $(19)_q$, 
+$\varepsilon\frac{dy_{(q)}}{dx}=A(x)y_{(q)}+\varepsilon 
+f(y_{(q-1)}(x,\varepsilon),x)$;
+$\sum\limits^n_1 F_j y_{(q)}(x_j,\varepsilon)=\alpha$,
+удовлетворяет при достаточной гладкости $f(y,x)$ задаче (7), (15) с 
+точностью $O(\varepsilon^{q+1})$. Действительно, это следует из 
+соотношений 
+\begin{gather*} 
+\varepsilon\frac{dy_{(0)}}{dx}-A(x)y_{(0)}-\varepsilon 
+f(y_{(0)}(x,\varepsilon),x)=O(\varepsilon);\quad 
+l y_{(0)}=\alpha;\\ 
+\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\\ 
+\varepsilon\frac{dy_{(q)}}{dx}-A(x)y_{(q)}-\varepsilon 
+f(y_{(q-1)}(x,\varepsilon),x)+\varepsilon 
+f(y_{(q-1)}(x,\varepsilon),x) -\\ 
+-\varepsilon f(y_{(q)}(x,\varepsilon),x)=\varepsilon 
+[f(y_{(q-1)}(x,\varepsilon),x)- 
+f(y_{(q)}(x,\varepsilon),x)]=O(\varepsilon^{q+1});\\ 
+l y_{(q)}=\alpha\quad (y_{(q)}(x,\varepsilon)= 
+y_{(q-1)}(x,\varepsilon)+\varepsilon^q 
+y_q(x,\varepsilon))\quad (q=\ov{1,N}). 
+\end{gather*} 
+ 
+Представим далее решение $y(x,\varepsilon)$ задачи (4), (14) в виде 
+$$ 
+y(x,\varepsilon)=y_{(N+1)}(x,\varepsilon)+ 
+\varepsilon^{N+1}R(x,\varepsilon)=y_{(N)}(x,\varepsilon)+ 
+\varepsilon^{N+1}R_1(x,\varepsilon), 
+$$ 
+при этом функция $R(x,\varepsilon)$ с учетом (19) является решением 
+краевой задачи 
+$$ 
+\varepsilon\frac{d R}{dx}=A(x)R+\varepsilon 
+\frac{\partial f(y_{(N)},x)}{\partial y} 
+(y_{N+1}(x,\varepsilon)+R)+O(\varepsilon^{N+1});\quad 
+\sum^n_1 F_j R(x_j,\varepsilon)=0, 
+$$ 
+которая в силу теоремы 3 имеет единственное и ограниченное при 
+$\varepsilon\to+0$ решение, что и доказывает оценку (20), если учесть, 
+что 
+$\|R_1(x,\varepsilon)\|=\|R(x,\varepsilon)+ 
+y_{N+1}(x,\varepsilon)\|\le C$. 
+ 
+Перейдем далее от задачи (4), (14) к эквивалентной задаче (7), (15), 
+асимптотическое разложение решения которой может быть представлено в 
+виде 
+$$ 
+z(x,\varepsilon)\sim z_{(N)}(x,\varepsilon)= 
+\sum^N_0 z_k(x,\varepsilon)\varepsilon^k, 
+$$ 
+где функции $z_{(q)}(x,\varepsilon)$ удовлетворяют линейным краевым 
+задачам 
+\begin{gather*} 
+\varepsilon\frac{dz_{(0)}}{dx}=\Lambda_0(x)z_{(0)},\quad 
+l_1z_{(0)}\equiv\sum^n_1 T_j(\varepsilon)z_{(0)} 
+(x_j,\varepsilon)=\alpha;\\ 
+\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc \\ 
+\varepsilon\frac{dz_{(q)}}{dx}=\Lambda_0(x)z_{(q)}+ 
+\varepsilon g(z_{(q-1)}(x,\varepsilon),x,\varepsilon),\quad 
+l_1z_{(q)}=\alpha \\ 
+(q\ge 1;\ \; g(z,x,\varepsilon)=(\Lambda_1(x)+ 
+\varepsilon G(x,\varepsilon))z+h(z,x,\varepsilon)) 
+\end{gather*} 
+с точностью до $O(\varepsilon^{q+1})$. 
+При этом структура решения нулевого приближения 
+\begin{gather*} 
+z_{(0)}(x,\varepsilon)=\Phi_0(x,\varepsilon)C;\\ 
+\Phi_0(x,\varepsilon)=\diag\{ 
+e^{\varphi_{01}(x,\varepsilon)},\dotsc, 
+e^{\varphi_{0n}(x,\varepsilon)}\}; \\ 
+\varphi_{0j}(x,\varepsilon)=\varepsilon^{-1}\int^x_{x_j} 
+\lambda_{0j}(t)dt\quad (j=\ov{1,n};\ \; x\in[a,b]) 
+\end{gather*} 
+позволяет записать уравнение для определения $z_{(1)}(x,\varepsilon)$ 
+в явном виде 
+\begin{equation} 
+\varepsilon\frac{dz_{(1)}}{dx}=\Lambda_0(x)z_{(1)}+ 
+\varepsilon P_1(x)e^{\beta_0(x,\varepsilon)}+\varepsilon 
+\sum^{n_1}_{k=1}\ov Q_{1k}(x)e^{\beta_k(x,\varepsilon)}+ 
+\varepsilon\sum^{m_1}_{k=1}\ov S_{1k}(x) 
+e^{\delta_k(x,\varepsilon)};\ \; l_1z_{(1)}=\alpha, 
+\end{equation} 
+где 
+$e^{\beta_q}=(e^{\beta_{q_1}},\dotsc,e^{\beta_{q_n}})^T$
+($q=\ov{0,n_1}$);
+$e^{\delta_k}=(e^{\delta_{k_1}},\dotsc,e^{\delta_{k_n}})^T$
+($k=\ov{1,m_1}$); 
+\begin{align*} 
+\varepsilon\frac{d\beta_{0j}}{dx}&\equiv\lambda_{0j}(x)\quad 
+(x\in[a,b];\ \; j=\ov{1,n});\\ 
+%
+\varepsilon\frac{d\beta_{kj}}{dx}&\equiv\nu_{kj}(x)\ne 
+\lambda_{0q}(x)\quad (j,q=\ov{1,n};\ \; k=\ov{1,n_1}; 
+\ \;x\in[a,b];\\ 
+%
+\varepsilon\frac{d\delta_{kj}}{dx}&\equiv\rho_{kj}(x)= 
+\lambda_{0q_j}(x)\quad (j=\ov{1,n};\ \; 1\le q_j\le n; 
+\ \; x\in\Omega_{q_j}\subset[a,b];\ \; k=\ov{1,m_1}). 
+\end{align*} 
+При этом функция $\varepsilon P_1(x)e^{\beta_0(x,\varepsilon)}$ в 
+уравнении (21) отражает наличие тождественных 
+резонансов, функции 
+$\varepsilon\ov Q_{1k}(x)e^{\beta_k(x,\varepsilon)}$ --- наличие 
+нерезонансных сингулярностей, а 
+функции $\varepsilon\ov S_{1k}(x)e^{\delta_k(x,\varepsilon)}$ --- 
+наличие нетождественных резонансов. Решение линейной 
+системы (21) будем искать в виде суммы решений однородной задачи и 
+четырех ее частных решений различных типов:
+$$ 
+z_{(1)}(x,\varepsilon)=\sum^4_{k=0}z_{1k}(x,\varepsilon)= 
+z_{10}(x,\varepsilon)+O(\varepsilon), 
+$$ 
+где $z_{10}(x,\varepsilon)=\Phi_0(x,\varepsilon)C_1$ --- общее решение 
+однородной системы 
+$\varepsilon\frac{dz}{dx}=\Lambda_0(x)z$; 
+$z_{11}(x,\varepsilon)=\ov V_1(x)e^{\beta_0(x,\varepsilon)}
+=O(\varepsilon^{N+1})$ 
+--- частное решение неоднородной системы 
+$\varepsilon\frac{dz}{dx}=\Lambda_0(x)z+\varepsilon\ov P_1(x) 
+e^{\beta_0(x,\varepsilon)}$, 
+возникающее при наличии тождественных резонансов; 
+$z_{12}(x,\varepsilon)=\varepsilon\ov{\ov V}_1(x,\varepsilon) 
+e^{\beta_0(x,\varepsilon)}$ --- частное 
+решение неоднородной системы 
+$$ 
+\varepsilon\frac{dz}{dx}=\Lambda_0(x)z+\varepsilon 
+\ov{\ov P}_1(x)e^{\beta_0(x,\varepsilon)}, 
+$$ 
+также отражающее наличие тождественных резонансов; 
+$z_{13}(x,\varepsilon)=\varepsilon\sum\limits^{n_1}_0 
+\ov H_{1k}(x)e^{\beta_k(x,\varepsilon)}$ --- частное 
+решение неоднородной системы 
+$$ 
+\varepsilon\frac{dz}{dx}=\Lambda_0(x)z+\varepsilon 
+\sum^{n_1}_{k=1}\ov Q_{1k}(x)e^{\beta_k(x,\varepsilon)}, 
+$$ 
+отвечающее нерезонансным правым частям; 
+$z_{14}(x,\varepsilon)=O(\varepsilon)$ --- частное решение 
+неоднородной системы 
+\begin{equation} 
+\varepsilon\frac{dz}{dx}=\Lambda_0(x)z+\varepsilon 
+\sum^{m_1}_{k=1}\ov S_{1k}(x)e^{\delta_k(x,\varepsilon)}, 
+\end{equation} 
+отражающее наличие нетождественных резонансов. При этом постоянный 
+вектор $C_1$ определяется краевыми условиями, а матрицы 
+$\ov V_1(x)$, $\ov{\ov V}_1(x,\varepsilon)$, 
+$\ov H_{1k}(x,\varepsilon)$ ($k=\ov{1,n_1}$; 
+$x\in[a,b]$) при непосредственной подстановке указанных частных 
+решений в соответствующие уравнения, что позволяет записать 
+\begin{gather*} 
+\frac{d\ov V_1}{dx}=\ov P_1(x)=\diag 
+\{p_{11}(x),\dotsc,p_{1n}(x)\},\\ 
+\ov V_1(x)=\diag\{v_{11}(x),\dotsc,v_{1n}(x)\};\quad 
+v_{1j}(x)=\int^x_{x_j}p_{1j}(t)dt\quad (j=\ov{1,n});\\ 
+\varepsilon\frac{d\ov{\ov V}_1}{dx}=\Lambda_0(x) 
+\ov{\ov V}_1-\ov{\ov V}_1\Lambda_0(x);\quad 
+\ov{\ov V}_1(x,\varepsilon)=\sum^\infty_0 
+\ov{\ov V}_{1k}(x)\varepsilon^k; \\ 
+\varepsilon\frac{d\ov H_{1q}}{dx}= 
+(\Lambda_0(x)-\ov N_{0q}(x))\ov H_{1q}+\ov Q_{1q}(x)\quad 
+(q=\ov{1,n_1}), \\ 
+\ov N_{0q}(x)=\diag\{\nu_{1q}(x),\dotsc,\nu_{nq}(x)\},\quad 
+\ov H_{1q}(x,\varepsilon)=\sum^\infty_{k=0} 
+\ov H_{1qk}(x)\varepsilon^k. 
+\end{gather*} 
+Последующие приближения при отсутствии нетождественных резонансов имеют 
+вид 
+$$ 
+z_{(q)}(x,\varepsilon)=\Phi_0(x,\varepsilon)C_q+ 
+V_q(x,\varepsilon)e^{\beta_0(x,\varepsilon)}+\varepsilon 
+\sum^{n_q}_1 \ov H_{q_k}(x,\varepsilon) 
+e^{\mu_k(x,\varepsilon)}, 
+$$ 
+где постоянный вектор $C_q$ однозначно определяется краевыми условиями. 
+При наличии нетождественных резонансов вид соответствующего уравнения 
+может усложняться за счет появления новых сингулярностей, определяемых 
+уравнениями вида (22), которые допускают на каждом последующем шаге 
+непосредственное интегрирование, в частности, 
+$$ 
+z_{14}
+(x,\varepsilon)=\sum^n_{j=1}\Phi_{0j}(x,\varepsilon) 
+\int^x_{x_j}\Phi^{-1}_0(t,\varepsilon) 
+\sum^{m_1}_{k=1}\ov S_{1k}(t)e^{\delta_k(t,\varepsilon)}dt, 
+$$ 
+причем $\|z_{14}(x,\varepsilon)\|=O(\varepsilon)$ при 
+$x\in[a,b]$. 
+ 
+ 
+\begin{thebibliography}{9} 
+ 
+\bibitem{1} 
+Ломов С.А. {\em Введение в общую теорию сингулярных возмущений}. -- М.: 
+Наука, 1981. -- 398~с. 
+\bibitem{2} 
+Васильева А.Б., Бутузов В.Ф. {\em Асимптотические методы в теории 
+сингулярных возмущений}. -- М.: Высш. школа, 1990. -- 208 с. 
+\bibitem{3} 
+Треногин В.А. {\em Функциональный анализ}. -- М.: Наука, 1980. -- 496 
+с. 
+\bibitem{4} 
+Рожков В.И., Панфилов Н.Г. {\em Краевая задача для линейной системы и 
+малым параметром при производной} // Дифференц. уравнения. -- 1978. -- 
+Т.\,14. -- \No\,10. -- С.\,1806--1813. 
+\bibitem{5} 
+Коняев Ю.А. {\em Конструктивные методы исследования многоточечных 
+краевых задач} // Изв. вузов. Математика. -- 1992. -- \No\,2. -- 
+С.\,57--61. 
+\bibitem{6} 
+Коняев Ю.А. {\em Об одном методе исследования некоторых задач теории 
+возмущений} // Матем. сб. -- 1993. -- \No\,12. -- С.\,133--144. 
+\bibitem{7} 
+Коллатц Л. {\em Функциональный анализ и вычислительная математика}. -- 
+М.: Мир, 1969. -- 448~с. 
+ 
+\end{thebibliography} 
+ 
+\vskip 2cm 
+ 
+\postup{\it Московский государственный}{$\qquad$\it Поступили} 
+\postup{\it энергетический институт}{{\it первый вариант} 25.04.1995} 
+\postup{\it $($Московский технический}% 
+{{\it окончательный вариант} 22.06.1998} 
+\postup{\it университет$)$}{} 
+ 
+\label{end} 
+\end{document} 

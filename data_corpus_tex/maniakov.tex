@@ -1,0 +1,690 @@
+\def\stat{maniakov}
+
+\def\tit{МАТЕМАТИЧЕСКАЯ МОДЕЛЬ ОПТИМАЛЬНОЙ ТРИАНГУЛЯЦИИ}
+
+\def\titkol{Математическая модель оптимальной триангуляции}
+
+\def\aut{А.\,А.~Батенков$^1$, Ю.\,А.~Маньяков$^2$, А.\,В.~Гасилов$^3$, 
+О.\,А.~Яковлев$^4$}
+
+\def\autkol{А.\,А.~Батенков, Ю.\,А.~Маньяков, А.\,В.~Гасилов, 
+О.\,А.~Яковлев}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Батенков А.\,А.}
+\index{Маньяков Ю.\,А.}
+\index{Гасилов А.\,В.} 
+\index{Яковлев О.\,А.}
+\index{Batenkov A.}
+\index{Maniakov Yu.}
+\index{Gasilov A.}
+\index{Yakovlev O.}
+
+
+
+
+%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+%{Работа поддержана РНФ (проект 16-11-10227).}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Орловский филиал Федерального исследовательского центра <<Информатика и~управление>> 
+Российской  академии наук, \mbox{batenkov1957@mail.ru}}
+\footnotetext[2]{Орловский филиал Федерального исследовательского центра <<Информатика и~управление>> 
+Российской академии наук, \mbox{maniakov\_yuri@mail.ru}}
+\footnotetext[3]{Орловский филиал Федерального исследовательского центра <<Информатика и~управление>> 
+Российской академии наук, \mbox{gasilov.av@yandex.ru}}
+\footnotetext[4]{Орловский филиал Федерального исследовательского центра 
+<<Информатика и~управление>> Российской академии наук, \mbox{maucra@gmail.com}}
+
+\vspace*{-6pt}
+  
+  \Abst{Формализована постановка задачи синтеза оптимальной плос\-кой выпуклой 
+триангуляции. Данная задача относится к~вопросам приложений информатики и~весьма 
+актуальна в~таких областях, как компьютерная графика и~геоинформационные сис\-те\-мы. 
+Математическая модель пред\-став\-ле\-на в~трех вариантах: экстремальная задача 
+с~бесконечным чис\-лом ограничений, минимаксная задача со связанными переменными 
+и~экстремальная задача с~дополнительным ограничением на пересечения отрезков 
+триангуляции, но конечным чис\-лом всех ограничений. Путем введения идемпотентных 
+ограничений на булевы переменные исходная целочисленная задача по\-гру\-же\-на в~общую 
+задачу математического программирования на континуальном мно\-же\-ст\-ве решений. 
+Произведен сравнительный анализ решений, по\-лу\-ча\-емых жадным алгоритмом на основе 
+пред\-став\-лен\-ной математической модели и~ал\-го\-рит\-мом триангуляции Делоне.}
+  
+  \KW{математическая модель; триангуляция; триангуляция Делоне}
+  
+  \DOI{10.14357/19922264180210}
+  
+%\vspace*{-6pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+
+\section{Введение}
+
+  Задача построения триангуляции весьма востребована в~таких разделах 
+информатики, как компьютерная графика, рас\-по\-зна\-ва\-ние образов 
+и~геоинформационные сис\-те\-мы, для моделирования поверхно\-стей и~решения 
+про\-стран\-ст\-вен\-ных задач, задач навигации автономных роботизированных 
+сис\-тем. Кроме того, триангуляция может быть использована в~алгоритмах 
+трехмерной реконструкции~[1].
+  
+  Отсутствие формализованной постановки задачи синтеза триангуляции 
+в~виде математической модели привело к~по\-яв\-ле\-нию множества эвристических 
+при\-бли\-жен\-ных алгоритмов~[2, 3] по различным критериям. Этому также 
+способствовало подозрение на NP-пол\-но\-ту задачи поиска оптимальной 
+триангуляции.
+  
+  Наиболее применима в~настоящее время триангуляция, предложенная 
+советским матема\-ти\-ком Б.\,Н.~Делоне, которая имеет вы\-чис\-ли\-тель\-ную 
+\mbox{слож\-ность} порядка $O(N\log N)$~\cite{3-man, 4-man} ($N$~--- число точек 
+триангуляции), но слабый критерий оптимизации~[5]. Прежде всего это 
+обусловлено ориентированностью триангуляции Делоне на алгоритмический 
+аспект ре\-ша\-емой задачи, а~никак не на поиск оптимальной триангуляции, под 
+которой понимается триангуляция с~минимальной суммой длин ребер среди 
+всех воз\-мож\-ных триангуляций, по\-стро\-ен\-ных на тех же исходных точ\-ках~[6]. 
+Также необходимо отметить, что алгоритмы триангуляции Делоне лишь 
+улучшают некоторую заданную первичную триангуляцию, поиск которой 
+требует дополнительных вы\-чис\-ли\-тель\-ных затрат.
+
+\begin{figure*}[b] %fig1
+ \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=162.307mm 
+ \epsfbox{man-1.eps}
+ }
+ \end{center}
+\vspace*{-9pt}
+      \Caption{Пересекающиеся~(\textit{а}) и~непересекающиеся~(\textit{б})  отрезки}
+\end{figure*}
+
+  \vspace*{-6pt}
+  
+  
+\section{Идентификация пересечения отрезков на~множестве 
+прямых}
+
+  Так как под триангуляцией понимается пла\-нарный граф, все внут\-рен\-ние 
+области которого являются треугольниками, то центральное мес\-то 
+в~математиче\-ской модели долж\-на занимать идентификация пересечений 
+отрезков прямых, входящих в~триангуляцию. Известные алгоритмы 
+обнаружения пересечения отрезков~[7] используют их па\-ра\-мет\-ри\-че\-ское 
+задание, что затрудняет использование этих алгоритмов при формулировке 
+экстремальных задач, поэтому необходим функционал, желательно с~булевым 
+множеством об\-ласти значений~[8].
+  
+  С этой целью используем оконную функцию в~виде:
+  
+\noindent
+  \begin{multline*}
+  \mathrm{Ok} (z, \mathrm{sn}, \mathrm{sv}) =
+  \left( \Phi\left(z-\mathrm{sn}-\mathrm{sign}\,(\mathrm{sv}-
+  \mathrm{sn}) \mathrm{zap}\right) - {}\right.\hspace*{-4.52142pt}\\
+\left.  {}-
+\Phi(z-\mathrm{sv}+\mathrm{sign}\,(\mathrm{sv}-
+\mathrm{sn}) \mathrm{zap})\right) \mathrm{sign}\,(\mathrm{sv}-\mathrm{sn})\,,
+  %\label{e1-man}
+  \end{multline*}
+где $\mathrm{sn}$ и~$\mathrm{sv}$~--- верх\-няя и~ниж\-няя границы окна; $\Phi(x)$~--- функция 
+Хевисайда~[9]; $\mathrm{sign}\,(x)$~--- функция знака~\cite{10-man}; $\mathrm{zap}$~--- 
+вспомогательная константа.
+  
+  Сформируем переопределенную сис\-те\-му линейных урав\-не\-ний с~двумя 
+неизвестными:
+  \begin{equation}
+    a_k x +b_k y=c_k\,,\quad
+k=\overline{1,D}\,,
+  \label{e2-man}
+\end{equation}
+где
+\begin{gather*}
+  a_k=\fr{1}{x_j-x_i}\,;\quad b_k=-\fr{1}{y_j-y_i}\,;\\
+   c_k=\fr{x_i}{x_j-x_i}-  \fr{y_i}{y_j-y_i}\,;\quad i,j=\overline{1,N}\,;\\
+  A Z =B\,;
+    \end{gather*}
+$D$~--- чис\-ло прямых, соединяющих каждую пару точек триангуляции:
+$D\hm={N(N\hm-1)}/{2}$;
+$A$~--- матрица коэффициентов размерности $D\times 2$;
+$Z^{\mathrm{T}}\hm=(x,y)$~--- вектор неизвестных раз\-мер\-ности $2\times 1$;
+$B$~--- вектор свободных членов раз\-мер\-ности $D\times 1$.
+
+  Введем вектор неизвестных $Y$ размерности $D\times 1$, опре\-де\-ля\-ющий 
+активные урав\-не\-ния сис\-те\-мы~(\ref{e2-man}), если $Y\not= 0$, и~свяжем их 
+с~(\ref{e2-man}):
+  \begin{equation}
+  \mathrm{diag}\,(Y) AZ=\mathrm{diag}\,(Y)B\,,
+  \label{e3-man}
+  \end{equation}
+где $\mathrm{diag}\,(Y)$~--- диагональная мат\-ри\-ца с~вектором~$\vec{Y}$ на 
+главной диа\-го\-нали.
+
+  Решим систему~(\ref{e3-man}) методом наименьших квад\-ра\-тов:
+  \begin{equation*}
+  Z=\left( M^{\mathrm{T}} M\right)^{-1} M^{\mathrm{T}} C\,,
+  %\label{e4-man}
+  \end{equation*}
+где $M=\mathrm{diag}\,(Y) A$; $C\hm= \mathrm{diag}\,(Y) B$.
+
+
+      
+  Анализ рис.~1 приводит к~выводу, что точка пересечения отрезков 
+существует, когда рав\-ны единице оконные функ\-ции:
+  \begin{align*}
+ & (x_i, y_i), (x_j, y_j); \ (x_k, y_k), (x_l, y_l)\,;\ \ i,j,k,l\in \{\overline{1,N}\}\,;\\
+ & \mathrm{OK}1(x^*, y^*)_R =
+ \mathrm{Ok}\left(x^*, x_i, x_j\right)\cdot \mathrm{Ok} \left(y^*, y_i, 
+y_j\right)\,;\\
+ &\hspace*{60mm}R\in\{ \overline{1,D}\}\,;
+ \end{align*}
+ 
+ \noindent
+ \begin{multline*}
+  \mathrm{OK}2\left(x^*, y^*\right)_S= \mathrm{Ok}\left(x^*, x_k, x_l\right)\cdot 
+ \mathrm{Ok} (y^*, y_k, y_l)\,;\\
+\ S\in \{\overline{1,D}\}\,.
+  \end{multline*}
+  
+  В результате получаем мат\-ри\-цу идентификации пересечения пар отрезков 
+в~за\-ви\-си\-мости от вектора~$\vec{Y}$ при известных координатах точек 
+триангуляции на плос\-кости:
+
+\noindent
+  \begin{multline}
+  \mathrm{Cp}(Y)={}\\
+ \!\!\hspace*{-2mm} {}=\left\{ \begin{pmatrix}
+  (\mathrm{OK}1((M^{\mathrm{T}}M)^{-1}M^{\mathrm{T}}C)\bullet Y)\\
+  (\mathrm{OK}2((M^{\mathrm{T}}M)^{-1} M^{\mathrm{T}} C)\bullet Y)^{\mathrm{T}}
+  \end{pmatrix}\bullet \mathrm{EDW}\right\}\,,\!\!
+  \label{e5-man}
+  \end{multline}
+где $\mathrm{EDW}$~---  верхняя треугольная мат\-ри\-ца раз\-мер\-ности $D\times D$: 
+
+\noindent
+$$
+\mathrm{EDW}=\begin{bmatrix}
+0&1&1&\cdots& 1\\
+0&0&1&\ddots &1\\
+0&0&0&\ddots &1\\
+\vdots& \ddots& \ddots& \ddots&\vdots\\
+0&0&0&\cdots &0
+\end{bmatrix}\,;
+$$
+($\bullet$)~--- произведение Адамара~\cite{11-man}.
+
+%\vspace*{-3pt}
+
+\section{Постановка задачи оптимальной триангуляции}
+
+  Использование функционала пересечения отрезков на основе~(\ref{e5-man}) 
+по\-рож\-да\-ет множество по\-ста\-но\-вок задач оптимальной триангуляции.
+  
+  Здесь приведем перспективную математическую модель оптимальной 
+триангуляции с~дополнительным ограничением на пересечения отрезков 
+триангуляции:
+
+\vspace*{2pt}
+
+\noindent
+  \begin{equation}
+  W^{\mathrm{T}} X\Rightarrow \min\limits_{X,Y}
+  \label{e6-man}
+  \end{equation}
+  
+  \pagebreak
+  
+  \noindent
+при ограничениях
+
+\noindent
+\begin{gather}
+\mathrm{Ed}^{\mathrm{T}}X =3(N-1)-N_c\,;\label{e7-man}\\
+X^{\mathrm{T}} P X=0\,;\label{e8-man}\\
+X_i=0\ \mbox{или } 1\,, \label{e9-man}
+\end{gather}
+где $W^{\mathrm{T}}\hm= (w_1, w_2, \cdots, w_D)$~--- вектор длин отрезков 
+между парами исходных точек триангуляции; $\mathrm{Ed}_R\hm=1$, $R\hm= 
+\overline{1,D}$~--- единичный вектор; $N$~--- чис\-ло точек триангуляции;  
+$N_c$~--- чис\-ло точек выпуклой оболочки.
+  
+  Целевая функция~(\ref{e6-man}) обеспечивает минимальную суммарную 
+длину ребер триангуляции. Ограничение~(\ref{e7-man}) сформировано на 
+основе леммы о~чис\-ле ребер триангуляции~\cite{6-man}.  
+Условие~(\ref{e9-man}) определяет булевый характер искомых 
+переменных~$X$. В~такой по\-ста\-нов\-ке введено дополнительное 
+ограничение~(\ref{e8-man}) на пересечения ребер триангуляции с~по\-мощью 
+предварительно вы\-чис\-лен\-ной мат\-ри\-цы~$[{P}]$, формирующей 
+множество пар пересекающихся отрезков для исходного множества точек 
+триангуляции. Мат\-ри\-ца~$[{P}]$ является верхней треугольной булевой 
+мат\-ри\-цей раз\-мер\-ности $D\times D$ вида:
+
+\vspace*{18pt}
+
+\noindent
+  $$
+  P=\begin{matrix}
+  1\\ \vdots \\ i\\ \vdots\\ j\\ \vdots \\ k \\\vdots \\ D
+  \end{matrix}
+  \left[\,
+  \begin{matrix}
+    \\[-24pt]
+  1 & \cdots & l&\cdots &  m& \cdots & n&\cdots& D\\
+  0&\cdots& 0& \cdots & 0 &\cdots & 0 &\cdots & 0/1\\
+  \vdots &\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots\\
+  0&\cdots&1 & \cdots & 0&\cdots& 0&\cdots& 0/1\\
+  \vdots &\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots\\
+  0&\cdots&0 & \cdots & 1&\cdots& 0&\cdots& 0/1\\
+  \vdots &\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots\\
+  0&\cdots&0 & \cdots & 0&\cdots& 1&\cdots& 0/1\\
+  \vdots &\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots\\
+  0&\cdots&0 & \cdots & 0&\cdots& 0&\cdots& 1/0
+  \end{matrix}
+  \,\right]\,.
+  $$
+  
+  
+  
+  Такая матрица идентифицирует пересечение\linebreak ($j$-го, $m$-го) и~($k$-го,  
+$n$-го) отрезков.
+  
+  Для формирования мат\-ри\-цы $[{P}]$ применим~(\ref{e5-man}). Тогда 
+$RS$-й элемент определится как
+  $$ 
+  P_{RS}=\mathrm{Cp}\left( Y^{RS}\right)\,,
+  $$
+где $Y^{RS}$~--- вектор с~компонентами $Y_R^{RS}\hm= 1$, $Y_S^{RS}\hm= 
+1$, $Y_i^{RS}\hm= 0$, $i\hm=\overline{1,D}$, $i\not= R, S$.
+  
+  Решение задачи~(\ref{e6-man})--(\ref{e9-man}) было найдено жад\-ным 
+алгоритмом.
+  
+  Условия булевости~(\ref{e9-man}) приводят к~NP-пол\-но\-те ре\-ша\-емой 
+задачи. Однако его мож\-но преобразовать к~континуальному множеству 
+решений задачи~(\ref{e6-man})--(\ref{e9-man}) с~по\-мощью ограничений на 
+идемпотентность переменных~\cite{12-man}:
+  \begin{equation}
+  X_i^2-X_i=0\,,\enskip i=\overline{1,D}\,.
+  \label{e10-man}
+  \end{equation}
+  
+  Так, в~последующих работах планируется погрузить дискретную 
+математическую модель~(\ref{e6-man})--(\ref{e9-man}) в~непрерывную путем 
+замены ограничений~(\ref{e9-man}) на~(\ref{e10-man}). Это позволит 
+применить градиентные методы поиска~\cite{13-man} оптимальной 
+триангуляции, что должно существенно снизить вы\-чис\-ли\-тель\-ные затраты.
+
+\vspace*{-6pt}
+
+\section{Апробирование математических моделей}
+
+  Произведем сравнительный анализ решений, по\-лу\-ча\-емых при использовании 
+разработанной математической модели и~алгоритма триангуляции Делоне 
+(рис.~2).
+
+
+  
+  Апробирование математических моделей и~их сравнение проводилось при 
+сле\-ду\-ющих исходных данных. Известны координаты~50~точек двумерных 
+проекций на плоскости трехмерного изображения по\-верх\-ности в~пространстве.
+  
+  Используя представленные координаты, были найдены одиннадцать точек 
+выпуклой оболочки.
+  
+  Для двух триангуляций были найдены по~136~ребер для каж\-дой
+  из них. Общая длина для жад\-ной триангуляции на основе разработанной 
+модели составила 9\,667,487, а~для триангуляции Делоне~--- 10\,096,338. При 
+этом графы триангуляций различаются~13~уникальными ребрами.
+  
+  Для сравнения пар по\-лу\-ча\-емых решений применялась нормированная 
+величина:
+  \begin{equation}
+  L(x,y) =\left\vert  \fr{x-y}{\max(x,y)}\right\vert \cdot 100\%\,,\enskip x>0\,,\ 
+y>0\,,
+  \label{e11-man}
+  \end{equation}
+  
+  \vspace*{9pt}
+  
+   { \begin{center}  %fig2
+ \vspace*{1pt}
+  \mbox{%
+ \epsfxsize=76.837mm 
+ \epsfbox{man-3.eps}
+ }
+
+\end{center}
+
+
+\noindent
+{{\figurename~2}\ \ \small{Сравнение триангуляций как множеств ребер:
+толстые линии~--- общие ребра; тонкая сплошная линия~--- реб\-ра, принадлежащие только триангуляции 
+Делоне; тон\-кая пунктирная линия~--- реб\-ра, присутствующие только в~жад\-ной 
+триангуляции}}
+}
+
+%\vspace*{9pt}
+
+\noindent
+где $x, y$~--- суммарные длины ребер для срав\-ни\-ва\-емых триангуляций.
+
+  Выигрыш по суммарной длине ребер со\-ста\-вил~4,436\%.
+  
+  Далее отметим использование найденных триангуляций для решения задач 
+навигации и~задач трехмерной реконструкции. Здесь может быть использована 
+задача коммивояжера с~целью формирования оптимального маршрута обхода 
+заданных опорных точек триангуляции. Это позволит существенно снизить 
+размерность ре\-ша\-емой NP-пол\-ной задачи коммивояжера. Так, для~50~точек 
+раз\-мер\-ность без триангуляции со\-ста\-вит~1225~ребер, 
+а~с~триангуляцией~--- 136~ребер.
+  
+  При исследовании математических моделей были найдены марш\-ру\-ты 
+мажоритарными алгоритмами на основе сравниваемых триангуляций. Здесь 
+выигрыш разработанной модели при использовании па\-ра\-мет\-ра~(\ref{e11-man}) 
+со\-ста\-вил~14,79\%.
+  
+
+\vspace*{-6pt}
+   
+  
+
+\section{Выводы}
+
+\noindent
+\begin{enumerate}[1.]
+\item Центральное место в~работе занимает поиск функционала пересечения 
+отрезков с~булевым множеством значений.
+\item Математическая модель оптимальной триангуляции пред\-став\-ле\-на в~виде 
+по\-ста\-нов\-ки экстремальной задачи с~учетом ограничений на пересечение 
+отрезков.
+\item Математическая модель может позволить преодолеть пред\-по\-ла\-га\-емую 
+NP-пол\-но\-ту задачи оптимальной триангуляции за счет применения 
+градиентных методов непрерывной оптимизации.
+\item Разработанные варианты математической модели оптимальной 
+триангуляции позволяют обосно\-вать применение эвристических приближенных 
+алгоритмов триангуляции, а~так\-же использование большего чис\-ла 
+расширенных классов алгоритмов оптимизации.
+\item Даже в~случае жадного алгоритма разработанная математическая модель 
+приводит к~меньшему значению целевого функционала на~4,436\% по 
+сравнению с~алгоритмом триангуляции Делоне.
+\item Использование решения задачи триангуляции в~качестве исходных 
+данных в~задаче коммивояжера позволяет снизить ее размерность с~$N(N-1)/2$ 
+до~$3(N\hm-1)\hm- N_c$.
+  \item Применение в~задаче навигации жадного алгоритма коммивояжера 
+к~разработанной модели триангуляции поз\-во\-ли\-ло получить выигрыш 
+в~14,79\% по сравнению с~применением его к~триангуляции Делоне.
+  \end{enumerate}
+  
+  Следующие два вывода предопределяют на\-прав\-ле\-ния дальнейших 
+при\-клад\-ных исследований предлагаемой математической модели.
+  \begin{enumerate}[1.]
+  \setcounter{enumi}{7}
+  \item Так как реб\-ра двумерной триангуляции пред\-став\-ля\-ют собой отрезки 
+прямых, то и~при восстановлении их в~трехмерном пространстве они также 
+являются отрезками прямых. Это свойство может быть использовано для 
+трехмерной реконструкции концов выделенных отрезков триангуляции.
+  \item При трехмерной реконструкции для выделения отрезков использование 
+решения задачи коммивояжера в~условиях разработанной модели триангуляции 
+может обеспечить меньшие искажения по срав\-не\-нию с~условиями 
+триангуляции Делоне.
+  \end{enumerate}
+  
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-man}
+\Au{Гасилов А.\,В., Яковлев~О.\,А.} Создание реалистичных наборов данных для алгоритмов 
+трехмерной реконструкции с~по\-мощью виртуальной съем\-ки компьютерной модели~// 
+Системы и~средства информатики, 2016. Т.~26. №\,2. С.~98--107.
+
+\bibitem{3-man} %2
+\Au{Костюк Ю.\,Л., Фукс~А.\,Л.} При\-бли\-жен\-ное вы\-чис\-ле\-ние оптимальной триангуляции~// 
+Геоинформатика: Теория и~практика, 1998. Вып.~1. С.~61--66.
+
+\bibitem{2-man} %3
+\Au{Лисин А.\,В., Файзуллин~Р.\,Т.} Эвристический алгоритм поиска при\-бли\-жен\-но\-го решения 
+задачи Штейнера, основанный на физических аналогиях~// Компьютерная оптика, 2013. 
+Т.~37. №\,4. С.~503--510.
+
+\bibitem{4-man}
+\Au{Препарата Ф., Шеймос~М.} Вы\-чис\-ли\-тель\-ная гео\-мет\-рия: Введение~/ Пер. с~англ.~--- 
+М.: Мир, 1989. 478~c. (\Au{Preparata~F., Shamos~M.} Computational geometry. An 
+introduction.~--- New York\,--\,Berlin\,--\,Heidelberg\,--\,Tokyo: Springer-Verlag, 
+1985. 398~p.)
+\bibitem{5-man}
+\Au{Скворцов А.\,В., Мирза~Н.\,С.} Алгоритмы по\-стро\-ения и~анализа триангуляции.~--- 
+Томск: ТГУ, 2006. 168~с.
+\bibitem{6-man}
+\Au{Скворцов А.\,В.} Триангуляция Делоне и~ее применение.~--- Томск: ТГУ, 2002. 128~с.
+\bibitem{7-man}
+\Au{Ивановский С.\,А., Симончик~С.\,К.} Алгоритмы вы\-чис\-ли\-тель\-ной гео\-мет\-рии. 
+Пересечение отрезков: метод заметания плос\-кости~// Компьютерные инструменты 
+в~образовании, 2007. №\,4. С.~18--33.
+\bibitem{8-man}
+\Au{Игошин В.\,И.} Математическая логика и~тео\-рия алгоритмов.~--- М.: Академия, 2008. 
+448~с.
+\bibitem{9-man}
+\Au{Волков И.\,К., Канатников~А.\,Н.} Интегральные преобразования и~операционное 
+ис\-чис\-ле\-ние.~--- 2-е изд.~--- М.: МГТУ им.\ Н.\,Э.~Баумана, 2002. 
+228~с.
+\bibitem{10-man}
+\Au{Бронштейн И.\,Н., Семендяев~К.\,А.} Справочник по математике.~--- М.: Наука, 1964. 
+608~с.
+
+%\pagebreak
+
+\bibitem{11-man}
+\Au{Потехина Е.\,А.} Применение произведения Адамара в~задаче пе\-ре\-чис\-ле\-ния 
+упорядоченных разбиений~// Наукоемкие технологии, 2012. Т.~13. №\,8. С.~58--65.
+\bibitem{12-man}
+\Au{Гантмахер Ф.\,Р.} Тео\-рия мат\-риц.~--- 2-е изд., доп.~--- М.: Наука, 1966. 576~с.
+\bibitem{13-man}
+\Au{Химмельблау Д.} Прикладное нелинейное программирование~/ Пер. с~англ.~--- М.: Мир, 
+1975. 526~с. (\Au{Himmelblau~D.\,M.} Applied nonlinear programming.~--- New York, NY, USA: 
+McGraw-HilI Book Co., 1972. 498~p.)
+{\looseness=1
+
+}
+ \end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 24.08.17}}
+
+\vspace*{6pt}
+
+%\newpage
+
+%\vspace*{-24pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{8pt}
+
+
+\def\tit{MATHEMATICAL MODEL OF~OPTIMAL TRIANGULATION}
+
+\def\titkol{Mathematical model of~optimal triangulation}
+
+\def\aut{A.~Batenkov, Yu.~Maniakov, A.~Gasilov, and~O.~Yakovlev}
+
+\def\autkol{A.~Batenkov, Yu.~Maniakov, A.~Gasilov, and~O.~Yakovlev}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-9pt}
+
+
+\noindent
+  Orel Branch of the Institute of Informatics Problems, Federal Research Center 
+``Computer Science and Control'' of the Russian Academy of Sciences, 
+137~Moskovskoe Shosse, Orel 302025, Russian Federation
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2018\ \ \ volume~12\ \ \ issue\ 2}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2018\ \ \ volume~12\ \ \ issue\ 2
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt}
+
+    
+  
+\Abste{The problem of synthesis of optimal planar convex triangulation is 
+formalized. This problem arises in different applications of informatics problems and 
+is very actual for its sections such as computer graphics and geographical information 
+systems. The mathematical model is represented as an extremum problem with 
+infinite number of constraints, as a minimax problem with bound variables, and as an 
+extremum problem with additional constraints on line segments intersections of 
+triangulation with limited number of constraints. By putting idempotent limitations 
+on Boolean variables, the initial integer-valued problem could be solved as a general 
+mathematical programming problem on a continuum set of answers. In addition, the 
+comparison of results obtained by the greedy algorithm based on the represented 
+model and Delaunay triangulation is provided.}
+
+\KWE{mathematical model; triangulation; Delaunay triangulation}
+
+\DOI{10.14357/19922264180210} %
+
+%\vspace*{-14pt}
+
+  %\Ack
+  % \noindent
+ %  The paper was supported by the Russian Scientific Foundation (project 16-11-10227).
+
+
+
+%\vspace*{-3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+\bibitem{1-man-1}
+\Aue{Gasilov, A.\,V., and O.\,A.~Yakovlev.} 2016. Sozdanie rea\-li\-stich\-nykh 
+naborov dannykh dlya al\-go\-rit\-mov trekh\-mer\-noy rekonstruktsii s~pomoshch'yu 
+virtual'noy s"em\-ki komp'yuternoy modeli [Genereating realistic  
+structure-from-motion datasets with a~virtual shooting]. \textit{Sistemy i~Sredstva 
+Informatiki~---Systems and Means of Informatics} 26(2):98--107.
+
+\bibitem{3-man-1}
+\Aue{Kostyuk, Yu.\,L., and A.\,L.~Fuks.} 1998. Priblizhennoe vychislenie 
+optimal'noy triangulyatsii [Approximate calculation of optimal triangulation]. 
+\textit{Geoinformatika: teoriya i~praktika} [Geoinformatics: Theory and practice] 
+ 1:61--66.
+\bibitem{2-man-1}
+\Aue{Lisin, A.\,V., and R.\,T.~Faizullin.} 2013. Evristicheskiy algoritm poiska 
+priblizhennogo resheniya zadachi Shteynera, osnovannyy na fizicheskikh 
+analogiyakh [Heuristic algorithm for finding approximate solution of Steiner 
+problem based on physical analogies]. \textit{Computer 
+Optics} 37(4):503--510.
+
+\bibitem{4-man-1}
+\Aue{Preparata, F., and M.~Shamos.} 1985. \textit{Computational geometry: An 
+introduction}.~--- New York\,--\,Berlin\,--\,Heidelberg\,--\,Tokyo: Springer-Verlag. 398~p.
+\bibitem{5-man-1}
+\Aue{Skvortsov, A.\,V., and N.\,S.~Mirza.} 2006. \textit{Algoritmy postroeniya 
+i~analiza triangulyatsii} [Generation and analysis algorithms of triangulation]. 
+Tomsk: Tomsk State University. 168~p.
+\bibitem{6-man-1}
+\Aue{Skvortsov, A.\,V.} 2002. \textit{Triangulyatsiya Delone i~ee primenenie} 
+[Delaunay triangulation and its application]. Tomsk: Tomsk State University. 128~p.
+\bibitem{7-man-1}
+\Aue{Ivanovskiy, S.\,A., and S.\,K.~Simonchik.} 2007. Algoritmy vychislitel'noy 
+geometrii. Peresechenie otrezkov: metod zametaniya ploskosti [Computational 
+geometry algorythms: Plane covering method]. \textit{Komp'yuternye instrumenty 
+v~obrazovanii} [Computer instruments in education] 4:18--33.
+\bibitem{8-man-1}
+\Aue{Igoshin, V.\,I.} 2008. \textit{Matematicheskaya logika i~teoriya algoritmov} 
+[Mathematical logic and algorithms' theory]. Moscow: Akademiya. 448~p.
+\bibitem{9-man-1}
+\Aue{Volkov, I.\,K., and A.\,N.~Kanatnikov.} 2002. \textit{Integral'nye 
+preobrazovaniya i~operatsionnoe ischislenie} [Integral 
+transformation and operational calculus]. 2nd ed. Moscow: MSTU. 228~p.
+\bibitem{10-man-1}
+\Aue{Bronshtein, I.\,N., and K.\,A.~Semendyaev.} 1964. \textit{Spra\-voch\-nik po 
+matematike} [Mathematics handbook]. Moscow: Nauka. 608~p.
+\bibitem{11-man-1}
+\Aue{Potekhina, E.\,A.} 2012. Primenenie proizvedeniya Adamara v~zadache 
+perechisleniya uporyadochennykh razbieniy [Application of Adamar's 
+multiplication for enumeration of ordered decompositions problem]. 
+\textit{Naukoemkie tekhnologii} [Science Technologies]  13(8):58--65.
+\bibitem{12-man-1}
+\Aue{Gantmakher, F.\,R.} 1966. \textit{Teoriya matrits} [The matrix theory]. 2nd 
+ed.  Moscow: Nauka. 576~p.
+\bibitem{13-man-1}
+\Aue{Himmelblau, D.\,M.} 1972. Applied nonlinear programming. New York, 
+NY: McGraw-Hill Book Co. 498~p.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received August 24, 2017}}
+
+%\vspace*{-24pt}
+  
+  \Contr
+  
+  \noindent
+  \textbf{Batenkov Alexander A.} (b.\ 1957)~--- research engineer, Orel Branch of 
+the Institute of Informatics Problems, Federal Research Center ``Computer Science 
+and Control'' of the Russian Academy of Sciences, 137~Moskovskoe Shosse, Orel 
+302025, Russian Federation; \mbox{batenkov1957@mail.ru}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Maniakov Yuri A.} (b.\ 1984)~--- senior scientist, Orel Branch of the 
+Institute of Informatics Problems, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 137~Moskovskoe Shosse, Orel 
+302025, Russian Federation; \mbox{maniakov\_yuri@mail.ru}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Yakovlev Oleg A.} (b.\ 1992)~--- junior scientist, Orel Branch of the 
+Institute of Informatics Problems, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 137~Moskovskoe Shosse, Orel 
+302025, Russian Federation; \mbox{maucra@gmail.com}
+  
+  \vspace*{3pt}
+  
+  \noindent
+  \textbf{Gasilov Artur A.} (b.\ 1992)~--- junior scientist, Orel Branch of the 
+Institute of Informatics Problems, Federal Research Center ``Computer Science and 
+Control'' of the Russian Academy of Sciences, 137~Moskovskoe Shosse, Orel 
+302025, Russian Federation; \mbox{gasilov.av@ya.ru}
+\label{end\stat}
+
+
+\renewcommand{\bibname}{\protect\rm Литература} 
+  

@@ -1,0 +1,356 @@
+%\input{preamblw}
+
+%\begin{document}
+
+\renewcommand{\firstpage}{11} %Начальная страница статьи для выноса в колонтитул
+\renewcommand{\lastpage}{14} %Конечная страница статьи для выноса в колонтитул
+%Расставляются при окончательной прогонке Вестника
+
+
+%\Partition{Дифференциальные уравнения}
+
+
+\udk{517.95}
+
+
+\title{Численное решение краевой задачи для междупредельного дифференциального уравнения методом модифицированной прогонки} 
+      {Численное решение краевой задачи для междупредельного дифференциального \dots } 
+
+\engtitle{Numerical solution of boundary value problems with а modified sweep method} 
+
+
+
+\author{В.\,А.~Чадаев}{Ч\,а\,д\,а\,е\,в~В.\,А.}
+\engauthor{V.\,A.~Chadaev}
+
+
+\workabstract{Рассмотрена модификация метода прогонки для численного решения краевой
+задачи для междупредельного дифференциального уравнения.
+Доказана теорема об устойчивости вычислительного процесса для
+нахождения прогоночных коэффициентов.}
+
+\engabstract{Modified sweep method of boundary value problem solution is introduced. A theorem of sweep coefficient process computing stability is proved.}
+
+\date{01.10.2007} 
+
+\address{Чеченский государственный университет, г.~Грозный}
+\engaddress{Chechen State University, Grozny, Russia}
+
+\email{niipma@mail333.com}
+
+
+\maketitle
+
+
+Рассмотрим междупредельное дифференциальное уравнение
+\begin{equation}
+\label{ch1}
+Ly\equiv D^{\alpha+1}_{0x} y(t)+p(x) D^\beta_{0x}y(t)+q(x) y(x)=f(x)
+\end{equation}
+с граничными условиями
+\begin{equation}
+\label{ch2} y(0)=0, \qquad y(l)=r,
+\end{equation} 
+где $D^\varepsilon_{0x}$ "--- оператор дробного (в~смысле Римана"--~Лиувилля) дифференцирования 
+порядка $0<\varepsilon\le 2$ с~началом в~точке 0 и~с~концом в~точке $x\in [0,\,l]$ 
+[1,~2]; $0<\alpha\le 1$, $0<\beta\le 1$; $y(x)\in C^4 [0,\,l]$; $p(x)$, $q(x)\in C[0,\,l]$. 
+
+Известно [3], что
+
+а) $\displaystyle 
+D^\beta_{0x}y(t)=y(0)\frac{x^{-\beta}}{\Gamma(1-\beta)}+ 
+\frac{1}{\Gamma(1-\beta)}\int\limits_0^x 
+y'(t)(x-t)^{-\beta}dt$,  
+ 
+\noindent 
+но так как $y(0)=0$, то имеем 
+\begin{equation} 
+\label{ch3} 
+D^\beta_{0x}y(t)=\frac{1}{\Gamma(1-\beta)}\int\limits_0^x 
+y'(t)(x-t)^{-\beta}dt=\partial^\beta_{0x} y(t), 
+\end{equation} 
+где $\partial^\beta_{0x}$ "--- регуляризованный оператор дробного порядка 
+$\beta$~[4]; 
+
+б) $\displaystyle  D^{\alpha+1}_{0x}y(t)=y(0)\frac{x^{-\alpha-1}}{\Gamma(-\alpha)}+ 
+y'(0)\frac{x^{-\alpha}}{\Gamma(1-\alpha)}+ 
+\frac{1}{\Gamma(1-\alpha)}\int\limits_0^x 
+y''(t)(x-t)^{-\alpha}dt$,  
+
+\noindent 
+но так как $y(0)=0$, то имеем 
+\begin{equation} 
+\label{ch4} 
+D^{\alpha+1}_{0x}y(t)=\frac{1}{\Gamma(1-\alpha)}\left( 
+y'(0)x^{-\alpha}+\int\limits_0^x 
+y''(t)(x-t)^{-\alpha}dt\right). 
+\end{equation} 
+
+Разобьём отрезок $[0,\,l]$ на $N$ равных частей, тогда $h=\frac lN$, $x_i=i h$
+($i=0,\,1,\,\dots,\,N$); $x_0=0$, $h$ "--- шаг равномерной сетки $\omega_n=\{x_k\}$. 
+
+Через $y_k$ обозначим значение $y(x_k)$ непрерывной функции $y(x)$  
+в~узле $x_k$  сетки $\omega_n$. Функцию целочисленного аргумента $y_k$ 
+($k=0,\,1,\,2,\,\dots$)  можно рассматривать как сеточную функцию. 
+
+Пусть $\Delta$ и $\nabla$ "--- правый и~левый разностные операторы
+[5,~c.\,20]; $R=\Delta\nabla$ "---  разностный оператор Римана (или симметрический) второго порядка;
+$ 
+S_k^\alpha=k^{1-\alpha} 
+$  
+"--- степенная сеточная функция. 
+
+Для первой производной можно положить 
+$$ 
+y'(t)=\frac{\Delta y_{k-1}}{h}+O(h),\quad \forall t\in[x_{k-1},\,x_{k}], 
+$$ 
+где $O(h)$ "--- символ Ландау и  
+$$ 
+O(h)\leq \frac h2\max\limits_{[x_{k-1},\,x_k]}|y''(t)|, 
+\quad k=1,\,2,\,\dots,\,N ,
+$$ 
+а для второй производной имеем 
+$$ 
+y''(t)=\frac{R y_{k}}{h^2}+O(h^2)= 
+\frac{\Delta^2 y_{k-1}}{h^2}+O(h^2),\quad \forall t\in[x_{k-1},\,x_{k+1}], 
+$$ 
+где  
+$$ 
+O(h^2)\leq \frac{h^2}{12}\max\limits_{[x_{k-1},\,x_{k+1}]}|y^{IV}(t)|, 
+\quad k=1,\,2,\, \dots,\,N-1. 
+$$ 
+
+Для $i=1,\,2,\,\dots,\,N$ с учётом формулы (3) имеем 
+\begin{multline}
+D^{\beta}_{0x_i} y(t)=\frac{1}{\Gamma(1-\beta)} 
+\sum\limits_{k=1}^i \int\limits_{x_{k-1}}^{x_k} \frac{\Delta y_{k-1}+ 
+h O(h)}{h}(x_i-t)^{-\beta}dt= \\
+= \frac{1}{h\Gamma(2-\beta)} 
+\sum\limits_{k=1}^i \Big(\Delta y_{k-1}+ 
+h O(h)\Big) \Big(x^{1-\beta}_{i-k+1}-x^{1-\beta}_{i-k}\Big)= 
+%\\
+\frac{h^{-\beta}}{\Gamma(2-\beta)} 
+\sum\limits_{k=1}^i \Big(\Delta y_{k-1}+ 
+h O(h)\Big) \Delta S^\beta_{i-k}=
+\\
+=\frac{h^{-\beta}}{\Gamma(2-\beta)} 
+\sum\limits_{k=1}^i  
+\Delta y_{k-1} \Delta S^\beta_{i-k}+ 
+\frac{h^{1-\beta}O(h)}{\Gamma(2-\beta)}i^{1-\beta}, 
+\label{ch5} 
+\end{multline} 
+а для формулы (4) получим аналогично 
+\begin{multline}
+D^{\alpha+1}_{0x_i} y(t)=\frac{1}{\Gamma(1-\alpha)}\left( 
+y'(0)x_i^{-\alpha}+ 
+\sum\limits_{k=1}^i \int\limits_{x_{k-1}}^{x_k} \frac{\Delta^2 y_{k-1}+ 
+h^2 O(h^2)}{h^2}(x_i-t)^{-\alpha}dt\right)= 
+\\
+= \frac{y'(0)x_i^{-\alpha}}{\Gamma(1-\alpha)}+ 
+\frac{1}{h^2\Gamma(2-\alpha)} 
+\sum\limits_{k=1}^i  
+\Big(\Delta^2 y_{k-1}+ 
+h^2 O(h^2)\Big) \Big(x^{1-\alpha}_{i-k+1}-x^{1-\alpha}_{i-k}\Big)= 
+\\
+= \frac{y'(0)x_i^{-\alpha}}{\Gamma(1-\alpha)}+ 
+\frac{h^{-1-\alpha}}{\Gamma(2-\alpha)} 
+\sum\limits_{k=1}^i  
+\Big(\Delta^2 y_{k-1}+ 
+h^2 O(h^2)\Big) \Delta S^\alpha_{i-k}= 
+\\
+\label{ch6} 
+=\frac{y'(0)x_i^{-\alpha}}{\Gamma(1-\alpha)}+ 
+\frac{h^{-1-\alpha}}{\Gamma(2-\alpha)} 
+\sum\limits_{k=1}^i  
+\Delta^2 y_{k-1} \Delta S^\alpha_{i-k}+ 
+\frac{h^{1-\alpha}\cdot O(h^{2})}{\Gamma(2-\alpha)}i^{1-\alpha}. 
+\end{multline} 
+ 
+Для (3) и (4) запишем окончательно  
+\begin{gather} 
+\label{ch7} 
+D^{\beta}_{0x_i} y(t)\approx\Delta^\beta_{0x_i} y(t)+ 
+R_\beta(h,i),\\ 
+\label{ch8} 
+D^{\alpha+1}_{0x_i} y(t)\approx 
+\Delta^{\alpha+1}_{0x_i} y(t)+ 
+R_\alpha(h,i), 
+\end{gather} 
+где 
+$$ 
+\Delta^{\beta}_{0x_i} y(t)=\frac{h^{-\beta}}{\Gamma(2-\beta)} 
+\sum\limits_{k=1}^i  
+\Delta y_{k-1} \Delta S^\beta_{i-k}, 
+$$ 
+$$ 
+\Delta^{\alpha+1}_{0x_i} y(t)=\frac{y'(0)x_i^{-\alpha}}{\Gamma(1-\alpha)}+ 
+\frac{h^{-1-\alpha}}{\Gamma(2-\alpha)} 
+\sum\limits_{k=1}^i  
+\Delta^2 y_{k-1} \Delta S^\alpha_{i-k}, 
+$$ 
+$$ 
+R_\beta(h,i)\leq \frac{h}{2\Gamma(2-\beta)} 
+\max\limits_{[0,x_i]}|y''(t)|x_i^{1-\beta}, 
+$$ 
+$$ 
+R_\alpha(h,i)\leq \frac{h^2}{12\Gamma(2-\alpha)} 
+\max\limits_{[0,x_i]}|y^{IV}(t)|x_i^{1-\alpha}. 
+$$ 
+ 
+Для уравнения (1) выпишем его разностный аналог с~учётом (7),~(8), 
+отбросив последние члены: 
+\begin{equation} 
+\label{ch9} 
+L^h y\equiv \Delta^{\alpha+1}_{0x_i} y(t)+p(x_i) 
+\Delta^{\beta}_{0x_i} y(t)+q(x_i)y(x_i)=f(x_i). 
+\end{equation} 
+ 
+Пусть  
+\begin{gather} 
+\label{ch10} 
+b_{i,k}=\big(h^{-\beta}\Delta S^\beta_{i-k}/ 
+\Gamma(2-\beta)\big)p(x_i),\\ 
+\label{ch11} 
+a_{i,k}=h^{-1-\alpha}\Delta S^\alpha_{i-k}/ 
+\Gamma(2-\alpha). 
+\end{gather} 
+ 
+Полагая $y'(0)=\frac{y_1-y_0}h$, с учётом (10) и~(11) уравнение (9) 
+примет вид 
+\begin{equation} 
+\label{ch12} 
+\frac{y_1 x^{-\alpha}_i}{h \Gamma(1-\alpha)}+\sum\limits_{k=1}^i 
+(y_{k-1}-2y_k+y_{k+1})a_{i,k}+\sum\limits_{k=1}^i 
+(y_k-y_{k-1})b_{i,k}+q_i y_i=f_i, 
+\end{equation} 
+где $q_i=q(x_i)$, $f_i=f(x_i)$. 
+ 
+В формуле (12) необходимо считать 
+$\Delta^2 y_{N-1}=R y_{N-1}. $ 
+ 
+Пусть  
+\begin{equation} 
+\label{ch13} 
+A_{i,k}=a_{i,k}-b_{i,k};\quad B_{i,k}=b_{i,k}-2a_{i,k};\quad 
+C_{i,k}=a_{i,k};\quad E_i=\frac{x_i^{-\alpha}}{h\Gamma(1-\alpha)}. 
+\end{equation} 
+Подставив (13) в уравнение (12), получим
+\begin{equation} 
+\label{ch14} 
+y_1 E_i + \sum\limits_{k=1}^i (A_{i,k} y_{k-1}+B_{i,k}y_k +C_{i,k} 
+y_{k+1})+q_iy_i=f_i, \quad i=1,\,2,\, \dots,\, N{-}1. 
+\end{equation} 
+ 
+Приведя подобные члены и~учитывая, что $y_0=0$, $y_N=r$, получим систему  
+$N{-}1$ уравнений с~\mbox{$N{-}1$} неизвестными. Допустим, что $d_{n,k}$ "---  
+элементы матрицы этой системы, тогда матрица $D$ будет иметь вид: 
+\begin{eqnarray*} 
+D=\left( 
+\begin{array}{cccccc} 
+d_{11} & d_{12} & 0 & \dots & 0 & 0 \\ 
+d_{21} & d_{22} & d_{23} & \dots & \dots & 0 \\ 
+\dots & \dots & \dots & \dots & \dots & \dots \\ 
+d_{N-2,1} & d_{N-2,2} & d_{N-2,3} & \dots & d_{N-2,N-1} & 0 \\ 
+d_{N-1,1} & d_{N-1,2} & d_{N-1,3} & \dots & d_{N-1,N-1} & d_{N-1,N} 
+\end{array} 
+\right). 
+\end{eqnarray*} 
+
+Система (14) примет вид 
+\begin{equation} 
+\label{ch15} 
+DY=F, 
+\end{equation} 
+где $Y=(y_1,\,y_2,\,\dots ,\, y_{N})^{\rm T}$, $F=(f_1,\, f_2,\, \dots,\, f_{N-1})^{\rm T}$. 
+Система (15) для $\alpha=\beta=1$ превращается в~трёхдиагональную систему, которая решается методом <<прогонки>>, и~достаточным условием устойчивости её решения является признак диагонального преобладания~[6]. 
+Так как <<прогонка>> является частным случаем метода последовательных  
+исключений Гаусса (с~прямым и~обратным ходами), учитывая 
+определённую <<разрежённость>>~[7] матрицы $D$ (матрица $D$ является нижней почти треугольной или матрицей 
+Хессенберга, которая отличается от треугольной наличием ещё одной 
+побочной диагонали [8]), предложим следующий метод 
+решения системы (15), который можно назвать модификацией метода 
+<<прогонки>> [9,~10].
+
+Систему (15) решим следующим образом. Пусть $K_0=L_0=0$; $\alpha_{k,0}=0$; 
+$\beta_{k,0}=f_k$ ($k=1,\,2,\, \dots,\,N{-}1$). Для всех $n=1,\,2,\,\dots,\,N-1$ и~для всех 
+$k=n,\,n+1,\, \dots,\,N-1$ положим 
+$$ 
+\alpha_{k,n}=d_{k,n}-\alpha_{k,n-1}K_{n-1},\quad 
+\beta_{k,n}=\beta_{k,n-1}-\alpha_{k,n-1} L_{n-1}; \quad  
+L_n=\frac{\beta_{n,n}}{\alpha_{n,n}}, \quad K_n=\frac{d_{n,n+1}}{\alpha_{n,n}}. 
+$$ 
+Тогда для обратного хода имеем
+$$
+y_n=L_n -K_n y_{n+1},\quad n=N-1,\,N-2,\, \dots,\,2,\,1.
+$$
+
+\begin{theorem}
+Вычислительный процесс для нахождения $L_n$ 
+и~$K_n$ устойчив, если существует такое число $\tau> 1+\alpha$, 
+что для всех главных диагональных миноров $D_n$ определителя $D$ выполняется 
+$$ 
+\frac{|D_{n-1}|}{|D_n|}=O(h^\tau). 
+$$ 
+\end{theorem}
+
+Нетрудно убедиться, что 
+$ 
+\alpha_{n,n}=\frac{|D_n|}{|D_{n-1}|},
+$ 
+но тогда  
+$ 
+K_n=d_{n,n+1}\frac{|D_{n-1}|}{|D_{n}|}. 
+$ 
+
+Известно также, что 
+$$ 
+d_{n,n+1}=a_{n,n}=\frac{\Delta S^\alpha_0}{h^{1+\alpha} \Gamma(2-\alpha)}= 
+\frac{1}{h^{1+\alpha} \Gamma(2-\alpha)}, 
+$$ 
+тогда 
+$$ 
+K_n=\frac{1}{\Gamma(2-\alpha)}\frac{O(h^\tau)}{h^{1+\alpha}}= 
+\frac{O(h^{\tau-1-\alpha})}{\Gamma(2-\alpha)}. 
+$$ 
+Отсюда видно, что $K_n$ будет ограничено при $h\to 0$, если $\tau-1-\alpha > 0$. 
+
+
+\begin{thebibliography}{10}
+\item {\it Нахушев, А.\,М.} Уравнения математической биологии [Текст]~/
+А.\,М.~Нахушев. "--- М.: Высш. шк., 1995. "--- 301~с.
+
+\item  {\it Самко, С.\,Г.} Интегралы и производные дробного порядка и некоторые их приложения [Текст]~/
+С.\,Г.~Самко, А.\,А.~Килбас, О.\,И.~Маричев. "--- Минск: Наука и техника, 1987. "--- 688~с. 
+
+\item {\it Нахушев, А.\,М.} К теории дробного исчисления [Текст]~/
+А.\,М.~Нахушев /\!/ Дифференциальные уравнения. "--- 1988. "--- Т.~24, \No~2. "--- С.~313--324.
+
+\item {\it Нахушев, А.\,М.} Дробное исчисление и его применение [Текст]~/
+А.\,М.~Нахушев. "--- М.: Физматлит, 2003. "--- 272~с. 
+
+\item {\it Самарский, А.\,А.} Введение в~численные методы [Текст]~/
+А.\,А.~Самарский. "--- М.: Наука, 1997. "--- 239~с.
+
+\item {\it Самарский, А.\,А.} Теория разностных схем [Текст]~/
+А.\,А.~Самарский. "--- М.: Наука, 1983. "--- 616~с.
+
+\item {\it Тьюарсон, Р.} Разрежённые матрицы [Текст]~/ Р.~Тьюарсон. "--- М.: Мир, 1977. "--- 191~c.
+
+\item {\it Parlett, B.\,N.} Global convergence of the basice QR"=algorithm on Hessenberge matrices~[Text]~/
+B.\,N.~Parlett~/\!/ Math. Comp. "--- 1968. "--- Vol.~22. "--- P.~803--817.
+
+\item  {\it Чадаев, В.\,А.} Численное решение краевой задачи методом модифицированной
+прогонки для дифференциального уравнения дробного порядка [Текст]~/ В.\,А.~Чадаев~/\!/
+Мухтаровские чтения: Международ. конф. "---  Махачкала, 2007. "--- С.~110--111.
+
+\item  {\it Чадаев, В.\,А.} Решение краевой задачи для дифференциальных  
+уравнений дробного порядка методом модифицированной прогонки [Текст]~/ В.\,А.~Чадаев~/\!/ 
+Дифференциальные уравнения, теория функций и приложения: Международ. конф.,
+посвящённая 100"=летию со дня рождения акад. И.\,Н.~Векуа. "--- Новосибирск, 2007. "---  С.~351--352.
+\end{thebibliography}
+
+\vspace{5mm}
+\thispagestyle{empty}
+\makeengtitle
+
+%\end{document}

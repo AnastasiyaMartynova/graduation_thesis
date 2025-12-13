@@ -1,0 +1,820 @@
+\documentstyle[% 
+righttag% 
+,11pt% 
+,amssymb% 
+,russian%               remove in Eng. 
+,izvru%                 Set izven% in Eng. 
+% ,izvru-ks             for brief communications 
+]{amsart} 
+ 
+% {=} p.5
+ 
+\newcommand{\tts}[1]{} 
+ 
+\theoremstyle{definition} 
+\theorembodyfont{\rm} 
+\newtheorem{cornonum}{\hskip\parindent Следствие} 
+\renewcommand{\thecornonum}{} 
+ 
+%\hoffset=-15mm%                  For Eng. 
+\setcounter{page}{37} 
+\god{2003} 
+\nomer{8~(495)} %                        Remove in Eng. 
+%\nomer{Vol.\,47, No.\,8}%               Set in Eng. 
+%\str{\pageref{begin}--\pageref{end}}%  Set in Eng. 
+\udk{517.968:519.642} 
+ 
+\author{\it Э.Н.\,Самойлова} 
+% NB:   ^^ remove in Eng. 
+\title{Решение сингулярного 
+интегродифференциального уравнения  
+методом сплайн-коллокаций} 
+ 
+\date{} 
+%\pagestyle{myheadings}%         Set in Eng. 
+\pagestyle{plain} %              Remove in Eng. 
+\begin{document} 
+%\thispagestyle{plain}%          Set in Eng. 
+\maketitle 
+\label{begin} 
+ 
+ 
+ 
+\section*{Введение} 
+ 
+В ряде прикладных задач встречается сингулярное интегродифференциальное 
+уравнение 
+\begin{equation} 
+A\varphi\equiv\varphi''(t)+a(t)\varphi'(t)+b(t)\varphi(t)+ 
+% 
+\frac{c(t)}{\pi}\int^1_{-1}\frac{\varphi(\tau)d\tau}{\tau-t}+ 
+\frac{d(t)}{\pi}\int^1_{-1}\frac{\varphi'(\tau)d\tau}{\tau-t}=f(t), 
+\ \ -1<t<1, 
+\end{equation} 
+с краевыми условиями 
+\begin{equation} 
+\varphi(-1)=\varphi(+1)=0, 
+\end{equation} 
+где $a(t)$, $b(t)$, $c(t)$, $d(t)$, $f(t)$ --- известные функции на 
+сегменте $[-1,1]$, a $\varphi(t)$ --- искомая функция. 
+ 
+Поскольку задача (1), (2) точно не решается, ниже предлагается 
+ее решение методом сплайн-коллокаций. В частности, приводятся 
+вычислительные схемы укaзанного метода и предлагается их 
+обоснование на основе теории приближения функций 
+(напр., [1]) и общей теории приближенных методов функционального 
+анализа (напр., [2], гл.\,14; [3], гл.\,1). 
+ 
+ 
+\section{Вычислительная схема метода} 
+ 
+Введем сетку узлов 
+\begin{equation} 
+t_k=-1+\frac{2k}{n},\quad k=\ov{0,n},\quad n\in\Bbb N. 
+\end{equation} 
+Приближенное решение задачи (1), (2) будем искать в виде кубического 
+сплайна 
+\begin{equation} 
+\varphi_n(t)=\varphi_{n,k}(t)=\sum^3_{i=0}\alpha_{ki}t^i,\quad 
+t_{k-1}\le t\le t_k,\ \ k=\ov{1,n}, 
+\end{equation} 
+с узлами (3). Неизвестные постоянные $\alpha_{ki}$, $k=\ov{1,n}$, 
+$i=\ov{0,3}$, определяются из условий 
+\begin{gather} 
+(A\varphi_n)(t_k)=f(t_k),\quad k=\ov{0,n}, \\ 
+% 
+\varphi_n(-1)=\varphi_n(1)=0. 
+\end{gather} 
+Отсюда получаем $n+3$ уравнений, недостающие уравнения находим в силу 
+того, 
+что $\varphi_n(t)$ --- кубический сплайн, т.\,е. за счет гладкого 
+склеивания в узлах (3) 
+\begin{equation} 
+\varphi^{(j)}_{n,k}(t_k)=\varphi^{(j)}_{n,k+1}(t_k),\quad 
+k=\ov{1,n-1},\ \ j=0,1,2. 
+\end{equation} 
+ 
+Таким образом, соотношения (5)--(7) представляют собой систему из $4n$ 
+линейных алгебраических уравнений (СЛАУ) относительно $4n$ неизвестных 
+коэффициентов сплайна (4). 
+ 
+ 
+\section{Предварительные результаты} 
+ 
+Для теоретического обоснования вычислительной схемы (1)--(7) 
+приведем вспомогательные утверждения. 
+ 
+\begin{lem} 
+Пусть $X$ и $Y$ --- полные линейные нормированные пространства, 
+а $G, T:X\to Y$ --- линейные ограниченные операторы. 
+Пусть, кроме того, выполнены условия 
+\begin{itemize} 
+\item[1)] $G:X\to Y$ --- непрерывно обратимый, а $T:X\to Y$ --- вполне 
+непрерывный операторы\/$;$ 
+\item[2)] линейное операторное уравнение 
+\begin{equation} 
+K x\equiv G x+T x=y\quad (x\in X,\ \; y\in Y) 
+\end{equation} 
+\end{itemize} 
+однозначно разрешимо в пространстве $X$ при любой правой части 
+из пространства $Y$. 
+ 
+Тогда оператор $K:X\to Y$ непрерывно обратим. 
+\end{lem} 
+ 
+\begin{pf} 
+В силу условия 1) уравнение (8) эквивалентно 
+операторному уравнению 2-го рода 
+\begin{equation} 
+G^{-1}K x\equiv M x\equiv x+G^{-1}T x=G^{-1}y\quad 
+(x,G^{-1}y\in X). 
+\tag{$8'$} 
+\end{equation} 
+Поэтому из однозначной разрешимости уравнения (8) следует однозначная 
+разрешимость эквивалентного ему операторного уравнения 
+$(8')$. Так как $G^{-1}T$ является вполне непрерывным оператором как 
+произведение ограниченного и вполне непрерывного операторов, то 
+из теории Рисса--Шаудера (напр., [2]) и условия 2) следует, что 
+оператор $M$ имеет непрерывный обратный $M^{-1}:X\to X$. Поскольку 
+$M^{-1}=(G^{-1}K)^{-1}$ --- ограниченный оператор, а $G^{-1}$ имеет 
+обратный, 
+равный оператору $G$, то существует обратный оператор $K^{-1}:Y\to X$ 
+и справедливы представления $M^{-1}=K^{-1}G$, $K^{-1}=M^{-1}G^{-1}$. 
+Отсюда находим неравенства 
+$$ 
+\|K^{-1}\|=\|M^{-1}G^{-1}\|\le 
+\|M^{-1}\|\,\|G^{-1}\|<\infty, 
+$$ 
+из которых следует требуемое утверждение. 
+\end{pf} 
+ 
+Обозначим через $\Phi=C^2[-1,1]$ пространство дважды непрерывно 
+дифференцируемых на $[-1,1]$ функций, удовлетворяющих условиям 
+(2); норму в $\Phi$ определим по формуле 
+$$ 
+\|\varphi\|_\Phi=\max_{-1\le t\le1}|\varphi''(t)|,\quad \varphi\in\Phi. 
+$$ 
+Через $Y=C[-1,1]$ обозначим пространство всех непрерывных на 
+$[-1,1]$ функций с обычной нормой. 
+ 
+\begin{lem} 
+Для любой функции $\varphi\in\Phi$ справедливы неравенства 
+\begin{gather} 
+\|\varphi\|_F\le2\|\varphi'\|_F\le4\|\varphi\|_\Phi, \\ 
+% 
+\|\varphi'\|_F\le2\|\varphi\|_\Phi. 
+\end{gather} 
+\end{lem} 
+ 
+\begin{cornonum} 
+Для любой функции $\varphi\in\Phi$ справедливы неравенства 
+$$ 
+|\varphi'(\pm1)|\le\|\varphi'(t)\|_F\le2\|\varphi\|_\Phi. 
+$$ 
+\end{cornonum} 
+ 
+\begin{pf} 
+В силу условия (2) любая функция $\varphi\in\Phi$ представима в виде 
+$$ 
+\varphi(t)=\int^t_{-1}\varphi'(\xi)d\xi=-\int^1_t 
+\varphi'(\xi)d\xi. 
+$$ 
+Отсюда, оценивая по модулю, равномерно относительно $t\in[-1,1]$ 
+получаем 
+$$ 
+|\varphi(t)|=\bigg|\int^t_{-1}\varphi'(\xi)d\xi\bigg|\le 
+\int^1_{-1}|\varphi'(\xi)|d\xi\le\max_{-1\le\xi\le1} 
+|\varphi'(\xi)|\int^1_{-1}d\xi\le2\|\varphi'\|_C. 
+$$ 
+Поэтому $\|\varphi\|_F\le2\|\varphi'\|_F$, $\varphi\in\Phi$. 
+ 
+Ввиду условий (2) по теореме Ролля для любой функции $\varphi\in\Phi$ 
+существует такая точка $\eta\in(-1,1)$, что $\varphi'(\eta)=0$. Тогда 
+$$ 
+\varphi'(t)=\int^t_\eta \varphi''(\xi)d\xi,\quad \varphi\in\Phi. 
+$$ 
+Оценивая по модулю, имеем 
+$$ 
+|\varphi'(t)|\le\bigg|\int^t_\eta|\varphi''(\xi)|d\xi\bigg|\le 
+2\|\varphi''\|_F=2\|\varphi\|_\Phi,\quad t\in[-1,1]. 
+$$ 
+Из полученных неравенств следуют оценки (9) и (10). 
+\end{pf} 
+ 
+\begin{lem} 
+Для любой функции $\varphi\in\Phi$ и любых $\delta\in(0,2]$ справедливы 
+неравенства 
+\begin{gather} 
+\omega(\varphi;\delta)\le\delta\|\varphi'\|_F\le2\delta 
+\|\varphi\|_\Phi, \\ 
+% 
+\omega(\varphi';\delta)\le\delta\|\varphi\|_\Phi,\quad 0<\delta\le2, 
+\end{gather} 
+где $\omega(\psi;\delta)$ --- модуль непрерывности функции $\psi\in 
+C[-1,1]$ с шагом $\delta\in(0,2]$. 
+\end{lem} 
+ 
+\begin{pf} 
+Пусть $t',t''\in[-1,1]$, причем $|t'-t''|\le\delta\le2$ и 
+$\varphi\in\Phi$. Тогда, используя теорему Лагранжа о конечных 
+приращениях, 
+для любой функции $\varphi\in\Phi$ находим 
+\begin{equation} 
+|\varphi(t')-\varphi(t'')|=|\varphi'(\xi)(t'-t'')|\le 
+\delta\|\varphi'\|_F, 
+\tag{$11'$} 
+\end{equation} 
+где $\xi\in[-1,1]$. Отсюда следует первая часть неравенств (11). Для 
+производной $\varphi'(t)$ функции $\varphi\in\Phi$ аналогично находим 
+\begin{equation} 
+|\varphi'(t')-\varphi'(t'')|=|\varphi''(\eta)(t'-t'')|\le 
+\delta\|\varphi''\|_F=\delta\|\varphi\|_\Phi,\quad 
+\eta\in(-1,1). 
+\tag{$12'$} 
+\end{equation} 
+Отсюда следуют неравенство (12) и вторая часть неравенств (11). 
+ 
+Таким образом, из неравенств $(11')$ и $(12')$ и леммы 2 следуют 
+оценки (11) и (12). 
+\end{pf} 
+ 
+\begin{lem} 
+Для любой функции $\varphi\in\Phi$ справедливы следующие 
+представления\/${:}$ 
+\begin{align} 
+S_0(\varphi;t)&\equiv\frac{1}{\pi}\int^{+1}_{-1} 
+\frac{\varphi(\tau)d\tau}{\tau-t}=-\frac{1}{\pi}\int^1_{-1} 
+\ln|\tau-t|\varphi'(\tau)d\tau,\quad -1\le t\le1; \\ 
+% 
+S_1(\varphi;t)&\equiv\frac{1}{\pi}\int^1_{-1} 
+\frac{\varphi'(\tau)d\tau}{\tau-t}=-\frac{1}{\pi}\int^1_{-1} 
+\ln|\tau-t|\varphi''(\tau)d\tau+ \notag \\ 
+&\qquad +\frac{\varphi'(+1)\ln(1-t)+\varphi'(-1)\ln(1+t)} 
+{\pi},\quad -1<t<1. 
+\end{align} 
+\end{lem} 
+ 
+\begin{pf} 
+Формула (13) следует из леммы 1 [4] и условий 
+(2). Формула (14) доказывается тем же методом, что и лемма 1 из [4]. 
+\end{pf} 
+ 
+\begin{lem} 
+Для любой функции $\varphi\in\Phi$ и любых $\delta\in(0,2]$ справедливы 
+неравенства 
+\begin{gather} 
+\|S_0(\varphi;t)\|_F\le\frac{2}{\pi}\|\varphi'(t)\|_F\le 
+\frac{4}{\pi}\|\varphi\|_\Phi;\\ 
+% 
+\omega(S_0\varphi;\delta)\le\frac{2}{\pi}\delta 
+(1+|\ln\delta|)\|\varphi'(t)\|_F\le\frac{4}{\pi}\delta 
+(1+|\ln\delta|)\|\varphi\|_\Phi. 
+\end{gather} 
+\end{lem} 
+ 
+\begin{pf} 
+Для любой функции $\varphi\in\Phi$ с учетом формулы 
+(13) равномерно относительно $t\in[-1,1]$ имеем первую часть неравенства
+(15).
+ 
+Известно [5], что для любой функции $\psi\in C[0,1]$ и любого 
+$\delta\in(0,1]$ справедлива оценка 
+$$ 
+\omega\bigg(\int^1_0\ln|\sigma-s|\psi(\sigma)d\sigma;\delta\bigg)\le 
+2\delta(1-\ln\delta)\|\psi\|_{C[0,1]}. 
+$$ 
+Отсюда, из представления (13) и леммы 2 после несложных (но громоздких) 
+преобразований находим (16). 
+\end{pf} 
+ 
+\begin{cornonum} 
+Оператор $S_0:\Phi\to F$ вполне непрерывен. 
+\end{cornonum} 
+ 
+\begin{pf} 
+Пусть $D=D(0,1)$ --- единичный шар пространства $\Phi$ 
+с центром в начале координат. Тогда из лемм 2 и 5 для любой 
+функции $\varphi\in D$ находим 
+\begin{gather*} 
+\|S_0\varphi\|_F\le\frac{4}{\pi}, \\ 
+\omega(S_0\varphi;\delta)\le4\delta(1+|\ln\delta|),\quad 
+\delta\in(0,2]. 
+\end{gather*} 
+Из двух последних неравенств видно, что функции множества 
+$\{S_0(\varphi;t):\varphi\in D\subset\Phi\}$ равномерно ограничены и 
+равностепенно непрерывны, 
+а следовательно, в силу известной теоремы Арцела [2] 
+утверждение следствия становится очевидным. 
+\end{pf} 
+ 
+ 
+\begin{lem} 
+Для любой функции $\varphi\in\Phi$ и любых $\delta\in(0,2]$ справедливы 
+неравенства 
+\begin{gather} 
+\bigg\|S_1(\varphi;t)-\frac{\varphi'(+1)\ln(1-t)-\varphi'(-1) 
+\ln(1+t)}{\pi}\bigg\|_F\le\frac{2}{\pi} 
+\|\varphi(t)\|_\Phi, \\ 
+% 
+\omega\bigg(S_1(\varphi;t)-\frac{\varphi'(+1)\ln(1-t) 
+-\varphi'(-1)\ln(1+t)}{\pi};\delta\bigg)\le\frac{2}{\pi} 
+\delta(1+|\ln\delta|)\|\varphi\|_\Phi. 
+\end{gather} 
+\end{lem} 
+ 
+\begin{pf} 
+В силу леммы 4 для любой функции $\varphi\in\Phi$ 
+справедливо 
+$$ 
+\psi(t)\equiv S_1(\varphi;t)- 
+\frac{\varphi'(+1)\ln(1-t)-\varphi'(-1)\ln(1+t)}{\pi}= 
+\frac{1}{\pi}\int^1_{-1}\ln|\tau-t|\varphi''(\tau)d\tau. 
+$$ 
+Отсюда, рассуждая так же, как при доказательстве леммы 5, и используя 
+лемму 2, выводим неравенства (17) и (18). 
+\end{pf} 
+ 
+\begin{lem} 
+Пусть $d(t)\in H_\alpha$ $(0<\alpha\le1)$ и $d(\pm1)=0$. Тогда 
+для функций $d_1(t)=d(t)\ln(1-t)$ и $d_2=d(t)\ln(1+t)$ 
+справедливы соотношения 
+\begin{gather*} 
+d_1(t)\in H_{\alpha-\varepsilon}[-1,1]\ \ \text{и}\ \ 
+|d_1(t)|\le M_1|1-t|^{\alpha-\varepsilon},\ \ -1\le t\le1;\\ 
+% 
+d_2(t)\in H_{\alpha-\varepsilon}[-1,1]\ \ \text{и}\ \ 
+|d_2(t)|\le M_2|1+t|^{\alpha-\varepsilon},\ \ -1\le t\le1, 
+\end{gather*} 
+где $\varepsilon$ --- сколь угодно малое положительное число, а $M_i$ --- 
+положительные постоянные, не зависящие от $t\in[-1,1]$. 
+\end{lem} 
+ 
+{\bf Доказательство} приведем для функции $d_1(t)$, случай функции 
+$d_2(t)$ доказывается аналогично. 
+ 
+Функция $d_1(t)$ определена всюду, за исключением точки $t=+1$. В 
+этой точке можно определить ее как 
+$$ 
+d_1(1)=\lim_{t\to1-0}d_1(t)=0, 
+$$ 
+т.\,к. для любых $t\in[-1,1]$ 
+$$ 
+0\le|d_1(t)|=|d(t)\ln(1-t)|=|d(t)-d(1)|\,|\ln(1-t)|\le 
+H(d;\alpha)|t-1|^\alpha\frac{K_1}{(1-t)^\varepsilon}= 
+M_1|1-t|^{\alpha-\varepsilon}, 
+$$ 
+где $\varepsilon$ --- сколь угодно малое положительное число, не зависящее 
+от $t$, 
+$K_1$ --- положительная постоянная, не зависящая от $t$ и $\varepsilon$, 
+$H(d;\alpha)$ --- 
+наименьшая постоянная условия Г\"ельдера функции $d\in H_\alpha$ при 
+данном $\alpha\in(0,1]$. 
+ 
+B силу $d_1(t)\in H_\alpha[-1,1]$ для точки $t'=1$ и любой точки 
+$t''=t\in[-1,1]$ 
+имеем 
+$$ 
+|d_1(t')-d_1(t'')|=|d_1(t)|\le M_1(1-t)^{\alpha-\varepsilon} 
+=M_1|t'-t''|^{\alpha-\varepsilon}.\quad\square 
+$$ 
+ 
+ 
+\section{Обоснование метода} 
+ 
+Для вычислительной схемы (1)--(7) справедлива 
+ 
+\begin{thm} 
+Пусть выполняются следующие условия\/${:}$ 
+ 
+$1)$ $a(t),b(t),c(t),f(t)\in C[-1,1]$, $d(t)\in H_\alpha$ 
+$(0<\alpha\le1)$, $d(\pm1)=0;$ 
+ 
+$2)$ краевая задача $(1)$, $(2)$ имеет единственное решение 
+$\varphi^*\in\Phi$ 
+при любой правой части $f\in C[-1,1]$. 
+ 
+Тогда {\em СЛАУ} $(5)$--$(7)$ однозначно разрешима относительно постоянных 
+$\alpha_{ki}$ $(k=\ov{1,n}$,\linebreak $i=0,1,2,3)$.
+Приближенные решения $(4)$ сходятся 
+к точному решению $\varphi^*$ задачи $(1)$, $(2)$ в пространстве $\Phi$ со 
+скоростью 
+\begin{equation} 
+\|\varphi^*-\varphi_n\|_\Phi=O\{\omega(f;\tfrac{1}{n})+\omega 
+(a;\tfrac{1}{n})+\omega(b;\tfrac{1}{n})+ 
+% 
+\omega(c;\tfrac{1}{n})+\omega(d_1;\tfrac{1}{n})+ 
+\omega(d_2;\tfrac{1}{n})+\tfrac{1}{n}\}. 
+\end{equation} 
+\end{thm} 
+ 
+\begin{pf} 
+Запишем краевую задачу (1), (2) в виде эквивалентного 
+ей линейного операторного уравнения 
+\begin{equation} 
+A\varphi\equiv G\varphi+T\varphi=f\quad 
+(\varphi\in\Phi,\ \; f\in F), 
+\end{equation} 
+где 
+\begin{gather} 
+G\varphi=\varphi''(t),\ \ T\varphi=U\varphi+V\varphi, 
+\ \ U\varphi=a(t)\varphi'(t)+b(t)\varphi(t),\notag \\ 
+% 
+V\varphi=c(t)S_0(\varphi;t)+d(t)S_1(\varphi;t). 
+\end{gather} 
+Нетрудно показать, что оператор $G:\Phi\to F$ непрерывно обратим и 
+для операторов $G$ и $G^{-1}$ справедливы равенства 
+$$ 
+\|G\|_{\Phi\to F}=1,\quad \|G^{-1}\|_{F\to\Phi}=1. 
+$$ 
+ 
+Введем подпространства, необходимые в дальнейшем. Пусть 
+$F_n{=}\Big\{\sum\limits^n_{k=0}\beta_k s_k(t):
+\beta_k\in\Bbb R\Big\}{\subset} F$ --- 
+множество всех сплайнов первой степени 
+с узлами (3); здесь $s_k(t)$ --- фундаментальные сплайны первой степени 
+на сетке узлов (3): 
+$$ 
+s_k(t)= 
+\begin{cases} 
+0, & t\le t_{k-1}; \\ 
+\frac{t-t_{k-1}}{t_k-t_{k-1}}, & t_{k-1}\le t\le t_k; \\ 
+\frac{t_{k+1}-t}{t_{k+1}-t_k}, & t_k\le t\le t_{k+1}; \\ 
+0, & t\ge t_{k+1}, 
+\end{cases} 
+$$ 
+где при $k=0$ и $k=n$ пренебрегаем первыми двумя и соответственно 
+последними двумя звеньями функций $s_0(t)$ и $s_n(t)$. 
+ 
+Пусть $\Phi_n\subset\Phi$ --- множество всех кубических сплайнов вида (4). 
+Очевидно, 
+$$ 
+\dim F_n=\dim \Phi_n=n+1<\infty. 
+$$ 
+ 
+Введем оператор 
+$$ 
+P_n(\psi;t)=\sum^n_{k=0}\psi(t_k)s_k(t),\ \ \psi\in F, 
+$$ 
+проектирующий пространство $F$ в подпространство $F_n$, 
+где узлы определены по формуле (3). Известно, что $P_n$ --- линейный 
+проекционный оператор, причем для любой функции $\psi\in C[-1,1]$ 
+справедливо неравенство 
+\begin{equation} 
+\|\psi(t)-P_n\psi(t)\|_F\le2\omega(\psi,\tfrac{1}{n}). 
+\end{equation} 
+ 
+Запишем СЛАУ (5)--(7) в виде эквивалентного ей операторного 
+уравнения 
+\begin{equation} 
+A_n\varphi_n\equiv P_n A\varphi_n=P_n G\varphi_n+ 
+P_n T\varphi_n=P_n f\quad (\varphi_n\in\Phi_n,\ \ P_n f\in F_n). 
+\end{equation} 
+Поскольку $P^2_n=P_n$, a $G\varphi_n\in F_n$ для любых функций 
+$\varphi_n\in\Phi_n$, то 
+уравнение (23) эквивалентно уравнению 
+\begin{equation} 
+A_n\varphi_n\equiv G\varphi_n+P_n T\varphi_n=P_n f\quad 
+(\varphi_n\in\Phi_n,\ \ P_n f\in F_n). 
+\end{equation} 
+ 
+Докажем близость операторных уравнений (20) и (24) ([3], гл.\,1) 
+Для их правых частей в силу условия 1) доказываемой 
+теоремы и неравенства (22) справедливы соотношения 
+$$ 
+\delta_n\equiv\|f-P_n f\|_F\le2\omega(f;\tfrac{1}{n})\to0, 
+\ \ n\to\infty. 
+$$ 
+ 
+В дальнейшем понадобится полная непрерывность 
+оператора $T:\Phi\to F$, определенного формулами (21). 
+ 
+С помощью лемм 2 и 3 для любой функции $\varphi\in D\subset\Phi$ и любых 
+$\delta\in(0,2]$ находим следующие неравенства: 
+\begin{align} 
+\|U\varphi\|_F&\le \|a\|_F\|\varphi\|_F+\|b\|_F\|\varphi'\|_F\le\notag \\ 
+&\le2\|\varphi\|_\Phi(2\|a\|_F+\|b\|_F)\le2(2\|a\|_F+\|b\|_F); \\ 
+% 
+\omega(U\varphi;\delta)&\le\omega(a;\delta)\|\varphi\|_F+ 
+\|a\|_F\,\omega(\varphi;\delta)+\omega(b;\delta) 
+\|\varphi'\|_F+\|b\|_F\,\omega(\varphi';\delta)\le\notag \\ 
+&\le[\omega(a;\delta)4\|\varphi\|_\Phi+\|a\|_F\,2\delta 
+\|\varphi\|_\Phi]+[\omega(b;\delta)2\|\varphi\|_\Phi+ 
+\|b\|_F\,\delta\|\varphi\|_\Phi]\le\notag \\ 
+&\le4\omega(a;\delta)+2\delta\|a\|_F+2\omega(b;\delta) 
++\delta\|b\|_F\le\varepsilon_1(\delta), 
+\end{align} 
+где 
+\begin{equation} 
+\varepsilon_1(\delta)=2\delta[\|a\|_F+\|b\|_F]+ 
+4[\omega(a;\delta)+\omega(b;\delta)]\to0, 
+\ \ \delta\to+0. 
+\end{equation} 
+Из соотношений (25)--(27) следует, что оператор $U:\Phi\to F$ является 
+вполне непрерывным. 
+ 
+Теперь для любых $\varphi\in D\subset\Phi$ и любых $\delta\in(0,2]$ с 
+помощью лемм 2 и 5 находим 
+\begin{gather} 
+\|c(t)S_0(\varphi;t)\|_F\le\|c\|_F\|S_0\varphi\|_F\le 
+\|c\|_F\frac{2}{\pi}\|\varphi'\|_F\le\frac{4}{\pi} \|c\|_F; \\ 
+% 
+\omega(c S_0\varphi;\delta)\le\omega(c;\delta) 
+\|S_0\varphi\|_F+\|c\|_F\,\omega(S_0\varphi;\delta)\le 
+\varepsilon_2(\delta), 
+\end{gather} 
+где 
+\begin{equation} 
+\varepsilon_2(\delta)=\frac{2}{\pi}\delta(1+|\ln\delta|) 
+\|c\|_F+\frac{4}{\pi}\omega(c;\delta)\to0,\ \ \delta\to+0. 
+\end{equation} 
+Из соотношений (28)--(30) и теоремы Арцела [2] следует компактность 
+оператора $c S_0:\Phi\to F$. 
+ 
+С помощью лемм 2, 4--7 для любой функции $\varphi\in D\subset\Phi$ и любых 
+$\delta\in(0,2]$ находим 
+\begin{align} 
+\|d S_1\varphi\|_F&\le\|d\|_F\bigg\|\frac{1}{\pi}\int^1_{-1} 
+\ln|\tau-t|\varphi''(\tau)d\tau\bigg\|_F+\notag \\ 
+&+\frac{|\varphi'(+1)|}{\pi}\|d_1(t)\|_F+ 
+\frac{|\varphi'(-1)|}{\pi}\|d_2(t)\|_F\le \|d\|_F\, 
+\frac{2}{\pi}\|\varphi''\|_F+\notag \\ 
+&+\frac{2\|\varphi\|_\Phi}{\pi}M_1\,2^{\alpha-\varepsilon} 
++\frac{2\|\varphi\|_\Phi}{\pi}M_2\,2^{\alpha-\varepsilon}\le 
+\frac{2}{\pi}(M_1+M_2)+\frac{2}{\pi}\|d\|_F;\\ 
+% 
+\omega(d S_1\varphi;\delta)&\le \omega\bigg(\frac{1}{\pi} 
+\int^1_{-1}\ln|\tau-t|\varphi''(\tau)d\tau;\delta\bigg)+\notag \\ 
+&+\frac{|\varphi'(+1)|}{\pi}\omega(d_1;\delta)+ 
+\frac{|\varphi'(-1)|}{\pi}\omega(d_2;\delta)\le\frac{2}{\pi} 
+\delta(1+|\ln\delta|)+\notag \\ 
+&+\frac{2}{\pi}\omega(d_1;\delta)+\frac{2}{\pi} 
+\omega(d_2;\delta)\le\varepsilon_3(\delta), 
+\end{align} 
+где 
+\begin{equation} 
+\varepsilon_3(\delta)=\frac{2}{\pi}\delta(1+|\ln\delta|)+ 
+\frac{2}{\pi}\delta^{\alpha-\varepsilon}[H(d_1; 
+\alpha-\varepsilon)+H(d_2;\alpha-\varepsilon)]\to0 
+\end{equation} 
+при $\delta\to+0$. Из соотношений (31)--(33) следует, что оператор $d 
+S_1:\Phi\to F$ вполне непрерывен. 
+ 
+Итак, из только что приведенных результатов для операторов $U$ 
+и $V$ получаем, что для любых $\varphi\in D\subset\Phi$ и $\delta\in(0,2]$ 
+справедливы неравенства 
+\begin{gather} 
+\|T\varphi\|_F\le c_1<\infty, \\ 
+% 
+\omega(T\varphi;\delta)\le c_2\varepsilon(\delta),\quad 
+\delta\to+0, 
+\end{gather} 
+где $c_1$ и $c_2$ --- положительные постоянные, не зависящие от 
+$\delta\in(0,2]$ и 
+$\varphi\in D\subset\Phi$, а в силу (27), (30), (33) 
+$$ 
+\varepsilon(\delta)=\varepsilon_1(\delta)+ 
+\varepsilon_2(\delta)+\varepsilon_3(\delta)\to0,\quad 
+\delta\to+0. 
+$$ 
+Отсюда и из теоремы Арцела [3] следует полная непрерывность 
+оператора $T:\Phi\to F$. Тогда в силу условия 2) доказываемой 
+теоремы и из леммы 1 следует, что оператор $A:\Phi\to F$, 
+определенный формулами (20), (21), непрерывно обратим. 
+ 
+Теперь докажем, что операторы $A_n:\Phi_n\to F_n$ аппроксимируют 
+оператор $A:\Phi_n\to F$. Для всех $\varphi_n\in\Phi_n$, $\varphi_n\ne0$, 
+в силу (20), (24) и (34), (35) находим 
+\begin{multline*} 
+\|A\varphi_n-A_n\varphi_n\|_F=\|G\varphi_n+T\varphi_n- 
+(G\varphi_n+P_n T\varphi_n)\|_F= \\ 
+% 
+=\|T\varphi_n-P_n T\varphi_n\|_F\le2\omega 
+(T\varphi_n;\tfrac{1}{n})\le2c_2\varepsilon(\tfrac{1}{n}) 
+\|\varphi_n\|_\Phi. 
+\end{multline*} 
+Тогда 
+$$ 
+\varepsilon_n\equiv\|A-A_n\|_{\Phi_n\to F}\le2c_2\varepsilon 
+(\tfrac{1}{n})\to0,\ \ n\to\infty. 
+$$ 
+Поэтому в силу теоремы 7 ([3], гл.\,1) для любых $n\in\Bbb N$, 
+удовлетворяющих неравенству 
+$$ 
+q_n=\|A^{-1}\|\varepsilon_n<1, 
+$$ 
+операторы $A_n:\Phi_n\to F$ непрерывно обратимы и обратные операторы 
+ограничены по норме в совокупности 
+$$ 
+\|A^{-1}_n\|\le c_3<\infty, 
+$$ 
+где $c_3$ --- положительная постоянная, не зависящая от $n$. Поэтому 
+уравнение (24), а следовательно, эквивалентная ему СЛАУ (5)--(7) 
+однозначно разрешимы при любых правых частях. 
+ 
+Согласно теоремe 7 ([3], гл.\,1) приближенные решения $\varphi_n$ 
+сходятся 
+к точному решению $\varphi^*$ в пространстве $\Phi$ со скоростью 
+$\|\varphi^*-\varphi_n\|_\Phi=O(\varepsilon_n+\delta_n)$, откуда следует 
+(19). 
+\end{pf} 
+ 
+ 
+\begin{thm} 
+В условиях теоремы $1$ приближенные решения $(4)$ 
+сходятся к точному решению задачи $(1)$, $(2)$ в пространстве $\Phi$ со 
+скоростью 
+\begin{equation} 
+\|\varphi^*-\varphi_n\|_\Phi=O\{\|\varphi^*{}''-P_n\varphi^*\|_F\}= 
+O\{\omega(\varphi^*{}'';\tfrac{1}{n})\}. 
+\end{equation} 
+\end{thm} 
+ 
+\begin{cor} 
+Пусть задача (1), (2) такова, что для ее решения 
+выполняется условие\linebreak $\varphi^*{}''\in H_\alpha$. 
+Тогда метод сходится со скоростью 
+$$ 
+\|\varphi^*-\varphi_n\|_\Phi=O(\tfrac{1}{n^\alpha}),\quad 
+0<\alpha\le1. 
+$$ 
+\end{cor} 
+ 
+\begin{cor} 
+Если существует ограниченная третья производная 
+$\varphi^*{}'''$, то метод (1)--(7) сходится со скоростью 
+$$ 
+\|\varphi^*-\varphi^*_n\|_\Phi=O(\tfrac{1}{n}). 
+$$ 
+\end{cor} 
+ 
+\begin{pf} 
+В ходе доказательства теоремы 1 установлено, 
+что операторы\linebreak $A_n:\Phi_n\to F_n$ 
+непрерывно обратимы и обратные операторы 
+$A^{-1}_n:F_n\to\Phi_n$ ограничены по норме в совокупности. Поэтому 
+из теоремы 6 гл.\,1 общей теории приближенных методов функционального 
+анализа [3] следует оценка (36). Отсюда и из результатов 
+теории приближения сплайнами [1] получим утверждения следствий 1 и 2. 
+\end{pf} 
+ 
+Из теоремы 2 и теории приближения сплайнами первой степени 
+легко выводятся следующие утверждения. 
+ 
+\begin{thm} 
+Пусть коэффициенты уравнения $(1)$ таковы, что 
+точное решение задачи $(1)$, $(2)$ удовлетворяет условию 
+$\varphi^*{}'''\in C[-1,1]$. 
+ 
+Тогда в условиях теоремы $1$ метод сплайн-коллокаций сходится 
+со скоростью 
+$$ 
+\|\varphi^*-\varphi^*_n\|=\tfrac{1}{n}O\{\omega(\varphi^*{}'''; 
+\tfrac{1}{n})\}. 
+$$ 
+\end{thm} 
+\addtocounter{cor}{-2}
+ 
+\begin{cor} 
+Пусть задача (1), (2) такова, что ее решение имеет 
+третью производную из $H_\alpha$ ($0<\alpha\le1$). 
+ 
+Тогда метод сходится со скоростью 
+$$ 
+\|\varphi^*-\varphi^*_n\|_\Phi=O(\tfrac{1}{n^{1+\alpha}}),\quad 
+0<\alpha\le1. 
+$$ 
+\end{cor} 
+ 
+\begin{cor} 
+Если существует ограниченная производная $\varphi^*{}^{\mathrm{IV}}(t)$, 
+то метод сходится со скоростью 
+$$ 
+\|\varphi^*-\varphi^*_n\|_\Phi=O(\tfrac{1}{n^2}).
+$$ 
+\end{cor} 
+ 
+ 
+\section{Заключение} 
+ 
+$1^0$. Результаты, аналогичные приведенным выше, справедливы также 
+для начальной задачи 
+\begin{equation} 
+\varphi(-1)=\varphi'(-1)=0 
+\tag{$2'$} 
+\end{equation} 
+для уравнения (1). Например, имеет место 
+\medskip 
+ 
+ 
+{\bf Теорема $\bold 1'$.} {\it Пусть выполняются следующие условия\/${:}$
+ 
+$1)$ $a(t),b(t),f(t)\in C[-1,1]$ и $c(t),d(t)\in H_\alpha$, 
+$c(+1)=d(+1)=0$, $0<\alpha\le1;$ 
+ 
+$2)$ задача Коши $(1)$, $(2')$ имеет единственное решение $\varphi^*\in 
+C^2[-1,1]$ при любой правой части $f\in C[-1,1]$. 
+ 
+Тогда {\em СЛАУ} $(5)$, $(7)$, $\varphi_n(-1)=\varphi'_n(-1)=0$ однозначно 
+разрешима 
+и приближенные решения $(4)$ сходятся к точному решению со 
+скоростью 
+$$ 
+\|\varphi^*-\varphi_n\|_{C^2}=O\{\omega(f;\tfrac{1}{n})+\omega 
+(a;\tfrac{1}{n})+\omega(b;\tfrac{1}{n})+\omega 
+(c_1;\tfrac{1}{n})+\omega(d_1;\tfrac{1}{n})+\tfrac{1}{n}\}, 
+$$ 
+где 
+$$ 
+c_1(t)=c(t)\ln(1-t),\quad d_1(t)=d(t)\ln(1-t). 
+$$ 
+} 
+ 
+ 
+Теорема $1'$ доказывается по схеме доказательства теоремы 1. 
+Однако при этом в приведенные выше леммы необходимо внести изменения, 
+которые связаны с начальными условиями $(2')$. Так, 
+для любой функции $\varphi\in C^2[-1,1]$ справедливы представления 
+\begin{alignat*}{2} 
+S_0(\varphi;t)&=\frac{1}{\pi}\int^1_{-1}\ln|\tau-t| 
+\varphi'(\tau)d\tau+ 
+\frac{\varphi(+1)\ln(1-t)}{\pi}, &\quad &-1\le t<1; \\ 
+% 
+S_1(\varphi;t)&=\frac{1}{\pi}\int^1_{-1}\ln|\tau-t| 
+\varphi''(\tau)d\tau+\frac{\varphi'(+1)\ln(1-t)}{\pi},&\quad 
+&-1\le t<1; 
+\end{alignat*} 
+здесь $C^2[-1,1]$ --- пространство дважды непрерывно дифференцируемых 
+на $[-1,1]$ функций, удовлетворяющих условиям $(2')$, где норма 
+вводится как и выше. 
+Это повлекло за собой корректировку условий на функции $c(t)$ и 
+$d(t)$. 
+ 
+$2^0$. Результаты, полученные выше для краевой задачи (1), (2) и 
+задачи Коши (1), $(2')$, легко переносятся на общую двухточечную краевую 
+задачу (1), 
+\begin{align*} 
+\beta_0\varphi(-1)+\beta_1\varphi'(-1)&=B,\\ 
+\gamma_0\varphi(+1)+\gamma_1\varphi'(+1)&=\Gamma, 
+\end{align*} 
+где $\beta_0$, $\beta_1$, $\gamma_0$, $\gamma_1$, $B$, $\Gamma$ --- вполне 
+определенные постоянные, причем 
+$$ 
+\beta^2_0+\beta^2_1>0,\quad \gamma^2_0+\gamma^2_1>0. 
+$$ 
+ 
+\begin{thebibliography}{9} 
+ 
+\bibitem{1} 
+Корнейчук Н.П. {\em Сплайны в теории приближения}. -- М.: Наука, 
+1984. -- 352 с. 
+\bibitem{2} 
+Канторович Л.В., Акилов Г.П. {\em Функциональный анализ}. -- М.: 
+Наука, 1977. -- 742 с. 
+\bibitem{3} 
+Габдулхаев Б.Г. {\em Оптимальные аппроксимации решений линейных 
+задач}. -- Казань: Изд-во Казанск. ун-та, 1980. -- 232 с. 
+\bibitem{4} 
+Самойлова Э.Н. {\em Сплайновые приближения решения сингулярного 
+интегродифференциального уравнения} // Изв. вузов. 
+Математика. -- 2001. -- \No\,11. -- С.\,35--45. 
+\bibitem{5} 
+Горлов В.Е. {\em Прямые методы решения нелинейных сингулярных 
+интегральных уравнений}: Дис. $\dotsc$ канд. физ.-матем. наук. -- Казань, 
+1977. -- 150 с. 
+ 
+ 
+\end{thebibliography} 
+ 
+\vskip 2cm 
+ 
+\post{\it Казанский государственный}{\it Поступила} 
+\post{\it университет}{13.02.2002} 
+ 
+\label{end} 
+\end{document} 
+
+
+$$ 
+|S_0(\varphi;t)|\le\frac{1}{\pi}\int^1_{-1} 
+\big|\ln|\tau-t|\big|\,|\varphi'(\tau)|d\tau\le\frac{1}{\pi} 
+\|\varphi'(\tau)\|_F\max_{-1\le t\le1}\int^1_{-1} 
+\big|\ln|\tau-t|\big|d\tau\equiv\frac{1}{\pi} 
+\|\varphi'\|_F\|J(t)\|_F, 
+$$ 
+где 
+$$ 
+J(t)=\int^1_{-1}\big|\ln|\tau-t|\big|d\tau=\int^{1-t}_{-1-t} 
+\big|\ln|t|\big|d\tau=\int^1_{-1}\big|\ln|t|\big|d\tau+ 
+\int^{-1}_{-1-t}\big|\ln|t|\big|d\tau+\int^{1-t}_1 
+\big|\ln|t|\big|d\tau=J_1(t)+J_2(t). 
+$$ 
+Ясно, что 
+\begin{align*} 
+J_1(t)&=-\int^1_{-1}\ln|\tau|d\tau=-2\int^1_0 
+\ln\tau\,d\tau=-2, \\ 
+% 
+J_2(t)&=\int^{-1}_{-1-t}\big|\ln|t|\big|d\tau+ 
+\int^{1-t}_1\big|\ln|t|\big|d\tau\le \\ 
+&\qquad \le \int^{-1}_{-2}\ln|\tau|d\tau+\int^2_1\ln\tau\,d\tau= 
+2\int^2_1\ln\tau\,d\tau=4\ln2-2. 
+\end{align*} 

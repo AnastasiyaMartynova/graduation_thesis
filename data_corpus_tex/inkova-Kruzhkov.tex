@@ -1,0 +1,679 @@
+
+\def\stat{inkova+kr}
+
+\def\tit{СТРУКТУРИРОВАННЫЕ ОПРЕДЕЛЕНИЯ ДИСКУРСИВНЫХ 
+ОТНОШЕНИЙ В~НАДКОРПУСНОЙ БАЗЕ ДАННЫХ КОННЕКТОРОВ$^*$}
+
+\def\titkol{Структурированные определения дискурсивных 
+отношений в~Надкорпусной базе данных коннекторов}
+
+\def\aut{О.\,Ю.~Инькова$^1$, М.\,Г.~Кружков$^2$}
+
+\def\autkol{О.\,Ю.~Инькова, М.\,Г.~Кружков}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\index{Инькова О.\,Ю.}
+\index{Кружков М.\,Г.}
+\index{Inkova O.\,Yu.}
+\index{Kruzhkov M.\,G.}
+
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
+{ Исследование выполнено с~использованием ЦКП <<Информатика>> ФИЦ ИУ РАН.}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Федеральный исследовательский центр <<Информатика 
+и~управление>> Российской академии наук, \mbox{olyainkova@yandex.ru}}
+\footnotetext[2]{Федеральный исследовательский центр <<Информатика 
+и~управление>> Российской академии наук, \mbox{magnit75@yandex.ru}}
+
+\vspace*{-10pt}
+
+
+
+    \Abst{Работа посвящена первым результатам разработки структурированных 
+определений дискурсивных отношений на основе их оригинальной классификации, а также 
+фиксации этих определений в~Надкорпусной базе данных коннекторов (НБД). Авторы 
+предлагают краткий обзор существующих подходов к~определению дискурсивных 
+отношений, а затем описывают принципы, на основе которых создаются структурированные 
+определения дискурсивных отношений в~НБД. Они включают (1)~базовую семантическую 
+операцию, на которую опирается ло\-ги\-ко-се\-ман\-ти\-че\-ское отношение (ЛСО): 
+импликация, расположение на шкале времени, сравнение, соотнесение частного и~общего 
+или элемента и~множества; (2)~уровень, на котором может быть установлено ЛСО: 
+пропозициональный уровень, уровень высказывания (иллокутивный), метаязыковой; 
+(3)~полярность, т.\,е.\ устанавливается ли ЛСО непосредственно между положениями 
+вещей~$p$ и~$q$, описанными в~связываемых им фрагментах текста, или же при его 
+интерпретации должны быть учтены также их отрицательные корреляты; (4)~семантические 
+и~прагматические характеристики контекста. Приводятся примеры структурированных 
+определений. Структурированные определения ЛСО фиксируются в~структуре НБД 
+с~по\-мощью набора взаимосвязанных таб\-лиц, отражающих четыре перечисленных типа 
+признаков. Кроме того, в~рамках таблицы Семейство (<<семейства>> различительных 
+признаков) фиксируется информация о концептуальной близости некоторых наборов 
+признаков. Описанная структура данных позволяет исчислять сходства и~различия ЛСО~--- 
+на сегодняшний день такая возможность не обеспечивается ни одним из существующих 
+корпусов, аннотированных с~точки зрения дискурсивных отношений.}
+    
+    
+    \KW{надкорпусная база данных; логико-семантические отношения; коннекторы; 
+аннотирование; фасетная классификация}
+    
+\DOI{10.14357/19922264210404}
+  
+\vspace*{-1pt}
+
+
+\vskip 10pt plus 9pt minus 6pt
+
+\thispagestyle{headings}
+
+\begin{multicols}{2}
+
+\label{st\stat}
+    
+\section{Классификации и~определения дискурсивных отношений: 
+существующие подходы}
+
+   Дискурсивные отношения и~их роль в~обеспечении связности текста 
+занимают умы ученых разных областей знаний уже не один десяток лет. 
+Напомним, что первые исследования, посвященные этому вопросу 
+и~выполненные с~целью обеспечения автоматической обработки текста, 
+появились в~середине 1970-х~гг.~[1--3]. Первая и~наиболее популярная 
+сегодня классификация дискурсивных, или, согласно данной теории, 
+риторических, отношений опубликована в~1988~г.~[4]. Лингвисты сразу же 
+увидели ее недостаток: риторические отношения определялись не на основе 
+языкового материала и~четких семантических критериев, а на основе интуиции 
+пишущего и~читающего. Это привело к~тому, что количество отношений, 
+выделяемых в~рамках данного подхода, может насчитывать от~80 до~170~[5], 
+что делает их трудно применимыми для аннотирования текста с~точки зрения 
+отношений связности. 
+   
+   С тех пор были предложены многочисленные классификации 
+дискурсивных, или, в~терминологии авторов статьи, логико-семантических, 
+отношений (см.\ обзор в~[6]), которые, однако, также имеют ряд недостатков. 
+Причин тому несколько. Прежде всего, неясным остается основание 
+классификаций, которое позволило бы определить семантическую близость 
+отношений и~возможность их объединения на этой основе в~классы; см., 
+например, классификацию, используемую в~Пенсильванском аннотированном 
+корпусе, которая регулярно пересматривается: последний ее вариант~[7] 
+значительным образом отличается от версии~2.0~[8]; подробнее о~различиях 
+между двумя вариантами см.~[9].
+{\looseness=-2
+
+}
+    
+   Еще один недостаток существующих классификаций заключается в~том, 
+что многие из них определяют отношения на основе семантики показателя 
+(коннектора), который считается прототипическим. Однако, с~одной стороны, 
+критерии выбора этого прототипического показателя неочевидны (см., 
+например, в~английском языке выбор \textit{but} для отношения Контраст 
+в~[10, 11] при наличии \textit{by contrast}). С~другой стороны, хорошо 
+известно, что коннекторы многозначны и~могут выражать несколько 
+отношений (ср.\ коннектор \textit{если}\ldots\ \textit{то}: \textit{Если завтра 
+будет тепло, то поедем купаться на озеро}~--- условные отношения; 
+\textit{Если цена на нефть осталась прежней, то газ сильно подорожал}~--- 
+сопоставительные отношения). Кроме того, дискурсивные отношения могут 
+не иметь показателя; ср.\ \textit{Будет тепло, поедем купаться на озеро}.
+   
+   Наконец, существующие классификации не имеют объяснительной силы. 
+В~част\-ности, они не могут объяснить, почему коннектор может выражать 
+определенный набор отношений, а~в~сопоставительном ключе~--- почему 
+коннектор одного семантического класса может служить переводным 
+эквивалентом коннектора другого семантического класса. Например, в~(1) 
+показатель отношения переформулирования \textit{то есть} переведен 
+показателем альтернативы \textit{ou} `или'.
+   \begin{enumerate}[(1)]
+   \item И в~эту минуту ему на голову упал сценический противовес. \textit{То 
+есть}, попросту говоря, брезентовый мешок килограммов на двенадцать.~--- 
+Au m$\hat{\mbox{e}}$me instant un contrepoids de sc$\grave{\mbox{e}}$ne lui 
+tomba sur la t$\hat{\mbox{e}}$te. \textit{Ou}, pour parler plus simplement, un sac de 
+toile d'une bonne douzaine de kilos. [С.~Довлатов. Иностранка (1986)~--- перевод 
+Jacques Michaut-Paterno (2001)]
+   \end{enumerate}
+   
+Чтобы отчасти преодолеть перечисленные недостатки, в~работе~[12] 
+предлагается определять отношения на основе набора семантических 
+признаков. Это позволяет увидеть общие семантические свойства у 
+отношений, которые в~разных классификациях носят разные названия 
+(подробнее см.~[13]). Число классифицирующих 
+признаков\footnote{Классифицирующих признаков всего четыре: 
+(1)~полярность (т.\,е.\ необходимо ли для интерпретации отношения 
+привлекать отрицание одного из соединяемых им положений вещей; 
+например, интерпретация уступительных отношений опирается на причинную 
+цепочку, которая считается нормальным развитием событий: \textit{Хотя 
+погода была хорошая, купаться мы не поехали} предполагает, что при 
+хорошей погоде \textit{мы едем купаться}, но в~данном случае этого не 
+произошло); (2)~базовая операция (аддитивная или причинная; например, как 
+было показано, причинная базовая операция лежит в~основе уступительных 
+отношений); (3)~источник связности (т.\,е.\ насколько говорящий вовлечен 
+в~устанавливаемое отношение; ср.\ два вида отношения альтернативы: 
+объективное \textit{При высокой температуре следует вызвать скорую или 
+обратиться к~лечащему врачу} и~субъективное \textit{Замолчи, или я~тебя 
+выгоню}, при котором говорящий предполагает, что ситуация \textit{я~тебя 
+выгоню} является нежелательной для слушающего); (4)~порядок следования 
+фрагментов текста (этот признак применяется только к~группе отношений, 
+основанных на причинной базовой операции, и~позволяет различать 
+следственные отношения, при которых следствие как хронологически, так 
+и~в~тексте следует за причиной, и~причинные отношения, при которых в~тексте 
+причина следует за следствием; ср.: \textit{Маша заболела, следовательно она 
+не придет} и~\textit{Маша не придет, потому что заболела}). Подробнее 
+см.~[13].} оказывается, однако, недостаточным для описания многообразия 
+дискурсивных отношений, поскольку некоторые отношения имеют 
+одинаковый набор признаков даже после введения дополнительных 
+классифицирующих признаков~[14]. Так, отношения спецификации (\textit{Он 
+любит книги, в~частности детективы}) и~генерализации (\textit{Он любит 
+детективы и~вообще любит читать}) имеют одинаковый набор не только 
+основных признаков (положительная полярность, аддитивная операция, 
+объ\-ек\-тив\-ный/субъ\-ек\-тив\-ный источник связности, признак порядка не 
+применяется), но и~дополнительный (specifity~--- `специфичность'). 
+
+\begin{table*}\small  %tabl1
+\begin{center}
+\Caption{Примеры структурированных определений ЛСО}
+\vspace*{2ex}
+
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Перифрастическое 
+переформулирование}}&\multicolumn{1}{c|}{\textbf{Метаязыковая альтернатива}}\\
+\hline
+\tabcolsep=0pt\begin{tabular}{l}
+--~операция сравнения, устанавливающая\\
+\hphantom{--~}сходство $p$ и~$q$\\
+--~метаязыковой уровень\\
+--~$p$~--- описание положения вещей $r$\\
+--~$q$~--- описания того же положения вещей $r$\\
+--~$p$ и~$q$ имеют одинаковый экстенсионал
+\end{tabular}&
+\tabcolsep=0pt\begin{tabular}{l}--~операция сравнения, устанавливающая\\ 
+\hphantom{--~}несходство $p$ и~$q$\\
+--~метаязыковой уровень\\
+--~$p$~--- возможное описание положения вещей $r$\\
+--~$q$~--- возможное описание того же положения вещей $r$\\
+--~говорящий предлагает сделать выбор между $p$ и~$q$
+\end{tabular}\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{2pt}
+\end{table*}
+\begin{figure*}[b] %fig1
+\vspace*{1pt}
+\begin{center}  
+\mbox{%
+\epsfxsize=154.85mm
+\epsfbox{ink-1.eps}
+}
+
+\vspace*{9pt}
+
+{\small Структурированное описание ЛСО (фрагмент схемы НБД)}
+
+\end{center}
+\end{figure*}
+
+
+
+\section{Классификация дискурсивных отношений, используемая 
+в~Надкорпусной базе данных коннекторов}
+
+   Классификация, используемая в~НБД,
+разработанной в~ИПИ ФИЦ ИУ РАН\footnote{Подробнее о структуре НБД, 
+ее возможностях и~результатах, полученных с~ее использованием, см., например, [15, 16]. 
+Представительный фрагмент НБД доступен по адресу: {\sf 
+http://a179.frccsc.ru/RFH41002/main.aspx}.}, принципиальным образом отличается от 
+существующих. 
+
+Во-пер\-вых, в~ее основу положены четыре базовые 
+семантические операции, или механизма, на которые опирается то или иное 
+ЛСО: импликация, расположение 
+на шкале времени, сравнение, соотнесение частного и~общего или элемента 
+и~множества. 
+   
+   
+   Во-вто\-рых, классификация различает уровни, на которых может быть 
+установлено ЛСО: пропозициональный уровень, уровень высказывания 
+(иллокутивный), метаязыковой; подробнее см.~[13]. 
+
+Каждое ЛСО может, 
+следовательно, определяться на основе этих двух критериев, к~которым 
+добавляется критерий, характеризующий ЛСО, основанные на импликации 
+и~сравнении: полярность,\linebreak т.\,е.\ устанавливается ли ЛСО непосредственно 
+между положениями вещей~$p$ и~$q$, описанными в~связываемых им 
+фрагментах текста, или же при его интерпретации должны быть учтены также 
+их \mbox{отрицательные} корреляты $\neg p$ и~$\neg q$. Наконец, учитываются 
+семантические и~прагматические характеристики контекста.
+   
+   Такая концепция классификации дискурсивных отношений позволяет 
+описывать их при помощи структурированных определений, представляющих 
+собой набор различительных признаков. Два таких определения~--- 
+перифрастического переформулирования и~метаязыковой альтернативы~--- 
+даны в~табл.~1 (другие определения см.\ в~\cite{9-in}).
+
+   Из определений видно, что эти два отношения имеют несколько общих 
+семантических признаков: оба они установлены в~результате операции 
+сравнения, на метаязыковом уровне, т.\,е.\ не между положениями вещей, 
+а~между описаниями одного и~того же положения вещей~$r$. Различия между 
+ними заключаются в~том, что в~случае переформулирования операция 
+сравнения устанавливает сходство описаний, а при альтернативе~--- 
+несходство, поэтому говорящий предлагает сделать между ними выбор. 
+Сходные семантические признаки объясняют, почему показатели 
+переформулирования и~метаязыковой альтернативы могут заменять друг 
+друга без нарушения связности текста (ср.\ вариант~(2) русского оригинала 
+примера~(1) c~\textit{или}), а~при переводе с~одного языка на другой~--- 
+переводить друг друга, как в~примере~(1).
+   \begin{enumerate}[(1)]
+   \setcounter{enumi}{1}
+\item И в~эту минуту ему на голову упал сценический противовес. 
+\textit{Или}, попросту говоря, брезентовый мешок килограммов на 
+двенадцать.
+   \end{enumerate}
+
+\section{Структурированные определения в~программном 
+обеспечении Надкорпусной базы данных}
+
+\vspace*{-14pt}
+   
+   Структурированные определения ЛСО фиксируются в~структуре НБД 
+   с~по\-мощью набора взаимосвязанных таблиц (см.\ соответствующий фрагмент 
+схемы НБД на рисунке). В~таблице \textbf{ЛСО} фиксируются неформальные 
+описания ЛСО с~отсылками к~соответствующим рубрикам фасетной 
+классификации, использующимся при аннотации переводных соответствий 
+в~НБД коннекторов. В~таблице \textbf{Признак} содержатся различительные 
+признаки, из комбинаций которых складываются структурированные 
+определения каждого ЛСО. Различительные признаки могут относиться 
+к~одному из типов, определения которых содержатся в~таблице \textbf{Тип}. 
+В~настоящее время в~этой таблице зафиксированы четыре типа признаков: 
+(1)~базовая операция, лежащая в~основе ЛСО; (2)~языковой уровень, на 
+котором устанавливается ЛСО; (3)~дополнительные  
+се\-ман\-ти\-че\-ские/праг\-ма\-ти\-че\-ские особенности; (4)~полярность 
+аргументов ЛСО. При не\-об\-хо\-ди\-мости в~дальнейшем набор типов признаков 
+может быть расширен.
+
+\begin{table*}\small %tabl2
+\begin{center}
+\Caption{Сопоставление структурированных описаний ЛСО в~структуре НБД}
+\vspace*{2ex}
+
+\tabcolsep=5pt
+\begin{tabular}{|p{48mm}|p{28mm}|p{48mm}|p{28mm}|}
+\hline
+\multicolumn{2}{|c|}{\textbf{ЛСО <<Пропозициональное 
+замещение>>}}&\multicolumn{2}{c|}{\textbf{ЛСО <<Замещение по дескриптивной 
+адекватности>>}}\\
+\hline
+\multicolumn{1}{|c|}{Признак}&\multicolumn{1}{c|}{\textit{Тип}}&
+\multicolumn{1}{c|}{Признак}&\multicolumn{1}{c|}{\textit{Тип}}\\
+\hline
+операция сравнения, уста\-нав\-ли\-ва\-ющая несходство $p$ и~$q$&\textit{базовая операция}&
+операция сравнения, уста\-нав\-ли\-ва\-ющая несходство~$p$~и~$q$&\textit{базовая операция}\\
+\hline
+пропозициональный уровень&\textit{уровень}&
+метаязыковой уровень&\textit{уровень}\\
+\hline
+$p$~--- положение вещей, осу\-ще\-ст\-в\-ле\-ние которого можно было бы ожидать&\textit{се\-ман\-ти\-ка/праг\-ма\-ти\-ка}&
+$p$~--- описание положения вещей~$r$, которое можно 
+было бы ожидать&\textit{семантика}/\textit{праг\-ма\-ти\-ка}\\
+\hline
+$q$~--- положение вещей, не со\-от\-вет\-ст\-ву\-ющее ожиданиям &\textit{семантика}/\textit{праг\-ма\-ти\-ка}&
+$q$~--- описание того же положения вещей~$r$, не со\-от\-вет\-ст\-ву\-ющее 
+ожиданиям&\textit{се\-ман\-ти\-ка/праг\-ма\-ти\-ка}\\
+\hline
+$p$ отвергается, принимается~$q$&\textit{полярность}&
+$p$ отвергается, принимается~$q$&\textit{полярность}\\
+\hline
+\end{tabular}
+\end{center}
+
+\end{table*}
+   
+Роль таблицы \textbf{Семейство} (<<семейства>> различительных признаков) 
+состоит в~том, чтобы фиксировать информацию о~концептуальной бли\-зости 
+некоторых наборов признаков. В~то время как \mbox{описания} различительных 
+признаков могут не совпадать, они могут вклю\-чать в~себя общие 
+концептуальные компоненты, благодаря которым различные ЛСО, 
+описывающиеся этими формально не совпадающими признаками, могут 
+оказываться семантически или функционально близкими. Например, 
+семейство признаков <<Семантика исключения>> включает в~себя 
+следующий набор признаков: 
+%\begin{enumerate}[(1)]
+%\item 
+(1)~$Y$ содержит указание на элемент~$q$, 
+ис\-клю\-ча\-емый из множества~$P$; 
+%\item %
+(2)~$Y$ содержит указание на элемент~$q$, 
+который надо исключить, чтобы признать истинным~$p$; 
+%\item %
+(3)~$p$ верно, 
+только если исключить осуществление~$q$\footnote{В описаниях признаков 
+строчные литеры~$p$ и~$q$ представляют собой пропозициональные компоненты, 
+связываемые данным ЛСО, а заглавные литеры $P$, $Q$, $X$ и~$Y$ представляют 
+собой отсылки к~множествам, задействованным в~ЛСО.}.
+%\end{enumerate}
+ Таким образом, сходство ЛСО может 
+определяться не только на основе наличия пол\-ностью совпадающих 
+признаков, но и~на основе принадлежности признаков различных ЛСО 
+к~одному и~тому же <<семейству>> признаков.
+   
+   Описанная структура данных уже позволяет выделять функциональные 
+   и~концептуальные группы ЛСО, а~так\-же в~предварительном при\-бли\-же\-нии 
+оценивать степень бли\-зости различных ЛСО. Например, в~табл.~2 
+представлены структурированные описания ЛСО <<Пропозициональное 
+замещение>> и~<<Замещение по дескриптивной аде\-кват\-ности>>. Каждое из 
+этих ЛСО описывается 5~признаками, из которых~2 совпадают, а~еще по 
+2~признака каж\-до\-го отношения относятся к~общему семейству <<компонент 
+ожидания>> (признаки, относящиеся к~типу \textit{се\-ман\-ти\-ка/праг\-ма\-ти\-ка}). 
+Таким образом, 4 из~5 компонентов описания обоих ЛСО 
+оказываются общими или концептуально близ\-ки\-ми, что свидетельствует 
+о~значительной бли\-зости от\-но\-ше\-ний.
+{\looseness=1
+
+}
+   
+   Кроме того, при ближайшем рассмотрении становится очевидно, что не 
+все различительные признаки в~равной мере влияют на близость опи\-сы\-ва\-емых 
+ими ЛСО. Например, признаки, относящиеся к~типу \textit{уровень}, вряд ли 
+могут считаться определяющими при выяснении близости соответствующих 
+отношений. В~связи с~этим в~таблицах \textbf{Признак} и~\textbf{Семейство} 
+также предусмотрены поля <<Коэффициент близости>>, в~которых в~будущем 
+предполагается фиксировать весовые коэффициенты, позволяющие более 
+точно определять степень близости между ЛСО. Значения этих весовых 
+коэффициентов у семейств и/или отдельных признаков будут соответствовать 
+степени влияния соответствующих признаков (или признаков, входящих 
+в~данное семейство) на близость описываемых ими отношений.
+
+\vspace*{-9pt}
+
+\section{Заключение}
+
+\vspace*{-3pt}
+
+   Используемые в~НБД структурированные определения ЛСО имеют, как 
+было показано, ряд преимуществ перед существующими. Во-пер\-вых, они 
+включают достаточный набор классифицирующих признаков, позволяющих 
+описывать ЛСО. Это, в~свою очередь, позволяет описывать семантические 
+свойства ЛСО вне зависимости от семантики показателей, которые его могут 
+выражать. Во-вто\-рых, как классификация ЛСО, так и~их определения 
+обладают объяснительной силой. Они позволяют, в~част\-ности, объяснить, 
+почему один и~тот же показатель может выражать несколько ЛСО и~каких 
+именно, а на основе семантических и~прагматических особенностей 
+фрагментов текста определить тот набор ЛСО, которые могут быть между 
+ними установлены. Наконец, фиксация структурированных определений ЛСО 
+в~структуре НБД с~помощью набора взаимосвязанных таблиц позволяет 
+количественно оценивать сходства и~различия ЛСО. На сегодняшний день 
+такая возможность не обеспечивается ни одним из существующих корпусов, 
+аннотированных с~точки зрения дискурсивных отношений. 
+   
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ %\addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-in}
+\Au{Hobbs J. R.} A~computational approach to discourse analysis. ~--- New York, NY, USA: 
+Department of Computer Science, City College, City University of New York, 1976. Research Report 76-2.
+P.~28--38.
+\bibitem{2-in}
+\Au{Hobbs J. R.} Why is discourse coherent?~--- Menlo Park, CA, USA: 
+SRI International, 1978. SRI Technical Note 176. 44~p.
+\bibitem{3-in}
+\Au{Hobbs J. R.} Coherence and coreference~// Cognitive Sci., 1979. Vol.~3. No.\,1. P.~67--90. 
+\bibitem{4-in}
+\Au{Mann W.\,C., Thompson~S.\,A.} Rhetorical structure theory: Towards a functional theory of text 
+organization~// Text, 1988. Vol.~8. No.\,3. P.~243--281. 
+\bibitem{5-in}
+\Au{Knott A., Dale~R.} Using linguistic phenomena to motivate a set of coherence relations~// 
+Discourse Process., 1994. Vol.~18. No.\,1. 
+P.~35--62.
+\bibitem{6-in}
+\Au{Гончаров А.\,А.} Классификации внутритекстовых отношений: основания и~принципы 
+структурирования~// Вопросы языкознания, 2021. №\,3. С.~97--119. 
+\bibitem{7-in}
+\Au{Webber B., Prasad~R., Lee~A., Joshi~A.} The Penn Discourse Treebank~3.0 annotation 
+manual, 2019. 81~p. {\sf https://catalog.ldc.upenn.edu/docs/LDC2019T05/ PDTB3-Annotation-Manual.pdf}.
+\bibitem{8-in}
+PDTB Research Group. The Penn Discourse Treebank~2.0 annotation manual.~--- 
+Philadelphia, PA, USA: Institute for Research in Cognitive Science, University of 
+Pennsylvania, 2008. Technical Report IRCS-08-01. 99~p. 
+{\sf https://www.seas.upenn.edu/$\sim$pdtb/PDTBAPI/pdtb-annotation-manual.pdf}.
+\bibitem{9-in}
+\Au{Инькова О.\,Ю.} Определения дискурсивных отношений: опыт Надкорпусной базы 
+данных коннекторов~// Компьютерная лингвистика и~интеллектуальные технологии: По 
+мат-лам ежегодной \mbox{Междунар.} конф. <<Диалог>>.~--- М.: РГГУ, 2021. Вып.~20(27). С.~328--338.
+\bibitem{10-in}
+\Au{Rudolph E.} Contrast: Adversative and concessive expressions on sentence and text level.~--- 
+Berlin/Boston: Walter de Gruyter, 1996. 564~p.
+\bibitem{11-in}
+\Au{Fraser B.} An account of discourse markers~// International Review Pragmatics, 2009. Vol.~1. 
+No.\,2. P.~293--320.
+\bibitem{12-in}
+\Au{Sanders T., Spooren~W., Noordman~L.} Toward a taxonomy of coherence relations~// 
+Discourse Process., 1992. Vol.~15. No.\,1. Р.~1--35.
+\bibitem{13-in}
+\Au{Инькова О.\,Ю.} Логико-семантические отношения: проблемы классификации~// 
+Связ\-ность текста: мереологические 
+ло\-ги\-ко-се\-ман\-ти\-че\-ские отношения.~--- М.: ЯСК, 2019. С.~11--98.
+\bibitem{14-in}
+\Au{Sanders T., Demberg~V., Hoek~J., Scholman~M., Asr~F.\,T., Zufferey~S., Evers-Vermeul~J.} 
+Unifying dimensions in coherence relations: How various annotation frameworks are 
+related~// Corpus Linguist. Ling., 2021. Vol.~17. No.\,1. P.~1--71.
+\bibitem{15-in}
+Семантика коннекторов: контрастивное исследование~/ Под. ред. О.\,Ю.~Иньковой.~--- 
+М.: ТОРУС ПРЕСС, 2018. 368~с.
+\bibitem{16-in}
+Структура коннекторов и~методы ее описания~/ Под. ред. О.\,Ю.~Иньковой.~--- М.: 
+ТОРУС ПРЕСС, 2019. 316~с.
+
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в~редакцию 29.09.21}}
+
+\vspace*{8pt}
+
+%\pagebreak
+
+%\newpage
+
+%\vspace*{-28pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{-2pt}
+
+\def\tit{STRUCTURED DEFINITIONS OF~DISCOURSE RELATIONS IN~THE~SUPRACORPORA 
+DATABASE OF~CONNECTIVES}
+
+
+\def\titkol{Structured definitions of~discourse relations in the Supracorpora 
+Database of Connectives}
+
+
+\def\aut{O.\,Yu.~Inkova and M.\,G.~Kruzhkov}
+
+\def\autkol{O.\,Yu.~Inkova and M.\,G.~Kruzhkov}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-11pt}
+
+
+\noindent
+Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences,  
+44-2 Vavilov Str., Moscow 119333, Russian Federation
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
+APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 4}
+}%
+ \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
+INFORMATICS AND APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 4
+\hfill \textbf{\thepage}}}
+
+\vspace*{3pt} 
+
+\Abste{The paper presents initial outcomes resulting from development 
+of structured definitions of discourse relations based on novel classification 
+principles and describes how these definitions are captured in the Supracorpora 
+Database of Connectives (SCDB). The authors provide an overview of existing approaches 
+to definition of discourse relations and propose novel principles for capturing
+structured definitions of discourse relations in the SCDB based on several aspects 
+which include ($i$)~the basic semantic operation that the logical-semantic 
+relation (LSR) is based on: implication, relative timeline positioning, comparison, and
+correlation between general and specific, between an element and a~set; 
+($ii$)~the linguistic level that the LSR is established on: propositional level,
+utterance (illocutionary) level, and metalinguistic level; 
+($iii$)~the polarity, i.\,e., whether the LSR is established directly between the 
+provisions~$p$ and~$q$ featuring in the text or whether their negative correlates 
+should also be considered in the relation interpretation;
+and ($i\nu$)~the semantic and pragmatic features of the context. The paper
+provides some examples of such structured definitions. The structured definitions are 
+captured within the SCDB by a set of interrelated tables. In addition, the\linebreak\vspace*{-12pt}}
+  
+\Abstend{``Family'' 
+table is introduced to offer information about conceptual closeness of some sets 
+of classification features. The proposed structure allows researchers to access similarities 
+and distinctions between various LSRs~--- as of today, this functionality is not implemented 
+in any of the existing corpora that include annotation of discourse relations.}
+
+\KWE{supracorpora database; logical-semantic relations; connectives; annotation; 
+faceted classification}
+
+\DOI{10.14357/19922264210404}
+
+\vspace*{-12pt}
+
+\Ack
+
+\vspace*{-3pt}
+
+
+\noindent
+The research was carried out using the infrastructure of the Shared Research Facilities ``High Performance 
+Computing and Big Data'' (CKP ``Informatics'') of FRC CSC RAS (Moscow).
+
+\vspace*{3pt}
+
+  \begin{multicols}{2}
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+ {%\baselineskip=10.8pt
+ \addcontentsline{toc}{section}{References}
+ \begin{thebibliography}{99}
+
+\bibitem{1-in-1}
+\Aue{Hobbs, J.\,R.} 1976. A~computational approach to discourse analyses. New York, NY: 
+Department of Computer Science, City College, City University of New York. Research Report 76-2. 
+28--38.
+\bibitem{2-in-1}
+\Aue{Hobbs, J.\,R.} 1978. Why is discourse coherent? Menlo Park, CA: SRI International. SRI 
+Technical Note 176. 44~p.
+\bibitem{3-in-1}
+\Aue{Hobbs, J.\,R.} 1979. Coherence and coreference. \textit{Cognitive Sci.} 3(1):67--90.
+\bibitem{4-in-1}
+\Aue{Mann, W.\,C., and S.\,A.~Thompson.} 1988. Rhetorical structure theory: Towards a functional 
+theory of text organization.
+\textit{Text} 8(3):243--281.
+\bibitem{5-in-1}
+\Aue{Knott, A., and R.~Dale.} 1994. Using linguistic phenomena to motivate a set of coherence relations. 
+\textit{Discourse Process.}
+ 18(1):35--62.
+\bibitem{6-in-1}
+\Aue{Goncharov, A.\,A.} 2021. Klassifikatsii vnutritekstovykh otnosheniy: Osnovaniya i~printsipy 
+strukturirovaniya [Classification of intratextual relations: Bases and structural principles]. \textit{Voprosy 
+yazykoznaniya} [Topics in the Study of Language] 3:97--119.
+\bibitem{7-in-1}
+\Aue{Webber, B., R.~Prasad, A.~Lee, and A.~Joshi.} 2019. The Penn Discourse Treebank~3.0 
+Annotation Manual. Available at: {\sf https://catalog.ldc.upenn.edu/docs/
+LDC2019T05/PDTB3-Annotation-Manual.pdf} (accessed October~29, 2021).
+\bibitem{8-in-1}
+PDTB Research Group. 2008. The Penn Discourse Treebank~2.0 Annotation Manual. Philadelphia, PA: 
+Institute for Research in Cognitive Science, University of Pennsylvania. Technical Report IRCS-08-01. 
+99~p. Available at: {\sf   
+https://www.seas.upenn.edu/$\sim$pdtb/PDTBAPI/pdtb-annotation-manual.pdf} (accessed October~29, 
+2021).
+\bibitem{9-in-1}
+\Aue{Inkova, O.\,Yu.} 2021. Opredeleniya diskursivnykh otnosheniy: opyt Nadkorpusnoy bazy dannykh 
+konnektorov [Definition of discourse relations: The case of the Supracorpora Database of Connectives]. 
+\textit{Komp'yuternaya lingvistika i~intellektual'nye tekhnologii: po mat-lam Mezhdunar. konf. 
+``Dialog''} [Computational Linguistics and Intellectual Technologies: Papers from the Annual Conference 
+(International) ``Dialogue'']. Moscow: RSHI. 20(27):328--338.
+\bibitem{10-in-1}
+\Aue{Rudolph, E.} 1996. \textit{Contrast: Adversative and concessive expressions on sentence and 
+text level.} Berlin/Boston: Walter de Gruyter. 564~p.
+\bibitem{11-in-1}
+\Aue{Fraser, B.} 2009. An account of discourse markers. \textit{International Review Pragmatics} 
+1(2):293--320.
+\bibitem{12-in-1}
+\Aue{Sanders, T., W.~Spooren, and L.~Noordman.} 1992. Toward a taxonomy of coherence relations. 
+\textit{Discourse Process.} 15(1):1--35.
+\bibitem{13-in-1}
+\Aue{Inkova, O.\,Yu.} 2019. Logiko-semanticheskie otnosheniya: Problemy klassifikatsii [Logical-semantic 
+relations: Classification problems]. \textit{Svyaznost' teksta: mereologicheskie logiko-semanticheskie 
+otnosheniya} [Text coherence: Mereological logical semantic relations]. Moscow: LRC Publishing House. 
+11--98.
+\bibitem{14-in-1}
+\Aue{Sanders T., V.~Demberg, J.~Hoek, M.~Scholman, F.\,T.~Asr, S.~Zufferey, and J.~Evers-
+Vermeul.} 2021. Unifying dimensions in coherence relations: How various annotation frameworks are 
+related. \textit{Corpus Linguist. Ling.} 17(1):1--71.
+\bibitem{15-in-1}
+In'kova, O.\,Yu., ed. 2018. \textit{Semantika konnektorov: Kontrastivnoe issledovanie} [Semantics of 
+connectives: Contrastive study]. Moscow: TORUS PRESS. 368~p.
+\bibitem{16-in-1}
+In'kova, O.\,Yu., ed. 2019. \textit{Struktura konnektorov i~metody ee opisaniya} [Structure of 
+connectives and methods of its description]. Moscow: TORUS PRESS. 316~p.
+\end{thebibliography}
+
+ }
+ }
+
+\end{multicols}
+
+\vspace*{-3pt}
+
+\hfill{\small\textit{Received September 29, 2021}}
+
+%\pagebreak
+
+\vspace*{-14pt}
+
+\Contr
+
+\vspace*{-3pt}
+
+
+\noindent
+\textbf{Inkova Olga Yu.} (b.\ 1965)~--- Doctor of Science  in philology, senior scientist, Institute of 
+Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian 
+Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
+\mbox{olyainkova@yandex.ru}
+
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Kruzhkov Mikhail G.} (b.\ 1975)~--- senior scientist, Institute of Informatics Problems, Federal 
+Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov 
+Str., Moscow 119333, Russian Federation; \mbox{magnit75@yandex.ru}
+
+
+
+\label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература} 
+      
+  

@@ -1,0 +1,832 @@
+\def\stat{step2}
+\label{step2}
+
+\def\tit{САМОСИНХРОННЫЙ УМНОЖИТЕЛЬ С~НАКОПЛЕНИЕМ:
+ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ$^*$}
+
+\def\titkol{Самосинхронный умножитель с~накоплением:
+практическая реализация}
+
+\def\autkol{Ю.\,А.~Степченков, Ю.\,Г.~Дьяченко, Ю.\,В.~Рождественский
+и~др.}
+
+\def\aut{Ю.\,А.~Степченков$^1$, Ю.\,Г.~Дьяченко$^2$, Ю.\,В.~Рождественский$^3$,
+Н.\,В.~Морозов$^4$, Д.\,Ю.~Степченков$^5$, А.\,В.~Рождественскене$^6$,
+А.\,В.~Сурков$^7$}
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]
+{Исследование выполнено при финансовой поддержке РФФИ
+(проект 13-07-12068 офи\_м).}}
+
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\footnotetext[1]{Институт проблем информатики Российской академии наук, YStepchenkov@ipiran.ru}
+\footnotetext[2]{Институт проблем информатики Российской академии наук, diaura@mail.ru}
+\footnotetext[3]{Институт проблем информатики Российской академии наук, YRogdest@ipiran.ru}
+\footnotetext[4]{Институт проблем информатики Российской академии наук, NMorozov@ipiran.ru}
+\footnotetext[5]{Институт проблем информатики Российской академии наук, Stepchenkov@mail.ru}
+\footnotetext[6]{Институт проблем информатики Российской академии наук, astarozd@yahoo.com}
+\footnotetext[7]{Научно-исследовательский институт системных исследований Российской академии наук, surkov@cs.niisi.ras.ru}
+
+\label{st\stat}
+
+\thispagestyle{headings}
+
+
+\Abst{Статья посвящена результатам разработки вариантов независимого
+от задержек устройства умно\-же\-ния-сло\-же\-ния (SIFMA~---
+Speed-Independed Fused Multiply-Add), соответствующего стандарту
+IEEE~754 и~выполняющего либо одну операцию умножения
+с~накоплением двойной точности, либо одну или две операции одинарной
+точности над тремя операндами. Устройство разработано по стандартной
+тех\-но\-ло\-гии КМОП (комплементарная структура ме\-талл--ок\-сид--по\-лу\-про\-вод\-ник)
+с~проектными нормами 65~нм. Оно работает с~синхронным или асинхронным окружением и~обеспечивает среднюю
+производительность на уровне 1~Гфлопса при напряжении питания 1~В
+и~температуре 25~$^\circ$C. Энергопотребление при этом не превышает
+970~мДж/ГГц.}
+
+\KW{самосинхронная схема; троичное кодирование; умножитель;
+сумматор; вычитатель; конвейер; индикация}
+
+\DOI{10.14357\!/\!08696527140305}
+
+
+
+\vskip 12pt plus 9pt minus 6pt
+
+
+      \thispagestyle{headings}
+
+\section{Введение}
+
+      Операция <<умножение двух операндов и сложение с третьим
+операндом>> (Fused Multiply-Add, FMA)~--- одна из наиболее часто
+используемых в распределенных вычислениях. В~литературе известны
+многочисленные реализации данной операции, относящиеся к классу
+синхронных схем (см., например,~[1--7]). Однако наилучшее сочетание
+потребительских характеристик блока FMA обеспечивается применением
+самосинхронных (СС) схем, не зависящих от задержек элементов (Speed Independent,
+SI).
+
+
+      Цель данной статьи~--- разработка двух вариантов устройства
+      умно\-же\-ния-сло\-же\-ния (SIFMA), предназначенных для работы с
+разным окружением. Оба варианта соответствуют стандарту IEEE
+      754~\cite{8-st2}, принадлежат к классу SI-устройств~\cite{9-st2},
+обладают расширенными функциональными возможностями и~имеют
+сбалансированные характеристики. Первый вариант SIFMA (далее по
+      тексту~--- асинхронный) предназначен для работы с~асинхронным
+окружением и~позволяет в~максимальной степени использовать преимущества
+CC-схем (рис.~1,\,\textit{а}). Второй вариант (синхронный) учитывает
+необходимость согласования входного и выходного интерфейса
+      CC-устрой\-ст\-ва умно\-же\-ния-сло\-же\-ния с~синхронным окружением
+      (рис.~1,\,\textit{б}).
+
+            \begin{figure} %fig1
+            \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=127.324mm
+ \epsfbox{st2-1.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Варианты реализации SIFMA: с асинхронным~(\textit{а}) и синхронным~(\textit{б})
+окружением}
+\vspace*{-9pt}
+\end{figure}
+
+
+\section{Структурная схема SIFMA}
+
+      Рассматриваемые варианты SIFMA разработаны на основе СС-яд\-ра.
+Однако детерминированность процесса подачи операндов на вход \mbox{SIFMA} (на
+каждом такте системной частоты) при наличии синхронного окружения не
+позволяет в~полной мере использовать тот факт, что время выполнения
+операции в~\mbox{SIFMA} зависит от типа операции и~значения операндов. Поэтому
+для обеспечения максимальной эффективности вычислительного процесса
+и~достижения предельного быстродействия вариант для синхронного окружения
+содержит устройства сопряжения с~синхронным окружением~--- входное
+и~выходное FIFO (first in, first out), также выполненные в~стиле SI-устройств. Результирующая
+схема устройства показана на рис.~1,\,\textit{б}.
+
+
+
+      Входные данные записываются в FIFO синхронно по фронту тактового
+сигнала Clk. Синхронное окружение не ждет подтверждения приема данных от
+SIFMA, но следит за дополнительным сигналом Stop, свидетельствующим
+о~заполнении FIFO. Выходные данные также считываются синхронно по фронту
+тактового сигнала Clk, но только при наличии активного уровня на выходе
+Ready. В~свою очередь, синхронное окружение информирует выходное FIFO
+сигналом Used о~том, что оно приняло текущий результат и~больше не
+нуждается в~нем. В~качестве такого сигнала может использоваться
+синхросигнал в~регистре синхронного окружения, фиксирующем результат
+операции.
+
+      В качестве FIFO использованы СС полуплотные регистры
+сдвига~[10, рис.~11.9] емкостью четыре слова данных. Схема одного FIFO
+показана на рис.~2. Отдельными оттенками изображены входная головка,
+внутренний элемент и~выходная головка FIFO. За счет перекрестных обратных
+связей каж\-дый разряд данного FIFO <<проталкивает>> принятый бит
+информации сразу до последней незанятой ячейки FIFO. Входная головка
+входного FIFO принимает от синхронного окружения информацию
+в~традиционном для синхронных схем виде: данные плюс синхросигнал~---
+и~преобразует ее в~парафазное представление.
+
+
+
+      Входная головка выходного FIFO работает с СС-устройствами, но ее
+схема идентична входной головке входного FIFO: роль синхросигнала играет
+поразрядный индикаторный выход предшествующего блока SIFMA.
+
+
+
+      Ядром обоих вариантов SIFMA является собственно вычислитель
+операции умно\-же\-ния-сло\-же\-ния, структурная схема которого показана на
+рис.~3. Его входной и выходной интерфейсы содержат все необходимые
+сигналы для организации взаимодействия SIFMA с асинхронным окружением.
+
+
+
+\begin{figure} %fig2
+ \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=72.613mm
+ \epsfbox{st2-2.eps}
+ }
+ \end{center}
+% \vspace*{-9pt}
+%\Caption{Структурная схема FIFO}
+\end{figure}
+
+      Входные операнды~--- обрабатываемые числа~$X$, $Y$, $Z$ и
+признаки операции~$R$ (тип округления, точность и характер операции)
+поступают на вход SIFMA асинхронно. Их готовность подтверждается
+сигналом~RqI со стороны источника. SIFMA запоминает данные во входных
+регистрах блоков умножителя и обработки экспонент (УОЭ1 и УОЭ2) и
+извещает об окончании этой процедуры сигналом AckI. Вход Rst служит для
+начального сброса устройства.
+
+      Отметим, что SIFMA способен одновременно выполнить две операции:\linebreak
+<<$Z + X*Y$>> и <<$Z - X*Y$>>~--- благодаря наличию двух параллельных
+путей обработки произведения и третьего операнда.
+
+
+      На выходе SIFMA формируется сумма FMA и/или разность FMS и
+сопутствующие флаги результата RFA и RFS. Готовность результата
+индицируется сигналом RqO. Окончание чтения результата асинхронное
+окружение SIFMA подтверждает сигналом AckO.
+
+      Наиболее сложным функциональным блоком в составе SIFMA является
+умножитель мантисс $53\times53$ (старший разряд~--- подразумеваемая, но
+отсутствующая в формате представления чисел по стандарту IEEE~754 единица
+целых; младшие 52-разряда~--- мантисса числа). Он реализован на основе
+модифицированного алгоритма Бута (Booth) с основанием Radix-2 и дерева
+Уоллеса (Wallace)~[11, 12]. Выходом всего дерева Уоллеса являются два
+      106-раз\-ряд\-ных операнда: суммы и межразрядного переноса.
+Двоичный результат перемножения двух входных операндов получается с
+помощью их сложения на 106-раз\-ряд\-ном сумматоре с распространением
+переноса.
+
+\addtocounter{figure}{1}
+\begin{figure} %fig3
+ \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=100mm
+ \epsfbox{st2-3.eps}
+ }
+ \end{center}
+ \vspace*{-13pt}
+\Caption{Структурная схема ядра SIFMA}
+\vspace*{-3pt}
+\end{figure}
+
+\begin{figure} %fig4
+ \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=106.799mm
+ \epsfbox{st2-4.eps}
+ }
+ \end{center}
+% \vspace*{-9pt}
+%\Caption{Самосинхронный троичный сумматор}
+\end{figure}
+
+      Исследования показали, что повышение быстродействия при
+практически таких же аппаратурных затратах достигается при использовании
+специального СС-ко\-ди\-ро\-ва\-ния, основанного на троичном избыточном
+представлении обрабатываемых операндов. Схема одного разряда сумматора
+таких операндов показана на рис.~4.
+
+
+      Специальное форматирование входных данных для алгоритма Бута
+позволяет в рамках одного умножения получить либо один результат операции
+двойной точности, либо сразу два результата двух операций одинарной
+точности.
+
+      Предлагаемая реализация SIFMA включает два блока УОЭ, работающих
+параллельно. Это обеспечивает максимальное быстродействие и
+сбалансированность ступеней конвейера при разумных аппаратурных затратах.
+Каждый блок УОЭ выполняет умножение операндов~$X$ и~$Y$, а также
+анализ и обработку экспонент всех трех операндов и выравнивание
+операнда~$Z$.
+
+      Очередность предоставления новых операндов блокам УОЭ не зависит
+от времени вычисления каждого блока и определяется простым чередованием.
+Это позволяет отказаться от использования арбитража как на входе блоков
+УОЭ, так и на их выходе и сохранить последовательность появления результата
+на выходе SIFMA, соответствующей порядку задания операндов на входе.
+Таким образом, окружение SIFMA всегда знает, результат какой именно
+операции присутствует на его выходе: SIFMA представляет собой как бы одно
+FIFO со сложной функциональной начинкой.
+
+      Последующие блоки ядра SIFMA обрабатывают поступающие данные в
+СС-ре\-жи\-ме: по мере готовности данные передаются из текущего блока в
+следующий. Причем мультиплексор данных на выходе блоков УОЭ выбирает
+произведение мантисс двух операндов, выравненную в соответствии со
+значением экспонент всех трех операндов мантиссу третьего операнда и
+экспоненту результата на выходе активного в данный момент канала и
+распараллеливает дальнейшие вычисления. Сумма и разность выравненного
+третьего операнда и произведения первых двух операндов вычисляются
+одновременно для ускорения работы SIFMA.
+
+      Результаты выполнения обеих операций записываются в выходное FIFO.
+Операция считается выполненной, если результаты и~сложения, и~вычитания
+зафиксированы в выходном FIFO. Максимальная производительность
+в~СС-устрой\-ствах, как и~в~синхронных схемах, обеспечивается
+конвейерной архитектурой.
+
+\section{Конвейер SIFMA}
+
+      Конвейер СС-устройства обычно строится на основе
+      за\-прос-от\-вет\-но\-го взаимодействия между ступенями (рис.~5).
+Гистерезисные триггеры (Г-триг\-ге\-ры~[10]) на основе индикаторных выходов
+предыдущей и последующей ступеней конвейера формируют сигналы
+управления, разрешающие переключение соответствующей ступени из рабочей
+фазы в спейсер и обратно.
+
+\addtocounter{figure}{1}
+\begin{figure} %fig5
+ \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=126.313mm
+ \epsfbox{st2-5.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Традиционное взаимодействие ступеней конвейера}
+\end{figure}
+
+\begin{figure} %fig6
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=77.341mm
+ \epsfbox{st2-6.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Структурная схема одной ступени традиционного конвейера}
+\end{figure}
+
+      В традиционной СС-схемотехнике одна ступень конвейера реализуется
+схемой, изображенной на рис.~6. Здесь индикаторные выходы комбинационной
+схемы (КС) и~регистра хранения (РХ) объединяются в~один индикаторный
+выходной сигнал всей ступени, который используется для организации
+взаимодействия с~предыдущей и~последующей ступенями конвейера.
+      Однако в ряде случаев удается оптимизировать взаимодействие
+ступеней конвейера, повысив его быстродействие путем разделения
+индикаторных сигналов, управляющих предыдущей и последующей ступенями
+конвейера. В~данном случае это оказалось возможным благодаря структуре
+каждой ступени конвейера, изображенной на рис.~7. Выходы DG$_i$
+индицируют поразрядные индикаторы и вместе с DP$_i$ составляют общую
+совокупность парафазных информационных выходов ступени.
+
+      Каждая ступень конвейера, за исключением входного и выходного FIFO,
+включает три блока:
+      \begin{enumerate}[(1)]
+\item входной РХ;
+\item КС, реализующую алгоритм обработки данных в текущей ступени;
+\item выходной регистр индикации и хранения (РИХ).
+\end{enumerate}
+
+        \begin{figure} %fig7
+        \vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=80.172mm
+ \epsfbox{st2-7.eps}
+ }
+ \end{center}
+ \vspace*{-9pt}
+\Caption{Структурная схема одной ступени реализованного конвейера}
+\end{figure}
+
+Регистр хранения формирует два индикаторных выхода: A$_i$ и R$_i$,~--- причем сигнал
+A$_i$, как в данной реализации, может иметь спекулятивную основу,
+позволяющую ускорить за\-прос-от\-вет\-ное взаимодействие многоразрядных
+устройств в~со\-ста\-ве конвейера. Сигнал же R$_i$ является полноценным
+индикатором РХ, обеспечивая строгую самосинхронность приема данных этой
+ступенью конвейера.
+{\looseness=-1
+
+}
+
+      Реализация РХ (рис.~8,\,\textit{а}) и РИХ (рис.~8,\,\textit{б})
+на основе Г-триг\-ге\-ра позволяет оптимизировать по быстродействию
+индикаторную подсхему SIFMA. Здесь $X$ и~$X_B$~--- информационные парафазные
+входы; $E$~--- общий для всех разрядов РХ сигнал управления; $I$~---
+индикаторный выход соответствующего разряда РХ или поразрядный
+индикатор комбинационной части данной ступени для РИХ; $Y$ и~$Y_B$~---
+парафазные выходы с нулевым спейсером. Индикаторные поразрядные выходы
+РХ <<сжимаются>> в общий индикаторный выход R$_i$ РХ с помощью
+стандартных схем индикации СС-схе\-мо\-тех\-ни\-ки~[10].
+\begin{figure} %fig8
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=100.487mm
+ \epsfbox{st2-8.eps}
+ }
+ \end{center}
+ \vspace*{-13pt}
+\Caption{Схема одного разряда регистров РХ~(\textit{а}) и РИХ~(\textit{б})}
+\vspace*{-3pt}
+\end{figure}
+
+      Регистры РХ и РИХ хранят как рабочую фазу, так и спейсер входных
+сигналов~$X$,~$X_B$. Это избавляет от необходимости использовать дополнительно
+блок преобразования бифазного сигнала (выхода бистабильной ячейки
+триггера~--- разряда традиционного регистра хранения) в парафазный сигнал со
+спейсером, с которым работают комбинационные СС-схе\-мы. Кроме того, РИХ
+индицирует своими выходами поразрядные индикаторы~$I$ схемы КС, а~РХ~---
+некоторый сигнал управления~$E$, формируемый индикаторными выходами
+текущей и следующей ступеней конвейера. Тем самым упрощается и
+ускоряется формирование общего индикатора КС. Результирующая схема
+взаимодействия ступеней конвейера показана на рис.~\ref{f9-st2}. Парафазные
+информационные выходы DP и~DG объединяются в одну шину
+информационных данных.
+
+      Каждая ступень конвейера имеет спекулятивный (упрощенный на
+основе критического пути) и полный индикаторный выход. Спекулятивный
+индикаторный выход ступени~$A$ используется для формирования сигнала~$E$
+управления предыдущей ступенью конвейера, а полный индикаторный
+выход~$R$~--- для формирования сигнала управления текущей ступенью.
+
+      Такая реализация позволила достичь при типовых условиях средней
+производительности конвейера 1~Гфлопс и обеспечить среднее время
+выполнения операции не более 6~нс.
+
+      Описанная организация запрос-от\-вет\-но\-го взаимодействия между
+ступенями конвейера была проанализирована программами анализа схемы на
+самосинхронность АСПЕКТ~[13] и АСИАН~[14], которые подтвердили
+принадлежность схемы конвейера к классу SI-устройств.
+
+\begin{figure} %fig9
+\vspace*{1pt}
+ \begin{center}
+ \mbox{%
+ \epsfxsize=106.21mm
+ \epsfbox{st2-9.eps}
+ }
+ \end{center}
+ \vspace*{-13pt}
+\Caption{Оптимизированная схема взаимодействия ступеней конвейера SIFMA}
+\vspace*{-6pt}
+\label{f9-st2}
+\end{figure}
+
+      С учетом необходимости и достаточности индицирования в полном
+объеме только спейсерной фазы SIFMA индикаторная подсхема КС строится с
+использованием только комбинационных логических элементов, без
+гистерезисных триггеров, и реализует логическую функцию <<И>> (для
+единичного спейсера) либо <<ИЛИ>> (для нулевого спейсера). Это сокращает
+аппаратурные затраты и ускоряет формирование индикаторных сигналов,
+участвующих в за\-прос-от\-вет\-ном взаимодействии ступеней конвейера.
+
+      Разбиение SIFMA на ступени конвейера выполнялось исходя из
+принципа обеспечения максимального быстродействия SIFMA с учетом
+приемлемых аппаратурных затрат и сбалансированности конвейера. В~целом
+оно соответствует структурной схеме SIFMA на рис.~3. В~варианте с
+синхронным окружением входное и выходное FIFO являются
+дополнительными ступенями конвейера.
+
+      Конвейер SIFMA обеспечивает производительность на уровне 1~Гфлопс
+для среднестатистической комбинации входных операндов при типовом
+напряжении питания 1~В и температуре окружающей среды 25~$^\circ$C.
+Среднее время выполнения операции~--- не более 6~нс. При обработке
+наихудшей с точки зрения времени выполнения комбинации входных
+операндов производительность может снижаться, но в среднем она будет не
+хуже 1~Гфлопс.
+
+\vspace*{-4pt}
+
+\section{Характеристики SIFMA}
+
+\vspace*{-2pt}
+
+      Характеристики любого устройства во многом определяются базисом
+его реализации. В~настоящее время известны два основных базиса реализации
+SI-схем:
+      \begin{enumerate}[(1)]
+      \item  избыточная NCL (NULL convention logic) логика~[15], обеспечивающая независимость не
+только от задержек элементов, но и от задержек в~цепях межсоединений;
+      \item  неизбыточная КМОП-логика~[16], обеспечивающая
+независимость от задержек элементов, а в пределах эквихронной зоны~[10]~---
+и от задержек в~цепях межсоединений.
+      \end{enumerate}
+
+      После сравнения преимуществ и недостатков обоих схемотехнических
+базисов~[16] предпочтение было отдано неизбыточной КМОП-ло\-ги\-ке, так
+как она обеспечивает меньшие аппаратурные затраты (в 4,49~раза при
+реализации двоичного счетчика, в 1,13~раза при реализации умножителя
+$4\times4$, до 2~раз при реализации более простых логических схем),
+б$\acute{\mbox{о}}$льшую производительность и~меньшее энергопотребление по сравнению с
+NCL-схе\-мами.
+
+      При проектировании SIFMA использовалась библиотека элементов,
+разработанная для стандартной КМОП-тех\-но\-ло\-гии с проектными нормами
+65~нм. Двадцать семь элементов, вошедших в состав библиотеки, являются
+подмножеством элементов из библиотеки для проектирования СС-схем~[17].
+Они были апробированы при разработке и изготовлении по
+      КМОП-тех\-но\-ло\-гии 65-на\-но\-мет\-ро\-вы\-ми проектными нормами SI-вычислителя~[9].
+
+      Характеристики вариантов SIFMA для асинхронного (А) и синхронного
+(С) окружения, выполненных по 65-на\-но\-мет\-ро\-вой КМОП-тех\-но\-ло\-гии с шестью
+слоями металлизации, приведены в таблице. Они являются оценочными. Они
+получены путем моделирования схемы SIFMA с учетом паразитных
+параметров, извлеченных из топологии блока. Быстродействие определялось
+для типовых условий эксплуатации, так как производительность SI-схем всегда
+соответствует текущим условиям эксплуатации, а сами SI-схе\-мы не требуют
+учета наихудшего случая.
+
+\begin{table}\small
+\begin{center}
+\tabcolsep=5.5pt
+\begin{tabular}{|c|c|c|c|c|c|}
+\multicolumn{6}{c}{Характеристики вариантов SIFMA}\\[6pt]
+\hline
+\tabcolsep=0pt\begin{tabular}{c}Интерфейс\\ SIFMA\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}Сложность\\ реализации,\\ транзисторы\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}Площадь,\\ мм\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}Производи-\\ тельность,\\ Гфлопс\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}Время\\ выполнения\\ операции, нс\end{tabular} &
+\tabcolsep=0pt\begin{tabular}{c}Энерго-\\ потребление,\\ мДж/ГГц\end{tabular}\\
+\hline
+А& 639\,000& 0,78& 1,0& 5,95& \hphantom{9}970\\
+С& 724\,000 & 0,96& 1,0& 6,90& 1140\\
+\hline
+\end{tabular}
+\end{center}
+\vspace*{-6pt}
+\end{table}
+
+В настоящее время вариант SIFMA для синхронного окружения
+находится на этапе завершения топологического проектирования и готовится к
+запуску в~составе тестовой БИС (большой интегральной схемы).
+
+\vspace*{-2pt}
+
+\section{Заключение}
+
+\vspace*{-1pt}
+
+      Представленные варианты устройства, выполняющего операцию FMA
+      в~соответствии со стандартом IEEE 754, относятся к~классу устройств, поведение
+которых не зависит от задержек элементов (SI-устройств). Они позволяют
+получить сумму и разность третьего операнда и произведения двух первых
+операндов для одной тройки чисел двойной точности или для двух
+упакованных троек чисел одинарной точности.
+
+      Вариант с синхронным окружением отличается от варианта с
+асинхронным окружением наличием входного и выходного FIFO емкостью в
+4~слова данных каждое.
+
+      Средняя производительность обоих вариантов устройства при типовых
+условиях равна 1,0~Гфлопс.
+
+      Энергопотребление SIFMA составляет 970 и 1140~мДж/ГГц для
+вариантов с асинхронным и синхронным окружением соответственно.
+
+      В настоящее время вариант SIFMA для синхронного окружения
+готовится к~запуску в составе тестовой БИС.
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{Литература}
+\begin{thebibliography}{99}
+\bibitem{1-st2}
+\Au{Chen C., Chen L.-A., Cheng J.-R.} Architectural design of a fast floating-point multiplication-add
+fused unit using signed-digit addition~/\!\!/ IEE Proc.
+Comput. Dig. Tec., 2002.
+Vol.~149. No.\,4. P.~113--120.
+\bibitem{2-st2}
+\Au{Seidel P.} Multiple path IEEE floating-point fused multiply-add~/\!\!/ 46th IEEE Midwest
+Symposium (International) on Circuits and Systems Proceedings.~--- Cairo, Egypt, 2003.
+P.~1359--1362.
+\bibitem{3-st2}
+\Au{Lang T., Bruguera J.} Floating-point fused multiply-add with reduced latency~/\!\!/ IEEE
+Trans. Comput., 2004. Vol.~53. No.\,8. P.~42--51.
+\bibitem{4-st2}
+\Au{Libo H., Li S., Kui D., Zhiying W.} A~new architecture for multiple-precision floating-point
+multiply-add fused unit design~/\!\!/ 18th IEEE Symposium on Computer Arithmetic
+Proceedings.~--- Montpellier, 2007. P.~69--76.
+\bibitem{5-st2}
+\Au{Quinnell E.\,C., Swartzlander E., Lemonds~C.} Floating-point fused multiply-add
+architectures~/\!\!/ 41th Asilomar Conference on Signals, Systems and Computers Proceedings.~---
+Pacific Grove, $\acute{\mbox{E}}$tats-Unis, 2007. P.~42--51.
+\bibitem{6-st2}
+\Au{Quinnell E.\,C., Swartzlander~E., Lemonds~C.}
+Three-path fused multiply adder circuit. United States Patent
+Application Publication  No.\,0256150. 2008.
+\bibitem{7-st2}
+\Au{Walaa Abd El Aziz I.} Binary floating point fused multiply add unit. Master Thesis.~--- Giza,
+Egypt, 2012. 88~p.
+\bibitem{8-st2}
+IEEE Standard for floating-point arithmetic 754-2008.~--- IEEE, 2008.
+doi: 10.1109/IEEESTD.2008.4610935.
+\bibitem{9-st2}
+\Au{Степченков Ю.\,А., Дьяченко Ю.\,Г., Рождественский~Ю.\,В., Морозов~Н.\,В.,
+Степченков~Д.\,Ю.} Разработка вычислителя, не зависящего от задержек элементов~/\!\!/
+Системы и средства информатики, 2010. Вып.~20. №\,1. С.~5--23.
+\bibitem{10-st2}
+ Автоматное управление асинхронными процессами в ЭВМ и
+дискретных системах~/ Под ред. В.\,И.~Варшавского.~--- М.: Наука, 1986. 400~с.
+
+\bibitem{12-st2} %11
+\Au{Makino H., Nakase Y., Suzuki~H., Morinaka~H., Shinohara~H., Mashiko~K.} An 8.8~ns
+$54\times54$~bit multiplier with high speed redundant binary architecture~/\!\!/ IEEE
+J.~Solid-St. Circ., 1996. Vol.~31. No.\,6. P.~773--783.
+\bibitem{11-st2} %12
+\Au{Hensley J., Lastra A., Singh M.} A~scalable counterflow-pipelined asynchronous radix-4 booth
+multiplier~/\!\!/ Symposium (International) on Asynchronous Circuits and Systems Proceedings,
+2005. P.~128--137.
+
+\bibitem{13-st2}
+\Au{Рождественский Ю.\,В., Морозов Н.\,В., Рождественскене~A.\,В.} АСПЕКТ:
+Подсистема событийного анализа самосинхронных схем~/\!\!/ Проблемы разработки
+перспективных микро- и наноэлектронных систем: IV~Всеросс. науч.-технич. конф.
+(МЭС-2010).~--- М.: ИППМ РАН, 2010. C.~26--31.
+\bibitem{14-st2}
+\Au{Рождественский Ю.\,В., Морозов Н.\,В., Степченков~Ю.\,А., Рождественскене~А.\,В.}
+Универсальная подсистема анализа самосинхронных схем~/\!\!/ Системы и средства
+информатики, 2006. Вып.~16. №\,2. С.~463--475.
+\bibitem{15-st2}
+\Au{Fant K.\,M.} Logically determined design: Clockless system design with NULL convention
+logic.~--- New York: J.~Wiley\,\&\,Sons, 2005. 292~p.
+\bibitem{16-st2}
+\Au{Соколов И.\,А., Степченков Ю.\,А., Бобков~С.\,Г., Захаров~В.\,Н., Дьяченко~Ю.\,Г.,
+Рождественский~Ю.\,В., Сурков~А.\,В.} Базис реализации су\-пер-ЭВМ эксафлопсного
+класса~/\!\!/ Информатика и её применения, 2014. Т.~8. Вып.~1. С.~45--70.
+
+\bibitem{18-st2}
+\Au{Степченков Ю.\,А., Денисов А.\,Н., Дьяченко~Ю.\,Г. и~др.} Библиотека элементов для
+проектирования самосинхронных полузаказных БМК микросхем серий 5503/5507 и
+5508/5509.~--- М.: ИПИ РАН, 2013. 391~с.
+\end{thebibliography}
+} }
+
+
+\vspace*{-6pt}
+
+\hfill{\small\textit{Поступила в редакцию 20.08.14}}
+
+%\newpage
+
+
+\vspace*{8pt}
+
+\hrule
+
+\vspace*{2pt}
+
+\hrule
+
+%\vspace*{6pt}
+
+%\newpage
+
+
+\def\tit{SELF-TIMED FUSED MULTIPLY-ADD UNIT: PRACTICAL~IMPLEMENTATION}
+
+\def\titkol{Self-timed fused multiply-add unit: Practical
+implementation}
+
+\def\aut{Y.~Stepchenkov$^1$, Y.~Diachenko$^1$, Y.~Rogdestvenski$^1$,
+N.~Morozov$^1$, D.~Stepchenkov$^1$, A.~Rogdestvenskene$^1$,
+and~A.~Surkov$^2$}
+\def\autkol{Y.~Stepchenkov, Y.~Diachenko, Y.~Rogdestvenski, \textit{et al.}}
+
+
+\titel{\tit}{\aut}{\autkol}{\titkol}
+
+\vspace*{-12pt}
+
+\noindent
+$^1$Institute of Informatics Problems, Russian Academy of Sciences, Moscow
+119333,\linebreak
+$\hphantom{^1}$44-2 Vavilova Str., Russian Federation
+
+\noindent
+$^2$Scientific Research Institute for System Studies, Russian Academy of Sciences,\linebreak
+$\hphantom{^1}$36~bld.~1 Nakhimovsky Prosp., Moscow 117218, Russian Federation
+
+
+
+\def\leftfootline{\small{\textbf{\thepage}
+\hfill Sistemy i Sredstva Informatiki~---
+Systems and Means of Informatics 2014 vol~24 no\,3}
+}%
+ \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
+ Systems and Means of Informatics   2014   vol~24   no\,3
+\hfill \textbf{\thepage}}}
+
+
+\Abste{Paper presents the results of designing Speed-Independed Fused
+Multiply-Add (SIFMA) variants compliant with the IEEE~754 Standard.
+\mbox{SIFMA} performs either one double precision FMA operation or one or two
+single precision operations simultaneously under three operands. SIFMA was
+designed for the standard 65-nanometer CMOS (complementary metall--oxide--semiconductor)
+technology. It uses both a standard
+cell library and a self-timed cell library designed in IPI RAS. One SIFMA
+variant operates with a synchronous environment, while another works with
+an asynchronous environment. Both variants provide an average performance
+up to 1~GFlops for 1-volt supply and  environment temperature of 25~$^\circ$C.
+At these conditions, energy consumption does not exceed 970~mJ/GHz.}
+
+\KWE{self-timed circuit; ternary coding; multiplier; adder; subtracter; pipeline;
+indication}
+
+\DOI{10.14357\!/\!08696527140305}
+
+%\vspace*{-24pt}
+
+\Ack
+
+\noindent
+This project was financially supported by the Russian Foundation for Basic Research
+(project 13-07-12068 ofi\_m).
+
+
+%\vspace*{-2pt}
+
+
+
+\renewcommand{\bibname}{\protect\rmfamily References}
+%\renewcommand{\bibname}{\large\protect\rm References}
+
+{\small\frenchspacing
+{%\baselineskip=10.8pt
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+
+\bibitem{1-st2-1}
+\Aue{Chen, C., L.-A.~Chen, and J.-R.~Cheng}. 2002. Architectural design of a fast floating-point
+multiplication-add fused unit using signed-digit addition. \textit{IEE Proc.\
+Comput. Dig. Tec.} 149(4):113--120.
+\bibitem{2-st2-1}
+\Aue{Seidel, P.} 2003. Multiple path IEEE floating-point fused multiply-add. \textit{46th IEEE
+Midwest Symposium (International)  on Circuits and Systems Proceedings}. Cairo, Egypt.
+ 1359--1362.
+\bibitem{3-st2-1}
+\Aue{Lang, T., and J.~Bruguera}. 2004. Floating-point fused multiply-add with reduced latency.
+\textit{IEEE Trans. Comput.} 53(8):42--51.
+\bibitem{4-st2-1}
+\Aue{Libo, H., S. Li, D.~Kui, and W.~Zhiying}. 2007. A~new architecture for multiple-precision
+floating-point multiply-add fused unit design. \textit{18th IEEE Symposium on Computer
+Arithmetic Proceedings}. Montpellier. 69--76.
+\bibitem{5-st2-1}
+\Aue{Quinnell, E.\,C., E. Swartzlander, and C.~Lemonds}. 2007. Floating-point fused
+multiply-add architectures. \textit{41th Asilomar Conference on Signals, Systems and Computers
+Proceedings}. Pacific Grove, $\acute{\mbox{E}}$tats-Unis. 42--51.
+\bibitem{6-st2-1}
+\Au{Quinnell, E.\,C., E.~Swartzlander, and C.~Lemonds.}  2008. Three-path fused multiply adder circuit. United States
+Patent Application Publication No.\,0256150.
+\bibitem{7-st2-1}
+\Aue{Walaa Abd El Aziz, I.} 2012. Binary floating point fused multiply add unit. Master
+Thesis. Giza, Egypt. 88~p.
+\bibitem{8-st2-1}
+IEEE Computer Society. 2008. IEEE standard for floating-point arithmetic 754-2008.
+doi: 10.1109/IEEESTD.2008.4610935.
+\bibitem{9-st2-1}
+\Aue{Stepchenkov, Y.\,A., Y.\,G. Diachenko, Y.\,V.~Rogdestvenski, N.\,V.~Morozov, and
+D.\,Y.~Stepchenkov}. 2010. Razrabotka vychislitelya, nezavisyashchego ot zaderzhek elementov
+[Designing of the delay independent computing device]. \textit{Sistemy i Sredstva Informatiki}~---
+\textit{Systems and Means of Informatics} 20(1):237--254.
+\bibitem{10-st2-1}
+Varshavsky, V.\,I., ed. 1990. \textit{Self-timed control of concurrent
+processes: The design of aperiodic logical circuits in computers and discrete systems}.
+Mathematics and its applications ser.
+Dordrecht, The Netherlands: Kluwer Academic Publs. 418~p.
+
+
+\bibitem{12-st2-1}
+\Aue{Makino, H., Y. Nakase, H. Suzuki, H.~Morinaka, H.~Shinohara, and K.~Mashiko}. 1996. An
+8.8~ns $54\times54$~bit multiplier with high speed redundant binary architecture. \textit{IEEE
+J.~Solid-St. Circ.} 31(6):773--783.
+
+\bibitem{11-st2-1}
+\Aue{Hensley, J., A. Lastra, and M.~Singh}. 2005. A~scalable counterflow-pipelined asynchronous
+radix-4 booth multiplier. \textit{Symposium (International) on Asynchronous Circuits and
+Systems Proceedings}. 128--137.
+
+\bibitem{13-st2-1}
+\Aue{Rogdestvenski, Y.\,V., N.\,V. Morozov, and A. Rogdestvenskene}. 2010. ASPEKT:
+Podsistema sobytiynogo analiza samosinkhronnykh skhem [ASPECT: A~suite of self-timed
+event-driven analysis]. \textit{Tr. Mezhdunar. konf. ``Problemy Razrabotki Perspektivnykh
+mikro- i nanoelektronnykh sistem''} [Problems of the Perspective Micro- and Nanoelectronic
+Systems Development Proceedings]. Moscow. 26--31.
+\bibitem{14-st2-1}
+\Aue{Rogdestvenski, Y.\,V., N.\,V. Morozov, Y.\,A.~Stepchenkov, and
+A.\,V.~Rog\-dest\-venskene}. 2006. Universal'naya podsistema
+analiza samosinkhronnykh skhem
+[The universal suite for self-timed circuit analysis].
+\textit{Sistemy i Sredstva Informatiki}~---
+\textit{Systems and Means of Informatics} 16(2):463--475.
+\bibitem{15-st2-1}
+\Aue{Fant, K.\,M.} 2005. \textit{Logically determined design: Clockless system design with NULL
+convention logic}. New York: J.~Wiley\,\&\,Sons. 292~p.
+\bibitem{16-st2-1}
+\Aue{Sokolov, I.\,A., Y.\,A. Stepchenkov, S.\,G. Bobkov, V.\,N.~Zakharov, Y.\,G.~Diachenko,
+Y.\,V.~Rogdestvenski, and A.\,V.~Surkov}. 2014. Bazis realizatsii super-EVM
+eksaflopsnogo klassa [Implementation basis of ExaFlops class supercomputer].
+\textit{Informatika i ee  Primeneniya}~--- \textit{Inform. Appl}. 8(1):45--70.
+
+\bibitem{18-st2-1}
+\Au{Stepchenkov, Y.\,A., A.\,N.~Denisov, Y.\,G.~Diachenko, \textit{et al}.} 2013.
+\textit{Biblioteka elementov
+dlya proektirovaniya samosinkhronnykh poluzakaznykh BMK seriy 5503/5507 i~5508/5509}
+[Cell library for designing self-timed 5503/5507 and 5508/5509 gate-arrays].
+Moscow: IPI RAN. 391~p.
+\end{thebibliography}
+} }
+
+
+%\end{multicols}
+
+%\vspace*{-12pt}
+
+\hfill{\small\textit{Received August 20, 2014}}
+
+%\vspace*{-24pt}
+
+\Contr
+
+\noindent
+\textbf{Stepchenkov Yuri A.}\ (b.\ 1951)~--- Candidate of Science (PhD) in technology, Head of
+Department, Institute of Informatics Problems, Russian Academy of Sciences,Moscow 119333,Russian
+Federation; YStepchenkov@ipiran.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Diachenko Yuri G.}\ (b.\ 1958)~--- Candidate of Science (PhD) in technology, senior scientist,
+Institute of Informatics Problems, Russian Academy of Sciences, Moscow 119333, Russian Federation;
+diaura@mail.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Rogdestvenski Yuri V.}\ (b.\ 1952)~--- Candidate of Science (PhD) in technology, Head of
+Laboratory, Institute of Informatics Problems, Russian Academy of Sciences, Moscow 119333, Russian
+Federation; YRogdest@ipiran.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Morozov Nikolay V.}\ (b.\ 1956)~--- senior scientist, Institute of Informatics Problems, Russian
+Academy of Sciences, Moscow 119333, Russian Federation;\linebreak NMorozov@ipiran.ru
+
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Stepchenkov Dmitri Y.}\ (b.\ 1973)~--- senior scientist, Institute of Informatics Problems,
+Russian Academy of Sciences, Moscow 119333, Russian Federation; Stepchenkov@mail.ru
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Rogdestvenskene Asta V.}\ (b.\ 1964)~--- senior scientist, Institute of Informatics Problems, Russian
+Academy of Sciences, Moscow 119333, Russian Federation; astarozd@yahoo.com
+
+\vspace*{3pt}
+
+\noindent
+\textbf{Surkov Alexei V.} (b.\ 1978)~--- senior scientist, Scientific Research Institute for System Studies,
+Russian Academy of Sciences, Moscow 117218, Russian Federation; surkov@cs.niisi.ras.ru
+
+\label{step2-end}
+
+ \label{end\stat}
+
+\renewcommand{\bibname}{\protect\rm Литература}
