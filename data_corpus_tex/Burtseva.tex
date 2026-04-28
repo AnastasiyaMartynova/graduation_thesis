@@ -1,787 +1,0 @@
-\def\stat{burtseva}
-
-\def\tit{УПРАВЛЯЕМАЯ СИСТЕМА МАССОВОГО ОБСЛУЖИВАНИЯ С~ЭЛАСТИЧНЫМ ТРАФИКОМ 
-И~СИГНАЛАМИ ДЛЯ~АНАЛИЗА НАРЕЗКИ РЕСУРСОВ В~СЕТИ РАДИОДОСТУПА$^*$}
-
-\def\titkol{Управляемая система массового обслуживания с~эластичным трафиком 
-и~сигналами для~анализа нарезки ресурсов} % в~сети радиодоступа}
-
-\def\aut{А.\,С.~Власкина$^1$, С.\,А.~Бурцева$^2$, И.\,А.~Кочеткова$^3$, 
-С.\,Я.~Шоргин$^4$}
-
-\def\autkol{А.\,С.~Власкина, С.\,А.~Бурцева, И.\,А.~Кочеткова, 
-С.\,Я.~Шоргин}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Власкина А.\,С.}
-\index{Бурцева С.\,А.}
-\index{Кочеткова И.\,А.}
-\index{Шоргин С.\,Я.}
-\index{Vlaskina A.\,S.}
-\index{Burtseva S.\,A.}
-\index{Kochetkova I.\,A.} 
-\index{Shorgin S.\,Ya.}
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Публикация выполнена при поддержке Программы стратегического академического лидерства РУДН.}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Российский университет дружбы народов, vlaskina-as@rudn.ru}
-\footnotetext[2]{Российский университет дружбы народов, sofiya\_burceva@inbox.ru}
-\footnotetext[3]{Российский университет дружбы народов; Федеральный исследовательский центр <<Информатика  
-и~управ\-ле\-ние>> Российской академии наук, \mbox{kochetkova-ia@rudn.ru}}
-\footnotetext[4]{Федеральный исследовательский центр <<Информатика и~управ\-ле\-ние>> Российской академии наук, 
-\mbox{sshorgin@ipiran.ru}}
-
-\vspace*{-6pt}
-
-  
-    
-  \Abst{Построена управляемая система массового обслуживания с~нетерпеливым 
-эластичным трафиком и~минимально гарантированной скоростью обслуживания для анализа 
-динамической нарезки радиоресурсов беспроводной сети. Управ\-ле\-ние перераспределением 
-ресурса между двумя сегментами сети осуществляется при поступлении сигнала 
-контроллера и~в~случае простаивания ресурса одного сегмента и~ожидающих начала 
-обслуживания пользователей другого сегмента. В~зависимости от состояния сис\-те\-мы 
-принимается решение о~том, на какой объем перераспределить ресурс. Принятие решения 
-основано на показателях эффективности нарезки, учитывающих использование ресурса 
-каждого из сегментов, отклонение от рекомендуемого <<начального>> разделения, 
-дополнительную сигнальную нагрузку от контроллера. Предложена соответствующая 
-целевая функция управления, применен итерационный алгоритм расчета параметров 
-оптимальной политики распределения ресурса.}
-   
-  \KW{5G; нарезка ресурсов; управляемая система массового обслуживания; марковский 
-процесс принятия решения; эластичный трафик}
-
-\DOI{10.14357/19922264220312} 
-  
-%\vspace*{-3pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-  
-  \section{Введение}
-  
-  Одна из ключевых концепций сетей пятого и~последующих поколений~--- 
-технология нарезки сети (\textit{англ.}\ network slicing)~--- позволяет создавать 
-логические сети (сегменты), каждая из которых имеет соответствующие 
-ресурсы для обслуживания пользователей определенных услуг~[1--3]. Общая 
-конструкция системы обеспечивает экономичность и~гибкость настройки 
-и~развертывания сегментов сети~[4--6]. 
-  
-  В работе исследуется модель сети, где имеются\linebreak базовый оператор 
-с~ресурсом, а~также два виртуальных оператора, которые запрашивают доступ 
-к~этому ресурсу (рис.~1). В~качестве услуг, которые\linebreak предоставляют 
-виртуальные операторы своим пользователям, рассматриваются услуги 
-передачи данных с~минимально допустимой скоростью обслуживания, 
-а~также с~ограничениями на время ожидания начала обслуживания. Отношения между 
-базовым и~виртуальными операторами регулирует соглашение о~качестве 
-обслуживания (\textit{англ.}\ Service Level Agreement, SLA). В~соответствии с~этим 
-соглашением базовый оператор планирует распределение ресурса в~условиях 
-нормальной загрузки (<<начальное>> разделение ресурса). Управ\-ле\-ние 
-заключается в~перераспределении ресурсов между классами трафика для 
-предотвращения ухудшения качества обслуживания в~одном сегменте сети 
-из-за нехватки ресурса в~другом. 
-
-Стратегией управ\-ле\-ния радиоресурсами 
-занимается контроллер, который с~определенной периодичностью направляет 
-сигналы о проверке необходимости перераспределения. Задачей является поиск 
-оптимальных способов планирования радиоресурсов (по каким критериям 
-и~сколько ресурсов зарезервировать под конкретную услугу) в~зависимости от 
-соответствия начальному распределению, максимального использования 
-ресурсов, а~также чис\-ла сигналов контроллера, приведших 
-к~перераспределению. 
-
-
-
-  Данная работа является продолжением исследований~[7, 8], 
-анализирующих эф\-фек\-тив\-ность динамической нарезки радиоресурсов между 
-сегментами сети, с~учетом перечисленных выше трех \mbox{принципов}. Исследована 
-модель управ\-ле\-ния ресурсами при поступлении сигнала контроллера в~виде 
-управ\-ля\-емой сис\-те\-мы массового обслуживания, применен итерационный 
-алгоритм вы\-чис\-ле\-ния оптимальной стратегии.
-
-\end{multicols}
-
-\begin{figure*} %fig1
-\vspace*{1pt}
-  \begin{center}  
-    \mbox{%
-\epsfxsize=158.384mm
-\epsfbox{bur-1.eps}
-}
-
-\end{center}
-\vspace*{-6pt}
-\Caption{Схема перераспределения ресурса: \textit{1}~--- сегмент (виртуальный оператор); 
-\textit{2}~--- занятые ресурсы; \textit{3}~--- ожидающие обслуживания запросы; \textit{4}~--- 
-текущее распределение ресурсов; \textit{5}~--- начальное распределение ресурсов}
-\end{figure*}
- 
-
-\begin{multicols}{2}
-  
-  \section{Управляемая система массового обслуживания}
-  
-  Рассмотренную модель с~двумя классами услуг\linebreak можно описать в~виде 
-управляемой системы массового обслуживания~[9] с~нетерпеливым 
-эластичным трафиком, минимально гарантированной ско\-ростью обслуживания 
-и~потоком сигналов, \mbox{которые} моделируют сообщения от контроллера. 
-Схематическое изображение системы представлено на рис.~2. 
-
-\begin{figure*} %fig2
-\vspace*{1pt}
-  \begin{center}  
-    \mbox{%
-\epsfxsize=128.916mm
-\epsfbox{bur-2.eps}
-}
-
-\end{center}
-\vspace*{-6pt}
-\Caption{Схема системы массового обслуживания}
-\end{figure*} 
-  
-  Будем считать, что поток заявок на обслуживание пользователей 
-виртуальных операторов пуассоновский с~интенсивностями $\lambda_1$ 
-и~$\lambda_2$. Обслуживание~--- экспоненциальное со средним объемом 
-передаваемых данных~$\mu_1^{-1}$ и~$\mu_2^{-1}$. С~учетом минимально 
-гарантированной скорости обслуживания запросов~$b$ рассматривается 
-многоканальная система с~$N$~обслуживающими приборами. По внешнему 
-пуассоновскому потоку сигналов с~параметром~$\delta$ начальное 
-распределение ресурсов~$\tilde{m}_1$ (для 1-го класса трафика) может 
-изменяться динамически и~в произвольный момент времени равняться~$m_1$. 
-В~случае отсутствия свободных приборов, соответствующих классу 
-поступившего запроса, последний попадает в~очередь длины~$R_1$ или~$R_2$ 
-соответственно. С~интенсивностью~$\varepsilon_1$ и~$\varepsilon_2$ запросы 
-покидают очередь по причине превышения допустимого порога на 
-экспоненциальное время задержки в~оче\-реди. 
-  
-  Опишем функционирование системы при помощи марковского процесса 
-принятия решений в~непрерывном времени, который задается четырьмя 
-параметрами $\left( \mathsf{S}, A_{\bm{s}}, Q_a(\bm{s},\bm{s}^\prime), 
-R(\bm{s})\right)$. Состояние системы может быть представлено в~виде вектора 
-$\bm{s}\hm= (m_1, l_1, l_2)$, где $m_1$~--- текущее число приборов для 1-го 
-класса трафика; $l_1$ и~$l_2$~--- число запросов \mbox{1-го} и~2-го классов трафика 
-в~системе, в~пространстве 
-  \begin{multline*}
-  \mathsf{S}=\left\{ \bm{s}=\left( m_1,l_1,l_2\right):\ m_1=0,\ldots , N,\right.\\
- \!\! \left. l_1=0, \ldots , m_1+R_1,\ l_2=0, \ldots , N-m_1+R_2\right\}\!.\!\!
- % \label{e1-bur}
-  \end{multline*}
-    
-  Перераспределение ресурсов инициируется при поступлении сигнала 
-контроллера, а~также простаивании ресурсов одного класса запросов 
-и~наличии ожидающих обслуживания запросов другого класса (будем называть 
-такой сигнал <<успешным>>, т.\,е.\ приведшим к~перераспределению). Если же 
-все очереди пусты или, наоборот, полностью заняты обслуживающие ресурсы, 
-при поступлении сигнала контроллера перераспределения ресурсов не 
-произойдет.
-  
-  Разбиение множества~$\mathsf{S}$ на подмножества проводится 
-в~зависимости от возможности перераспределения ресурсов, а~также 
-соотношения между числом запросов в~очередях и~на приборах. 
-Это состояния, в~которых при поступлении сигнала произойдет $\mathsf{S}_\delta$ и~не 
-произойдет $\overline{\mathsf{S}_\delta}$ перераспределение ресурсов, 
-$\mathsf{S}\hm= \mathsf{S}_\delta \cup \overline{\mathsf{S}_\delta}$. 
-Подмножество со\-сто\-яний с~числом приборов 1-го класса $m_1$
-\begin{gather*}
-\mathsf{S}(m_1)= \left\{ (i,l_1,l_2)\in \mathsf{S}:\ i=m_1\right\}, \\
-\mathsf{S}= \mathop{\bigcup}\limits_{m_1=0}^N \mathsf{S}\left(m_1\right),
-\end{gather*}
- тоже разбивается на 
-те, в~которых произойдет перераспределение ресурсов и~в~которых не произойдет: 
-  $$
-  \mathsf{S}(m_1)= \mathsf{S}_\delta (m_1)\bigcup 
-\overline{\mathsf{S}_\delta}\left(m_1\right).
-$$
-%
- В~свою очередь, 
- $$
- \mathsf{S}_\delta  (m_1)= \mathsf{S}^1_\delta (m_1)\bigcup \mathsf{S}_\delta^2(m_1),
- $$
-  где 
-$\mathsf{S}_\delta^1(m_1)= \{ i,l_1,l_2)\hm\in \mathsf{S}(m_1):\ l_1\hm> 
-m_1, l_2\hm< N\hm-$\linebreak $-\;m_1\}$~--- состояния, в~которых при поступлении 
-сигнала ресурсы 1-го класса трафика будут увеличены; 
-$\mathsf{S}_\delta^2(m_1)\hm= \{ (i,l_1,l_2)\hm\in \mathsf{S}(m_1): l_1\hm< 
-m_1, l_2\hm>N\hm-m_1\}$~--- где будут увеличены ресурсы 2-го класса. 
-Следовательно, в~случае наличия необходимого числа свободных ресурсов для 
-обслуживания ожидающих запросов увеличение сегментов осуществляется на 
-число ожидающих запросов
-
-\vspace*{-5pt} 
-
-\noindent
-\begin{multline*}
-\mathsf{S}_\delta^k(m_1)= \mathsf{S}_\delta^{k1}(m_1)\bigcup \mathsf{S}_\delta^{k2}(m_1),\\ 
-\mathsf{S}_\delta^{k1}(m_1)\hm= \{(i,l_1,l_2)\hm\in \mathsf{S}_\delta^k(m_1): 
-l_1\hm+ l_2\hm\leq N\}
-\end{multline*}
-
-
-\vspace*{-5pt}
-
-\noindent
-или на все свободные ресурсы 
-$$
-\mathsf{S}_\delta^{k2}(m_1)\hm= \{( i,l_1,l_2)\hm\in \mathsf{S}_\delta^k(m_1): 
-l_1\hm+l_2\hm> N\}.
-$$
-
-  
-  Задачей управления системой массового обслуживания будет выбор нового 
-объема ресурса для 1-го класса трафика при поступлении сигнала конт\-рол\-ле\-ра. 
-Множество допустимых стратегий управ\-ле\-ния зависит от состояния системы 
-$\bm{s}\hm\in \mathsf{S}$ и~определяется в~виде:
-
-\vspace*{-4pt}
-
-\noindent
-  \begin{multline*}
-  A_{\bm{s}}= \left\{
-  \begin{array}{ll}
-  \{m_1,\ldots , l_1\}, &\ \bm{s}\in \mathsf{S}_\delta^{11}\,;\\[3pt]
-  \{m_1,\ldots , N-l_2\}, &\ \bm{s}\in \mathsf{S}_\delta^{12}\,;\\[3pt]
-  \{N-l_2,\ldots , m_1\}\,,&\ \bm{s}\in \mathsf{S}_\delta^{21}\,;\\[3pt]
-  \{l_1, \ldots , m_1\}\,,&\ \bm{s}\in \mathsf{S}_\delta^{22}\,,
-  \end{array}
-  \right.\\
-   a(\bm{s})\in A_{\bm{s}}\,,\ \bm{s}\in \mathsf{S}\,.
-%  \label{e2-bur}
-  \end{multline*}
-    
-    
-    \vspace*{-3pt}
-    
-  Далее зададим инфинитезимальную матрицу $Q_a(\bm{s},\bm{s}^\prime) 
-\hm= \left[ q_a (\bm{s},\bm{s}^\prime)\right]$ перехода из состояния~$\bm{s}$ 
-в~состояние~$\bm{s}^\prime$ при управляющем действии~$a$. Матрица 
-является консервативной, т.\,е.\ $q_a(\bm{s},\bm{s}^\prime) \hm\geq0$, 
-$\bm{s}\hm\not= \bm{s}^\prime$, $q_a(\bm{s},\bm{s}^\prime) \hm= -q_a(\bm{s})\hm= -
-\sum\nolimits_{\bm{s}\not= \bm{s}^\prime} q_a (\bm{s},\bm{s}^\prime)$, 
-$q_a(\bm{s})\hm<\infty$, где для $\bm{s}\hm\not= \bm{s}^\prime$ элементы 
-матрицы имеют вид:
-
-\pagebreak
-
-\noindent
-  \begin{multline*}
-  q_a(\bm{s},\bm{s}^\prime) = {}\\
-  {}\!=\!\begin{cases}
-  \lambda_1\,, & \hspace*{-25mm}\bm{s}^\prime=\left( m_1,l_1+1,l_2\right)\,,\ \bm{s}: l_1+1\leq 
-R_1\,;\\
-  \lambda_2\,, & \hspace*{-25mm}\bm{s}^\prime=\left( m_1,l_1,l_2+1\right)\,,\ \bm{s}: l_2+1\leq 
-R_2\,;\\
-  \fr{m_1}{N}\,V\mu_1\,, & \hspace*{-13mm}\bm{s}^\prime=\left( m_1,l_1-1,l_2\right)\,,\\[-4pt]
-  & \hspace*{7mm}\bm{s}:  m_1>0\,,\ l_1>0\,;\\
-  \fr{N-m_1}{N}\,V\mu_2\,, & \hspace*{-5mm}\bm{s}^\prime=\left( m_1,l_1,l_2-1\right)\,,\\[-4pt]
-  &\bm{s}: N-m_1>0\,,\ l_2>0\,;\\
-  (l_1-m_1)\varepsilon_1\,, & \hspace*{-5mm}\bm{s}^\prime=\left( m_1, l_1-1, l_2\right)\,,\\[-4pt]
-&\hspace*{18mm}\bm{s}: l_1\geq m_1\,;\\
-  (l_2-N+m_1)\varepsilon_2\,, & \hspace*{-3mm}\bm{s}^\prime=\left( m_1, l_1, l_2-1\right)\,,\\
-  & \hspace*{12mm}\bm{s}: l_2\geq N-m_1\,;\\
-  \delta\,, & \hspace*{-25mm}\bm{s}^\prime =\left( a,l_1,l_2\right)\ \mbox{для } m_1\leq a\leq l_1\,,\ \bm{s}\in 
-\mathsf{S}_\delta^{11},\\
-  & \hspace*{-13mm}\mbox{при } m_1\leq a\leq N- l_2,\ 
-\bm{s}\in \mathsf{S}_\delta^{12},\\
-& \hspace*{-13mm}\mbox{или } N-l_2\leq a\leq m_1\,,\  \bm{s}\in \mathsf{S}_\delta^{21},\\
- & \hspace*{-13mm}\mbox{или } l_1\leq a\leq m_1\,,\ \bm{s}\in 
-\mathsf{S}_\delta^{22}.
-\!\!  \end{cases}\!\!
- % \label{e3-bur}
-  \end{multline*}
-  
-  \vspace*{-4pt}
-  
-  Наконец, система приносит вознаграждение в~размере $R(s)$ денежных единиц за 
-единицу времени в~течение всего периода ее пребывания в~состоянии~$s$. 
-
-\vspace*{-12pt}
-  
-  \section{Функция вознаграждения}
-  
-  \vspace*{-4pt}
-  
-  Напомним, что строится управляемая система массового обслуживания, 
-параметром управления которой служит объем выделяемых ресурсов для \mbox{1-го} 
-класса трафика. Функция вознаграждения будет состоять из трех слагаемых, 
-которые рассчитываются для каждого конкретного состояния системы. Каждая 
-из трех компонент соответствует принципам оптимального распределения 
-ресурсов, которые будут представлены ниже.
-  
-  Принцип равного деления ресурсов, позволяющий определять число 
-запросов, которые могли бы обслуживаться, но которым приходится ожидать 
-из-за несправедливого деления ресурсов, выглядит следующим образом:
-
-\vspace*{-4pt}
-
-  \begin{equation*}
-  \chi(\bm{s})\!=\! \begin{cases}
-  \fr{N}{2}-m_1\,, & \hspace*{-2mm} \bm{s}: m_1<\fr{N}{2}\,,\ l_1>m_1\,,\\[-2pt]
-  & \hspace*{6mm}l_1-m_1> \fr{N}{2}- m_1\,;\\[-2pt]
-  l_1-m_1\,, &\hspace*{-2mm} \bm{s}: m_1<\fr{N}{2}\,,\ l_1>m_1\,,\\[-2pt]
-  & \hspace*{6mm}l_1-m_1\leq \fr{N}{2}-m_1\,;\\[-2pt]
-  \fr{N}{2}\!-\!N\!+\!m_1\,, & \hspace*{-2mm}\bm{s}: m_1\!>\!\fr{N}{2}\,,\ l_2\!>\!N\!-\!m_1\,,\\[-2pt]
-  & \hspace*{-8mm}l_2-N+m_1> \fr{N}{2}-N+m_1\,;\\[-2pt]
-  l_2\!-\!N\!+\!m_1\,, &\hspace*{-2mm} \bm{s}: m_1\!>\!\fr{N}{2}\,,\ l_2\!>\!N\!-\!m_1\,,\\[-2pt]
- & \hspace*{-6mm}l_2-N+m_1\leq \fr{N}{2}-N+m_1\,.
-\!  \end{cases}\!\!\!
- % \label{e4-bur}
-  \end{equation*}
-  
-  \vspace*{-4pt}
-  
-  Второй компонентой является принцип <<успеха>> перераспределения, 
-который учитывает вероятность того, что поступит сигнал о перераспределении 
-ресурсов, но перераспределения не произойдет из-за состояния системы, 
-и~определяется как
-  \begin{multline*}
-  \beta_\delta(\bm{s})= \delta\left( \delta+\lambda_1\cdot 1\left\{ l_1+1\leq 
-R_1+m_1\right\} +{}\right.\\
-  {}+ \lambda_2\cdot 1\left\{ l_2+1\leq R_2+N-m_1\right\}+{}\\
-  {}+
-  \fr{m_1}{N}\,V\mu_1\cdot 1\left\{ m_1>0\,,\ l_1>0\right\} +{}\\
-  {}+\fr{N-
-m_1}{N}\,V\mu_2\cdot 1\left\{ N-m_1>0\,,\ l_2>0\right\}+{}\\
-  {}+
-\left(l_1-m_1\right)\varepsilon_1\cdot 1\left\{ l_1>m_1\right\} +{}\\
-    \left.{}+\left( l_2-
-N+m_1\right)\varepsilon_2 \cdot 1\left\{l_2>N-m_1\right\}\right)^{-1}.
-  %\label{e5-bur}
-  \end{multline*}
-  
-  Третья компонента использования ресурсов, отражающая число 
-запросов, которые могли бы обслуживаться, но находятся в~ожидании из-за 
-простаивания ресурсов, определяется как 
-  \begin{equation*}
-  \gamma(\bm{s})= \begin{cases}
-  N-m_1-l_2\,, & \ \bm{s}\in \mathsf{S}_\delta^{12}(m_1)\,;\\
-  l_1-m_1\,, &\ \bm{s}\in \mathsf{S}_\delta^{11}(m_1)\,;\\
-  m_1-l_1\,, &\ \bm{s}\in \mathsf{S}_\delta^{22}(m_1)\,;\\
-  l_2-N+m_1\,, &\ \bm{s}\in \mathsf{S}_\delta^{21}(m_1)\,.
-  \end{cases}
- % \label{e6-bur}
-  \end{equation*}
-    Если в~первой компоненте задержка обслуживания связана 
-    с~<<несправедливым>> занятием всех ресурсов, то здесь, наоборот, с~тем, что 
-система выделила недостаточный объем ресурсов для обслуживания трафика. 
-  
-  В итоге функция вознаграждения вычисляется по формуле:
-  \begin{multline}
-  R(\bm{s}) =-\left( c_1\chi(\bm{s}) \cdot {1}\left\{ \bm{s}\in 
-\overline{\mathsf{S}_\delta^1(m_1)} \right\} \left[  1\left\{ m_1<\fr{N}{2}\,,\right.\right.\right.\hspace*{-2.6706pt}\\\ 
-\left.\left.\bm{s}\in \mathsf{S}_\delta^1(m_1)\right\}+
-1\left\{ m_1>\fr{N}{2},\ \bm{s}\in 
-\mathsf{S}_\delta^2(m_1)\right\}\right] +{}\\
-\left.{}+c_2\beta_\delta(\bm{s}) \cdot 1\left\{ 
-\bm{s}\in \overline{\mathsf{S}_\delta}\right\} +c_3\gamma(\bm{s})\cdot 1\left\{ 
-\bm{s}\in \mathsf{S}_\delta\right\}
-\vphantom{\fr{N}{2}}
-\right)\,,
-  \label{e7-bur}
-\end{multline}
-а функция среднего вознаграждения при управлении~$a$ определяется как 
-\begin{equation}
-g_a= \sum\limits_{\bm{s}\in \mathsf{S}} R(\bm{s}) \pi_a(\bm{s})\,,
-\label{e8-bur}
-\end{equation}
-где $\pi_a(s)$~--- стационарное распределение вероятностей при 
-управлении~$a$. Используя заданную функцию среднего 
-вознаграждения~(\ref{e8-bur}), будем решать оптимизационную 
-задачу:
-\begin{equation}
-  g^*=\max\limits_a \left( g_a\right)
-  \label{e9-bur}
-  \end{equation}
-и~получим оптимальную стратегию управления 
-распределения ресурсов. 
-
-  \begin{figure*}[b]
-  \begin{center}
-  \begin{tabular}{lll}
-\hline
-  \multicolumn{3}{c}{\textbf{Алгоритм 1.}\ Итерационный алгоритм вычисления 
-оптимальной стратегии}\\
-  \hline
-  &&\\[-6pt]
-  1: & $n\leftarrow 0$&\\
-  2: & $\displaystyle  v^{(0)}(\bm{s})=0$, $\bm{s}\in \mathsf{S}$\\ 
-  3: & $a^{(0)} (\bm{s}) = \begin{cases}
-  l_1\,, & s\in \mathsf{S}_\delta^{11}\,;\\
-  N-l_2\,, & s\in \mathsf{S}_\delta^{12}\,;\\
-  m_1-l_2-N+m_1\,, & s\in \mathsf{S}_\delta^{21}\,;\\
-  l_1\,, & s\in \mathsf{S}_\delta^{22}\,,
-  \end{cases}$ &$\triangleright$ начальная политика \\
-  4: & \textbf{solve} (система (\ref{e10-bur}))&\\
-  5: & $a^{(n+1)} (\bm{s})= (\mbox{по\ формуле}~(\ref{e11-bur}))$& $\triangleright$ улучшение 
-политики \\ 
-  6: & \textbf{if} $a^{(n+1)}(\bm{s}) =a^{(n)}(\bm{s})$, $\bm{s}\in \mathsf{S}$ 
-\textbf{then} &\\
-  7: &\hspace*{5mm} \textbf{return} $a^{(n+1)}(\bm{s}), v^{(n)}(\bm{s}), g^{(n)}$ &\\
-  8: & \textbf{else} $n\leftarrow n+1$, \textbf{go to step} 5 &\\
-  9: & \textbf{end if} &\\
-  \hline
-  \end{tabular}
-  \end{center}
-  \end{figure*}
-
-  
-  
-  \section{Оптимальная стратегия}
-  
-  Для решения оптимизационной задачи вида~(\ref{e9-bur}) в~теории 
-марковских процессов принятия решений используются итерационные 
-алгоритмы, которые существенно сокращают вычисления. Применим 
-итерационный алгоритм Р.~Ховарда~[10] для вы\-чис\-ле\-ния оптимальной 
-стратегии. Система уравнений относительно среднего  
-вознаграждения~(\ref{e8-bur}) и~весовых коэффициентов $v(s)$ имеет вид:
-  \begin{multline}
-  v(\bm{s}) =\fr{1}{\sum\nolimits_{\bm{s}^\prime \in \mathsf{S}\backslash 
-\bm{s}} q_a(\bm{s},\bm{s}^\prime)}\Bigg[ R(\bm{s})+{}\\
-{}+\sum\limits_{\bm{s}^\prime 
-\in \mathsf{S}\backslash \bm{s}} q_a(\bm{s},\bm{s}^\prime) v(\bm{s}^\prime) -
-g^a\Bigg]\,,\enskip 
-  \bm{s}\in \mathsf{S}\,,
-  \label{e10-bur}
-  \end{multline}
-    где $q_a(\bm{s},\bm{s}^\prime)$~--- элементы инфинитезимальной мат\-ри\-цы 
-$Q_a(\bm{s},\bm{s}^\prime)$; $R(\bm{s})$~--- функция 
-вознаграждения~(\ref{e7-bur}). Здесь коэффициенты $v(\bm{s})$ имеют смысл 
-вознаграждений в~случае, если система находится в~состоянии~$\bm{s}$. Для поиска 
-новой (улучшенной) стратегии задается целевая функция в~виде 
-\begin{equation}
-a(\bm{s})=\argmax\limits_{a\in A_{\bm{s}}} \left\{ v\left( a,l_1, 
-l_2\right)\right\}\,,\enskip \bm{s}\in \mathsf{S}_\delta\,.
-\label{e11-bur}
-\end{equation}
-    
-  С помощью алгоритма~1 зададим начальную стратегию перераспределения 
-ресурсов (шаг~3), при которой ресурсы классов трафика увеличиваются либо 
-на все свободные ресурсы, либо на число ожидающих обслуживания запросов. 
-На первом этапе (шаг~4) вычисляются весовые коэффициенты для текущей 
-стратегии управления. На втором этапе (шаг~5) улучшается стратегия 
-изменением управляющих действий $a(\bm{s})$ для каждого состояния $\bm{s}\hm\in 
-\mathsf{S}_\delta$. Этапы повторяются до тех пор, пока не будет найде\-на 
-оптимальная стратегия.
-  
-  
-  \section{Заключение}
-  
-  \vspace*{-6pt}
-  
-  В статье построена модель обслуживания двух классов трафика 
-с~минимально гарантированной\linebreak скоростью обслуживания при применении 
-технологии нарезки сети, которая инициируется\linebreak при поступлении сигнала 
-контроллера, в~виде управ\-ля\-емой сис\-те\-мы массового обслуживания 
-с~эластичным трафиком и~нетерпеливыми заявками. Сис\-те\-ма пред\-став\-ле\-на 
-в~терминах марковского процесса принятия решений в~непрерывном времени. 
-В~качестве принятия решений выступает выбор объема выделяемых ресурсов 
-для одного из сегментов при динамическом перераспределении ресурсов. 
-Функция вознаграждения представляет собой со\-во\-куп\-ность предложенных 
-коэффициентов: соответствия начальному распределению ресурса, успеха 
-перераспределения ресурса и~использования ресурса. 
-
-\vspace*{-16pt}
-  
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- %\addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
- 
- \vspace*{-2pt}
-
-\bibitem{2-bur} %1
-\Au{Ageev K., Sopin~E., Samouylov~K.} Resource sharing model with minimum allocation for the 
-performance analysis of network slicing~// Information technologies and mathematical 
-modelling. Queueing theory and applications~/ Eds. A.~Dudin, A.~Nazarov, 
-A.~Moiseev.~--- Communications in computer and information science ser.~--- Springer, 
-2021. Vol.~1391. P.~378--389. doi: 10.1007/978-3-030-72247-0\_28.
-
-\bibitem{1-bur} %2
-\Au{Yarkina N., Correia~L.\,M., Moltchanov~D., Gaidamaka~Y., Samouylov~K.} Multi-tenant 
-resource sharing with equitable-priority-based performance isolation of slices for 5G cellular 
-systems~// Comput. Commun., 2022. Vol.~188. P.~39--51. doi: 
-10.1016/j.comcom.2022.02.019.
-
-\bibitem{3-bur}
-\Au{Stepanov M.\,S., Stepanov~S.\,N., Andrabi~U., Petrov~D., Ndayikunda~J.} The increasing of 
-resource sharing efficiency in network slicing implementation~// Distributed computer and 
-communication networks~/ Eds. V.\,M.~Vishnevskiy, K.\,E.~Samouylov, 
-D.\,V.~Kozyrev.~--- Communications in computer and information science ser.~--- 
-Springer, 2022. Vol.~1552. P.~18--35. doi: 10.1007/978-3-030-97110-6\_2.
-
-\bibitem{5-bur} %4
-\Au{Muhizi S., Ateya~A.\,A., Muthanna~A., Kirichek~R., Koucheryavy~A.} A~novel slice-oriented 
-network model~// Distributed computer and communication networks~/ Eds. 
-V.~Vishnevskiy, D.~Kozyrev.~--- Communications in computer and information 
-science ser.~--- Springer, 2018. Vol.~919. P.~421--431. doi: 10.1007/978-3-319-99447-5\_36.
-\bibitem{6-bur} %5
-\Au{Yarkina N., Gaidamaka~Y., Correia~L.\,M., Samouylov~K.} An analytical model for 5G 
-network resource sharing with flexible SLA-oriented slice isolation~// Mathematics, 2020. Vol.~8. 
-No.\,7. P.~1177. 19~p. doi: 10.3390/ math8071177.
-
-\bibitem{4-bur} %6
-\Au{Shu Z., Taleb~T., Song~J.} Resource allocation modeling for fine-granular network slicing in 
-beyond 5G systems~// Oper. Res., 2022. Vol.~70. No.\,2. P.~349--363. doi: 
-10.1587/transcom.2021WWI0002.
-
-\bibitem{8-bur} %7
-\Au{Kochetkova I., Vlaskina~A., Burtseva~S., Savich~V., Hosek~J.} Analyzing the effectiveness of 
-dynamic network slicing procedure in 5G network by queuing and simulation models~// {Internet 
-of things, smart spaces, and next generation networks and systems}~/ Eds. 
-O.~Galinina, S.~Andreev, S.~Balandin, Y.~Koucheryavy.~--- Lecture notes in 
-computer science ser.~--- Springer, 2020. Vol.~12525. P.~71--85. doi: 10.1007/978-3-030-65726-0\_7.
-
-\bibitem{7-bur} %8
-\Au{Кочеткова И.\,А., Власкина~А.\,С., Ву~Н.\,Н., Шоргин~В.\,С.} Система массового 
-обслуживания с~управляемым по сигналам перераспределением приборов для анализа 
-нарезки ресурсов сети 5G~// Информатика и~её применения, 2021. Т.~15. Вып.~3. С.~91--97.
-doi:  10.14357/ 19922264210312.
-\bibitem{9-bur}
-\Au{Efrosinin D., Kochetkova~I., Samouylov~K., Stepanova~N.} Algorithmic analysis of  
-a~two-class multi-server heterogeneous queueing system with a controllable cross-connectivity~// 
-Analytical and stochastic modelling techniques and applications~/ Eds. 
-M.~Gribaudo, E.~Sopin, I.~Kochetkova.~--- Lecture notes in computer science  
-ser.~--- Springer, 2020. Vol.~12023. P.~1--17. doi:  
-10.1007/978-3-030-62885-7\_1.
-\bibitem{10-bur}
-\Au{Ховард Р.\,А.} Динамическое программирование и~марковские процессы~/ Пер. с~англ.~--- М.: 
-Советское радио, 1964. 192~с.
-(\Au{Howard~R.\,A.} {Dynamic programming and Markov processes}.~--- 
-Cambridge, MA, USA: MIT Press, 1960. 136~p.)
-  \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 15.07.22}}
-
-\vspace*{8pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{CONTROLLABLE QUEUING SYSTEM WITH ELASTIC TRAFFIC 
-AND~SIGNALS FOR~ANALYZING NETWORK SLICING}
-
-
-\def\titkol{Controllable queuing system with elastic traffic 
-and~signals for~analyzing network slicing}
-
-
-\def\aut{A.\,S.~Vlaskina$^1$, S.\,A.~Burtseva$^1$, I.\,A.~Kochetkova$^{1,2}$, 
-and~S.\,Ya.~Shorgin$^2$}
-
-\def\autkol{A.\,S.~Vlaskina, S.\,A.~Burtseva, I.\,A.~Kochetkova, 
-and~S.\,Ya.~Shorgin}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-15pt}
-
-
- \noindent
-   $^1$Peoples' Friendship University of Russia (RUDN University),  
-6~Miklukho-Maklaya Str., Moscow 117198, Russian\linebreak
-$\hphantom{^1}$Federation
-
- \noindent
-   $^2$Federal Research Center ``Computer Science and Сontrol'' of the Russian 
-Academy of Sciences, 44-2~Vavilov\linebreak
-$\hphantom{^1}$Str., Moscow 119333, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2022\ \ \ volume~16\ \ \ issue\ 3}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2022\ \ \ volume~16\ \ \ issue\ 3
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt} 
-  
-  
-  
-  \Abste{A~controllable queuing system with impatient elastic 
-traffic and minimum bit rate guarantee transmission is built to analyze the dynamic 
-network slicing in wireless network. Resource management of allocation between 
-two segments is carried out by controller signal and in the case of an idle resource of 
-one segment and waiting users of another. Depending on the state of the system, a 
-decision is made how to allocate the resource. The decision-making is based on the 
-efficiency indicators of slicing taking into account the resource usage of each of the 
-segments, deviation from the recommended ``initial'' slicing, and additional signal load 
-from the controller. The corresponding objective control function is proposed and an 
-iterative algorithm for calculating the parameters of the optimal resource allocation 
-policy is applied.}
-  
-  \KWE{5G; network slicing; controllable queuing system; Markov decision 
-process; elastic traffic}
-  
- 
-  
-\DOI{10.14357/19922264220312} 
-
-\vspace*{-22pt}
-
- \Ack
- 
- \vspace*{-4pt}
- 
- 
-  \noindent
-  The paper has been supported by the RUDN University Strategic Academic 
-Leadership Program.
-
-\vspace*{-1pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-
-\vspace*{-2pt}
-
-\bibitem{2-bur-1}
-  \Aue{Ageev, K., E.~Sopin, and K.~Samouylov.} 2021. Resource sharing model 
-with minimum allocation for the performance analysis of network slicing. 
-\textit{Information technologies and mathematical modelling. Queueing theory and 
-applications}. Eds. A.~Dudin, A.~Nazarov, and A.~Moiseev. Communications in 
-computer and information science ser. Springer. 1391:378--389.  
-doi: 10.1007/978-3-030-72247-0\_28.
-
-\bibitem{1-bur-1}
-  \Aue{Yarkina, N., L.\,M.~Correia, D.~Moltchanov, Y.~Gaidamaka, and 
-K.~Samouylov.} 2022. Multi-tenant resource sharing with equitable-priority-based 
-performance isolation of slices for 5G cellular systems. \textit{Comput. 
-Commun.} 188:39--51. doi: 10.1016/j.comcom.2022.02.019.
-
-\bibitem{3-bur-1}
-  \Aue{Stepanov, M.\,S., S.\,N.~Stepanov, U.~Andrabi, D.~Petrov, and 
-J.~Ndayikunda}. 2022. The increasing of resource sharing efficiency in network 
-slicing implementation. \textit{Distributed computer and communication networks}. 
-Eds. V.\,M.~Vishnevskiy, K.\,E.~Samouylov, and D.\,V.~Kozyrev. Communications 
-in computer and information science ser. Springer. 1552:18--35.  
-doi: 10.1007/978-3-030-97110-6\_2.
-
-\bibitem{5-bur-1} %4
-  \Aue{Muhizi, S., A.\,A.~Ateya, A.~Muthanna, R.~Kirichek, and A.~Koucheryavy}. 
-2018. A~novel slice-oriented network model. \textit{Distributed computer and 
-communication networks}. Eds. V.~Vishnevskiy and D.~Kozyrev. Communications 
-in computer and information science ser. Springer. 919:421--431.  
-doi: 10.1007/978-3-319-99447-5\_36.
-\bibitem{6-bur-1} %5
-  \Aue{Yarkina, N., Y.~Gaidamaka, L.\,M.~Correia, and K.~Samouylov.} 2020. An 
-analytical model for 5G network resource sharing with flexible SLA-oriented slice 
-isolation. \textit{Mathematics} 8(7):1177. 19~p. doi: 10.3390/math8071177.
-
-\bibitem{4-bur-1} %6
-  \Aue{Shu, Z., T.~Taleb, and J.~Song.} 2022. Resource allocation modeling for 
-fine-granular network slicing in beyond 5G systems. \textit{Oper. Res.} 
-70(2):349--363. doi: 10.1587/transcom.2021WWI0002.
-
-
-\bibitem{8-bur-1} %7
-  \Aue{Kochetkova, I., A.~Vlaskina, S.~Burtseva, V.~Savich, and J.~Hosek.} 2020. 
-Analyzing the effectiveness of dynamic network slicing procedure in 5G network by 
-queuing and simulation models. \textit{Internet of things, smart spaces, and next 
-generation networks and systems}. Eds. O.~Galinina, S.~Andreev, S.~Balandin, and 
-Y.~Koucheryavy. Lecture notes in computer science ser. Springer. 12525:71--85. 
-doi: 10.1007/978-3-030-65726-0\_7.
-
-\bibitem{7-bur-1} %8
-  \Aue{Kochetkova, I.\,A., A.\,S.~Vlaskina, N.\,N.~Vu, and V.\,S.~Shorgin.} 2021. Sistema 
-massovogo obsluzhivaniya s~upravlyaemym po signalam pereraspredeleniem 
-priborov dlya analiza narezki resursov seti 5G [Queuing system with signals for 
-dynamic resource allocation for analyzing network slicing in 5G networks]. 
-\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 15(3):91--97. doi: 
-10.14357/19922264210312.
-
-\bibitem{9-bur-1}
-  \Aue{Efrosinin, D., I.~Kochetkova, K.~Samouylov, and N.~Stepanova.} 2020. 
-Algorithmic analysis of a two-class multi-server heterogeneous queueing system with 
-a~controllable cross-connectivity. \textit{Analytical and stochastic modelling 
-techniques and applications}. Eds. M.~Gribaudo, E.~Sopin, and I.~Kochetkova. 
-Lecture notes in computer science ser. Springer. 12023:1--17.  
-doi: 10.1007/978-3-030-62885-7\_1.
-\bibitem{10-bur-1}
-  \Aue{Howard, R.\,A.} 1960. \textit{Dynamic programming and Markov processes}. 
-Cambridge, MA: MIT Press. 136~p.
-  \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received July 15, 2022}}
-  
-  \Contr
-  
-  \noindent
-  \textbf{Vlaskina Anastasia S.} (b.\ 1995)~--- assistant professor, Peoples' 
-Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., 
-Moscow 117198, Russian Federation; \mbox{vlaskina-as@rudn.ru}
-  
-  \vspace*{3pt}
-  
-  \noindent
-  \textbf{Burtseva Sofiya A.} (b.\ 1999)~--- student, Peoples' Friendship University 
-of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian 
-Federation; \mbox{sofiya\_burceva@inbox.ru}
-  
-  \vspace*{3pt}
-  
-  \noindent
-  \textbf{Kochetkova Irina A.} (b.\ 1985)~--- Candidate of Science (PhD) in physics 
-and mathematics, associate professor, Peoples' Friendship University of Russia 
-(RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian 
-Federation; senior scientist, Institute of Informatics Problems, Federal Research 
-Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-44-2~Vavilov Str., Moscow 119133, Russian Federation; \mbox{kochetkova-ia@rudn.ru}
-  
-  \vspace*{3pt}
-  
-  \noindent
-  \textbf{Shorgin Sergey Ya.} (b.\ 1952)~--- Doctor of Science in physics and 
-mathematics, professor, principal scientist, Institute of Informatics Problems, Federal 
-Research Center ``Computer Science and Control'' of the Russian Academy of 
-Sciences, 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
-\mbox{sshorgin@ipiran.ru}
-  
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}    

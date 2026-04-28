@@ -1,878 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-]{amsart}
-
-% 
-\newcommand{\la}{\langle}
-\newcommand{\ra}{\rangle}
-\newcommand{\Argmin}{\operatornamewithlimits{Arg\ min}}
-\newcommand{\tts}[1]{} 
-
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{20}
-\god{2003}
-\nomer{1~(488)} %                        Remove in Eng.
-%\nomer{Vol.\,47, No.\,1}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{517.998+519.6}
-
-\author{\it И.Б.\,Бадриев, О.А.\,Задворнов}
-% NB:   ^^ remove in Eng.
-\title{Итерационные методы решения
-вариационных неравенств второго рода
-с обратно сильно монотонными операторами}
-\thanks{Работа выполнена при финансовой поддержке 
-Российского фонда фундаментальных исследований 
-(код проекта 01-01-00616, 03-01-00380). }
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-
-\section*{Введение}
-
-В данной работе предложены итерационные методы решения вариационных 
-неравенств второго рода с обратно сильно монотонными операторами и выпуклыми 
-недифференцируемыми функционалами, возникающих, в частности, при описании 
-процессов установившейся фильтрации, задач об определении положения 
-равновесия мягких оболочек. Предварительно рассмотрены задачи о поиске 
-седловых точек функции Лагранжа и модифицированной функции Лагранжа.
-Установлена связь между решениями этих задач и исходной задачи.
-Это позволяет применить для построения итерационного метода решения 
-рассматриваемого вариационного неравенства алгоритм нахождения 
-седловой точки модифицированной функции Лагранжа. Исследована сходимость
-предложенного метода. В качестве примера рассмотрены 
-стационарные задачи фильтрации несжимаемой жидкости, 
-следующей разрывному закону фильтрации с предельным 
-градиентом. 
-
-\section{Постановка задачи}
-
-Пусть $V$, $H$ --- гильбертовы пространства со скалярными произведениями
-$(\cdot,\cdot)_V$, $(\cdot,\cdot)_H$ соответственно, 
-$F(\eta)=\Psi (\eta)+G (\Lambda \eta)$,
-$\Psi:V \to R^1$ --- дифференцируемый по Гато функционал, причем
-производная Гато $A=\Psi':V\to V$ --- коэрцитивный, а также 
-обратно сильно монотонный оператор, т.\,е. \cite{GT_89}
-\begin{equation}
-(A u-A \eta,\, u-\eta)_V \geq 
-\sigma \|A u-A \eta\|_V^2, \quad \sigma > 0 
-\ \ \forall u, \eta \in V,
-\label{bz_01}
-\end{equation}
-$G: H \to R^1$ --- собственный, выпуклый, непрерывный функционал, 
-$\Lambda : V \to H$ --- линейный
-непрерывный оператор, имеющий ограниченный обратный такой, что
-$(\Lambda u, \Lambda \eta)_H=(u, \eta)_V$\linebreak $\forall u , \eta \in V$.
-
-Рассматривается задача 
-\begin{equation}
-F (u)=\inf_{\eta \in V} F(\eta).
-\label{bz_02}
-\end{equation}
-Эта задача эквивалентна (см., напр., \cite{ET_79})
-следующему вариационному неравенству второго рода
-\begin{equation}
-(A u ,\, \eta-u)_V+G (\Lambda \eta)-G (\Lambda u) \geq 0 
-\ \ \forall \eta \in V
-\label{bz_03}
-\end{equation}
-и имеет по крайней мере одно решение.
-Такие вариационные неравенства возникают, в частности, при описании процессов
-установившейся фильтрации, задач об определении положения равновесия мягких
-оболочек (см. \cite{BS_IV_92}, \cite{Lap_1979}).
-
-Определим функцию Лагранжа $L:V \times H \times H \to R^1$,
-$$
-L(\eta,z;\mu)=\Psi (\eta)+G(z)+(\mu,\Lambda \eta-z)_H,
-$$
-а также расширенную (модифицированную) функцию Лагранжа \cite{FG_83} 
-$L_r : V \times H \times H \to R^1$,
-\begin{equation}
-L_r (\eta, z; \mu)=L (\eta, z; \mu)+
-\frac {r} {2} \| {\Lambda \eta-z}\|_H^2, \quad r >0.
-\label{bz_05}
-\end{equation}
-Наряду с задачей (\ref{bz_02}) рассмотрим следующие задачи о
-поиске седловых точек функционалов $L$ и $L_r$:
-\begin{gather}
-\inf_{\eta \in V,\ z\in H}
-\sup_{\mu \in H}L (\eta, z; \mu),
-\label{bz_06} \\
-%
-\inf_{\eta \in V,\ z \in H}
-\sup_{\mu \in H} L_r (\eta, z; \mu).
-\label{bz_07}
-\end{gather}
-
-\begin{thm} \label{bz_T1}
-Задача $(\ref{bz_06})$ разрешима,
-при этом первая компонента \ $u$ \ седловой точки --- это решение задачи 
-$(\ref{bz_02})$, вторая и третья компоненты $y$ и $\lambda$ седловой точки 
-связаны с первой компонентой $u$ соотношениями 
-$y=\Lambda u$, $\lambda \in \partial G(\Lambda u)$. Наоборот, 
-если $u$ --- решение задачи $(\ref{bz_02})$, $\Lambda u=y$, 
-то существует $\lambda \in \partial G(\Lambda u)$ такая, что 
-$(u, y; \lambda)$ --- седловая точка задачи $(\ref{bz_06})$.
-\end{thm}
-
-\begin{pf}
-Нетрудно проверить, что для любых $\eta \in V$, $z\in H$ справедливо
-соотношение
-$$
-\sup_{\mu \in H} \{{(\mu, \Lambda \eta-z)_H}\}=
-\begin{cases}
-0, & \Lambda \eta-z=0;\\ 
-+\infty & \text{в противном случае.}
-\end{cases}
-$$
-Поскольку решение задачи (\ref{bz_02}) существует, то
-\begin{equation}
-\min_{\eta \in V,\ z \in H}
-\sup_{\mu \in H} L (\eta, z; \mu)=
-\min_{\eta \in V,\ z \in H,\ z=\Lambda \eta}
-\{{\Psi (\eta)+G(z)}\}= 
-\min_{\eta \in V} 
-\{{\Psi (\eta)+G(\Lambda \eta)}\}=
-\Psi (u)+G(\Lambda u),
-\label{2bz5_1}
-\end{equation}
-а значит, в силу предложения~1.2 (\cite{ET_79}, с.\,172), достаточно
-доказать, что 
-\begin{equation}
-\max_{\mu \in H} 
-\inf_{\eta \in V,\ z\in H} L (\eta, z; \mu)=
-\Psi (u)+G(\Lambda u)=
-F(u)=\min_{\eta \in V,\ z \in H} 
-\sup_{\mu \in H} L (\eta, z; \mu).
-\label{2bz6}
-\end{equation}
-Для любого $\mu \in H$ имеем
-\begin{multline}
-\inf_{\eta \in V,\ z \in H} L (\eta, z; \mu)=
-- \sup_{\eta \in V} 
-[(\mu,-\Lambda \eta)_H-\Psi (\eta)] 
--\sup_{z \in H}[{(\mu, z)_H-G(z)}]= \\
-%
-=- \sup_{\eta \in V} 
-[({- \Lambda^* \mu , \eta} )_V-\Psi (\eta)] 
--\sup_{z \in H} [{(\mu, z)_H-G(z)}],
-\label{2bz6_1}
-\end{multline}
-где сопряженный к $\Lambda$ оператор $\Lambda^*: H \to V$ 
-определен соотношением
-\begin{equation}
-(\mu, \Lambda \eta)_H=({\Lambda^* \mu, \eta})_V 
-\ \ \forall \mu \in H, 
-\ \ \forall \eta \in V.
-\label{2bz7}
-\end{equation}
-
-Таким образом,
-\begin{equation}
-\sup_{\mu \in H} 
-\inf_{\eta \in V,\ z\in H} L (\eta, z; \mu)=
-\sup_{\mu \in H}
-\{{-\Psi^* (- \Lambda^* \mu)-G^*(\mu)}\},
-\label{2bz8}
-\end{equation}
-где сопряженные функционалы $G^* : H \to R^1$ и $\Psi^* : V^* \to R^1$ 
-определены соотношениями (см., напр., \cite{IoT_74}, \cite{ET_79})
-$$
-G^*(\mu)=\sup_{z \in H}[{(\mu, z)_H-G(z)}],\ \
-\Psi^* (\eta^*)=\sup_{\eta \in V}
-[({\eta^*, \eta})_V-\Psi (\eta)].
-$$
-
-С другой стороны, следуя \cite{ET_79}, введем 
-функционал $\Phi : V \times H \to R^1$ по формуле 
-$\Phi (\eta, z)=\Psi (\eta)+G(\Lambda \eta+z)$. 
-Этот функционал является 
-выпуклым, конечным и слабо полунепрерывным снизу,
-$\Phi (\eta, 0)=\Psi (\eta)+G(\Lambda \eta)=F(\eta)$. 
-Имеем
-\begin{multline}
-\Phi^* (0, \mu)=\sup_{\eta \in V,\ z \in H} 
-\{{(\mu, z)_H-\Psi (\eta)-G(\Lambda \eta+z)}\}= \\
-%
-=\sup_{\eta \in V,\ z \in H}
-\{{(\mu, z)_H-G(z)+(\mu,-\Lambda \eta)_H-\Psi (\eta)}\}= \\
-%
-=\sup_{\eta \in V} [{({- \Lambda^* \mu , \eta} )_V-\Psi (\eta)}] 
-+\sup_{z \in H} [{(\mu, z)_H-G(z)}]=
-\Psi^* (- \Lambda^* \mu)+G^*(\mu).
-\label{2bz8_1}
-\end{multline} 
-
-Таким образом, двойственной к (\ref{bz_02}) 
-(относительно возмущения $\Phi $) является задача
-\begin{equation}
-- \Phi^* (0, \lambda)=\sup_{\mu \in H} \{-\Phi^* (0, \mu) \} 
-=\sup_{\mu \in H}
-\{{-\Psi^* (- \Lambda^* \mu)-G^*(\mu)}\} .
-\label{2bz9}
-\end{equation}
-
-Из предложения 2.5 (\cite{ET_79}, с.\,63) следует, 
-что имеет место равенство 
-$$
-\sup_{\mu \in H} \{-\Phi^* (0, \mu) \} 
-=\inf_{\eta \in V} \{\Phi (\eta, 0) \}=
-\Psi (u)+G(\Lambda u) . 
-$$
-Из этого равенства, а также 
-соотношений (\ref{2bz5_1}), (\ref{2bz8})--(\ref{2bz9})
-и вытекает справедливость (\ref{2bz6}). 
-
-Пусть $(u, y; \lambda)$ --- седловая 
-точка задачи (\ref{bz_06}), т.\,е.
-\begin{equation}
-L (u, y; \mu) \leq L (u, y; \lambda) \leq L (\eta, z; \lambda)
-\ \ \forall (\eta , z) \in V \times H,\ \ \forall \mu \in H.
-\label{2bz10}
-\end{equation}
-Расписывая левое неравенство в (\ref{2bz10}), имеем
-$$
-\Psi (u)+G(y)+(\mu, \Lambda u-y)_H \leq
-\Psi (u)+G(y)+(\lambda, \Lambda u-y)_H \ \ \forall \mu \in H,
-$$ 
-следовательно, 
-$(\Lambda u-y, \mu-\lambda)_H\le0$\, $\forall \mu \in H$,
-т.\,е.
-\begin{equation}
-\Lambda u=y.
-\label{2bz11}
-\end{equation}
-Расписывая правое неравенство в (\ref{2bz10}), имеем
-\begin{equation}
-\Psi (u)+G(y)+(\lambda , \Lambda u-y)_H \leq 
-\Psi (\eta)+G(z)+(\lambda , \Lambda \eta-z)_H 
-\ \ \forall (\eta , z) \in V \times H.
-\label{2bz12}
-\end{equation} 
-Подставляя $\eta=u$ в (\ref{2bz12}), получим
-$G(y) \leq G(z)-(\lambda , y-z)_H$\, $\forall z \in H$
-или с учетом (\ref{2bz11})
-$(\lambda , y-z)_H \leq G(y)-G(z)$\, $\forall z \in H$,
-т.\,е. $\lambda \in \partial G(y)=\partial G(\Lambda u)$.
-Подставляя $z=\Lambda \eta$ в (\ref{2bz12}), с учетом (\ref{2bz11}) получим
-$$
-\Psi (u)+G(y)+(\lambda , \Lambda u-y)_H=
-\Psi (u)+G(\Lambda u)=F (u) \leq 
-\Psi (\eta)+G(\Lambda \eta)=F(\eta)
-\ \ \forall \eta \in V ,
-$$
-т.\,е. $u$ --- решение задачи (\ref{bz_02}).
-
-Наоборот, пусть $u$ --- решение задачи (\ref{bz_02}). Пусть $\lambda$ --- 
-некоторое решение двойственной задачи (\ref{2bz9}). Это решение существует
-в силу предложения~2.5 (\cite{ET_79}, с.\,63), причем справедливо равенство
-\begin{equation}
-0=\Phi^* (0, \lambda)+\Phi (u, 0), 
-\label{2bz12_1}
-\end{equation} 
-следовательно, с учетом (\ref{2bz7}) имеем
-\begin{gather*}
-0=\Psi^* (- \Lambda^* \lambda)+G^*(\lambda)+
-\Psi (u)+G(\Lambda u)=
-[{\Psi (u)+\Psi^* (- \Lambda^* \lambda) 
-- \la {-\Lambda^* \lambda, u} \ra}]+ \\
-%
-+[{G(\Lambda u)+G^*(\lambda) 
-- \la {\Lambda^* \lambda, u} \ra}]=
-[{\Psi (u)+\Psi^* (- \Lambda^* \lambda) 
-- \la {-\Lambda^* \lambda , u} \ra}]+ \\ +
-[{G(\Lambda u)+G^*(\lambda) 
-- ({\lambda, \Lambda u})_H}]. 
-\end{gather*}
-Поскольку по определению сопряженных функций выражения в квадратных 
-скобках неотрицательны, то отсюда
-$G(\Lambda u)+G^*(\lambda)-({\lambda, \Lambda u})_H=0$, 
-а это условие равнозначно тому, что
-(см. \cite{ET_79}, предл.~5.1, с.\,31)
-$\lambda \in \partial G({\Lambda u})$.
-
-Далее, из (\ref{2bz6_1}), (\ref{2bz8_1}), (\ref{2bz9}) вытекает
-$$
-- \Phi^* (0, \lambda)=
-\sup_ {\mu \in H}\{-\Phi^* (0, \mu) \}=
-\inf_{\eta \in V,\ z \in H} 
-L (\eta, z; \lambda) \leq L (u, \Lambda u; \lambda).
-$$
-Следуя (\cite{ET_79}, с.\,65), нетрудно проверить, что
-справедливо соотношение
-$$
-\Phi (u, 0)=\sup_{\mu \in H}
-L (u, \Lambda u; \mu) \geq L (u, \Lambda u; \lambda),
-$$
-а тогда, снова используя (\ref{2bz12_1}), получим, что
-$(u, y; \lambda)$ --- седловая точка задачи (\ref{bz_06}).
-\end{pf}
-
-\begin{thm} \label{bz_T2}
-Множества седловых точек задач $(\ref{bz_06})$ и $(\ref{bz_07})$ совпадают.
-\end{thm}
-
-\begin{pf}
-Пусть $(u, y; \lambda)$ --- седловая точка задачи (\ref{bz_06}), т.\,е.
-выполнено соотношение (\ref{2bz10}). При доказательстве 
-теоремы~\ref{bz_T1} установлено, что выполнено равенство (\ref{2bz11}). 
-При этом
-\begin{multline*}
-L_r (u,y;\mu)=L (u, y; \mu)\leq L (u, y;\lambda)=L_r (u, y; \lambda) \leq \\
-%
-\leq L (\eta, z; \lambda) \leq L_r (\eta, z; \lambda) 
-\ \ \forall (\eta , z) \in V \times H, \ \ \forall \mu \in H,
-\end{multline*}
-а значит, $(u, y; \lambda)$ --- седловая точка задачи (\ref{bz_07}).
-
-Обратно, пусть $(u, y; \lambda)$ --- седловая 
-точка задачи (\ref{bz_07}), т.\,е.
-\begin{equation}
-L_r (u, y; \mu) \leq L_r (u, y; \lambda)
-\leq L_r (\eta, z; \lambda)
-\ \ \forall (\eta , z) \in V \times H, \ \ \forall \mu \in H.
-\label{2bz13}
-\end{equation}
-Из левого неравенства в (\ref{2bz13}) вытекает $\Lambda u=y$. Поэтому
-для произвольных $\mu$ из $H$ получаем
-$$
-L (u, y; \mu)=L_r (u, y; \mu) \leq L_r (u, y; \lambda)=L (u, y; \lambda)
-\ \ \forall \mu \in H. 
-$$
-Из правого неравенства в (\ref{2bz13}) имеем
-\begin{multline}
-\Psi (u)+G(y)+(\lambda , \Lambda u-y)_H+
-\frac {r} {2} \| {\Lambda u-y}\|_H^2 \leq \\ \le \Psi (\eta)+
-G(z)+(\lambda , \Lambda \eta-z)_H 
-+ \frac {r} {2} \| {\Lambda \eta-z}\|_H^2 
-\ \ \forall (\eta , z) \in V \times H. 
-\label{2bz14}
-\end{multline}
-Полагая в этом неравенстве
-$\eta=u+t(w-u)$, $z=y+t(s-y)$, где $t \in (0,1)$, 
-$w$ и $s$ --- произвольные элементы из $V$ и $H$ соответственно, пользуясь 
-выпуклостью функционалов $\Psi$ и $G$ и равенством ${\Lambda u=y}$, получим
-\begin{multline*}
-\Psi (u)+G(y) \leq \Psi (u)+ t({\Psi (w)-\Psi (u)})+
-G(y)+ t ({G(s)-G(y)})+ \\
-%
-+(1-t) (\lambda , \Lambda u-y)_H+
-t(\lambda , \Lambda w-s)_H+ \\
-%
-+ \frac {r} {2}\| {(1-t) (\Lambda u-y)+t (\Lambda w-s)}\|_H^2=
-\Psi (u)+ t ({\Psi (w)-\Psi (u)})+ \\
-%
-+G(y)+ t ({G(s)-G(y)})+
-t (\lambda , \Lambda w-s)_H 
-+ t^2 \frac {r} {2} \| {\Lambda w-s}\|_H^2 
-\ \ \forall (w , s) \in V \times H, 
-\end{multline*}
-отсюда
-$$
-0 \leq t ({\Psi (w)-\Psi (u)})+ t ({G(s)-G(y)})+
-t (\lambda , \Lambda w-s)_H+
- t^2 \frac {r} {2} \| {\Lambda w-s}\|_H^2 
-\ \ \forall (w , s) \in V \times H. 
-$$
-Разделив обе части этого неравенства на $t > 0$ и
-перейдя затем к пределу при ${t \to+0}$, получим
-$$
-0 \leq \Psi (w)-\Psi (u)+G(s)-G(y)+
-(\lambda , \Lambda w-s)_H 
-\ \ \forall (w , s) \in V \times H, 
-$$
-следовательно,
-$L (u, y; \lambda) \leq L (w, s; \lambda)$ 
-\, $\forall (w , s) \in V \times H$. 
-
-Таким образом, 
-$(u, y; \lambda)$ --- седловая точка задачи (\ref{bz_06}).
-\end{pf}
-
-\section{Построение итерационного процесса и исследование его сходимости}
-
-Из теорем \ref{bz_T1}, \ref{bz_T2} вытекает, что для нахождения решения
-задачи (\ref{bz_02}) можно использовать алгоритмы поиска седловой точки
-функции Лагранжа (\ref{bz_05}). 
-
-Рассмотрим следующий итерационный процесс поиска седловой точки $L_r$.
-Пусть $u^{(0)}$ --- произвольный элемент из $V$,
-полагаем $y^{(0)}=\Lambda u^{(0)}$, 
-находим $\lambda^{(0)} \in \partial G (u^{(0)})$.
-Для известных $y^{(k)}$, $\lambda^{(k)}$ найдем 
-\begin{equation}
-u^{(k+1)}=u^{(k)}-\tau [{A u^{(k)}+\Lambda^* \lambda^{(k)}+
-r u^{(k)}-r \Lambda^* y^{(k)}}] .
-\label{2bz15}
-\end{equation}
-Затем находим $y^{(k+1)}$, решая задачу минимизации
-\begin{equation}
-L_r (u^{(k+1)}, y^{(k+1)}; \lambda^{(k)}) \leq
-L_r (u^{(k+1)}, z; \lambda^{(k)})
-\ \ \forall z \in H.
-\label{2bz16}
-\end{equation}
-Полагаем, наконец,
-\begin{equation}
-\lambda^{(k+1)}=\lambda^{(k)}+r ({\Lambda u^{(k+1)}-y^{(k+1)}}).
-\label{2bz17}
-\end{equation}
-
-Исследуем сходимость предложенного итерационного процесса.
-Пусть $Q=V \times H \times H$ --- гильбертово пространство
-со скалярным произведением
-$({\cdot,\cdot})_Q=
-a_1 ({\cdot,\cdot})_V+a_2 ({\cdot,\cdot})_H+
-a_3 ({\cdot,\cdot})_H$, где
-$$
-a_1 =\frac {1-\tau r} {2 \tau}, 
-\ \ a_2 =\frac {r} {2}, \ \ a_3 =\frac {1} {2 r},
-$$
-$\tau$, $r$ --- положительные константы, 
-связанные соотношением ${\tau r < 1}$,
-а также дополнительными условиями, которые будут сформулированы ниже.
-
-Введем оператор $T: Q \to Q$,
-\begin{gather}
-Tq=\{{T_1q, T_2 q, T_3 q,} \},\notag \\
-%
-T_1 q=q_1-\tau [{A q_1+\Lambda^* q_3+r q_1-r \Lambda^* q_2}], 
-\label{bz_08_0} \\
-%
-T_2 q=\Argmin_{z \in H} L_r (T_1 q, z; q_3), 
-\label{bz_08} \\
-%
-T_3 q=q_3+r [{\Lambda T_1 q-T_2 q}], 
-\label{bz_09}
-\end{gather}
-
-\begin{thm} \label{bz_T3}
-Множество седловых точек задачи $(\ref{bz_06})$ совпадает с 
-множеством неподвижных точек оператора $T$.
-\end{thm}
-
-\begin{pf}
-Пусть $(q_1, q_2, q_3)$ --- неподвижная точка оператора $T$, т.\,е. 
-${T_1q=q_1}$, ${T_2q=q_2}$, ${T_3q=q_3}$. Из (\ref{bz_09}) имеем
-$\Lambda q_1=q_2$, т.\,е. $q_1=\Lambda^* q_2$.
-С учетом этого равенства из (\ref{bz_08_0}) следует
-$A q_1+\Lambda^* q_3=0$,
-откуда, принимая во внимание равенство $A=\Psi '$, получим
-$$
-(\Psi' q_1, \eta-q_1)_V+(q_3 , \Lambda \eta-q_2)_H=0
-\ \ \forall \eta \in V,
-$$
-и
-\begin{equation}
-\Psi (\eta)-\Psi (q_1)+(q_3 , \Lambda \eta-q_2)_H \geq 0
-\ \ \forall \eta \in V.
-\label{bz_10}
-\end{equation}
-
-Далее, расписывая соотношение (\ref{bz_08}), имеем
-\begin{multline}
-\Psi (q_1)+G(q_2)+(q_3, \Lambda q_1-q_2)_H+
-\frac {r} {2} \| {\Lambda q_1-q_2} \|_H^2 \leq \\
-%
-\leq \Psi (q_1)+G(z)+(q_3, \Lambda q_1-z)_H+
-\frac {r} {2} \| {\Lambda q_1-z} \|_H^2 \ \ \forall z \in H
-\label{bz_10_1}
-\end{multline}
-или
-$$
-G(z)-G(q_2)-(q_3, z-q_2)_H+
-r ({q_2-\Lambda q_1, z-q_2})_H \geq 0 \ \ \forall z \in H.
-$$
-Отсюда, принимая во внимание равенство $\Lambda q_1=q_2$, получаем
-\begin{equation}
-G(z)-G(q_2)-(q_3, z-q_2)_H \geq 0 \ \ \forall z \in H.
-\label{bz_11}
-\end{equation}
-Сложим неравенства (\ref{bz_10}) и (\ref{bz_11})
-$$
-0 \leq \Psi (\eta)-\Psi (q_1)+(q_3 , \Lambda \eta-q_2)_H+
-G(z)-G(q_2)-(q_3, z-q_2)_H
-\ \ \forall (\eta, z) \in V \times H,
-$$
-т.\,е.
-$$
-\Psi (q_1)+G(q_2) \leq \Psi (\eta)+G(z)+(q_3 , \Lambda \eta-z)_H
-\ \ \forall (\eta, z) \in V \times H,
-$$
-откуда, снова используя равенство $\Lambda q_1=q_2$, получим
-\begin{multline}
-L(q_1, q_2; \mu)=\Psi (q_1)+G(q_2)+(\mu, \Lambda q_1-q_2)_H= \\
-%
-=\Psi (q_1)+G(q_2) \leq
-\Psi (\eta)+G(z)+(q_3 , \Lambda \eta-z)_H= 
-L(\eta , z; q_3)
-\ \ \forall (\eta, z) \in V \times H, \ \ \forall \mu \in H.
-\label{bz_12}
-\end{multline}
-Полученные соотношения означают, что
-$(q_1, q_2, q_3)$ --- седловая точка функционала $L$.
-
-Наоборот, пусть $(q_1, q_2, q_3)$ --- седловая точка функционала $L$, т.\,е.
-выполнены соотношения (\ref{bz_12}). 
-По аналогии с доказательством теоремы \ref{bz_T1}, нетрудно проверить, что
-$\Lambda q_1=q_2$, откуда вытекает
-\begin{equation}
-q_3=q_3+r [{\Lambda q_1-q_2}]. 
-\label{bz_13}
-\end{equation}
-Далее, подставляя в правую часть неравенства (\ref{bz_12}) $\eta=q_1$, 
-с учетом $\Lambda q_1=q_2$ получим справедливость неравенства
-(\ref{bz_10_1}), т.\,е.
-\begin{equation}
-q_2=\Argmin_{z \in H} L_r (q_1, z; q_3).
-\label{bz_14}
-\end{equation}
-Подставляя, наконец, в правую часть неравенства (\ref{bz_12}) $z=q_2$,
-получим, что справедливо неравенство (\ref{bz_10}), откуда вытекает
-\begin{equation}
-q_1=q_1-\tau [{A q_1+\Lambda^* q_3+r q_1-r \Lambda^* q_2}]. 
-\label{bz_15}
-\end{equation}
-Соотношения (\ref{bz_13})--(\ref{bz_15}) означают, что 
-$(q_1, q_2, q_3)$ --- неподвижная точка оператора $T$.
-\end{pf}
-
-\begin{thm} \label{bz_T4}
-Пусть 
-\begin{equation}
-\tau < \min \bigg\{{\frac {2 \sigma} {2 \sigma r+1}, 
-\frac {1} {r}} \bigg\}. 
-\label{2bz18}
-\end{equation}
-Тогда оператор $T$ является нерастягивающим. 
-
-Более того, справедливо неравенство
-\begin{equation}
-\| {T q-T p} \|_Q^2+
-\delta (A q_1-A p_1, q_1-p_1)_V
-\leq \| {q-p} \|_Q^2 ,
-\label{2bz18_01}
-\end{equation}
-где 
-$\delta= \frac{1}{2 (1-\tau r)}\big(2-2 \tau r-\frac {\tau} {\sigma}\big)$.
-\end{thm}
-
-\begin{pf}
-Имеем
-$$
-T_1 q=(1- \tau r)q_1-\tau A q_1 -
-\tau [{\Lambda^* q_3-r \Lambda^* q_2}]=
-S q_1-\tau [{\Lambda^* q_3-r \Lambda^* q_2}] ,
-$$
-где $S \eta=(1- \tau r) \eta-\tau A \eta$. Далее, в силу (\ref{bz_01}) 
-\begin{multline}
-\| {S \eta-S u} \|_V^2=(1- \tau r)^2 \| {\eta-u} \|_V^2 -
-2 \tau (1- \tau r) (A \eta-A u, \eta-u)_V+ \\
-%
-+\tau^2 \| {A \eta-A u} \|_V^2 \leq
-(1- \tau r)^2 \| {\eta-u} \|_V^2- 
-\tau \bigg(2-2 \tau r-\frac {\tau} {\sigma}\bigg) (A \eta-A u, \eta-u)_V
-\ \ \forall u, \eta \in V. 
-\label{2bz19}
-\end{multline}
-Поскольку
-$T_1 q-T_1 p=S q_1-S p_1-
-\tau [{\Lambda^* (q_3-p_3)-r \Lambda^* (q_2-p_2)}]$,
-то, используя $\varepsilon$-неравенство Юнга, имеем
-\begin{multline*}
-\| {T_1 q-T_1 p} \|_V^2=(S q_1-S p_1, T_1 q-T_1 p)_V-
-\tau ({\Lambda^* (q_3-p_3)-r \Lambda^* (q_2-p_2), T_1 q-T_1 p})_V \leq \\
-%
-\leq \frac {1}{2 \varepsilon} \| {S q_1-S p_1} \|_V^2+
-\frac {\varepsilon} {2} \| {T_1 q-T_1 p} \|_V^2 -
-\tau ({\Lambda^* (q_3-p_3)-r \Lambda^* (q_2-p_2), T_1 q-T_1 p})_V.
-\end{multline*}
-Отсюда с учетом (\ref{2bz19})
-\begin{multline*}
-\frac {2-\varepsilon} {2 \tau} \| {T_1 q-T_1 p} \|_V^2 \leq
-\frac {1} {2 \varepsilon \tau} \| {S q_1-S p_1} \|_V^2 - 
-({\Lambda^* (q_3-p_3)-r \Lambda^* (q_2-p_2), T_1 q-T_1 p})_V \leq \\
-%
-\leq \frac {(1-\tau r)^2} {2 \varepsilon \tau} \| {q_1-p_1} \|_V^2 -
-({\Lambda^* (q_3-p_3)-r \Lambda^* (q_2-p_2), T_1 q-T_1 p})_V - \\
-%
-- \frac {1} {2 \varepsilon} \bigg(2-2 \tau r-\frac {\tau} {\sigma}\bigg) 
-(A q_1-A p_1, q_1-p_1)_V.
-\end{multline*}
-Выбирая $\varepsilon=1-\tau r$, получим
-\begin{multline}
-\frac {1+\tau r} {2 \tau} \| {T_1 q-T_1 p} \|_V^2 \leq
-\frac {(1-\tau r)} {2 \tau} \| {q_1-p_1} \|_V^2 - \\
-%
-- ({\Lambda^* (q_3-p_3)-r \Lambda^* (q_2-p_2), T_1 q-T_1 p})_V -
-\delta (A q_1-A p_1, q_1-p_1)_V= \\
-%
-= \frac {1-\tau r} {2 \tau} \| {q_1-p_1} \|_V^2 -
-\frac {1} {2 (1-\tau r)} \bigg(2-2 \tau r-\frac {\tau} {\sigma}\bigg) 
-(A q_1-A p_1, q_1-p_1)_V - \\
-%
-- ({q_3-p_3, \Lambda (T_1 q-T_1 p)})_H
-+r ({q_2-p_2, \Lambda (T_1 q-T_1 p)})_H.
-\label{2bz20_0}
-\end{multline}
-Поскольку
-$$
-({q_2-p_2, \Lambda (T_1 q-T_1 p)})_H \leq
-\frac {1} {2} \| {q_2-p_2} \|_H^2+
-\frac {1} {2} \| {\Lambda (T_1 q-T_1 p)} \|_H^2,
-$$
-то из (\ref{2bz20_0}) вытекает
-\begin{multline}
-\delta (A q_1-A p_1, q_1-p_1)_V+
-\frac {1+\tau r} {2 \tau} \| {T_1 q-T_1 p} \|_V^2 \leq \\
-%
-\leq \frac {1-\tau r} {2 \tau} \| {q_1-p_1} \|_V^2 -
-({q_3-p_3, \Lambda (T_1 q-T_1 p)})_H+
-\frac {r} {2} \| {q_2-p_2} \|_H^2+
-\frac {r} {2} \| {\Lambda (T_1 q-T_1 p)} \|_H^2.
-\label{2bz20}
-\end{multline}
-Далее, из (\ref{bz_08}) получим
-\begin{align*}
-- (q_3, s-T_2 q)_H+r (T_2 q-\Lambda T_1 q, s-T_2 q)_H+G(s)-G(T_2 q) &\geq 0
-\ \ \forall s \in H, \\
-%
-- (p_3, s-T_2 p)_H+r (T_2 p-\Lambda T_1 p, s-T_2 p)_H+G(s)-G(T_2 p) &\geq 0
-\ \ \forall s \in H.
-\end{align*}
-Подставляя в первое из этих неравенств $s=T_2 p$, во второе $s=T_2 q$,
-а затем складывая полученные неравенства, имеем
-$$
-- (q_3-p_3, T_2 p-T_2 q)_H+r (T_2 q-T_2 p, T_2 p-T_2 q)_H-
-r (\Lambda (T_1 q-T_1 p), T_2 p-T_2 q)_H \geq 0
-$$
-или
-\begin{equation}
-r \| {T_2 q-T_2 p} \|_H^2 \leq 
--r (\Lambda (T_1 q-T_1 p), T_2 p-T_2 q)_H-(q_3-p_3, T_2 p-T_2 q)_H .
-\label{2bz21}
-\end{equation}
-Теперь, используя (\ref{bz_09}), получим
-\begin{multline*}
-\| {T_3 q-T_3 p} \|_H^2=\| {q_3-p_3} \|_H^2+
-2 r (q_3-p_3, \Lambda (T_1 q-T_1 p))_H- \\
-%
-- 2 r (q_3-p_3, T_2 q-T_2 p)_H+
-r^2 \| {\Lambda (T_1 q-T_1 p)-(T_2 q-T_2 p)} \|_H^2, 
-\end{multline*}
-откуда вытекает
-\begin{multline}
-\frac {1} {2 r} \| {T_3 q-T_3 p} \|_H^2=
-\frac {1} {2 r} \| {q_3-p_3} \|_H^2+
-(q_3-p_3, \Lambda (T_1 q-T_1 p)_H- 
-(q_3-p_3, T_2 q-T_2 p))_H+ \\ +
-\frac {r} {2} \| {\Lambda (T_1 q-T_1 p)} \|_H^2 - 
-r (\Lambda (T_1 q-T_1 p), T_2 q-T_2 p)_H+
-\frac {r} {2} \| {T_2 q-T_2 p} \|_H^2. 
-\label{2bz22}
-\end{multline}
-Сложим соотношения (\ref{2bz20})--(\ref{2bz22})
-\begin{multline*}
-\delta (A q_1-A p_1, q_1-p_1)_V+
-\frac {1} {2 r} \| {T_3 q-T_3 p} \|_H^2+ 
-r \| {T_2 q-T_2 p} \|_H^2+
-\frac {1+\tau r} {2 \tau} \| {T_1 q-T_1 p} \|_V^2 \leq \\
-%
-\le \frac {1-\tau r} {2 \tau} \| {q_1-p_1} \|_V^2+ 
-\frac {r} {2} \| {q_2-p_2} \|_H^2+
-\frac {r} {2} \| {\Lambda (T_1 q-T_1 p)} \|_H^2+ \\
-%
-+ \frac {1} {2 r} \| {q_3-p_3} \|_H^2+
-\frac {r} {2} \| {\Lambda (T_1 q-T_1 p)} \|_H^2+
-\frac {r} {2} \| {T_2 q-T_2 p} \|_H^2= \\
-%
-= \frac {1-\tau r} {2 \tau} \| {q_1-p_1} \|_V^2+
-\frac {r} {2} \| {q_2-p_2} \|_H^2+
-r \| {T_1 q-T_1 p} \|_V^2+ 
-\frac {1} {2 r} \| {q_3-p_3} \|_H^2+
-\frac {r} {2} \| {T_2 q-T_2 p} \|_H^2,
-\end{multline*}
-следовательно,
-\begin{multline}
-\delta (A q_1-A p_1, q_1-p_1)_V+\| {T q-T p} \|_Q^2=
-\delta (A q_1-A p_1, q_1-p_1)_V+ \\
-+ \frac {1} {2 r} \| {T_3 q-T_3 p} \|_H^2+
-\frac {r} {2} \| {T_2 q-T_2 p} \|_H^2+ 
-\frac {1-\tau r} {2 \tau} \| {T_1 q-T_1 p} \|_V^2 \leq
-\frac {1-\tau r} {2 \tau} \| {q_1-p_1} \|_V^2+ \\
-%
-+\frac {r} {2} \| {q_2-p_2} \|_H^2+
-\frac {1} {2 r} \| {q_3-p_3} \|_H^2=\| { q- p} \|_Q^2.
-\label{2bz23}
-\end{multline}
-Из (\ref{2bz23}) следует справедливость неравенства (\ref{2bz18_01}).
-Так как в силу (\ref{2bz18}) $\delta > 0$, то из (\ref{2bz18_01}) следует, что
-оператор $T$ является нерастягивающим. 
-\end{pf}
-
-Справедлива
-
-\begin{thm} \label{bz_T5}
-Пусть выполнено условие $(\ref{2bz18_01})$,
-итерационные последовательности $\{{u^{(k)}} \}_{k=0}^{\infty}$, 
-$\{{y^{(k)}} \}_{k=0}^{\infty}$, $\{{\lambda^{(k)}} \}_{k=0}^{\infty}$
-построены согласно $(\ref{2bz15})$--$(\ref{2bz17})$. Тогда существует 
-$(u, y; \lambda)$
---- седловая точка лагранжиана $(\ref{bz_05})$ такая, что последовательность
-$$
-\bigg({\frac {1} {k} \sum \limits_{j=1}^{k} u^{(j)}, 
-\frac {1} {k} \sum \limits_{j=1}^{k} y^{(j)}; 
-\frac {1} {k} \sum \limits_{j=1}^{k} \lambda^{(j)} 
-}\bigg)
-%% \label{2bz24}
-$$
-сходится слабо к $(u, y; \lambda)$ в $Q$ при $k \to+\infty$.
-\end{thm}
-
-\begin{pf}
-Очевидно, что итерационный процесс (\ref{2bz15})--(\ref{2bz17}) можно
-записать в виде
-$$
-q^{(k+1)}=Tq^{(k)},\ \ q^{(k)}=(u^{(k)}, y^{(k)}; \lambda^{(k)}).
-$$
-
-Согласно теоремам \ref{bz_T1}, \ref{bz_T3} существует по крайней мере
-одна неподвижная точка $q^*$ оператора $T$, являющегося в силу
-теоремы \ref{bz_T4} нерастягивающим. Введем множество
-$$
-K=\{{q \in Q: \| {q-q^*} \|_Q \leq d=
-\| {q^{(0)}-q^*} \|_Q} \}. 
-$$
-Ясно, что это множество является выпуклым, замкнутым и ограниченным.
-При этом оператор $T$ переводит множество $K$ в себя, поскольку
-$$
-\| {Tq-q^*} \|_Q=\| {Tq-Tq^*} \|_Q \leq
-\| {q-q^*} \|_Q \leq d \ \ \forall q \in K.
-$$
-Поэтому утверждение данной теоремы вытекает непосредственно
-из теоремы~7 (\cite{OE_88}, с.\,248).
-\end{pf}
-
-\section{Применение к стационарным задачи теории фильтрации}
-
-Рассматриваются стационарные задачи фильтрации несжимаемой жидкости, 
-следующей разрывному закону фильтрации с предельным 
-градиентом.
-
-Пусть $\Omega$ --- ограниченная область в $R^{m}$, $m \geq 1$,
-с непрерывной по Липшицу  границей $\Gamma$, \linebreak
-$\xi \to g(\xi^{2})\xi$ --- функция, определяющая закон фильтрации. 
-Предполагаем $g(\xi^{2})\xi=g_0(\xi^{2})\xi+g_1(\xi^{2})\xi$, причем 
-$\xi \to g_i(\xi^{2})\xi$, $i=0,1$, --- неотрицательные 
-функции, равные нулю при 
-$\xi \leq \beta$, ($\beta \geq 0$ --- предельный градиент), 
-$g_1(\xi^{2})\xi=\vartheta$ при
-$\xi > \beta $, $\xi \to g_0(\xi^{2})\xi$ --- непрерывная функция, 
-строго возрастающая при $\xi > \beta$, имеющая на бесконечности
-линейный рост и удовлетворяющая так называемому
-условию подчинения
-$$ 
-\frac{g_0(\xi^{2})\xi -g_0(\eta^{2})\eta} 
-{\xi-\eta} \le c_{0}(1+\xi+\eta)^{p-2} \ \ \forall
-\xi, \eta \in R^{1} > 0.
-$$
-Пусть $V=\overset{\circ} W{}^{(1)}_2 (\Omega)$, 
-$H=[{L_2 (\Omega)}]^m$, $\Lambda=\nabla$, 
-$A: V \to V^*$ --- оператор, порождаемый формой
-$$
-(A u, \eta)_V=\int_{\Omega} g_0(| \nabla u |^2)
-(\nabla u , \nabla \eta) dx-(f, \eta)_V \ \ \forall u, \eta \in V,
-$$
-где $(\cdot,\cdot)$ и $| \cdot |$ --- соответственно скалярное 
-произведение и норма в $R^m$, $f$ --- заданный элемент из $V$. 
-Определим также функционал $G: H \to R^1$ соотношением
-$$
-G(p)=\int_\Omega \int_0^{| p |} g_1(\xi^{2}) \xi\, d\xi\,
-dx.
-$$ 
-
-Под решением рассматриваемой стационарной задачи фильтрации 
-будем понимать функцию $u \in V$, 
-являющуюся решением вариационного неравенства (\ref{bz_03})
-(см. \cite{Lap_1979}, \cite{LBK_IV_78}).
-
-В \cite{BZS_DU_01}, \cite{KL_73_IV} установлено, что оператор $A$ 
-и функционал $G$ удовлетворяют условиям \S\,1,
-так что для решения рассматриваемых задач фильтрации
-можно использовать итерационный процесс (\ref{2bz15})--(\ref{2bz17}). 
-При этом справедливо утверждение теоремы~\ref{bz_T5}.
-
-\begin{thebibliography}{99}
-
-\bibitem{GT_89}
-Гольштейн Е.Г., Третьяков Н.В. 
-{\em Модифицированные функции Лагранжа}. -- М.: Наука, 1989. -- 400 с.
-
-\bibitem{ET_79}
-Экланд И., Темам Р. {\em Выпуклый анализ и вариационные проблемы}.
--- М.: Мир, 1979. -- 399~с.
-
-\bibitem{BS_IV_92}
-Бадриев И.Б., Шагидуллин Р.Р.
-{\em Исследование одномерных уравнений статического состояния
-мягкой оболочки и алгоритма их решения} // 
-Изв. вузов. Математика. -- 1992. -- \No\,1. -- С.\,8--16. 
-
-\bibitem{Lap_1979}
-Лапин А.В. {\em Об исследовании некоторых нелинейных задач теории 
-фильтрации} // Журн. вычисл. матем. и матем. физ. --
-1979. -- Т.\,19. -- \No\,3. -- С.\,689--700.
-
-\bibitem{FG_83}
-{\em Resolution numeriques de problemes aux limites par des methodes
-de Lagrangien augmente}
-/ Eds. M.\,Fortin, R.\,Glowinski. -- Paris: Dunod, 1983. -- 576~p.
-
-\bibitem{IoT_74}
-Иоффе А.Д., Тихомиров В.М.
-{\em Теория экстремальных задач}. -- М.: Наука, 1974. -- 478~с.
-
-\bibitem{OE_88}
-Обен Ж.-П., Экланд И. {\em Прикладной нелинейный анализ}. --
-М.: Мир, 1988. -- 516~с.
-
-\bibitem{LBK_IV_78}
-Ляшко А.Д.\, А.Д.\,Бадриев И.Б., Карчевский М.М.
-{\em О вариационном методе для уравнений с разрывными монотонными 
-операторами} // Изв. вузов. Математика. -- 1978. --
-\No\,11. -- С.\,63--69.
-
-\bibitem{BZS_DU_01}
-Бадриев И.Б., Задворнов О.А., Саддек А.М. 
-{\em Исследование сходимости итерационных методов решения некоторых 
-вариационных неравенств с псевдомонотoнными операторами} // Дифференц. 
-уравнения. -- 2001. -- Т.\,37. -- \No\,7. -- C.\,1009--1016.
-
-
-\bibitem{KL_73_IV}
-Ляшко А.Д., Карчевский М.М.
-{\em О решении некоторых нелинейных задач 
-теории фильтрации} // Изв. вузов. Математика. -- 1975.
--- \No\,6. -- С.\,73--81. 
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Казанский государственный университет}{\it Поступила}
-\post{}{17.06.2002}
-
-\label{end}
-\end{document}
-

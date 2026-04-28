@@ -1,786 +1,0 @@
-\def\stat{gorshenin-i}
-
-\def\tit{СИСТЕМА УПРАВЛЕНИЯ ОБУЧЕНИЕМ ELIS. ПОЛЬЗОВАТЕЛЬСКИЙ ИНТЕРФЕЙС И~ФУНКЦИОНАЛЬНЫЕ 
-ВОЗМОЖНОСТИ}
-
-\def\titkol{Система управления обучением ELIS. Пользовательский интерфейс 
-и %функциональные 
-возможности}
-
-
-\def\aut{А.\,К.~Горшенин$^1$, Е.\,С.~Данилович$^2$, Д.\,Р.~Хромов$^3$}
-
-\def\autkol{А.\,К.~Горшенин, Е.\,С.~Данилович, Д.\,Р.~Хромов}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Горшенин А.\,К.}
-\index{Данилович Е.\,С.}
-\index{Хромов Д.\,Р.}
-\index{Gorshenin A.\,K.}
-\index{Danilovich E.\,S.}
-\index{Khromov D.\,R.}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-%\footnotetext[1]
-%{Работа поддержана РФФИ (проект 14-01-00075).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проб\-лем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> 
-Российской академии наук; Московский технологический университет (МИРЭА),
-\mbox{agorshenin@frccsc.ru}}
-\footnotetext[2]{Московский технологический университет (МИРЭА), 
-\mbox{cio@andromeda-inc.com}}
-\footnotetext[3]{Московский технологический университет (МИРЭА), 
-\mbox{ceo@andromeda-inc.com}}
-
-\label{st\stat}
-
-                  \thispagestyle{headings}
- 
-  %\vspace*{-8pt}
-
-
-\Abst{Для автоматизации современного образовательного процесса 
-используются различные сис\-те\-мы управления обучением, которые позволяют 
-осуществлять общее администрирование, формирование отчетности по  
-образовательным курсам и~учебным программам, координацию взаимодействия 
-преподавателей и~обучающихся, мониторинг показателей их деятельности. При этом 
-необходимо учитывать качество системы управления обучением, реализованных 
-сервисов и~внедренного контента, так как данные аспекты оказывают значительное 
-влияние на удовлетворенность учащихся и~успешность использования информационных 
-технологий поддержки электронного обучения. В~статье описаны основные функциональные 
-возможности, предо-\linebreak став\-ля\-емые пользовательским интерфейсом разрабатываемой авторами 
-сис\-те\-мы управ\-ле\-ния обучением {\tt ELIS}
- ({\tt Electronic Learning Intelligent System}). Продемонстрированы результаты пробного 
-тестирования, проведенного с~ее по\-мощью в~студенческих фо\-кус-груп\-пах Московского 
-технологического университета (МИРЭА) и~Национального исследовательского университета 
-<<Высшая школа экономики>>.}
-
-\KW{система управления обучением; электронное обучение; SaaS; облачные вычисления}
-
-\DOI{10.14357\!/\!08696527170207} 
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-      
-      %\vspace*{-10pt}
-
-\section{Введение}
-
-В статье~\cite{Gorshenin2016b-2} была предложена реализация автоматизированного 
-средства аттестации с~учетом основных требований  работы~\cite{Gorshenin2014-2} 
-на основе архитектуры <<кли\-ент--сер\-вер>>. Однако хорошо известны недостатки 
-данной парадигмы, поэтому для соответствия требованиям к~разработке современных 
-информационных комплексов для системы управления обучением \verb"ELIS" была 
-использована облачная платформа с~моделью обслуживания \verb"SaaS" (программное 
-обеспечение как услуга, \verb"Software-as-a-Service"), в~рамках которой обучающиеся 
-и~преподаватели получают возможность использования реализованных в~системе решений  
-с~по\-мощью тонкого клиента. В~част\-ности, это упрощает решение чрезвычайно актуальной 
-задачи масштабирования, так как число пользователей систем управления обучением может 
-значительно возрастать в~ограниченные временные сроки. Более подробно основные 
-архитектурные решения для \verb"ELIS" представлены в~статье~\cite{Gorshenin2017-2}.
-
-Как отмечено в~работе~\cite{Ozkan2009-2}, при разработке и~внедрении сис\-тем 
-управления обучением необходимо учитывать качество программного комплекса, 
-реализованных сервисов и~используемого контента, так как данные аспекты оказывают 
-значительное влияние на удовлетворенность учащихся (см., например, 
-исследования~\cite{Sun2008-2,Liaw2008-2}), а~значит, во многом и~на оценку успешности 
-использования информационных технологий поддержки электронного обучения. 
-При этом из-за различий в~понимании данных требований в~каждом конкретном 
-случае за\-час\-тую организации предпочитают разработку собственных сис\-тем 
-электронного обучения (см., например, исследование~\cite{Paulsen2003-2} 
-с~анализом опыта~113~европейских институтов). Отметим, что осуществляются 
-попытки создания унифицированных подходов к~разработке сис\-тем управ\-ле\-ния 
-обучением, один из них предложен в~работе~\cite{Avgeriou2003-2}. 
-Весьма перспективным представляется создание достаточно универсальных решений, 
-которые носили бы междисциплинарный и~надорганизационный характер, а~также могли 
-обеспечивать некоторые специальные возможности (например, удаленный доступ к~научному 
-оборудованию для проведения лабораторных работ, как описано в~статье~\cite{Rapuano2006-2} 
-для \verb"LMS" (Learning Management System)
-или в~исследовании~\cite{Callaghan2007-2} для классической архитектуры 
-<<кли\-ент--сер\-вер>>) для максимально широкого охвата потребностей различных 
-дисциплин.
-
-В данной статье описаны основные функциональные возможности, предостав\-ляемые 
-пользовательским интерфейсом системы управления обучением \verb"ELIS". 
-Продемонстрированы результаты пробного тестирования, проведенного с~ее помощью 
-в~студенческих фо\-кус-груп\-пах Московского технологического университета (МИРЭА) 
-и~Национального исследовательского университета <<Высшая школа экономики>>.
-
-\section{Интерфейс системы управления обучением ELIS}
-
-В рамках системы \verb"ELIS" предусмотрено разделение пользователей 
-на группы с~различными политиками доступа (подробнее см.\ статью~\cite{Gorshenin2017-2}). 
-В~данном разделе рассмотрим функциональные возможности и~примеры представления 
-интерфейса для следующих основных групп:  \verb"Студент", \verb"Преподаватель", 
-\verb"Администратор".
-
-\begin{figure} %fig1
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{goi-1.eps}
- }
-\end{center}
- \vspace*{-9pt}
-\Caption{Личный кабинет обучающегося. Пример}\label{FigTestStudent1}
-\end{figure}
-
-Для начала работы необходимо пройти процедуру авторизации. 
-Для входа в~систему пользователь вводит свой логин и~пароль. После успешной 
-проверки правильности введенных данных происходит определение принадлежности 
-пользователя к~одной из описанных выше системных групп и~соответствующего 
-уровня доступа, а~затем осуществляется переход на начальную страницу в~личном 
-кабинете.
-
-В личном кабинете обучающегося (см.\ пример на рис.~\ref{FigTestStudent1}) 
-слева расположена панель меню с~разделами <<Мои курсы>>, <<Сообщения>>, 
-<<Настройки>>, <<Мой профиль>>. В~основной части интерфейса продемонстрировано 
-отображение названия теста, заданного диапазона для его прохождения, количества 
-доступных попыток, значения временн$\acute{\mbox{о}}$го лимита для выполнения заданий, а~также 
-результаты (включая предысторию). Для тестов с~несколькими допустимыми 
-попытками возможно несколько вариантов выставления итоговой оценки: 
-максимальная из всех попыток, среднее значение по всем прохождениям и~т.\,д. 
-Данный параметр задается преподавателем при создании теста. Если лимит попыток 
-не был израсходован, то тест может быть пройден. Здесь же могут быть указаны 
-доступные лекции на соответствующую тему или иные загруженные преподавателем 
-материалы.
-
-\begin{figure} %fig2
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{goi-2.eps}
- }
-\end{center}
- \vspace*{-9pt}
-\Caption{Тестовые задания. Пример}\label{FigTestStudent2}
-\end{figure}
-
-
-\begin{figure} %fig3
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{goi-3.eps}
- }
-\end{center}
- \vspace*{-9pt}
-\Caption{База тем вопросов. Пример}\label{FigqBase}
-\end{figure}
-
-На рис.~\ref{FigTestStudent2} отображается процедура прохождения некоторого 
-испытания. Продемонстрированный тест состоит из набора вопросов с~фиксированными 
-вариантами ответов. Ряд заданий дополнен картинками, формулами, набранными 
-в~\verb"TeX", или примерами программного кода с~подсвеченными ключевыми словами. 
-По мере прохождения теста ответы сохраняются~--- это позволяет прервать 
-выполнение теста и~вернуться к~нему позже, если такая возможность была 
-предусмотрена преподавателем (в~рамках заданного лимита времени). При исчерпании 
-лимита, отведенного на одну попытку прохождения теста, выполнение теста 
-автоматически прекращается, а оценка выставляется на основе полученных к~этому 
-моменту ответов.
-
-На начальной странице личного кабинета преподавателя отображается сводная 
-статистика по его курсам. Здесь можно просмотреть сведения о~прохождении 
-тестов обучающимися. Преподаватель имеет возможность создавать свои базы вопросов 
-(см.\ пример на рис.~\ref{FigqBase}), на основе которых выполняется автоматическое 
-формирование вариантов заданий. Все вопросы делятся на темы, каждая из которых 
-относится к~определенному предмету. Для добавления новых вопросов в~базу в~первую 
-очередь необходимо выбрать для редактирования тему, причем как одну из существующих, 
-так и~создать новую. Для поиска предусмотрены фильт\-ры по предмету и~названию. 
-Для добавления новой темы нужно ввести ее название, выбрать предмет, к~которому 
-тема будет относиться, а~также указать, будет ли этот набор вопросов публичным, т.\,е.\ 
-доступным для использования другими преподавателям.
-
-\begin{figure} %fig4
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{goi-4.eps}
- }
-\end{center}
- \vspace*{-9pt}
-\Caption{Создание теста. Пример}\label{FigCreateTest}
-\end{figure}
-
-На рис.~\ref{FigCreateTest} представлен пример создания теста из нескольких тем, 
-относящихся к~разным разделам курса 
-<<Программирование>>~\cite{Gorshenin2016BookC-2,Gorshenin2016BookAlg-2} 
-c~указанием количества вопросов, относящихся к~соответствующей теме. Здесь 
-же могут быть заданы параметры прохождения теста, которые будут отображаться в~личном 
-кабинете обучающегося. После выбора (или создания) нужной темы можно 
-перейти к~редактированию вопросов. Для добавления вопроса необходимо заполнить 
-специальную форму. Сначала задается уровень сложности, всего их преду\-смот\-ре\-но 
-три: базовый, средний, сложный. Далее производится ввод текста вопроса, при 
-этом форматирование задается с~по\-мощью средств язык разметки \verb"Markdown". 
-Поддерживается оформление заданий с~по\-мощью элементов программного кода на 
-различных языках~--- при указании его названия производится автоматическое 
-выделение цветом и~полужирным шрифтом ключевых слов (см., например, вопрос~5 
-на рис.~\ref{FigTestStudent2}). Также доступен ввод формул в~формате \verb"TeX" 
-для поддержки широкого спектра курсов естественно-научных дисциплин. 
-Все эти средства позволяют оформить текст вопроса максимально наглядным образом. 
-Для удобства в~правой части экрана доступен предпросмотр верстки за\-дания.
-{\looseness=1
-
-}
-
-Поддерживаются следующие допустимые типы ответов:
-\begin{itemize}
-\item выбор единственного корректного варианта из списка заданных;\\[-9pt]
-\item выбор нескольких правильных опций из доступных;\\[-9pt]
-\item произвольный ввод~--- ответ представляется в некоторой предопределенной текстовой форме
-(например, такой вариант удобно использовать для определений, формулировок теорем); 
-предусмотрена возможность указать несколько вариантов написания правильного ответа, 
-в~таком случае корректным будет считаться любой из них;\\[-9pt]
-\item числовой ввод~--- ответом является число (либо некоторый диапазон);\\[-9pt]
-\item восстановление порядка~--- создается несколько частей ответа, 
-которые пользователь должен расположить в~правильном порядке: восстановление 
-хронологии исторических событий, последовательности шагов алгоритма и~т.\,п.;\\[-9pt]
-\item развернутый текст~---  ответ представляется в~свободной форме (например, эссе), 
-оценка осуществляется в~ручном режиме преподавателем;\\[-9pt]
-\item программа~--- обучающийся вводит программный код, записанный на одном 
-из поддерживаемых языков; затем он исполняется на заранее заданном 
-преподавателем наборе тестов.
-\end{itemize}
-
-После ввода текста вопроса необходимо выбрать тип ответа и~максимальное 
-число баллов, которые можно получить в случае успеха. 
-Затем вопрос сохра-\linebreak няется и~добавляется в~базу.
-
-В разделе личного кабинета преподавателя <<Мои курсы>> отображается 
-список всех курсов, к~которым преподаватель имеет доступ. Для каждого курса 
-указывается название, описание, соответствующая дисциплина из учебного плана. 
-На публичные курсы может записаться любой студент, на остальные~--- 
-только после одобрения преподавателем. При выборе определенного курса открывается 
-соответствующий раздел (рис.~\ref{FigCourses}), в~котором отображаются 
-интерфейсные элементы  <<Добавить тест>>, <<Добавить лекцию>>, <<Добавить файл>>.
-
-\begin{figure} %fig5
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{goi-5.eps}
- }
-\end{center}
- \vspace*{-9pt}
-\Caption{Раздел личного кабинета преподавателя <<Мои курсы>>. Пример}\label{FigCourses}
-\end{figure}
-
-При добавлении теста преподаватель вводит название (тему) теста, 
-дату, время начала и~окончания доступности заданий, устанавливает 
-ограничение по времени одной попытки, определяет количество попыток прохождения теста.
-После этого происходит формирование содержимого теста. При нажатии кнопки 
-<<Добавить категорию>> открывается окно со списком всех доступных категорий 
-из баз вопросов с~указанием количества в~каждой. Возможно добавление вопросов 
-как из заданных категорий, так и~введение новых. После сохранения тест 
-попадает в~элементы курса. Для каждого преподавателя есть возможность 
-прикрепления произвольных файлов в~качестве элементов курса. При добавлении файла 
-также указывается его название и~краткое описание. При добавлении лекции доступны 
-те же методы форматирования, что и~в тексте вопросов.
-
-
-
-Администраторы осуществляют техническое управление образовательными процессами 
-в~своей компании на базе площадки \verb"ELIS". На главной странице администратора 
-отображаются новости организации с~возможностью публикации новых элементов, а~также 
-сводная статистика по образовательному учреждению: число преподавателей, студентов, 
-процент успеваемости студентов по каждой дисциплине и~т.\,д. Администратор может 
-добавить нового преподавателя посредством заполнения формы с~подробной информацией 
-о~нем, включая дисциплины, которые он ведет. Предусмотрена возможность импорта 
-сведений о~преподавателях из внешнего файла в~формате \verb"CSV" или \verb"XML". 
-После добавления преподавателя на заданный адрес электронной почты высылается письмо 
-с~логином и~паролем. На рис.~\ref{FigAdministrator} продемонстрирован пример 
-редактирования списков контроля доступа в~личном кабинете администратора.
-
-\begin{figure} %fig6
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{goi-6.eps}
- }
-\end{center}
- \vspace*{-9pt}
-\Caption{Личный кабинет администратора. Списки контроля доступа. Пример}
-\label{FigAdministrator}
-\end{figure}
-
-В настройках образовательного учреждения указывается регистрационная информация, 
-а~также опция самостоятельной регистрации для студентов. Если эта возможность 
-отключена, обучающихся необходимо добавлять вручную. На экране управления 
-студентами отображаются имя, фамилия, группа обучающегося, доступны фильтры 
-для поиска. Здесь же доступна полная информация о~студенте и~его успеваемости. 
-Добавление студентов также возможно в~форме импорта из файла.
-
-В качестве технологической основы при реализации были использованы:
-\begin{itemize}
-\item \verb"HTML5" (\verb"HyperText Markup Language", version 5)~---  
-верстка веб-ин\-тер\-фей\-са с~использованием наиболее современных стандартов;
-\item \verb"СSS3" (\verb"Cascading Style Sheets")~---  стилевое оформления элементов 
-веб-ин\-тер\-фейса;
-\item \verb"DSUI"~--- фреймворк собственной разработки для создания интерфейса 
-и~реализации взаимодействия его элементов (с использованием \verb"JavaScript");
-\item \verb"Highcharts"~--- библиотека для построения диаграмм и~графиков;
-\item \verb"Markdown"~--- язык разметки для оформления текстов на сайте;
-\item поддержка выражений в~формате \verb"TeX"  для отображения формул;
-\item \verb"Ajax" (\verb"Asynchronous Javascript and XML")~--- 
-фоновый обмен клиента (браузера) и~веб-сер\-ве\-ра для обновления контента без 
-полной перезагрузки страницы;
-\item \verb"WebSocket"~--- мгновенная передача сообщений и~уведомлений;
-\item \verb"GCC" (\verb"GNU Compiler Collection")~--- 
-компилятор для проверки пользовательских программ.
-\end{itemize}
-
-\section{Тестирование системы ELIS на~фокус-группах}
-
-В данном разделе продемонстрированы результаты пробного тестирования, 
-проведенного с~помощью системы управления обучением \verb"ELIS" 
-в~студенческих фо\-кус-груп\-пах Московского технологического университета (МИРЭА) 
-и~Национального исследовательского университета <<Высшая школа экономики>>.
-
-На основе материалов учебных 
-пособий~[11--14]
-был разработан набор тес\-товых вопросов по языку Си, основным алгоритмам и~структурам 
-данных. В~качест\-ве проверочной была выбрана тема <<\verb"Введение в С">>, состоящая 
-из~17~вопросов. Для каждого студента из фо\-кус-груп\-пы бакалавров первого курса 
-Института информационных технологий Московского технологического университета (МИРЭА) 
-в~автоматическом режиме был сформирован индивидуальный вариант из десяти заданий. 
-Всего в~пробном тестировании приняли участие~28~студентов для оценки работоспособности 
-и~удобства пользования сис\-те\-мой. Время на прохождение теста в~среднем 
-со\-ста\-ви\-ло~6~мин 
-15~с. Средний балл ответов~---  6,1, максимальный~--- 10, минимальный~---~3. 
-В~системе \verb"ELIS" в~разделе для преподавателей доступна 
-полная статистика по каждому тесту (подробнее см.\ рис.~\ref{FigStatsMIREA}). 
-Отметим возможность сортировки обучающихся по полученной оценке, 
-вывод круговой и~столбчатой диаграмм для анализа успеваемости студентов.
-
-\begin{figure}[b] %fig7
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{goi-7.eps}
- }
-\end{center}
- \vspace*{-9pt}
-\Caption{Результаты тестирования на фокус-группе Московского 
-технологического университета (МИРЭА)}\label{FigStatsMIREA}
-\end{figure}
-
-На рис.~\ref{FigStatsMIREA} продемонстрирован еще один важный элемент интерфейса~--- 
-панель уведомлений в~правой части. Она позволяет реализовать контроль преподавателя 
-за событиями, происходящими в~системе: выполнением студентами домашних заданий, 
-прохождением тестов, получением сообщений и~т.\,п. Подобный инструмент чрезвычайно 
-важен для сис\-тем управ\-ле\-ния обучением.
-
-\begin{figure} %fig8
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{goi-8.eps}
- }
-\end{center}
- \vspace*{-9pt}
-\Caption{Результаты тестирования на фо\-кус-груп\-пе 
-Национального исследовательского университета <<Высшая школа экономики>>}
-\label{FigStatsHSE}
-\end{figure}
-
-Для тестирования функциональных возможностей были также привлечены 
-студенты Национального исследовательского университета <<Высшая школа экономики>>. 
-Для них предлагался тест на тему <<Основы экономики>>. Всего в~данном пробном 
-тестировании приняли участие~17~студентов для оценки работоспособности и~удобства 
-пользования системой. Время на прохождение  в~среднем составило~4~мин 33~с. 
-Средний балл~---  7, максимальный~---~10, минималь-\linebreak ный~---~5. 
-На рис.~\ref{FigStatsHSE} соответствующие аналитические материалы 
-пред\-став\-ле\-ны в~формате системы \verb"ELIS".
-
-Необходимо отметить, что для фо\-кус-групп не ставилась задача максимально 
-быст\-ро\-го или успешного прохождения испытания. Наибольший интерес пред\-став\-ля\-ло 
-именно комплексное взаимодействие с~сис\-те\-мой, оценка пользовательского опыта 
-и~удобства интерфейса. По результатам тестирования студенты были опрошены на предмет 
-удовлетворенности качеством работы системы управления обучением \verb"ELIS". 
-В~част\-ности, был отмечен значительный интерес к~такой форме прохождения испытаний, 
-взаимодействия с~преподавателями. Все студенты проявили желание участвовать в~повторном 
-тестировании, в~том числе при увеличении числа предметов. Потенциальная реализация 
-тонких клиентов в~виде мобильных приложений для различных платформ была признана 
-чрезвычайно привлекательной.
-
-\section{Заключение}
-
-В работе представлено описание основных функциональных возможностей разрабатываемой 
-авторами системы управления обучением \verb"ELIS", а~также продемонстрированы 
-результаты пробного тестирования на фо\-кус-груп\-пах 
-Московского технологического университета (МИРЭА) и~Национального исследовательского 
-университета <<Высшая школа экономики>>. В~настоящий момент весь функционал доступен 
-исключительно через средства портала, однако предполагается разработка приложений для 
-популярных мобильных платформ на базе архитектуры <<кли\-ент--сер\-вер>>. 
-Необходимо отметить актуальность использования такого рода решений в~процессах 
-электронного обучения, в~том числе из-за возможности привлечения дополнительной 
-аудитории, про\-яв\-ля\-ющей повышенный интерес к~новым информационным технологиям. 
-Кроме того, наблюдается и~положительный эффект в~качестве усвоения знаний, 
-полученных при работе с~мобильными решениями (см., например,~\cite{Chen2010-2}). 
-При создании клиентских приложений необходимо ориентироваться на требования, 
-описанные в~работе~\cite{Gorshenin2016c-2}, с~учетом особого внимания к~уровню 
-безопасности (некоторые интересные криптографические и~биометрические решения описаны, 
-например, в~статьях~[17--19]). Данные задачи составляют предмет 
-дальнейших исследований.
-
-
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-\bibitem{Gorshenin2016b-2}
-\Au{Горшенин~А.\,К., Кучин~А.\,С.}
-Об одной реализации автоматизированного средства аттестации~/\!\!/ 
-Системы и~средства информатики, 2016. Т.~26. №\,1. С.~192--205.
-
-\bibitem{Gorshenin2014-2} 
-\Au{Горшенин~А.\,К.} О~принципах разработки 
-электронных средств аттестации учащихся по курсам направления <<Программирование>>~/\!\!/ 
-Информатизация инженерного образования: Труды Междунар. научно-методической конф. 
-ИНФОРИНО-2014.~--- М.:~МЭИ, 2014. С.~529--530.
-
-\bibitem{Gorshenin2017-2} %3
-\Au{Горшенин~А.\,К., Данилович~Е.\,С., Хромов~Д.\,Р.} 
-Система управления обучением ELIS. Архитектурные решения~/\!\!/ 
-Системы и~средства информатики, 2017. Т.~27. №\,2. 
-С.~\pageref{stgorshenin-a}--\pageref{endgorshenin-a}.
-
-\bibitem{Ozkan2009-2} %4
-\Au{Ozkan~S., Koseler~R.} 
-Multi-dimensional students' evaluation of e-Learning systems in the higher 
-education context: An empirical investigation~/\!\!/ Comput. Educ., 2009. Vol.~53. Iss.~4. P.~1285--1296.
-
-\bibitem{Sun2008-2}  %5
-\Au{Sun~P.-Ch., Tsai~R.\,J., Finger~G., Chen~Y.-Y., 
-Yeh~D.} What drives a successful e-Learning? An empirical investigation of 
-the critical factors influencing learner satisfaction~/\!\!/ Comput. 
-Educ., 2008. Vol.~50. Iss.~4. P.~1183--1202.
-
-\bibitem{Liaw2008-2} %6
-\Au{Liaw~S.-S.} Investigating students' perceived satisfaction, 
-behavioral intention, and effectiveness of e-Learning: A~case study of the 
-Blackboard system~/\!\!/ Comput. Educ., 2008. Vol.~51. Iss.~2. P.~864--873.
-
-\bibitem{Paulsen2003-2} 
-\Au{Paulsen~M.\,F.} Experiences with Learning 
-Management Systems in 113 European institutions~/\!\!/ Educ. 
-Technol. Soc., 2003. Vol.~6. Iss.~4. P.~134--148.
-
-\bibitem{Avgeriou2003-2} 
-\Au{Avgeriou~P., Papasalouros~A., Retalis~S., Skordalakis~M.} 
-Towards a pattern language for learning management systems~/\!\!/ 
-Educ. Technol. Soc., 2003. Vol.~6. Iss.~2. P.~11--24.
-
-\bibitem{Rapuano2006-2} 
-\Au{Rapuano~S., Zoino~F.} 
-A~learning management system including laboratory experiments on measurement 
-instrumentation~/\!\!/ IEEE Trans. Instrum. Meas., 2006. Vol.~55. Iss.~5. P.~1757--1766.
-
-\bibitem{Callaghan2007-2} %10
-\Au{Callaghan~M.\,J., Harkin~J., McColgan~E., 
-McGinnity~T.\,M., Maguire~L.\,P.} Client--server architecture for 
-collaborative remote experimentation~/\!\!/ J.~Netw. Comput. Appl., 
-2007. Vol.~30. Iss.~4. P.~1295--1308.
-
-\bibitem{Gorshenin2016BookC-2} %11
-\Au{Горшенин~А.\,К.} Принципы разработки программного 
-обеспечения и~основы языка~C.~--- М.: ФИЦ ИУ РАН, 2016. 100~с.
-
-\bibitem{Gorshenin2016BookAlg-2} %12 
-\Au{Горшенин~А.\,К.} Методы реализации абстрактных 
-типов данных.~--- М.: ФИЦ ИУ РАН, 2016. 100~с.
-
-\bibitem{Gorshenin2015BookC-2} %13
- \Au{Горшенин~А.\,К.} Основы языка программирования~C: 
-Курс лекций в~форме компьютерных презентаций.~--- М.: ФИЦ ИУ РАН, 2015. 100~с.
-
-\bibitem{Gorshenin2015BookAlg-2} %14
-\Au{Горшенин~А.\,К.} Основы алгоритмов и~структур 
-данных: Курс лекций в~форме компьютерных презентаций.~--- М.: ФИЦ ИУ РАН, 2015. 88~с.
-
-
-
-\bibitem{Chen2010-2} 
-\Au{Chen~H.\,R., Huang~H.\,L.} User acceptance of 
-Mobile Knowledge Management Learning System: Design and analysis~/\!\!/ 
-Educ. Technol.  Soc., 2010. Vol.~13. Iss.~3. P.~70--77.
-
-\bibitem{Gorshenin2016c-2} 
-\Au{Горшенин~А.\,К.} 
-Некоторые аспекты разработки мобильных приложений для аттестации учащихся~/\!\!/ 
-Информатизация инженерного образования: Труды Междунар. на\-уч\-но-методической конф. 
-ИНФОРИНО-2016.~--- М.:~МЭИ, 2016. С.~92--95.
-
-\bibitem{Wu2010-2} 
-\Au{Wu~T.-Y., Tseng~Y.-M.} An efficient user authentication 
-and key exchange protocol for mobile client--server environment~/\!\!/ 
-Comput. Netw., 2010. Vol.~54. Iss.~9. P.~1520--1530.
-
-\bibitem{Xi2011-2} 
-\Au{Xi~K., Ahmad~T., Han~F., Hu~J.} 
-A~fingerprint based bio-cryptographic security protocol designed for client/server 
-authentication in mobile computing environment~/\!\!/ Secur. 
-Commun. Netw., 2011. Vol.~4. Iss.~5. P.~487--499.
-
-\bibitem{He2012-2} 
-\Au{He~D.\,B., Chen~J.\,H., Hu~J.} 
-An ID-based client authentication with key agreement protocol for mobile 
-client--server environment on ECC with provable security~/\!\!/ Inform. Fusion, 
-2012. Vol.~13. Iss.~3. P.~223--230.
-       \end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 15.03.17}}
-
-
-
-
-%\vspace*{9pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-\newpage
-
-\vspace*{-28pt}
-
-%\hrule
-
-%\vspace*{9pt}
-
-
-
-\def\tit{LEARNING MANAGEMENT SYSTEM ELIS. USER~INTERFACE~AND~FUNCTIONAL CAPABILITIES}
-
-\def\titkol{Learning management system ELIS. User interface and functional capabilities}
-
-
-\def\aut{A.\,K.~Gorshenin$^{1,2}$, E.\,S.~Danilovich$^2$, and~D.\,R.~Khromov$^2$}
-\def\autkol{A.\,K.~Gorshenin, E.\,S.~Danilovich, and~D.\,R.~Khromov}
-
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-
-\noindent
-$^1$Institute of Informatics Problems, 
-Federal Research Center ``Computer Science\linebreak
-$\hphantom{^1}$and Control'' of the Russian Academy 
-of Sciences, 44-2~Vavilov Str., Moscow\linebreak
-$\hphantom{^1}$119333, Russian Federation
-
-\noindent
-$^2$Federal State Budget Educational Institution of Higher Education 
-``Moscow Tech-\linebreak
-$\hphantom{^1}$nological University,'' 78~Vernadskogo Ave., Moscow 119454, 
-Russian Federation
-
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2017 vol~27 no\,2}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2017   vol~27   no\,2
-\hfill \textbf{\thepage}}}
-
-
-
-\Abste{For automation of the modern educational process, various 
-learning management systems are currently being used. They implement 
-the functionality for general administration, reporting on educational 
-courses and curricula, coordination of interaction between lecturers and students, 
-and monitoring of their progress. At the same time, it is necessary to take into 
-account the quality of a~learning management system, its services, and content since 
-these aspects have a~significant impact on student satisfaction and the success 
-of using information technologies to support e-Learning. The article describes 
-main functional capabilities provided by the user interface of the learning 
-management system {\tt ELIS}
- ({\tt Electronic Learning Intelligent System}) developed by the authors. The results of trial 
-testing in student focus groups of Moscow Technological University (MIREA) 
-and National Research University Higher School of Economics are demonstrated.}
-
-\KWE{learning management system; e-Learning; SaaS; cloud computing}
-
-
-\DOI{10.14357\!/\!08696527170207} 
-
-%\vspace*{-24pt}
-
-%\Ack
-
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-\bibitem{1-g2}
-\Aue{Gorshenin,~A.\,K., and A.\,S.~Kuchin.} 2016. Ob odnoy realizatsii 
-avtomatizirovannogo sredstva attestatsii 
-[On a~realization of an automated testing service]. \textit{Sistemy i~Sredstva 
-Informatiki~--- Systems and Means of Informatics} 26(1):192--205.
-
-\bibitem{2-g2}
-\Aue{Gorshenin,~A.\,K.} 2014. O~printsipakh razrabotki elektronnykh sredstv 
-attestatsii uchashchikhsya po kursam napravleniya ``Programmirovanie'' 
-[On principles of development of the electronic certifications for students 
-in programming courses]. \textit{Conference (International) INFORINO-2014 Proceedings}.  Moscow. 529--530.
-
-\bibitem{3-g2}
-\Aue{Gorshenin,~A.\,K., E.\,S.~Danilovich, and D.\,R.~Khromov.} 2017.
- Sistema upravleniya obucheniem ELIS. Arkhitekturnye resheniya 
- [Learning management system ELIS. Architecture solutions]. 
- \textit{Sistemy i~Sredstva Informatiki~---  Systems and Means of Informatics} 
- 27(2):\pageref{stgorshenin-a}--\pageref{endgorshenin-a}.
-
-\bibitem{4-g2}
-\Aue{Ozkan,~S., and R.~Koseler.} 2009. Multi-dimensional students' 
-evaluation of\linebreak e-Learning systems in the higher education context: 
-An empirical investigation. \textit{Comput. Educ.} 53(4):1285--1296.
-
-\bibitem{5-g2}
-\Aue{Sun,~P.-Ch., R.\,J.~Tsai, G~Finger., Y.-Y.~Chen, and D.~Yeh.} 2008. 
-What drives a successful e-Learning? An empirical investigation of 
-the critical factors influencing learner satisfaction. 
-\textit{Comput. Educ.} 50(4):1183--1202.
-
-\bibitem{6-g2}
-\Aue{Liaw,~S.-S.} 2008. Investigating students' perceived satisfaction, 
-behavioral intention, and effectiveness of e-learning: A~case study of 
-the Blackboard system. \textit{Comput. Educ.} 51(2):864--873.
-
-\bibitem{7-g2}
-\Aue{Paulsen,~M.\,F.} 2003. Experiences with Learning Management Systems 
-in~113~European institutions. \textit{Educ. Technol. Soc.} 6(4):134--148.
-
-\bibitem{8-g2}
-\Aue{Avgeriou,~P., A.~Papasalouros, S.~Retalis, and M.~Skordalakis.} 2003. 
-Towards a~pattern language for learning management systems. 
-\textit{Educ. Technol.  Soc.} 6(2):11--24.
-
-\bibitem{9-g2}
-\Aue{Rapuano,~S., and F.~Zoino.} 2006. A~learning management system including 
-laboratory experiments on measurement instrumentation. 
-\textit{IEEE Trans. Instrum. Meas.} 55(5):1757--1766.
-
-\bibitem{10-g2}
-\Aue{Callaghan,~M.\,J., J.~Harkin, E.~McColgan, T.\,M.~McGinnity, and L.\,P.~Maguire.} 
-2007. Client--server architecture for collaborative remote experimentation. 
-\textit{J.~Netw. Comput. Appl.} 30(4):1295--1308.
-
-\bibitem{13-g2} %11
-\Aue{Gorshenin,~A.\,K.} 2016. \textit{Printsipy razrabotki programmnogo 
-obespecheniya i~osnovy yazyka~C} [Foundations of software development 
-and C programming language]. Moscow: FRC CSC RAS. 100~p.
-
-\bibitem{14-g2} %12
-\Aue{Gorshenin,~A.\,K.} 2016. \textit{Metody realizatsii abstraktnykh tipov dannykh} 
-[Methods of implementing abstract data types]. 
-Moscow: FRC CSC RAS. 100~p.
-
-\bibitem{11-g2} %13
-\Aue{Gorshenin,~A.\,K.} 2015. \textit{Osnovy yazyka programmirovaniya~C: 
-Kurs lektsiy v~forme komp'yuternykh prezentatsiy} 
-[Basic aspects of C~programming language:  Lectures in a~form of presentation slides]. 
-Moscow: FRC CSC RAS. 100~p.
-
-\bibitem{12g2} %14
-\Aue{Gorshenin,~A.\,K.} 2015. \textit{Osnovy algoritmov i~struktur dannykh: Kurs 
-lektsiy v~forme komp'yuternykh prezentatsiy} [Basic aspects of algorithms and data 
-structures: Lectures in a form of presentation slides]. Moscow: FRC CSC RAS. 88~p.
-
-
-
-\bibitem{15-g2}
-\Aue{Chen,~H.\,R., and H.\,L.~Huang.} 2010. User acceptance of 
-Mobile Knowledge Management Learning System: Design and analysis. 
-\textit{Educ. Technol. Soc.} 13(3):70--77.
-
-\bibitem{16-g2}
-\Aue{Gorshenin,~A.\,K.} 2016. Nekotorye aspekty razrabotki mobil'nykh prilozheniy 
-dlya attestatsii uchashchikhsya [Some issues of development of mobile applications for 
-student testing]. \textit{Conference (International)
-INFORINO-2016 Proceedings}.  Moscow. 92--95.
-
-\bibitem{17-g2}
-\Aue{Wu,~T.-Y., and Y.-M.~Tseng.} 2010. An efficient user authentication and
- key exchange protocol for mobile client--server environment. \textit{Comput.
- Netw.}   54(9):1520--1530.
-
-\bibitem{18-g2}
-\Aue{Xi,~K., T.~Ahmad, F.~Han, and J.~Hu.} 2011. A~fingerprint based bio-cryptographic 
-security protocol designed for client/server authentication in mobile computing 
-environment. \textit{Secur. Commun. Netw.} 4(5):487--499.
-
-\bibitem{19-g2}
-\Aue{He,~D.\,B., J.\,H.~Chen, and J.~Hu.} 2012. An ID-based client authentication 
-with key agreement protocol for mobile client--server environment on ECC 
-with provable security. \textit{Inform. Fusion} 13(3):223--230.
-
-\end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Received March 15, 2017}}
-
-
-\Contr
-
-\noindent
-\textbf{Gorshenin Andrey K.} (b.\ 1986)~--- 
-Candidate of Science (PhD) in physics and mathematics, associate professor, 
-leading scientist, Institute of Informatics Problems, Federal Research Center 
-``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
-Moscow 119333, Russian Federation; associate professor, 
-Federal State Budget Educational Institution of Higher Education 
-``Moscow Technological University,'' 78~Vernadskogo Ave., Moscow 119454, 
-Russian Federation; \mbox{agorshenin@frccsc.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Danilovich Evgeniy S.} (b.\ 1996)~--- student, Federal State Budget 
-Educational Institution of Higher Education ``Moscow Technological University,'' 
-78~Vernadskogo Ave., Moscow 119454, Russian Federation; \mbox{cio@andromeda-inc.com}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Khromov Dmitry R.} (b.\ 1998)~--- student, Federal State Budget Educational 
-Institution of Higher Education ``Moscow Technological University,'' 78~Vernadskogo 
-Ave., Moscow 119454, Russian Federation; \mbox{ceo@andromeda-inc.com}
-
-
-\label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}

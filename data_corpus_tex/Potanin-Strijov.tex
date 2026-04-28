@@ -1,884 +1,0 @@
-\newcommand{\sigmab}{{\boldsymbol{\sigma}}}
-\newcommand{\wm}{{\mathbf{w}}}
-\newcommand{\xb}{{\mathbf{x}}}
-\newcommand{\x}{{\mathbf{x}}}
-
-
-%\newcommand{\M}{\mathbf{M}}
-
-%\newcommand{\g}{{\mathbf{g}}}
-%\newcommand{\m}{{\mathbf{m}}}
-
-\def\stat{potanin-strijov}
-
-\def\tit{ОПТИМИЗАЦИЯ СТРУКТУРЫ СЕТЕЙ ГЛУБОКОГО ОБУЧЕНИЯ$^*$}
-
-\def\titkol{Оптимизация структуры сетей глубокого обучения}
-
-\def\aut{М.\,С.~Потанин$^1$, К.\,О.~Вайсер$^2$, В.\,А.~Жолобов$^3$, 
-В.\,В.~Стрижов$^4$}
-
-\def\autkol{М.\,С.~Потанин, К.\,О.~Вайсер, В.\,А.~Жолобов, В.\,В.~Стрижов}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Потанин М.\,С.}
-\index{Вайсер К.\,О.}
-\index{Жолобов В.\,А.}
-\index{Стрижов В.\,В.}
-\index{Potanin M.\,S.}
-\index{Vayser K.\,O.}
-\index{Zholobov V.\,A.}
-\index{Strijov V.\,V.}
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Работа выполнена при поддержке РФФИ (проекты 19-07-1155, 19-07-0885) 
-и~правительства РФ (соглашение 05.Y09.21.0018). Настоящая статья содержит 
-результаты проекта <<Статистические методы машинного обучения>>, выполняемого 
-в~рамках реализации Программы Центра компетенций Национальной технологической 
-инициативы <<Центр хранения и~анализа больших данных>>, поддерживаемого 
-Министерством науки и~высшего образования Российской Федерации по договору 
-МГУ имени М.\,В.~Ломоносова  с~Фондом поддержки проектов Национальной 
-технологической инициативы от 11.12.2018 №\,13/1251/2018.}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{ Московский физико-технический институт, 
-mark.potanin@phystech.edu}
-\footnotetext[2]{Московский физико-технический институт, 
-vajser.ko@phystech.edu}
-\footnotetext[3]{Московский физико-технический институт, 
-zholobov.va@phystech.edu}
-\footnotetext[4]{Вычислительный центр имени А.\,А.~Дородницына Федерального 
-исследовательского центра <<Информатика и~управление>> Российской академии 
-наук; Московский фи\-зи\-ко-тех\-ни\-че\-ский институт, 
-\mbox{strijov@ccas.ru}}
-
-%\vspace*{-12pt}
-
-\Abst{Исследуется проблема выбора оптимальной структуры модели.  Моделью 
-служит суперпозиция обобщенных линейных моделей, элементами которой являются 
-линейная регрессия, логистическая регрессия, метод главных компонент, 
-автоэнкодер и~нейросеть. Под структурой модели понимаются значения 
-структурных параметров модели, за\-да\-ющих вид итоговой суперпозиции. 
-Исследуется свойства алгоритма выбора структуры модели.  Исследуется 
-зависимость точности, сложности и~устойчивости модели от способа задания 
-структуры. Создан алгоритм выбора оптимальной структуры нейронной сети. 
-Проведен вычислительный эксперимент с~использованием реальных и~синтетических 
-данных. В~результате эксперимента существенно снижена структурная сложность 
-моделей с~сохранением точности аппроксимации.}
-
-\KW{выбор моделей; линейные модели; автокодировщик; нейронные сети; 
-структура; генетический алгоритм}
-
-\DOI{10.14357/19922264200408} 
-  
-\vspace*{9pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-
-
-\section{Введение}
-
-\vspace*{-3pt}
-
-Решается задача аппроксимации выборки нейронными сетями.
-%Задана выборка, множество пар $(\xb,y),\; \xb\in \mathbb{X} = 
-%\mathbb{R}^n,\; 
-%y\in\mathbb{Y}$, где $y$~--- зависимая переменная, а $\xb$~--- признаковое 
-%описание объекта. В~случае задачи классификации $\mathbb{Y} = 
-%\{1,\dots,M\}$. 
-%В~случае задачи регрессии $\mathbb{Y}\subseteq\mathbb{R}$.
-Нейронная сеть служит универсальной моделью~\cite{sixth,third}, так как 
-приближает произвольную непрерывную функцию многих \mbox{переменных} с~любой 
-точностью. Нейрон, или однослойная нейронная сеть, представляет собой 
-суперпозицию двух функций~--- функции активации и~линейной комбинации 
-признаков объекта. Но однослойные сети применимы только для линейно 
-разделимых выборок. Для аппроксимации выборок общего вида требуется 
-универсальная модель, оптимизация структуры которой и~исследуется в~данной 
-работе.
-
-\smallskip
-
-\noindent
-\textbf{Теорема 1} (Колмогоров, 1961) в~\cite{twentythree} утверждает, что 
-функция от~$n$ аргументов представима в~виде комбинации $n(2n \hm+ 1)$ 
-функций одного аргумента. Какими именно должны быть функции 
-$\sigma_i$ и~$g_{ij}$, не указывается.
-Теорема об универсальной аппроксимации~2 (Цыбенко, 1989) в~\cite{twentythree} 
-утверждает, что искусственная нейронная сеть прямой связи, в~которой связи не 
-образуют циклов, с~одним скрытым слоем аппроксимирует любую непрерывную 
-функцию многих переменных с~любой точностью.
-Однако затруднительно выбрать такую структуру нейронной сети, чтобы размеры 
-скрытого слоя не были велики. В~теореме~3 (Ханин, 2017) оценивается 
-оптимальная размерность скрытых слоев и~обосновывается возможность замены 
-нейронной сети с~функциями активации ReLU~\cite{twentythree} с~входным слоем 
-раз\-мер\-ности~$n$ и~одним скрытым слоем раз\-мер\-ности~$k$ на эквивалентную 
-с~глубиной $k\hm+2$ и~размерностями скрытых слоев $n \hm+ 2$. Эти три тео\-ре\-мы 
-и~определяют исследуемую структуру суперпозиций сети глубокого обучения.
-
-Исследуется зависимость ошибки от суперпозиции 
-автокодировщиков~\cite{eighteen} и~многослойной нейронной сети. Ошибка 
-состоит из двух слагаемых: ошибки восстановления элементов выборки после 
-кодирования и~восстановления зависимых переменных. Слагаемые 
-используют одни и~те же признаки объектов, которые являются независимыми переменными, но 
-разные зависимые переменные. Для автокодировщика зависимые переменные~--- это 
-сами признаки объекта, для нейронной сети, следующей за ним, зависимая 
-переменная~--- ответ~$y$ на объекте.  Точка разделения~--- это место 
-в~суперпозиции, где автокодировщик, име\-ющий оптимальные параметры, передает 
-преобразованный вектор признаков в~нейросеть. Необходимо найти оптимальное 
-расположение разделения автокодировщика и~сети, которое минимизирует ошибку 
-аппроксимации выборки. Под структурой такой модели понимаются величины, 
-за\-да\-ющие вид итоговой суперпозиции,  т.\,е.\ чис\-ло слоев автокодировщика 
-и~нейросети, а также число нейронов в~слоях. Процедура минимизации ошибки 
-аппроксимации выборки следующая: сначала максимизируется точность 
-реконструкции кодировщиков, затем оптимизируются параметры нейросети. 
-Вмес\-те с~точностью оптимизируется сложность модели. Под сложностью понимается 
-{структурная сложность модели}~--- число параметров модели.
-
-В~данном исследовании для выбора оптимальной структуры используется 
-генетический алгоритм. Задается множество случайных начальных значений 
-структурных параметров. Затем вычисляется значение функции ошибки 
-аппроксимации, которое характеризует качество модели в~наборе. Согласно этой 
-функции выбираются модели, которые обмениваются структурными параметрами, 
-образуя новую структуру. Многократное повторение этой операции позволяет 
-получить оптимальную структуру модели. 
-
-Алгоритмы прореживания OBD (optimal brain damage)~\cite{second} и~OBS
-(optimal brain surgeon)~\cite{nine} используют 
-производные второго порядка функции ошибки по параметрам для выбора удаляемых 
-параметров. В~\cite{eight} авторы предлагают новый метод прореживания для 
-глубоких нейронных сетей. Параметры каждого слоя независимо  прореживаются на 
-основе производных второго порядка функции послойной ошибки по 
-соответствующим па\-ра\-мет\-рам. В~\cite{ten} используются производные первого 
-порядка для снижения слож\-ности сверточных нейронных сетей. 
-Использование~\cite{second} позволило в~\cite{eleven} уменьшить чис\-ло 
-структурных параметров рекуррентной нейронной сети на~$60\%$ и~снизить ошибку 
-на валидационной выборке на~$30\%$ по сравнению с~исходной моделью. 
-Автоматизированные методы поиска нейросетевой архитектуры~\cite{twentyone} 
-являются \mbox{частью} парадигмы автоматического машинного 
-обучения~\cite{twentytwo}. Сис\-те\-ма поиска получает на вход набор данных и~тип 
-решаемой задачи. Результат~--- оптимизированная архитектура нейронной сети.
-
-%В~\cite{thirteen} было предложено использовать вариационное 
-%исключение~\cite{twenty} для настройки величины исключения отдельно для 
-%каждого нейрона. Применение этого метода~\cite{fourteen} позволяет уменьшить 
-%количество параметров в~280 раз на архитектуре нейросети LeNet и~в 68 раз 
-%в~%VGG-подобных нейросетях без значительного снижения качества аппроксимации.
-
-\section{Постановка задачи выбора модели}
-
-Задана выборка $(\xb_i,y_i)$, $\xb_i \hm\in \mathbb{R}^n$, $y_i\hm\in 
-\mathbb{R}^1$, $i\hm=1,\dots,m,$ где $\xb$~--- описание объекта, вектор из 
-$n$ элементов признаков; $y$~--- зависимая переменная. Моделью называется 
-отображение $f:(\xb,\wm)\mapsto y$. Требуется построить аппроксимирующую 
-модель $f(\x)$ вида:
-\begin{multline}
-\label{eq44}
-f = \sigma_k\circ\underset{1\times1}{\wm_k^\mathsf{T}\sigmab_{k-
-1}}\circ\mathbf{W}_{k-1}\sigmab_{k-2}\circ\cdots\\
-\cdots \circ\underset{n_2 \times 
-1}{\mathbf{W}_2\sigmab_1}\circ \underset{n_1 \times n}{\mathbf{W}_1}\underset{n \times 1}{\x}.
-\end{multline}
-Эта модель рассматривается как суперпозиция линейной модели, глубокой 
-нейросети и~автоэнкодера. Рассмотрим различные модели как частные 
-случаи~\eqref{eq44}. Линейная, или логистическая, регрессия и~один нейрон 
-имеют вид
-%\begin{equation}\label{eq11}
- $f(\xb,\wm)=\sigmab(\wm^\mathsf{T}\xb),$
-%\end{equation}
-где $\sigmab$~--- функция активации, непрерывная монотонная дифференцируемая 
-функция~\eqref{eq49};  $\wm$~--- вектор параметров; 
-$\xb$~--- объект, вектор с~присоединенным элементом единица, соответствующим аддитивному 
-параметру~$w_0$. При использовании линейной функции активации получаем 
-линейную регрессию $f(\xb,\wm)\hm=\wm^\mathsf{T}\xb.$
-
-Такую функцию активации обозначим $\sigmab \hm= \mathrm{id} $. При 
-использовании сигмоидной функции активации получаем модель логистической 
-регрессии: 
-\begin{equation}
-\label{eq49}
-f(\xb,\wm)=\sigma(\wm^\mathsf{T}\xb)=\fr{1}{1+\exp(-\wm^\mathsf{T}\xb)}\,.
-\end{equation}
-
-Двухслойная нейронная сеть, состоящая из линейной комбинации нейронов, 
-однослойных нейронных сетей:
-\begin{multline*}
-%\label{eq12}
-f(\xb,\wm)={}\\
-{}=\sigma^{(2)}\!\left(\!\sum\limits_{i=1}^{n_2}w_i^{(2)}\sigma^{(1)}
-\!\left(\!
-\sum\limits_{j=1}^{n}w_{ij}^{(1)}x_j+w_{i0}^{(1)}\!\right)\!+w_0^{(2)}\!\right) = {}\\
-{}=
-\sigma\circ \wm^{\mathsf{T}}\sigmab\circ \mathbf{W}\xb.
-\end{multline*}
-
-\paragraph*{Метод главных компонент.} Модель допускает вращения признакового 
-пространства, т.\,е.\ объекты преобразуются только с~помощью поворотов, 
-$\mathbf{h} = \mathbf{W}\x,$ где $\mathbf{W}$~--- матрица поворота. Она 
-ортогональна:
-%\begin{equation}\label{eq51}
-$\mathbf{W}\mathbf{W}^\mathsf{T} = \mathbf{I}_n.$
-%\end{equation}
-Полученное пространство образов~$\mathbf{h}$ называется скрытым. Происходит 
-преобразование без потерь.
-
-При удалении нескольких строк оптимальной~\cite{fourth} матрицы~$\mathbf{W}$, 
-например их число $u \hm< n$,  полученный вектор $\mathbf{h}$ имеет размер $u 
-\times 1$. Получается проекция $\mathbf{h}$ вектора $\mathbf{x}$. Согласно 
-теореме С.\,Р.~Рао~\cite{fourth}, первые $u$ главных компонент 
-восстанавливают $\mathbf{h}$ оптимальным способом, $\mathbf{r}(\mathbf{x}) = 
-\mathbf{W}^{\mathsf{T}}\mathbf{h}.$
-
-Автокодировщик $\mathbf{h}$~--- это монотонное нелинейное отображение 
-входного вектора свободных переменных $\mathbf{x} \hm\in \mathbb{R}^n$ 
-в~скрытое представление $\mathbf{h} \hm\in \mathbb{R}^{u}$ вида:
-\begin{equation*}
-%\label{eq52}
-\mathbf{h}(\x) = \sigmab(\underset{u \times n}{\mathbf{W}}\x + \mathbf{b}) .
-\end{equation*}
-В~случае $\sigmab = \mathbf{id}$ и~ортогональной матрицы~$\mathbf{W}$
-%~\eqref{eq51}
-автокодировщик тождествен методу главных компонент. Скрытое представление 
-$\mathbf{h}$ реконструирует вектор $\mathbf{x}$ линейно:
-\begin{equation*}
-%\label{eq53}
-\mathbf{r}(\x) = \underset{n \times u}{\mathbf{W}{'}}\mathbf{h} + 
-\wm_{0}^{'}.
-\end{equation*}
-
-\section{Задача выбора оптимальной структуры модели}
-
-Решается задача выбора оптимальной структуры модели
-\begin{multline}
-\label{eq57}
-f = 
-\sigma_k\circ\boldsymbol{\Gamma}_k\otimes\underset{1\times1}{\wm_k^\mathsf{T}
-\sigmab_{k-1}}\circ\boldsymbol{\Gamma}_{k-1}\otimes\mathbf{W}_{k-
-1}\sigmab_{k-2}\circ\cdots\\
-\cdots\circ\boldsymbol{\Gamma}_2\otimes\underset{n_2 
-\times 
-1}{\mathbf{W}_2\sigmab_1}\circ\boldsymbol{\Gamma}_1\otimes\underset{n_1 
-\times n}{\mathbf{W}_1}\underset{n \times 1}{\x},
-\end{multline}
-где $\boldsymbol{\Gamma}$~--- матрица, за\-да\-ющая структуру модели; 
-$\otimes$~--- адамарово произведение, определяемое как поэлементное 
-умножение. Если элемент $\gamma\in\{0,1\}$ мат\-ри\-цы $\boldsymbol{\Gamma}$ 
-равен нулю, то соответствующий элемент мат\-ри\-цы па\-ра\-мет\-ров~$\mathbf{W}$ 
-обнуляется и~не участвует в~работе модели. Множество индексов, соответствующих 
-ненулевым элементам матрицы $\boldsymbol{\Gamma}$, обозначается~$\mathcal{A}$.  
-Требуется найти такое подмножество индексов~$\mathcal{A}^{*}$, которое 
-доставляет минимум \mbox{функции}
-\begin{equation}
-\label{eq46}
-\mathcal{A}^{*} = \mathrm{arg}\,\underset{\mathcal{A} \subseteq 
-\mathcal{I}}\min S(f_{\mathcal{A}}|\wm^*, \mathfrak{D}_\mathcal{C})
-\end{equation}
-на разбиении выборки~$\mathfrak{D}$, определенной множеством индексов 
-$\mathcal{C}$. Здесь $\mathcal{I}\hm = \mathcal{C}\sqcup \mathcal{L}$~--- все 
-индексы всех матриц~$\boldsymbol{\Gamma}$. Таким образом, требуется снизить число 
-признаков и~повысить устойчивость модели. При этом параметры $\mathbf{w}^*$ 
-модели доставляют минимум ошибки
-\begin{equation}
-\label{eq102}
-\mathbf{w}^* = \mathrm{arg}\,\underset{\mathbf{w}}\min 
-S(\mathbf{w}|\mathfrak{D}_\mathcal{L}, f_\mathcal{A})
-\end{equation}
-на разбиении выборки, определенной множеством~$\mathcal{L}$. Процедура 
-разбиения описана в~вы\-чис\-ли\-тель\-ном эксперименте.
-
-\paragraph*{Генетический алгоритм.}
-Для решения задачи оптимизации структуры~\eqref{eq46}  используется 
-генетический алгоритм.
-Структура нейронной сети~\eqref{eq57} включает в~себя $k$ слоев, $l$-й слой 
-содержит $N_l$ нейронов, $\sum\nolimits_{l=1}^kN_l \hm= L$. Каждому слою 
-соответствует матрица $\boldsymbol\Gamma_l \hm\in \{0,1\}^{N_l}$. Это 
-означает, что па\-ра\-мет\-ры, которые умножаются поэлементно на ноль,  не будут 
-учитываться. Составляется вектор
-$$
-\boldsymbol{\gamma} = 
-[\gamma_1,\gamma_2,\dots,\gamma_L] = \mathbf{vec} 
-[\boldsymbol\Gamma_1,\boldsymbol\Gamma_2,\dots,\boldsymbol\Gamma_k],
-$$ 
-соответствующий~\eqref{eq57}.
-Процедура оптимизации структуры:
-\begin{enumerate}
-    \item Задается множество начальных значений $\mathfrak{G}\hm =  
-\{\boldsymbol{\gamma}_1,\boldsymbol{\gamma}_2,\dots , \boldsymbol{\gamma}_R\}$, 
-где случайным образом задаются элементы бинарного вектора 
-$\boldsymbol{\gamma}$.
-    \item Для каждого $\boldsymbol{\gamma}_\iota \in\in \mathfrak{G}$ 
-вычисляется значение функции ошибки~$S$~\eqref{eq3} (см.\ разд.~4).
-    \item Для каждого $\boldsymbol{\gamma}_\iota$ оценивается вероятность 
-выбора его как структуры для \mbox{скрещивания} с~по\-мощью функции 
-$$
-P_\iota = \fr{1/S_\iota}{\sum\nolimits_{\iota=1} 1/S_\iota}.
-$$
- Выбирается пара 
-структур $\boldsymbol{\gamma}_p,\boldsymbol{\gamma}_q$ с~максимальной 
-вероятностью.
-    \item Выбирается случайный индекс точки разделения $\nu\hm \in 
-\{1,\ldots ,L-1\}$.
-    \item Структуры разделяются на две части, происходит обмен элементами, 
-следующими за~$\nu$:
-   \begin{align*}
-[\gamma_{p,1},\dots,\gamma_{p,\nu},\gamma_{q,\nu+1},\dots,\gamma_{q,L}]&\rightarrow 
-\boldsymbol{\gamma}^{\prime}_p,
-\\
-[\gamma_{q,1},\dots,\gamma_{q,\nu},\gamma_{p,\nu+1},\dots,\gamma_{p,L}]&\rightarrow 
-\boldsymbol{\gamma}^{\prime}_q.
-\end{align*}
-    \item Выбираются случайные номера $\eta_1,\dots,\eta_Q\hm \in 
-\{1,\dots,L\}$.
-    \item У векторов 
-$\boldsymbol{\gamma}^{\prime}_p,\boldsymbol{\gamma}^{\prime}_q$ инвертируются 
-позиции с~номерами $\eta_1,\dots,\eta_Q$.
-    \item Пункты 4--8 повторяются $R/2$ раз. Множество~$\mathfrak{G}$ 
-содержит на каждой итерации~$R$ структур, которым соответствует наименьшее 
-\mbox{ошибка}.
-    
-\end{enumerate}
-Здесь $R$ и~$Q$~--- фиксированные параметры алгоритма.
-В~эксперименте производится настройка~$\boldsymbol{\Gamma}$ по частям, 
-т.\,е.\ алгоритм запускается отдельно для каж\-до\-го слоя. Результатом работы 
-становится вектор, нулевые элементы которого соответствуют нейронам, 
-исключаемым из структуры.
-
-\begin{table*}[b]\small %[!htbp]
-\begin{center}
-\label{table2}
-\vspace*{2ex}
-
-\begin{tabular}{|l|r|c|r|c|c|c|}
-\multicolumn{7}{c}{Результат применения генетического алгоритма для 
-прореживания сети}\\
-\multicolumn{7}{c}{\ }\\[-6pt]
-\hline
-\multicolumn{1}{|c|}{Выборка $\mathfrak{D}$} & \multicolumn{1}{c|}{$m$} & $n$ &
-\tabcolsep=0pt\begin{tabular}{c} Ошибка сети\\ c 
-прореживанием\end{tabular}  & 
-\tabcolsep=0pt\begin{tabular}{c}Ошибка сети\\ без прореживания\end{tabular}  & 
-\tabcolsep=0pt\begin{tabular}{c}Сложность\\ без\\ прореживания\end{tabular}& 
-\tabcolsep=0pt\begin{tabular}{c}Сложность\\ после\\ прореживания\end{tabular}\\
-\hline 
-Credit Card & 30000 & 35  & 0,3204\;$\pm$\;0,0032& 0,2681\;$\pm$\;0,0034& 68& 25 \\
-%\hline
-Protein & 45730 & \hphantom{9}9 & 4,4968\;$\pm$\;0,0238& 4,4968\;$\pm$\;0,0238& 16 & \hphantom{9}1 \\
-%\hline
-Airbnb & 10498 & 16 & l35,0773\;$\pm$\;0,5909& 33,9163\;$\pm$\;0,5978\hphantom{9}& 32 & 
-12 \\
-%\hline
-Wine quality  & 4898 & 11 & 0,5818\;$\pm$\;0,0147&  0,5941\;$\pm$\;0,0149& 20 
-& \hphantom{9}4 \\
-%\hline
-Synthetic, $10^{-3}$ & 2000 & 30 & 0,3005\;$\pm$\;0,0081& \hphantom{9}0,303\;$\pm$\;0,0079 
-& 60 & 12 \\
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
-
-\section{Функция ошибки и~критерии качества модели}
-
-Для оптимизации структуры предлагается использовать композитную функцию 
-ошибки~\eqref{eq3}.\linebreak Она состоит из двух слагаемых. Первое слагаемое 
-соответствует точности восстановления зависимой переменной. Второе 
-слагаемое~--- это точность реконструкции независимой переменной 
-автокодировщиком. Задача~\eqref{eq102} представляет собой задачу\linebreak минимизации 
-функции~$S$. Она включает сла\-га\-емые~\eqref{eq3} и~\eqref{eq54} для 
-оптимизации параметров модели~\eqref{eq44}:
-
-\noindent
-\begin{multline}
-f =
- %\underbrace
- %{\begin{array}{l}
-\sigma_k\circ\underset{1\times1}
-{\boldsymbol\Gamma_k\wm_k^\mathsf{T}\sigmab_{k-1}}\circ\boldsymbol\Gamma_{k-1}
-\mathbf{W}_{k-1}\sigmab_{k-2}\circ\cdots\\
-\hspace*{20mm}\cdots
-\underbrace{\circ\underset{n_2 
-\times 
-1}{\boldsymbol\Gamma_2\mathbf{W}_2\sigmab_1}\circ\boldsymbol\Gamma_1\underset
-{n_1 \times n}{\mathbf{W}_1}\underset{n \times 1}{\x}}_{E_\mathbf{x}}.
-\label{eq58}
-\end{multline}
-
-\vspace*{-36pt}
-
-%\end{array}}
-$$
-\underbrace{\hspace*{62mm}}_{S}
-$$
-Первое слагаемое $E_{\textbf{x}}$~--- это функция ошибки реконструкции 
-объекта стеком автокодировщиков. Второе слагаемое $S$~--- это функция ошибки 
-нейросети. При выборе моделей используются три вида критериев качества: 
-точность, устойчивость и~сложность.
-
-\textbf{Точность.} В задаче восстановления регрессии функция ошибки имеет вид:
-\begin{equation}
-\label{eq3}
-S = \sum_{i\in\mathcal{I}}\big(y_i-f(\xb_i)\big)^2.
-\end{equation}
-%Эта функция ошибки включает в~себя полученные предсказания модели и~значения  
-%зависимых переменных. В~задачах прогнозирования точность аппроксимации имеет  
-%вид:
-%\begin{equation}\label{eq106}
-%\text{MAE} =\frac{1}{m} \sum\limits_{i=1}^m|y_i-f(\xb_i)|.
-%\end{equation}
-При включении в~модель~\eqref{eq44} метода главных компонент или 
-автокодировщика метки объектов не используются. Функция ошибки штрафует 
-невязки восстановленного объекта:
-\begin{equation}
-\label{eq4}
-E_\mathbf{x} = \sum\limits_{i\in\mathcal{I}}\left\Vert{\xb_i-
-\mathbf{r}(\xb_i)}\right\Vert_2^2,
-\end{equation}
-где $\mathbf{r}(\x)$~--- линейная реконструкция объекта $\x$. 
-Функция~\eqref{eq4} с~аддитивной регуляризацией:
-\begin{equation}
-\!\!\!E_\mathbf{x} = 
-\sum\limits_{i=1}^m\left\Vert\mathbf{r}(\mathbf{x}_i,\mathbf{W}_{\mathrm{AE}}
-) - \x_i\right\Vert^2 + 
-\lambda^2\left\Vert\mathbf{W}\right\Vert_{\mathrm{Frobenius}}^2,\!\!
-\label{eq54}
-\end{equation}
-где $m$~--- число элементов в~обучающей выборке.
-Параметры автокодировщика $\mathbf{W}_{\mathrm{AE}} = 
-\{\mathbf{W}^{'},\mathbf{W},\mathbf{b}^{'},\mathbf{b}\}$ оптимизированы таким 
-образом~\eqref{eq4}, чтобы приблизить реконструкцию $\mathbf{r}(\x)$ 
-к~исходному вектору~$\x$.
-
-Процедура оптимизации параметров композитной функции~\eqref{eq58}: 
-\begin{enumerate}[(1)]
-\item оптимизируются параметры модели согласно~\eqref{eq54}; 
-\item заданные 
-параметры фиксируются; 
-\item оптимизируются параметры согласно~\eqref{eq3}.
-\end{enumerate}
-
-%\paragraph{
-\textbf{Сложность~---} это число параметров модели, $\sum\nolimits_{l = 1}^k
-\left\Vert\boldsymbol{\Gamma}_k\right\Vert_1 \rightarrow \min.$
-
-%\paragraph
-\textbf{Устойчивость~---} это минимум дисперсии функции ошибки~\eqref{eq3}:
-%\begin{equation}\label{eq103}
-$\mathsf{D}(S) \hm\rightarrow \min.$
-%\end{equation}
-При вычислении устойчивости выборка считается фиксированной и~изменение 
-устойчвости считается зависящим только от структуры и~параметров модели.
-
-\section{Вычислительный эксперимент}
-
-Исследуется процедура оптимизации структуры нейросети с~сохранением качества 
-аппроксимации. Структура оптимизируется с~помощью генетического алгоритма. 
-Цель вычислительного эксперимента состоит в~определении оптимальной позиции 
-разделения автокодировщиков и~нейронной сети, а~также исследовании 
-зависимости точ\-ности, слож\-ности и~устой\-чи\-вости модели от способа задания 
-структуры. Исходный код находится на Github~\cite{twentythree}.
-
-
-%
-
-\begin{figure*}[b] %fig1
-\vspace*{6pt}
-    \begin{center}  
-  \mbox{%
- \epsfxsize=162.76mm 
- \epsfbox{str-1.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Ошибка~\eqref{eq3} в~зависимости от конфигурации модели: (\textit{а}) 
-первый подход; (\textit{б})~второй подход}
-\label{fig:blobs}
-\end{figure*}
-
-
-
-\textbf{Наборы данных.}
-Качество предложенного подхода к~построению модели оценивается на нескольких 
-реальных наборах данных и~одном синтетическом наборе. Выборки взяты из 
-открытого \mbox{репозитория} данных для машинного обучения~\cite{seventh}.  Описание 
-всех выборок представлено в~таблице. %~\ref{table2}. 
-Синтетический набор данных состоит из признаков с~различными свойствами 
-ортогональности и~коррелированности друг с~другом и~с~целевой переменной. 
-Процедура генерации синтетических данных описана в~работе~\cite{first}. 
-Возможны следующие конфигурации синтетических данных: неполный 
-и~скоррелированный; адекватный и~случайный; адекватный и~избыточный; адекватный и~скоррелированный.
-
-Каждый набор данных разбивается на три час\-ти. Обучающая выборка~--- $60\%$ от 
-исходного набора.\linebreak
- На этой выборке модель тренируется и~фиксируются значения 
-параметров. Валидационная выборка~--- $20\%$ от исходного набора. На этой 
-выборке применяется генетический алгоритм, который\linebreak ищет оптимальную 
-структуру. Тестовая выборка~--- $20\%$ от исходного набора. Она никак не 
-участвует в~оптимизации структуры модели. Эта выборка\linebreak используется только для 
-контроля качества~--- сравнение модели исходной и~оптимизированной структуры, 
-а также сравнение с~другими алгоритмами прореживания сетей.
-Решается задача восстановления регрессии, т.\,е.\ зависимой переменной 
-служит~$y\in\mathbb{R}$. В~процессе работы были рассмотрены два подхода 
-к~решению задачи и, соответственно, две структуры нейронной сети.
-
-\begin{figure*} %fig2
-\vspace*{1pt}
-    \begin{center}  
-  \mbox{%
- \epsfxsize=160.143mm 
- \epsfbox{str-2.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Ошибка и~ее дисперсия в~зависимости от структуры модели: 
-(\textit{а})~первый подход; (\textit{б})~второй подход. Порядковый номер 
-графика и~точки на графике соответствуют разному числу слоев соответствующей 
-модели}
-\label{fig:disp}
-\vspace*{3pt}
-\end{figure*}
-
-
-
-\textbf{Первый подход}. Автокодировщик преобразует входные векторы $\x$, 
-которые затем подаются на вход полносвязной нейронной сети.
-
-\textbf{Второй подход}.
-Оптимизируются параметры автокодировщика, его параметры фиксируются 
-и~предпоследний слой соединяется с~полносвязной нейросетью, оптимизируются 
-параметры модели. Предпоследний слой содержит меньшее число параметров по 
-сравнению с~размерностью входного пространства признаков. Число парамеров 
-определяет число нейронов в~этом слое, т.\,е.\ полносвязная сеть получает на 
-вход скрытое представление исходной независимой переменной.
-
-Параметры в~обеих сетях инициализированы нормальным распределением с~нулевым 
-средним и~смещением~$\sqrt{({1}/{2)}({N_{\mathrm{in}}+N_{\mathrm{out}})}}$, 
-где $N_{\mathrm{in}}$~--- чис\-ло входных признаков; $N_{\mathrm{out}}$~--- 
-число признаков на выходе слоя. Такая инициализация параметров была 
-предложена в~\cite{fifth}. Она выбрана экспериментальным путем как 
-показывающая наилучший результат точности аппроксимации. Каждая из сетей 
-обучалась в~течение~500 итераций обновления параметров, и~размер пакета 
-обучения равен~128.  В~качестве функции активации в~слоях автокодировщика 
-используется $\mathrm{Relu}(x) \hm= \max(0,x)$, для полносвязной сети тоже 
-$\mathrm{Relu}$, но в~последнем слое~$\mathrm{id}$.
-
-Для вычисления ошибки~\eqref{eq3} используются выходные значения полносвязной 
-сети. Варьируется число промежуточных слоев автокодировщика\linebreak и~полносвязной 
-сети от~1 до~5. Рассматривается декартово произведение двух 
-множеств:~$[1,2,3,4,5] \hm\times [1,2,3,4,5]$. Число нейронов в~каждом скрытом 
-слое одинаково для любой сети и~равно десяти. Для каждой конфигурации 
-считается ошибка~\eqref{eq3}. Качество оценивается на синтетическом наборе 
-данных. Полученный результат представлен на рис.~\ref{fig:blobs}. Размер 
-пузыря пропорционален полученной ошибке. Каждая конфигурация сети обучалась 
-на наборе, полученном с~по\-мощью бут\-стреп-ме\-то\-да из данных, взятых для 
-обучения. Чис\-ло итераций процедуры  
-бут\-стреп-ме\-то\-да равно~10. Ошибка считалась на отложенном наборе данных 
-для тестирования. Видно, что при увеличении числа слоев полносвязной сети 
-ошибка в~основном падает. Минимальная ошибка достигается при конфигурации: 
-четыре слоя автокодировщика и~два слоя полносвязной сети для первого подхода; 
-один слой автокодировщика и~четыре слоя полносвязной сети для второго 
-подхода. Данную конфигурацию возьмем для дальнейшего исследования параметров 
-модели,  используя, соответственно, второй подход.
-
-На рис.~\ref{fig:disp} представлена дисперсия %~\eqref{eq103}
-и значение ошибки~\eqref{eq3} в~зависимости от числа слоев в~автокодировщике и~полносвязной сети. Дисперсия была получена с~помощью десяти итераций 
-бутстрепирования обучающей выборки для каждой конфигурации. С~увеличением 
-числа слоев в~автокодировщике при использовании первого подхода снижаются 
-ошибка и~дисперсия ошибки.
-
-С помощью описанных двух подходов получается оптимальная архитектура 
-соединения автокодировщика и~полносвязной сети. Далее применяется описанный 
-ранее генетический алгоритм для прореживания сети и~уменьшения ее сложности. 
-Алгоритм применяется на нейронах каждого слоя сети. В~таблице приведены 
-результаты применения генетического алгоритма для исследуемых наборов данных, 
-качество алгоритма оценивается по тестовой выборке. В~качестве ошибки 
-выступает %~\eqref{eq106}
-$\mathrm{MAE} =({1}/{m}) \sum\nolimits_{i=1}^m|y_i\hm-f(\xb_i)|$, 
-а~в~качестве сложности алгоритма выступает число ненулевых нейронов. Под нулевым 
-нейроном понимается нейрон, все параметры которого равны нулю.
-
-\section{Заключение}
-
-В~представленной работе исследованы два подхода к~построению модели, 
-состоящей из автокодировщика и~нейронной сети и~имеющей композитную функцию 
-ошибки. Представлены \mbox{подходы} к~поиску оптимальной точки разделения 
-автокодировщика и~нейронной сети. Исследовано применение генетического 
-алгоритма для оптимизации структуры и~снижения сложности. Работа 
-предложенного алгоритма исследовалась на пяти различных наборах данных. Как 
-показано в~таб\-ли\-це, предложенный алгоритм выбора структуры  
-существенно снижает сложность модели без потери качества аппроксимации.
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- %\addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-
-\bibitem{sixth} 
-\Au{Cybenko~G.\,V.} Approximation by superpositions of a 
-sigmoidal function~// Math. Control Signal., 1989.~Vol.~2. 
-Iss.~4. P.~303--314.
-\bibitem{third} 
-\Au{Бахтеев~О.\,Ю., Стрижов~В.\,В.} Выбор моделей глубокого 
-обучения субоптимальной сложности~// Автоматика и~телемеханика, 2018. Вып.~8. С.~129--147.
-\bibitem{twentythree} 
-\Au{Потанин~М.\,С., Вайсер~К.\,О., Жолобов~В.\,А., 
-Стрижов~В.\,В.} Приложение к~статье: вы\-чис\-ли\-тель\-ный эксперимент по выбору 
-универсальной модели и~базовые теоремы, 2019. {\sf 
-https://github.com/MarkPotanin/ GeneticOpt}.
-\bibitem{eighteen} 
-\Au{Hinton G.\,E., Salakhutdinov~R.\,R.} Reducing the 
-dimensionality of data with neural networks~// Science,~2006. Vol.~313. 
-Iss.~5786. P.~504--507.
-
-\bibitem{second} 
-\Au{LeCun~Y., Denker~J.\,S., Solla~S., Howard~R.\,E., 
-Jackel~L.\,D.} Optimal brain damage~// Adv. Neur. In., 1989. Vol.~2. P.~598--605.
-\bibitem{nine} 
-\Au{Hassibi~B., Stork~D.\,G.} Second order derivatives for 
-network pruning: Optimal brain surgeon~// Adv. Neur. In., 1992. Vol.~5. P.~164--171.
-\bibitem{eight} 
-\Au{Dong~X., Chen~S., Pan~S.} Learning to prune deep neural 
-networks via layer-wise optimal brain surgeon~// Adv. Neur. 
-In., 2017.  Vol.~30. P.~4857--4867.
-\bibitem{ten} 
-\Au{Molchanov~P., Tyree~S., Karras~T., Aila~T., Kautz~J.} 
-Pruning convolutional neural networks for resource efficient transfer
-learning~// ArXiv.org, 2016. ArXiv:1611.06440.
-\bibitem{eleven} 
-\Au{Chaber~P., Lawrynczuk~M.} Pruning of recurrent neural 
-models: An optimal brain damage approach~// Nonlinear Dynam., 2018. 
-Vol.~92. Iss.~2. P.~763.
-\bibitem{twentyone}  %10
-\Au{Elsken T., Metzen J.\,H., Hutter~F.} Neural 
-architecture search: A~survey~// ArXiv.org, 2018. ArXiv:1808.05377.
-\bibitem{twentytwo} %11
-\Au{Hutter F., Kotthoff~L., Vanschoren~J.} Automated 
-machine learning~--~methods, systems, challenges.~--- Springer, 2019. 223~p.
-\bibitem{fourth} %12
-\Au{Рао~С.\,Р.} Линейные статистические методы и~их 
-применение~/ Пер.~с~англ.~--- М.: Наука, 1968. 548~с. (\Au{Rao~C.\,R.} Linear 
-statistical inference and its application.~--- New York, NY, USA: 
-Wiley,~1968. 548~p.)
-\bibitem{seventh} %13
-UCI Machine Learning Repository, 2007. {\sf 
-https:// archive.ics.uci.edu/ml}.
-\bibitem{first}  %14
-\Au{Katrusa~A.\,M., Strijov~V.\,V.} Stress test procedure for 
-feature selection algorithms~// Chemometr. Intell. Lab., 2015. Vol.~142. P.~172--183.
-\bibitem{fifth} \Au{Glorot~X., Bengio~Y.} Understanding the difficulty of 
-training deep feedforward neural networks~// 13th Conference (International) 
-on Artificial Intelligence and Statistics Proceedings.~--- Sardinia, 
-Italy, 2010. P.~249--256.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 02.12.19}}
-
-%\vspace*{8pt}
-
-%\pagebreak
-
-\newpage
-
-\vspace*{-28pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-%\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{DEEP LEARNING NEURAL NETWORK STRUCTURE OPTIMIZATION\\[-5pt]}
-
-
-\def\titkol{Deep learning neural network structure optimization}
- 
-\def\aut{M.\,S.~Potanin$^1$, K.\,O.~Vayser$^1$, V.\,A.~Zholobov$^1$, and~V.\,V.~Strijov$^{1,2}$\\[-5pt]}
-
-\def\autkol{M.\,S.~Potanin, K.\,O.~Vayser, V.\,A.~Zholobov, and~V.\,V.~Strijov}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-21pt}
-
-
-\noindent
-$^1$Moscow Institute of Physics and Technology, 9~Institutskiy Per., Dolgoprudny, Moscow Region 
-141700, Russian\linebreak
-$\hphantom{^1}$Federation
-
-\noindent
-$^2$A.\,A.~Dorodnicyn Computing Center, Federal Research Center ``Computer Science and Control'' 
-of the Russian\linebreak
-$\hphantom{^1}$Academy of Sciences,   40~Vavilov Str., Moscow 119333, Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt} 
-
-
-\Abste{The paper investigates the optimal model structure selection problem. The model is a 
-superposition of generalized linear models. 
-Its elements are linear regression, logistic regression, principal components analysis, autoencoder and 
-neural network. The model structure refers to values of structural 
-parameters that determine the form of final superposition. This paper analyzes the model structure 
-selection method and investigates dependence of accuracy, complexity and stability of the model on it.
-The paper proposes an algorithm for selection of the neural network optimal structure. The proposed 
-method was tested on real and synthetic data. The experiment resulted
- in significant structural complexity reduction of the model while maintaining accuracy of approximation.}
-
-\KWE{model selection; linear models; autoencoders; neural networks; structure; genetic alghorithm}
-
-
-\DOI{10.14357/19922264200408} 
-
-\vspace*{-22pt}
-
-\Ack
-
-\vspace*{-4pt}
-\noindent
- This research was supported by RFBR (projects 19-07-1155 and 19-07-0885) and by  the Government of the 
-Russian Federation (agreement 05.Y09.21.0018). This paper contains results of the project ``Statistical 
-methods of machine learning'' which is carried out within the framework of the Program ``Center of Big 
-Data Storage and Analysis'' of the National Technology Initiative Competence Center. It is supported by 
-the Ministry of Science and Higher Education of the Russian Federation according to the agreement 
-between the M.\,V.~Lomonosov Moscow State University and the Foundation of Project Support of the 
-National Technology Initiative from 11.12.2018 No.\,13/1251/2018.
-
-%\vspace*{6pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {\baselineskip=10.3pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-
-\bibitem{1-pot-1}
-\Aue{Cybenko, G.} 1989. Approximation by superpositions of a~sigmoidal function. \textit{Math. 
-Control Signal.} 2(4):303--314.
-\bibitem{2-pot-1}
-\Aue{Bakhteev, O.\,Yu, and V.\,V.~Strijov}. 2018. Deep learning model selection of suboptimal 
-complexity. \textit{Automat. Rem. Contr.} 79(8):1474--1488.
-\bibitem{3-pot-1}
-\Aue{Potanin, M.\,S., K.\,O.~Vajser, V.\,A.~Zholobov, and V.\,V.~Strijov.} 2019. Prilozhenie 
-k~stat'e: vy\-chis\-li\-tel'\-nyy eksperiment po vyboru universal'noy modeli i~ba\-zo\-vye teoremy [Appendix to 
-the paper: Computational expirement and basic theorems]. Available at: {\sf  
-https://github.com/MarkPotanin/GeneticOpt} (accessed November~5, 2020).
-\bibitem{4-pot-1}
-\Aue{Hinton, G.\,E., and R.\,R.~Salakhutdinov.} 2006. Reducing the dimensionality of data with neural 
-networks. \textit{Science} 313(5786):504--507.
-\bibitem{5-pot-1}
-\Aue{LeCun, Y., J.~Denker, and S.~Solla.} 1989. Optimal brain damage. \textit{Adv. Neur. In.} 2:598--605.
-\bibitem{6-pot-1}
-\Aue{Hassibi, B., and D.\,G.~Stork.} 1992. Second order derivatives for network pruning: Optimal brain 
-surgeon. \textit{Adv. Neur. In.} 5:164--171.
-\bibitem{7-pot-1}
-\Aue{Dong, X., S. Chen, and S.~Pan.} 2017. Learning to prune deep neural networks via layer-wise 
-optimal brain surgeon. \textit{Adv. Neur. In.} 30:4857--4867.
-\bibitem{8-pot-1}
-\Aue{Molchanov, P., S.~Tyree, T.~Karras, T.~Aila, and
-J.~Kautz.} 2016. Pruning convolutional neural networks for resource efficient 
-transfer learning. arXiv:1611.06440 [cs.LG]. Available at: {\sf https://arxiv.org/abs/1611.06440} 
-(accessed November~5, 2020).
-\bibitem{9-pot-1}
-\Aue{Chaber, P., and M.~Lawry$\acute{\mbox{n}}$czuk.} 2018. Pruning of recurrent neural models: an 
-optimal brain damage approach. \textit{Nonlinear Dynam.} 92(2):763--780.
-\bibitem{10-pot-1}
-\Aue{Elsken, T., J.\,H. Metzen, and F.~Hutter.} 2018. Neural architecture search: A~survey. 
-arXiv:1808.05377 [stat.ML]. Available at: {\sf https://arxiv.org/abs/1808.05377} (accessed November~5, 
-2020).
-\bibitem{11-pot-1}
-\Aue{Hutter, F., L. Kotthoff, and J.~Vanschoren.} 2019. \textit{Automated machine learning-methods, 
-systems, challenges}. Springer. 223~p.
-\bibitem{12-pot-1}
-\Aue{Rao, C.\,R.} 1973. \textit{Linear statistical inference and its applications}. Vol.~2. New York, 
-NY: Wiley. 548~p.
-\bibitem{13-pot-1}
-UCI Machine Learning Repository. Available at: {\sf http:// archive.ics.uci.edu/ml} (accessed 
-November~5, 2020).
-\bibitem{14-pot-1}
-\Aue{Katrutsa, A.\,M., and V.\,V.~Strijov.} 2015. Stress test procedure for feature selection algorithms. 
-\textit{Chemometr. Intell. Lab.} 142:172--183.
-\bibitem{15-pot-1}
-\Aue{Glorot, X., and Yo. Bengio.} 2010. Understanding the difficulty of training deep feedforward 
-neural networks. \textit{13th Conference (Internatioanl) on Artificial Intelligence and Statistics 
-Proceedings.} 
-249---256.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-11pt}
-
-\hfill{\small\textit{Received December 2, 2019}}
-
-\pagebreak
-
-%\vspace*{-24pt}
-
-
-\Contr
-
-\noindent
-\textbf{Potanin Mark St.} (b.\ 1994)~--- PhD student, Moscow Institute of Physics and Technology,  
-9~Institutskiy Per., Dolgoprudny, Moscow Region 141701, Russian Federation; 
-\mbox{mark.potanin@phystech.edu}
-
-\vspace*{5pt}
-
-\noindent
-\textbf{Vayser Kirill O.} (b.\ 2000)~--- student, Moscow Institute of Physics and Technology, 
-9~Institutskiy Per., Dolgoprudny, Moscow Region 141701, Russian Federation; 
-\mbox{vajser.ko@phystech.edu}
-
-\vspace*{5pt}
-
-\noindent
-\textbf{Zholobov Vladimir Al.} (b.\ 1998)~--- student, Moscow Institute of Physics and Technology, 
-9~Institutskiy Per., Dolgoprudny, Moscow Region 141701, Russian Federation; 
-\mbox{zholobov.va@phystech.edu}
-
-\vspace*{5pt}
-
-\noindent
-\textbf{Strijov Vadim V.} (b.\ 1967)~--- Doctor of Science in physics and mathematics, leading scientist, 
-A.\,A.~Dorodnicyn Computing Center, Federal Research Center ``Computer Science and Control'' of 
-the Russian Academy of Sciences, 40~Vavilov Str., Moscow 119333, Russian Federation; professor, 
-Moscow Institute of Physics and Technology, 9~Institutskiy Per., Dolgoprudny, Moscow Region 141701, 
-Russian Federation; \mbox{strijov@phystech.edu}\
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 
-      

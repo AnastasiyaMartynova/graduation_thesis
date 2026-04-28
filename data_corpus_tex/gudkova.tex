@@ -1,955 +1,0 @@
-\def\stat{gudkova}
-
-\def\tit{СРАВНИТЕЛЬНЫЙ АНАЛИЗ ПОКАЗАТЕЛЕЙ ЭФФЕКТИВНОСТИ МОДЕЛИ БЕСПРОВОДНОЙ 
-СЕТИ МЕЖМАШИННОГО ВЗАИМОДЕЙСТВИЯ, РАБОТАЮЩЕЙ В~РАМКАХ ДВУХ ПОЛИТИК РАЗДЕЛЕНИЯ РАДИОРЕСУРСОВ$^*$}
-
-\def\titkol{Сравнительный анализ показателей эффективности модели беспроводной 
-сети межмашинного взаимодействия}
-%, работающей в~рамках двух политик разделения радиоресурсов}
-
-\def\aut{Е.\,В.~Маркова$^1$, А.\,А.~Гольская$^2$, И.\,Л.~Дзантиев$^3$, И.\,А.~Гудкова$^4$, 
-С.\,Я.~Шоргин$^5$}
-
-\def\autkol{Е.\,В.~Маркова, А.\,А.~Гольская, И.\,Л.~Дзантиев и др.}
-%$^3$ И.\,А.~Гудкова$^4$,  С.\,Я.~Шоргин$^5$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Е.\,В.~Маркова$^1$, А.\,А.~Гольская$^2$, И.\,Л.~Дзантиев$^3$ И.\,А.~Гудкова$^4$, 
-С.\,Я.~Шоргин$^5$}
-\index{E.\,V.~Markova, A.\,A.~Golskaia, I.\,L.~Dzantiev, et al.} 
-%I.\,A.~Gudkova$^{1,2}$, and~S.\,Ya.~Shorgin}
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Публикация подготовлена при финансовой поддержке Минобрнауки России 
-(проект 2.3397.2017/4.6).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Российский университет дружбы народов, markova\_ev@rudn.university}
-\footnotetext[2]{Российский университет дружбы народов, golskaya\_aa@rudn.university}
-\footnotetext[3]{Российский университет дружбы народов, dzantiev\_il@rudn.university}
-\footnotetext[4]{Российский университет дружбы народов; Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управ\-ле\-ние>> Российской академии наук, gudkova\_ia@rudn.university}
-\footnotetext[5]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{sshorgin@ipiran.ru}}
-
-\vspace*{-4pt}
-
-
-
-
-\Abst{В~настоящее время информационно-коммуникационные технологии (ИКТ) все глубже 
-проникают во многие области современной жизни. Например, концепция интеграции ИКТ 
-и~Интернета вещей (Internet of Things, IoT) для управления городской инфраструктурой 
-<<Умный город>> позволяет городской власти следить за изменениями и~ситуацией в~городе 
-с~помощью датчиков. При этом специализированные системы осуществляют сбор данных 
-в~автоматическом режиме без участия человека. Важным параметром при определении 
-показателей эффективности беспроводных сетей межмашинного взаимодействия 
-(Machine-to-Machine, M2M)~--- скорости передачи данных, вероятности блокировки~--- служит 
-удаленность устройства (датчика) от радиопередающей аппаратуры (базовой станции, БС). 
-Поэтому при описании такой сети в~виде сис\-те\-мы массового обслуживания с~потоковым 
-(гарантированная ско\-рость передачи данных) или эластичным (негарантированная скорость) 
-трафиком необходимо рассматривать входящий поток запросов на передачу данных от 
-M2M-устройств таким образом, чтобы учесть расположение устройств относительно БС. 
-Представлена модель соты беспроводной сети со стационарными M2M-устрой\-ст\-ва\-ми, 
-находящимися либо в~пассивном, либо в~активном со\-сто\-янии. Устройства описываются 
-точками, случайно возникающими на плос\-кости, и~генерируют потоковый трафик, скорость 
-передачи которого зависит от расположения устройства в~соте, его мощности и~уровня шума. 
-Состояние системы описывает вектор переменной длины, компонентами которого служат 
-расстояния от каждого активного устройства до БС. Рассмотрены две политики управ\-ле\-ния 
-радиоресурсами~--- \textit{round robin} (RR) и~\textit{full power} (FP), отличающиеся друг от друга 
-распределением временного интервала обслуживания M2M-устрой\-ст\-ва 
-и~предоставляемой ско\-ростью передачи данных. Проведен сравнительный анализ значений 
-вероятности блокировки запроса на передачу данных.}
-
-\KW{беспроводная сеть; LTE; устройство межмашинного взаимодействия; индикатор 
-качества канала; формула Шеннона; равномерное распределение; политика циклического 
-обслуживания; политика обслуживания на максимальной мощности; вероятность 
-блокировки}
-
-\DOI{10.14357/19922264190115}
-  
-%\vspace*{4pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-
-\vspace*{-2pt}
-
-  В связи со стремительным ростом числа используемых M2M-устройств~[1] 
-в~широком спектре отраслей они становятся все более распространенными. 
-Согласно прогнозу Cisco~[2], количество M2M-со\-еди\-не\-ний составит более 
-половины от общего числа подключенных устройств и~соединений (51\%) 
-и~достигнет значения 14,6~млрд к~2022~г. 
-
-Для обслуживания  
-M2M-при\-ло\-же\-ний, генерирующих в~совокупности большой объем данных с~необходимым уровнем QoS (Quality of Service), требуется развитие 
-существующих и~разработка новых технологий. Отметим, что для различных 
-типов M2M-приложений эти технологии значительно отличаются~[3]. 
-
-Первый 
-тип приложений включает в~себя смарт-из\-ме\-ре\-ния, мобильный трекинг, 
-электронное здравоохранение и~т.\,д.\ и~характеризуется малыми объемами 
-данных и~длительными задержками, а~также низкой стоимостью 
-и~энергопотреблением. 
-
-Второй тип приложений относится к~связи между 
-подвижными объектами и~характеризуется небольшими объемами данных, 
-короткими задержками и~высокой надежностью. 
-
-Третий тип относится 
-к~видеонаблюдению, для которого характерны большие объемы данных 
-и~высокая скорость их передачи. 
-  
-  Стремительный рост объема трафика, генерируемого  
-M2M-при\-ло\-же\-ни\-ями~[4, 5], в~конечном \mbox{итоге} может привести к~нехватке 
-частотного диапазона~[6]. Одним из возможных решений этой проб\-ле\-мы 
-может стать более эффективное использование частотного ресурса, а~именно 
-использование более высоких диапазонов час\-тот~[7]. Наиболее эффективно 
-использовать частотный диапазон помогают различные политики управления 
-час\-тот\-но-вре\-мен\-н$\acute{\mbox{ы}}$\-ми ресурсами, например политика, основанная на 
-равномерном распределении временн$\acute{\mbox{о}}$го ресурса между всеми 
-обслуживаемыми M2M-устрой\-ст\-ва\-ми (RR policy), или политика, 
-основанная на передаче данных с~максимальной мощностью (FP policy). 
-  
-  В статье предложена модель соты беспроводной сети LTE со стационарными 
-M2M-устрой\-ст\-ва\-ми, генерирующими потоковый трафик и~способными 
-находиться в~двух состояниях: пассивном или активном. Устройства 
-описываются точками, случайно возникающими на плоскости и~получающими 
-различные значения индикатора качества канала CQI (Channel Quality Indicator) 
-в~соответствии с~их удаленностью от БС~[8]. Параметр CQI может принимать 
-значения от~0 до~15. Чем выше значение, тем лучше~--- тем выше скорость, 
-которую может выделить БС оператора LTE. В~связи с~этим все устройства 
-соты можно разделить по значению соответствующего CQI на~15~групп. 
-
-В~работе рассмотрены две политики управления радиоресурсами, 
-учитывающие значение CQI. Проведено по\-стро\-ение математической модели 
-для случая конечной мощности. Для обеих политик проведен анализ 
-вероятности блокировки запросов устройств на передачу данных.
-  
-\section{Описание модели}
-
-  Рассмотрим соту сети беспроводной передачи данных радиуса~$R$ 
-с~равномерно распределенными по территории стационарными  
-M2M-устрой\-ст\-ва\-ми. С~интенсивностью~$\lambda$ устройства переходят 
-из пассивного в~активное состояние и~передают данные в~восходящем канале 
-(uplink channel) со средним временем передачи~$\mu^{-1}$. Пусть случайная 
-величина (СВ) $\eta\hm=1,\ldots ,L$ определяет значение CQI, соответствующее 
-каждому M2M-устрой\-ст\-ву. Тогда расстояние от устройства до БС 
-определяется как $\xi_d(\eta)\hm=RL^{-1}\eta$. Обозначим максимальную 
-мощность передачи сигнала M2M-устрой\-ст\-вом через~$p_{\max}$. Текущая 
-мощ\-ность передачи пред\-став\-ля\-ет собой СВ~$\xi_p$, которая удовлетворяет 
-условию $\xi_p\hm\leq p_{\max}$. Предположим, что устройства передают 
-данные с~гарантированной скоростью~$r_0$. Будем считать, что максимальная 
-мощность сигнала одинакова для всех устройств. Отметим, что 
-рассматриваются идеальные условия, так называемая среда free  
-space~\cite{9-gud}. 
-  
-  Предположим, что M2M-устрой\-ст\-ва распределены в~соте равномерно, 
-тогда функция распределения (ФР) ${F}_{\xi_d(\eta)}(d)\hm= 
-{\sf P}\{\xi_d(\eta)\leq d\}$ СВ~$\xi_d(\eta)$ равна~0 при $d\hm<0$, 
-$d^2/R^2$ при $0\hm < d\hm < R$ и~1 при $d\hm > R$, 
-а~соответствующая плотность распределения $f_{\xi_d(\eta)}(d)\hm= 2d/R^2$, 
-$0\hm\leq d\hm\leq R$.
-  
-  Согласно теореме Шеннона достижимая M2M-устрой\-ст\-вом скорость 
-передачи данных $r(\xi_d(\eta),\xi_p)$ зависит от ширины полосы 
-частот~$\omega$ восходящего канала, мощности передачи сигнала~$\xi_p$, 
-уда\-лен\-ности~$\xi_d(\eta)$ от БС и~определяется следующим образом:
-  \begin{multline*}
-  r\left( \xi_d(\eta),\xi_p\right) = 
-  \omega\ln \left( 1+\fr{G\xi_p}{\xi_d^\kappa(\eta) 
-N_0}\right) ={}\\
-{}=\omega \ln \left( 1+ \fr{G\xi_p}{(R\eta/L)^\kappa N_0}\right)\,,
-  %\label{e1-gud}
-  \end{multline*}
-где $\omega$~--- ширина полосы пропускания; $N_0$~--- мощность шума; 
-$G$~--- коэффициент затухания сигнала; $\kappa$~--- степень затухания 
-сигнала.    
-
-  Рассмотрим две политики управления радиоресурсами, позволяющие учесть 
-удаленность устройства от БС. Первая~--- RR policy~--- 
-характеризуется разбиением временн$\acute{\mbox{о}}$го ресурса на равные интервалы. 
-Вторая~--- FP policy~--- передачей сигнала с~максимальной мощностью. 
-Проиллюстрируем функционирование обеих политик в~зависимости от 
-расположения устройств~\cite{10-gud, 11-gud, 12-gud}, а~следовательно, 
-и~значений CQI.
-
-\setcounter{figure}{1}
-\begin{figure*}[b] %fig2
-\vspace*{1pt}
- \begin{center}  
-  \mbox{%
- \epsfxsize=163mm 
- \epsfbox{gud-2.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Случаи~I~(\textit{а}) и~II~(\textit{б}) для политики RR}
-%\end{figure*}
-%\setcounter{figure}{2}
-%\begin{figure*} %fig3
-%\vspace*{6pt}
- \begin{center}  
-  \mbox{%
- \epsfxsize=163mm 
- \epsfbox{gud-4.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Случаи~I~(\textit{а}) и~II~(\textit{б}) для политики FP}
-\end{figure*}
-
-  
-  На рис.~1 первое устройство расположено на расстоянии 
-$\xi_d(\eta_1)\hm=d_1$, второе~--- на расстоянии $\xi_d(\eta_2)\hm=d_2$ от БС. 
-А~третье устройство может быть расположено либо близко к~БС, на расстоянии 
-$\xi_d(\eta_1^I)\hm= d_3^I$ (случай~I), либо далеко~--- $\xi_d(\eta_1^{II})\hm= 
-d_3^{II}$ (случай~II).
-
-
-
-   Рассмотрим политику RR. Временной ресурс делится поровну 
-между всеми пользовательскими устройствами, которые, в~свою очередь, 
-регулируют мощность передачи для обеспечения гарантированной 
-скорости~$r_0$, т.\,е.\ при переходе M2M-устрой\-ст\-ва в~активное состояние 
-все остальные устройства, находящиеся также в~активном состоянии 
-и~передающие данные, в~связи с~уменьшением временн$\acute{\mbox{о}}$го интервала, 
-отведенного им на обслуживание, вынуждены увеличить мощность передачи 
-данных для\linebreak\vspace*{-12pt}
-
-%\pagebreak
-
-{ \begin{center}  %fig1
- \vspace*{-3pt}
-  \mbox{%
- \epsfxsize=79mm 
- \epsfbox{gud-1.eps}
- }
-
-
-\end{center}
-
-
-\noindent
-{{\figurename~1}\ \ \small{Пример расположения M2M-устройства в~соте}}
-}
-
-\vspace*{9pt}
-
-\addtocounter{figure}{1} 
-
-\noindent
- достижения гарантированной скорости~$r_0$. В~противном случае 
-запрос на обслуживание блокируется и~M2M-устрой\-ст\-во остается 
-в~пассивном со\-сто\-янии. 
-  
-  Рассмотрим случай~I, когда новое устройство находится близко к~БС 
-(рис.~2,\,\textit{а}). Близкое расположение позволяет увеличить мощность других 
-устройств, не превышая ее максимального значения~$p_{\max}$, и~принять 
-запрос на обслуживание нового устройства. В~случае сильной удаленности от 
-БС (случай~II) увеличения мощности M2M-устройств до максимального 
-значения~$p_{\max}$ недостаточно для достижения гарантированной ско\-рости 
-и~запрос на обслуживание устройства блокируется (рис.~2,\,\textit{б}). 
-  
-
-
-
-  Далее рассмотрим поведение системы при использовании политики 
-\textit{full power}, при которой все M2M-устрой\-ст\-ва всегда работают на 
-максимальной мощности, а временной ресурс распределяется пропорционально 
-достижимой каждым устройством скорости~$r_i$, где~$i$~--- номер 
-устройства. В~случае~I временного интервала достаточно для достижения 
-гарантированной скорости, поэтому возможно обслуживание нового 
-устройства (рис.~3,\,\textit{а}). В~случае~II из-за удаленности от БС устройству 
-недостаточно отведенного временн$\acute{\mbox{о}}$го интервала для достижения 
-скорости~$r_0$ и~происходит блокировка запроса на обслуживание (рис.~3,\,\textit{б}).
-  
-
-
-\vspace*{-6pt}
-
-
-\section{Построение математической модели}
-
-  Введем следующие обозначения: $\xi(t)$~--- чис\-ло M2M-устройств, 
-находящихся в~активном состоянии в~момент времени $t\hm> 0$; $\eta_i(t)$, 
-$i\hm=1,\ldots , \xi(t)$,~--- значение параметра CQI для \mbox{$i$-го} 
- M2M-устрой\-ст\-ва в~момент времени $t\hm> 0$; $\left\{ \xi(t),\eta_1(t),\ldots , 
-\eta_{\xi(t)}(t),\ t\hm\geq 0\right\}$~--- марковский случайный процесс (СП), 
-описывающий поведение системы; $(k, l_1, \ldots , l_k)$, $l_i\hm=1, \ldots , L$, 
-$k\hm=0,1,\ldots$,~--- состояние системы. 
-  
-  Для адекватного построения модели сначала рассмотрим случай, когда 
-мощность передачи сигнала активными M2M-устрой\-ст\-ва\-ми не имеет 
-ограничений. Тогда пространство состояний системы~${\sf L}^{\sim}$ имеет 
-следующий вид:
-  \begin{multline*}
-  {\sf L}^{\sim}={}\\
-  {}=\left\{ (0), (1,1),\ldots , (1,L), (2,1,1), \ldots , (2,L,L),\ldots\right.\\
-\left.  \ldots , 
-\left(k, \underbrace{1,\ldots , 1}_{k}\right), \ldots ,  \left( k, \underbrace{L,\ldots 
-,L}_{k}\right), \ldots\right\}={}\\
-  {}= \{ (0), (k, l_1, l_2,\ldots , l_k),\ l_i\in \{1,\ldots , L\}\,,\\
-   i=1,\ldots , k\,,\ 
-k=1,2,\ldots\}\,.
-  %\label{e2-gud}
-  \end{multline*}
-  
-  Предположим, что СВ~$\eta$ принимает значение, равное~$l$, 
-с~вероятностью~$q_l$, $l\hm\in \{1,\ldots ,L\}$, которая с~учетом равномерного 
-распределения M2M-устройств в~соте определяется как 
-$$
-q_l= \fr{2L-2l- 1}{L^2}\,, \enskip l=1,\ldots , L\,.
-$$
-  
-  Пусть в~системе~$k$~активных M2M-устройств, каж\-до\-му из которых 
-соответствует некоторое значение параметра CQI $16\hm- l_i$. Для упрощения 
-расчетов агрегируем состояния системы по числу обслуживаемых  
-M2M-устройств~$k$~\cite{13-gud}. Тогда пространство состояний~${\sf 
-L}^{\sim}$ разбивается следующим образом: 
-  $$
-  {\sf L}^{\sim} = \mathop{\bigcup}\limits_{n=0}^\infty {\sf L}^{\sim}(k),\ 
-  {\sf  L}^{\sim}(k)= \left\{ \left(k, l_1, l_2, \ldots , l_k\right) \in 
-  {\sf L}^{\sim}\right\}.
-  $$
-
-\section{Сужение случайного процесса в~соответствии с~политикой управления 
-радиоресурсами}
-
-  В действительности мощность передачи сигнала не может быть бесконечной, 
-а~следовательно, ограничено и~число обслуживаемых в~соте M2M-устройств. 
-Эти ограничения определяются в~соответствии с~выбранной политикой 
-управления радиоресурсами. В~связи с~этим рассмотрим сужение СП 
-  $\left\{ \xi(t), \eta_1(t),\ldots , \eta_{\xi(t)}(t)\,, \ t\hm\geq 0\right\}$ над 
-множеством ${\sf L}\hm\subset {\sf L}^{\sim}$. Для корректного определения 
-множества~${\sf L}$ введем функции доступа, соответствующие каждой из 
-рассматриваемых политик. Для политики RR функция доступа имеет вид:
-  \begin{multline}
-  g_{\xi_d(\eta)}(k, l_1, l_2,\ldots , l_k)={}\\
- \!\!{}=\begin{cases}
-  1, &\!\!\! \fr{r_0}{r(\xi_d(\eta),p_{\max})}\leq \fr{1}{k+1}\,,\ i=1,\ldots , k+1;\\
-  0 & \!\!\!\mbox{в~противном~случае};
-  \end{cases}\!\!
-  \label{e3-gud}
-  \end{multline}
-для политики FP
-\begin{multline}
-  g_{\xi_d(\eta)}(k, l_1, l_2,\ldots , l_k)={}\\
-  {}=\begin{cases}
-1\,, & \displaystyle \sum\limits^n_{i=1} \fr{r_0}{r(\xi_d(\eta),p_{\max})}\leq 1\,;\\
-0 & \mbox{в~противном~случае}\,.
-\end{cases}
-\label{e4-gud}
-\end{multline}
-    Тогда пространство состояний ${\sf L}_{\mathrm{RR}}(k)$ или~${\sf 
-L}_{\mathrm{FP}}(k)$, в~зависимости от использования политики RR или FP, 
-определяется в~соответствии с~формулой~(\ref{e3-gud}) или~(\ref{e4-gud}) 
-следующим образом:
-  \begin{multline}
-  {\sf L}_{\mathrm{RR}}(k)= \left\{
-  \vphantom{\fr{1}{k}}
-  0\leq d_1\leq R,\ldots , 0\leq d_k\leq R:\right.\\
-\left.   \fr{r_0}{\omega\ln 
-(1+Gp_{\max}/(d_i^\kappa N_0))}\leq \fr{1}{k}\,,\enskip i=1,\ldots, 
-k\right\}\,,\\ {\sf L}_{\mathrm{RR}}\subset {\sf L}^{\sim}\,;
-  \label{e5-gud}
-  \end{multline}
-  
-  \vspace*{-12pt}
-  
-  \noindent
-  \begin{multline}
-  {\sf L}_{\mathrm{FP}}(k)= \left\{
-  \vphantom{\sum\limits^k_{i=1}}
-  0\leq d_1\leq R,\ldots , 0\leq d_k\leq R:\right.\\
-   \left.\sum\limits^k_{i=1} \fr{r_0}{\omega\ln 
-(1+Gp_{\max}/(d_i^\kappa N_0))}\leq 1\,,\right\}\,,\\
- {\sf  L}_{\mathrm{FP}}\subset {\sf L}^{\sim}\,.
-  \label{e6-gud}
-  \end{multline}
-  
-  Обозначим через 
-  \begin{multline*}
-  {\sf P}(k-1)={\sf P}\left\{ \left( k, l_1, l_2, \ldots , l_k\right)\in{}\right.\\
- \left. {}\in 
-  {\sf L}(k)\vert \left(k,l_1,l_2,\ldots, l_{k-1}\right)\in {\sf  L}(k\hm-1)\right\}
-\end{multline*} 
-условную вероятность того, что $k$-е M2M-устрой\-ст\-во 
-с~соответствующим значением CQI~$l_k$, $l_k\hm\in \{1,\ldots , L\}$, будет 
-обслужено при условии, что в~системе уже обслуживается $k\hm-1$  
-M2M-устройств, каждое из которых имеет соответствующее значение CQI 
-$l_1,\ldots , l_{k-1}$. 
-  
-  Тогда стационарное распределение вероятностей~$p_k$, $k\hm=1,2,\ldots$, 
-того, что в~системе ровно~$k$~активных M2M-устройств, рассчитывается по 
-фор\-муле:
-  \begin{multline*}
-  p_k=\left( \fr{\sum\nolimits^k_{j=0}\left( \left( {\lambda}/{\mu}\right)^j 
-\prod\nolimits_{i=0}^{j-1} {\sf P}(i)\right)}{j!}\right)^{-1}\times{}\\ 
-{}\times \fr{(\lambda/\mu)^k \prod\nolimits_{i=0}^{k-1} {\sf P}(i)}{k!}\,,\enskip 
-k=1,2,\ldots
-  %\label{e7-gud}
-  \end{multline*}
-  
-  Основной характеристикой рассматриваемой модели служит 
-вероятность~$B$ блокировки передачи данных от M2M-устрой\-ст\-ва, которая 
-рассчитывается по формуле:
-  \begin{equation}
-  B=\sum\limits^\infty_{k=1} \left( 1-{\sf P}(k-1)\right) p_k\,.
-  \label{e8-gud}
-  \end{equation}
-
-\section{Расчет условной вероятности в~соответствии 
-с~выбранной политикой управления радиоресурсами}
-
-  С учетом функции доступа~(\ref{e3-gud}) и~пространства состояний~(\ref{e5-gud}) условная вероятность ${\sf P}(k-1)$ при использовании политики RR 
-имеет вид:
-\begin{multline*}
-  {\sf P}(k-1)= \left( {\sf P}\left\{ \fr{r_0}{r(\xi_d(\eta),p_{\max})}\leq 
-\fr{1}{k}\right\}\right)^k\times{}\\
- {}\times\left( {\sf P}\left\{ 
-\fr{r_0}{r(\xi_d(\eta),p_{\max})}\leq \fr{1}{k-1}\right\}\right)^{-(k-1)}\,.
- % \label{e9-gud}
-  \end{multline*}
-  Так как СВ $\xi_d(\eta)$ является равномерно распределенной, то
-  \begin{multline*}
-  {\sf P}(k)=\fr{1}{R^2}\left(\fr{Gp_{\max}}{N_0}\right)^{2/\kappa} \left( 
-e^{r_0k/\omega}-1\right)^{2k/\kappa}\times{} \\
-{}\times
-\left( e^{(r_0k+1)/\omega}-1\right) ^{-
-2(k+1)/\kappa}\,.
- % \label{e10-gud}
-  \end{multline*}
-  
-  Перейдем к~расчету условной вероятности ${\sf P}(k\hm-1)$ для политики FP, 
-опираясь на формулы~(\ref{e4-gud}) и~(\ref{e6-gud}). Для случая, когда 
-в~системе нет активных M2M-устройств, т.\,е.\ $k\hm=1$, получим: 
-  \begin{equation*}
-  {\sf P}(0)=F_{\xi_d(\eta)}\left( \min \left\{ R,\left( 
-\fr{Gp_{\max}}{(e^{r_0/\omega}-1)N_0}\right)^{1/\kappa}\right\}\!\right).
- % \label{e11-gud}
-  \end{equation*}
-  
-  Для вывода формул расчета остальных условных вероятностей ${\sf P}(k-1)$, 
-$k\hm>1$, воспользуемся определением условной вероятности и~функцией 
-доступа~(\ref{e6-gud}):
-  \begin{multline*}
-  {\sf P}(k-1)={}\\
-  {}={\sf P}\left\{ \sum\limits^k_{i=1} \fr{1}{r(l_i,p_{\max})}\leq 
-\fr{1}{r_0}\,, \sum_{i=1}^{k-1}\fr{1}{r(l_i,p_{\max})}\leq \fr{1}{r_0}\right\} 
-\!\Bigg /\\
-{} {\sf P} \left\{ \sum\limits_{i=1}^{k-1} \fr{1}{r(l_i,p_{\max})}\leq 
-\fr{1}{r_0}\right\}\,,
- % \label{e12-gud}
-  \end{multline*}
-где согласно центральной предельной теореме
-$$
-{\sf P}\left\{ \sum\limits^k_{i=1} \fr{1}{r(l_i,p_{\max})}\leq 
-\fr{1}{r_0}\right\}=\Phi\left(\fr{ 1-\theta k r_0}{r_0\sigma \sqrt{k}}\right)\,.
-$$
-Здесь  $\theta$ и~$\sigma$~--- математическое ожидание и~среднеквадратичное 
-отклонение независимых и~одинаково распределенных СВ $1/r(l_i,p_{\max})$; 
-$\Phi(x)\hm= (1/\sqrt{2\pi}) \int\nolimits^x_{-\infty} e^{-t/2}\,dt$~--- стандартное 
-нормальное распределение.   
-  
-  Для дальнейшего упрощения записи введем обозначения: 
- \begin{align*}
-  m_k&= kr_0E \fr{1}{r(l_i,p_{\max})}\,;\\
-  \tau_k^2&= kr_0\left(
-  E \left(\fr{1}{r(l_i,p_{\max})}\right)^2 - \left( E \fr{1}{r(l_i,p_{\max})}\right)^2\right)\,.
-\end{align*}
- Тогда условная вероятность 
-  при использовании политики FP примет вид:
-  \begin{equation*}
-  {\sf P}(k-1)=\fr{\Phi\left( \left(1-m_k\right)/\tau_k\right)}{
-  \Phi\left(  
-\left(1-m_{k-1}\right)/\tau_{k-1}\right)} \,.
-%  \label{e13-gud}
-  \end{equation*}
-  
-  Расчет математического ожидания случайных величин $1/r(l_i,p_{\max})$ 
-и~$(1/r(l_i,p_{\max}))^2$ представлен в~\cite{13-gud}.
-
-\setcounter{table}{1}
-\begin{table*}\small  %tabl2
-\begin{center}
-\Caption{Постоянные данные}
-\vspace*{2ex}
-
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
-\hline
-&&&&&&&\\[-9pt]
-$\omega$&$L$&$d_0$&$r_0$&$\mu^{-1}$&$N_0$&$G$&$\kappa$\\
-\hline
-10 МГц&15&$R/15$&1~Мбит/с&0,1~с&$-60$~дБм&197,43&5\\
-\hline
-\end{tabular}
-\end{center}
-\vspace*{-6pt}
-\end{table*}
-  
-\section{Численный анализ}
-
-  Для проведения численного анализа веро\-ят\-ности блокировки, 
-рассчитываемой по формуле~(\ref{e8-gud}) с~учетом используемой политики 
-управления радиоресурсами, рассмотрим три различных сценария, в~которых 
-динамически меняются: 
-\begin{enumerate}[(1)]
-\item радиус соты; 
-\item мощность передачи; 
-\item интенсивность перехода устройств в~активное состояние. 
-\end{enumerate}
-
-Сведем исходные 
-данные в~табл.~1, характеризующую динамические значения параметров, 
-и~табл.~2 с~постоянными значениями.
-  
-  
-
-
-
-  
-  Построим графики поведения вероятности блокировки для каждого из 
-рассматриваемых сценариев и~в~рамках используемой политики 
-распределения радиоресурсов (рис.~4). 
-
-
-  
-  Очевидно, что вероятность блокировки ниже при большей мощности 
-передачи. При одинаковых значениях мощности вероятность блокировки 
-принимает различные значения в~зависимости\linebreak\vspace*{-12pt}
-
-%    \begin{table*}
- %tabl1
-  \begin{center}
-  \vspace*{6pt}
-  
-{{\tablename~1}\ \ \small{Динамически меняющиеся данные}}
-
-
-  \vspace*{2ex}
-{\small  
-  \tabcolsep=4.5pt
-  \begin{tabular}{|c|c|c|c|}
-  \hline
-Сценарий&$R$ & $p_{\max}$& $\lambda$\\
-\hline
-1& $200\to 400$~м &\tabcolsep=0pt\begin{tabular}{c}23 дБм (0,2~Вт)\\
-42 дБм (15,85~Вт)\end{tabular} & 10\\
-\hline
-2& 200, 400~м &$23 \to 42$~дБм & 10\\
-\hline
-3 & 200, 400~м& \tabcolsep=0pt\begin{tabular}{c}23~дБм 
-(0,2~Вт)\\
-42~дБм (15,85~Вт)\end{tabular} & $2 \to 10$\\
-\hline
-\end{tabular}}
-\vspace*{3pt}
-\end{center}
-%}
-%\end{table*}
-
-{ \begin{center}  %fig4
- \vspace*{-3.5pt}
-  \mbox{%
- \epsfxsize=79mm 
- \epsfbox{gud-6.eps}
- }
-
-
-\end{center}
-
-
-\noindent
-{{\figurename~4}\ \ \small{Вероятность блокировки в~рамках реализации сценариев~1~(\textit{а}),
-2~(\textit{б}) и~3~(\textit{в})}}
-}
-
-\vspace*{9.5pt}
-
-\addtocounter{figure}{1}
-
-
-\noindent
- от используемой политики 
-распределения радиоресурсов. На рис.~4,\,\textit{а} видно, что при использовании 
-политики RR вероятность блокировки выше. 
-  
-  При увеличении мощности передачи данных вероятность блокировки 
-снижается (рис.~4,\,\textit{б}). 
-  
-
-
-  
-  С увеличением частоты поступления новых запросов на обслуживание 
-устройств, вероятность блокировки увеличивается (рис.~4,\,\textit{в}). 
-
-%\vspace*{-12pt}
-
-\section{Заключение}
-
-  В статье построена модель соты беспроводной\linebreak сети LTE  
-с~M2M-устрой\-ст\-ва\-ми, равномерно распределенными в~соте 
-и~сгруппированными по расстоянию от БС, определяемому с~учетом 
-соответ\-ствующего устройству значения CQI. Устройства\linebreak генерируют 
-потоковый трафик, передаваемый в~восходящем канале с~гарантированной 
-скоростью. Рассмотрены две политики управления радиоресурсами, 
-основанные на различных вариациях таких ресурсов, как ширина полосы 
-частот, мощность передачи сигнала и~время обслуживания M2M-за\-проса.
-  
-  В рамках текущего исследования моделей сети с~двумя различными 
-политиками распределения (FP и~RP) результаты 
-численного анализа показали, что политика FP является преимущественной 
-в~использовании и~наиболее эффективной, так как в~этом случае ве\-ро\-ят\-ность 
-блокировки ниже.
-
-%\vspace*{-12pt}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-\bibitem{1-gud}
-\Au{Laya A., Alonso~L., Alonso-Zarate~J.} Is the random access channel of LTE and LTE-A 
-suitable for M2M communications? A~survey of alternatives~// IEEE Commun. Surv. 
-Tut., 2014. Vol.~16. Iss.~1. P.~4--16. doi: 10.1109/ SURV.2013.111313.00244.
-\bibitem{2-gud}
-Cisco Visual Networking Index: Forecast and trends, 2017--2022. White Papers, 
-November~26, 2018. Document ID: 1543280537836565.
-\bibitem{3-gud}
-Future technology trends of terrestrial IMT systems. \mbox{ITU-R} Reports. Report M.2320,
-November 2014.
-\bibitem{4-gud}
-\Au{Aijaz A., Tshangini~M., Nakhai~M.\,R., Chu~X., Aghvami~\mbox{A.-H.}} Energy-efficient uplink 
-resource allocation in LTE networks with M2M/H2H co-existence under statistical QoS 
-guarantees~// IEEE~T. Commun., 2014. Vol.~62. Iss.~7. P.~2353--2365. doi: 
-10.1109/ TCOMM.2014.2328338.
-\bibitem{5-gud}
-\Au{Hamdoun S., Rachedi~A., Ghamri-Doudane~Y.} A~flexible M2M radio resource sharing 
-scheme in LTE networks within an H2H/M2M coexistence scenario~// Conference (International) 
-on Communications.~--- IEEE, 2016. P.~1--7. doi: 10.1109/ICC.2016.7511237.
-\bibitem{6-gud}
-Ericsson mobility report: On the pulse of the networked society.~--- Ericsson, June 2016.
-\bibitem{7-gud}
-Requirements, evaluation criteria and submission templates for the development of IMT-2020 // 
-ITU-R Report M.2411, November 2017.
-\bibitem{8-gud}
-\Au{Samouylov K., Gudkova~I., Markova~E., Dzantiev~I.} On analyzing the blocking probability 
-of M2M transmissions for a~CQI-based RRM scheme model in 3GPP LTE~// Information 
-technologies and mathematical modelling~--- queueing theory and applications~/
-Eds.\ A.~Dudin, A.~Gortsev, A.~Nazarov, R.~Yakupov.~---
-Communications in computer and information science ser.~---
-Springer, 2016. Vol.~638. P.~327--340. doi: 
-10.1007/978-3-319-44615-8\_29.
-\bibitem{9-gud}
-\Au{Markova E., Dzantiev~I., Gudkova~I., Shorgin~S.} Analyzing impact of path loss models on 
-probability characteristics of wireless network with licensed shared access framework~//  9th 
-Congress (International) on Ultra Modern Telecommunications and Control Systems  
-Proceedings.~--- Piscataway, NJ, USA: IEEE, 2017. 
-P.~20--25. doi: 10.1109/ICUMT.2017.8255189.
-
-\bibitem{12-gud} %10
-\Au{Begishev V., Kovalchukov~R., Samuylov~A., Ometov~A., Moltchanov~D., Gaidamaka~Y., 
-Andreev~S.} An analytical approach to SINR estimation in adjacent rectangular cells~// Internet of 
-things, smart spaces, and next generation networks and systems~/
-Eds.\ S.\,I.~Balandin, S.\,D.~Andreev, Y.~Koucheryavy.~---
-Lecture notes in computer  science ser.~--- Springer, 2015. Vol.~9247. 
-P.~446--458. doi: 10.1007/978-3-319-23126-6\_39.
-
-\bibitem{11-gud} %11
-\Au{Samuylov A., Moltchanov~D., Gaidamaka~Y., Andreev~S., Koucheryavy~Y.} Random triangle: 
-A~baseline model for interference analysis in heterogeneous networks~// IEEE~T.  
-Veh. Technol., 2016. Vol.~65. Iss.~8. P.~6778--6782. doi: 10.1109/TVT.2015.2481795.
-
-\bibitem{10-gud} %12
-\Au{Naumov V., Samouylov~K.} Analysis of multi-resource loss system with state-dependent arrival 
-and service rates~// Probab.  Eng. Inform. Sc., 2017. Vol.~31. Iss.~4.  
-P.~413--419. doi: 10.1017/S0269964817000079.
-
-\bibitem{13-gud}
-\Au{Markova E., Gudkova~I., Ometov~A., Dzantiev~I., And\-re\-ev~S., Koucheryavy~Ye., 
-Samouylov~K.} Flexible spectrum management in a~smart city within licensed shared access 
-framework~// IEEE Access, 2017. Vol.~5. P.~22252--22261. doi: 
-10.1109/ACCESS.2017.2758840.
- \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 15.01.19}}
-
-\vspace*{12pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{COMPARATIVE ANALYSIS OF~PERFORMANCE MEASURES FOR~A~WIRELESS 
-MACHINE-TO-MACHINE NETWORK MODEL OPERATING WITHIN~TWO RADIO RESOURCE MANAGEMENT POLICIES}
-
-
-\def\titkol{Comparative analysis of performance measures for a~wireless 
-machine-to-machine network model} % operating within two radio resource management policies}
-
-\def\aut{E.\,V.~Markova$^1$, A.\,A.~Golskaia$^1$, I.\,L.~Dzantiev$^1$, 
-I.\,A.~Gudkova$^{1,2}$, and~S.\,Ya.~Shorgin$^{1,2}$}
-
-\def\autkol{E.\,V.~Markova, A.\,A.~Golskaia, I.\,L.~Dzantiev, et al.} 
-%I.\,A.~Gudkova$^{1,2}$, and~S.\,Ya.~Shorgin$^{1,2}$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-
-\noindent
-$^1$Peoples' Friendship University of Russia, 6~Miklukho-Maklaya Str., Moscow 117198, 
-Russian Federation
-
-\noindent
-$^2$Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' 
-of the Russian\linebreak
-$\hphantom{^1}$Academy of Sciences; 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 1}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 1
-\hfill \textbf{\thepage}}}
-
-\vspace*{12pt}
-
-
-    
-
-
-
-     
-     \Abste{Currently, information and communication technologies (ICT) 
-     deeply penetrate into many areas of modern life. For example, the 
-     concept of integrating ICT and the Internet of Things 
-     for managing Smart City infrastructure allows city authorities to monitor 
-     changes and the situation in the city using sensors. Thus, specialized 
-     systems collect data automatically without human intervention. 
-     An important parameter in determining the performance of wireless 
-     networks of machine-to-machine  (M2M) interaction~--- 
-     data transfer rates, blocking probabilities, becomes the distance between 
-     the device (sensor) and the radio transmitting equipment (base station, BS). 
-     Therefore, describing such a~network in the form of a~queuing system 
-     with streaming (guaranteed data transfer rate) or elastic traffic 
-     (nonguaranteed speed), it is necessary to consider the incoming stream 
-     of requests for data transmission of M2M devices in such a~way as to take 
-     into account the distance between devices and BS. In this paper, there 
-     is built a~cell model of a wireless network with stationary M2M devices 
-     that are in a~passive or active state, shown by points that appear randomly 
-     on a~plane. The devices generate streaming traffic which depends on the 
-     distance from the BS, the device transmit power, and the noise level. 
-     The state of the system is described by the vector of variable length, 
-     the components of which are the distance of each active device to the BS. 
-     Two different disciplines of radio resource separation are considered~--- 
-     ``round robin'' and ``full power,'' which differ\linebreak\vspace*{-12pt}}
-     
-     \Abstend{in the distribution of 
-     the time interval for servicing an M2M device and the data transfer rate 
-     provided. There is built a random process with states enlarged by the 
-     number of users and a~formula for calculating 
-     the probability of blocking a~data transfer request is proposed.}
-     
-     \KWE{wireless network; LTE; machine-to-machine communication; 
-     channel quality indicator; Shannon's formula; uniform distribution; 
-     round robin policy; 
-     full power policy; blocking probability}
-
-
-\DOI{10.14357/19922264190115}
-
-%\vspace*{-14pt}
-
-\Ack
-\noindent
-The publication was supported by the Ministry of Education and Science of the 
-Russian Federation (project No.\,2.3397.2017/4.6).
-
-
-
-%\vspace*{6pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-\bibitem{1-gud-1}
-\Aue{Laya, A., L.~Alonso, and J.~Alonso-Zarate.} 2014. Is the random access channel 
-of LTE 
-and LTE-A suitable for M2M communications? A~survey of alternatives. 
-\textit{IEEE Commun. 
-Surv. Tut.} 16(1):4--16. doi: 10.1109/ SURV.2013.111313.00244.
-\bibitem{2-gud-1}
-Cisco Visual Networking Index: Forecast and trends, 2017--2022.  November~26, 
-2018. White Paper. Available at: 
-{\sf https://www.cisco.com/c/en/us/solutions/collateral/\linebreak
-service-provider/visual-networking-index-vni/white-paper-c11-741490.html}
- (accessed January~15, 2019).
-\bibitem{3-gud-1}
-  Future technology trends of terrestrial IMT systems. November~2014.
-  ITU-R Report M.2320.
-Available at: {\sf 
-https://www.itu.int/pub/R-REP-M.2320-2014} (accessed January~15, 2019).
-\bibitem{4-gud-1}
-\Aue{Aijaz, A., M.~Tshangini, M.\,R.~Nakhai, X.~Chu, and A.-H.~Aghvami.} 
-2014. Energy-efficient 
-uplink resource allocation in LTE networks with M2M/H2H 
-co-existence under statistical QoS 
-guarantees. \textit{IEEE~T. Commun.} 62(7):2353--2365. doi: 
-10.1109/TCOMM.2014.2328338.
-\bibitem{5-gud-1}
-\Aue{Hamdoun, S., A.~Rachedi, and Y.~Ghamri-Doudane.} 2016. 
-A~flexible M2M radio resource 
-sharing scheme in LTE networks within an H2H/M2M coexistence scenario. 
-\textit{Conference (International) on Communications}. IEEE. 1--7. 
-doi: 10.1109/ICC.2016.7511237.
-\bibitem{6-gud-1}
-On the pulse of the networked society. 
-June 2016. Ericsson mobility report. Available at: 
-{\sf https://www.\linebreak ericsson.com/assets/local/mobility-report/documents/ 2016/ericsson-mobility-report-june-2016.pdf}
- (accessed January~15, 2019) . 
-\bibitem{7-gud-1}
- Requirements, evaluation criteria and submission 
-templates for the development of IMT-2020. 
- November~2017.
- ITU-R Report M.2411. Available at: {\sf 
-https:// www.itu.int/pub/R-REP-M.2411-2017} (accessed January~15, 2019). 
-\bibitem{8-gud-1}
-\Aue{Samouylov, K., I.~Gudkova, E.~Markova, and I.~Dzantiev.} 2016. 
-On analyzing the blocking 
-probability of M2M transmissions for a~CQI-based RRM scheme model in 3GPP LTE. 
-\textit{Information 
-technologies and mathematical modelling~--- queueing theory and applications}.
-Eds.\ A.~Dudin, A.~Gortsev, A.~Nazarov, and R.~Yakupov.
-Communications in computer and information science ser.
-Springer. 638:327--340. doi: 10.1007/978-3-319-44615-8\_29.
-\bibitem{9-gud-1}
-\Aue{Markova, E., I.~Dzantiev, I.~Gudkova, and S.~Shorgin.} 2017. 
-Analyzing impact of path loss 
-models on probability characteristics of wireless network with licensed shared access 
-framework. \textit{9th Congress (International) on Ultra Modern Telecommunications and 
-Control Systems Proceedings}.  
-Piscataway, NJ: IEEE. 20--25. doi: 10.1109/ICUMT.2017.8255189.
-
-\bibitem{12-gud-1} %10
-\Aue{Begishev, V., R.~Kovalchukov, A.~Samuylov, A.~Ometov, D.~Moltchanov, 
-Y.~Gaidamaka, and  S.~Andreev.} 2015. An analytical approach to SINR 
-estimation in adjacent rectangular cells. 
-\textit{Internet of 
-things, smart spaces, and next generation networks and systems}.
-Eds.\ S.\,I.~Balandin, S.\,D.~Andreev, and Y.~Koucheryavy.
-Lecture notes in computer  science ser. Springer. 9247:446--458. doi: 
-10.1007/978-3-319-23126-6\_39.
-
-\bibitem{11-gud-1}
-\Aue{Samuylov, A., D.~Moltchanov, Y.~Gaidamaka, S.~Andreev, and Y.~Koucheryavy.} 2016. 
-Random triangle: A~baseline model for interference analysis in heterogeneous networks. 
-\textit{IEEE~T. Veh. Technol.} 65(8):6778--6782. doi: 
-10.1109/TVT.2015.2481795.
-\bibitem{10-gud-1} %12
-\Aue{Naumov, V., and K.~Samouylov. 2017.} 
-Analysis of multi-resource loss system with state-dependent arrival and service rates. 
-\textit{Probab. Eng. Inform. Sc.} 31(4):413--419. 
-doi: 10.1017/S0269964817000079.
-
-\bibitem{13-gud-1}
-\Aue{Markova, E., I.~Gudkova, A.~Ometov, I.~Dzantiev, S.~And\-re\-ev, Ye.~Koucheryavy, 
-and~K.~Samouylov.} 2017. Flexible spectrum management in 
-a~smart city within licensed shared 
-access framework. \textit{IEEE Access} 5:22252--22261. doi: 10.1109/ACCESS.2017.2758840.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received January 15, 2019}}
-
-%\pagebreak
-
-\vspace*{-12pt}
-
-
-\Contr
-
-\noindent
-\textbf{Markova Ekaterina V.} (b.\ 1987)~--- Candidate of Science (PhD) in physics and 
-mathematics; associate professor, Peoples' Friendship University of Russia, 6~Miklukho-Maklaya 
-Str., Moscow 117198, Russian Federation; \mbox{markova\_ev@rudn.university} 
-
-%\vspace*{3pt}
-
-\noindent
-\textbf{Golskaia Anastasia A.} (b.\ 1994)~--- PhD student, Department of Applied Informatics 
-and Probability Theory, Peoples' Friendship University of Russia, 6~Miklukho-Maklaya Str., 
-Moscow 117198, Russian Federation; \mbox{golskaya\_aa@rudn.university}
-
-\vspace*{5pt}
-
-\noindent
-\textbf{Dzantiev Iliya L.} (b.\ 1991)~--- PhD student, Department of Applied Informatics and 
-Probability Theory, Peoples' Friendship University of Russia, 6 Miklukho-Maklaya Str., Moscow 
-117198, Russian Federation; \mbox{dzantiev\_il@rudn.university}
-
-\vspace*{5pt}
-
-\noindent
-\textbf{Gudkova Irina A.} (b.\ 1985)~--- Candidate of Science (PhD) in physics and 
-mathematics; associate professor, 
-Peoples' Friendship University of Russia, 6~Miklukho-Maklaya 
-Str., Moscow 117198, Russian Federation; senior scientist, Institute of Informatics Problems, 
-Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{gudkova\_ia@rudn.university}
-
-\vspace*{5pt}
-
-\noindent
-\textbf{Shorgin Sergey Ya.} (b.\ 1952)~--- Doctor of Science in physics and mathematics, 
-professor; principal scientist, Institute of Informatics Problems, Federal Research Center 
-``Computer Science and Control'' of the Russian Academy of Sciences; 44-2~Vavilov Str., Moscow 
-119333, Russian Federation; \mbox{sshorgin@ipiran.ru}
-
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}       

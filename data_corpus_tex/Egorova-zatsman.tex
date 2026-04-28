@@ -1,867 +1,0 @@
-\def\stat{egorova-zats}
-
-\def\tit{НЕСТАБИЛЬНОСТЬ НЕЙРОННОГО МАШИННОГО ПЕРЕВОДА$^*$}
-
-\def\titkol{Нестабильность нейронного машинного перевода}
-
-\def\aut{А.\,Ю.~Егорова$^1$, И.\,М.~Зацман$^2$, 
-В.\,В.~Косарик$^3$, В.\,А.~Нуриев$^4$}
-
-\def\autkol{А.\,Ю.~Егорова, И.\,М.~Зацман, В.\,В.~Косарик, В.\,А.~Нуриев}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Егорова А.\,Ю.}
-\index{Зацман И.\,М.}
-\index{Косарик В.\,В.}
-\index{Нуриев В.\,А.}
-\index{Egorova A.\,Yu.}
-\index{Zatsman I.\,M.}
-\index{Kosarik V.\,V.}
-\index{Nuriev V.\,A.}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа выполнена в~Институте проблем информатики ФИЦ ИУ РАН при поддержке РФФИ (проект по гранту
-№\,18-07-00192).}} 
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{ann.shurova@gmail.com}}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{izatsman@yandex.ru}}
-\footnotetext[3]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{valery\_lek@mail.ru}}
-\footnotetext[4]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{nurieff.v@gmail.com}}
-
- \label{st\stat}
-
- \thispagestyle{headings}
- 
- \vspace*{-12pt}
-
-\Abst{Дано описание эксперимента по исследованию нестабильности 
-нейронного машинного перевода (НМП). Сформированный массив текстовых 
-фрагментов на русском языке повторно и~многократно переводился на 
-французский язык в~течение одного года с~шагом в~один месяц посредством 
-системы НМП Google. Это дало возможность зафиксировать нестабильность 
-перевода одних и~тех же фрагментов текстов. Затем было выполнено 
-лингвистическое аннотирование полученных переводов и~определено 
-несколько видов нестабильности НМП. При этом использовалась ранее 
-разработанная типология ошибок перевода. В~процессе аннотирования в~нее 
-был внесен ряд изменений, описание которых приведено в~статье. Конечная 
-цель эксперимента~--- получить частотную оценку видов нестабильности 
-НМП. На первом его этапе, описанию результатов которого и~посвящена 
-статья, ставилась задача провести категоризацию нестабильности. 
-Эмпирическим материалом для эксперимента служат русско-французские 
-аннотации, сформированные в~надкорпусной базе данных. Каждая аннотация 
-содержит одно или несколько предложений оригинального текста на русском 
-языке, их перевод и~описание встретившихся ошибок перевода.}
-
-  \KW{машинный перевод; нестабильность; мониторинг результатов перевода; 
-лингвистическое аннотирование; виды нестабильности}
-  
-\DOI{10.14357\!/\!08696527200212} 
-
-\vskip 10pt plus 9pt minus 6pt
-
- \thispagestyle{headings}
- 
- \vspace*{-12pt} 
-
-\section{Введение}
-
-  В 2018~г.\ в~издательстве <<Шпрингер>> началась публикация серии книг, 
-посвященных технологиям и~применению систем машинного перевода~[1, 2]. 
-Первый том этой серии полностью посвящен анализу результатов машинного 
-перевода и~включает обзор экспертного и~автоматизированного подходов 
-к~классификации и~аннотированию его ошибок, что говорит об актуальности 
-этой проблематики. Сравнение двух указанных подходов позволило сделать 
-вывод, что первый из них может дать более подробное описание ошибок, 
-поскольку эксперты могут различать б$\acute{\mbox{о}}$льшее число их 
-видов, чем автоматизированный подход. При этом отмечается, что выбор 
-релевантной типологии ошибок для анализа результатов машинного перевода 
-представляет собой самостоятельную и~довольно сложную задачу. 
-Автоматизированный анализ ошибок выполняется быстрее и~требует меньше 
-финансовых ресурсов, но он, как правило, не дает подробного описания ошибок 
-и~не позволяет провести тонкую дифференциацию разных их видов, хотя это 
-не всегда является легким и~для экспертов~[3]. Отметим, что использование 
-автоматизированного анализа может упростить реализацию и~экспертного 
-подхода, например, если ввести этап компьютерного сравнения 
-повторных/многократных переводов, чтобы пометить переводные варианты, не 
-изменившиеся в~период проведения эксперимента.
-  
-  В статье описывается эксперимент по мониторингу НМП на основе 
-экспертного подхода. Сама идея такого эксперимента возникла в~ходе 
-российско-швей\-цар\-ско\-го проекта, поддержанного РФФИ (грант 
-№\,16-24-41002) и~Швейцарским национальным научным фондом (грант 
-№\,IZLRZ1\_164059), когда было показано, что НМП одних и~тех же 
-фрагментов текста может изменяться со временем, т.\,е.\ быть нестабильным.
-  
-  В работе~[4] приведен пример двукратного машинного перевода одного 
-и~того же предложения из пьесы А.\,П.~Чехова <<Дядя Ваня>>, который был 
-выполнен в~феврале и~октябре 2018~г.\ (табл.~1). При этом второй перевод 
-явно уступает первому, так как в~нем слово <<impudent>> повторено два раза, 
-что существенно ухудшило качество перевода.
-  
-\begin{table}[b]\small %tabl1
-\vspace*{-12pt}
-\begin{center}
-\Caption{Пример результата машинного перевода}
-\vspace*{2ex}
-
-\tabcolsep=5pt
-\begin{tabular}{|p{150pt}|p{200pt}|}
-\hline
-Когда бываю в~таком состоянии, то становлюсь нахальным и~наглым до крайности.&Quand 
-je suis dans cet $\acute{\mbox{e}}$tat, je deviens impudent et insolent 
-$\grave{\mbox{a}}$~l'extr$\hat{\mbox{e}}$me.\newline
-(translate.google.com,\newline дата обращения 05.02.2018 19:48)\\
-\hline
-\multicolumn{2}{p{361pt}}{\footnotesize \textbf{Примечание.} С~момента 
-записи в~надкорпусную базу данных коннекторов 05.02.2018 перевод, 
-предлагаемый системой Google's Neural Machine Translation, изменился 
-следующим образом: <<Quand je suis dans un tel $\acute{\mbox{e}}$tat, 
-je deviens impudent et impudent $\grave{\mbox{a}}$~l'extr$\hat{\mbox{e}}$me>> 
-(11.10.2018 19:35). }
-\end{tabular}
-\end{center}
-\end{table}
-  
-  Поэтому кроме оценки качества машинного перевода в~статике~[5--7] 
-целесообразно разработать подход к~описанию нестабильности НМП 
-с~использованием классификации ошибок перевода и~качественной оценки 
-перевода во времени. Отметим, что задача исследования нестабильности 
-отличается от задачи повышения устойчивости НМП, когда небольшие 
-возмущения на входе могут серьезно исказить промежуточные представления 
-и, таким образом, повлиять на качество перевода~[8]. В~интересах разработки 
-такого подхода был сформирован массив русскоязычных текстовых 
-фрагментов, полученных из Национального корпуса русского языка~[9], 
-и~затем был проведен эксперимент по машинному переводу, описание 
-результатов которого и~стало основной целью статьи.
-  
-  Для сформированного массива текстовых фрагментов сначала был выполнен 
-их перевод на французский язык посредством системы НМП Google (Google's 
-Neural Machine Translation system, {\sf https://translate.google.com}). 
-Архитектура этой системы включает в~себя две рекуррентные нейронные сети 
-с~долгой краткосрочной памятью (long short-term memory). Одна~--- 
-кодирующая~--- обрабатывает входную текстовую последовательность, 
-другая~--- декодирующая~--- отвечает за формирование выходного перевода. 
-Сети имеют восьмислойную структуру, где связь между слоями помогают 
-осуществлять остаточные соединения (residual connections), обеспечивающие 
-градиентный поток (gradient flow). Кодирующий и~декодирующий сегменты 
-соединяются модулем внимания (attention module), который позволяет 
-оптимизировать работу с~протяженными входными последовательностями. 
-Чтобы обеспечить параллелизм при обработке данных, внимание нижнего 
-уровня декодирующей сети подключается к~верхнему уровню ко\-ди\-ру\-ющей 
-сети. Для уменьшения времени вывода применяются вычисления с~низкой 
-точностью (low-precision arithmetic), а для дополнительного ускорения~--- 
-специальное оборудование (тензорный процессор Google) (подробнее см.\ 
-в~[10]).
-  
-  Перевод в~системе Google выполнялся многократно в~течение одного года 
-с~временн$\acute{\mbox{ы}}$м шагом в~один месяц (с~марта 2019~г.\ по февраль 2020~г.). Это 
-дало возможность получить серию переводов для каждого фрагмента. 
-В~настоящей статье проанализированы переводы, полученные на протяжении 
-первых 10~месяцев эксперимента. В~результате программного анализа были 
-помечены и~исключены из рассмотрения те фрагменты, переводы которых 
-оставались неизменными в~период проведения эксперимента. Таким образом, 
-предметом последующей экспертизы стали серии переводов только тех 
-текстовых фрагментов, в~отношении которых фиксировалась нестабильность 
-перевода.
-  
-  На стадии экспертизы было выполнено лингвистическое аннотирование 
-каж\-до\-го отобранного фрагмента текста на русском языке и~серии его 
-переводов на французский язык, включающее описание встретившихся 
-в~переводе ошибок. Метод аннотирования и~виды аннотаций описаны 
-в~работе~[11]. Аннотирование каждого фрагмента и~соответствующей серии 
-переводов дало возможность зафиксировать нестабильность НМП и~ее виды. 
-На первом этапе экспертизы ставилась задача провести категоризацию 
-нестабильности НМП.
-
-\section{Экспериментальные данные}
-
-Для оценки изменения НМП был проведен эксперимент по ежемесячному 
-аннотированию результатов машинного перевода с~помощью надкорпусной 
-базы данных (НБД)~[12, 13]. Источником текстов (объем которых составляет 
-около~4~млн словоупотреблений), используемых в~НБД для поиска 
-и~аннотирования языковых единиц~--- в~данном случае 
-коннекторов,\footnote{Коннектор~--- языковая единица, функция которой состоит в~выражении 
-логико-семантических отношений, существующих между двумя соединенными с~ее помощью текстовыми 
-компонентами, имеющими предикативный характер (см.~[14, с.~17]).}~--- 
-послужил рус\-ско-французский подкорпус Национального корпуса русского языка. Из текстов 
-НБД коннекторов было отобрано для эксперимента 250~текстовых фрагментов 
-на русском языке (см.\ их примеры в~4-м столбце в~табл.~2), каждый из 
-которых содержит один из 10~двухкомпонентных коннекторов (таких как 
-\textit{не} (\textit{расстояние})~\textit{а}; \textit{хотя} (\textit{расстояние}) 
-\textit{но} и~т.\,п.). 
-   \begin{table}\small %tabl2
-   \begin{center}
-   \Caption{Примеры экспортированных из НБД строк}
-   \vspace*{2ex}
-
-\tabcolsep=4.45pt   
-\begin{tabular}{|c|c|c|l|l|}
-   \hline
-№$^*$&
-\tabcolsep=0pt\begin{tabular}{c} Дата\\ изменения\end{tabular}&
-\tabcolsep=0pt\begin{tabular}{c} Р$^{**}$ в~ори-\\ гинале\end{tabular}&
-\multicolumn{1}{c|}{\tabcolsep=0pt\begin{tabular}{c} Контекст РР\\ в~оригинале\end{tabular}}&
-\multicolumn{1}{c|}{\tabcolsep=0pt\begin{tabular}{c} Контекст РР\\ в~переводе\end{tabular}}\\
-\hline
- 28365&04.03.2019 14:06&
-не$\|$а&\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за 
-город, а в~город. \end{tabular}&
-\tabcolsep=0pt\begin{tabular}{l} 
-L'invit$\acute{\mbox{e}}$ n'est pas\\
-all$\acute{\mbox{e}}$ en ville,\\ mais en ville. \end{tabular}\\
-\hline
-28860&05.04.2019 15:03&не$\|$а&\tabcolsep=0pt\begin{tabular}{l}  
-Гость направился\\ не за город, а в~город. \end{tabular}&
-\multicolumn{1}{c|}{-"-}\\
-\hline
-29043&02.05.2019 14:52&не$\|$а&
-\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за 
-город, а в~город. \end{tabular}&\multicolumn{1}{c|}{-"-}\\
-\hline
-29978&06.06.2019 14:33&не$\|$а&\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за 
-город, а в~город. \end{tabular}&\multicolumn{1}{c|}{-"-}\\
-\hline
-30286&04.07.2019 14:53&не$\|$а&
-\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за 
-город, а в~город. \end{tabular}&\multicolumn{1}{c|}{-"-}\\
-\hline
-30513&04.08.2019 15:35&не$\|$а&
-\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за 
-город, а в~город. \end{tabular}&
-\tabcolsep=0pt\begin{tabular}{l} 
-L'invit$\acute{\mbox{e}}$ ne s'est pas\\ 
-dirig$\acute{\mbox{e}}$ hors de la ville\\ mais dans la ville. \end{tabular}\\
-\hline
-30873&07.09.2019 21:48&не$\|$а&
-\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за 
-город, а в~город. \end{tabular}&
-\tabcolsep=0pt\begin{tabular}{l} 
-L'invit$\acute{\mbox{e}}$ ne s'est pas\\ 
-dirig$\acute{\mbox{e}}$ hors de la ville,\\ mais dans la ville. 
-\end{tabular}\\
-\hline
-31137&04.10.2019 15:00&не$\|$а&
-\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за 
-город, а в~город. \end{tabular}&\multicolumn{1}{c|}{-"-}\\
-\hline
-31701&07.11.2019 16:18&не$\|$а&
-\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за 
-город, а в~город. \end{tabular}&\multicolumn{1}{c|}{-"-}\\
-\hline
-32319&06.12.2019 16:34&не$\|$а&
-\tabcolsep=0pt\begin{tabular}{l} Гость направился\\ не за город, а в~город. \end{tabular}&
-\tabcolsep=0pt\begin{tabular}{l} 
-L'invit$\acute{\mbox{e}}$ n'est pas\\ 
-sorti de la ville,\\ mais dans la ville. \end{tabular}\\
-\hline
-\multicolumn{5}{p{360pt}}{\footnotesize \hspace*{2mm}$\hphantom{^*}^*$Номер двуязычной аннотации в~НБД, 
-включающей фрагмент текста оригинала и~его перевод.}\\
-\multicolumn{5}{p{360pt}}{\footnotesize \hspace*{2mm}$^{**}$РР (речевая реализация)~--- та форма, в~которой 
-коннектор встречается в~конкретном высказывании~[15].}
-\end{tabular}
-\end{center}
-\vspace*{-12pt}
-\end{table}
-На каждый коннектор при этом приходится в~среднем 
-25~фрагментов (от~9 до~51~фрагмента). Для эксперимента были выбраны 
-двухкомпонентные коннекторы, которые в~силу своей структуры чаще 
-вызывают трудности при переводе. 
-
-
-  В ходе эксперимента выполнялось ежемесячное (в~течение первых 7~дней 
-каж\-до\-го месяца) формирование 250~аннотаций, включающих фрагмент на 
-русском языке, его перевод на французский, выполненный с~помощью 
-системы НМП Google, и~описание ошибок, если таковые имели место.
-  
-  Для удобства сопоставления и~анализа полученные экспериментальные 
-данные были экспортированы из НБД в~табличной форме (см.\ табл.~2). Что 
-касается машинных переводов, оставшихся неизменными на протяжении двух 
-и~более месяцев подряд, то они были заменены на знак повтора. Общее число 
-строк после экспорта составило~2500. При этом в~течение первых 10~месяцев 
-проведения эксперимента переводы~10 из 250~фрагментов оставались 
-неизменными (что составляет 4\% от общего числа фрагментов).
-   
-\section{Классификация ошибок в~машинных переводах}
-
-  В процессе лингвистического аннотирования переводов применялась 
-классификация ошибок, которая специально предназначена для анализа 
-машинных переводов. Она является развитием ранее созданной классификации. 
-Ее первая версия появилась в~результате анализа переводов, сделанных 
-посредством системы Яндекс.Переводчик в~2016--2017~гг. Первоначально она 
-включала 8~рубрик для обозначения ошибок в~переводе как текстовых 
-фрагментов с~коннектором, так и~самих коннекторов (подробнее см.\ в~\cite{5-
-ez}), а также рубрику <<Ошибок нет>> (NoError), применявшуюся для 
-маркировки допустимых вариантов перевода.
-  
-  Работа над второй версией классификации~\cite{6-ez} началась в~2018~г. 
-Она проводилась по результатам анализа переводов, полученных с~помощью 
-системы НМП Google. Вторая версия классификации включала уже 15~рубрик 
-(помимо рубрики <<Ошибок нет>>). Отличие использованной в~эксперименте 
-третьей версии классификации ошибок состоит в~том, что она была 
-разработана для оценки качества НМП не в~статике, а~в~динамике. По 
-сравнению с~работами~\cite{4-ez, 5-ez, 6-ez} в~эксперименте фокус 
-переместился с~анализа перевода коннектора на перевод всего содержащего 
-коннектор фрагмента целиком, так как только детальный анализ всех ошибок 
-позволяет оценить качество перевода и~проследить нестабильность НМП во 
-времени.
-  
-  В табл.~3 представлено сопоставление второй и~третьей версий 
-классификации. Не считая рубрики <<Ошибок нет>>, в~третью версию вошло 
-20~рубрик (для наглядности новые рубрики выделены полужирным шрифтом). 
-Классификация была уточнена следующим образом. Два признака из второй 
-версии, указывающие на <<локальную аграмматичность фрагмента>> 
-(AgramLocal и~AgramPostCNT), были специфицированы по грамматическим 
-уровням. Также были добавлены три новых признака, учитывающие ранее не 
-затронутые аспекты (пунктуацию и~семантику всего текстового фрагмента). 
-В~ходе экспертизы НМП также была выявлена необходимость ввести новые 
-рубрики, фиксирующие вариативность допустимых версий перевода.
-   
-   \begin{table}\footnotesize
-   %\small  %tabl3
-   \begin{center}
-   \Caption{Сопоставление второй и~третьей версий классификации}
-   \vspace*{2ex}
-
-\tabcolsep=4pt   
-\begin{tabular}{|l|l|l|l|l|}
-\hline
-&\multicolumn{2}{c|}{Название рубрики}&
-\multicolumn{2}{c|}{Код рубрики}\\
-\hline 
-&\multicolumn{1}{c|}{2-я версия}&\multicolumn{1}{c|}{3-я версия}&
-\multicolumn{1}{c|}{2-я версия}&\multicolumn{1}{c|}{3-я версия}\\
-\hline
-&
-\multicolumn{2}{c|}{Все предложение аграмматично}&
-\multicolumn{2}{c|}{AgramTotal}\\
-\cline{2-5}
-\tabcolsep=0pt\begin{tabular}{l} Рубрики,\\ относящиеся\\ к~переводу\\ 
-текстового\end{tabular}&\tabcolsep=0pt\begin{tabular}{l} Локальная\\ аграмматичность\\ 
-во фрагменте\\ текста, не 
-вводи- \end{tabular}&
-\tabcolsep=0pt\begin{tabular}{l} \textbf{Синтаксическая}\\ \textbf{ошибка во фрагменте}\\ 
-\textbf{текста, не вводимом}\\ \textbf{коннектором}\end{tabular}&
-AgramLocal&\textbf{ErrorSyntax}\\
-\cline{3-3}
-\cline{5-5}
-\tabcolsep=0pt\begin{tabular}{l} фрагмента\\ \ \\ \ \\ \ \end{tabular}
-&\tabcolsep=0pt\begin{tabular}{l} мом коннектором\\ \ \\ \ \\ \ \end{tabular}
-&\tabcolsep=0pt\begin{tabular}{l} \textbf{Морфологическая}\\ \textbf{ошибка во 
-фрагменте}\\ \textbf{текста, не вводимом}\\ \textbf{коннектором}\end{tabular}&&
-\textbf{ErrorMorph}\\
-\cline{2-5}
-&\tabcolsep=0pt\begin{tabular}{l} Локальная\\ аграмматичность\\ во фрагменте\\ текста, 
-вводимом \end{tabular}&
-\tabcolsep=0pt\begin{tabular}{l} \textbf{Синтаксическая}\\ \textbf{ошибка во фрагменте}\\ 
-\textbf{текста, вводимом}\\ \textbf{коннектором}\end{tabular}&
-AgramPostCNT&\tabcolsep=0pt\begin{tabular}{c}\textbf{ErrorSyntax-}\\ \textbf{PostCNT}\end{tabular}\\
-\cline{3-3}
-\cline{5-5}
-&\tabcolsep=0pt\begin{tabular}{l} коннектором\\ \ \\ \ \\ \ \end{tabular}&
-\tabcolsep=0pt\begin{tabular}{l} \textbf{Морфологическая}\\ \textbf{ошибка во 
-фрагменте}\\ \textbf{текста, вводимом}\\ \textbf{коннектором}\end{tabular}&&
-\tabcolsep=0pt\begin{tabular}{c}\textbf{ErrorMorph-}\\ \textbf{PostCNT}\end{tabular}\\
-\cline{2-5}
-&\multicolumn{2}{l|}{Лексическая ошибка во фрагменте 
-текста}&\multicolumn{2}{l|}{ErrorLex}\\
-\cline{2-5}
-&\multicolumn{1}{c|}{---}&
-\tabcolsep=0pt\begin{tabular}{l} \textbf{Пунктуационная}\\
-\textbf{ошибка}\end{tabular}&
-\multicolumn{1}{c|}{---}&
-\textbf{ErrorPunct}\\
-\cline{2-5}
-&\multicolumn{1}{c|}{---}&
-\tabcolsep=0pt\begin{tabular}{l} \textbf{Семантическая ошиб-}\\
-\textbf{ка, искажение смысла }\end{tabular}&
-\multicolumn{1}{c|}{---}&
-\textbf{ErrorSemant}\\
-\cline{2-5}
-&&&&\\[-9pt]
-&\multicolumn{1}{c|}{---}&
-\textbf{Избыточный перевод}$^*$&
-\multicolumn{1}{c|}{---}&
-\textbf{Pleonasm}\\
-\cline{2-5}
-&\multicolumn{2}{l|}{Слова кириллицей}&
-\multicolumn{2}{l|}{Cyrillic}\\
-\cline{2-5}
-&\multicolumn{2}{l|}{Русское слово латинским шрифтом}&
-\multicolumn{2}{l|}{Latin}\\
-\cline{2-5}
-&\multicolumn{2}{l|}{Пропуск фрагмента текста}&
-\multicolumn{2}{l|}{Lacuna}\\
-\hline
-\tabcolsep=0pt\begin{tabular}{l} Рубрики,\\ относящиеся
-%\\ к~переводу\\ коннектора
-\end{tabular}&
-\multicolumn{2}{l|}{\tabcolsep=0pt\begin{tabular}{l}Переведена первая часть неоднословного\\ коннектора\end{tabular}}&
-TrPartI&
-TrPart$_1$CNT \\
-\cline{2-5}
-\tabcolsep=0pt\begin{tabular}{l} %Рубрики,\\ относящиеся\\ 
-к~переводу\\ коннектора\end{tabular}&
-\multicolumn{2}{l|}{\tabcolsep=0pt\begin{tabular}{l}Переведена вторая часть неоднословного\\ коннектора\end{tabular}}&
-TrPartII&
-TrPart$_2$CNT\\
-\cline{2-5}
-&\multicolumn{2}{l|}{\tabcolsep=0pt\begin{tabular}{l}Первая часть неоднословного коннектора\\ переведена ошибочно\end{tabular}}&
-ErrorPartI&
-ErrorPart$_1$CNT\\
-\cline{2-5}
-&\multicolumn{2}{l|}{\tabcolsep=0pt\begin{tabular}{l}Вторая часть неоднословного коннектора\\ переведена ошибочно\end{tabular}}&
-ErrorPartII&
-ErrorPart$_2$CNT\\
-\cline{2-5}
-&\multicolumn{2}{l|}{\tabcolsep=0pt\begin{tabular}{l}Коннектор переведен несуществующей\\ единицей\end{tabular}}&
-ErrorTotal&
-\textbf{ErrorTotalCNT}\\
-\cline{2-5}
-&\multicolumn{2}{l|}{\tabcolsep=0pt\begin{tabular}{l}Коннектор ошибочно заменен языковой\\ единицей, не являющейся 
-коннектором\end{tabular}}&
-ErrorMorph&
-\textbf{ErrorMorphCNT}\\
-\cline{2-5}
-&\multicolumn{2}{l|}{\tabcolsep=0pt\begin{tabular}{l}Орфографическая ошибка в~форме\\ коннектора\end{tabular}}&
-ErrorOrth&
-\textbf{ErrorOrthCNT}\\
-\cline{2-5}
-&\multicolumn{2}{l|}{\tabcolsep=0pt\begin{tabular}{l}Семантическая ошибка в~выборе\\ коннектора\end{tabular}}&
-\multicolumn{2}{l|}{ErrorCNT}\\
-\hline
-\multicolumn{5}{p{360pt}}{\footnotesize \hspace*{2mm}$^*$Имеется 
-в~виду дублирование при переводе элемента смысла.}
-\end{tabular}
-\end{center}
-\end{table}
-
-\section{Категоризация результатов нейронного машинного перевода}
-
-  Третья версия классификации ошибок позволила снабдить сформированные 
-аннотации дополнительными руб\-ри\-ка\-ми-приз\-на\-ка\-ми, 
-сигнализирующими о~появлении и\!/\!или исчезновении ошибок НМП, и~указать 
-в~аннотациях типы ошибок. Это дало возможность описать виды 
-нестабильности НМП с~использованием рубрик классификации ошибок, а 
-также оценить частотность тех или иных типов ошибок для каждого вида 
-нестабильности. 
-  
-  В результате экспертизы эмпирического массива была проведена 
-категоризация нестабильности НМП. Было выявлено пять видов 
-нестабильности, которые иллюстрируются примерами.
-\begin{enumerate}[1.]
-\item Повышение качества НМП: число ошибок в~последующих переводах 
-уменьшается. Так, в~переводе от 05.08.19 исправлена морфологическая ошибка 
-(неверное местоимение), допущенная в~переводе от 05.03.19\footnote{За первые 10 
-месяцев эксперимента (с марта по декабрь 2019~г.)\ было зафиксировано 3~варианта перевода данного 
-фрагмента. Принимая во внимание ограниченный объем статьи, здесь и~далее будут представлены только те 
-варианты перевода, которым при аннотировании присваивались разные наборы дополнительных 
-признаков-рубрик, маркирующих ошибки.}.
-\begin{center}
-{\tabcolsep=5pt\begin{tabular}{|p{60pt}|p{130pt}|p{130pt}|}
-\hline
-Существуют обязанности \textit{не только} по отношению 
-к~Богу и~другим людям, \textit{но и}~к~самому себе.
-&Il y a~des obligations \textit{non seulement} envers Dieu et envers les autres, \textit{mais aussi} 
-envers \underline{\textbf{lui-m$\hat{\mbox{e}}$me}}\footnotetext{$^*$Полужирным шрифтом 
-с~подчеркиванием выделены ошибки, курсивом выделены коннекторы.}. (\textit{аннотация 
-сформирована 05.03.19, ErrorMorphPostCNT})
-&Il y a~des obligations \textit{non seulement} envers Dieu et envers les autres, \textit{mais aussi} 
-envers \underline{\textbf{soi-m$\hat{\mbox{e}}$me}}. (\textit{аннотация сформирована 
-05.08.19, NoError})\\
-\hline
-\end{tabular}}
-\end{center}
-
-\item Снижение качества НМП: число ошибок в~НМП увеличивается 
-с~течением времени. Например, вариант перевода от 04.03.19 приемлемый, а 
-в~переводе от 06.12.19 появляется лексическая ошибка.
-\begin{center}
-{\tabcolsep=5pt\begin{tabular}{|p{60pt}|p{130pt}|p{130pt}|}
-\hline
-\textit{Не} жизнь, \textit{а} санаторий для партийных работников.
-&\textit{Pas} la vie, \textit{mais} un sanatorium pour les travailleurs du parti. (\textit{аннотация 
-сформирована 04.03.19, NoError})
- &\textit{Pas} la vie, \textit{mais} un sanatorium pour 
- \underline{\textbf{les f$\hat{\mbox{e}}$tards}}. 
-(\textit{аннотация сформирована 06.12.19, ErrorLex})\\
-\hline
-\end{tabular}}
-\end{center}
-
-\item Колебание качества НМП между повышением и~снижением: качество 
-перевода сначала повышается (в~переводе от 04.07.19 нет ошибок в~отличие 
-от перевода от 04.03.19, где выбран семантически неверный предлог), а~затем 
-понижается (в переводе от 06.12.19 есть лексическая ошибка: в~данном 
-контексте предлог \textit{dans} не сочетается с~глаголом \textit{sortir}, во 
-второй части предложения следовало добавить другой глагол). Изменения 
-качества могут происходить неоднократно и~в любой последовательности.
-\begin{center}
-{\tabcolsep=5pt\begin{tabular}{|p{60pt}|p{80pt}|p{90pt}|p{80pt}|}
-\hline
-Гость направился \textit{не} за город, \textit{а} в~город.
-&L'invit$\acute{\mbox{e}}$ \textit{n}'est \textit{pas} all$\acute{\mbox{e}}$ 
-\underline{\textbf{en}} ville, \textit{mais} en ville. 
-(\textit{аннотация сформирована\- 04.03.19, ErrorSemant})
-&L'invit$\acute{\mbox{e}}$ \textit{ne} s'est \textit{pas} 
-dirig$\acute{\mbox{e}}$ hors de la ville \textit{mais} dans la ville.
- (\textit{аннотация сформирована 04.07.19, NoError})
-&L'invit$\acute{\mbox{e}}$ \textit{n}'est~\textit{pas} sorti de la ville,
- \textit{mais} \underline{\textbf{dans}} la ville. 
-(\textit{аннотация сформирована\- 06.12.19, ErrorLex})\\
-\hline
-\end{tabular}}
-\end{center}
-
-\item Чередование ошибок в~НМП без динамики его качества: одна ошибка 
-со временем исчезает, но появляется другая. В~переводе от 07.08.19 нет 
-морфологической ошибки во фрагменте с~коннектором, которая была 
-в~переводе от 03.03.19 (неверное наклонение глагола \textit{chercher}), однако 
-остается та же лексическая ошибка (устойчивое выражение <<искать руки>> 
-переведено дословно), к~тому же возникает другая морфологическая ошибка 
-(неверное согласование местоимения в~лице).
-\begin{center}
-{\tabcolsep=5pt\begin{tabular}{|p{60pt}|p{130pt}|p{130pt}|}
-\hline
-И \textit{хотя}~он, точно, искал руки моей дочери, будучи сам хорошего, трезвого поведения 
-и~великой учености, \textit{но} я никогда не подавала ему никакой надежды.
-&Et \textit{bien que}, certes, il \underline{\textbf{cherchait les mains}} de ma fille, ayant 
- lui-m$\hat{\mbox{e}}$me un bon comportement sobre et une grande $\acute{\mbox{e}}$rudition, 
-\textit{mais} je ne lui ai jamais donn$\acute{\mbox{e}}$ aucun espoir. (\textit{аннотация 
-сформирована 03.03.19, 
-ErrorMorphPostCNT, ErrorLex})
-&Et \textit{bien qu}'il ait certainement cherch$\acute{\mbox{e}}$ \underline{\textbf{les mains}} 
-de ma fille, $\acute{\mbox{e}}$tant \underline{\textbf{moi-m$\hat{\mbox{e}}$me}} d'un bon 
-comportement sobre et d'une grande $\acute{\mbox{e}}$rudition, \textit{mais} je ne lui ai jamais 
-donn$\acute{\mbox{e}}$ aucun espoir. (\textit{аннотация сфор\-ми\-ро\-ва\-на 
-07.08.19,
-ErrorLex, возникает другая ErrorMorphPostCNT})\\
-\hline
-\end{tabular}}
-\end{center}
-
-\item Изменение НМП без динамики его качества: средства перевода 
-меняются, но качество остается на том же уровне. Так, перевод от 02.08.19 
-изменился по сравнению с~переводом от 01.03.19 (одновременность 
-действий передана с~помощью придаточного времени вместо предложно-именной группы), но его качество осталось прежним~--- оба варианта 
-допустимы. К этой категории относятся также переводы с~ошибками, число 
-и~состав которых не меняются от перевода к~переводу (при этом меняются 
-средства перевода, т.\,е.\ применяются другие переводные эквиваленты).
-\begin{center}
-{\tabcolsep=5pt\begin{tabular}{|p{60pt}|p{125pt}|p{135pt}|}
-\hline
-\textit{Как} она проснется, \textit{так} он уже тут.
-&\underline{$\grave{\mbox{A}}$~son r$\acute{\mbox{e}}$veil}, il est 
-d$\acute{\mbox{e}}$j$\grave{\mbox{a}}$ l$\grave{\mbox{a}}$.
-(\textit{аннотация сформирована 01.03.19, NoError})
-&\underline{\textit{Alors qu}'elle se r$\acute{\mbox{e}}$veille}, il est\newline 
-d$\acute{\mbox{e}}$j$\grave{\mbox{a}}$ l$\grave{\mbox{a}}$. 
-(\textit{ан\-но\-та\-ция~сформирована 02.08.19, NoError})\\
-  \hline
-  \end{tabular}}
-  \end{center}
-  
-  \end{enumerate}
-  
-  В целом, качество перевода применительно к~пяти описанным видам 
-нестабильности может изменяться (как 
-  в~1--3) или оставаться на одном уровне, хотя перевод и~претерпевает ряд 
-изменений (виды 4--5). Также отметим, что категории~3 и~4 схожи в~том, что 
-переводы, где наблюдаются эти виды нестабильности, характеризует 
-чередование ошибок, но категория 3 при этом фиксирует повышение/снижение 
-качества перевода, а в~категории 4 качество почти не меняется.
-
-\section{Заключение}
-
-  В статье приведено описание первого этапа эксперимента по многократному 
-фиксированию машинных переводов, полученных с~помощью системы НМП 
-Google. На этом этапе ставилась задача провести категоризацию 
-нестабильности по видам. В~ходе эксперимента была создана третья версия 
-классификации ошибок в~МП. В~результате экспертизы полученных данных 
-были выделены и~описаны пять видов нестабильности НМП.
-  
-  В дальнейшем планируется разработать методику анализа ошибок, 
-включенных в~третью версию классификации (см.\ табл.~2), и~соотнести виды 
-нестабильности НМП с~рубриками ошибок.  При этом планируется определить 
-частотности рубрик ошибок, релевантных для каждого вида нестабильности НМП.
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{1-ez}
-Machine translation: Technologies and applications. Vol.~1: Translation quality 
-assessment~/ Eds. J.~Moorkens, S.~Castilho, F.~Gaspari, S.~Doherty.~--- Cham: Springer 
-International Publishing, 2018. 287~p.
-\bibitem{2-ez}
-\Au{Scott B.}
-Machine translation: Technologies and applications. Vol.~2:  Translation, brains 
-and the computer: A neurolinguistic solution to ambiguity and complexity in machine 
-translation.~--- Cham: Springer International Publishing, 2018. 241~p.
-\bibitem{3-ez}
-\Au{Popovi$\acute{\mbox{c}}$ M.} Error classification and analysis for machine 
-translation quality assessment~/\!\!/ Machine translation: Technologies and applications. 
-Vol.~1: Translation quality assessment.~--- Cham: Springer International Publishing, 
-2018. P.~129--158.
-\bibitem{4-ez}
-\Au{Бунтман Н.\,В., Гончаров А.\,А., Зацман И.\,М., Нуриев~В.\,А.} Количественный 
-анализ результатов машинного перевода с~использованием надкорпусных баз 
-данных~/\!\!/ Информатика и~её применения, 2018. Т.~12. Вып.~4. С.~96--105.
-\bibitem{5-ez}
-\Au{Nuriev V., Buntman N., Inkova O.} Machine translation of Russian connectives into 
-French: Errors and quality failures~/\!\!/ Информатика и~её применения, 2018. Т.~12. 
-Вып.~2. С.~105--113.
-\bibitem{6-ez}
-\Au{Гончаров А.\,А., Бунтман Н.\,В., Нуриев В.\,А.} Ошибки в~машинном переводе: 
-проблемы классификации~/\!\!/ Системы и~средства информатики, 2019. Т.~29. 
-№\,3. С.~92--103.
-\bibitem{7-ez}
-\Au{Рычихин А.\,К.} О методах оценки качества машинного перевода~/\!\!/ Системы 
-и~средства информатики, 2019. Т.~29. №\,4. С.~106--118.
-\bibitem{8-ez}
-\Au{Cheng Y., Tu Z., Meng F., Zhai J., Liu~Y.} Towards robust neural machine 
-translation~/\!\!/ 56th Annual Meeting of the Association for Computational Linguistics 
-Proceedings.~--- Melbourne: Association for Computational Linguistics, 2018. Vol.~1. 
-P.~1756--1766. {\sf https://www.aclweb.org/anthology/P18-1163}.
-\bibitem{9-ez}
-Национальный корпус русского языка. {\sf http://www.ruscorpora.ru}.
-\bibitem{10-ez}
-\Au{Нуриев В.\,А.} Архитектура системы нейронного машинного перевода~/\!\!/ 
-Информатика и~её применения, 2019. Т.~13. Вып.~3. С.~90--96.
-\bibitem{11-ez}
-\Au{Зализняк А.\,А., Зацман И.\,М., Инькова О.\,Ю.} Надкорпусная база данных 
-коннекторов: построение системы терминов~/\!\!/ Информатика и~её применения, 2017. 
-Т.~11. Вып.~1. С.~100--108.
-
-\bibitem{13-ez}
-\Au{Зацман И.\,М., Кружков М.\,Г.} Надкорпусная база данных коннекторов: 
-развитие системы терминов проектирования~/\!\!/ Системы и~средства 
-информатики, 2018. Т.~28. №\,4. С.~156--167.
-
-\bibitem{12-ez}
-\Au{Егорова А.\,Ю., Зацман И.\,М., Мамонова О.\,С.} Надкорпусные базы данных 
-в~лингвистических проектах~/\!\!/ Системы и~средства информатики, 2019. Т.~29. 
-№\,3. С.~77--91.
-
-\bibitem{14-ez}
-\Au{Инькова-Манзотти О.\,Ю.} Коннекторы противопоставления во французском 
-и~русском языках. Сопоставительное исследование.~--- М.: Информэлектро, 2001. 
-429~с. 
-\bibitem{15-ez}
-\Au{Инькова О.\,Ю.} Надкорпусная база данных как инструмент формальной 
-вариативности коннекторов~/\!\!/ Компьютерная лингвистика и~интеллектуальные 
-технологии: по мат-лам ежегодной Международ. конф. <<Диалог>>.~--- М.: РГГУ, 
-2018. Вып.~17(24). С.~240--253.
-
- \end{thebibliography}
-} }
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 03.03.20}}
-
-\vspace*{8pt}
-
-\hrule
-
-\vspace*{2pt}
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{8pt}
-
-\def\tit{INSTABILITY OF~NEURAL MACHINE TRANSLATION}
-
-\def\titkol{Instability of neural machine translation}
-
-\def\aut{A.\,Yu.~Egorova, I.\,M.~Zatsman, V.\,V.~Kosarik, and~V.\,A.~Nuriev}
-
-\def\autkol{A.\,Yu.~Egorova, I.\,M.~Zatsman, V.\,V.~Kosarik, and~V.\,A.~Nuriev}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-\noindent
-Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
-Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2020 vol~30 no\,2}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics 2020 vol~30 no\,2
-\hfill \textbf{\thepage}}}
-
-\vspace*{6pt}
-
-\Abste{The paper describes an experiment focused on studying the instability of neural machine 
-translation (NMT). In the course of a~year, an array of text fragments in Russian was repeatedly 
-translated into French. The time step was one month. To produce translations, the Google's NMT 
-system was used. The experiment helps reveal the instability of NMT, i.\,e., it shows that 
-translations of a~given text fragment tend to change with time but not always 
-improving the quality. 
-The generated translations were linguistically annotated, which led to
-uncovering several different 
-types of the NMT instability. While annotating,\linebreak
-\vspace*{-12pt}}
-
-\pagebreak
-
-\Abstend{a~previously designed classification of machine 
-translation errors was employed. It was altered to meet the objectives of the experiment, the 
-ultimate goal of which was to obtain a~frequency distribution of different types of the NMT 
-instability. Yet, the first step of the experiment limited itself to only categorizing the NMT 
-instability, and it is this very step that the paper describes. As the empirical data, the experiment 
-uses Russian--French annotations generated in a~supracorpora database. Each annotation contains 
-a~fragment of the source Russian text, its translation into French, and the description of translation 
-errors occurring there.}
-
-\KWE{machine translation; instability; translation monitoring; linguistic annotation; instability 
-types}
-
-\DOI{10.14357\!/\!08696527200212} 
-
-%\vspace*{-24pt}
-
-\Ack
-\noindent
-The study was funded by the Russian Foundation for Basic Research, project 18-07-00192.
-
-%\vspace*{-12pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-\bibitem{1-ez-1}
-Moorkens, J., S. Castilho, F. Gaspari, and S.~Doherty, eds. 2018. \textit{Machine translation: 
-Technologies and applications. Vol.~1: Translation quality assessment}. Cham: Springer 
-International Publishing. 287~p.
-\bibitem{2-ez-1}
-\Aue{Scott, B.} 2018. \textit{Machine translation: Technologies and 
-applications. Vol.~2: Translation, brains and the computer: A neurolinguistic solution to ambiguity 
-and complexity in machine translation}. Cham: Springer International Publishing. 241~p.
-\bibitem{3-ez-1}
-\Aue{Popovi$\acute{\mbox{c}}$, M.} 2018. Error classification and analysis for machine 
-translation quality assessment. \textit{Machine translation: 
-Technologies and applications. Vol.~1: Translation quality assessment}. 
-Cham: Springer International Publishing. 129--158.
-\bibitem{4-ez-1}
-\Aue{Buntman, N.\,V., A.\,A. Goncharov, I.\,M. Zatsman, and V.\,A.~Nuriev.} 2018. 
-Ko\-li\-chest\-ven\-nyy analiz rezul'tatov mashinnogo perevoda s~ispol'zovaniem nadkorpusnykh baz 
-dannykh [Using supracorpora databases for quantitative analysis of machine translations]. 
-\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 12(4):96--105.
-\bibitem{5-ez-1}
-\Aue{Nuriev, V., N. Buntman, and O.~Inkova.} 2018. Machine translation of Russian connectives 
-into French: Errors and quality failures. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 
-12(2):105--113.
-\bibitem{6-ez-1}
-\Aue{Goncharov, A.\,A., N.\,V. Buntman, and V.\,A.~Nuriev.} 2019. Oshibki v mashinnom 
-perevode: Problemy klassifikatsii [Machine translation errors: Problems of classification]. 
-\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 29(3):92--103.
-\bibitem{7-ez-1}
-\Aue{Rychikhin, A.\,K.} 2019. O metodakh otsenki kachestva mashinnogo perevoda [On methods 
-of machine translation quality assessment]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and 
-Means of Informatics} 29(4):106--118.
-\bibitem{8-ez-1}
-\Aue{Cheng, Y., Z. Tu, F. Meng, J.~Zhai, and Y.~Liu.} 2018. Towards robust neural machine 
-translation. \textit{56th Annual Meeting of the Association for Computational Linguistics 
-Proceedings}. Melbourne:
-Association for Computational Linguistics. 1:1756--1766.
-Available at: {\sf https://www.aclweb.org/anthology/P18-1163} (accessed June~1, 2020).
-\bibitem{9-ez-1}
-Natsional'nyy korpus russkogo yazyka [Russian National corpus]. Available at: {\sf 
-http:// www.ruscorpora.ru/} (accessed February~25, 2020).
-\bibitem{10-ez-1}
-\Aue{Nuriev, V.\,A.} 2019. Arkhitektura sistemy neyronnogo mashinnogo perevoda [Architecture 
-of a~machine translation system]. 
-\textit{Informatika i ee Primeneniya~--- Inform. Appl.} 13(3):90--96.
-\bibitem{11-ez-1}
-\Aue{Zaliznyak, A.\,A., I.\,M. Zatsman, and O.\,Yu.~Inkova.} 2017. Nadkorpusnaya baza dannykh 
-konnektorov: postroenie sistemy terminov [Supracorpora database
- on connectives: Term system development]. 
-\textit{Informatika i ee Primeneniya~--- Inform. Appl.} 11(1):100--108. 
-
-\bibitem{13-ez-1}
-\Aue{Zatsman, I.\,M., and M.\,G. Kruzhkov.} 2018. Nadkorpusnaya baza dannykh konnektorov: 
-razvitie sistemy terminov proektirovaniya [Supracorpora database of connectives: Design-oriented 
-evolution of the term system]. \textit{Sistemy i Sredstva Informatiki~--- Systems and Means of 
-Informatics} 28(4):156--167.
-
-\bibitem{12-ez-1}
-\Aue{Egorova, A.\,Yu., I.\,M. Zatsman, and O.\,S. Mamonova.} 2019. Nadkorpusnye bazy 
-dannykh v~lingvisticheskikh proektakh [Supracorpora databases in linguistic projects]. 
-\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 29(3):77--91.
-
-\bibitem{14-ez-1}
-\Aue{Inkova-Manzotti, O.\,Yu.} 2001. \textit{Konnektory protivopostavleniya 
-vo frantsuzskom i~rus\-skom yazykakh. Sopostavitel'noe issledovanie} [Connectors of opposition in French and Russian: 
-A~comparative study]. Moscow: Informelektro. 429~p. 
-\bibitem{15-ez-1}
-\Aue{Inkova, O.\,Yu.} 2018. Nadkorpusnaya baza dannykh kak instrument formal'noy variativnosti 
-konnektorov [Supracorpora database as an instrument of the study of the formal variability of 
-connectives]. \textit{Computer Linguistic and Intellectual Technologies: 
-Conference (International) ``Dialog'' Proceedings}. Moscow. 17(24):240--253.
-\end{thebibliography}
-} }
-
-\vspace*{-8pt}
-
-\hfill{\small\textit{Received March 3, 2020}} 
-
-\vspace*{-6pt} 
-
-\Contr
-
-\noindent
-\textbf{Egorova Anna Yu.} (b.\ 1991)~--- junior scientist, Institute of Informatics Problems, 
-Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-44-2 Vavilov Str., Moscow 119333, Russian Federation; \mbox{ann.shurova@gmail.com}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Zatsman Igor M.} (b.\ 1952)~--- Doctor of Science in technology, Head of Department, 
-Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
-Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{izatsman@yandex.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Kosarik Valery V.} (b.\ 1970)~--- scientist, Institute of Informatics Problems, Federal 
-Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 44-
-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{valery\_lek@mail.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Nuriev Vitaly A.} (b.\ 1980)~--- Candidate of Science (PhD) in philology, leading scientist, 
-Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
-Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{nurieff.v@gmail.com}
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 

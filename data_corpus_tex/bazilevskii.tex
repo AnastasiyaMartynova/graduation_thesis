@@ -1,537 +1,0 @@
-\def\stat{bazilevskii}
-
-\def\tit{ПРОГРАММА ПОСТРОЕНИЯ ВПОЛНЕ ИНТЕРПРЕТИРУЕМЫХ И~RTF-АДЕКВАТНЫХ 
-ЛИНЕЙНЫХ РЕГРЕССИОННЫХ МОДЕЛЕЙ}
-
-\def\titkol{Программа построения вполне интерпретируемых и~RTF-адекватных 
-линейных %регрессионных 
-моделей}
-
-\def\aut{М.\,П.~Базилевский$^1$}
-
-\def\autkol{М.\,П.~Базилевский}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Базилевский М.\,П.}
-\index{Bazilevskiy M.\,P.}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-%\footnotetext[1]
-%{Работа частично поддержана РФФИ (проект 18-29-03124-мк).}} 
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Иркутский государственный университет путей сообщения, кафедра математики, 
-\mbox{mik2178@yandex.ru}}
-
- \label{st\stat}
-
- \thispagestyle{headings}
- 
- \vspace*{-12pt} 
-
-
-
-  \Abst{Статья посвящена проблеме отбора <<информативных>> регрессоров (ОИР)
-  в~регрессионных моделях, оцениваемых с~помощью метода наименьших квадратов (МНК). 
-Построенные в~результате такого отбора модели часто оказываются неадекватными и~плохо 
-интерпретируемыми. В~работе впервые сформулированы определения <<вполне 
-интерпретируемой>> и~<<RTF-адекват\-ной>> регрессионной модели. Рассмотрен ранее 
-предложенный эффективный алгоритм решения задачи ОИР. 
-На его основе разработан алгоритм построения вполне интерпретируемых 
-и~RTF-адекват\-ных линейных регрессионных моделей. В~нем для каждой регрессии 
-последовательно осуществляется проверка: <<информативности>> переменных, 
-мультиколлинеарности, соответствия знаков коэффициентов физическому смыслу факторов, 
-адекватности модели по коэффициенту детерминации и~значимости в~целом по  
-F-кри\-те\-рию Фишера, а также значимости коэффициентов по t-кри\-те\-рию Стьюдента. 
-Предложенный алгоритм реализован в~виде программы для эконометрического пакета Gretl. 
-Разработанная программа универсальна и~может быть использована для решения широкого 
-круга задач анализа данных.}
-  
-  \KW{отбор <<информативных>> регрессоров; метод наименьших квадратов; вполне 
-интерпретируемая и~RTF-адекватная регрессия; критерий <<информативности>> 
-переменных; мультиколлинеарность; F-кри\-те\-рий Фишера; t-кри\-те\-рий Стьюдента}
-
-\DOI{10.14357\!/\!08696527210402} 
-
-\vskip 10pt plus 9pt minus 6pt
-
- \thispagestyle{headings}
- 
- %\vspace*{-20pt}
-
-\section{Введение}
-
-  Один из этапов регрессионного анализа~[1]~--- спецификация модели, т.\,е.\ 
-выбор состава переменных и~математической формы связи между ними. 
-Определение спецификации регрессии на практике зачастую сводится 
-к~решению задачи ОИР, более 
-известной в~зарубежной литературе как <<subset selection>>, <<variable 
-selection>> или <<feature selection>> in regression~[2, 3]. В~отечественной 
-литературе описание методов ОИР можно найти в~работе~[4]. Решение задачи 
-ОИР может осуществляться не только по ка\-ко\-му-то одному критерию 
-адекватности, а одновременно по нескольким критериям сразу. Такая 
-технология многокритериального выбора получила название <<конкурс>> 
-моделей~[5, 6].
-  
-  В работе~[7] автором был проведен анализ и~выявлены сле\-ду\-ющие 
-недостатки программного комплекса автоматизации процесса построения 
-регрессионных моделей (ПК АППРМ), предназначенного для проведения 
-<<конкурса>> моделей.
-  \begin{enumerate}[1.]
-\item Полученные в~результате <<конкурса>> модели часто представляют 
-собой сложные нелинейные уравнения, коэффициенты которых весьма 
-затруднительно интерпретировать. При этом игнорируется проб\-ле\-ма 
-мультиколлинеарности, которая может лишать смысла интерпретацию 
-коэффициентов модели.
-\item Полученные в~результате <<конкурса>> модели часто оказываются 
-неадекватными по коэффициенту детерминации~$R^2$, незначимыми  
-по F-кри\-те\-рию Фишера, а их оценки~--- незначимыми по t-кри\-те\-рию 
-Стьюдента.
-\end{enumerate}
-  
-  На основе выявленных недостатков в~работе~[7] было введено понятие 
-<<хорошо интерпретируемая качественная регрессия>>, удовлетворяющая 
-пяти условиям, и~разработан фундаментальный блок алгоритмов построения 
-таких моделей.
-  
-  Цель данной работы~--- создание конкретного алгоритма построения хорошо 
-интерпретируемых и~качественных линейных регрессий, а также его 
-реализация в~виде программы.
-  
-\section{Вполне интерпретируемые и~RTF-адекватные регрессионные 
-модели}
-
-  Размышления над предложенным в~[7] понятием <<хорошо 
-интерпретируемая качественная модель>> привели к~тому, что целесообразнее 
-заменить этот термин следующими двумя определениями.
-  \smallskip
-  
-  \noindent
-  \textbf{Определение~1.}\ Регрессионная модель считается вполне 
-интерпретируемой, если она удовлетворяет трем условиям:
-  \begin{enumerate}[(1)]
-\item ее спецификация изначально выбрана так, что после оценивания модели 
-можно объяснить любой ее коэффициент или некоторый его аналог, за 
-исключением, быть может, свободного члена;
-\item знаки коэффициентов оцененной модели соответствуют физическому 
-смыслу входящих в~уравнение факторов;
-\item эффект мультиколлинеарности незначителен.
-\end{enumerate}
-
-  \noindent
-  \textbf{Определение~2.}\  Регрессионная модель, оцененная с~помощью 
-МНК, считается RTF-адекват\-ной, если она удовлетворяет трем условиям:
-  \begin{enumerate}[(1)]
-\item модель адекватна по коэффициенту детерминации~$R^2$;
-\item коэффициенты модели значимы по t-кри\-те\-ри\-ям Стьюдента;
-\item модель значима в~целом по F-кри\-те\-рию Фишера.
-\end{enumerate}
-
-\section{Эффективный алгоритм решения задачи отбора 
-<<информативных>> регрессоров}
-
-  Рассмотрим модель множественной линейной регрессии
-  \begin{equation}
-  y_i= \alpha_0+\alpha_1x_{i1} +\alpha_2x_{i2}+\cdots + \alpha_l 
-x_{il}+\varepsilon_i\,,\enskip i=\overline{1,n}\,,
-  \label{e1-baz}
-  \end{equation}
-где $y_i$, $i=\overline{1,n}$,~--- значения зависимой (объясняемой) 
-переменной~$y$; $x_{i1}, x_{i2}, \ldots$\linebreak $\ldots , x_{il}$, $i\hm= \overline{1,n}$,~--- 
-значения~$l$~независимых (объясняющих) переменных (регрессоров)~$x_1, 
-x_2, \ldots , x_l$; $\varepsilon_i$, $i\hm=\overline{1,n}$,~--- ошибки 
-аппроксимации; $\alpha_0, \alpha_1, \ldots , \alpha_l$~--- неизвестные 
-параметры; $n$~--- объем выборки.
-  
-  \textbf{Задача отбора 
-<<информативных>> регрессоров.} Необходимо выделить из~$l$~возможных 
-регрессоров~$m$~переменных, минимизируя сумму квадратов ошибок для 
-регрессии~(1).
-  
-  В~работах~[7, 8] рассмотрен эффективный алгоритм <<Selection~B>> 
-решения поставленной задачи ОИР. В~его основе лежит следующая техника 
-оценивания регрессионной модели с~помощью МНК. Предварительно 
-проводится нормирование (стандартизация) всех переменных по формулам:
-  $$v_i=\fr{y_i-\overline{y}}{\sigma_y}\,;\enskip z_{i1}=\fr{x_{i1}-
-\overline{x}_1}{\sigma_{x_1}}\,;\ldots ; z_{il}=\fr{x_{il}-
-\overline{x}_l}{\sigma_{x_l}}\,,
-  $$
-где $\overline{y}, \overline{x}_1, \ldots,  \overline{x}_l$~--- средние значения 
-переменных; $\sigma_y, \sigma_{x_1}, \ldots, \sigma_{x_l}$~--- 
-сред\-не\-квад\-ра\-тич\-ные отклонения переменных; $v, z_1, \ldots , z_l$~--- 
-стандартизованные переменные, для которых среднее значение равно~0, 
-а~среднеквадратичное отклонение равно~1.
-  
-  Тогда регрессии~(1) ставится в~соответствие ее стандартизованная модель:
-  \begin{equation}
-  v_i=\beta_1 z_{i1}+\beta_2 z_{i2} +\cdots + \beta_l z_{il}+u_i\,,\enskip
-  i=\overline{1,n}\,,
-  \label{e2-baz}
-  \end{equation}
-где $\beta_1, \ldots , \beta_l$~--- неизвестные параметры  
-(бе\-та-ко\-эф\-фи\-ци\-ен\-ты); $u_i$, $i\hm=\overline{1,n}$,~--- ошиб\-ки 
-аппроксимации.
-  
-  Оценки бета-коэффициентов находятся по формуле:
-  \begin{equation*}
-  \tilde{\beta}_{\mathrm{МНК}}=r^{-1}_{xx} r_{yx}\,,
-  %\label{e3-baz}
-  \end{equation*}
-где $r_{xx}$~--- матрица коэффициентов парной корреляции между 
-объясняющими переменными; $r_{xy}$~--- вектор коэффициентов парной 
-корреляции между объясняемой переменной~$y$ и~объясняющими 
-переменными $x_1, x_2, \ldots , x_l$.
-  
-  Коэффициент детерминации для регрессий~(1) и~(2) находится по формуле:
-  \begin{equation}
-  R^2=r^{\mathrm{T}}_{yx} \tilde{\beta}_{\mathrm{МНК}}\,.
-  \label{e4-baz}
-  \end{equation}
-  
-  Алгоритм <<Selection B>> предполагает предварительное задание 
-пользователем следующих параметров:
-  \begin{enumerate}[1.]
-\item Вектор знаков $\mathrm{Sign}_{1\times l}$. Компоненты этого вектора 
-назначаются по сле\-ду\-юще\-му правилу:
-$$
-\hspace*{-4mm}\hspace*{-0.16994pt}\mathrm{Sign}_{1,j}=\begin{cases}
-1\,, & \!\!\mbox{если\ $j$-я\ переменная\ оказывает\ положительное\ влияние\ на\ 
-$y$};\hspace*{-0.42108pt}\\ 
--1\,, & \!\!\mbox{если\ $j$-я\ переменная\ оказывает\ отрицательное\ влияние\ на\ 
-$y$};\\
-0\,, & \!\!\mbox{если\ затруднительно\ оценить\ влияние\ $j$-й\ переменной\ на\ 
-$y$.}
-\end{cases}
-$$
-  
-  Для формирования вектора $\mathrm{Sign}$ желательно привлекать 
-экспертов.
-\item Число отбираемых регрессоров~$m$.
-\item Граница мультиколлинеарности~$d$.
-\end{enumerate}
-
-  В алгоритме <<Selection B>> сначала определяется общее число 
-альтернативных вариантов моделей $r\hm=C_l^m$, после чего запускается 
-основный цикл алгоритма. На каждом повторении формируются необходимые 
-матрицы~$r_{xx}$ и~$r_{yx}$, а~затем последовательно проверяются условия:
-  \begin{align}
-  \left\vert r_{xx}^J\right\vert &<d\,; \label{e5-baz}\\
-  \tilde{\beta}_j \mathrm{Sign}_{1,j} &<0\,,\quad j\in J\,,
-  \label{e6-baz}
-  \end{align}
-где $J$~--- множество номеров объясняющих переменных, входящих 
-в~регрессию; $r_{xx}^J$~--- матрица парных коэффициентов корреляции для 
-объясняющих переменных с~номерами из множества~$J$.
-  
-  В неравенстве~(\ref{e5-baz}) определитель матрицы парных коэффициентов 
-корреляции $\vert r_{xx}^J\vert$ представляет собой критерий обнаружения 
-эффекта мультиколлинеарности. Если $\vert r_{xx}^J\vert \hm=0$, то имеет 
-место совершенная мультиколлинеарность, а если $\vert r_{xx}^J\vert\hm=1$, то 
-мультиколлинеарности нет. Если условие~(\ref{e5-baz}) выполняется, то такая 
-регрессия сразу исключается из рассмотрения.
-  
-  Если выполнено хотя бы одно из условий~(\ref{e6-baz}), то это означает, что 
-знак бе\-та-ко\-эф\-фи\-ци\-ен\-та~$\tilde{\beta}_j$ стандартизованной регрессии 
-не согласуется с~соответствующим знаком вектора Sign. Следовательно, такая 
-модель исключается из дальнейшего <<конкурса>>.
-  
-  Если очередная альтернативная регрессия прошла <<испытание>> 
-условиями~(\ref{e5-baz}) и~(\ref{e6-baz}), то для нее по формуле~(\ref{e4-baz}) 
-рассчитывается величина коэффициента детерминации. После окончания 
-работы основного цикла определяется наилучшая модель по величине~$R^2$.
-  
-  Проведенный в~работе~[8] эксперимент показал, что решение задачи ОИР 
-с~использование пакета Gretl по алгоритму <<Selection B>> осуществляется 
-более чем в~6~раз быстрее, нежели в~ПК АППРМ.
-  
-  \section{Алгоритм построения вполне интерпретируемых  
-и~RTF-адекватных линейных регрессий}
-  
-  Алгоритм построения вполне интерпретируемых и~RTF-адекват\-ных 
-линейных регрессий (см.\ рисунок) был разработан на основе фундаментального 
-блока, предложенного в~работе~[7]. Согласно этому блоку, для того чтобы 
-очередная альтернативная регрессионная модель была допущена к~участию 
-в~<<конкурсе>>, она должна пройти жесткую процедуру отсева, состоящую 
-из~5~стадий:
-  \begin{enumerate}[(1)]
-\item проверка <<информативности>> переменных;
-\item проверка присутствия эффекта мультиколлинеарности;
-\item проверка соответствия знаков коэффициентов физическому смыслу 
-факторов;
-\item проверка адекватности по коэффициенту детерминации и~значимости 
-в~целом по F-кри\-те\-рию Фишера;
-\item проверка значимости коэффициентов по t-кри\-те\-рию Стьюдента.
-\end{enumerate}
-
-  Первая стадия связана с~вычислением критерия <<информативности>> 
-переменных~\cite{5-baz}:
-  \begin{equation*}
-  \Gamma\left( x_1, x_2,\ldots , x_l\right)=\sum\limits_{j\in J} \mathrm{Inf}\left( 
-x_j\right)\!,
- % \label{e7-baz}
-  \end{equation*}
-где $\mathrm{Inf}\,(x_j)$~--- некоторый вес (балл) регрессора~$x_j$, например 
-в~пятибалльной шкале. Таким образом, этот критерий указывает на 
-суммарную <<важность>> вхождения всех независимых переменных 
-в~зависимость.
-  
-  На четвертой стадии для обеспечения значимости регрессии в~целом по 
- \mbox{F-кри}\-те\-рию Фишера значение коэффициента детерминации~$R^2$ не 
-должно быть меньше величины
-  \begin{equation*}
-  R^\prime = \fr{ F_{\mathrm{крит}}(\alpha, m, n-m-1)}{(n-m-
-1)/m+F_{\mathrm{крит}}(\alpha, m, n-m-1)}\,,
-  %\label{e8-baz}
-  \end{equation*}
-где $\alpha$~--- заданный уровень значимости; $F_{\mathrm{крит}}(\alpha, 
-m, n-m-1)$~--- критическая точка распределения Фишера.
-
-  На пятой стадии вычисление t-кри\-те\-ри\-ев Стюдента для регрессий~(1) 
-и~(2) реализуется по формулам:
-  \begin{equation*}
-  t_j=\fr{\tilde{\beta}_j}{\sqrt{s^2(r_{xx}^J)_{jj}^{-1}}}\,,\quad 
-j=\overline{1,m}\,,
- % \label{e9-baz}
-  \end{equation*}
- где $s^2\hm= (1\hm-R^2)/ (n\hm-m\hm-1)$~--- величина 
-остаточной дисперсии; $(r_{xx}^J)^{-1}_{jj}$~--- $j$-й диагональный элемент матрицы 
-$(r_{xx}^J)^{-1}$.
-  
-  \begin{figure} %fig1
-  \vspace*{1pt}
-\begin{center}
- \mbox{%
- \epsfxsize=122.7mm 
-\epsfbox{baz-1.eps}
- }
-
-\vspace*{4pt}
-
-  {\small Алгоритм построения линейных регрессий}
-     \end{center}
-     \vspace*{-6.72816pt}
-  \end{figure}
-  
-\pagebreak
-  
-  Пользователю предварительно необходимо задать следующие параметры:
-  \begin{enumerate}[1.]
-\item Вектор знаков $\mathrm{Sign}_{1\times l}$.
-\item Вектор <<информативности>> переменных $\mathrm{Inf}_{1\times l}$. 
-Компоненты этого вектора представляют собой целые числа из 
-интервала~[1,\,5]. Если $\mathrm{Inf}_{1\times j}\hm=5$, то <<информативность>> 
-\mbox{$j$-й} переменной максимальна и~составляет 5~баллов, а~если 
-$\mathrm{Inf}_{1\times j}\hm=1$, то <<информативность>> минимальна 
-и~составляет 1~балл. Для формирования этого вектора также желательно 
-привлекать экспертов.
-\item Число отбираемых регрессоров~$m$.
-\item Границу мультиколлинеарности~$d$.
-\item Границу значимости для F-кри\-те\-рия Фишера~$R^\prime$.
-\item Границу значимости для t-кри\-те\-ри\-ев Стьюдента~$t^\prime$.
-\end{enumerate}
-  
-  На рисунке $\mathrm{Glavn}_{r\times m}$~--- матрица альтернатив, в~которой 
-объясняемая переменная имеет номер~1, а объясняющие переменные~--- $2, 3, 
-\ldots , l\hm+1$; adeq~--- счетчик вполне интерпретируемых  
-и~RTF-адекват\-ных моделей; flag~--- бинарная переменная, которая отвечает 
-за выполнение всех пяти требований, предъявляемым к~моделям; Krit~--- 
-критериальная матрица, в~первом столбце которой содержатся значения 
-коэффициента детерминации~$R^2$, во втором~--- определителя $\vert 
-r_{xx}\vert$, в~третьем~--- критерия <<информативности>> переменных, 
-в~остальных~--- номера объясняющих переменных.
-  
-  Предложенный алгоритм был реализован в~виде программы 
-с~использованием эконометрического пакета Gretl.
-  
-  \section{Заключение}
-  
-  Разработанная программа построения вполне интерпретируемых  
-и~RTF-аде\-кват\-ных линейных регрессионных моделей позволяет находить 
-среди многочисленных альтернатив по-настоящему качественные регрессии, 
-значимые в~целом по F-кри\-те\-рию Фишера, в~которых все знаки 
-коэффициентов соответствуют физическому смыслу факторов, незначителен 
-эффект мультиколлинеарности и~все коэффициенты значимы по t-кри\-те\-рию 
-Стьюдента. Кроме того, выбор состава переменных приобретает определенную 
-сознательность, поскольку в~процесс построения модели привлекаются 
-эксперты в~исследуемой предметной об\-ласти.
-  
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{9}
-\bibitem{1-baz}
-\Au{Pardoe I.} Applied regression modeling.~--- Hoboken, NJ, USA: Wiley, 2020. 336~p.
-\bibitem{2-baz}
-\Au{Miller A.\,J.} Subset selection in regression.~--- London, U.K.: Chapman \& Hall/CRC, 2002. 
-256~p.
-\bibitem{3-baz}
-\Au{Venkatesh B., Anuradha~J.} A~review of feature selection and its methods~/\!\!/ Cybernetics 
-Information Technologies, 2019. Vol.~19. P.~3--26.
-\bibitem{4-baz}
-\Au{Стрижов В.\,В., Крымова Е.\,А.} Методы выбора регрессионных моделей.~--- М.:  
-ВЦ РАН, 2010. 60~с.
-
-\bibitem{6-baz}
-\Au{Носков С.\,И., Потороченко Н.\,А.} Диалоговая система реализации <<конкурса>> 
-регрессионных зависимостей~/\!\!/ Управ\-ля\-ющие сис\-те\-мы и~машины, 1992. №\,3-4. 
-С.~111--116.
-\bibitem{5-baz}
-\Au{Носков С.\,И.} Технология моделирования объектов с~нестабильным 
-функционированием и~неопределенностью в~данных.~--- Иркутск: Облинформпечать, 1996. 
-321~c.
-
-\bibitem{7-baz}
-\Au{Базилевский М.\,П.} Фундаментальный блок алгоритмов построения хорошо 
-интерпретируемых качественных регрессионных моделей~/\!\!/ Информационные 
-технологии и~математическое моделирование в~управлении сложными системами, 2020. 
- №\,3(8). С.~1--10.
-\bibitem{8-baz}
-\Au{Базилевский М.\,П.} Повышение эффективности алгоритма отбора по критерию 
-детерминации информативных регрессоров в~регрессионных моделях~/\!\!/ Прикладная 
-математика и~информатика: современные исследования в~области естественных 
-и~технических наук.~--- Тольятти, 2018. С.~196--202.
-
-    \end{thebibliography}
-} }
-
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 13.01.21}}
-
-\vspace*{8pt}
-
-\hrule
-
-\vspace*{2pt}
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-%\vspace*{8pt}
-
-\def\tit{A PROGRAM FOR~CONSTRUCTING OF~QUITE INTERPRETABLE AND~RTF-ADEQUATE 
-LINEAR REGRESSION MODELS}
-
-
-\def\titkol{A program for~constructing of~quite interpretable and~rtf-adequate 
-linear regression models}
-
-\def\aut{M.\,P.~Bazilevskiy}
-
-\def\autkol{M.\,P.~Bazilevskiy}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-15pt}
-
-\noindent
-Department of Mathematics, Irkutsk State Transport University, 15~Chernyshevskogo Str., Irkutsk 664074, 
-Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2021 vol~31 no\,4}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics 2021 vol~31 no\,4
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}
-
-\Abste{The article is devoted to the problem of feature selection in regression models estimated using the 
-ordinary least squares method. Models constructed as a~result of such selection are often inadequate and 
-poorly interpreted. For the first time, the definitions of ``quite interpretable'' and ``RTF-adequate''
- regression 
-models are formulated. The previously proposed effective algorithm for solving the problem of feature 
-selection is considered. On its basis, an algorithm has been developed for constructing quite interpretable and 
-RTF-adequate linear regression models. In it, for each regression, the following tests are sequentially carried 
-out: ``informativeness'' of variables, multicollinearity, correspondence of coefficients signs to the physical 
-meaning of factors, adequacy of model in terms of coefficient of determination and significance in general 
-according to Fisher's F-test, and significance of the coefficients according to the Student's t-test. The proposed 
-algorithm is implemented as a~program for the Gretl econometric package. The developed program is 
-universal and can be used to solve a~wide range of data analysis tasks.}
-
-\KWE{feature selection; ordinary least squares; quite interpretable and RTF-adequate regression; 
-variable ``informativeness'' criterion; multicollinearity; Fisher's F-test; Student's t-test}
-
-\DOI{10.14357\!/\!08696527210402} 
-
-%\vspace*{-16pt}
-
-%\Ack
-%\noindent
-
-
-%\vspace*{-6pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{9}
-\bibitem{1-baz-1}
-\Aue{Pardoe, I.} 2020. \textit{Applied regression modeling}. Hoboken, NJ, USA: Wiley. 336 p.
-\bibitem{2-baz-1}
-\Aue{Miller, A.\,J.} 2002. \textit{Subset selection in regression}. London, U.K.: Chapman \& Hall/CRC. 256 
-p.
-\bibitem{3-baz-1}
-\Aue{Venkatesh, B., and J.~Anuradha.} 2019. A~review of feature selection and its methods. 
-\textit{Cybernetics Information Technologies} 19:3--26.
-\bibitem{4-baz-1}
-\Aue{Strizhov, V.\,V., and E.\,A.~Krymova.} 2010. \textit{Metody vybora regressionnykh modeley} 
-[Regression model selection methods]. Moscow: CC RAS. 60~p.
-
-\bibitem{6-baz-1}
-\Aue{Noskov, S.\,I., and N.\,A.~Potorochenko.} 1992. Dialogovaya sistema realizatsii konkursa 
-regressionnykh zavisimostey [Dialogue system for the implementation of the competition of regression 
-dependencies]. \textit{Upravlyayushchie sistemy i~mashiny} [Control Systems and Computers]  
-3-4:111--116.
-\bibitem{5-baz-1}
-\Aue{Noskov, S.\,I.} 1996. \textit{Tekhnologiya modelirovaniya ob''ektov s~nestabil'nym 
-funk\-tsi\-o\-ni\-ro\-va\-ni\-em i~neopredelennost'yu v~dannykh} [Technology for modeling objects with unstable 
-functioning and uncertainty in data]. Irkutsk: Oblinformpechat'. 321~p.
-
-\bibitem{7-baz-1}
-\Aue{Bazilevskiy, M.\,P.} 2020. Fundamental'nyy blok algoritmov postroeniya khorosho 
-interpretiruemykh kachestvennykh regressionnykh modeley [The fundamental block of algorithms for 
-constructing well-interpreted qualitative regression models]. \textit{Informatsionnye tekhnologii 
-i~matematicheskoe modelirovanie v~upravlenii slozhnymi sistemami} [Information Technology and 
-Mathematical Modeling in the Management of Complex Systems] 3(8):1--10.
-\bibitem{8-baz-1}
-\Aue{Bazilevskiy, M.\,P.} 2018. Povyshenie effektivnosti algoritma otbora po kriteriyu determinatsii 
-informativnykh regressorov v~regressionnykh modelyakh [Improving the efficiency of the algorithm for 
-selecting informative regressors by the criterion of determination in regression models]. 
-\textit{Prikladnaya matematika i~informatika: sovremennye issledovaniya v~oblasti estestvennykh
-i~tekhnicheskikh nauk}
-[Applied Mathematics and Informatics: Contemporary Research in Natural 
-and Technical Sciences]. Tol'yatti. 196--202.
-
-\end{thebibliography}
-} }
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Received January 13, 2021}} 
-
-\vspace*{-14pt}  
-
-\Contrl
-
-
-\noindent
-\textbf{Bazilevskiy Mikhail P.} (b.\ 1987)~--- Candidate of Science (PhD) in technology, associate 
-professor, Irkutsk State Transport University, 15~Chernyshevkogo Str., Irkutsk 664074, Russian Federation; 
-\mbox{mik2178@yandex.ru}
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 

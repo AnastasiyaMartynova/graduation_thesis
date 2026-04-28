@@ -1,623 +1,0 @@
-\def\stat{nikitenkova}
-
-\def\tit{ПРИМЕНЕНИЕ БИСПЕКТРАЛЬНОГО АНАЛИЗА  В~ОБНАРУЖЕНИИ DEEPFAKE-ИЗОБРАЖЕНИЙ}
-
-\def\titkol{Применение биспектрального анализа  в~обнаружении deepfake-изображений}
-
-\def\aut{С.\,П.~Никитенкова$^1$}
-
-\def\autkol{С.\,П.~Никитенкова}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Никитенкова С.\,П.}
-\index{Nikitenkova S.\,P.}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-%\footnotetext[1]
-%{Исследование выполнено с~использованием ЦКП <<Информатика>> ФИЦ ИУ РАН.}} 
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Национальный исследовательский Нижегородский государственный 
-университет им.\ Н.\,И.~Лобачевского, \mbox{nikitenkova@rf.unn.ru}}
-
- \label{st\stat}
-
- \thispagestyle{headings}
- 
- \vspace*{-14pt}
- 
-
-  \Abst{По мере того как инструменты синтеза deepfake-изображений становятся все более 
-мощными и~доступными, растет потребность в~разработке методов обнаружения 
-сгенерированного контента. В~работе исследуются перспективы применения 
-биспектрального анализа как инструмента обнаружения deepfake-изображений, 
-сгенерированных нейросетями GAN  (generative adversarial network). Показано, что спектральные корреляции более 
-высокого порядка, выявленные с~помощью биспектрального анализа, в~меньшей мере 
-присутствуют в~реальных изображениях по сравнению с~изображениями, сгенерированными с~по\-мощью GAN. 
-Эти корреляции, вероятно, отражают фундаментальные свойства процесса 
-синтеза изображений. Причиной могут быть нелинейности, вносимые при синтезе 
-изображений, а также недостаточная обработка сигналов, вызывающая наложение спектров 
-в~сети генератора нейросети GAN. Была проведена процедура кластеризации для обнаружения 
-сгенерированных изображений. Были получены обнадеживающие результаты: 
-сгенерированные изображения определялись с~точностью до~80\%.}
-  
-  \KW{AI-синтезированное изображение; биспектральный анализ; нелинейность; 
-алгоритмы машинного обучения}
-
-\DOI{10.14357\!/\!08696527230203}  
-
-\vskip 10pt plus 9pt minus 6pt
-
- \thispagestyle{headings}
- 
- \vspace*{-18pt}
-
-\section{Введение}
-
-\vspace*{-4pt}
-
-  Благодаря современным технологиям возможность создания 
-высокореалистичных визуальных подделок (deepfake) доступна каждому, что 
-приводит к~серь\-ез\-ным угрозам с~точки зрения дезинформации и~достоверности 
-данных. Это относится, в~частности, к~искусственно сгенерированным 
-изображениям. Проведенные исследования фотореализма сгенерированных лиц 
-показали: нейросети способны создавать лица, неотличимые от реальных 
-и,~главное, вызывающие симпатию и~большее доверие, чем настоящие 
-лица~[1].
-  
-  Deepfake-изображения обычно создаются с~помощью методов, основанных 
-на так называемых ге\-не\-ра\-тив\-но-со\-стя\-за\-тель\-ных сетях, сокращенно 
-GAN~[2]. Первый вариант технологии StyleGAN 
-был опубликован в~2019~г. Сгенерированные StyleGAN лица содержали 
-очевидные артефакты, включая асимметрию лица. Были обнаружены 
-артефакты границ формы зрачка, несовместимые цвета радужной оболочки~[3]. 
-Детектирование подобных артефактов возможно с~помощью алгоритма~[4]. 
-В~2020~г.\ была предложена технология StyleGAN2, позволившая добиться 
-значительного улучшения качества изображений~[5]. На основе\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
- \mbox{StyleGAN2} 
-появились он\-лайн-сер\-ви\-сы, например \mbox{thispersondoesnotexist}, а~также 
-многочисленные генераторы Text-to-Image, позволяющие создавать 
-фотореалистичные изображения, соответствующие заданным описаниям.
-  
-  В 2022~г.\ встроенная поддержка нейросети StyleGAN2 появилась 
-в~официальном релизе популярного программного продукта Adobe Photoshop.
-  
-  Таким образом, в~настоящее время StyleGAN2~--- одна из самых доступных 
-технологий генерации изображений.
-  
-  Методы, основанные на анализе частотной области, широко применяются 
-в~задачах обнаружения сгенерированных изображений. Как оказалось, 
-изображения, сгенерированные GAN, имеют аномалии в~частотном спектре. 
-Аномалии можно разделить на два типа: неправильные спектральные картины и~несоответствие в~их распределении мощности. Было установлено, что 
-настоящие и~сгенерированные изображения ведут себя по-раз\-но\-му 
-в~спектрах на высоких частотах: для любой модели GAN изображения 
-демонстрируют неизменное приращение высокочастотных компонент~[6]. Был 
-обнаружен артефакт повышающей дискретизации транспонированной свертки 
-GAN, названный <<артефактом шахматной доски>> (checkerboard artifact)~[7]. 
-  
-  На основе анализа обнаруженных частотных артефактов появилось 
-множество детекторов изображений, сгенерированных StyleGAN2, однако 
-в~последнее время их надежность ставится под сомнение. В~ряде работ, 
-например в~[8], показано, что злоумышленник может удалить показательные 
-артефакты непосредственно из спектра сгенерированного изображения, 
-начиная от фильтрации высоких частот и~заканчивая более тонкой очисткой 
-частотных пиков.
-  
-  Анализ спектров высшего порядка, в~частности биспектра, позволил бы 
-узнать о сгенерированном изображении гораздо больше, чем применение 
-традиционного спектрального анализа. Биспектр был успешно применен для 
-обнаружения такой распространенной формы фотографических манипуляций, 
-как цифровое объединение (фотомонтаж) двух или более изображений, а также 
-для оценки качества изображения~[9, 10]. Однако систематический анализ 
-спектров высшего порядка сгенерированных изображений до сих пор 
-отсутствует.
-
-\vspace*{-4pt}
-  
-\section{Биспектральный анализ}
-
-\vspace*{-2pt}
-
-  Для дискретного двумерного сигнала $f(x, y)$, представляющего отдельные 
-цветовые каналы изображения размером $M\times N$, дискретное 
-преобразование Фурье $F(u,v)$ определяется как
-
-\vspace*{1pt}
-
-\noindent
-  \begin{equation*}
-  F(u,v)= \sum\limits_{x=0}^{M-1} \sum\limits_{y=0}^{N-1} f(x,y) \exp \left( -
-2\pi  i \left( \fr{ux}{M} +\fr{vy}{N}\right)\right)\,,
-  %\label{e1-nikt}
-  \end{equation*}
-  
-  \vspace*{-3pt}
-  
-  \noindent
-где $x$ и~$y$~--- позиция пикселя; $f(x, y)$~--- значение пикселя выбранного 
-канала изображения; $u$ и~$v$~--- пространственная частота. Спектр 
-изображения показывает, насколько быст\-ро\!/\!мед\-лен\-но изменяются  
-кон\-траст\!/\!цвет\!/\!зна\-че\-ния пикселей в~пространственных измерениях. 
-В~фурье-пред\-став\-ле\-нии изображений спект-\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
-раль\-ная амплитуда и~фаза 
-играют разные роли. Амплитуда представляет собой интенсивность различных 
-частот в~изображении и~содержит большую часть информации 
-о~геометрической структуре изображения в~пространственной области. Фаза 
-представляет расположение этих особенностей, что помогает человеческому 
-глазу лучше понять изображение. 
-  
-  При генерации изображений нейросетями GAN используются нелинейные 
-функции активации. Нелинейность приводит к~появлению в~спектре 
-высокочастотных компонент. Биспектральный анализ служит эффективным 
-инструментом, идентифицирующим не\-ли\-ней\-ность, а~также фазовые 
-взаимосвязи между различными частотными компонентами изображений~[11]. 
-Разумно предположить, что при генерации изображения могут появиться 
-корреляции высших порядков (по величине и~фазе). На этом основании можно 
-ожидать изменение характерных значений би\-спект\-ра для сгенерированных 
-изображений по сравнению с~реальными.
-  
-  Биспектр одномерного сигнала $x(t)$ пред\-став\-ля\-ет собой преобразование 
-\mbox{Фурье} от его тройной корреляции: 
-  \begin{equation*}
-  B\left( \omega_1,\omega_2\right) ={\sf E}\left\{ F(\omega_1) F(\omega_2) 
-F^*(\omega_1+\omega_2)\right\},
- % \label{e2-nikt}
-  \end{equation*}
-где ${\sf E}\{\,\}$~--- функция математического ожидания; $F(\omega)$~---  
-фурье-пре\-об\-ра\-зо\-ва\-ние сигнала $x(t)$; $F^*(\omega)$~--- его 
-сопряжение на частоте~$\omega$~[12]. Биспектр~--- величина комплексная, 
-а~значит, его можно представить в~виде:
-\begin{equation*}
-B\left( \omega_1,\omega_2\right) =\left\vert B(\omega_1,\omega_2)\right\vert  
-e^{i \psi (B(\omega_1,\omega_2))}.
-%\label{e3-nikt}
-\end{equation*}
-  
-  C точки зрения интерпретации целесообразно применять нормализованное 
-пред\-став\-ле\-ние би\-спект\-ра~--- би\-ко\-ге\-рент\-ность:
-  \begin{equation}
-  b(\omega_1,\omega_2) =\fr{B(\omega_1,\omega_2)}{\sqrt{{\sf E}\left\{ \vert 
-F(\omega_1) F(\omega_2)\vert^2\right\} {\sf E}\left\{ \vert 
-F(\omega_1+\omega_2)\vert^2\right\}}}\,.
-  \label{e4-nikt}
-  \end{equation}
-    Абсолютное значение бикогерентности находится в~пределах от~0 до~1. 
-Если меж\-ду двумя частотами нет фазовой связи, значение бикогерентности 
-будет нулевым. Если степень фазовой связи высока, то значение 
-би\-ко\-ге\-рент\-ности будет близ\-ко к~единице. 
-  
-  Изображение можно интерпретировать как двумерный сигнал, 
-а~следовательно, изображение будет иметь четырехмерный би\-спектр:
-  \begin{equation*}
-  B\left( u_1, v_1; u_2,v_2\right) =F(u_1,v_1) F(u_2,v_2) F^*(u_1+u_2, v_1+v_2).
-  %\label{e5-nikt}
-  \end{equation*}
-  
-  Аналогично уравнению~(\ref{e4-nikt}) для изображения может быть введена 
-бикогерентность. Бикогерентность инвариантна к~линейному преобразованию, 
-что поз\-во\-ля\-ет ее использовать для анализа широкого диапазона изображений, 
-в~том числе в~условиях размытия или масштабирования.
-  
-  В работе~\cite{10-nikt} было показано, что фазовые корреляции между 
-пространственными частотами в~строках или столбцах одномерного 
-сканирования об\-ласти изображения аналогичны рас\-счи\-тан\-ным для об\-ласти 
-двумерного изображения. Поэтому во избежание сложности вычисления 
-полной четырехмерной би\-ко\-ге\-рент\-ности изображения, анализ может быть 
-ограничен строками одномерного горизонтального сканирования и~столбцами 
-одномерного вертикального сканирования изоб\-ра\-же\-ния. Чтобы уменьшить 
-дисперсию оценки, одномерную би\-ко\-ге\-рент\-ность следует вы\-чис\-лять путем 
-усред\-не\-ния по~$K$ пе\-ре\-кры\-ва\-ющим\-ся сегментам конечной длины:
-
-\vspace*{-6pt}
-
-\noindent
-  \begin{multline}
-  \hat{b}\left(u_1,u_2\right) ={}\\[-2pt]
-  {}=\fr{(1/K) \sum\nolimits^K_{k=1} F_k(u_1) F_k(u_2) F_k^*(u_1+u_2)} 
-{\sqrt{\left((1/K) \sum\nolimits^K_{k=1} \vert F_k(u_1) F(u_2)\vert^2\right) \left( 
-(1/K) \sum\nolimits^K_{k=1} \vert F_k(u_1+u_2)\vert^2\right)}}\,.
-  \label{e6-nikt}
-  \end{multline}
-  
-  \vspace*{-4pt}
-  
-  Бикогерентность области изображения задается как среднее значение 
-би\-ко\-ге\-рент\-ности горизонтальных и~вертикальных строк развертки 
-изображения:
-  \begin{equation*}
-  \hat{b} = \sqrt{\left( \fr{1}{N_h}\sum\limits_{k=1}^{N_h} b_k^h\right) +\left( 
-\fr{1}{N_v}\sum\limits_{k=1}^{N_v} b_k^v\right)}\,,
-%  \label{e7-nikt}
-  \end{equation*}
-где $N_h$ и~$N_v$~--- число горизонтальных и~вертикальных строк развертки 
-области изображения; $b_k^h$ и~$b_k^v$~--- средние би\-ко\-ге\-рент\-ности $k$-й 
-горизонтальной и~$k$-й вертикальной линий, вычисленные по  
-формуле~(\ref{e6-nikt}).
-
-
-\vspace*{-2pt}
-
-\section{Вычислительный эксперимент}
-
-\vspace*{-2pt}
-
-  Чтобы проверить применимость биспектральной статистики для 
-обнаружения сгенерированных изображений, были сформированы два датасета, 
-каждый из~100~изображений. Первый датасет состоит из~50~изображений 
-реальных лиц в~разрешении $1024\times 1024$~пикселя из набора 
-данных Flickr-Faces-HQ Dataset (FFHQ) и~50~изоб\-ра\-же\-ний из 
-100\,000~сгенерированных \mbox{StyleGAN2} в~том же разрешении, предоставленных 
-создателем технологии \mbox{StyleGAN2} компанией NVIDIA. Изобра\-же\-ния доступны 
-для загрузки с~ресурсов~[13, 14]. Второй датасет состоит из~50~изоб\-ра\-же\-ний в~жан\-ре аниме в~разрешении $512\times 512$~пикселей из 
-известного набора \mbox{danbooru2019} и~50~сгенерированных \mbox{StyleGAN2} 
-изображений того же жан\-ра в~том же разрешении из парного пуб\-лич\-но\-го 
-датасета. Изоб\-ра\-же\-ния доступны для за\-груз\-ки с~ресурсов~[15, 16]. Назовем 
-первый датасет FFHQ-StyleGAN2, второй~--- danbooru-StyleGAN2. 
-  %
-  Каждое исследуемое изоб\-ра\-же\-ние было разбито на блоки размером 
-$128\times128$~пикселей. Би\-ко\-ге\-рен\-тность вы\-чис\-ля\-лась отдельно для 
-горизонтальных и~вертикальных срезов, каждый из которых пред\-став\-лял собой 
-одномерный сигнал длиной~128~пикселей. Аналогичная вычислительная 
-процедура использовалась, например, в~[9, 10]. Для каждого среза 
-бикогерентность оценивалась по трем перекрывающимся сегментам длиной~64~пикселя, 
-где перекрытие составляло~32~пикселя. Чтобы уменьшить утечку 
-частоты и~получить лучшее разрешение по частоте при вычислении 
-дискретного преобразования Фурье, сегменты умножались на окно 
-Ханнинга~[17]. 
-
-Полученная выборка вычисленных значений бикогерентности 
-каждого изоб\-ра\-же\-ния характеризовалась первыми четырьмя статистическими 
-моментами: средним значением, дисперсией, асимметрией и~эксцессом. Таким 
-образом, каждое изображение характеризовалось 8-мер\-ным вектором 
-признаков.
-  
-   Чтобы проверить, могут ли амплитуда и~фаза бикогерентности служить 
-параметрами, по которым можно различить реальные и~сгенерированные 
-изображения, нормализованные средние значения амплитуды и~фазы были 
-визуализированы на диаграмме рассеяния (см.\ рисунок). Рисунок показывает, что 
-реальные и~сгенерированные изображения могут быть разделены, хотя 
-в~центральной час\-ти графика все же есть явные перекрытия. Таким образом, 
-спектральные корреляции более высокого порядка, выявленные с~по\-мощью 
-биспектрального анализа, в~меньшей мере присутствуют в~реальных 
-изображениях по сравнению с~изображениями, сгенерированными с~по\-мощью 
-GAN. Эти корреляции, вероятно, отражают фундаментальные свойства 
-процесса синтеза. Причиной могут быть нелинейности, вносимые при синтезе 
-изображений, а~также недостаточная обработка сигналов, вызывающая 
-наложение спектров в~сети GAN.
-   
-\begin{figure}[b] %fig1
- \vspace*{-2pt}
-  \begin{center}
- \mbox{%
- \epsfxsize=128.246mm 
-\epsfbox{nva-1.eps}
- }
-\end{center}
-\vspace*{-6pt}
-{\small Двумерный срез (амплитуда и~фаза) восьмимерной статистической характеристики 
-бикогерентности реальных~(\textit{1}) и~сгенерированных~(\textit{2}) изображений для датасетов 
-FFHQ-\mbox{StyleGAN2}~(\textit{а}) и~danbooru-StyleGAN2~(\textit{б}) соответственно}
-\end{figure}
-
-  На основании полученных данных была проведена процедура кластеризации 
-для обнаружения сгенерированных изображений с~по\-мощью алгоритма KMeans и~библиотеки Scikit-learn~[18]. 
-Результаты этой процедуры можно увидеть в~таб\-ли\-це. Были получены обнадеживающие результаты: сгенерированные 
-изоб\-ра\-же\-ния определялись с~точ\-ностью до~80\% по мет\-ри\-ке F1-score~[19]. 
-Значения метрик классификации для второго датасета выше, чем для первого. 
-Это можно объяснить меньшим размером изображений, входящих в~датасет.
-  
-  \begin{table}\small
-  \begin{center}
-  \begin{tabular}{|l|c|c|c|c|}
-  \multicolumn{5}{c}{Метрики качества классификации датасетов}\\
-  \multicolumn{5}{c}{\ }\\[-6pt]
-  \hline
-\multicolumn{1}{|c|}{Датасет}&Precision&Recall&F1-Score&Accuracy\\
-\hline
-FFHQ-StyleGAN2&0,73&0,86&0,79&0,77\\
-danbooru-StyleGAN2&0,86&0,84&0,85&0,85\\
-\hline
-\end{tabular}
-\end{center}
-\vspace*{-6pt}
-\end{table}
-
-\vspace*{-4pt}
-    
-\section{Заключение}
-
-\vspace*{-2pt}
-
-   Социальная и~биометрическая безопасность требует создания защитного 
-механизма от deepfake-подделок. В~данном исследовании предлагается метод 
-обнаружения поддельных изображений, синтезированных нейросетью 
-StyleGAN2, на основе биспектрального анализа. Эф\-фек\-тив\-ность предложенного 
-метода апробировалась на двух различных датасетах. Экспериментальные 
-результаты показали, что спект\-раль\-ные корреляции более высокого порядка, 
-выявленные с~помощью биспектрального анализа, в~меньшей мере 
-присутствуют в~реальных изображениях по сравнению с~изображениями, 
-сгенерированными с~по\-мощью GAN. 
-   
-  Технологии создания deepfake развиваются быстрее, чем технологии их 
-обнаружения. В~конце 2021~г.\ компанией NVIDIA была разработана 
-архитектура \mbox{StyleGAN3}, главной целью которой стала адаптация технологии 
-\mbox{StyleGAN} для ее применения в~анимации и~видео. При динамической 
-визуализации изоб\-ра\-же\-ний, сгенерированных с~по\-мощью \mbox{StyleGAN2}, могло 
-наблюдаться рассогласование мелких деталей, получившее название <<эффект 
-прилипания текстур>> (texture sticking)~[20]. Однако существенные изменения, 
-внесенные в~архитектуру \mbox{StyleGAN3}, вызывают множество вопросов и~новых 
-вызовов, например воз\-мож\-ность точ\-но инвертировать и~редактировать 
-реальные изображения~[21]. Применение би\-спект\-раль\-но\-го анализа 
-к~изображениям, сгенерированным \mbox{StyleGAN3}, может стать пред\-ме\-том 
-самостоятельного исследования.
-  
-  \vspace*{-4pt}
-  
-  
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-
-\vspace*{-2pt}
-
-\begin{thebibliography}{99}
-  \bibitem{1-nikt}
-  \Au{Nightingale S., Farid H.} Synthetic faces are more trustworthy than real faces~/\!\!/ 
-J.~Vision, 2022. Vol.~22. No.\,14. Art. 3068. doi: 10.1167\!/\!jov.22.14.3068.
-  \bibitem{2-nikt}
-  \Au{Goodfellow I., Pouget-Abadie~J., Mirza~M., \textit{et al.}} Generative adversarial networks~/\!\!/ Commun. 
-ACM, 2020. Vol.~63. No.\,11. P.~139--144. doi: 10.1145\!/\!3422622.
-  \bibitem{3-nikt}
-  \Au{Matern F., Riess C., Stamminger~M.} Exploiting visual artifacts to expose deepfakes and 
-face manipulations~/\!\!/ Winter Applications of Computer Vision Workshops.~--- IEEE, 2019. P.~83--92. doi: 10.1109\!/\!WACVW.2019.00020.
-  \bibitem{4-nikt}
-\Au{Павельева Е.\,А.} Поиск соответствий между ключевыми точками изображений 
-радужных оболочек глаз с~помощью метода проекционной фазовой корреляции~/\!\!/ 
-Системы и~средства информатики, 2013. Т.~23. №\,2. С.~74--88. doi: 
-10.14357\!/ 08696527130206.
-  
-  \bibitem{5-nikt}
-  \Au{Karras T., Laine S., Aittala~M., Hellsten~J., Lehtinen~J., Aila~T.} Analyzing and 
-improving the image quality of StyleGAN~/\!\!/ IEEE\!/\!CVF Conference on Computer 
-Vision and Pattern Recognition.~--- IEEE, 2020. P.~8110--8119.
-  \bibitem{6-nikt}
-  \Au{Durall R., Keuper~M., Pfreundt~F.-J., Keuper~J.} Unmasking DeepFakes with simple 
-features~/\!\!/ Cornell University, 2019. 8~p. arXiv:1911.00686 [cs.LG].
-  \bibitem{7-nikt}
-  \Au{Frank J., Eisenhofer T., Sch\"{o}nherr~L., Fischer~A., Kolossa~D., Holz~T.} Leveraging 
-frequency analysis for deep fake image recognition~/\!\!/ 37th  Conference (International) on 
-Machine Learning Proceedings, 2020. Vol.~119. P.~3247--3258.
-  \bibitem{8-nikt}
-  \Au{Dong C., Kumar A., Liu~E.} Think twice before detecting GAN-generated fake images 
-from their spectral domain imprints~/\!\!/ IEEE\!/\!CVF Conference on Computer Vision and 
-Pattern Recognition.~--- IEEE, 2022. P.~7865--7874.
-  \bibitem{9-nikt}
-  \Au{Ng T.\,T., Chang S.\,F., Sun Q.} Blind detection of photomontage using higher order 
-statistics~/\!\!/ Symposium (International) on Circuits and Systems.~--- IEEE, 
-2004. Vol.~5. Art. 1329901. doi: 10.1109\!/\!ISCAS.2004.1329901.
-  \bibitem{10-nikt}
-  \Au{Wen Z., Fraser D., Lambert~A.} Bicoherence: A~new lucky region technique in 
-anisoplanatic image restoration~/\!\!/ Appl. Optics, 2009. Vol.~48. No.\,32. P.~6111--6119.
-  \bibitem{11-nikt}
-  \Au{Hinich M.\,J., Wolinsky M.\,A.} A~test for aliasing using bispectral analysis~/\!\!/ 
-  J.~Am. Stat. Assoc., 1988. Vol.~83. No.\,402. P.~499--502.  doi: 10.1080\!/\!01621459. 1988.10478623.
-  \bibitem{12-nikt}
-  \Au{Mendel J.\,M.} Tutorial on higher-order statistics (spectra) in signal processing and system 
-theory: Theoretical results and some applications~/\!\!/ P.~IEEE, 1991. Vol.~79.  doi: 10.1109\!/\!5.75086.
-No.\,3. P.~278--305.
-  \bibitem{13-nikt}
-  GitHub~--- NVlabs/FFHQ-dataset. {\sf https://github.com/NVlabs/ffhq-dataset}.
-  \bibitem{14-nikt}
-  GitHub~--- NVlabs/StyleGAN2-dataset. {\sf https://github.com/NVlabs/stylegan2}.
-  \bibitem{15-nikt}
-  High-resolution anime face dataset ($512\times512$). {\sf 
-https://www.kaggle.com/ datasets/subinium/highresolution-anime-face-dataset-512$\times$512}.
-  \bibitem{16-nikt}
-  GitHub~--- justinpinkney/awesome-pretrained-StyleGAN2-Anime-portraits-dataset. {\sf 
-https://github.com/justinpinkney/awesome-pretrained-stylegan2\#Anime-portraits}.
-  \bibitem{17-nikt}
-  \Au{Silvagni D., Djerroud C., R\'{e}veill\'{e}~T., Gravier~E.} Bispectral analysis: Comparison 
-of two windowing functions~/\!\!/ J. Phys. Conf. Ser., 2018. Vol.~982. No.\,1. 
-Art. 012007. P.~1--6.  doi:  
-10.1088\!/\!1742-6596\!/\!982\!/\!1\!/\!012007.
-  
-  \bibitem{18-nikt}
-  Scikit-learn: Machine learning in Python. {\sf http://scikit-learn.org}.
-  \bibitem{19-nikt}
-  \Au{Ng A.} Machine learning yearning: Technical strategy for AI engineers, in the era of Deep 
-Learning.~--- Self-publishing, 2018. {\sf https://www.mlyearning.org}. 
-  \bibitem{20-nikt}
-  \Au{Karras T., Aittala~M., Laine~S., \textit{et al.}} Alias-free generative adversarial networks~/\!\!/ Adv.  Neur. 
-In., 2021. Vol.~34. P.~852--863.
-  \bibitem{21-nikt}
-  \Au{Alaluf Y., Patashnik O., Wu~Z., Zamir~A., Shechtman~E., Lischinski~D., Cohen-Or~D.} 
-Third time's the charm? Image and video editing with StyleGAN3~/\!\!/ Computer vision~/ Eds. L.~Karlinsky, T.~Michaeli, K.~Nishino.~--- Lecture notes in computer 
-science ser.~--- Cham: Springer, 2023. Vol.~13802. P.~204--220. doi:  
-10.1007\!/\!978-3-031-25063-7\_13.
- \end{thebibliography}
-} }
-
-
-
-\vspace*{-8pt}
-
-\hfill{\small\textit{Поступила в~редакцию 15.01.23}}
-
-%\vspace*{8pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-\newpage
-
-\vspace*{-28pt}
-
-%\hrule
-
-%\vspace*{8pt}
-
-\def\tit{DEEPFAKE IMAGE DETECTION USING BISPECTRAL ANALYSIS}
-
-
-
-\def\titkol{Deepfake image detection using bispectral analysis}
-
-\def\aut{S.\,P.~Nikitenkova}
-
-\def\autkol{S.\,P.~Nikitenkova}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-8pt}
-
-
-\noindent
-N.\,I.~Lobachevsky State University of Nizhny Novgorod, 23~Prospekt Gagarina, Nizhny Novgorod 603022, 
-Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2023 vol~33 no\,2}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics 2023 vol~33 no\,2
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt} 
-  
-
-
-\Abste{As deep-fake image synthesis tools become more powerful and available, there is a growing 
-need to develop methods for detecting generated content. The main goal of the work is to test the application 
-of bispectral analysis as a tool for detecting images generated by artificial intelligence (AI). It is shown that higher-order spectral 
-correlations detected by spectral analysis are less present in natural images compared to the images generated 
-using generative-adversarial neural networks GAN  (generative adversarial network). These correlations are probably the result of fundamental 
-properties of the image generation process. The clustering procedure has shown encouraging results: it 
-determines the generated images with an accuracy of~80\%.}
-
-\KWE{AI-synthesized image; polyspectral analysis; nonlinearity; machine learning algorithms}
-
-\DOI{10.14357\!/\!08696527230203}  
-
-%\vspace*{-10pt}
-
-
-%\Ack
-%\noindent
-
-%\vspace*{-3pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{ %\baselineskip=12pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-\bibitem{1-nikt-1}
-\Aue{Nightingale, S., and H.~Farid.} 2022. Synthetic faces are more trustworthy than real faces. 
-\textit{J.~Vision }22(14):3068. doi: 10.1167\!/\!jov.22.14.3068.
-  \bibitem{2-nikt-1}
-\Aue{Goodfellow, I., J.~Pouget-Abadie, M.~Mirza, \textit{et al.}} 2020. Generative adversarial networks. \textit{Commun. ACM} 
-63(11):139--144. doi: 10.1145\!/\!3422622.
-\bibitem{3-nikt-1}
-\Aue{Matern, F., C.~Riess, and M.~Stamminger.} 2019. Exploiting visual artifacts to expose deepfakes and 
-face manipulations. \textit{Winter Applications of Computer Vision Workshops}. IEEE. 83--92. 
-doi: 10.1109\!/\!WACVW.2019.00020.
-\bibitem{4-nikt-1}
-\Aue{Pavelyeva, E.\,A.} 2013. Poisk sootvetstviy mezhdu klyuchevymi tochkami izobrazheniy raduzhnykh 
-obolochek glaz s~pomoshch'yu metoda proektsionnoy fazovoy korrelyatsii [The search for matches 
-between the iris key points using Hermite projection phase-only correlation method]. \textit{Sistemy 
-i~Sredstva Informatiki~--- Systems and Means of Informatics} 23(2):74--88. doi: 
-10.14357\!/\!08696527130206.
-\bibitem{5-nikt-1}
-\Aue{Karras, T., S.~Laine, M.~Aittala, J.~Hellsten, J.~Lehtinen, and T.~Aila.} 2020. Analyzing and 
-improving the image quality of StyleGAN. \textit{IEEE\!/\!CVF Conference on Computer Vision and Pattern 
-Recognition}. IEEE. 8110--8119.
-\bibitem{6-nikt-1}
-\Aue{Durall, R., M.~Keuper, F.-J.~Pfreundt, and J.~Keuper.} 2019. Unmasking deepfakes with simple 
-features. \textit{arXiv.org}. 8~p. Available at: {\sf https://arxiv.org/abs/1911.00686} (accessed April~17, 2023).
-\bibitem{7-nikt-1}
-\Aue{Frank, J., T.~Eisenhofer, L.~Sch$\ddot{\mbox{o}}$nherr, A.~Fischer, D.~Kolossa, and T.~Holz.} 2020. Leveraging 
-frequency analysis for deep fake image recognition. \textit{37th Conference (International) on Machine 
-Learning Proceedings}. 119:3247--3258.
-\bibitem{8-nikt-1}
-\Aue{Dong, C., A.~Kumar, and E.~Liu.} 2022. Think twice before detecting GAN-generated fake images 
-from their spectral domain imprints. \textit{IEEE\!/\!CVF Conference on Computer Vision and Pattern 
-Recognition}. IEEE. 7865--7874.
-\bibitem{9-nikt-1}
-\Aue{Ng, T.\,T., S.\,F.~Chang, and Q.~Sun.} 2004. Blind detection of photomontage using higher order 
-statistics. \textit{Symposium (International) on Circuits and Systems}. IEEE. 5:1329901. doi: 
-10.1109\!/\!ISCAS.2004.1329901.
-\bibitem{10-nikt-1}
-\Aue{Wen, Z., D. Fraser, and A.~Lambert.} 2009. Bicoherence: A~new lucky region technique in 
-anisoplanatic image restoration. \textit{Appl. Optics} 48(32):6111--6119.
-\bibitem{11-nikt-1}
-\Aue{Hinich, M.\,J., and M.\,A.~Wolinsky.} 1988. A~test for aliasing using bispectral analysis. 
-\textit{J.~Am. Stat. Assoc.} 83(402):499--502. doi: 10.1080\!/\!01621459.1988.10478623.
-\bibitem{12-nikt-1}
-\Aue{Mendel, J.\,M.} 1991. Tutorial on higher-order statistics (spectra) in signal processing and system 
-theory: Theoretical results and some applications. \textit{P. IEEE} 79(3):278--305. doi: 10.1109\!/\!5.75086.
-\bibitem{13-nikt-1}
-NVlabs/FFHQ-dataset. Available at: {\sf https://github.com/NVlabs/ffhq-dataset} (accessed April~17, 2023).
-\bibitem{14-nikt-1}
-NVlabs/StyleGAN2-dataset. Available at: {\sf https://github.com/NVlabs/stylegan2} (accessed April~17, 2023).
-\bibitem{15-nikt-1}
-High-resolution anime face dataset ($512\times512$). Available at: {\sf 
-https://www.kaggle.com/ datasets/subinium/highresolution-anime-face-dataset-512$\times$512} (accessed April~17, 
-2023).
-\bibitem{16-nikt-1}
-GitHub~--- justinpinkney/awesome-pretrained-StyleGAN2-Anime-portraits-dataset. Available at: {\sf 
-https://github.com/justinpinkney/awesome-pretrained-stylegan2\# Anime-portraits} (accessed April~17, 2023).  
-\bibitem{17-nikt-1}
-\Aue{Silvagni, D., C.~Djerroud, T.~R\'{e}veill\'{e}, and E.~Gravier.} 2018. Bispectral analysis: Comparison 
-of two windowing functions. \textit{J.~Phys. Conf. Ser.} 982(1):012007. doi:  
-10.1088\!/\!1742-6596\!/\!982\!/\!1\!/\!012007.
-\bibitem{18-nikt-1}
-Scikit-learn: Machine learning in Python. Available at: {\sf http://scikit-learn.org} (accessed April~17, 2023).
-\bibitem{19-nikt-1}
-\Aue{Ng, A.} 2018. \textit{Machine learning yearning: Technical strategy for AI engineers, in the era of 
-deep learning}.  Self-publishing. 118~p.
-\bibitem{20-nikt-1}
-\Aue{Karras, T., M.~Aittala, S.~Laine, \textit{et al.}} 2021. Alias-free generative adversarial networks. \textit{Adv. Neur. In.} 
-34:852--863.
-\bibitem{21-nikt-1}
-\Aue{Alaluf, Y., O.~Patashnik, Z.~Wu, A.~Zamir, E.~Shechtman, D.~Lischinski, and D.~Cohen-Or.} 2023. 
-Third time's the charm? Image and video editing with StyleGAN3. \textit{Computer vision}. Eds. L.~Karlinsky, 
-T.~Michaeli, and K.~Nishino. Lecture notes in computer science ser. 
-Cham: Springer. 13802:204--220. doi: 10.1007\!/\!978-3-031-25063-7\_13.
-\end{thebibliography}
-} }
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received January 15, 2023}} 
-
-\vspace*{-12pt} 
-
-\Contrl
-
-\vspace*{-2pt}
-
-\noindent
-\textbf{Nikitenkova Svetlana P.} (b.\ 1968)~--- Candidate of Science (PhD) in technology, associate 
-professor, Department of Information Systems Security, N.\,I.~Lobachevsky State University of Nizhny Novgorod, 
-23~Prospekt Gagarina, Nizhny Novgorod 603022, Russia Federation; \mbox{nikitenkova@rf.unn.ru}
-
-  
- 
- 
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}    

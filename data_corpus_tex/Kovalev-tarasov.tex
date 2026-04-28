@@ -1,725 +1,0 @@
-\def\stat{kovalev-tarasov}
-
-\def\tit{АРХИТЕКТУРА ПЛАТФОРМЫ ДЛЯ ПРОВЕДЕНИЯ ДВИЖИМЫХ ГИПОТЕЗАМИ ВИРТУАЛЬНЫХ 
-ЭКСПЕРИМЕНТОВ$^*$}
-
-\def\titkol{Архитектура платформы для проведения %движимых гипотезами 
-виртуальных 
-экспериментов}
-
-\def\aut{Д.\,Ю.~Ковалев$^1$, Е.\,А.~Тарасов$^2$, В.\,Н.~Захаров$^3$, 
-Н.\,М.~Филимонов$^4$}
-
-\def\autkol{Д.\,Ю.~Ковалев, Е.\,А.~Тарасов, В.\,Н.~Захаров, Н.\,М.~Филимонов}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Ковалев Д.\,Ю.}
-\index{Тарасов Е.\,А.}
-\index{Захаров В.\,Н.}
-\index{Филимонов Н.\,М.}
-\index{Kovalev D.\,Y.}
-\index{Tarasov E.\,A.}
-\index{Zakharov V.\,N.}
-\index{Filimonov N.\,M.}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа выполнена при частичной финансовой поддержке РФФИ (проект 18-07-01434~А).}} 
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{dkovalev@ipiran.ru}}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{etarasov@outlook.com}}
-\footnotetext[3]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{vzakharov@ipiran.ru}}
-\footnotetext[4]{Институт информационных и~вычислительных технологий Национального 
-исследовательского института <<Московский энергетический институт>>, 
-\mbox{filimonovn160@gmail.com}}
-
- \label{st\stat}
-
- \thispagestyle{headings}
- 
- \vspace*{-12pt}
-
-\Abst{Рассматривается проблема проведения движимых гипотезами виртуальных 
-экспериментов. Проведен анализ методов управления виртуальными экспериментами 
-в~существующих системах работы с~экспериментами, по результатам которого 
-сформирован жизненный цикл виртуального эксперимента. Для этапов жизненного цикла 
-представлены основные операции управления виртуальными экспериментами, а также 
-основные этапы по работе эксперта с~платформой исполнения виртуального 
-эксперимента. Предложена программная архитектура платформы управления 
-виртуальными экспериментами и~гипотезами с~описанием основных компонентов 
-платформы и~их функций, которые реализуют основные операции жизненного цикла.}
-
-\KW{жизненный цикл виртуального эксперимента; гипотеза; интенсивное использование 
-данных}
-
-\DOI{10.14357\!/\!08696527200206} 
-
-\vskip 10pt plus 9pt minus 6pt
-
- \thispagestyle{headings}
- 
- \vspace*{-12pt} 
-
-\section{Введение}
-
-В настоящее время в~научных исследованиях необходимо решать задачи по 
-получению новых знаний на основе разноструктурированных распределенных 
-данных. Наборы данных получают в~результате наблюдений, экспериментов или 
-компьютерного моделирования, а также построения математических моделей для 
-интерпретации наблюдаемых явлений. Такие исследования опираются на явное 
-использование гипотез и~реализующих их вычислительных моделей, 
-используемых для преодоления разрыва между концептуальным описанием 
-изучаемого явления и~его симуляцией. 
-
-Проект 18-07-01434, выполняемый Федеральным научным центром 
-<<Информатика и~управление>> Российской академии наук при финансовой 
-поддержке Российского фонда фундаментальных исследований, направлен на 
-разработку методов и~средств проведения виртуальных экспериментов, 
-основанных на проверке гипотез, в~исследованиях с~интенсивным 
-использованием данных для их ускорения. 
-
-Виртуальный эксперимент в~рамках исследований определяется как кортеж 
-$\langle O, H, M, R, W, C\rangle$~\cite{1-kt}, где~$O$~--- это онтология 
-предметной области, которая представляет собой набор понятий и~отношений, 
-определенный на некотором формальном языке (например, OWL~2~\cite{2-kt}); 
-$H$~--- набор спецификаций гипотез и~взаимосвязей между ними (описание 
-гипотез в~работе ограничивается системами уравнений), являющийся частью 
-онтологии~$O$ и~использующий ее понятия; $M$~--- набор моделей, в~котором 
-каждая модель представляет собой набор программных функций, реализующих 
-спецификацию некоторой гипотезы; $R: M \to H$~--- сюръективное отображение 
-из множества моделей в~множество гипотез, соответствующее реализации 
-гипотез моделями; $W$~--- поток работ, т.\,е.\ набор задач, организованный 
-с~помощью определенных конструкций (образцов потоков работ, таких как 
-разбиение, объединение и~т.\,д.\cite{3-kt}) и~реализующий эксперимент (каж\-дая 
-задача представляет собой вызов функций некоторой модели из~$M$); $C$~--- 
-конфигурация эксперимента, представляющая собой отображение задач потока 
-работ в~набор значений параметров функций. При проведении нового 
-виртуального эксперимента требуется определить полностью кортеж $\langle O, 
-H, M, R, W, C\rangle$. Пример определения элементов кортежа виртуального 
-эксперимента для задачи моделирования масс звезд Безансонской модели 
-Галактики приведен в~работе~\cite{1-kt}.
-
-Анализ возможностей и~ограничений существующих систем управления 
-виртуальными экспериментами показывает необходимость разработки 
-и~реализации методов и~инструментов, имеющих дело с~наборами зависимых 
-гипотез, называемых далее \textit{решетками гипотез}. В~работе~\cite{4-kt} 
-приведен алгоритм построения решеток гипотез для виртуального 
-эксперимента, а также дана оценка сложности алгоритма. Построение решеток 
-гипотез вносит ряд улучшений в~проведение виртуального эксперимента, 
-например: использование промежуточных результатов вычисления независимых 
-гипотез приводит к~ускорению вычислений. Порождение гипотез представляет 
-дополнительную трудность, а потому при не\-об\-хо\-ди\-мости гипотезы могут 
-автоматически генерироваться из данных. Так, в~работе~\cite{5-kt} рассмотрены 
-подходы к~извлечению гипотез в~виде нелинейных функциональных 
-зависимостей между несколькими переменными.
-
-Данная статья посвящена разработке архитектуры платформы управления 
-виртуальными экспериментами, включающей средства концептуального 
-пред\-став\-ле\-ния гипотез в~процессе проведения виртуальных экспериментов, 
-сохранения эволюции гипотез и~моделей, построения связей между несколькими 
-гипотезами в~одном эксперименте, воспроизводимости экспериментов. 
-Платформа предполагает исследование взаимосвязи между гипотезами в~форме 
-математических уравнений, предоставляя информацию не только о зависимостях 
-переменных в~одной гипотезе\!/\!модели, но также и~о нескольких зависимых 
-гипотезах в~одном виртуальном эксперименте. Одна из важнейших целей 
-платформы~--- повышение скорости проведения исследований за счет повторного 
-использования уже вычисленных фрагментов виртуальных экспериментов.
-
-Работа структурирована следующим образом. В~разд.~2 приводится анализ 
-существующих методов управления экспериментами, по результатам которого 
-выделяются жизненный цикл и~основные операции формального 
-манипулирования виртуальными экспериментами и~гипотезами. В~разд.~3 
-представленa архитектура платформы для проведения движимых гипотезами 
-виртуальных экспериментов, реализующих операции всех этапов жизненного 
-цикла эксперимента. 
-
-\section{Методы и~операции управления виртуальными 
-экспериментами и~гипотезами}
-
-В данном разделе рассматриваются методы манипулирования гипотезами 
-и~экспериментами в~ряде существующих систем работы с~виртуальными 
-экспериментами. По результатам анализа методов манипулирования 
-виртуальными экспериментами выделены операции для последующей реализации 
-в~рамках платформы управления виртуальными экспериментами.
-
-В системе Hephaestus\cite{6-kt} основными методами для манипулирования 
-гипотезами и~виртуальными экспериментами являются: 
-\begin{enumerate}[(1)]
-\item метод 
-автоматического по\-рож\-де\-ния гипотез из данных;
-\item метод интервенций при 
-исполнении виртуального эксперимента;
-\item метод корректного разбиения данных 
-наблюдений при проверке статистических гипотез;
-\item метод ранжирования 
-нескольких конкурирующих гипотез;
-\item метод построения графа 
-при\-чин\-но-след\-ст\-вен\-ных и~вероятностных зависимостей.
-\end{enumerate}
-
- В~качестве \textit{метода 
-автоматического порождения гипотез} используется символьная 
-регрессия~\cite{7-kt} при подборе аппроксимирующей формулы для выбранного 
-подмножества переменных на наборе данных. Сущность \textit{метода 
-интервенций} при исполнении виртуального эксперимента заключается 
-в~уста\-нов\-ле\-нии существующих и~возможной генерации новых гипотез, которые 
-значимо влияют на выбранную экспертом гипотезу~\cite{8-kt}. \textit{Метод 
-корректного разбиения данных наблюдений} при проверке статистических 
-гипотез требуется для обеспечения несмещенных оценок при дальнейшем 
-тестировании гипотез~\cite{9-kt}. \textit{Метод ранжирования} нескольких 
-конкурирующих гипотез позволяет по вы\-бран\-ной мет\-ри\-ке (например, 
-достигаемому уровню значимости) или нескольким мет\-ри\-кам выбрать одну или 
-несколько гипотез, наиболее соответствующих наблюдениям. \textit{Постро\-ение 
-графа причинно-следственных и~вероятностных зависимостей} применяется для 
-оценки соответствия полученных зависимостей общепринятым в~данной области, 
-а также для потенциального исследования значимых корреляций и~их 
-последующего преобразования в~при\-чин\-но-след\-ст\-вен\-ные зависимости. 
-Кроме того, построенные графы зависимостей могут в~явном виде передаваться 
-другим экспертам в~данной об\-ласти.
-
-В системе Upsilon-DB~\cite{10-kt} в~качестве основных методов можно 
-выделить: 
-\begin{enumerate}[(1)]
-\item формальное кодирование гипотез в~качестве кортежей баз данных; 
-\item оценку соответствия гипотез наборам данных;
-\item построение  
-при\-чин\-но-след\-ст\-вен\-ных зависимостей для параметров одной гипотезы. 
-\end{enumerate}
-
-Сущность метода \textit{формального кодирования гипотез} заключается 
-в~представлении гипотез в~виде систем уравнений над кортежами базы данных. 
-При этом осуществляется проверка корректности гипотез, строится схема базы 
-данных и~набор функциональных зависимостей для переменных, извлеченных из 
-системы уравнений. \textit{Метод оценки соответствия гипотез наборам 
-данных} использует правило Байеса~\cite{11-kt}. Дополнительно в~схему базы 
-данных добавляется мера соответствия гипотез исследуемому явлению. 
-В~процессе оценки соответствия используется \textit{метод построения графа 
-при\-чин\-но-след\-ст\-вен\-ных зависимостей} для параметров одной гипотезы.
-
-В системе FCCE~\cite{12-kt} ключевым методом является построение попарных 
-значимых корреляционных зависимостей для всех переменных множества 
-разрозненных наборов данных. Для метода существует распределенная 
-реализация. Метод хорошо масштабируется при сборе, извлечении и~запросах 
-к~географически распределенным большим наборам данных.
-
-В системе Robot Scientist\cite{13-kt} используются: 
-\begin{enumerate}[(1)]
-\item метод логического вывода 
-новых гипотез при проведении экспериментов;
-\item метод статической оценки 
-корректности соответствия гипотез полученным данным.
-\end{enumerate}
-
- \textit{Метод 
-логического вывода} использует абдуктивное логическое 
-программирование~\cite{14-kt} для генерации достоверных гипотез, 
-объясняющих наблюдения, а~затем использует эти гипотезы для определения 
-следующего наиболее информативного эксперимента. В~начале исследования все 
-потенциальные гипотезы считаются в~равной степени верными. После этого 
-устанавливается значимость оставшихся гипотез при помощи, например, теста 
-Стьюдента. В~работе~\cite{15-kt} демонстрируется подход к~оценке значимости 
-гипотез при помощи нескольких статистических тестов.
-
-Основываясь на вышеприведенном анализе методов управления виртуальными 
-экспериментами, можно определить \textit{основные этапы жизненного цикла 
-виртуального эксперимента}.
-
-На \textbf{первом этапе} происходит инициализация виртуального эксперимента: 
-определение онтологии предметной области, определение гипотез 
-и~соответству-\linebreak
-\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
-ющих им моделей, определение потока работ для исполнения 
-виртуального эксперимента, задание конфигурации эксперимента. Используется 
-представление гипотез как специальных структур данных, сочетающих 
-уравнения, входящие в~них переменные и~при\-чин\-но-след\-ст\-вен\-ные 
-отображения над ними. После загрузки виртуального эксперимента в~систему 
-происходит автоматическое построение решетки гипотез виртуального 
-эксперимента. Решетка гипотез определяется как направленный ациклический 
-граф с~вершинами, отвечающими гипотезам. Ребра графа соответствуют 
-отношениям зависимости между гипотезами, когда результат вычислений одной 
-гипотезы используется в~вычислениях другой гипотезы. 
-
-На \textbf{втором этапе} 
-по желанию пользователя происходит автоматическое порождение 
-дополнительных гипотез из данных. 
-
-На \textbf{третьем этапе} происходит 
-построение оптимального плана исполнения эксперимента. 
-
-На \textbf{четвертом 
-этапе} происходит непосредственное проведение эксперимента, при этом 
-система отслеживает, существуют ли сохраненные результаты исполнения 
-отдельных функций эксперимента при заданных параметрах, и~подставляет их, 
-если совпадение найде\-но. После исполнения виртуального эксперимента 
-результат возвращается эксперту.
-
-В процессе определения жизненного цикла выделены следующие \textit{операции 
-в~работе над виртуальным экспериментом}. При реализации первого этапа 
-к~доступным эксперту операциям над виртуальными экспериментами относятся 
-до\-бав\-ле\-ние, модификация и~удаление виртуальных экспериментов, гипотез, 
-потоков работ, а~также конфигураций экспериментов. Этап также включает 
-автоматические операции: построение графа при\-чин\-но-след\-ст\-вен\-ных 
-зависимостей между переменными одной гипотезы, специфицированной 
-системой уравнений, а также построение структуры для описания взаимодействия 
-между несколькими гипотезами~--- решетки гипотез. Операция построения графа 
-причинно-следственных зависимостей строит граф на основании системы 
-уравнений, соответствующей гипотезе. Решетка гипотез для виртуального 
-эксперимента строится на основании упомянутого графа и~потока работ 
-виртуального экспери-\linebreak мента.
-
-Для реализации второго этапа используются операции автоматического 
-по\-рож\-де\-ния новых гипотез из данных по желанию эксперта и~поиска 
-корреляционных зависимостей между параметрами различных независимых 
-гипотез.
-
-Для реализации третьего этапа используется операция построения оптимального 
-плана исполнения виртуального эксперимента. 
-
-Для реализации четвертого этапа используется операция исполнения 
-виртуального эксперимента. Промежуточные результаты расчетов, 
-соответствующих вызовам отдельных функций моделей, и~оценка их 
-соответствия экспериментальным данным сохраняются в~базе данных для 
-последующего использования и~отслеживания эволюции гипотез и~моделей 
-виртуального эксперимента. 
-
-\section{Программная архитектура платформы исполнения 
-виртуальных экспериментов}
-
-\begin{figure}[b]
-\vspace*{6pt}
- \begin{center}
- \mbox{%
- \epsfxsize=103.326mm 
- \epsfbox{kov-1.eps}
- }
-\vspace*{9pt}
-
-{\small Архитектура платформы исполнения виртуальных экспериментов}
- \end{center}
-\end{figure}
-
-В данном разделе представлена архитектура платформы (см.\ рисунок) 
-и~рас\-смот\-ре\-но, каким образом компоненты архитектуры поддерживают 
-различные этапы деятельности эксперта по проведению виртуальных 
-экспериментов. На рисунке штриховые стрелки обозначают доступ из одного 
-компонента к~интерфейсу другого компонента. Программная архитектура 
-системы исполнения виртуального эксперимента включает в~себя компоненты, 
-поддерживающие различные этапы проведения виртуальных экспериментов. 
-В~настоящее время архитектура находится в~стадии программной реализации.
-
-Компонент \textit{Metadata Repository} представляет собой репозиторий 
-метаинформации (базу данных), предназначенный для хранения результатов 
-выполнения виртуального эксперимента с~учетом накопления данных 
-о~добавлении, модификации и~удалении гипотез, потоков работ, онтологий 
-и~виртуальных экспериментов. Дополнительно в~репозитории сохраняются 
-построенные зависимости между гипотезами (полученными либо от эксперта, 
-либо автоматически извлеченные) и~имеющейся информацией о~корреляции 
-между параметрами как в~рамках одной, так и~параметров нескольких гипотез.
-
-Компонент \textit{Virtual Experiment Manager} представляет пользователю 
-интерфейс с~операциями формального манипулирования виртуальными 
-экспериментами и~гипотезами. После загрузки виртуального эксперимента 
-в~систему его спецификация сохраняется в~базе данных. Далее по запросу 
-эксперта происходит вызов компонента автоматического порождения гипотез из 
-данных \textit{Hypothesis Generator}. После этого автоматически происходит 
-вызов компонента \textit{Hypothesis Lattices Constructor} для построения решетки 
-гипотез виртуального эксперимента. Далее вызывается компонент \textit{Virtual 
-Experiment Planner}, отвечающий за построение плана исполнения виртуального 
-эксперимента. Построенный план сохраняется в~базе данных. Наконец, 
-происходит вызов компонента \textit{Virtual Experiment Runner}, ответственного 
-за непосредственное исполнение виртуального эксперимента. Компонент 
-поддерживает одновременное управление несколькими экспериментами.
-
-Компонент \textit{Hypothesis Generator} по запросу эксперта обеспечивает 
-автоматическое построение гипотез по данным в~виде нелинейных 
-функциональных зависимостей. В~качестве основного метода используется 
-символьная регрессия, обеспечивающая интерпретируемость полученных 
-формул. Эксперту вместе с~системой уравнений возвращается оценка качества 
-соответствия данным, по которой принимается решение об использовании 
-построенной гипотезы. Компонент реализован в~виде модуля на языке Python 
-с~использованием библиотек pandas, numpy, sympy и~deap~\cite{5-kt}. Для 
-построения функциональной зависимости между переменными в~данных 
-используется реализация символьной регрессии на основе генетического 
-программирования с~арифметическими и~тригонометрическими 
-операциями~\cite{7-kt}. 
-
-Компонент \textit{Hypothesis Lattices Constructor} обеспечивает автоматическое 
-построение решеток гипотез по соответствующим им системам уравнений. 
-Компонент загружает из базы данных метаинформации спецификацию потока 
-работ и~гипотез. Далее системы уравнений, соответствующих гипотезам, из 
-спецификации переводятся во внутреннее представление, после чего вызывается 
-компонент \textit{COA Constructor} для построения при\-чин\-но-след\-ст\-вен\-но\-го 
-графа зависимостей переменных. Дальнейшая работа компонента состоит 
-в~следующем. Задачи, составляющие поток работ, рассматриваются по очереди 
-в~соответствии с~порядком, заданным направлением ребер потока работ. Для 
-каждой пары гипотез~$I$ и~$J$, где~$I$ используется в~текущей задаче, а~$J$~--- 
-в~некоторой задаче, достижимой из текущей задачи, 
-конструируется транзитивное замыкание объединения структур двух гипотез 
-(состоящих из уравнений и~переменных)~\cite{4-kt}. После этого производится 
-объединение всех таких транзитивных замыканий. Структура результирующей 
-решетки соответствует структуре объединения замыканий. Решетка гипотез 
-сохраняется в~базе данных метаинформации. Компонент реализован в~виде 
-модуля на языке Python с~использованием библиотек pandas, numpy и~itertools.
-
-Компонент \textit{COA Constructor} позволяет построить причинно-следственный 
-граф зависимостей переменных одной гипотезы. Компонент включает механизм 
-вероятностного вывода, позволяющего отследить не только  
-при\-чин\-но-след\-ст\-вен\-ные связи между гипотезами, но и~неявные 
-зависимости, например значимые корреляции между параметрами гипотез, не 
-связанных причинно-следственными зависимостями. Входными данными 
-компонента служат пары гипотез и~решетка гипотез, а выходными~--- пары 
-значимо коррелирующих переменных, соответствующих параметрам различных 
-независимых гипотез. Использование пар значимо коррелирующих переменных 
-позволяет системе указывать эксперту, например, на необходимость их 
-совместного изменения. Компонент реализован в~виде модуля на языке Python 
-с~использованием библиотек pandas, numpy и~scipy. При реализации используется 
-информация о вхождении переменных в~уравнения в~виде булевой матрицы. При 
-этом установление причинно-следственных связей сводится к~поиску подматриц 
-с~ненулевым рангом. 
-
-Компонент \textit{Virtual Experiment Planner} вычисляет оптимальный план 
-исполнения виртуального эксперимента, при этом используются решетки гипотез, 
-содержащиеся в~репозитории. Это позволяет до проведения виртуального 
-эксперимента спланировать оптимальным образом подбор параметров гипотез 
-и~отсечь заранее непригодные комбинации параметров. Например, уже 
-вычисленные результаты вызова функции модели могут быть повторно 
-использованы в~другом виртуальном эксперименте, а также могут помочь 
-в~исключении виртуального эксперимента, производящего данные, не 
-совпадающие с~реальными наблюдениями.
-
-Компонент \textit{Virtual Experiment Runner} запускается для непосредственного 
-исполнения виртуального эксперимента. Из репозитория метаинформации 
-загружаются спецификация виртуального эксперимента и~дополнительно 
-построенные решетка гипотез и~план проведения виртуального эксперимента. 
-Исполнение происходит в~соответствии с~планом, при этом система использует 
-сохраненные результаты исполнения части виртуального эксперимента (при их 
-наличии в~репозитории метаинформации). Используя спецификацию моделей 
-виртуального эксперимента, компонент осуществляет вызов соответствующих 
-функций, а~затем собирает полученные данные от них. Результаты проведения 
-виртуального эксперимента сохраняются в~базе данных метаинформации.
-
-\section{Заключение}
-
-В работе проведен анализ методов управления экспериментами, реализованных 
-в~существующих системах. Рассмотрены основные этапы жизненного цикла 
-виртуального эксперимента; выделены операции, используемые на каждом этапе 
-жизненного цикла. Операции разделены на автоматические и~вызываемые 
-экспертом. Предложена программная архитектура платформы управления 
-виртуальными экспериментами, выделены ее основные компоненты, 
-реализующие операции жизненного цикла виртуального эксперимента. 
-
-Платформа находится в~стадии программной реализации и~экспериментальных 
-исследований. Реализованы компоненты построения при\-чин\-но-след\-ст\-вен\-но\-го 
-графа зависимостей переменных одной гипотезы, компонент автоматического 
-построения решеток гипотез по соответствующим им системам уравнений, 
-компонент автоматического порождения гипотез из данных, компонент 
-непосредственного исполнения виртуального эксперимента. Остальные 
-компоненты платформы находятся в~стадии разработки. Планируются 
-экспериментальные исследования применения платформы для проведения 
-виртуальных экспериментов в~нескольких областях с~интенсивным 
-использованием данных, в~том числе в~астрономии и~нейрофизиологии.
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{1-kt}
-\Au{Kovalev D., Kalinichenko L., Stupnikov S.} Organization of virtual experiments in  
-data-intensive domains: Hypotheses and workflow specification~/\!\!/ CEUR Workshop 
-Proceedings:  Selected Papers of the 19th Conference (International) on Data 
-Analytics and Management in Data Intensive Domains~/
-Eds. L.~Kalinichenko, Ya.~Manolopoulos, N.~Skvortsov, V.~Sukhomlin.~---
-Moscow,   2017. Vol.~2022. P.~293--300.
-{\sf http://ceur-ws.org/Vol-2022/paper46.pdf}.
-\bibitem{2-kt}
-\Au{Grau B.\,C., Horrocks I., Motik B., Parsia B., Patel-Schneider~P., 
-Sattler~U.} OWL~2: The 
-next step for OWL~/\!\!/ J.~Web Semant., 2008. Vol.~6. Iss.~4. P.~309--322.
-\bibitem{3-kt}
-\Au{Van Der Aalst W.\,M., Ter Hofstede A.\,H., Kiepuszewski B., Barros~A.\,P.} Workflow 
-patterns~/\!\!/ Distrib. Parallel Dat., 2003. Vol.~14. Iss.~1. P.~5--51.
-\bibitem{4-kt}
-\Au{Kovalev D., Stupnikov S.} Constructing hypothesis lattices for virtual experiments in data 
-intensive research~/\!\!/ Ivannikov Memorial Workshop.~--- IEEE, 2019. 
-P.~14--17.
-\bibitem{5-kt}
-\Au{Tirikov E.} Comparison of male and female nonlinear brain functional connectivity~/\!\!/ 
-CEUR Workshop Proceedings: Selected Papers of the 21st Conference 
-(International) on Data Analytics and Management in Data Intensive 
-Domains~/ Eds. A.~Elizarov, B.~Novikov, S.~Stupnikov.~---
-Kazan,  2019. Vol.~2523. P.~404--412.
-{\sf http://ceur-ws.org/Vol-2523/paper39.pdf}
-\bibitem{6-kt}
-\Au{Duggan J., Brodie M.} Hephaestus: Data reuse for accelerating scientific discovery~/\!\!/ 7th 
-Biennial Conference on Innovative Data Systems Research: Online Proceedings, 2015. 
-Paper~29. 12~p. {\sf 
-http://users.eecs. northwestern.edu/$\sim$jennie/pubs/hephaestus\_full.pdf}.
-\bibitem{7-kt}
-\Au{Uy N.\,Q., Hoai N.\,X., O'Neill M., McKay R.\,I., 
-Galv$\acute{\mbox{a}}$n-L$\acute{\mbox{o}}$pez~E.} Semantically-based 
-crossover in genetic programming: Application to 
-real-valued symbolic regression~/\!\!/ Genet. Program. Evol.~M., 2011. 
-Vol.~12. Iss.~2. P.~91--119.
-\bibitem{8-kt}
-\Au{Triantafillou S., Tsamardinos I.} Constraint-based causal discovery from multiple interventions 
-over overlapping variable sets~/\!\!/ J.~Mach. Learn. Res., 2015. Vol.~16. Iss.~1. 
-P.~2147--2205.
-\bibitem{9-kt}
-\Au{Neal R.\,M.} Slice sampling~/\!\!/ Ann. Stat., 2003. 
-Vol.~31. Iss.~3. P.~705--741.
-\bibitem{10-kt}
-\Au{Gonсalves B., Silva F., Porto F.} Upsilon-DB: A~system for data-driven hypothesis 
-management and analytics~/\!\!/ arXiv.org, 2014. arXiv:1411.7419 [cs.DB]. 
-6~p.
-\bibitem{11-kt}
-\Au{Darwiche A.} Modeling and reasoning with Bayesian networks.~--- Cambridge
-University Press, 2009. 
-548~p.
-\bibitem{12-kt}
-\Au{Schales D., Hu X., Jang J., %Sailer R., Stoecklin~M., 
-\textit{et al.}} FCCE: Highly scalable 
-distributed feature collection and correlation engine for low latency 
-big data analytics~/\!\!/ IEEE 31st  Conference (International)
- on Data Engineering.~--- IEEE, 2015. P.~1316--1327.
-\bibitem{13-kt}
-\Au{King R.\,D., Whelan K.\,E., Jones F.\,M., Reiser P.\,G., Bryant~C.\,H., Muggleton~S.\,H., 
-Kell~D.\,B., Oliver~S.\,G.} Functional genomic hypothesis generation and experimentation by 
-a~robot scientist~/\!\!/ Nature, 2004. Vol.~427. Iss.~6971. P.~247--252.
-\bibitem{14-kt}
-\Au{Kakas A.\,C., Kowalski R.\,A., Toni F.} Abductive logic programming~/\!\!/ J.~Logic 
-Comput., 1992. Vol.~2. Iss.~6. P.~719--770.
-\bibitem{15-kt}
-\Au{Тарасов Е., Ковалев Д.} Оценка качества научных гипотез в~виртуальных экспериментах 
-в~областях с~интенсивным использованием данных~/\!\!/ CEUR Workshop Proceedings: 
-Selected Papers of the 19th Conference (International) on Data Analytics and 
-Management in Data Intensive Domains~/
-Eds. L.~Kalinichenko, Ya.~Manolopoulos, N.~Skvortsov, V.~Sukhomlin.~---
-Moscow,   2017. Vol.~2022. P.~281--292.
-{\sf http://ceur-ws.org/Vol-2022/paper46.pdf}.
-
-\end{thebibliography}
-} }
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 15.03.20}}
-
-\vspace*{8pt}
-
-\hrule
-
-\vspace*{2pt}
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{8pt}
-
-\def\tit{ARCHITECTURE OF THE PLATFORM FOR~MANAGING HYPOTHESES-DRIVEN VIRTUAL 
-EXPERIMENTS}
-
-\def\titkol{Architecture of the platform for managing hypotheses-driven virtual 
-experiments}
-
-\def\aut{D.\,Y.~Kovalev$^1$, E.\,A.~Tarasov$^1$, V.\,N.~Zakharov$^1$, 
-and~N.\,M.~Filimonov$^2$}
-
-\def\autkol{D.\,Y.~Kovalev, E.\,A.~Tarasov, V.\,N.~Zakharov, and~N.\,M.~Filimonov}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-\noindent
-$^1$Institute of Informatics Problems, Federal Research Center ``Computer 
-Science\linebreak
-$\hphantom{^1}$and 
-Control'' of the Russian Academy of Sciences, 44-2 Vavilov Str., Moscow\linebreak
-$\hphantom{^1}$119333, 
-Russian Federation
-
-\noindent
-$^2$Institute of Automatics and Computer Engineering, National Research 
-University\linebreak
-$\hphantom{^1}$``Moscow Power Engineering Institute,'' 14~Krasnokazarmennaya 
-Str., Moscow\linebreak
-$\hphantom{^1}$111250, Russian Federation 
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2020 vol~30 no\,2}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics 2020 vol~30 no\,2
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}
-
-\Abste{The problem of carrying out virtual experiments driven by hypotheses is 
-considered. The analysis of methods for managing virtual experiments in existing 
-systems for working with experiments is carried out. According to the results of the 
-analysis, a~life cycle of a~virtual experiment is formed. Basic operations of managing 
-virtual experiments are presented for the stages of an
-experiment life cycle, as well as 
-the main stages of the expert's work with the platform for executing a~virtual 
-experiment. The program architecture of the platform for managing virtual experiments 
-and hypotheses is proposed with\linebreak
-\vspace*{-12pt}}
-
-\pagebreak
-
-\Abstend{a~description of the main components of the platform 
-and their functions that implement the basic operations of the life cycle.}
-
-\KWE{virtual experiment life cycle; hypotheses; data intensive research}
-
-\DOI{10.14357\!/\!08696527200206} 
-
-%\vspace*{-24pt}
-
-\Ack
-\noindent
-This research was partially supported by the Russian Foundation for Basic Research 
-(project 18-07-01434~А).
-
-%\vspace*{-12pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-\bibitem{1-kt-1}
-\Aue{Kovalev, D., L. Kalinichenko, and S. Stupnikov.} 2017. Organization of virtual 
-experiments in data-intensive domains: Hypotheses and workflow specification. 
-\textit{CEUR Workshop Proceedings: Selected Papers of the 19th Conference 
-(International) on Data Analytics and Management in Data Intensive Domains}.
-Eds. L.~Kalinichenko, Ya.~Manolopoulos, N.~Skvortsov, and V.~Sukhomlin.  Moscow.
-2022:293--300. Available at:  
-{\sf http://ceur-ws.org/Vol-2022/paper46.pdf} (accessed April~9, 2020).
-\bibitem{2-kt-1}
-\Aue{Grau, B.\,C., I. Horrocks, B. Motik, B.~Parsia, P.~Patel-Schneider, and 
-U.~Sattler}. 2008. OWL 2: The next step for OWL. \textit{J.~Web Semant.} 
-6(4):309--322.
-\bibitem{3-kt-1}
-\Aue{Van Der Aalst, W.\,M., A.\,H. Ter Hofstede, B. Kiepuszewski, and 
-A.\,P.~Barros}. 2003. Workflow patterns. \textit{Distrib. Parallel Dat.} 
-14(1):5--51.
-\bibitem{4-kt-1}
-\Aue{Kovalev, D., and S. Stupnikov.} 2019. Constructing hypothesis lattices for virtual 
-experiments in data intensive research. \textit{Ivannikov Memorial Workshop}. IEEE. 14--17.
-\bibitem{5-kt-1}
-\Aue{Tirikov, E.} 2019. Comparison of male and female nonlinear brain functional 
-connectivity. \textit{CEUR Workshop Proceedings: Selected Papers of the 21st 
-Conference (International) on Data Analytics and Management in Data Intensive 
-Domains.} Eds. A.~Elizarov, B.~Novikov, and S.~Stupnikov. Kazan. 2523:404--412. Available at:  
-{\sf http://ceur-ws.org/Vol-2523/paper39.pdf} (accessed April~9, 2020).
-\bibitem{6-kt-1}
-\Aue{Duggan, J., and M. Brodie.} 2015. Hephaestus: Data reuse for accelerating 
-scientific discovery. \textit{7th Biennial Conference on Innovative Data Systems 
-Research: Online Proceedings.} Papre~29. 12~p. Available at: {\sf 
-http://users.eecs. northwestern.edu/$\sim$jennie/pubs/hephaestus\_full.pdf} (accessed 
-April~9, 2020).
-\bibitem{7-kt-1}
-\Aue{Uy, N.\,Q., N.\,X. Hoai, M. O'Neill, R.\,I.~McKay, and  
-E.~Galv$\acute{\mbox{a}}$n-L$\acute{\mbox{o}}$pez.} 2011. Semantically-based 
-crossover in genetic programming: Application to real-valued symbolic regression. 
-\textit{Genet. Program. Evolv.~M.} 12(2):91--119.
-\bibitem{8-kt-1}
-\Aue{Triantafillou, S., and I. Tsamardinos.} 2015. Constraint-based causal discovery 
-from multiple interventions over overlapping variable sets. \textit{J.~Mach. 
-Learn. Res.} 16(1):2147--2205.
-\bibitem{9-kt-1}
-\Aue{Neal, R.\,M.} 2003. Slice sampling. \textit{Ann. Stat.} 31(3):705--741. 
-\bibitem{10-kt-1}
-\Aue{Gonсalves, B., F. Silva, and F. Porto.} Upsilon-DB: A~system for data-driven 
-hypothesis management and analytics. \textit{arXiv.org}. 6~p. Available at: {\sf 
-https://arxiv.org/ abs/1411.7419} (accessed April~9, 2020).
-\bibitem{11-kt-1}
-\Aue{Darwiche, A.} 2009. \textit{Modeling and reasoning with Bayesian networks}. 
-Cambridge University Press. 548~p.
-\bibitem{12-kt-1}
-\Aue{Schales, D., X. Hu, J. Jang, %R.~Sailer, M.~Stoecklin, 
-\textit{et al.}} 2015. FCCE: 
-Highly scalable distributed feature collection and correlation engine for low latency big 
-data analytics. \textit{31st Conference (International) on Data Engineering}. IEEE. 
-1316--1327.
-\bibitem{13-kt-1}
-\Aue{King R.\,D., K.\,E.~Whelan, F.\,M.~Jones, P.\,G.~Reiser, C.\,H.~Bryant, 
-S.\,H.~Muggleton, D.\,B.~Kell, and S.\,G.~Oliver.} 2004. Functional genomic 
-hypothesis generation and experimentation by a~robot scientist. \textit{Nature} 
-427(6971):247--252.
-\bibitem{14-kt-1}
-\Aue{Kakas, A.\,C., R.\,A. Kowalski, and F.~Toni.} 1992. Abductive logic 
-programming. \textit{J.~Logic Comput.} 2(6):719--770.
-\bibitem{15-kt-1}
-\Aue{Tarasov E., and D. Kovalev.} 2017. Otsenka kachestva nauchnykh gipotez 
-v~virtual'nykh eksperimentakh v~oblastyakh s~intensivnym ispol'zovaniem dannykh 
-[Estimation of scientific hypotheses quality in virtual experiments in data intensive 
-domains]. \textit{CEUR Workshop Proceedings: Selected Papers of the 19th Conference 
-(International) on Data Analytics and Management in Data Intensive Domains}. 
-Eds. L.~Kalinichenko, Ya.~Manolopoulos, N.~Skvortsov, and
-V.~Sukhomlin. Moscow. 2022:281--292. Available at:  
-{\sf http://ceur-ws.org/Vol-2022/paper46.pdf} (accessed April~9, 2020).
-\end{thebibliography}
-} }
-
-%\vspace*{-3pt}
-
-\hfill{\small\textit{Received March 15, 2020}} 
-
-%\vspace*{-16pt} 
-
-\Contr
-
-\noindent
-\textbf{Kovalev Dmitry Y.} (b.\ 1988)~--- scientist, Institute of Informatics Problems, 
-Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
-Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{dkovalev@ipiran.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Tarasov Evgeny A.} (b.\ 1987)~--- programmer, Institute of Informatics 
-Problems, Federal Research Center ``Computer Science and Control'' of the Russian 
-Academy of Sciences, 44-2 Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{e.tarasov@outlook.com}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Zakharov Victor N.} (b.\ 1948)~--- Doctor of Science in technology, associate 
-professor, scientific secretary, Federal Research Center ``Computer Science and 
-Control'' of the Russian Academy of Sciences, 44-2 Vavilov Str., Moscow 119333, 
-Russian Federation; \mbox{vzakharov@ipiran.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Filimonov Nikita M.} (b.\ 1998)~--- student, Institute of Automatics and 
-Computer Engineering, National Research University ``Moscow Power Engineering 
-Institute,'' 14~Krasnokazarmennaya Str., Moscow 111250, Russian Federation; 
-\mbox{filimonovn160@gmail.com}
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 

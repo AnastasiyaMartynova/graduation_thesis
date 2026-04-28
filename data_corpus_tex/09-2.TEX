@@ -1,581 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-%% ,izvru-ks%             for brief communications
-]{amsart}
-
-%
-\newcommand{\tts}[1]{}
-\numberwithin{equation}{section}
-
-\theoremstyle{definition}
-\theorembodyfont{\rm}
-\newtheorem{defnnonum}{\hskip\parindent Определение}
-\renewcommand{\thedefnnonum}{}
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{75}
-\god{2005}
-\nomer{2~(513)} %                        Remove in Eng.
-%\nomer{Vol.\,49, No.\,2}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{519.624}
-
-\author{\it И.В.\,Олемской}
-% NB:   ^^ remove in Eng.
-\title{Конструирование явных методов типа Рунге--Кутта
-интегрирования систем специального вида}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
- 
-
-
-\section{Введение}
-
-При решении задачи Коши
-\begin{gather}
-y_{i}' =f_{i}(x,y_{1},\dotsc,y_{n}) ,\quad i=1,\dotsc,n,\label{form1} \\
-y_{i}(X_{0})=y_{i\,0},\quad i=1,\dotsc,n,\notag \\
-x \in [X_{0},X_{1}] \subset R,\quad
-y_{i}:[X_{0},X_{1}] \longrightarrow
-R ,\quad i=1,\dotsc,n,\notag\\
-f_{i}:[X_{0},X_{1}] \times R^{n}
-\longrightarrow R,\quad i=1,\dotsc,n,\notag
-\end{gather}
-общая схема явного метода Рунге--Кутта ([1], гл.\,6, \S\,3, с.\,82)
-численного интегрирования системы (\ref{form1}) имеет вид
-\begin{equation}
-y_{i}(x+h)\approx z_{i} = y_{i}(x)+\sum_{j=1}^{m_{i}} b_{ij}
-k_{ij}(h), \quad i=1,\dotsc,n, \label{form3}
-\end{equation}
-где функции $k_{ij}(h)$ вычисляются по следующей схеме:
-\begin{gather}
-k_{ij}(h)=h f_{i}\bigg(x+c_{ij} h,y_{1}(x)+\sum_{p=1}^{j -1}
-a_{ij1p}k_{1p},\dotsc,
-y_{n}(x)+\sum_{p=1}^{j -1}
-a_{ijnp}k_{np}\bigg), \label{form4}\\
-c_{i1}=0,\quad a_{i1s0}= 0,\quad s=1,\dotsc,n. \notag
-\end{gather}
-Здесь $m_{i}$ --- число этапов и $q_{i}$ --- порядок 
-по $i$-й компоненте искомой функции в общем случае могут быть различны
-по каждой из компонент.
-Поэтому при построении расчетных схем метода их характеристикой
-могут выступать как векторы числа этапов $M=(m_1,\dotsc,m_n)$ и порядка
-$Q=(q_1,\dotsc,q_n)$,
-если хотя бы одна из компонент соответствующих векторов отлична
-от остальных (и тогда метод называется {\it разноэтапным}
-и {\it разнопорядковым} соответственно), так и скаляры $m$
-и $q$, если компоненты
-соответствующих векторов равны между собой:
-$m_1=\dotsc=m_n=m,$ $q_1=\dotsc=q_n=q$.
-
-Под {\it порядком метода}
-(\ref{form3}), (\ref{form4}) при векторе порядка
-$Q=(q_1,\dotsc,q_n)$ будем понимать $q=\min\{q_1,\dotsc,q_n\}$.
-\par Введем еще одно понятие, необходимое для сравнения
-методов интегрирования
-систем обыкновенных дифференциальных уравнений.
-
-\begin{defnnonum}
-Пусть для некоторого вектора числа этапов
-в рамках одношагового
-метода существует расчетная схема с вектором порядка 
-$Q=(q_1,\dotsc,q_n)$.
-Будем называть такой вектор числа этапов
-минимальным и обозначать
-$M(Q)=(m_1(q_1),\dotsc,m_n(q_n)),$ если для любой
-$M=(m_1,\dotsc,m_n)$-этапной расчетной
-схемы с вектором порядка $Q=(q_1,\dotsc,q_n)$
-этого же метода справедливы неравенства $m_i\geq m_i(q_i)$, $i=1,\dotsc,n$.
-\end{defnnonum}
-
-В скалярном случае минимальное число этапов
-метода порядка $q$ будем обозначать через $m(q)$.
-
-При построении расчетных схем ([1], гл.\,6, \S\,3, с.\,84) в 
-рамках метода (\ref{form3}), (\ref{form4})
-традиционно в силу равноправности уравнений системы
-параметры метода полагают независящими от номеров компоненты $i$ и $s$:
-$b_{j}\equiv b_{ij}$, $c_{j}\equiv c_{ij}$,
-$a_{jp}\equiv a_{ijsp}$, $m\equiv m_{i}$.
-
-Такой способ распространения метода ({\it формальный})
-(\ref{form3}), (\ref{form4})
-интегрирования уравнений на системы сужает его возможности, однако
-значительно упрощает задачу
-конструирования методов интегрирования систем. В этом случае
-методы строятся для скалярных
-уравнений, а распространение на системы осуществляется простой заменой
-скалярных функций $y,$ $f,$ $k_j$ на соответствующие
-векторные. При этом все утверждения о соотношении порядка 
-метода $q$ и числа этапов $m,$ справедливые для скалярного случая,
-верны и для векторного: $m(q)=q$, $q\leq4$.
-Эти равенства справедливы не только для
-формального метода интегрирования системы (\ref{form1}), но и для
-общей схемы метода (\ref{form3}), (\ref{form4}).
-
-В ([2], гл.\,2, \S\,14, с.\,294; [3]) предложен метод и построена 
-теория условий порядка для разделяющихся
-дифференциальных уравнений.
-Параметры метода интегрирования разделяющихся систем
-зависят от номера компоненты решения $s$, но
-все они одинаковы для всех компонент $i$ правой части:
-$b_{j} \equiv b_{ij}$, $c_{j} \equiv c_{ij}$,
-$a_{jsp} \equiv a_{ijsp}$, $m\equiv m_{i}$.
-А это значит, что в методе для разделяющихся
-систем (как и в формальном)
-порядок вычислений функций $k_{ij}$ на
-$j$-м этапе произволен (обычно в порядке возрастания индекса $i$). 
-Метод интегрирования разделяющихся систем и формальный метод
-пассивно используют структурные особенности 
-интегрируемых систем только на уровне исследования
-условий порядка.
-
-В отличие от указанных выше подходов в данной работе рассматривается
-новый явный одношаговый метод типа Рунге--Кутта
-решения задачи Коши для структурно разделяющихся
-систем обыкновенных дифференциальных уравнений вида
-\begin{gather}
-\begin{cases}
-y_{1}'=f_{1}(x,y_{n}), & \ \\
-y_{j}'=f_{j}(x,y_{j-1}), & j=2,\dotsc ,n,\ \ n\geq 2,
-\end{cases}
-\label{frmm1} \\
-y_{s}(X_{0})=y_{s0},\quad s=1,\dotsc ,n,\quad
-x \in [X_{0},X_{1}] \subset R, \notag
-\end{gather}
-где $y_{s}$, $f_{s}$ --- функции размерности $r_s$.
-Для их интегрирования [4] построены
-экономичные двух- и трехэтапные
-методы третьего и четвертого порядков соответственно.
-
-
-\section{Метод интегрирования}
-
-Считаем, что известно точное решение $y_{s}(x)$, $s=1,\dotsc,n$,
-задачи (\ref{frmm1}) в точке $x\in [X_0,X_1]$. 
-Приближение $z_{s}$, $s=1,\dotsc,n$, к точному решению
-$y_{s}(x+h)$ в точке $x+h\in [X_0,X_1]$ ищем в виде
-\begin{equation}
-y_{s}(x+h)\approx z_{s} = y_{s}(x)+\sum_{w=1}^{m_{s}} b_{sw}
-k_{sw}(h) , \quad s=1,\dotsc ,n, \label{frmm3}
-\end{equation}
-где функции $k_{sw}\equiv k_{sw}(h)$ вычисляем по схеме
-\begin{gather}
-k_{1w} =\begin{cases}
-h f_{1}(x,y_{n}(x)), & w = 1 ; \\
-h f_{1}\Big(x+c_{1w} h,y_{n}(x)+\sum\limits_{g=1}^{w -1}
-a_{1wg} k_{nw} \Big), & w>1,
-\end{cases}
-\label{frmm4}
-\\
-k_{iw} =h f_{i}\bigg(x+c_{iw} h,y_{i-1}(x)+\sum_{g=1}^{w}
-a_{iwg} k_{i-1\,g}\bigg),\ \ c_{i1} \neq 0,\ \ i=2,\dotsc,n,\label{frmm5}
-\end{gather}
-в строгой последовательности
-$k_{11}, k_{21},\dotsc, k_{n1},k_{12},k_{22},\dotsc$;
-$m_{s}$ --- число этапов (количество вычислений
-$s$-й компоненты правой части системы
-(\ref{frmm1}) на шаге интегрирования):
-\begin{equation}
-m_1=\dotsb =m_{s}\geq m_{s+1}=\dotsb =m_{n},\ m_{s}-m_{s+1}\leq 1,
-\label{frmm555}
-\end{equation}
-$b_{sw}$, $c_{sw}$, $a_{swg}$ --- 
-параметры метода (\ref{frmm3})--(\ref{frmm555});\quad
-$h$ --- шаг метода.
-
-Для компактного представления метода (\ref{frmm3})--(\ref{frmm555}) 
-можно использовать табличное представление (табл.\,1), состоящее
-из $n$ подтаблиц.
-\smallskip      %%%%% TAKE HARDCOPY & REDO THE TABLES
-
-\begin{center}
-Таблица 1. Метод (\ref{frmm3})--(\ref{frmm555})
-интегрирования систем (\ref{frmm1})
-\end{center}
-
-\begin{eqnarray*}
-\begin{array}{c|ccc|c}
-c_{1\eta} & & a_{1\eta\nu} & & b_{1\eta}\\
-\hline
-c_{11} & & & & b_{11} \\
-c_{12} &a_{121} & & & b_{12} \\
-\dotfill &\dotfill &\dotfill &\dotfill &\dotfill \\
-c_{1\,m_{1}}&a_{1\,m_{1}\,1}&\dotsc & a_{1\,m_{1}\,m_{1}-1}
-& b_{1\,m_{1}} 
-\end{array}
-\qquad
-%
-\begin{array}{c|ccc|c}
-c_{2\eta} & & a_{2\eta\nu} & & b_{2\eta}\\
-\hline
-c_{21} & a_{211}& & & b_{21} \\
-c_{22} &a_{221} & & & b_{22} \\
-\dotfill &\dotfill &\dotfill &\dotfill &\dotfill \\
-c_{2\,m_{2}}&a_{2\,m_{2}\,1}&\dotsc & a_{2\,m_{2}\,m_{2}}
-& b_{2\,m_{2}}
-\end{array}
-\end{eqnarray*}
-%
-$$\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc\dotsc $$
-%
-\begin{eqnarray*}
-\begin{array}{c|ccc|c}
-c_{n\eta} & & a_{n\eta\nu} & & b_{n\eta}\\
-\hline
-c_{n1} & a_{n11}& & & b_{n1} \\
-c_{n2} &a_{n21} & & & b_{n2} \\
-\dotfill &\dotfill &\dotfill &\dotfill &\dotfill \\
-c_{n\,m_{n}}&a_{n\,m_{n}\,1}&\dotsc & a_{n\,m_{n}\,m_{n}}
-& b_{n\,m_{n}}
-\end{array}
-\end{eqnarray*}
-\smallskip
-
-\noindent{}Здесь исследуются возможности
-$M=(3,\dotsc,3,2)$-этапного
-метода (\ref{frmm3})--(\ref{frmm555})
-интегрирования систем (\ref{frmm1})
-при построении вычислительных схем четвертого порядка.
-
-При ограничениях
-$\sum\limits_{g=1}^{w}a_{swg} =c_{sw}$, $c_{11} =0$,
-$w=1,\dotsc,m_s$, условия порядка метода, которым должны удовлетворять
-параметры метода (\ref{frmm3})--(\ref{frmm555})
-при $q_s=4$, $s=1,\dotsc,n$, образуют систему $8n$
-нелинейных алгебраических уравнений c $12n-9$ неизвестными
-$b_{sj}$, $c_{sj}$, $a_{sjw}$:
-\begin{gather}
-\sum_{w=1}^{m_s}b_{sw} c_{sw} ^{p}
-=\frac{\displaystyle 1}
-{\displaystyle p+1},\quad p=0,1,2,3;
-\label{frm0} \\
-\sum_{w=1}^{m_s}b_{sw} c_{sw}^{\xi}
-\sum_{g=1}^{w}a_{swg} c_{s-1\,g}^{\varkappa}
-=\frac{\displaystyle 1}
-{\displaystyle 2(\xi +3)\varkappa},
-\quad (\xi,\varkappa)\in\{(0,1),(1,1),(0,2)\};
-\label{frm30} \\
-\sum_{w=1}^{m_s}b_{sw} \sum_{g=1}^{w}a_{swg}
-\sum_{t=1}^{g}a_{s-1\,gt} c_{s-2\,t}
- =\frac{\displaystyle 1}
-{\displaystyle 24}.
-\label{frm32}
-\end{gather}
-Такая компактная запись предполагает (здесь и в дальнейшем), что,
-во-первых,
-интервалы изменения индексов фиксированы ($s=1,\dotsc,n$, $v=2,\dotsc,n-1$,
-$d=3,\dotsc,n-1$), и,
-во-вторых, формально 
-вводятся и считаются нулевыми параметры, явно не присутствующие
-в вычислительной схеме метода (\ref{frmm3})--(\ref{frmm555})
-($b_{0j} \equiv b_{nj}$, $c_{0j} \equiv c_{nj}$, $a_{0jg} \equiv a_{njg}$,
-$c_{-1\,j} \equiv c_{n-1\,j}$, $a_{1jj} =0$, $c_{11} =0$,
-$c_{n3} =b_{n3} =a_{n3j} =0)$.
-
-\begin{thm}
-В рамках $M=(3,2)$-этапного метода $(\ref{frmm3})$--$(\ref{frmm555})$
-численного интегрирования системы $(\ref{frmm1})$
-не существует расчетной схемы с порядком $Q=(4,3)$.
-\end{thm}
-
-Доказательство сводится к установлению несовместности
-условий порядка (\ref{frm0})--(\ref{frm32}), которые в этих предположениях 
-образуют систему 16
-нелинейных алгебраических уравнений c 15 неизвестными
-$b_{sw}$, $c_{sw}$, $a_{swg}$.
-Для систем двух уравнений (\ref{frmm1}) с
-неравнотрудоемкими (по числу арифметических операций)
-правыми частями построена 
-вычислительная схема третьего порядка (табл.\,2) с минимальным
-количеством слагаемых в главном члене погрешности по первой компоненте.
-%%\smallskip
-\pagebreak
-
-\begin{center}
-Таблица 2. Метод (\ref{frmm3})--(\ref{frmm555})
-третьего порядка
-интегрирования систем (\ref{frmm1}) при $n=2$
-\end{center}
-
-\begin{eqnarray*}
-\begin{array}{c|cc|c}
-c_{1\eta} & & a_{1\eta\nu} & b_{1\eta}\vrule height6mm width0mm depth3mm\\
-\hline
-0& & & \frac{ 9-\sqrt{3}}{ 52}\vrule height6mm width0mm depth3mm \\
-\frac{3-\sqrt{3}}{ 3} &\frac{ 3-\sqrt{3}}{ 3} & & \frac{ 13+ 7\sqrt{3}}{ 44}
-\vrule height6mm width0mm depth3mm\\
-\frac{ 9+\sqrt{3}}{ 12}&
-\frac{ 5+2\sqrt{3}}{ 16}
-& \frac{ 21-2\sqrt{3}}{ 48}
-& \frac{ 76- 20\sqrt{3}}{ 143} 
-\end{array}
-%
-\qquad
-%
-\begin{array}{c|ccc|c}
-c_{2\eta} & & a_{2\eta\nu} & & b_{2\eta}\vrule height6mm width0mm depth3mm\\
-\hline
-\frac{ 3-\sqrt{3}}{ 6} &
-\frac{ 3-\sqrt{3}}{ 6}& & & \frac{ 1}{ 2}\vrule height6mm width0mm depth3mm \\
-\frac{ 3+\sqrt{3}}{ 6} &
-\frac{ 5+\sqrt{3}}{ 22} & 
-\frac{ 9+4\sqrt{3}}{ 33} & & \frac{ 1}{ 2} \\
-\vrule height6mm width0mm depth3mm &&&&
-\end{array}
-\end{eqnarray*}
-
-\begin{thm}
-В рамках $M=(3,\dotsc,3,2)$-этапного метода
-$(\ref{frmm3})$--$(\ref{frmm555})$
-численного интегрирования системы $(\ref{frmm1})$ при $n\geq 3$
-существует расчетная схема четвертого порядка.
-\end{thm}
-
-При доказательстве теоремы найдено частное решение (табл.\,3)
-системы (\ref{frm0})--(\ref{frm32}).
-\smallskip
-
-\begin{center}
-Таблица 3. Метод (\ref{frmm3})--(\ref{frmm555})
-четвертого порядка
-интегрирования систем (\ref{frmm1}) при $n\geq 3$
-\end{center}
-
-\begin{eqnarray*}
-\begin{array}{c|cc|c}
-c_{1\eta} & & a_{1\eta\nu} & b_{1\eta}\vrule height6mm width0mm depth3mm\\
-\hline
-0& & & \frac{ 9-\sqrt{3}}{ 52}\vrule height6mm width0mm depth3mm \\
-\frac{ 3-\sqrt{3}}{ 3} &\frac{ 3-\sqrt{3}}{ 3} & 
-& \frac{ 13+ 7\sqrt{3}}{ 44}\vrule height6mm width0mm depth3mm \\
-\frac{ 9+\sqrt{3}}{ 12}&\frac{ 5+2\sqrt{3}}{ 16}
-& \frac{ 21-2\sqrt{3}}{ 48}
-& \frac{ 76- 20\sqrt{3}}{ 143} 
-\end{array}
-%
-\qquad
-%
-\begin{array}{c|ccc|c}
-c_{2\eta} & & a_{2\eta\nu} & & b_{2\eta}\vrule height6mm width0mm depth3mm\\
-\hline
-\frac{ 3-\sqrt{3}}{ 12} & 
-\frac{ 3-\sqrt{3}}{ 12}&
-& & \frac{ 76-20\sqrt{3}}{ 143}\vrule height6mm width0mm depth3mm \\
-\frac{ \sqrt{3}}{ 3} &
-\frac{11 \sqrt{3}-15}{ 24} &
-\frac{ 5-\sqrt{3}}{ 8} 
-& & \frac{ 13+ 7\sqrt{3}}{ 44} \vrule height6mm width0mm depth3mm\\
-1& \frac{ \sqrt{3}-1}{ 8}&
-\frac{ 73+63\sqrt{3}}{ 264} & 
-\frac{ 28-12\sqrt{3}}{ 33}
-& \frac{ 9- \sqrt{3}}{ 52} 
-\end{array}
-\end{eqnarray*}
-%
-\begin{eqnarray*}
-\begin{array}{c|ccc|c}
-c_{d\eta} & & a_{d\eta\nu} & & b_{d\eta}\vrule height6mm width0mm depth3mm\\
-\hline
-\frac{ 3-\sqrt{3}}{ 12} & \frac{ 3-\sqrt{3}}{ 12}&
-& & \frac{ 76- 20\sqrt{3}}{ 143} \vrule height6mm width0mm depth3mm\\
-\frac{ \sqrt{3}}{ 3} &
-\frac{ \sqrt{3}-1}{ 2} &
-\frac{ 3-\sqrt{3}}{ 6} 
-& & \frac{ 13+ 7\sqrt{3}}{ 44} \vrule height6mm width0mm depth3mm\\
-1& \frac{ 35 - 15\sqrt{3}}{ 66}&
-\frac{ 31+15\sqrt{3}}{ 66} & 0
-& \frac{ 9-\sqrt{3}}{ 52} 
-\end{array}
-%
-\qquad
-%
-\begin{array}{c|ccc|c}
-c_{n\eta} & & a_{n\eta\nu} & & b_{n\eta}\vrule height6mm width0mm depth3mm\\
-\hline
-\frac{ 3-\sqrt{3}}{ 6} &
-\frac{ 3-\sqrt{3}}{ 6}& & & \frac{ 1}{ 2}\vrule height6mm width0mm depth3mm \\
-\frac{ 3+\sqrt{3}}{ 6} &
-\frac{ 5+\sqrt{3}}{ 22} & \frac{ 9+4\sqrt{3}}{ 33} & & \frac{ 1}{ 2}\\
-\vrule height6mm width0mm depth3mm &&&&
-\end{array}
-\end{eqnarray*}
-
-\noindent{}При его поиске использовались упрощающие предположения
-$\sum\limits_{g=w}^{m_s}b_{sg} a_{sgw}
-=b_{s-1\,w}(1-c_{s-1\,w})$,
-$w=1,2,3$; $\sum\limits_{g=1}^{w-1}a_{pwg} c_{p-1\,g}
-=\frac12 c_{pw} ^2$, $w=2,3,\quad p=1,n$.
-
-В силу алгоритмической несимметричности метода (\ref{frmm3})--(\ref{frmm555})
-покомпонентное применение упрощающих предположений различно.
-
-Необходимо отметить, что в рамках рассмотренного
-метода (\ref{frmm3})--(\ref{frmm555})
-нельзя построить расчетную схему четвертого порядка 
-численного интегрирования системы (\ref{frmm1})
-с вектором числа этапов $M=(3,\dotsc,3,2,2)$.
-Поэтому набор числа этапов
-$M(4)=(3,\dotsc,3,2)$ является минимальным для метода
-(\ref{frmm3})--(\ref{frmm555}) четвертого порядка.
-
-По своим характеристикам полученные расчетные схемы (табл.\,2 и 3)
-обладают явными преимуществами перед расчетными
-схемами формального метода Рунге--Кутта. 
-Следует обратить внимание на два
-существенных момента, характеризующих рассматриваемый метод. Во-первых, 
-доказанные утверждения (теоремы 1 и 2)
-демонстрируют зависимость
-порядка метода (\ref{frmm3})--(\ref{frmm555}) от размерности
-системы (\ref{frmm1}). Во--вторых, метод (\ref{frmm3})--(\ref{frmm555})
-интегрирования
-систем (\ref{frmm1}) при интегрировании дифференциальных уравнений
-\begin{equation}
-y^{(n)} = f(x,y),\quad y^{(i)}(x_0)=y_{0}^{(i)},
-\quad i=0,1,\dotsc,n-1,\label{ur_vic_1}
-\end{equation}
-столь же эффективен, как и специальные прямые методы 
-его интегрирования
-\begin{gather}
-k_{i} = hf\bigg(x_{0}+C_{i} h,\
-\sum_{j=0}^{n-1}\frac{(C_{i} h)^{j}}
-{j! }y_0^{(j)}
-+h^{n-1}\sum_{j=1}^{i-1}A_{ij} k_{j}\bigg) ,\notag\\
-%
-y^{(\nu)}(x_0+h)\approx \sum_{j=0}^{n-1-\nu}\frac{h^{j}}{j! }
-y_0^{(j+\nu)}
-+h^{n-\nu-1}\sum_{i=1}^{m}B_{\nu i} k_{i},\quad \nu =0,\dotsc,n-1,
-\label{frmm_u2} \\
-%
-C_{1} =0. \label{frmm_u}
-\end{gather}
-Каждому прямому методу (\ref{frmm_u2}), (\ref{frmm_u})
-соответствует табличное представление (табл.\,4).
-\smallskip
-
-\begin{center}
-Таблица 4. \ $m$-этапный метод прямого интегрирования
-уравнения (\ref{ur_vic_1})
-\end{center}
-
-\begin{eqnarray*}
-\begin{array}{c|ccccc|cccc}
-C_{i} & & & A_{ij} & & &B_{0i} &B_{1i}&\dotsc&B_{n-1\,i} \\
-\hline
-C_{1} & 0 & & & & &B_{01} &B_{11}&\dotsc&B_{n-1\,1} \\
-C_{2} & A_{21} & & & & &B_{02} &B_{12}&\dotsc&B_{n-1\,2} \\
-\dotfill &\dotfill &\dotfill &\dotfill & & &\dotfill &\dotfill &\dotfill&\dotfill \\
-C_{m} &A_{m1} & A_{m2} &\dotsc & A_{m,m-1} & 0 &B_{0m} &B_{1m}&\dotsc&B_{n-1\,m} 
-\end{array}
-\end{eqnarray*}
- 
-Например, приведение вычислительных схем (табл.\,2 и 3) при $n=2,3$
-разноэтапного метода (\ref{frmm3})--(\ref{frmm555})
-к экономичному и алгоритмически простому виду дает
-расчетные схемы (табл.\,5 и~6) прямого интегрирования
-дифференциального уравнения (\ref{ur_vic_1}) второго и третьего 
-порядков соответственно.
-\medskip
-
-\begin{center}
-\begin{tabular}{cc}
-
-\begin{tabular}{c|cc|cc}
-\multicolumn{5}{c}{Таблица 5. Метод третьего порядка}\\
-$C_{i}$ & $A_{ij}$ & \ & $B_{0i}$ &
-$B_{1i}$\vrule height6mm width0mm depth3mm \\
-\hline
-$\frac12 -\frac{\sqrt{3}}{6}$ & 0 & & $\frac14+\frac{\sqrt{3}}{12}$ &
-$\frac12$ \vrule height6mm width0mm depth3mm\\
-$\frac12 +\frac{\sqrt{3}}{6}$ & $\frac13$ & 
-0 & $\frac14 -\frac{\sqrt{3}}{12}$& $\frac12$ \vrule height6mm width0mm depth3mm\\
-\end{tabular}
-&
-\begin{tabular}{c|cc|ccc}
-\multicolumn{6}{c}{Таблица 6. Метод четвертого порядка}\\
-$C_{i}$ & $A_{ij}$ & & $B_{0i}$& $B_{1i}$&
-$B_{2i}$\vrule height6mm width0mm depth3mm \\
-\hline
-$\frac12 -\frac{\sqrt{3}}{6}$ & 0 & &$\frac{1}{12}+\frac{\sqrt{3}}{24}$&
-$\frac14 +\frac{\sqrt{3}}{12}$ & $\frac12$ \vrule height6mm width0mm depth3mm\\
-$\frac12+\frac{\sqrt{3}}{6}$ & $\frac{1}{12}$ & 0 
-& $\frac{1}{12}-\frac{\sqrt{3}}{24}$ & 
-$\frac14-\frac{\sqrt{3}}{12}$ & $\frac12$\vrule height6mm width0mm depth3mm
-\end{tabular}
-\end{tabular}
-\end{center}
-\medskip
-
-Отметим, что явная двухэтапная расчетная схема
-третьего порядка (табл.\,5) численного интегрирования
-$y''=f(x,y)$ согласно классификации, используемой в
-([2], гл.\,2, \S\,13, с.\,276; [5], гл.\,1,
-\S\,3.2, с.\,33), принадлежит типу Нюстр\"ема, но не может быть 
-получена в рамках
-двухэтапного метода (\ref{frmm_u2})
-в силу ограничения (\ref{frmm_u}).
-
-По своим характеристикам двухэтапная
-расчетная схема четвертого порядка (табл.\,6) интегрирования
-уравнений $y'''=f(x,y)$
-превосходит специальный метод Цурмюля ([5], гл.\,1,
-\S\,3.4, с.\,37), т.\,к.
-при том же порядке он требует трех вычислений
-правой части на шаге интегрирования.
-
-Все вышесказанное, во-первых, заставляет по-новому взглянуть
-на общую схему метода (\ref{frmm_u2}), (\ref{frmm_u}) интегрирования
-дифференциальных уравнений высшего порядка, т.\,к.
-здесь показано, что ограничение $C_{1} =0$
-при $n=2,3$ существенно сужает его возможности; во--вторых, позволяет
-установить связь между
-методами интегрирования систем дифференциальных уравнений (\ref{frmm1})
-и дифференциальных уравнений высшего порядка (\ref{ur_vic_1})
-(построены экономичные расчетные схемы табл.\,5 и 6,
-являющиеся едиными для систем и дифференциальных уравнений при
-$n=2,3$). 
-
-
-\begin{thebibliography}{9}
-
-\bibitem{1}
-Крылов В.И., Бобков В.В., Монастырный П.И. {\em Вычислительные
-методы высшей математики}. Т.\,2. -- Минск: Вышэйш. школа,
-1975. --- 672~с.
-\bibitem{2}
-Хайрер Э., Нерсетт С., Ваннер Г. {\em Решение oбыкновенных
-дифференциальных уравнений. Нежесткие задачи}. -- 
-М.: Мир, 1990. -- 512~с.
-\bibitem{3}
-Hairer E. {\em Order conditions for numerical methods for partitioned ordinary
-differential equations} // Numer. Math. -- 1981. --
-V.\,36. -- P.\,431--445.
-\bibitem{4}
-Олемской И.В. {\em Структурный подход в задаче конструирования
-явных одношаговых методов} // Журн. вычисл. матем. и матем. физ. --
-2003. -- Т.\,43. -- \No\,7. -- С.\,961--974.
-\bibitem{5}
-Коллатц Л. {\em Численные методы решения дифференциальных
-уравнений}. -- М.: Ин. лит., 1953. -- 460~с.
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Санкт-Петербургский}{\it Поступила}
-\post{\it государственный университет}{04.09.2003}
-
-\label{end}
-\end{document}
-

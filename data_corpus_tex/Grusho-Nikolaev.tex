@@ -1,461 +1,0 @@
-  \def\stat{gr-nik}
-
-\def\tit{КОМПЛЕКСНОЕ ОБЕСПЕЧЕНИЕ ИНФОРМАЦИОННОЙ БЕЗОПАСНОСТИ ЧАСТНЫХ 
-ОБЛАЧНЫХ ВЫЧИСЛИТЕЛЬНЫХ~СРЕД$^*$}
-
-\def\titkol{Комплексное обеспечение ИБ %информационной безопасности 
-частных  облачных вычислительных сред}
-
-
-\def\aut{А.\,А.~Грушо$^1$, А.\,В.~Николаев$^2$, В.\,О.~Писковский$^3$, 
-В.\,В.~Сенчило$^4$, Е.\,Е.~Тимонина$^5$}
-
-\def\autkol{А.\,А.~Грушо, А.\,В.~Николаев, В.\,О.~Писковский и~др.}
-%$^3$, В.\,В.~Сенчило$^4$, Е.\,Е.~Тимонина$^5$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Грушо А.\,А.}
-\index{Николаев А.\,В.}
-\index{Писковский В.\,О.} 
-\index{Сенчило В.\,В.}
-\index{Тимонина Е.\,Е.}
-\index{Grusho A.\,A.}
-\index{Nikolaev A.\,V.}
-\index{Piskovski V.\,O.}
-\index{Senchilo V.\,V.} 
-\index{Timonina E.\,E.}
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа частично поддержана РФФИ (проект 18-29-03081).} 
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> 
-Российской академии наук, \mbox{grusho@yandex.ru}}
-\footnotetext[2]{Федеральный исследовательский центр химической физики им.\ Н.\,Н.~Семёнова Российской академии наук, 
-\mbox{gentoorion@mail.ru}}
-\footnotetext[3]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> 
-Российской академии наук, \mbox{vpvp80@yandex.ru}}
-\footnotetext[4]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> 
-Российской академии наук, \mbox{volodias@mail.ru}}
-\footnotetext[5]{Институт проблем информатики Федерального исследовательского 
-центра <<Информатика и~управление>> 
-Российской академии наук, \mbox{eltimon@yandex.ru}}
-
- \label{st\stat}
-
- \thispagestyle{headings}
- 
- \vspace*{-12pt}  
-  
-
-  
-  \Abst{Рассматривается задача построения безопасного корпоративного облака, в~котором 
-используются небезопасные компоненты. Наиболее важным представляется решение для 
-удаленной работы сотрудников организации. Решение основано на выделении простого 
-подоблака, реализующего безопасные взаимодействия удаленных сотрудников между собой, с~облачными сервисами и~ресурсами глобальной сети Интернет.}
-  
-  \KWE{информационная безопасность; облачные вычисления; безопасность удаленной 
-работы на небезопасных терминалах}
-
-\DOI{10.14357\!/\!08696527200407}  
-
-\vskip 10pt plus 9pt minus 6pt
-
- \thispagestyle{headings}
- 
- \vspace*{-24pt}
-  
-
-  \section{Введение }
-  
-  Различные организации все шире используют облачные вычисления. Вынос 
-точки доступа в~частное облако за пределы контролируемой зоны (КЗ) всегда 
-связан с~целым рядом рисков информационной безопасности (ИБ). В~качестве 
-такой точки доступа может быть использован ноутбук, персональный компьютер, 
-планшет или телефон. Удаленное рабочее место может содержать деловую 
-переписку, важные документы, статистику. Его легко потерять, лишиться при 
-транспортировке и~пр. Таким образом, обработка важной или секретной 
-информации на таком рабочем месте вне КЗ проблематична. Кроме 
-несанкционированного доступа к~конфиденциальной информации, хранимой на 
-рабочей станции, подключение ее к~домашней сети может завершиться взломом 
-и~инфицированием с~последующим неконтролируемым проникновением 
-в~офисную информационную среду или инфраструктуру организации. Без 
-профессиональных средств защиты обнаружить подобную атаку практически 
-невозможно, как и~невозможно предотвратить использование сторонних средств 
-хранения и~обмена информации, ин\-тер\-нет-ре\-сур\-сов. Служба 
-ИБ компании обычно не имеет возможности проконтролировать 
-удаленные рабочие места, что делает такие сценарии реализации угроз еще более 
-критичными с~точки зрения последствий. Контроль действий при обмене 
-информацией становится еще более сложной задачей. Очевидно, что для 
-обеспечения удаленного рабочего места, безопасного с~точки зрения интересов 
-компании, нужен новый подход к~организации эффективной системы защиты, 
-которая создавалась бы с~учетом вышеперечисленных угроз. При этом система 
-должна быть простой в~эксплуатации, а лучше~--- скрытой, управление не должно 
-требовать высокой квалификации обслуживающего персонала.
-  
-  \section{Архитектура защиты }
-  
-  В течение ряда лет в~Российской Федерации проводились исследования по 
-разработке архитектуры защищенной информационной системы (ИС) из 
-не\-безопас\-ных компонентов~[1, 2]. Ряд этих результатов можно применить 
-и~к~построению корпоративного облака. В работе предложено в~отдельное 
-подоблако вынести: 
-  \begin{itemize}
-\item удаленное взаимодействие сотрудников корпорации между собой;
-\item удаленное использование ресурсов компании; 
-\item взаимодействие с~ресурсами глобальной сети. 
-\end{itemize}
-
-  Такое подоблако позволит локализовать и~изолировать опасные функции, 
-связанные с~взаимодействиями и~сетевыми обменами. Отметим, что остальная 
-часть облачных сервисов также окажется в~изоляции, что позволит использовать 
-в~облаке небезопасные компоненты. Идея максимальной изоляции подсистем, 
-построенных из небезопасных элементов, стала одной из основных в~теории 
-построения защищенных систем из незащищенных элементов~[3, 4].
-  
-  Этот подход частично пересекается с~новой разработкой американских ученых, 
-а~именно: с~концепцией в~области кибербезопасности~--- <<нулевое доверие>> 
-(Zero Trust, или ZT)~[5]. Этот подход предполагает, что каждая сеть взломана, 
-каждая машина скомпрометирована и~каждый пользователь (вольно или невольно) 
-становится либо нарушителем, либо объектом интереса нарушителя. Никому 
-и~ничему в~сети с~нулевым доверием нельзя доверять, пока не доказано обратное. 
-  
-  Национальный институт стандартов и~технологий США (NIST)~[5] определяет 
-ZT как парадигму ки\-бер\-безопас\-ности, направленную на защиту ресурсов 
-в~предположении, что уровень доверия никогда не предоставляется по 
-умолчанию, а~постоянно оценивается. Архитектура сети, соответствующая ZT, 
-представляет собой план кибербезопасности предприятия, который использует 
-концепции нулевого доверия и~охватывает отношения компонентов, планирование 
-рабочего процесса и~политики доступа. Таким образом, ZT-безопас\-ность~--- это 
-совокупность взаимосвязанных политик, практик, программного обеспечения 
-(ПО) и~оборудования.
-  
-  ZT не выступает альтернативой традиционным методам безопасности, 
-а~является развитием хорошо известных и~зарекомендовавших себя технологий. 
-Повысить уровень доверия к~среде, в~которой работает пользователь, ZT 
-предлагает с~помощью ряда известных мер, в~числе которых: 
-  \begin{itemize}
-\item установка и~поддержка антивирусного ПО; 
-\item установка и~корректная настройка межсетевого экрана; 
-\item корректная настройка процессов обновления системного и~прикладного 
-ПО;
-\item установка аппаратного модуля доверенной загрузки. 
-\end{itemize}
-
-  Для создания сети в~рассматриваемых предположениях необходимо наличие 
-ряда автоматизированных служб и~компонентов поддержки безопасности. Все эти 
-элементы служат инструментами или процедурами, которые уже успешно 
-существуют, эксплуатируются и~повторяют концепцию  
-про\-грам\-мно-ком\-му\-ти\-ру\-емой сети (ПКС). Так, компонент принятия 
-решения о политике (PDP~--- Policy Decision Point) решает, безопасен ли 
-компьютер или веб-тра\-фик, и~после этого соответственно предоставляет или 
-отменяет доступ. Механизм политик безопас\-ности (ПБ)~[6] использует все 
-доступные, в~том числе и~внешние, источники данных, применимые 
-к~потребностям организации для определения безопасности на основе ПБ. Так, 
-решение о безопасности сетевого компонента принимается на основе 
-информации, предоставляемой системами. Система непрерывной диагностики 
-и~компенсации последствий считается главной. Система собирает информацию 
-о~текущем состоянии сетевых компонентов и~применяет обновления 
-к~конфигурации и~программным компонентам, предоставляет информацию об 
-элементе, отправляющем запрос на доступ, например работает ли он 
-с~соответствующей исправленной операционной системой и~приложениями или 
-есть ли у~актива ка\-кие-ли\-бо известные уязвимости.
-  
-   Основным недостатком описанного подхода является наличие сложной 
-интеллектуальной системы отслеживания и~динамического принятия решений. 
-В~рамках достижений информационных технологий в~РФ такую систему создать 
-сложно. Второй недостаток американского подхода состоит в~том, что он 
-опирается на стандартный набор механизмов безопасности, которые не всегда 
-дают надежность защиты. В~отечественных разработках предложена концепции 
-контроля соединений распределенной системы на основе метаданных, которая 
-позволяет обеспечить более высокий уровень ИБ~[7].
-  
-  \section{Безопасные взаимодействия }
-  
-  В качестве примера применения частного подоблака для организации 
-безопасных взаимодействий рассмотрим реализацию частного облака, 
-представленного на рисунке. 
-
-\begin{figure}
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=107mm %8.78mm  
-\epsfbox{gru-1.eps}
-}
-\end{center}
-%\vspace*{-9pt}
-
-{\small Архитектура защищенного корпоративного облака с~по\-мощью безопас\-но\-го 
-коммуникационного подоблака}
-\vspace*{-9pt}
-\end{figure}
-
-  В качестве пользовательского терминала используется виртуальная машина 
-(или контейнер), на которой реализован клиент для терминальных служб, 
-развернутых в~частном облаке. Привлекает идея загрузки в~недоверенный 
-терминал пользователя <<чистой>> рабочей среды с~внешнего носителя или 
-облачного ресурса. Будем называть устройство безопасного доступа 
-пользовательского терминала к~облачным ресурсам \textit{абонентским облачным 
-интерфейсом} (АОИ). Рабочая станция (РС) пользователя не имеет возможности 
-непосредственного выхода в~глобальную сеть. Единственным каналом служит 
-защищенный канал из АОИ, соединяющий РС1 с~частным подоблаком 
-и~реализующий тотальное шифрование информации, передаваемой по этому 
-каналу на уникальном для АОИ ключе. 
-  
-  В соответствии с~вышесказанным, РС1 с~установленным АОИ запрашивает 
-нужное взаимодействие в~подоблаке контроля взаимодействий. Между 
-коммутатором, служащим точкой доступа в~облако, и~АОИ устанавливается 
-защищенное соединение на ключе, используемом только между этой 
-РС и~шифратором на коммутаторе. Каждый легальный АОИ имеет 
-уникальный симметричный ключ для связи с~коммутатором. Успешное 
-расшифрование обращения к~коммутатору служит надежной аутентификацией 
-АОИ и~инициирует продолжение организации взаимодействия.
-  
-  Если взаимодействие предполагает связь с~другим сотрудником корпорации, то 
-осуществляется его вызов через аналогичный терминал этого сотрудника на его 
-симметричном ключе. Для их взаимодействия потребуется перешифрование 
-обмена информацией с~одного ключа на другой. Описанная схема взаимодействия~--- 
-простейшая, она оставляет возможность контроля взаимодействия. Для 
-маршрутизации трафика внутри облака коммутаторы строят индивидуальные для 
-каждого узла защищенные соединения с~помощью развернутой инфраструктуры 
-средств шифрования предприятия.
- 
-  \section{Заключение }
-  
-  Построение современных корпоративных систем с~защищенными терминалами 
-удаленных друг от друга пользователей может опираться на незащищенные 
-РС и~мобильные устройства, в~которые встроен единственный 
-доверенный блок, реализующий интерфейс небезопасного компьютера без 
-воз\-мож\-ности выхода в~сеть и~сетевого интерфейса с~единственным адресом 
-взаимодействия. Этот адрес предполагает связь с~примитивным подоблаком 
-корпоративной сис\-те\-мы, реализующей коммутатор для организации 
-взаимодействия удаленных пользователей друг с~другом, с~сервисами 
-корпоративного облака и~ресурсами внешней глобальной сети. В~за\-ви\-си\-мости от 
-ценностей активов организации может использоваться гарантированное  или легкое шифрование.
-  
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{9} 
-\bibitem{1-gn}
-\Au{Grusho A.\,A.} Composition of the trusted computer security using untrusted elements~/\!\!/ 
-Probabilistic methods in discrete mathematics~/ Eds. V.\,F.~Kolchin, 
-V.\,Ya.~Kozlov, Yu.\,L.~Pavlov, Yu.\,V.~Prokhorov.~--- Utrecht, 
-Netherlands: VSP, 1997. P.~231--236. doi: 10.1515/9783112314074-022.
-\bibitem{2-gn}
-\Au{Тимонина Е.\,Е.} Анализ угроз скрытых каналов и~методы построения гарантированно 
-защищенных распределенных автоматизированных систем: Дис.\ \ldots\ докт. техн. наук.~--- М., 2004. 
-204~с.
-\bibitem{3-gn}
-\Au{Грушо А.\,А., Володин А.\,В., Тимонина~Е.\,Е.} Безопасный интерфейс с~глобальной сетью из 
-ненадежных в~смысле безопасности элементов~/\!\!/ Информационные технологии в~науке, 
-образовании, телекоммуникации, бизнесе (весенняя сессия): Тр. Междунар. конф.~--- 
-Запорожье, Украина: Лаборатория издательских технологий и~компьютерной графики 
-Запорожского государственного университета, 2001. С.~149--151.
-\bibitem{4-gn}
-\Au{Грушо А.\,А., Тимонина Е.\,Е.} Гарантированно защищенные базы данных, построенные на 
-недоверенных с~точки зрения безопасности элементах~/\!\!/ Проб\-ле\-мы безопас\-ности 
-и~противодействия терроризму: Мат-лы конф.~--- М.: МЦНМО, 2006. С.~335--348.
-\bibitem{5-gn}
-\Au{Borchert O., Mitchell S., Connelly~S., Rose~S.} Zero trust architecture~/\!\!/ Draft (2nd) NIST 
-Special Publication 800-207, 2000. {\sf https://csrc.nist.gov/publications/\linebreak detail/sp/800-207/final}. 
-\bibitem{6-gn}
-\Au{Грушо А.\,А., Применко Э.\,А., Тимонина~Е.\,Е.} Теоретические основы компьютерной 
-безопас\-ности.~--- М.: Академия, 2009. 272~с.
-\bibitem{7-gn}
-\Au{Grusho A.\,A., Timonina E.\,E., Shorgin~S.\,Ya}. Modelling for ensuring information security of 
-the distributed information systems~/\!\!/ 31th European Conference on Modelling and Simulation 
-Proceedings.~--- Dudweiler, Germany: Digitaldruck Pirrot GmbH, 2017. P.~656--660.
-{\sf 
- http://www.scs-europe.net/dlib/2017/ecms2017acceptedpapers/0656-probstatECMS20170026.pdf}.
-\end{thebibliography}
-} }
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 12.09.20}}
-
-
-
-
-%\vspace*{6pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-\newpage
-
-\vspace*{-28pt}
-
-%\hrule
-
-%\vspace*{8pt}
-
-\def\tit{END-TO-END INFORMATION SECURITY OF~PRIVATE CLOUD COMPUTING}
-
-\def\titkol{End-to-end information security of~private cloud computing}
-
-
-
-\def\aut{A.\,A.~Grusho$^1$, A.\,V.~Nikolaev$^2$, V.\,O.~Piskovski$^1$, V.\,V.~Senchilo$^1$, 
-and~E.\,E.~Timonina$^1$}
-
-\def\autkol{A.\,A.~Grusho, A.\,V.~Nikolaev, V.\,O.~Piskovski, et al.}
-%V.\,V.~Senchilo$^1$,  and~E.\,E.~Timonina$^1$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-
-\noindent
-$^1$Institute of Informatics Problems, Federal Research Center ``Computer Science\linebreak
-$\hphantom{^1}$and Control'' of 
-the Russian Academy of Sciences; 44-2~Vavilov Str., Moscow\linebreak
-$\hphantom{^1}$119133, Russian Federation
-
-
-\noindent
-$^2$N.\,N.~Semenov Federal Research Center for Chemical Physics of the Russian\linebreak
-$\hphantom{^1}$Academy of Sciences,
-4~Kosygin  Str., Moscow 119991, Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2020 vol~30 no\,4}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics 2020 vol~30 no\,4
-\hfill \textbf{\thepage}}}
-  
-  
-\vspace*{3pt}
- 
-
-
-\Abste{The paper discusses building of a secure enterprise cloud that uses unsecure components. The 
-most important solution is for the organization's employees to work remotely. The solution is based on 
-provision of a simple subcloud that implements secure interactions of remote employees among 
-themselves, cloud services, and interaction with resources in the global Internet.}
-
-\KWE{information security; cloud computing; security of remote work on unsecure terminals}
-
-
-
-\DOI{10.14357\!/\!08696527200407}  
-
-\vspace*{-12pt}
-
-
-\Ack
-\noindent
-The paper was partially supported by RFBR, project  
-No.\,18-29-03081.
- 
-
-%\vspace*{-12pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{9}
-\bibitem{1-gn-1}
-\Aue{Grusho, A.\,A.} 1997. Composition of a trusted computer security system on the base of 
-untrusted elements. \textit{Probabilistic methods in discrete mathematics}. Eds. V.\,F.~Kolchin, 
-V.\,Ya.~Kozlov, Yu.\,L.~Pavlov, and Yu.\,V.~Prokhorov. Utrecht, Netherlands: VSP. 231--236.  doi: 10.1515/9783112314074-022.
-\bibitem{2-gn-1}
-\Aue{Timonina, E.\,E.} 2004.  Analiz ugroz skrytykh kanalov i~metody postroeniya garantirovanno 
-zashchishchennykh raspredelennykh avtomatizirovannykh sistem [The analysis of threats of covert 
-channels and methods of creation of guaranteed protected distributed automated systems]. Moscow: 
-Russian State University for the Humanities. D.Sc. Diss. 204~p.
-\bibitem{3-gn-1}
-\Aue{Grusho, A.\,A., A.\,V. Volodin, and E.\,E.~Timonina.} 2001. Bezopasnyy interfeys s~glo\-bal'\-noy 
-set'yu iz nenadezhnykh v~smysle bezopasnosti elementov [Secure interface with WAN from untrusted 
-elements]. \textit{Informatsionnye tekhnologii v~nauke, obrazovanii, 
-telekommunikatsii, biznese (vesennyaya sessiya): Tr. Mezhdunar. konf.} [Conference (International)  ``Information 
-Technologies in Science, Education, Telecommunications, Business (spring session)'' Proceedings]. 
-Zaporozhye: Laboratory of Publishing Technologies and Computer Graphics of Zaporozhye State University. 
-149--151.
-\bibitem{4-gn-1}
-\Aue{Grusho, A.\,A., and E.\,E.~Timonina.} 2006. Garantirovanno zashchishchennye bazy dannykh, 
-postroennye na nedoverennykh s~tochki zreniya bezopasnosti elementakh [Guaranteed secure 
-databases built on insecure elements]. \textit{Problemy bezopas\-nosti i~protivodeystviya 
-terrorizmu: Mat-ly konf.} [Conference ``Security and Counter-Terrorism Issues'' Proceedings]. 
-Moscow: MCCME. 335--348.
-\bibitem{5-gn-1}
-\Aue{Borchert, O., S.~Mitchell, S.~Connelly, and S.~Rose.} 2000. SP 800-207: Zero trust 
-architecture. {NIST}. Available at: {\sf https://csrc.nist.gov/publications/detail/sp/800-207/final} 
-(accessed September~12, 2020).
-\bibitem{6-gn-1}
-\Aue{Grusho, A., E. Primenko, and E.~Timonina.} 2009. \textit{Teoreticheskie osnovy komp'yuternoy 
-bezopasnosti} [Theoretical bases of computer security]. Moscow: Academy. 272~р.
-\bibitem{7-gn-1}
-\Aue{Grusho, A.\,A., E.\,E.~Timonina, and S.\,Ya.~Shorgin.} 2017. Modelling for ensuring 
-information security of the distributed information systems. \textit{31th European Conference on 
-Modelling and Simulation Proceedings}. Dudweiler, Germany: Digitaldruck Pirrot GmbH. 656--660. 
-Available at: {\sf 
- http://www.scs-europe.net/dlib/2017/ecms2017acceptedpapers/0656-probstatECMS20170026.pdf} 
-(accessed September12, 2020).
-\end{thebibliography}
-} }
-
-%\vspace*{-3pt}
-
-\hfill{\small\textit{Received September 12, 2020}} 
-
-%\vspace*{-16pt}
-
-\Contr
-
-\noindent
-\textbf{Grusho Alexander A.} (b.\ 1946)~--- Doctor of Science in physics and mathematics, professor, 
-principal scientist, Institute of Informatics Problems, Federal Research Center ``Computer Science 
-and Control'' of the Russian Academy of Sciences; 44-2~Vavilov Str., Moscow 119133, Russian 
-Federation; \mbox{grusho@yandex.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Nikolaev Andrei V.} (b.\ 1973)~--- Candidate of Science (PhD) in physics and mathematics, 
-scientist, N.\,N.~Semenov Federal Research Center for Chemical Physics of the Russian Academy of Sciences, 
-4~Kosygin Str., Moscow 119991, Russian Federation; \mbox{gentoorion@mail.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Piskovski Viktor O.} (b.\ 1963)~--- Candidate of Science (PhD) in physics and mathematics, 
-senior scientist, Institute of Informatics Problems, Federal Research Center ``Computer Science and 
-Control'' of the Russian Academy of Sciences; 44-2~Vavilov Str., Moscow 119133, Russian 
-Federation; \mbox{vpvp80@yandex.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Senchilo Vladimir V.} (b.\ 1963)~--- scientist, Institute of Informatics Problems, Federal 
-Research Center ``Computer Science and Control'' of the Russian Academy of Sciences; 
- 44-2~Vavilov Str., Moscow 119133, Russian Federation; \mbox{volodias@mail.ru} 
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Timonina Elena E.} (b.\ 1952)~--- Doctor of Science in technology, professor, leading scientist, 
-Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
-Russian Academy of Sciences; 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
-\mbox{eltimon@yandex.ru}
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}

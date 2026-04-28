@@ -1,775 +1,0 @@
-\def\stat{eg+zat}
-
-\def\tit{МАШИННЫЙ ПЕРЕВОД С~ПОМОЩЬЮ ChatGPT: МОНИТОРИНГ 
-ВОСПРОИЗВОДИМОСТИ РЕЗУЛЬТАТОВ}
-
-\def\titkol{Машинный перевод с~помощью ChatGPT: мониторинг 
-воспроизводимости результатов}
-
-\def\aut{А.\,Ю.~Егорова$^1$, И.\,М.~Зацман$^2$, В.\,О.~Романенко$^3$}
-
-\def\autkol{А.\,Ю.~Егорова, И.\,М.~Зацман, В.\,О.~Романенко}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{А.\,Ю.~Егорова$^1$, И.\,М.~Зацман$^2$, В.\,О.~Романенко$^3$}
-\index{Krivenko M.\,P.}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-%\footnotetext[1]
-%{Работа выполнена в~Институте проблем информатики Федерального исследовательского центра 
-%<<Информатика и~управление>> Российской академии наук ????}} 
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук; 
-Московский государственный лингвистический университет, \mbox{anna.yu.egorova@yandex.ru}}
-\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
-\mbox{izatsman@yandex.ru}}
-\footnotetext[3]{Федеральный исследовательский центр <<Информатика и~управление>> Российской 
-академии наук, \mbox{varvarorama@gmail.com}}
-
- \label{st\stat}
-
- \thispagestyle{headings}
- 
- \vspace*{-12pt}
- 
- 
-  
-
-  \Abst{Рассматривается вопрос воспроизводимости на интервале времени результатов 
-применения чат-бо\-та \mbox{ChatGPT} для решения математической задачи, генерации 
-кода и~раз\-гад\-ки визуальной головоломки. Дан крат\-кий обзор экспериментальных данных 
-мониторинга вос\-про\-из\-во\-ди\-мости результатов для этих трех приложений чат-бо\-та. 
-Пред\-став\-лен\-ные экспериментальные данные иллюстрируют то, что результаты работы 
-\mbox{ChatGPT} при решении одной и~той же задачи могут изменяться со временем. При этом 
-значительные изменения могут произойти за относительно короткий промежуток времени, 
-что подчеркивает не\-об\-хо\-ди\-мость мониторинга и~оцен\-ки поведения чат-бо\-та 
-\mbox{ChatGPT} при его использовании. Основ\-ная цель \mbox{статьи} со\-сто\-ит в~исследовании 
-вос\-про\-из\-во\-ди\-мости на заданном интервале времени результатов машинного перевода, 
-выполненного по запросу к~\mbox{ChatGPT}. Полученные экспериментальные данные 
-мониторинга вос\-про\-из\-во\-ди\-мости результатов так\-же свидетельствуют об их изменении, 
-включая и~снижение на интервале времени качества машинного перевода одних и~тех же 
-текс\-тов. Для мониторинга вос\-про\-из\-во\-ди\-мости результатов и~оцен\-ки поведения 
-\mbox{ChatGPT} применяется ранее разработанный метод интервального оценивания 
-машинного перевода.} 
-   
-\KW{приложения ChatGPT; мониторинг; вос\-про\-из\-во\-ди\-мость результатов; 
-машинный перевод; интервальное оценивание}
-
-\DOI{10.14357\!/\!08696527230310}{LTOWWN}  
-
-\vskip 10pt plus 9pt minus 6pt
-
- \thispagestyle{headings}
- 
- \vspace*{-28pt}
-
-
-\section{Введение}
-
-\vspace*{-2pt}
-
-  ChatGPT, один из наиболее популярных чат-бо\-тов, был выпущен 
-компанией \mbox{OpenAI} в~ноябре 2022~г. Три месяца спустя чат-бот 
-насчитывал порядка~123~млн активных пользователей в~месяц. Для сравнения, 
-\mbox{TikTok} понадобилось~9~ме\-ся\-цев, чтобы пересечь отметку в~100~млн активных 
-пользователей, а~Instagram\footnote[4]{Организация, деятельность которой запрещена на территории Российской Федерации.}~--- 2,5~года для до\-сти\-же\-ния аналогичного 
-результата~\cite{1-eg}. 
-  
-  В работе~\cite{2-eg} приведены предварительные экспериментальные 
-данные мониторинга вос\-про\-из\-во\-ди\-мости результатов работы чат-бо\-тов 
-\mbox{ChatGPT-3.5} и~\mbox{ChatGPT-4} на интервале времени март--июнь 
-2023~г.\footnote{Экспериментальные данные, иллюстрирующие решение математической 
-задачи, генерацию кода и~разгадку визуальной головоломки, опуб\-ли\-ко\-ва\-ны на  
-ин\-тер\-нет-ре\-сур\-сах, а~не в~ре\-цен\-зи\-ру\-емых жур\-на\-лах\!/\!сбор\-ни\-ках. При 
-по\-сле\-ду\-ющей их пуб\-ли\-ка\-ции в~ре\-цен\-зи\-ру\-емых жур\-на\-лах\!/\!сбор\-ни\-ках они могут быть 
-уточ\-не\-ны. Однако выводы \mbox{статьи}, ка\-са\-ющи\-еся машинного перевода, сделаны пол\-ностью на 
-осно\-ве полученных в~ФИЦ ИУ РАН экспериментальных данных, т.\,е.\ они не зависят от 
-воз\-мож\-ных по\-сле\-ду\-ющих изменений в~ци\-ти\-ру\-емых работах, раз\-ме\-щен\-ных сейчас на 
-  ин\-тер\-нет-ре\-сур\-сах.} Мониторинг проводился в~процессе решения 
-сле\-ду\-ющих задач: математической (относится ли заданное чис\-ло к~прос\-тым), 
-генерация кода (поиск таких трехзначных чисел~$N$, конкатенация которых 
-с~$2N$ и~$3N$ содержит все девять цифр, кроме~0) и~вос\-ста\-нов\-ле\-ние 
-набора~9~пол\-но\-цвет\-ных плиток ($3\times 3$) по девяти цвет\-ным фрагментам 
-этих плиток (далее~--- визуальная головоломка)\footnote{Кроме решения 
-пе\-ре\-чис\-лен\-ных задач анализировалась вос\-про\-из\-во\-ди\-мость ответов на такие рискованные 
-вопросы, как, например: <<Со\-ставь список способов заработать деньги, нарушая закон>>.}. 
-В~ходе эксперимента задачи решались дваж\-ды~--- в~начале и~в~конце указанного 
-интервала. Цель проведенного эксперимента~--- проиллюстрировать степень 
-вос\-про\-из\-во\-ди\-мости результатов решения одних и~тех же задач по про\-шест\-вии 
-заданного промежутка вре\-мени.
-{\looseness=1
-
-}
-  
-  Обозначенные задачи были выбраны авторами работы~\cite{2-eg} по двум 
-причинам. Во-первых, они час\-то используются для оцен\-ки больших 
-линг\-ви\-сти\-че\-ских моделей~\cite{3-eg, 4-eg, 5-eg}. Во-вто\-рых, три 
-пе\-ре\-чис\-лен\-ные задачи имеют формальную по\-ста\-нов\-ку и~результаты их 
-решения относительно лег\-ко поддаются \mbox{оценке}.
-  
-  Проведенный эксперимент показал, что результаты работы \mbox{ChatGPT} 
-при решении одной и~той же задачи могут изменяться со временем. При этом 
-значительные изменения могут произойти за относительно короткий 
-промежуток времени, что подчеркивает не\-об\-хо\-ди\-мость мониторинга и~оцен\-ки 
-поведения чат-бо\-та \mbox{ChatGPT}.
-  %
-  В частности, выполнимость кода, сгенерированного \mbox{ChatGPT-4}, 
-в~мар\-те со\-став\-ля\-ла~52\%, в~июне же она упала до~10\%; для 
- \mbox{ChatGPT-3.5} тенденция была такая же: вы\-пол\-ни\-мость уменьшилась 
-с~22\% до~2\%. Результаты разгадки визуальной го\-ло\-во\-лом\-ки изменились 
-незначительно: для \mbox{ChatGPT-4} правильное решение было найдено 
-в~24,6\% случаев в~мар\-те и~в~27,4\% в~июне; для \mbox{ChatGPT-3.5} 
-наблюдалась схожая тенденция: доля правильных ответов увеличилась 
-с~10,3\% до~12,2\%~\cite{2-eg}.
-  
-  В ряде других работ была проведена оцен\-ка результатов использования 
-\mbox{ChatGPT} при решении таких задач обработки текс\-тов на естественном 
-языке, как понимание прочитанного~\cite{6-eg}, машинный перевод~\cite{7-eg} 
-и~резюмирование~\cite{8-eg}. В~исследовании понимания прочитанного  
-чат-бот \mbox{ChatGPT} тес\-ти\-ро\-вал\-ся на тех же экзаменационных билетах, по 
-которым учащиеся сред\-ней школы в~Нидерландах сдают экзамен по 
-пониманию письменного текс\-та на английском языке. По результатам 
-тес\-ти\-ро\-ва\-ния \mbox{ChatGPT-3.5} получил оценку~7,3 (по шкале от~1 до~10), 
-что со\-по\-ста\-ви\-мо со сред\-ней оценкой всех учащихся, сда\-вав\-ших этот экзамен 
-в~Нидерландах (она рав\-на~6,99). Однако иногда требовались по\-втор\-ные 
-за\-про\-сы, чтобы получить хоть ка\-кой-то ответ: без них \mbox{ChatGPT-3.5} 
-получил оцен\-ку~6,5. \mbox{ChatGPT-4}, в~свою очередь, получил 
-оценку~8,3~балла без не\-об\-хо\-ди\-мости повторных запросов~\cite{6-eg}. 
-Отметим, что в~этом тес\-ти\-ро\-ва\-нии анализировались результаты работы 
-\mbox{ChatGPT-3.5} и~\mbox{ChatGPT-4}, но при этом не ставилась задача 
-мониторинга вос\-про\-из\-во\-ди\-мости результатов их работы на интервале вре\-мени.
-  
-  В тестировании чат-бота ChatGPT как машинного переводчика его 
-результаты со\-по\-став\-ля\-лись с~переводами, полученными с~по\-мощью сис\-тем 
-нейронного машинного перевода (НМП) Google Translate~\cite{9-eg}, DeepL 
-Translate~\cite{10-eg} и~\mbox{Tencent} \mbox{TranSmart}~\cite{11-eg}. Было 
-обнаружено, что \mbox{ChatGPT-3.5} переводит кон\-ку\-рен\-то\-спо\-соб\-но по 
-срав\-не\-нию с~данными сис\-те\-ма\-ми НМП, если речь идет о~европейских 
-языках с~большими языковыми ресурсами, но значительно отстает от них на 
-языках с~ограниченным объемом ресурсов. По результатам тестирования 
-\mbox{ChatGPT-4} сделан вывод, что это отставание значительно со\-кра\-ти\-лось. 
-Отметим, что и~в~этом тес\-ти\-ро\-ва\-нии не ставилась задача мониторинга 
-вос\-про\-из\-во\-ди\-мости результатов работы на интервале времени. Однако во время 
-тестирования было замечено, что ответы на один и~тот же за\-прос могут 
-различаться в~раз\-ные моменты~\cite{7-eg}.
-  
-  Итоги тестирования чат-бо\-та ChatGPT-3 на задачах резюмирования показали, 
-что су\-щест\-ву\-ющие методы оценки его результатов нерелевантны из-за низ\-кой 
-корреляции этих оценок с~экспертными. Этот вывод, по мнению авторов 
-работы~\cite{8-eg}, обуслов\-ли\-ва\-ет по\-треб\-ность в~новых методах, 
-обес\-пе\-чи\-ва\-ющих получение более качественных оценок результатов 
-резюмирования.
-  
-  Таким образом, при решении перечисленных задач обработки текс\-тов на 
-естественном языке с~по\-мощью чат-бота \mbox{ChatGPT} не использовались 
-методы мониторинга вос\-про\-из\-во\-ди\-мости результатов его  
-работы~\cite{6-eg, 7-eg, 8-eg}. При этом было замечено, что результаты одного 
-и~того же за\-про\-са на машинный перевод могут различаться в~разные 
-моменты~\cite{7-eg}, но при этом остался открытым вопрос, а~какими же 
-методами мож\-но было бы реализовать мониторинг вос\-про\-из\-во\-ди\-мости 
-результатов.
-  
-  Основная цель статьи со\-сто\-ит в~исследовании вос\-про\-из\-во\-ди\-мости на 
-заданном интервале времени результатов машинного перевода, выполненного 
-по за\-про\-су к~\mbox{ChatGPT}, с~применением ранее разработанного метода 
-интервального оценивания машинного перевода~\cite{12-eg, 13-eg}, 
-адап\-ти\-ро\-ван\-но\-го для решения по\-став\-лен\-ной за\-дачи.
-
-
-
-\section{Обзор модели ChatGPT}
-   
-   ChatGPT представляет собой искусственную нейронную сеть, в~которой 
-используется технология Generative Pre-trained Transformer (GPT), поз\-во\-ля\-ющая 
-обрабатывать большой объем входных данных с~по\-сле\-ду\-ющей генерацией 
-связного текс\-та~\cite{14-eg}. Как было отмечено выше, \mbox{ChatGPT} 
-применяется для решения задач в~об\-ласти обработки текс\-тов на естественном 
-языке (Natural Language Processing, NLP), таких как перевод текс\-та с~одного 
-языка на другой, резюмирование текс\-та, со\-став\-ле\-ние ответов на вопросы. 
-В~част\-ности, чат-бот \mbox{ChatGPT} потенциально может иметь широкий 
-спектр сфер применения, включая образование, здравоохранение, разработку 
-про\-грам\-мных продуктов, сферу научных исследований и~обработку текс\-тов на 
-естественном языке~\cite{15-eg}.
-   
-Воронцов приводит более детальный перечень 
-возможностей \mbox{ChatGPT}~\cite{16-eg}: со\-став\-ле\-ние обзоров, рефератов, новостных сводок на 
-раз\-ных языках; поиск и~структурирование профессиональной информации; 
-сообщение новостей; генерация документов (в~том чис\-ле юридических) 
-и~сайтов по описанию; генерация программного кода; уточ\-не\-ние и~до\-пол\-не\-ние 
-кон\-тен\-та в~диалоге; под\-дер\-жа\-ние разговора; беседа с~детьми с~учетом их 
-воз\-раст\-ных особенностей; выполнение отдельных функций воспитателя, 
-учителя, на\-став\-ни\-ка; оказание психологической по\-мощи. 
-   
-   Исследователи~\cite{14-eg, 15-eg, 17-eg} указывают на сле\-ду\-ющие 
-недостатки работы \mbox{ChatGPT} на нынешнем этапе его раз\-ви\-тия: 
-сообщение неверной информации; выдача некорректных сведений, ка\-са\-ющих\-ся 
-событий, технологий, законов; манипулирование, по\-буж\-де\-ние изменить точ\-ку 
-зрения; умал\-чи\-ва\-ние информации; под\-дер\-жа\-ние предрассудков и~ненаучных 
-пред\-став\-ле\-ний.
-   
-   Вот почему стремительное развитие больших языковых моделей 
-и~искусственного интеллекта в~целом может вызывать одновременно 
-и~оптимизм, и~обеспо\-ко\-ен\-ность. К~этому на\-прав\-ле\-нию мож\-но относиться 
-с~оптимизмом, так как большие языковые модели помогают в~решении 
-широкого спект\-ра задач. С~другой стороны, они могут вызывать опасение из-за 
-угро\-зы распространения фундаментально не\-вер\-но\-го пред\-став\-ле\-ния 
-о~функционировании естественного языка и~других знаковых сис\-тем, 
-создаваемых и~ис\-поль\-зу\-емых человеком, а~так\-же о~процессах по\-зна\-ния 
-и~креативной дея\-тель\-ности человека~\cite{14-eg, 17-eg, 18-eg}.
-   
-   В заключение следует отметить, что у~\mbox{ChatGPT} есть конкуренты, 
-такие как Bing Chat от компании Microsoft, Bard от \mbox{Alphabet} (\mbox{Google}) и~\mbox{Ernie} от 
-\mbox{Baidu}. В~част\-ности, наиболее существенное различие меж\-ду \mbox{ChatGPT} 
-и~Bing Chat заключается в~том, что Bing Chat имеет до\-ступ к~постоянно 
-об\-нов\-ля\-ющим\-ся данным из ин\-тер\-нет-ре\-сур\-сов, в~то время как 
-\mbox{ChatGPT-4} ограничен набором обуча\-ющих данных, опуб\-ли\-ко\-ван\-ных до 
-сентября 2021~г.~\cite{14-eg}. 
-
-\section{Описание эксперимента по~мониторингу воспроизводимости}
-
-   В ходе исследования воспроизводимости результатов работы 
-\mbox{ChatGPT} был проведен эксперимент по переводу текс\-то\-вых 
-фрагментов с~русского языка на французский. В~качестве экспериментального 
-корпуса были отобраны~24~русскоязычных предложения, каж\-дое из которых 
-содержит двухкомпонентный коннектор. Под коннектором понимается 
-языковая единица, функция которой со\-сто\-ит в~выражении  
-ло\-ги\-ко-се\-ман\-ти\-че\-ско\-го отношения, су\-щест\-ву\-юще\-го меж\-ду 
-со\-еди\-нен\-ны\-ми с~ее по\-мощью частями текс\-то\-во\-го  
-фраг\-мен\-та~\cite[с.~17]{19-eg}. Например, коннектор {\bfseries\textit{не только 
-(рас\-сто\-яние)~и}}~уста\-нав\-ли\-ва\-ет отношение не\-един\-ст\-вен-\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
-ности между 
-двумя частями предложения~--- <<сирени>> и~<<липы отцвели, ягоды 
-ото\-шли>> (табл.~1).
-   
-   Источником всех предложений послужил рус\-ско-фран\-цуз\-ский 
-подкорпус Национального корпуса русского языка~\cite{20-eg}. Данные 
-предложения были выбраны по результатам ранее проведенного эксперимента 
-с~привлечением сис\-те\-мы \mbox{Google} Translate: тогда машинные переводы 
-фиксировались ежемесячно на протяжении года~\cite{21-eg, 22-eg}. По его 
-итогам этим~24~сериям перевода была присвоена категория не\-ста\-биль\-ности, 
-ха\-рак\-те\-ри\-зу\-ющая \textit{снижение качества НМП с~течением времени}. 
-Эти~24~русскоязычных предложения и~были отоб\-ра\-ны для исследования 
-вос\-про\-из\-во\-ди\-мости результатов работы \mbox{ChatGPT} именно по причине 
-снижения качества их пе\-ре\-вода.
-   
-   Для эксперимента с~ChatGPT перевод осуществлялся на сай\-те {\sf 
-https:// chat.openai.com} на протяжении трех месяцев (с~20~апреля по~20~июля 
-2023~г.). Использовался \mbox{ChatGPT} вер\-сии~3.5. Сессии переводов 
-проводились еженедельно в~заранее определенный день недели. Всего было 
-сделано~14~сессий перевода, результаты которых фиксировались 
-в~надкорпусной базе данных (НБД)~\cite{23-eg}\footnote{Ввод результатов 
-перевода в~НБД был выполнен С.\,Т.~Мачавариани и~В.\,О.~Романенко.}. Если чат-бот 
-выдавал два и~более варианта перевода текс\-то\-во\-го фрагмента, то в~НБД 
-фиксировались все варианты за текущую дату. Дальнейшее аннотирование 
-русскоязычных предложений и~их переводов происходило по методике, 
-описанной в~работе~\cite{13-eg}\footnote{Аннотирование русскоязычных 
-предложений и~их переводов было выполнено А.\,Ю.~Егоровой.}. Метод интервального 
-оценивания подра\-зуме\-ва\-ет мно\-го\-крат\-ное повторение эксперимента через 
-определенный временной интервал и~фиксирование результатов машинного 
-перевода в~НБД с~их по\-сле\-ду\-ющим ан\-но\-ти\-ро\-ва\-нием. 
-   
-   Эксперимент находится в~процессе реализации: по со\-сто\-янию на~23~июля 
-2023~г.\ в~результате~14~серий переводов была получена~341~пара\footnote{Это 
-чис\-ло со\-сто\-ит из 24 серий по~14~переводов (всего~336) плюс еще~5~вариантов перевода, 
-выданных сис\-те\-мой \mbox{ChatGPT} единовременно в~ответ на один запрос.}, со\-сто\-ящая 
-из русского предложения и~его перевода на французский язык (см.\ табл.~1).
-
-\begin{table}\small %tabl1
-\begin{center}
-\Caption{Пример предложения из книги И.\,А.~Гончарова <<Обломов>> и~его машинный 
-перевод, выполненный с~по\-мощью \mbox{ChatGPT} на французский}
-\vspace*{2ex}
-
-\tabcolsep=6.5pt
-\begin{tabular}{|p{60.5mm}|p{60.5mm}|}
-\hline 
-\multicolumn{1}{|c|}{\textbf{Исходный текст}}&\multicolumn{1}{c|}{\textbf{Текст перевода}}\\
-\hline
-{\bfseries\textit{Не только}} сирени~--- {\bfseries\textit{и}}~липы отцвели, ягоды 
-отошли.&{\bfseries\textit{Non seulement}} les lilas ont fleuri, {\bfseries\textit{mais aussi}} les 
-tilleuls ont perdu leurs fruits.\\
-\hline
-\end{tabular}
-\end{center}
-\vspace*{-9pt}
-\end{table}
-   
-   
-   В табл.~1 представлен пример текстового фраг\-мен\-та, переведенного на 
-французский с~по\-мощью \mbox{ChatGPT}. В~переводе допущена 
-семантическая ошиб\-ка, по\-влек\-шая искажение смысла: фрагмент <<les tilleuls 
-ont perdu leurs fruits>> может быть переведен как <<липы потеряли свои 
-плоды>>. При этом фрагмент <<ягоды ото\-шли>> остается без пе\-ре\-вода. 
-
-\section{Результаты мониторинга воспроизводимости}
-   
-   По итогам 14~недель эксперимента получены количественные данные 
-распределения аннотаций по категориям, ха\-рак\-те\-ри\-зу\-ющим не\-ста\-биль\-ность 
-результатов НМП, полученных с~по\-мощью \mbox{ChatGPT}. В~НБД каждая 
-аннотация со\-сто\-ит из сле\-ду\-ющих четырех час\-тей:
-\begin{enumerate}[(1)]
-\item исходное предложение 
-(или его фрагмент) с~двухкомпонентным коннектором на русском языке; 
-\item руб\-ри\-ки классификации, присвоенные исходному текс\-ту; 
-\item перевод 
-предложения (или его фрагмента на французский), выполненный с~по\-мощью 
-\mbox{ChatGPT};
-\item руб\-ри\-ки классификации, при\-сво\-ен\-ные переводу (примеры 
-аннотаций см.\ в~\cite{22-eg}).
-\end{enumerate}
-
-\begin{table}[b]\small %tabl2
-\vspace*{-9pt}
-\begin{center}
-\Caption{Распределение аннотаций с~ChatGPT по категориям, ха\-рак\-те\-ри\-зу\-ющим не\-ста\-биль\-ность 
-НМП}
-\vspace*{2ex}
-
-\tabcolsep=6.6pt
-\begin{tabular}{|c|l|c|r|}
-\hline 
-\textbf{№}&\multicolumn{1}{c|}{\tabcolsep=0pt\begin{tabular}{c}\textbf{Название рубрики, характеризующей}\\ \textbf{нестабильность НМП}\end{tabular}}&
-\tabcolsep=0pt\begin{tabular}{c}\textbf{Число} \\ \textbf{аннотаций}\end{tabular}&
-\tabcolsep=0pt\begin{tabular}{c}\textbf{Доля от общего}\\ \textbf{числа аннотаций}\\ \textbf{(341)}\end{tabular}\\
-\hline
-1&Повышение качества НМП&0&0\%\hspace*{10mm}\\
-\hline
-2&Снижение качества НМП&28&8,2\%\hspace*{10mm}\\
-\hline
-3&Колебание качества НМП&187&54,8\%\hspace*{10mm}\\
-\hline
-4&\tabcolsep=0pt\begin{tabular}{l}Изменение набора ошибок в~НМП без\\ динамики его качества\end{tabular}&0&0\%\hspace*{10mm}\\
-\hline
-5&Изменение НМП без динамики его качества&126&37\%\hspace*{10mm}\\
-\hline
-6&НМП без изменений&0&0\%\hspace*{10mm}\\
-\hline
-\multicolumn{2}{|l|}{\textbf{Итого:}}&\textbf{341}&\textbf{100\%}\hspace*{10mm}\\
-\hline
-\end{tabular}
-\end{center}
-%\vspace*{-9pt}
-\end{table}
-
-   
-   В табл.~2 представлены данные по всем аннотациям, сформированным 
-с~по\-мощью \mbox{ChatGPT} и~зафиксированным в~НБД коннекторов на~23~июля 2023~г. 
-   
-   Прежде всего следует отметить, что на данном этапе исследования только 
-три из шести категорий, ха\-рак\-те\-ри\-зу\-ющих не\-ста\-биль\-ность НМП, получили 
-ненулевое значение. Нулевыми остались ячейки, со\-от\-вет\-ст\-ву\-ющие сле\-ду\-ющим 
-руб\-ри\-кам: повышение качества НМП; изменение набора ошибок в~НМП без 
-динамики его качества; НМП без изменений. 
-   
-   Как было отмечено выше, для мониторинга и~оценки вос\-про\-из\-во\-ди\-мости 
-результатов машинного перевода с~по\-мощью \mbox{ChatGPT} были 
-использованы только те предложения, качество машинного перевода которых 
-с~по\-мощью \mbox{Google} Translate \textit{снизилось} по данным мониторинга и~оценки 
-воспроизводимости результатов~\cite{21-eg, 22-eg}. По данным мониторинга 
-\mbox{Google} Translate, таких предложений было~24, и~именно они были отоб\-ра\-ны для 
-мониторинга и~оцен\-ки вос\-про\-из\-во\-ди\-мости результатов работы \mbox{ChatGPT}. Этим 
-критерием отбора (снижения качества на интервале времени), воз\-мож\-но, 
-и~объясняется нулевое значение показателя в~строке <<Повышение качества 
-НМП>> в~табл.~2.
-   
-   Последнее нулевое соответствие указывает на то, что практически все 
-машинные переводы, выполненные с~по\-мощью \mbox{ChatGPT}, проявляют 
-не\-ста\-биль\-ность перевода, т.\,е.\ перевод меняется при по\-сле\-ду\-ющих итерациях 
-машинного перевода 24~отоб\-ран\-ных русскоязычных предложений. 
-   
-   Наибольшее число аннотаций (54,8\%) приходится на тре\-тью категорию, 
-ха\-рак\-те\-ри\-зу\-ющую колебание качества НМП. Это означает, что качество 
-перевода меняется так, что чис\-ло ошибок в~НМП может со временем  
-уве\-ли\-чи\-вать\-ся\!/\!умень\-шать\-ся, после чего наблюдается обратная 
-тенденция. 
-   
-   Следующую позицию по числу аннотаций (37\%) занимает пятая категория, 
-ха\-рак\-те\-ри\-зу\-ющая изменение перевода без динамики его качества. Наименьшее 
-чис\-ло аннотаций (8,2\%) приходится на вторую категорию, ха\-рак\-те\-ри\-зу\-ющую 
-снижение качества НМП. 
-   
-   Методика интервального оценивания может найти сле\-ду\-ющее практическое 
-применение: при использовании \mbox{ChatGPT} в~качестве переводчика 
-следует принимать во внимание пре\-об\-ла\-да\-ющую не\-ста\-биль\-ность его переводов 
-и~отсутствие тенденции к~повышению качества перевода. Это означает, что 
-при использовании \mbox{ChatGPT} в~критических приложениях необходимо 
-предусмот\-реть проверку результатов работы \mbox{ChatGPT}  
-экс\-пер\-том-пе\-ре\-вод\-чи\-ком.
-
-\section{Заключение}
-   
-   В статье рассмотрен вопрос вос\-про\-из\-во\-ди\-мости на интервале времени 
-результатов функционирования чат-бо\-та \mbox{ChatGPT} как машинного 
-переводчика и~его применения для решения математической задачи, генерации 
-кода и~разгадки визуальной го\-ло\-во\-лом\-ки. Предложен метод мониторинга 
-вос\-про\-из\-во\-ди\-мости результатов \mbox{ChatGPT} как машинного переводчика 
-и~пред\-став\-ле\-ны результаты эксперимента по наблюдению за изменением 
-качества полученных переводов. Как уже было отмечено, наибольшее чис\-ло 
-аннотаций (54,8\%) попадает в~категорию, ха\-рак\-те\-ри\-зу\-ющую колебание 
-качества НМП. Это означает, что качество перевода меняется таким образом, 
-что чис\-ло ошибок перевода, ре\-гист\-ри\-ру\-емых итерационно на интервале 
-времени, со временем уве\-ли\-чи\-ва\-ет\-ся\!/\!умень\-ша\-ет\-ся, после чего 
-наблюдается об\-рат\-ная тенденция. 
-   
-   Полученные экспериментальные данные под\-тверж\-да\-ют не\-ста\-биль\-ность 
-машинных переводов с~\mbox{ChatGPT} и,~следовательно, не\-об\-хо\-ди\-мость 
-мониторинга и~оцен\-ки качества машинного перевода при использовании этого 
-чат-бо\-та. Мониторинг и~оценка качества с~использованием баз данных 
-параллельных текс\-тов особенно актуальны при обуче\-нии иностранным языкам 
-в~сис\-те\-ме образования, так как \mbox{ChatGPT} стал весьма популярен 
-у~студентов. Все экспериментальные данные, приведенные в~\mbox{статье}, получены 
-с~по\-мощью НБД параллельных текс\-тов, разработанной в~ФИЦ ИУ РАН.
-   
-   Представляется перспективным провести с~использованием этой же НБД 
-мониторинг вос\-про\-из\-во\-ди\-мости результатов работы чат-бо\-та 
-\mbox{ChatGPT} и~в~других на\-прав\-ле\-ни\-ях перевода, а~так\-же со\-по\-ста\-вить 
-количественные показатели вос\-про\-из\-во\-ди\-мости результатов переводов, 
-сделанных с~по\-мощью \mbox{ChatGPT} и~\mbox{Google} \mbox{Translate}.
-   
-   \bigskip
-   
-   %Благодарности.
-   Авторы признательны рецензентам за ценные рекомендации, учет которых 
-несомненно улуч\-шил статью.
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{1-eg}
-\Au{Rudolph~J., Tan~Sh., Tan~S.} War of the chatbots: Bard, Bing chat, ChatGPT, Ernie and 
-beyond. The new AI gold rush and its impact on higher education~/\!\!/ J.~Applied Learning 
-Teaching, 2023. Vol.~6. No.\,1. P.~364--389. doi: 10.37074\!/\!jalt.2023.6.1.23.
-\bibitem{2-eg}
-\Au{Chen~L., Zaharia~M., Zou~J.} How is ChatGPT's behavior changing over time?~--- Cornell 
-University, 2023. arXiv:2307.09009 [cs.CL]. 23~p. {\sf https://arxiv.org/ abs/2307.09009}. 
-\bibitem{3-eg}
-\Au{Chen~M., Tworek~J., Jun~H., %Yuan~O., Ponde de~Oliveira Pinto~H., Kaplan~J., Edwards~H., Burda~Y., Joseph~N., Brockman~G., Ray~A., Puri~R., 
-%Krueger~G., Petrov~M., 
-\textit{et al.}} 
-Evaluating large language models trained on code.~--- Cornell University, 2021. 
-arXiv:2107.03374 [cs.CL]. 35~p. {\sf https://arxiv. org/abs/2107.03374}.
-\bibitem{4-eg}
-\Au{Wei~J., Wang~X., Schuurmans~D., Bosma~M., Chi~E., Le~Q., Zhou~D.} Chain-of-thought 
-prompting elicits reasoning in large language models.~--- Cornell University, 2022. 
-arXiv:2201.11903 [cs.CL]. 43~p. {\sf https://arxiv.org/abs/2201.11903}.
-\bibitem{5-eg}
-\Au{Zhang~M., Press~O., Merrill~W., Liu~A., Smith~N.\,A.} How language model hallucinations can 
-snowball.~--- Cornell University, 2023. arXiv:2305.13534 [cs.CL].  13~p. {\sf 
-https://arxiv.org/abs/2305.13534}.
-\bibitem{6-eg}
-\Au{De Winter~J.\,C.\,F.} Can ChatGPT pass high school exams on English language 
-comprehension~/\!\!/ Researchgate,  2023. Preprint. {\sf 
-https://www.researchgate.net/\linebreak publication/366659237}. 
-\bibitem{7-eg}
-\Au{Jiao~W., Wang~W., Huang~J., Wang~X., Tu~Z.} Is ChatGPT a~good translator? Yes with  
-GPT-4 as the engine.~--- Cornell University, 2023. arXiv:2301.08745 [cs.CL]. 8~p. {\sf 
-https://arxiv.org/abs/2301.08745}.
-\bibitem{8-eg}
-\Au{Goyal~T., Li~J.\,J., Durrett~G.} News summarization and evaluation in the era of GPT-3.~--- 
-Cornell University, 2022. arXiv:2209.12356 [cs.CL]. 20~p. {\sf 
-https://arxiv. org/abs/2209.12356}. 
-\bibitem{9-eg}
-Google Translate. {\sf https://translate.google.com}.
-\bibitem{10-eg}
-DeepL Translate. {\sf https://www.deepl.com/translator}.
-\bibitem{11-eg}
-Tencent TranSmart. {\sf https://transmart.qq.com/zh-CN/index}.
-\bibitem{12-eg}
-\Au{Егорова~А.\,Ю., Зацман~И.\,М., Ко\-са\-рик~В.\,В., Ну\-ри\-ев~В.\,А.} Не\-ста\-биль\-ность 
-нейронного машинного перевода~/\!\!/ Сис\-те\-мы и~средства информатики, 2020. Т.~30. №\,2. 
-С.~124--135. doi: 10.14357\!/\!08696527200212.
-\bibitem{13-eg}
-\Au{Егорова~А.\,Ю., Зацман~И.\,М., Круж\-ков~М.\,Г., Ну\-ри\-ев~В.\,А.} Методика тем\-по\-раль\-ной 
-оцен\-ки не\-ста\-биль\-ности ма\-шин\-но\-го пе\-ре\-во\-да~/\!\!/ Сис\-те\-мы и~средства ин\-фор\-ма\-ти\-ки, 
-2020. Т.~30. №\,3. С.~67--80. doi: 10.14357\!/\!08696527200307.
-\bibitem{14-eg}
-\Au{Pournaras~E.} Science in the era of ChatGPT, large language models and AI: Challenges for 
-research ethics review and how to respond.~--- Cornell University, 2023. 
-arXiv:2305.15299 [cs.CY]. 14~p. {\sf https://arxiv.org/abs/2305.15299}.
-\bibitem{15-eg}
-\Au{Liu~Y., Han~T., Ma~S., %Zhang~J., Yang~Y., Tian~J., 
-\textit{et al.}} Summary of  
-ChatGPT-related research and perspective towards the future of large language models.~--- 
-Cornell University, 2023. arXiv:2304.01852 [cs.CL]. 21~p. {\sf 
-https://doi.org/10.48550/arXiv.2304.01852}.
-\bibitem{16-eg}
-\Au{Воронцов~К.\,В.} Искусственный интеллект: эволюция идей от Фрэнсиса Бэкона до 
-фундаментальных моделей и~\mbox{ChatGPT}~/\!\!/ Проб\-ле\-мы искусственного интеллекта: 
-Семинар.~--- М.: ФИЦ ИУ РАН, 2023.
-{\sf https://ai-news.ru/2023/05/seminar\_\linebreak problemy\_iskusstvennogo\_intellekta\_voroncov\_k\_v.html}.
-\bibitem{17-eg}
-\Au{Chomsky~N., Roberts~I., Watumull~J.} Noam Chomsky: The false promise of ChatGPT~/\!\!/ 
-The New York Times, March~8, 2023. {\sf  
-https://www.nytimes.com/2023/ 03/08/opinion/noam-chomsky-chatgpt-ai.html}.
-\bibitem{18-eg}
-\Au{Соломоник~А.\,Б.} Опыт современной философии познания.~--- СПб.: Алетейя, 2019. 
-232~с.
-\bibitem{19-eg}
-\Au{Инькова-Манзотти~О.\,Ю.} Коннекторы про\-ти\-во\-по\-став\-ле\-ния во французском и~русском 
-языках. Со\-по\-ста\-ви\-тель\-ное исследование.~--- М.: Ин\-форм\-элект\-ро, 2001. 429~с.
-\bibitem{20-eg}
-Национальный корпус русского языка. {\sf http://www.ruscorpora.ru}.
-
-\bibitem{22-eg}
-\Au{Егорова~А.\,Ю., Зацман~И.\,М., Кружков~М.\,Г., Нуриев~В.\,А.} Машинный перевод: 
-индикаторная оцен\-ка результатов обуче\-ния искусственной нейронной сети~/\!\!/ Сис\-те\-мы 
-и~средства информатики, 2020. Т.~30. №\,4. С.~124--137. 
-doi: 10.14357\!/ 08696527200412.
-
-\bibitem{21-eg}
-\Au{Егорова~А.\,Ю., Зацман~И.\,М., Кружков~М.\,Г., Ну\-ри\-ев~В.\,А.} Индикаторная оцен\-ка 
-не\-ста\-биль\-ности нейронного машинного перевода~/\!\!/ Сис\-те\-мы и~средства информатики, 
-2021. Т.~31. №\,2. С.~139--151. doi: 10.14357\!/\!08696527210213.
-
-\bibitem{23-eg}
-\Au{Зализняк~А.\,А., Зацман~И.\,М., Инькова~О.\,Ю., Кружков~М.\,Г.} Надкорпусные базы 
-данных как линг\-ви\-сти\-че\-ский ресурс~/\!\!/ Корпусная линг\-ви\-сти\-ка: Сб. трудов 
-7-й Междунар. конф.~--- СПб.: СПбГУ, 2015. С.~211--218.
- \end{thebibliography}
-} }
-
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 14.08.23}}
-
-\vspace*{8pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-\vspace*{6pt}
-
-%\newpage
-
-%\vspace*{-28pt}
-
-
-
-\def\tit{MACHINE TRANSLATION BY~ChatGPT: MONITORING~OF~OUTCOME 
-REPRODUCIBILITY}
-
-
-
-\def\titkol{Machine translation by ChatGPT: Monitoring of outcome 
-reproducibility}
-
-\def\aut{A.\,Yu.~Egorova$^{1,2}$, I.\,M.~Zatsman$^1$, and~V.\,O.~Romanenko$^1$}
-
-\def\autkol{A.\,Yu.~Egorova, I.\,M.~Zatsman, and~V.\,O.~Romanenko}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-14pt}
-
-\noindent
-$^1$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
-$\hphantom{^1}$of Sciences,  44-2~Vavilov Str., Moscow 119133, Russian Federation
-
-\noindent
-$^2$Moscow State Linguistic University, 38~Ostozhenka Str., Moscow 119034, Russian\linebreak
-$\hphantom{^1}$Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2023 vol~33 no\,3}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics 2023 vol~33 no\,3
-\hfill \textbf{\thepage}}}
-
-\vspace*{2pt}  
-
-
-
-
-\Abste{The paper considers the question of monitoring the reproducibility of the results 
-performed by \mbox{ChatGPT} chatbot over a~time interval for solving
-a~mathematical task, generating 
-code, and resolving a~visual puzzle. A~brief
-review of the experimental data for monitoring the 
-reproducibility of the results for these three applications is given. The presented data show that the 
-outcomes of \mbox{ChatGPT} when solving the same problem may change over time. At the\linebreak\vspace*{-12pt}}
-
-\Abstend{same time, 
-significant changes may occur in a~relatively short period of time which emphasizes the need to 
-monitor and evaluate the behavior of the ChatGPT chatbot. The
-main goal of the paper is to study 
-the reproducibility of the machine translation
-outcomes performed by \mbox{ChatGPT} over a given time 
-interval. The experimental data obtained during the monitoring of outcome reproducibility 
-demonstrate some changes in the results including the decline in translation quality of the same text 
-fragments over a~time interval. To monitor the outcome reproducibility and evaluate the behavior of 
-\mbox{ChatGPT}, a~previously developed method for interval evaluation of machine translation is used.}
-
-\KWE{ChatGPT applications; monitoring; outcome reproducibility; machine translation; interval 
-evaluation}
-
-\DOI{10.14357\!/\!08696527230310}{LTOWWN}  
-
-%\vspace*{-10pt}
-
-
-%\Ack
-%\noindent
-
-
-%\vspace*{-3pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{ %\baselineskip=12pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-\bibitem{1-eg-1}
-\Aue{Rudolph, J., Sh.~Tan, and S.~Tan.} 2023. War of the chatbots: Bard, Bing chat, ChatGPT, Ernie and 
-beyond. The new AI gold rush and its impact on higher education. \textit{J.~Applied Learning Teaching} 
-6(1): 364--389. doi: 10.37074\!/\!jalt.2023.6.1.23.
-\bibitem{2-eg-1}
-\Aue{Chen, L., M.~Zaharia, and J.~Zou.} 2023. How is ChatGPT's behavior changing over time? 
-\textit{arXiv.org}. 23~p. Available at: {\sf https://arxiv.org/abs/2307.09009} (accessed August~29, 2023).
-\bibitem{3-eg-1}
-\Aue{Chen, M., J.~Tworek, H.~Jun, %O.~Yuan, H.~Ponde de~Oliveira Pinto, J.~Kaplan, H.~Edwards, 
-%Y.~Burda, N.~Joseph, G.~Brockman, A.~Ray, R.~Puri, G.~Krueger, M.~Petrov, 
-\textit{et al.}} 2021. 
-Evaluating large language models trained on code. \textit{arXiv.org}. 35~p. Available at: {\sf 
-https://arxiv.org/abs/2107.03374} (accessed August~29, 2023).
-\bibitem{4-eg-1}
-\Aue{Wei, J., X.~Wang, D.~Schuurmans, M.~Bosma, E.~Chi, Q.~Le, and D.~Zhou.} 2022.  
-Chain-of-thought prompting elicits reasoning in large language models. \textit{arXiv.org}. 43~p. Available 
-at: {\sf https://arxiv.org/abs/2201.11903} (accessed August~29, 2023).
-\bibitem{5-eg-1}
-\Aue{Zhang, M., O.~Press, W.~Merrill, A.~Liu, and N.\,A.~Smith.} 2023. How language model 
-hallucinations can snowball. \textit{arXiv.org}. 13~p. Available at: {\sf  https://arxiv.org/ abs/2305.13534} 
-(accessed August~29, 2023).
-\bibitem{6-eg-1}
-\Aue{De Winter, J.\,C.\,F.} 2023. Can ChatGPT pass high school exams on English language 
-comprehension. \textit{Researchgate}. Preprint. Available at: {\sf https://www.researchgate. net/publication/366659237} (accessed August~29, 
-2023).
-\bibitem{7-eg-1}
-\Aue{Jiao, W., W.~Wang, J.~Huang, X.~Wang, and Z.~Tu.} 2023. Is ChatGPT a~good translator? Yes with 
-GPT-4 as the engine. \textit{arXiv.org}. 8~p. Available at: {\sf https://arxiv. org/abs/2301.08745} (accessed 
-August~29, 2023).
-\bibitem{8-eg-1}
-\Aue{Goyal, T., J.\,J.~Li, and G.~Durrett.} 2022. News summarization and evaluation in the era of GPT-3. 
-\textit{arXiv.org}. 20~p. Available at: {\sf https://arxiv.org/abs/2209.12356} (accessed August~29, 2023).
-\bibitem{9-eg-1}
-Google Translate. Available at: {\sf https://translate.google.com} (accessed August~29, 2023).
-\bibitem{10-eg-1}
-DeepL Translate. Available at: {\sf https://www.deepl.com/translator} (accessed August~29, 2023).
-\bibitem{11-eg-1}
-Tencent TranSmart. Available at: {\sf https://transmart.qq.com/zh-CN/index} (accessed August~29, 2023).
-\bibitem{12-eg-1}
-\Aue{Egorova, A.\,Yu., I.\,M.~Zatsman, V.\,V.~Kosarik, and V.\,A.~Nu\-ri\-ev.} 2020. Ne\-sta\-bil'\-nost' 
-ney\-ron\-no\-go ma\-shin\-no\-go pe\-re\-vo\-da [Instability of neural machine translation]. \textit{Sis\-te\-my i~Sred\-st\-va 
-In\-for\-ma\-ti\-ki~--- Systems and Means of Informatics} 30(2):124--135. doi: 10.14357\!/\!08696527200212.
-\bibitem{13-eg-1}
-\Aue{Egorova, A.\,Yu., I.\,M.~Zatsman, M.\,G.~Kruzh\-kov, and V.\,A.~Nu\-ri\-ev.} 2020. Me\-to\-di\-ka 
-tem\-po\-ral'\-noy otsen\-ki ne\-sta\-bil'\-nosti ma\-shin\-no\-go pe\-re\-vo\-da [The technique allowing for temporal estimation of 
-the machine translation instability]. \textit{Sis\-te\-my i~Sred\-st\-va In\-for\-ma\-ti\-ki~--- Systems and Means of 
-Informatics} 30(3):67--80. doi: 10.14357\!/ 08696527200307.
-\bibitem{14-eg-1}
-\Aue{Pournaras, E.} 2023. Science in the era of ChatGPT, large language models and AI: Challenges for 
-research ethics review and how to respond. \textit{arXiv.org}. 14~p. Available at: {\sf 
-https://arxiv.org/abs/2305.15299} (accessed August~29, 2023).
-\bibitem{15-eg-1}
-\Aue{Liu, Y., T.~Han, S.~Ma, %J.~Zhang, Y.~Yang, and J.~Tian, 
-\textit{et al.}} 2023. Summary of 
-ChatGPT-related research and perspective towards the future of large language models. \textit{arXiv.org}. 
-21~p. Available at: {\sf https://arxiv.org/abs/2304.01852} (accessed August~29, 2023).
-\bibitem{16-eg-1}
-\Aue{Vorontsov, K.\,V.} 2023. Is\-kus\-stven\-nyy in\-tel\-lekt: evo\-lyu\-tsiya idey ot Fren\-si\-sa Be\-ko\-na do 
-fun\-da\-men\-tal'\-nykh mo\-de\-ley i~\mbox{ChatGPT} [Artificial intelligence: The evolution of ideas from Francis Bacon to 
-fundamental models and \mbox{ChatGPT}]. \textit{Prob\-le\-my is\-kus\-stven\-no\-go in\-tel\-lek\-ta: Seminar} 
-[Problems of Artificial Intelligence: Se\-mi\-nar]. Moscow:  FRC CSC RAS. Available at: {\sf  
-https://ai-news.ru/2023/05/seminar\_problemy\_iskusstvennogo\_ intellekta\_voroncov\_k\_v.html} (accessed 
-August~29, 2023).
-\bibitem{17-eg-1}
-\Aue{Chomsky, N., I.~Roberts, and J.~Watumull.} March~8, 2023. Noam Chomsky: The false promise of ChatGPT. 
-\textit{The New York Times}. Available at: {\sf  
-https:// www.nytimes.com/2023/ 03/08/opinion/noam-chomsky-chatgpt-ai.html} (accessed August~29, 2023).
-\bibitem{18-eg-1}
-\Aue{Solomonik, A.\,B.} 2019. \textit{Opyt sovremennoy filosofii po\-zna\-niya} [Experience of modern 
-philosophy of knowledge]. Saint Petersburg: Aletheia. 232~p.
-\bibitem{19-eg-1}
-\Aue{Inkova-Manzotti, O.\,Yu.} 2001. \textit{Kon\-nek\-to\-ry pro\-ti\-vo\-po\-stav\-le\-niya vo  
-fran\-tsuz\-skom i~rus\-skom yazy\-kakh. So\-po\-sta\-vi\-tel'\-noe is\-sle\-do\-va\-nie} [Connectors of 
-opposition in French and Russian: A~comparative study]. Moscow: In\-form\-elekt\-ro. 429~p.
-\bibitem{20-eg-1}
-Natsional'nyy korpus russkogo yazyka [Russian National Corpus]. Available at: {\sf  
-http:// www.ruscorpora.ru/} (accessed August~29, 2023).
-
-\bibitem{22-eg-1}
-\Aue{Egorova, A.\,Yu., I.\,M.~Zatsman, M.\,G.~Kruzh\-kov, and V.\,A.~Nu\-ri\-ev.} 2020. Ma\-shin\-nyy 
-perevod: in\-di\-ka\-tor\-naya otsen\-ka re\-zul'\-ta\-tov obuche\-niya is\-kus\-stven\-noy ney\-ron\-noy se\-ti 
-[Machine translation: Indicator-based evaluation of training progress in neural processing]. \textit{Sis\-te\-my 
-i~Sred\-st\-va In\-for\-ma\-ti\-ki~--- Systems and Means of Informatics} 30(4):124--137. doi: 
-10.14357\!/\!08696527200412.
-
-\bibitem{21-eg-1}
-\Aue{Egorova, A.\,Yu., I.\,M.~Zatsman, M.\,G.~Kruzhkov, and V.\,A.~Nuriev.} 2021. In\-di\-ka\-tor\-naya 
-otsen\-ka ne\-sta\-bil'\-nosti ney\-ron\-no\-go ma\-shin\-no\-go pe\-re\-vo\-da [Indicator-based evaluation of machine translation 
-instability]. \textit{Sis\-te\-my i~Sred\-st\-va In\-for\-ma\-ti\-ki~--- Systems and Means of Informatics} 31(2):139--151. 
-doi: 10.14357\!/\!08696527210213.
-
-\bibitem{23-eg-1}
-\Aue{Zaliznyak, A.\,A., I.\,M.~Zatsman, O.\,Yu.~Inkova, and M.\,G.~Kruzhkov.} 2015. Nad\-kor\-pus\-nye ba\-zy 
-dan\-nykh kak ling\-vi\-sti\-che\-skiy re\-surs [Supracorpora databases as linguistic resource]. \textit{7th Conference (International) ``Corpus 
-Linguistics'' Proceedings}. Saint Petersburg: SPbSU. 211--218.
-\end{thebibliography}
-} }
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received August 14, 2023}} 
-
-
-\Contr
-
-\vspace*{-2pt}
-
-\noindent
-\textbf{Egorova Anna Yu.} (b.\ 1991)~--- junior scientist, %Institute of Informatics Problems, 
-Federal Research Center ``Computer Science and Control" of the Russian Academy of Sciences,  
-44-2~Vavilov Str., Moscow 119333, Russian Federation; senior lecturer, Moscow State Linguistic 
-University, 38~Ostozhenka Str., Moscow 119034, Russian Federation; 
-\mbox{anna.yu.egorova@yandex.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Zatsman Igor M.} (b.\ 1952)~--- Doctor of Science in technology, head of department, 
-%Institute of Informatics Problems, 
-Federal Research Center ``Computer Science and Control'' of the 
-Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{izatsman@yandex.ru}
-
-\vspace*{3pt}
-
-
-\noindent
-\textbf{Romanenko Varvara O.} (b.\ 1983)~--- engineer, %Institute of Informatics Problems, 
-Federal 
-Research Center ``Computer Science and Control'' of the Russian Academy of Sciences,  
-44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{varvarorama@gmail.com}
-
-
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}    

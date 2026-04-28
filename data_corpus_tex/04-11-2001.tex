@@ -1,933 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-]{amsart}
-
-%
-
-\newcommand{\const}{\operatorname{const}}
-\newcommand{\Lip}{\operatorname{Lip}}
-\newcommand{\tts}[1]{}
-\numberwithin{equation}{section}
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{35}
-\god{2001}
-\nomer{11~(474)} %                        Remove in Eng.
-%\nomer{Vol.\,45, No.\,11}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{517.968:519.6}
-
-\author{\it Э.Н.\,Самойлова }
-% NB:   ^^ remove in Eng.
-\title{Сплайновые приближения решения сингулярного \\
-интегродифференциального уравнения}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-
-\section*{Введение}
-
-В данной статье для уравнения
-\begin{equation}
-A\varphi \equiv \varphi'(t)+a(t)\varphi (t)+\frac{b(t)}{\pi}\int_{-1}^1
-\frac{\varphi (\tau)d\tau}{\tau-t}=f(t),\quad -1\leq t\leq 1,
-\tag{0.1}
-\end{equation}
-с начальным условием
-\begin{equation}
-\varphi(-1)=0
-\tag{0.2}
-\end{equation}
-приводятся вычислительные схемы методов сплайн-коллокации и 
-сплайн-подобластей с теоретическим обоснованием этих методов
-([1], гл.\,14; [2], гл.\,1).
-
-\section{Вычислительная схема метода сплайн-коллокации}
-
-Приведем вычислительную схему метода сплайн-коллокации для 
-задачи (0.1)--(0.2) при $a(t), b(t), f(t)\in C[-1,1]$,
-где $C[-1,1]\equiv C$ --- пространство 
-непрерывных на $[-1,1]$ функций с обычной нормой.
-
-Введем сетки узлов
-\begin{gather}
-t_k=-1+\frac{2k}{n},\quad  k=\overline{0,n},\ \; n\in N,\\
-%
-\ov t_{k-1}=\frac{t_{j-1}+t_j}{2}=-1+\frac{2j-1}{2n}, 
-\quad j=\overline{1,n},\ \; n\in N, 
-\end{gather}
-где $N$ --- множество натуральных чисел.
-Приближенное решение задачи (0.1)--(0.2) будем искать в виде сплайна
-\begin{equation}
-\varphi_n(t)=\sum_{k=0}^{n}\alpha_k s_k(t),\quad n\in N,
-\end{equation}
-где 
-\begin{equation}
-s_k(t)=
-\begin{cases}
-0, & t\leq t_{k-1};\\
-\frac{t-t_{k-1}}{t_k-t_{k-1}}, & t_{k-1}\leq t\leq t_k;\\
-\frac{t_{k+1}-t}{t_{k+1}-t_k}, & t_k\leq t\leq t_{k+1};\\
-0, & t\geq t_{k+1},
-\end{cases}
-\end{equation}
---- фундаментальные сплайны первой степени,
-причем при $k=0$ и $k=n$ пренебрегаем первыми двумя и соответственно
-последними двумя звеньями функций $s_0(t)$ и $s_n(t)$. Неизвестные 
-постоянные
-$\alpha_0,\alpha_1,\dotsc,\alpha_n$ определяем методом коллокаций из 
-условий
-\begin{equation}
-(A\varphi_n)(\ov t_j)=f(\ov t_j),\quad j=\overline{1,n},\ \;
-\varphi_n(-1)=0.
-\end{equation}
-Они эквивалентны системе линейных алгебраических уравнений (СЛАУ)
-\begin{equation}
-\alpha_0=0,\ \; \frac{\alpha_j-\alpha_{j-1}}{t_j-t_{j-1}}+a_j\frac
-{\alpha_j+\alpha_{j-1}}{2}+b_j\sum_{k=1}^{n}c_{jk}\alpha_k=f_j,\ \;
-j=\overline{1,n},
-\end{equation}
-где 
-\begin{gather}
-a_j=a(\ov t_j),\ \; b_j=b(\ov t_j),\ \; f_j=f(\ov t_j), \\
-%
-c_{jk}=\frac{1}{\pi}
-\begin{cases}
-(k-j+\frac{3}{2})\ln\left|\frac{2k-2j+3}{2k-2j+1}\right|-
-(k-j-\frac{1}{2})\ln\left|\frac{2k-2j+1}{2k-2j-1}\right|, & 
-k=\overline{1,n-1},\ j=\overline{1,n};\\
-1-(n-j-\frac{1}{2})\ln\left|\frac{2n-2j+1}{2n-2j-1}\right|, &  
-k=n,\ j=\overline{1,n}.
-\end{cases}
-\end{gather}
-
-Покажем способ получения СЛАУ (1.6)--(1.8). В силу (0.2) из (1.3)--(1.4)
-получаем $\varphi_n(-1)=\varphi_n(t_0)=\alpha_0=0$. В силу (1.1)--(1.4)
-ясно также, что
-\begin{equation}
-\varphi_n(\ov t_j)=\frac{\alpha_j+\alpha_{j-1}}{2},\quad \varphi'_n(
-\ov t_j)=\frac{\alpha_j-\alpha_{j-1}}{h},\quad h=\frac{2}{n}.
-\end{equation}
-Поэтому из (1.3)--(1.5) последовательно находим
-\begin{equation}
-\frac{1}{\pi}\int_{-1}^{1}\frac{\varphi_n(\tau)d\tau}{\tau-\ov t_j}=
-\sum_{k=1}^{n}c_{jk}\alpha_k,
-\end{equation}
-где
-\begin{equation}
-c_{jk}=\frac{1}{\pi}\int_{t_{k-1}}^{t_{k+1}}\frac{s_k(\tau)d\tau}{\tau-
-\ov t_j},\quad k=\overline{1,n},\ \;
-j=\overline{1,n},\ \; t_{n+1}\equiv t_n.
-\end{equation}
-В силу (1.4) и (1.11) имеем
-\begin{equation}
-\pi c_{jk}=\int_{t_{k-1}}^{t_{k+1}}\frac{s_k(\tau)d\tau}{\tau-\ov t_k}=
-\frac{1}{h}\left[(\ov t_j-t_{k-1})\beta_{jk}+(t_{k+1}-\ov t_j)\beta_
-{j,k+1}\right],
-\end{equation}
-где $k=\overline{1,n-1}$, $j=\overline{1,n}$ и
-\begin{gather}
-\beta_{jk}=\int_{t_{k-1}}^{t_k}\frac{d\tau}{\tau-\ov t_j}=
-\begin{cases}
-0, & j=k;\\
-\ln\left|\frac{2k-2j+1}{2k-2j-1}\right|, & j\ne k,
-\end{cases} \\
-%
-\pi c_{jk}=\int_{t_{n-1}}^{t_n}\frac{s_n(\tau)d\tau}{\tau-\ov t_j}=
-1+\frac{\ov t_j-t_{n-1}}{h}\beta_{jn},\ \; j=\overline{1,n},
-\end{gather}
-где $\beta_{j n}$ определены формулой (1.13) с $k=n$.
-
-Из соотношений (1.11)--(1.14) получаем формулы (1.8), отсюда и из (1.5),
-(1.9)--(1.11) следует СЛАУ (1.6).
-
-\section{Предварительные результаты}
-
-Пусть $X=W_2^1(-1,1)\equiv W_2^1$ --- пространство непрерывных на $[-1,1]$ 
-функций, удовлетворяющих условию (0.2) и имеющих там первые обобщенные
-производные, квадратично суммируемые по Лебегу. Норму в $X$ введем
-соотношением 
-$$
-\| x\|_X=\bigg\{\int_{-1}^1
-| x'(t)|^2dt\bigg\}^{\frac{1}{2}},\quad x\in X.
-$$
-За $Y$ возьмем пространство Лебега $L_2(-1,1)\equiv L_2$ с обычной
-нормой
-$$
-\| y\|_Y=\bigg\{\int_{-1}^1{| y'(t)|}^2dt
-\bigg\}^{\frac{1}{2}},\quad y\in Y.
-$$     
-Тогда задачу (0.1)--(0.2) можно записать в виде эквивалентного ей 
-линейного операторного уравнения
-\begin{equation}
-A\varphi\equiv G\varphi+T\varphi=f\quad (\varphi\in X,\ \;f\in Y),
-\end{equation}
-где 
-\begin{equation}
-G\varphi=\varphi'(t),\quad T\varphi=a\varphi+B\varphi,\quad
-B\varphi=bS\varphi,
-\end{equation}
-причем сингулярный интеграл
-\begin{equation}
-S(\varphi;t)=\frac{1}{\pi}\int_{-1}^1\frac{\varphi(\tau)d\tau}
-{\tau-t},\quad t\in (-1,1),
-\end{equation}
-понимается в смысле главного значения по Коши--Лебегу (напр., [3], [4]).
-
-\begin{lem}
-Для любой функции $\varphi\in X$ справедливо
-представление
-\begin{equation}
-\pi S(\varphi;t)=\varphi(+1)\ln(1-t)-\int_{-1}^1\varphi'(\xi)\ln|\xi-t|
-d\xi,\quad -1\leq t<1.
-\end{equation}
-\end{lem}
-
-{\bf Доказательство.} В силу (0.2) для любой функции 
-$\varphi\in X$ имеем
-\begin{equation}
-\varphi(\tau)=\int_{-1}^{\tau}\varphi'(\xi)d\xi,\,\tau\in[-1,1].
-\end{equation}
-Отсюда с учетом (0.2) и (2.3) последовательно находим
-\begin{multline*}
-\pi S(\varphi;t)=\int_{-1}^1\frac{d\tau}{\tau-t}\int_{-1}^{\tau}
-\varphi'(\xi)d\xi=\int_{-1}^1\varphi'(\xi)d\xi\int_{\xi}^1\frac{d\tau}
-{\tau-t}=\int_{-1}^1\varphi'(\xi)\ln\frac{1-t}{|\xi-t|}d\xi=\\
-%
-=\ln(1-t)\int_{-1}^1\varphi'(\xi)d\xi-\int_{-1}^1\ln|\xi-t|
-\varphi'(\xi)d\xi=\ln(1-t)\varphi(+1)-\int_{-1}^1\varphi'(\xi)
-\ln|\xi-t|d\xi,\ \;\,t\in[-1,1).\ \; \square
-\end{multline*} 
-
-\begin{lem}
-Пусть функция $b(t)\in \Lip_{K_0}\beta$,
-$0<\beta\leq 1$, $K_0=\const$ и $b(+1)=0$. Тогда оператор 
-$B:X\to Y$, где
-$$
-B(\varphi;t)=b(t)S(\varphi;t),\ \;\varphi\in X,\ \; -1\leq t\leq 1,
-$$
-является вполне непрерывным как оператор из $X$ в $C[-1,1]$ и тем более
-он вполне непрерывен как оператор из $X$ в $Y$.
-\end{lem}
-
-\begin{pf}
-Обозначим через $\cal B=\cal B(0,1)$ единичный шар
-пространства $X$. Покажем, что функции множества 
-$\{B(\varphi;t)=b(t)S(\varphi;t)\}$, $\varphi\in \cal B$, равномерно 
-ограничены и равностепенно непрерывны.
-
-1. {\it Равномерная ограниченность.} В силу леммы 1 для любой
-функции $\varphi\in X$ имеем
-\begin{equation}
-\pi b(t)S(\varphi;t)=\varphi(+1)b(t)\ln(1-t)-b(t)\int_{-1}^1\ln|\xi-t|
-\varphi'(\xi)d\xi.
-\end{equation}
-Ясно, что для любой $\varphi\in \cal B\subset X$
-\begin{gather*}
-|\varphi(+1)|\leq\|\varphi(t)\|_C\leq\sqrt{2}\|\varphi
-\|_X\leq\sqrt{2},\\
-%
-| b(t)|=| b(+1)-b(t)|\leq K_0| 1-t|^\beta,\quad t\in[-1,1].
-\end{gather*}
-Поэтому для любого $t\in[-1,1]$ справедливы неравенства
-\begin{equation}
-\negthickspace |\varphi(+1)b(t)\ln(1-t)|\leq\sqrt{2}K_0| 1-t|^\beta
-|\ln(1-t)|\leq\sqrt{2}K_0K_1| 1-t|^\beta| 1-t|^
-{-\varepsilon}\leq 2^{\beta}K_0K_1\equiv K_2,
-\end{equation}
-где $\varepsilon$ --- сколь угодно малое положительное число, а $K_i$ ---
-положительные постоянные, не зависящие от $t\in[-1,1]$.
-С помощью неравенства Буняковского находим
-\begin{multline}
-\bigg\| b(t)\int_{-1}^1\ln|\xi-t|\varphi'(\xi)d\xi\bigg \|_C
-\leq\| b(t)\|_C\max_{-1\leq t\leq 1}\sqrt{\int_{-1}^1\ln^2|
-\xi-t| d\xi}\; \|\varphi'\|_Y\leq \\
-%
-\leq\| b\|_CK_3\|\varphi\|_X\leq K_4<\infty,\ \; \varphi\in \cal B.
-\end{multline}
-Из соотношений (2.6)--(2.8) для любой $\varphi\in \cal B\subset X$ следует 
-требуемое неравенство
-$$
-\| B(\varphi;t)\|_C\leq\frac{K_2}{\pi}+\frac{K_4}{\pi}=K_5<\infty.
-$$
-
-2. {\it Равностепенная непрерывность.} Положим 
-$b_1 (t)=b(t)\ln(1-t)$. Так как функция $b(t)\in \Lip_{K_0}\beta$ и
-$b(+1)=0$, то функция $b_1 (t)\in \Lip_{\wt K}(\beta-\varepsilon)$, где
-$0<\wt K=\const<\infty$, а $\varepsilon$ --- сколь угодно малое 
-положительное число. Поэтому
-\begin{equation}
-\omega(b_1;\delta)=\omega(b(t)\ln(1-t);\delta)\to 0,\ \; \delta\to +0,
-\end{equation}
-где $\omega(\psi;\delta)$ --- модуль непрерывности функции 
-$\psi\in C[-1,1]$ с шагом $\delta\in(0,2]$.
-С другой стороны, для любой функции $\varphi\in \cal B\subset X$ имеем
-$$
-U'(t)=\frac{1}{\pi}\int_{-1}^1\frac{\varphi'(\xi)d\xi}{\xi-t},\ \;-1<t<1,\ \;
-\| U'\|_Y\leq\|\varphi'\|_Y=\|\varphi\|_X\leq 1.
-$$
-Отсюда следует, что функция $U(t)$ удовлетворяет условию
-\begin{equation}
-U(t)=\frac{1}{\pi}\int_{-1}^1\varphi'(\xi)\ln|\xi-t|d\xi\in \Lip_1
-\frac{1}{2}.
-\end{equation}
-Теперь в силу (2.6)--(2.10) для любой $\varphi\in \cal B\subset X$ находим 
-\begin{multline*}
-\pi\omega(B\varphi;\delta)\leq|\varphi(+1)|\omega(b_1;\delta)+
-\omega(b;\delta)\| U(t)\|_C+\| b(t)\|_C\omega(U;\delta)\leq \\
-%
-\leq\sqrt{2}\omega(b_1;\delta)+\omega(b;\delta)K_3+\| b\|_C
-\sqrt{\delta}\leq K_6\{\omega(b;\delta)+\omega(b_1;\delta)+\sqrt{\delta}\}.
-\end{multline*}
-Поэтому
-\begin{equation}
-\sup_{\varphi\in X,\ \|\varphi\|\leq 1}\omega(B\varphi;\delta)=
-\sup_{\varphi\in \cal B}\omega(B\varphi;\delta)\leq\frac{K_6}{\pi}
-\gamma(\delta),
-\end{equation}
-где
-$$
-\gamma(\delta)=\{\omega(b;\delta)+\omega(b_1;\delta)+\sqrt{\delta}\}\to 0,
-\ \; \delta\to+0.
-$$
-Тем самым равностепенная непрерывность множества функций 
-$\{B(\varphi;t)\}$ при $\varphi\in \cal B \subset X$ доказана.
-
-В силу сказанного выше и критерия компактности (напр., [1], гл.\,1 и гл.\,9)
-в пространстве непрерывных функций лемма 2 доказана.
-\end{pf}
-
-\section{Обоснование метода сплайн-коллокации}
-
-\begin{thm}
-Пусть $a(t),f(t)\in C[-1,1]$ и 
-$b(t)\in \Lip_{K_0}\beta,b(+1)=0$. Если задача $(0.1)$--$(0.2)$ имеет
-единственное решение $\varphi^{\star}\in X$ при любой правой части
-$f\in Y$, то при всех $n\in N$, начиная с некоторого, СЛАУ $(1.4)$ имеет
-единственное решение. Приближенные решения $(1.3)$ сходятся при 
-$n\to\infty$ к точному решению $\varphi^{\star}(t)$ задачи $(0.1)$--$(0.2)$
-в пространстве $X$ со скоростью
-\begin{equation}
-\|\varphi^{\star}-\varphi_n\|_X=O\bigg\{\omega\bigg(f;\frac{1}{n}\bigg)+
-\omega\bigg(a;\frac{1}{n}\bigg)+
-\frac{\| a\|_C}{\sqrt n}+\omega\bigg(b;\frac
-{1}{n}\bigg)+\omega\bigg(b_1;\frac{1}{n}\bigg)\bigg\}.
-\end{equation}
-\end{thm}
-
-{\bf Доказательство.} В силу леммы 1 для оператора 
-$T:X\to Y$ справедливо представление
-\begin{equation}
-T(\varphi;t)=a(t)\varphi(t)+\frac{b(t)\varphi(+1)\ln(1-t)}{\pi}-\frac
-{b(t)}{\pi}\int_{-1}^1\varphi'(\xi)\ln|\xi-t|d\xi.
-\end{equation}
-Отсюда видно, что оператор $T:X\to Y$ является вполне непрерывным. 
-В силу (0.2) и (2.5) оператор $G:X\to Y$ является линейной изометрией,
-а именно,
-\begin{equation}
-\| G\|_{X\to Y}=\| G^{-1}\|_{Y\to X}=1.
-\end{equation}
-Из сказанного выше уравнение (2.1) является приводящимся ([1], гл.13) к
-уравнению второго рода, а следовательно [1], оператор 
-$A:X\to Y$ непрерывно обратим и
-\begin{equation}
-\| A^{-1}\|_{Y\to X}\leq \const<\infty.
-\end{equation}
-
-Обозначим через $X_n$ множество всех сплайнов первой степени с узлами
-(1.1), удовлетворяющих условию (0.2). Очевидно, $X_n\subset X$ и
-$\dim X_n=n<\infty$. Через $Y_n$ обозначим множество всех сплайнов 
-нулевой степени с узлами (1.1). Очевидно, $Y_n\subset Y$ и 
-$\dim Y_n=n<\infty$. Введем оператор $P_n$, проектирующий пространство $Y$
-в подпространство $Y_n$ по формуле
-\begin{equation}
-P_n(\psi;t)=\sum_{j=1}^n\psi(\ov t_j)\psi_j(t), \quad t\in[-1, 1], 
-\end{equation}
-где $\psi(t)\in C[-1, 1]$, а $\psi_j(t)$ -- характеристические функции
-интервалов $[t_{j-1}, t_j]$, точнее, 
-\begin{equation}
-\psi_j(t)=
-\begin{cases}
-1, & t\in[t_{j-1}, t_j); \\
-0, & t\notin[t_{j-1}, t_j), \ \;j=\overline{1, n-1},
-\end{cases}
-\quad
-\psi_n(t)=
-\begin{cases}
-1, & t\in[t_{n-1}, t_n];\\
-0, & t\notin[t_{n-1}, t_n].
-\end{cases}
-\end{equation}
-
-Известно, что $P_n$ -- линейный проекционный оператор, причем (напр., 
-[5]) для любой функции $\psi\in C[-1, 1]$ справедливо неравенство
-\begin{equation}
-|\psi(t)-P_n\psi(t)|\leq\omega\bigg(\psi;\frac{1}{n}\bigg),\quad t\in[-1,1]. 
-\end{equation}
-
-Легко видеть, что СЛАУ (1.4) можно записать в виде эквивалентного ей 
-операторного уравнения
-\begin{equation}
-A_n\varphi_n\equiv P_nA\varphi_n=P_nG\varphi_n+P_nT\varphi_n=P_nf
-\quad (\varphi_n\in X_n, \ \; P_nf\in Y_n). 
-\end{equation}
-Поскольку $\varphi_n\in X_n$, $G\varphi_n=\varphi'_n\in Y_n$, а 
-$P_n^2=P_n$, то $P_nG\varphi_n=G\varphi_n$. Поэтому уравнение (3.8)
-принимает вид
-\begin{equation}
-A_n\varphi_n\equiv G\varphi_n+P_n(a\varphi_n)+P_n(bS\varphi_n)=P_nf
-\quad (\varphi_n\in X_n, \ \; P_nf\in Y_n). 
-\end{equation}
-
-Для любого $\varphi_n\in X_n$ из формул (2.1)--(2.3) и (3.8), (3.9)
-последовательно находим
-\begin{multline}
-\| A\varphi_n-A_n\varphi_n\|_Y=\| A\varphi_n-P_nA\varphi_n
-\|_Y=\| T\varphi_n-P_nT\varphi_n\|_Y\leq \\
-%
-\leq\| a\varphi_n-P_n(a\varphi_n)\|_Y+\| bS\varphi_n-
-P_n(bS\varphi_n)\|_Y. 
-\end{multline}
-
-Оценим сверху каждое из слагаемых в правой части формулы (3.10). Так 
-как $a\varphi_n\in C$ для любой функции $\varphi_n\in X_n$, то в 
-силу (3.7) получаем
-\begin{multline}
-\| a\varphi_n-P_n(a\varphi_n)\|_Y\leq\sqrt{2}\sup_{-1\leq t
-\leq 1}| a(t)\varphi_n(t)-P_n(a(t)\varphi_n(t))|\leq\sqrt{2}
-\omega\bigg(a\varphi_n;\frac{1}{n}\bigg)\leq \\
-%
-\leq\sqrt{2}\bigg\{\| a\|_C\omega\bigg(\varphi_n;\frac{1}{n}\bigg)+
-\omega\bigg(a;\frac{1}{n}\bigg)\|\varphi_n\|_C\bigg\},\quad\varphi_n\in X_n. 
-\end{multline}
-
-Известно, что для любой функции $\varphi\in X$ справедливы соотношения
-\begin{gather*}
-\|\varphi(t)\|_C=\bigg\|\int_{-1}^t\varphi'(\xi)d\xi\bigg\|_C\leq
-\int_{-1}^1|\varphi'(\xi)| d\xi\leq\sqrt{2}\|\varphi'
-\|_Y=\sqrt{2}\|\varphi\|_X, \\
-%
-|\varphi(t')-\varphi(t'')|=\bigg|\int_{t'}^{t''}\varphi'(t)dt
-\bigg|\leq\sqrt{| t'-t''|}\; \|\varphi'\|_Y=\sqrt{| t'-t''
-|}\; \|\varphi\|_X, \quad t', t''\in[-1, 1]. 
-\end{gather*}
-Поэтому для любого $\varphi_n\in X_n$ имеем
-\begin{gather}
-\|\varphi_n\|_C\leq\sqrt{2}\|\varphi_n\|_X, \\
-%
-\omega(\varphi_n;\delta)\leq\delta^{\frac{1}{2}}\|\varphi_n\|_X, \ \;
-\delta\in(0, 2]. 
-\end{gather}
-Из соотношений (3.11)--(3.13) следует, что для любого $\varphi_n\in X_n$
-\begin{equation}
-\| a\varphi_n-P_n(a\varphi_n)\|_Y\leq 2\bigg\{\frac{\| a\|_C}
-{\sqrt{n}}+\omega\bigg(a;\frac{1}{n}\bigg)\bigg\}
-\|\varphi_n\|_X\equiv\beta_n\|\varphi_n\|_X, 
-\end{equation}
-где
-$\beta_n=2\left\{\frac{\| a\|_C}{\sqrt{n}}+
-\omega\left(a;\frac{1}{n}\right)\right\}\to 0$, $n\to\infty$. 
-
-Для второго слагаемого в правой части (3. 10) последовательно находим
-\begin{multline}
-\| bS\varphi_n-P_n(bS\varphi_n)\|_Y\leq\sqrt{2}\sup_{-1\leq t
-\leq 1}|(bS\varphi_n)(t)-P_n(bS\varphi_n;t)|=\\
-%
-=\sqrt{2}\|\varphi_n\|_X\sup_{-1\leq t\leq 1}| bS\sigma_n-
-P_n(bS\sigma_n)|\leq\sqrt{2}\|\varphi_n\|_X\sup_{\sigma_n
-\in X_n,\ \|\sigma_n\|=1}\ \sup_{-1\leq t\leq 1}| bS\sigma_n-
-P_n(bS\sigma_n)|\leq\\
-%
-\leq\sqrt{2}\|\varphi_n\|_X\sup_{\varphi\in X,\ \|\varphi
-\|=1}\ \sup_{-1\leq t\leq 1}| bS\varphi-P_n(bS\varphi)|, 
-\end{multline}
-где 
-$\sigma_n=\frac{\varphi_n}{\|\varphi_n\|}$, $\varphi_n\in X_n$, 
-$\varphi_n\not\equiv 0$. 
-Теперь с помощью леммы 2 и формул (3.15), (2.11) находим
-\begin{multline}
-\| bS\varphi_n-P_n(bS\varphi_n)\|_Y\leq\sqrt{2}\|\varphi_n
-\|_X\sup_{\varphi\in X,\ \|\varphi\|=1}\omega\bigg(B\varphi;\frac{1}
-{n}\bigg)\leq \\
-%
-\leq\frac{\sqrt{2}K_6}{\pi}\|\varphi_n\|_X\beta\bigg(\frac{1}{n}\bigg)=
-\|\varphi_n\|_X\theta\bigg(\frac{1}{n}\bigg), \quad \varphi_n\in X_n, 
-\end{multline}
-где
-$$
-\theta_n=\theta\bigg(\frac{1}{n}\bigg)=\frac{\sqrt{2}K_6}{\pi}
-\bigg\{\omega\bigg(b;\frac{1}{n}\bigg)
-+\omega\bigg(b_1;\frac{1}{n}\bigg)+\frac{1}{\sqrt{n}}\bigg\}
-\to 0, \quad n\to\infty. 
-$$
-
-Таким образом, в силу (3.10), (3.14) и (3.16) имеем
-\begin{equation}
-\varepsilon_n\equiv\| A-A_n\|_{X_n\to Y}\leq\beta_n+\theta_n\to 0, 
-\quad n\to\infty, 
-\end{equation}
-где величины $\beta_n$ и $\theta_n$ определены в (3.14) и (3.16)
-соответственно. Кроме того, для правых частей уравнений (2.1) и (3.9) 
-в силу неравенства (3.7) имеем 
-\begin{equation}
-\delta_n\equiv\| f-P_nf\|_Y\leq\sqrt{2}\sup_{-1\leq t\leq 1}
-| f(t)-P_nf(t)|\leq\sqrt{2}\omega\bigg(f;\frac{1}{n}\bigg)\to 0,
-\quad n\to\infty. 
-\end{equation}
-
-Итак, в силу соотношений (3.4), (3.17) и (3.18) для уравнений (2.1) и
-(3.9) выполнены все условия леммы 2.1 из ([2], гл.\,1). Поэтому
-\begin{itemize}
-\item[a)] для всех $n\in N$ таких, что 
-$q_n\equiv\varepsilon_n\| A^{-1}\|_{Y\to X}<\frac{1}{2}$, операторы
-$A_n:X_n\to Y_n$ линейно обратимы, а обратные операторы ограничены по 
-норме в совокупности, точнее
-\begin{equation}
-\| A_n^{-1}\|\leq 2\| A^{-1}\|<\infty, \ \; n\geq n_0;
-\end{equation}
-\item[б)] приближенные решения $\varphi_n=A_n^{-1}P_nf$,
-определенные по формуле
-(1.3), сходятся к точному решению $\varphi^\star=A^{-1}f$ задачи
-(0.1)--(0.2) в пространстве $X$ со скоростью
-$$
-\|\varphi^{\star}-\varphi_n\|_X=O(\varepsilon_n+\delta_n). 
-$$
-\end{itemize}
-
-Отсюда и из (3.18), (3.17), (3.16), (3.14) с учетом свойств функций $a(t)$, 
-$b(t)$ и $f(t)$ находим
-\begin{equation}
-\|\varphi^{\star}-\varphi_n\|_X=O\bigg\{\omega\bigg(a;\frac{1}{n}\bigg)+
-\omega\bigg(b;\frac{1}{n}\bigg)+\omega\bigg(b_1;\frac{1}{n}\bigg)+
-\omega\bigg(f;\frac{1}{n}\bigg)+
-\frac{\| a\|_C}{\sqrt{n}}\bigg\}\to 0, \ \; n\to\infty. \quad\square
-\end{equation}
-
-Теорему 1 дополняет
- 
-\begin{thm}
-В условиях теоремы $1$ погрешность 
-приближенного решения может быть оценена неравенством
-\begin{equation}
-\|\varphi^{\star}-\varphi_n\|_X=O\bigg\{\omega\bigg(\varphi^{\star}{}';
-\frac{1}{n}\bigg)\bigg\}. 
-\end{equation}
-Если же коэффициенты $a(t)$, $b(t)$ и $f(t)$ уравнения $(0.1)$ таковы, что
-\begin{equation}
-\varphi^{\star}{}'(t)\equiv f(t)-a(t)\varphi^{\star}(t)-b(t)S(\varphi^
-{\star};t)\in \Lip \alpha, \quad 0<\alpha\leq 1, 
-\end{equation}
-то метод $(0.1)$--$(0.2)$, $(1.1)$--$(1.4)$ сходится со скоростью
-\begin{equation}
-\|\varphi^{\star}{}'(t)-\varphi_n\|_X=O\bigg(\frac{1}{n^{\alpha}}\bigg). 
-\end{equation}
-\end{thm}
-
-\begin{pf}
-Прежде всего отметим, что в силу лемм 1 и 2 
-функция $\varphi^{\star}{}'(t)=f(t)-T(\varphi^{\star};t)\in C[-1, 1]$, 
-и поэтому оценка (3. 21) имеет смысл. Теорема 1, в
-частности, соотношения (3.3), (3.4), (3.19), а также следствие 1 леммы 2.2
-из ([2], гл.\,1) позволяют оценить погрешность приближенного решения по
-формуле
-\begin{multline}
-\|\varphi^{\star}-\varphi_n\|_X=\|(E-A_n^{-1}P_nT)G^{-1}(G
-\varphi^{\star}-P_nG\varphi^{\star})\|_X\leq\\
-\le \| E-A_n^{-1}P_nT
-\|_{X\to X}\| G\varphi^{\star}-P_nG\varphi^{\star}\|_Y\leq\\
-\leq(1+2\| A^{-1}\|_{Y\to X}\| P_nT\|_{X\to Y})\| G
-\varphi^{\star}-P_nG\varphi^{\star}\|_Y. 
-\end{multline}
-В ходе доказательства теоремы 1 показано, что
-\begin{equation}
-\| T-P_nT\|_{X_n\to Y}\leq\| T-P_nT\|_{X\to Y}\leq\beta_n
-+\theta_n\to 0, \quad n\to\infty. 
-\end{equation}
-Поскольку сходящаяся последовательность операторов $P_nT:X\to Y$ 
-ограничена, то из (3.24) и (3.25) находим
-$\|\varphi^{\star}-\varphi_n\|_X=O\{\| G\varphi^{\star}-P_nG\
-\varphi^{\star}\|_Y\}$. 
-
-Отсюда и из неравенства (3.7) получим
-$$
-\|\varphi^{\star}-\varphi_n\|_X=O\Big\{\sup_{-1\leq t\leq 1}| G
-\varphi^{\star}-P_nG\varphi^{\star}|\Big\}=
-O\bigg\{\omega\bigg(\varphi^{\star'};\frac{1}{n}\bigg)\bigg\}, 
-$$
-т.\,е. оценка (3.21) доказана. Оценка (3.23) следует из формул (3.21), 
-(3.22) и (3.7). 
-\end{pf}
-
-Из теоремы 2 и известных теорем вложения функций от одной 
-переменной (напр., [6], детали см. в [7,] [2]) легко выводится
-
-\begin{thm}
-В условиях теоремы $1$ метод $(0.1)$--$(0.2)$, 
-$(1.1)$--$(1.4)$ сходится равномерно и в пространстве Г\"ельдера
-$H_{\varepsilon}$ $(0<\varepsilon\leq\frac{1}{2})$ со скоростями 
-соответственно 
-$$
-\|\varphi^{\star}-\varphi_n\|_C=O\bigg\{\omega\bigg(\varphi^{\star}{}';
-\frac{1}{n}\bigg)\bigg\}, \quad
-\|\varphi^{\star}-\varphi_n\|_{H_{\varepsilon}}=O\bigg\{\omega\bigg
-(\varphi^{\star}{}';\frac{1}{n}\bigg)\bigg\},
-$$
-a при выполнении условия $(3.22)$ метод сходится со скоростью, 
-определяемой неравенствами
-$\|\varphi^{\star}-\varphi_n\|_C\leq\|\varphi^{\star}-\varphi_n
-\|_{H_{\varepsilon}}=O\left(\frac{1}{n^{\alpha}}\right)$. 
-\end{thm}
-
-\section{Метод сплайн-подобластей} 
-
-В предыдущих параграфах мы исследовали метод сплайн-коллокации решения
-задачи Коши (0.1)--(0.2). Теперь рассмотрим теоретическое обоснование 
-метода сплайн-подобластей решения задачи (0.1)--(0.2). 
-
-Приближенное решение снова ищем в виде сплайна (1.3) с узлами (1.1), а
-неизвестные постоянные определяем методом подобластей из условий
-\begin{equation}
-\int_{t_{j-1}}^{t_j}A(\varphi_n;t)dt=\int_{t_{j-1}}^{t_j}f(t)dt, \quad
-j=\overline{1, n}, \ \; \varphi_n(-1)=0. 
-\end{equation}
-В силу (0.1)--(0.2), (1.1)--(1.4) эти условия эквивалентны следующей СЛАУ:
-\begin{equation}
-\sum_{k=1}^nd_{jk}\alpha_k=f_j, \quad j=\overline{1, n}, \ \; \alpha_0=0, 
-\end{equation}
-где
-$d_{jk}=\int\limits_{t_{j-1}}^{t_j}A(s_k;t)dt$,
-$f_j=\int\limits_{t_{j-1}}^{t_j}f(t)dt$. 
-
-При обосновании схемы (0.1)--(0.2), (1.1), (1.3), (4.1)--(4.2) существенную
-роль играют две леммы. 
-
-\begin{lem}
-Пусть $a(t)$ и $b(t)\in C[-1, 1]$. Тогда оператор
-$T:X\to Y$, 
-$$
-T(\varphi;t)\equiv a(t)\varphi(t)+b(t)S(\varphi;t), \quad -1<t<1, 
-$$
-вполне непрерывен как оператор из пространства $X=W_2^1(-1, 1)$ в
-пространство $Y=L_2(-1, 1)$.
-\end{lem}
-
-{\bf Доказательство.} Поскольку
-\begin{gather}
-\|\ln(1-t)\|_Y\leq M_1=\const<\infty, \\
-%
-\max_{-1\leq t\leq 1}\int_{-1}^1\big|\ln|\xi-t|\big| d\xi\leq
-M_2=\const<\infty, \\
-%
-|\varphi(+1)|\leq\|\varphi\|_C\leq\sqrt{2}\|\varphi\|_X, 
-\end{gather}
-то для любой функции $\varphi\in \cal B \subset X$ последовательно находим
-\begin{align*}
-| T(\varphi;t)|&\leq\| a\|_C|\varphi(t)|+\frac
-{\| b\|_C}{\pi}\bigg\{|\varphi(+1)|\,|\ln(1-t)|+\|
-\varphi\|_C\int_{-1}^1\big|\ln|\xi-t|\big| d\xi\bigg\}\leq \\
-%
-&\leq\|\varphi\|_C\bigg\{\| a\|_C+\frac{\| b\|_C}{\pi}
-\bigg[|\ln(1-t)|+\int_{-1}^1\big|\ln|\xi-t|\big| d\xi\bigg]\bigg\}\leq \\
-%
-&\le \sqrt{2}\,\|\varphi\|_X\bigg\{\| a\|_C+\frac{\| b\|_C}
-{\pi}[|\ln(1-t)|+M_2]\bigg\}, \\
-%
-\| T\varphi\|_Y&\leq\sqrt{2}\bigg\{\sqrt{2}\| a\|_C+\frac{\| b
-\|_C}{\pi}[M_1+\sqrt{2}M_2]\bigg\}\equiv M_3=\const<\infty. 
-\end{align*}
-
-С другой стороны, при доказательстве леммы 2 было показано, что оператор
-$\wt T:X\to Y$, где
-$$
-\wt T(\varphi;t)=a(t)\varphi(t)-\frac{b(t)}{\pi}\int_{-1}^1\varphi'
-(\xi)\ln|\xi-t| d\xi, \quad -1\leq t\leq 1, 
-$$
-является вполне непрерывным как оператор из пространства $X$ в 
-пространство $C$, а следовательно, из пространства $X$ в пространство $Y$.
-В силу представления (3.1) для доказательства леммы остается показать, что 
-оператор $\ov T=T-\wt T:X\to Y$, где
-$$
-\ov T(\varphi;t)=\frac{\varphi(+1)}{\pi}\ln(1-t),
-\quad  -1\leq t<1, \ \; \varphi\in X, 
-$$
-является вполне непрерывным. Это утверждение легко выводится из критерия
-компактности (напр., [1], гл.\,9, п.\,1) в пространстве $L_2(-1, 1)$ и 
-неравенств (4.3)--(4.5). 
-
-Введем оператор проектирования $\ov P_n:Y\to Y_n$ по формуле
-$$
-\ov P_n(f;t)=\sum_{j=1}^n\frac{\psi_j(t)}{t_j-t_{j-1}}\int_{t_{j-1}}^
-{t_j}f(\xi)d\xi, \quad f\in L_2(-1, 1). 
-$$
-
-Известна (напр., [5]; [7], гл.\,4)
-
-\begin{lem}
-Справедливы утверждения\/$:$
-\begin{itemize}
-\item[a)] $\ov P_n^2=\ov P_n=\ov P_n^{\star}$, где $\ov P_n^{\star}$ ---
-сопряженный к $\ov P_n$ оператор\/$;$
-\item[б)] $\|\ov P_n\|_{Y\to Y}=1$, $n\in N;$
-\item[в)] $\ov P_n\to E$ при $n\to\infty$ сильно в пространстве $Y$ со 
-скоростью
-$$
-\| f-\ov P_nf\|_Y\leq\sqrt{2}\omega\bigg(f;\frac{1}{n}\bigg)_2, 
-$$
-где $\omega(f;\delta)_2$ --- модуль непрерывности функции $f\in L_2(-1, 1)$
-в пространстве $Y=L_2(-1, 1)$. 
-\end{itemize}
-\end{lem}
-
-Для вычислительной схемы (0.1)--(0.2), (1.1), (1.3), (4.1)--(4.2)
-справедлива
-
-\begin{thm}
-Пусть выполнены условия\/$:$
-\begin{itemize}
-\item[a)] функции $a(t), b(t)\in C[-1, 1]$, $f(t)\in L_2[-1, 1];$
-\item[б)] задача $(0.1)$--$(0.2)$
-имеет единственное решение $\varphi^{\star}\in X$
-при любой правой части $f\in Y$. 
-\end{itemize}
-
-Тогда при всех $n\in N$, начиная с некоторого, СЛАУ $(4.2)$ имеет 
-единственное решение $\alpha_0=0$, $\alpha_1, \dotsc,\alpha_n\in R$. 
-Приближенные решения $(1.3)$ сходятся к точному решению $\varphi^{\star}$ 
-в пространстве $X$ со скоростью
-\begin{equation}
-\|\varphi^{\star}-\varphi_n\|_X=O\bigg\{\omega\bigg(\varphi^{\star'};
-\frac{1}{n}\bigg)_2\bigg\}. 
-\end{equation}
-\end{thm}
-
-{\bf Доказательство.} Легко показать, что СЛАУ (4.2) эквивалентна 
-линейному операторному уравнению
-$$
-A_n\varphi_n\equiv\ov P_nA\varphi_n=\ov P_nf\quad (\varphi_n\in X_n, 
-\ \; \ov P_nf\in Y_n). 
-$$
-Поскольку $\ov P_n^2=\ov P_n$, а $G\varphi_n=\varphi'_n\in Y_n$, то
-$\ov P_nG\varphi_n=G\varphi_n$. Поэтому это уравнение запишется в
-следующем виде:
-\begin{equation}
-A_n\varphi_n\equiv G\varphi_n+\ov P_nT\varphi_n=\ov P_nf\quad (\varphi_n
-\in X_n,\ \; \ov P_nf\in Y_n). 
-\end{equation}
-Из уравнений (2.1) и (4.7) для любого $\varphi_n\in X_n$ находим
-\begin{multline*}
-\| A\varphi_n-A_n\varphi_n\|_Y=\| T\varphi_n-\ov P_nT
-\varphi_n\|_Y\leq\|\varphi_n\|_X\sup_{\varphi_n\in X_n,\ \|
-\varphi_n\|=1}\| T\varphi_n-\ov P_nT\varphi_n\|_Y\leq \\
-%
-\leq\|\varphi_n\|_X\sup_{\varphi\in X,\ \|\varphi\|=1}
-\| T\varphi-\ov P_nT\varphi\|_Y\equiv\sigma_n\|
-\varphi_n\|_X. 
-\end{multline*}
-
-Так как в силу леммы 3 $T\cal B$ --- компактное множество в пространстве
-$Y$, а сильно сходящаяся последовательность линейных операторов на
-компактном множестве сходится равномерно, то
-$\lim\limits_{n\to\infty}\sigma_n=0$,
-$\sigma_n=\sup\limits_{\varphi\in X,\ \|\varphi
-\|=1}\| T\varphi-\ov P_nT\varphi\|_Y$. 
-Поэтому
-\begin{equation}
-\varepsilon_n\equiv\| A-A_n\|_{X_n\to Y}\leq\sigma_n\to 0, \quad n\to
-\infty. 
-\end{equation}
-Кроме того, в силу леммы 4 для правых частей уравнений (2.1) и (4.7)
-справедливы соотношения
-\begin{equation}
-\delta_n\equiv\| f-\ov P_nf\|_Y\leq\sqrt{2}\omega\bigg(f;\frac{1}
-{n}\bigg)_2\to 0, \quad n\to\infty. 
-\end{equation}
-
-Таким образом, учитывая (4.8), (4.9) и условие б) теоремы для уравнений
-(2.1) и (4.2) выполнены все условия леммы 2.1 из ([2], гл.\,1). Oтсюда и
-из леммы 4 следует требуемое утверждение. 
-
-Из теоремы 4 легко выводится
-
-\begin{thm}
-Пусть функции $a(t)$, $b(t)$ и $f(t)$ таковы, что
-\begin{equation}
-\frac{d\varphi^{\star}(t)}{dt}\in \Lip\alpha\ \; (0<\alpha\leq1)
-\ \; \text{в}
-\ \; L_2(-1, 1). 
-\end{equation}
-Тогда метод $(0.1)$--$(0.2)$, $(1.1)$, $(1.3)$, $(4.2)$
-сходится в пространстве $X$ со скоростью
-$$
-\|\varphi^{\star}-\varphi_n^{\star}\|_X=O\bigg(\frac{1}{n^{\alpha}}\bigg), 
-\quad 0<\alpha\leq 1. 
-$$
-\end{thm}
-
-По аналогии с теоремой 3, но с помощью теоремы 5, доказывается
-
-\begin{thm}
-В условиях теоремы $4$ метод сплайн-подобластей 
-$(0.1)$--$(0.2)$, $(1.1)$, $(1.3)$, $(4.2)$
-сходится в пространствах $C[-1, 1]$ и
-$H_\beta[-1, 1]$ $(0<\beta\leq\frac{1}{2})$, причем при условии $(4.10)$
-справедливы соотношения
-$$
-\|\varphi^{\star}-\varphi_n\|_C\leq\|\varphi^{\star}-\varphi_n
-\|_{H_{\beta}}=O\left(\frac{1}{n^{\alpha}}\right),\ \; 0<\alpha\leq 1. 
-$$
-\end{thm}
-
-\section{Некоторые замечания и дополнения}
-
-1. Теоремы 4--6 можно усилить, если использовать следующее
-утверждение.
-
-\begin{lem}
-Пусть $a(t)\in L_2(-1, 1)$ и
-$b_1(t)\equiv b(t)\ln(1-t)\in L_2(-1, 1)$. 
-
-Тогда оператор $T:X\to Y$, где
-$$
-(T\varphi)(t)=a(t)\varphi(t)+b(t)S(\varphi;t), \quad -1<t<1, 
-$$
-является вполне непрерывным.
-\end{lem}
-
-{\bf Доказательство.} Для любой функции $\varphi\in X$ имеем
-\begin{equation}
-\| a\varphi\|_Y\leq\|\varphi\|_C\| a\|_{L_2}\leq
-\sqrt{2}\|\varphi\|_X\| a\|_{L_2}. 
-\end{equation}
-Для любой $\varphi\in X$ и любых $t$, $t+h\in[-1, 1]$, $h>0$, последовательно
-находим
-\begin{gather*}
-| a(t+h)\varphi(t+h)-a(t)\varphi(t)|\leq| a(t+h)-a(t)|\,
-|\varphi(t+h)|+| a(t)|\,|\varphi(t+h)-\varphi(t)|\leq \\
-%
-\leq\|\varphi\|_C| a(t+h)-a(t)|+| a(t)|\bigg|\int_
-t^{t+h}\varphi'(\tau)d\tau\bigg|\leq \\
-%
-\le \sqrt{2}\|\varphi\|_X | a(t+h)-a(t)|+
-| a(t)|\sqrt{h}\|\varphi'\|_{L_2}\leq\|\varphi\|_X
-\{\sqrt{2}\,| a(t+h)-a(t)|+\sqrt{h}\,| a(t)|\};\\
-%
-\| a(t+h)\varphi(t+h)-a(t)\varphi(t)\|_{L_2(-1, 1-h)}\leq\|
-\varphi\|_X\{\sqrt{2}\omega(a;h)_2+\sqrt{h}\| a\|_{L_2}\}\leq \\
-%
-\leq\sqrt{2}\|\varphi\|_X\{\omega(a;h)_2+\sqrt{h}\| a \|_{L_2}\}. 
-\end{gather*}
-Поэтому
-\begin{equation}
-\omega(a\varphi;\delta)_2\leq\sqrt{2}\|\varphi\|_X\{\omega
-(a;\delta)_2+\sqrt{\delta}\| a\|_{L_2}\}, \quad 0<\delta\leq 1. 
-\end{equation}
-
-Из неравенств (5.1) и (5.2) следует, что оператор $T_1:X\to Y$, где
-$(T_1\varphi)(t)=a(t)\varphi(t)$, является вполне непрерывным. 
-
-Для операторa $T_2:X\to Y$, где 
-$T_2(\varphi;t)=b(t)\varphi(+1)\ln(1-t)$, $-1\leq t<1$, 
-при любой  $\varphi\in X$ имеем
-$$
-\| T_2\varphi\|_Y=|\varphi(+1)|\,\| b_1(t)\|_{L_2}
-\leq\sqrt{2}\|\varphi\|_X\| b_1\|_Y;\ \;
-\omega(T_2\varphi;\delta)_2=|\varphi(+1)|\omega(b_1;\delta)
-_2\leq\sqrt{2}\|\varphi\|_X\omega(b_1;\delta)_2, 
-$$
-где $\omega(b_1;\delta)_2\to 0$ при $\delta\to+0$ в силу того, что
-$b_1\in L_2(-1, 1)$. 
-
-Для операторa $T_3:X\to Y$, где
-\begin{equation}
-T_3(\varphi;t)=\frac{b(t)}{\pi}\int_{-1}^1\varphi'(\xi)\ln|\xi-t
-| d\xi\equiv b(t)H(\varphi;t), \quad -1\leq t\leq 1,
-\end{equation}
-при любой функции $\varphi\in X$ находим
-$\| T_3\varphi\|_Y=\| bH\varphi\|_Y\leq\| b\|_{L_2}\| H\varphi\|_C$, 
-где
-\begin{equation}
-\| H\varphi\|_C=\bigg\|\frac{1}{\pi}\int_{-1}^1\varphi'(\xi)\ln
-|\xi-t| d\xi\bigg \|_C\leq \frac{1}{\pi}
-\|\varphi'\|_{L_2}\max_{-1\leq t\leq 1}\sqrt{\int_
-{-1}^1\ln^2|\xi-t| d\xi}=K_3\|\varphi\|_X. 
-\end{equation}
-
-С другой стороны, при доказательстве леммы 2 было показано, что оператор 
-$H$ является вполне непрерывным как оператор из пространства $X$ в
-пространство $C[-1, 1]$. Из условия леммы 5 следует, что
-$b(t)\in L_2$. Поэтому в силу (5.3) и (5.4) оператор $T_3:X\to Y$
-является вполне непрерывным. 
-
-Поскольку $T=T_1+T_2+T_3:X\to Y $ в силу леммы 1,
-а каждый из операторов $T_j:X\to Y$ ($i=1, 2, 3$) вполне непрерывен,
-то лемма 5 доказана.
-
-2. Результаты, полученные выше, могут быть перенесены также на
-интегродиф\-фе\-рен\-ци\-аль\-ное уравнение
-$$
-\varphi'(t)+a(t)\varphi(t)+\frac{1}{\pi}\int_{-1}^1\frac{h(t, \tau)
-\varphi(\tau)}{\tau-t}d\tau=f(t)
-$$
-при начальном условии (0.2). Здесь $h(t, \tau)$ --- известная функция
-такая, что порождаемый ядром
-$$
-h_1(t, \xi)\equiv\frac{1}{\pi}\int_{\xi}^1\frac{h(t, \tau)}{\tau-t}d\tau, 
-\quad -1\leq\xi\leq 1, 
-$$
-интегральный оператор
-$$
-U(\psi;t)=\int_{-1}^1h_1(t, \xi)\psi(\xi)d\xi, \quad -1\leq t\leq 1, 
-$$
-является вполне непрерывным в пространстве $L_2(-1, 1)$ (для метода
-сплайн-подобластей) и вполне непрерывным как оператор из
-$L_2(-1, 1)$ в пространство $C[-1, 1]$ (для метода сплайн-коллокации). 
-
-
-\begin{thebibliography}{99}
-
-\bibitem{3}
-Канторович Л.В., Акилов Г.П. {\it Функциональный анализ.}
--- М.: Наука, 1977. -- 742 с. 
-\bibitem{2}
-Габдулхаев Б.Г. {\it Численный анализ сингулярных интегральных 
-уравнений. Избранные главы.}
--- Казань: Изд--во Казанск. ун-та, 1995. -- 230 с. 
-\bibitem{4}
-Мусхелишвили Н.И. {\it Сингулярные интегральные уравнения.
-Граничные задачи теории функций и некоторые их
-приложения к математической физике.}
--- М.: Наука, 1968. -- 512~с. 
-\bibitem{5}
-Michlin S.G., Prossdorf S. {\it Singul\"are Integraloperatoren.}
--- Berlin: Akademic-Verlag, 1980. -- 514 s. 
-\bibitem{6}
-Корнейчук Н. П. {\it Сплайны в теории приближения.}
--- М.: Наука, 1984. -- 352 с. 
-\bibitem{7}
-Андриенко В.А. {\it Теоремы вложения для функций одного переменного} //
-Итоги науки. Сер. Матем. анализ. 
--- М.: ВИНИТИ, 1971. -- С.\,203--262. 
-\bibitem{1}
-Габдулхаев Б.Г. {\it Прямые методы решения сингулярных интегральных
-уравнений первого рода. \/}
--- Казань: Изд-во Казанск. ун-та, 1994. -- 288 с. 
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Казанский государственный}{\it Поступила}
-\post{\it энергетический институт}{10.04.2000}
-
-\label{end}
-\end{document}

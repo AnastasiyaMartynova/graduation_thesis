@@ -1,623 +1,0 @@
-\def\stat{butenko}
-
-\def\tit{ИСПОЛЬЗОВАНИЕ БАЗЫ ДАННЫХ МОДЕЛЕЙ СТРУКТУРНЫХ 
-ПЕРЕВОДЧЕСКИХ ТРАНСФОРМАЦИЙ ДЛЯ~ИЗВЛЕЧЕНИЯ 
-МНОГОКОМПОНЕНТНЫХ ТЕРМИНОЛОГИЧЕСКИХ ЕДИНИЦ}
-
-\def\titkol{Использование базы данных моделей структурных 
-переводческих трансформаций} % для~извлечения  многокомпонентных терминологических единиц}
-
-\def\aut{Ю.\,И.~Бутенко$^1$}
-
-\def\autkol{Ю.\,И.~Бутенко}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Бутенко Ю.\,И.}
-\index{Butenko Yu.\,I.}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-%\footnotetext[1]
-%{Исследование выполнено с~использованием ЦКП <<Информатика>> ФИЦ ИУ РАН.}} 
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Московский государственный технический университет им.\ Н.\,Э.~Баумана,\\ \mbox{iubutenko@bmstu.ru}}
-
- \label{st\stat}
-
- \thispagestyle{headings}
- 
- \vspace*{-15pt} 
- 
-
-
-\Abst{Раскрыты основные принципы использования базы данных моделей структурных 
-переводческих трансформаций терминологических словосочетаний для извлечения и~
-выравнивания многокомпонентных терминов из англо- и~русскоязычных параллельных 
-текстов. Описана формальная структура терминологических единиц, а~также структурные 
-модели многокомпонентных терминов в~английском и~русском языках. Дано определение 
-структурных трансформаций в~переводе, выделены основные модели структурных 
-трансформаций англо- и~русскоязычных терминов при переводе на\-уч\-но-тех\-ни\-че\-ских 
-текстов. Обосновано, что использование структурных переводческих моделей 
-терминологических словосочетаний требует учета специфических особенностей каждого 
-анализируемого языка. Предложен подход к~извлечению и~выравниванию 
-терминологических единиц в~параллельных на\-уч\-но-тех\-ни\-че\-ских текс\-тах, а~каждый этап 
-предложенного подхода проиллюстрирован примерами обработки параллельного на\-уч\-но-тех\-ни\-че\-ско\-го текста на русском и~английском языках.}
-
-\KW{структурная модель; многокомпонентный термин; формальная структура термина; 
-модели структурных переводческих трансформаций; русскоязычная терминология; 
-англоязычная терминология}
-
-\DOI{10.14357\!/\!08696527230104}  
-
-\vskip 10pt plus 9pt minus 6pt
-
- \thispagestyle{headings}
- 
- \vspace*{-20pt}
-
-\section{Введение}
-
-\vspace*{-4pt}
-
-  В настоящее время профессиональная межкультурная коммуникация между 
-учеными и~специалистами различных сфер профессиональной деятельности 
-становится обыденной нормой, неотъемлемой частью которой должна быть 
-однозначно понимаемая и~непротиворечивая терминология. Значительное 
-увеличение доли переводных научных журналов, нормативной и~прочей 
-документации свидетельствует об увеличении роли профессиональной 
-межкультурной коммуникации и,~соответственно, ведет к~ужесточению 
-требований к~качеству перевода на\-уч\-но-тех\-ни\-че\-ских текстов и~особенно 
-специальной терминологии. В~основе упорядочения терминологии, а~также 
-поиска адекватных переводных эквивалентов лежит наличие возможности 
-обрабатывать большие массивы неструктурированной информации, 
-пред\-став\-лен\-ной текс\-та\-ми на естественном языке.
-
-\pagebreak
-  
-  Несмотря на значительные успехи в~обработке естественного языка, 
-обработка на\-уч\-но-тех\-ни\-че\-ских текстов сопряжена со значительными 
-трудностями, главная из которых~--- формальная структура терминов~[1]. Так, 
-термин может быть однокомпонентным и~состоять из ключевого слова или 
-пред\-став\-лять собой терминологическую группу, в~состав которой входит 
-ключевое слово, или ядро группы, одно или несколько левых определений и~одно или несколько правых или предложных определений, которые уточняют 
-или модифицируют смысл терминологической единицы. Терминологическое 
-словосочетание может состоять из~10--12~компонентов. При этом 
-терминологическое словосочетание пред\-став\-ля\-ет собой номинативную единицу в~некоторой предметной области, которая выражает одно целое понятие~[2].
-  
-  Согласно В.\,М.~Лейчику, подавляющее большинство терминов имеет 
-формальную структуру лексических единиц того естественного языка, в~сфере 
-которого они функционируют и~образуются~[2], т.\,е.\ многокомпонентные 
-термины разных предметных областей в~рамках одного языка имеют одни и~те же
-способы словообразования и,~соответственно, один и~тот же перечень 
-структурных моделей. Таким образом, для извлечения многокомпонентных 
-терминов в~параллельных текстах целесообразно использовать их структурные 
-модели, установив варианты структурных трансформаций терминов при 
-переводе с~одного языка на другой.
-  
-  Целью исследования ставится использование базы данных моделей 
-структурных переводческих трансформаций многокомпонентных терминов при 
-переводе, а~на ее основе разработка подхода к~извлечению и~выравниванию 
-терминов в~параллельных на\-уч\-но-тех\-ни\-че\-ских текс\-тах.
-
-\section{Структурные модели английских и~русских терминологических 
-единиц}
-
-  Стоит отметить, что структурные модели терминологических единиц для 
-русского и~английского языков являются сравнительно хорошо изученной 
-и~описанной областью языкознания~[3, 4]. К~наиболее часто используемым 
-моделям терминов в~русском языке можно отнести двух- и~трехкомпонентные 
-словосочетания,\linebreak образованные по следующим моделям:  
-су\-щест\-ви\-тель\-ное\;+\;су\-щест\-ви\-тель\-ное\linebreak в~родительном падеже;  
-при\-ла\-га\-тель\-ное\;+\;су\-щест\-ви\-тель\-ное;  
-при\-ла\-га\-тель\-ное\;+\linebreak +\;\;при\-ла\-га\-тель\-ное\;+\;су\-щест\-ви\-тель\-ное;  
-при\-ла\-га\-тель\-ное\;+\;су\-щест\-ви\-тель\-ное\;+\;су\-щест\-ви\-тель\-ное в~родительном падеже и~др. Для английского языка наиболее продуктивны 
-модели: noun\;+\;noun; adjective\;+\;noun; noun\;+\;preposition\;+\;noun;  
-noun\;+\;noun\;+\;noun и~т.\,д.
-  
-  Структурные переводческие трансформации~--- это грамматические 
-преобразования формальной структуры лексической единицы, с~по\-мощью 
-которых можно осуществить переход от единиц на языке оригинала к~единицам 
-языка перевода в~указанном смысле~[5]. В~таблице пред\-став\-ле\-ны примеры 
-структурных переводческих трансформаций англоязычных терминов, 
-образованных по модели noun\;+\;noun, а~также структурные переводческие 
-трансформации их эквивалентов в~русском языке.
-
-\begin{table}\small %tabl
-\begin{center}
-
-
-%\tabcolsep=3pt
-\begin{tabular}{|l|l|l|}
-\multicolumn{3}{c}{Структурные переводческие трансформации модели noun\;+\;noun}\\
-\multicolumn{3}{c}{\ }\\[-6pt]
-\hline
-\multicolumn{1}{|c|}{\tabcolsep=0pt\begin{tabular}{c}Примеры\\ англоязычных\\ терминов,\\ образованных\\по модели 
-\end{tabular}}&\multicolumn{2}{c|}{\tabcolsep=0pt\begin{tabular}{c}Виды структурных переводческих трансформаций\\ 
-эквивалентных русскоязычных терминов\end{tabular}}\\
-\cline{2-3}
-\multicolumn{1}{|c|}{noun\;+\;noun}&\multicolumn{1}{c|}{Модель}&\multicolumn{1}{c|}{Пример}\\
-\hline
-Stud welding&\tabcolsep=0pt\begin{tabular}{l}Сущ.\,+\;сущ.\\ в~родительном падеже\end{tabular}&Приварка шпилек\\
-\hline
-Resistance welding&Прил.\;+\;прил.\;+\;сущ.&Электрическая контактная сварка\\
-\hline
-Upset welding&\tabcolsep=0pt\begin{tabular}{l}Прил.\;+\;сущ.\;+\;сущ.\\ в~творительном падеже\end{tabular}&Стыковая сварка 
-сопротивлением\\
-\hline
-Pressure welding&\tabcolsep=0pt\begin{tabular}{l}Сущ.\;+\;сущ.\\ в~творительном падеже\end{tabular}&Сварка давлением\\
-\hline
-Gravity welding&\tabcolsep=0pt\begin{tabular}{l}Сущ.\;+\;прил.\;+ сущ.\\ в~творительном падеже\end{tabular}&Сварка наклонным 
-электродом\\
-\hline
-Dielectric welding&\tabcolsep=0pt\begin{tabular}{l}Прил.\;+\;сущ.\;+\;сущ.\\ в~родительном падеже\end{tabular}&Высокочастотная сварка 
-пластмасс\\
-\hline
-\end{tabular}
-\end{center}
-\vspace*{-18pt}
-\end{table}
-
-%\vspace*{-2pt}
-
-\section{Применение базы данных моделей структурных переводческих 
-трансформаций для~извлечения и~выравнивания многокомпонентных 
-терминологических единиц}
-
-  В настоящее время выравнивание терминологических единиц в~параллельных текстах обычно осуществляется в~два этапа. Сначала выделяют 
-терминологические единицы на каждом языке отдельно. Затем один из 
-одноязычных списков тер\-ми\-нов-кан\-ди\-да\-тов интерпретируется как язык 
-источника, и~для каждого тер\-ми\-на-кан\-ди\-да\-та на язы\-ке-ис\-точ\-ни\-ке 
-предлагаются потенциально эквивалентные термины в~списке  
-тер\-ми\-нов-кан\-ди\-да\-тов на языке перевода~[6].
-  
-  Предлагаемый подход к~автоматическому извлечению и~выравниванию 
-терминов на основе базы данных моделей структурных переводческих 
-трансформаций терминологических словосочетаний состоит из~5~основных 
-этапов. В~качестве примера рассмотрим извлечение терминов для следующего 
-фрагмента текста и~его перевода: 
-  \begin{center}
- % \tabcolsep=0pt
- {\small \begin{tabular}{p{61mm}p{61mm}}
-Отсутствие аккомодации свойственно не только явлению переноса количества движения, но 
-и,~как показывают экспериментальные исследования, процессу обмена энергией между 
-падающими молекулами и~стенкой.&The absence of accommodation is characteristic not only of 
-the phenomenon of momentum transfer, but also, as experimental studies show, the process of 
-energy exchange between incident molecules and the wall.
-\end{tabular}
-}
-\end{center}
-
-
-     На первом этапе проводится автоматический морфологический анализ 
-текста, т.\,е.\ каждому слову приписываются его грамматические 
-характеристики~[6]: 
-
-\noindent
-     {\small \begin{center}
-     \begin{tabular}{p{72mm}p{50mm}}
-Отсутствие$^{\mathrm{СУЩ,неод,ср.ед,им}}$ ак\-ко\-мо\-да\-ции$^{\mathrm{СУЩ,неод,жр\,ед,рд }}$ 
-свойственно$^{\mathrm{Н}}$ \sout{не}$^{\mbox{\sout{\scriptsize ЧАСТ}}}$ \sout{только}$^{\mbox{\sout{\scriptsize ЧАСТ}}}$ 
-явлению$^{\mathrm{СУЩ,неод,ср\,ед,дт}}$ переноса$^{\mathrm{СУЩ,неод,мр\,ед,рд}}$ 
-ко\-ли\-чест\-ва$^{\mathrm{СУЩ,неод,ср\,ед,рд}}$ дви\-же\-ния$^{\mathrm{СУЩ,неод,ср\,ед,рд}}$, ${}^{\mbox{{\sout{\scriptsize ЗПР}}}}$, 
- \sout{но}$^{\mbox{\sout{\scriptsize СОЮЗ}}}$ 
-\sout{и}$^{\mbox{\sout{\scriptsize СОЮЗ}}}$, ${}^{\mbox{{\sout{\scriptsize ЗПР}}}}$ 
-\sout{как}$^{\mbox{\sout{\scriptsize СОЮЗ}}}$ 
-\sout{по\-ка\-зы\-ва\-ют}$^{\mbox{\scriptsize \sout{ГЛ,несов,перех\,мн,3л,наст,изъяв}}}$ по\-ка\-зы\-ва\-ют 
-экс\-пе\-ри\-мен\-таль\-ные$^{\mathrm{ПРИЛ\,неод,мн,вн }}$ ис\-сле\-до\-ва\-ния$^{\mathrm{СУЩ,неод,ср\,ед,рд}}$,${}^{\mbox{{\sout{\scriptsize ЗПР}}}}$ 
- про\-цес\-су$^{\mathrm{СУЩ,неод,мр\,ед,дт}}$ 
-об\-ме\-на$^{\mathrm{СУЩ,неод,мр\,ед,рд}}$ энер\-ги\-ей$^{\mathrm{СУЩ,неод,жр\,ед,тв}}$ 
-меж\-ду$^{\mathrm{ПР}}$ па\-да\-ющи\-ми$^{\mathrm{ПРИЧ,несов,неперех,наст,действ\, мн,тв}}$ 
-мо\-ле\-ку\-ла\-ми$^{\mathrm{СУЩ,неод,жр\,мн,тв}}$ \sout{и}$^{\mbox{\sout{\scriptsize СОЮЗ}}}$ 
-стен\-кой$^{\mathrm{СУЩ,неод,жр\,ед,тв}}$.${}^{\mbox{{\sout{\scriptsize ЗПР}}}}$
- &
-The$^{\mathrm{determiner}}$ absence$^{\mathrm{noun}}$ of$^{\mathrm{prep}}$ 
-accommodation$^{\mathrm{noun}}$ \sout{is}$^{\mbox{\footnotesize \sout{verb}}}$ 
-charac\-ter\-istic$^{\mathrm{adj}}$ \sout{not}$^{\mbox{\footnotesize \sout{adverb}}}$ 
-\sout{only}$^{\mbox{\scriptsize \sout{adverb}}}$  of$^{\mathrm{prep}}$ the$^{\mathrm{determiner}}$ 
-phe\-nom\-e\-non$^{\mathrm{noun}}$ of$^{\mathrm{prep}}$ mo\-men\-tum$^{\mathrm{noun}}$ 
-transfer$^{\mathrm{noun}}$,  \sout{but}$^{\mbox{\scriptsize \sout{conj}}}$ also$^{\mathrm{adverb}}$, 
-as$^{\mathrm{prep}}$ experimental studies$^{\mathrm{noun}}$ \sout{show}$^{\mbox{\scriptsize 
-\sout{verb}}}$, the$^{\mathrm{determiner}}$ process$^{\mathrm{noun}}$ of$^{\mathrm{prep}}$ 
-en\-er\-gy$^{\mathrm{noun}}$ exchange$^{\mathrm{noun}}$ be\-tween$^{\mathrm{prep}}$ 
-incident$^{\mathrm{adj}}$ mol\-e\-cules$^{\mathrm{noun}}$ \sout{anf}$^{\mbox{\scriptsize \sout{conj}}}$ 
-the$^{\mathrm{determiner}}$ wall$^{\mathrm{noun}}$.
-\end{tabular}
-\end{center}
-}
-
-
-     
-     На втором этапе из размеченного текста необходимо убрать части речи, 
-которые не входят в~состав терминологических словосочетаний, такие как 
-глаголы, местоимения, междометия и~т.\,д., в~том числе и~знаки 
-препинания~[7]. После удаления любого из элементов, не входящих в~состав 
-терминологического словосочетания, следующая цепочка слов начинается 
-с~новой строки. В~результате обработки рассматриваемого фрагмента текста 
-на втором этапе получаем список тер\-ми\-нов-кан\-ди\-да\-тов:
-    {\small \begin{center}
-     \begin{tabular}{p{68mm}p{54mm}}
- Отсутствие$^{\mathrm{СУЩ,неод,ср\,ед,им}}$ ак\-ко\-мо\-да\-ции$^{\mathrm{СУЩ,неод,жр\,ед,рд}}$ 
-свой\-ст\-вен\-но$^{\mathrm{Н}}$\newline 
- яв\-ле\-нию$^{\mathrm{СУЩ,неод,ср\,ед,дт}}$ пе\-ре\-но\-са$^{\mathrm{СУЩ,неод,мр\,ед,рд}}$ 
-ко\-ли\-чест\-ва$^{\mathrm{СУЩ,неод,ср\,ед,рд}}$ дви\-же\-ния$^{\mathrm{СУЩ,неод,ср\,ед,рд}}$ %\newline
- экс\-пе\-ри\-мен\-таль\-ные$^{\mathrm{ПРИЛ\,неод,мн,вн}}$ 
-ис\-сле\-до\-ва\-ния$^{\mathrm{СУЩ,неод,ср\,ед,рд}}$\newline
- про\-цес\-су$^{\mathrm{СУЩ,неод,мр\,ед,дт}}$ обмена$^{\mathrm{СУЩ,неод,мр\,ед,рд}}$ 
-энер\-ги\-ей$^{\mathrm{СУЩ,неод,жр\,ед,тв}}$ между$^{\mathrm{ПР}}$ 
-па\-да\-ющи\-ми$^{\mathrm{ПРИЧ,несов,неперех,наст,действ\,мн,тв}}$ 
-мо\-ле\-ку\-ла\-ми$^{\mathrm{СУЩ,неод,жр\,мн,тв}}$\newline
-   стен\-кой$^{\mathrm{СУЩ,неод,жр\,ед,тв}}$. ${}^{\mbox{{\sout{\scriptsize ЗПР}}}}$
-   &
-   The$^{\mathrm{determiner}}$ 
-absence$^{\mathrm{noun}}$ of$^{\mathrm{prep}}$ ac\-commo\-dation$^{\mathrm{noun}}$\newline 
-   characteristic$^{\mathrm{adj}}$ %\newline 
-   of$^{\mathrm{prep}}$ the$^{\mathrm{determiner}}$ phenomenon$^{\mathrm{noun}}$ 
-of$^{\mathrm{prep}}$ momentum$^{\mathrm{noun}}$ transfer$^{\mathrm{noun}}$\newline
-   also$^{\mathrm{adverb}}$ %\newline
-   as$^{\mathrm{prep}}$ experimental studies$^{\mathrm{noun}}$ %\newline 
-   the$^{\mathrm{determiner}}$ process$^{\mathrm{noun}}$ of$^{\mathrm{prep}}$ 
-en\-er\-gy$^{\mathrm{noun}}$ exchange$^{\mathrm{noun}}$\newline between$^{\mathrm{prep}}$ 
-incident$^{\mathrm{adj}}$ mol\-e\-cules$^{\mathrm{noun}}$ %\newline 
-   the$^{\mathrm{determiner}}$ wall$^{\mathrm{noun}}$
-    \end{tabular}
-    \end{center}
-    }
-     
-     На третьем этапе выполняется проверка ряда лингвистических 
-условий~[8]. Например, терминологическое словосочетание как в~английском, 
-так и~русском языке не может начинаться с~предлога: of$^{\mathrm{prep}}$ 
-the$^{\mathrm{determiner}}$ phenomenon$^{\mathrm{noun}}$ of $^{\mathrm{prep}}$ 
-momentum$^{\mathrm{noun}}$ transfer$^{\mathrm{noun}}$, а~также состоять из одного 
-элемента, кроме существительного, например наречия: also$^{\mathrm{adverb}}$. 
-В~первом случае предлог исключается из словосочетания, а~во втором слово 
-удаляется из списка тер\-ми\-нов-кан\-ди\-да\-тов. В~английском языке также 
-опускаются артикли. Стоит отметить, что использование методов 
-автоматического извлечения многокомпонентных терминов еще усложнено 
-тем, что часто многокомпонентные термины сочетаются с~общей лексикой, 
-а~их синтаксическая конструкция совпадает со структурной моделью. 
-Например, прил.\;+\;прил.\;+\;сущ.~--- \textit{интеллектуальная 
-информационная технология} (термин) и~\textit{современная информационная 
-технология} (общеупотребительное сло\-во\;+\;тер\-мин). В~таком случае 
-необходимо сформировать список общеупотребительных слов с~оценочной или внепредметной семантикой (\textit{современный, передовой, новый и~т.\,п.}), 
-чтобы не учитывать их при извлечении терминов.
-     
-     На четвертом этапе проводится сравнение полученных словосочетаний со 
-структурными моделями терминологических словосочетаний. При этом при 
-сравнении полученных на предыдущем этапе фрагментов текста со 
-структурными моделями терминов ядерный элемент термина может иметь 
-любой падеж и~число, а~остальные элементы строго соответствовать 
-структурной модели. В~русском языке ядерным элементом всегда служит имя 
-существительное, вступающее в~словоизменительную парадигму в~зависимости 
-от языкового окружения в~предложении, прилагательное наследует 
-грамматические характеристики имени существительного, перед которым 
-стоит, а~все остальные элементы обладают неизменными грамматическими 
-характеристиками, например: \textbf{cущ.}\;+\;прил.\;+\;сущ.\ в~творительном 
-падеже~---  
-{\bfseries\textit{свар\-ка}}\!/\!{\bfseries\textit{свар\-ки}}\!/\!{\bfseries\textit{свар\-кой}} 
-\textit{наклонным электродом}. В~английском языке ядерным элементом 
-служит последнее имя существительное в~цепочке или последнее 
-существительное перед предлогом, например: noun\;+\;\textbf{noun}~--- 
-information \textbf{technology} и~\textbf{noun}\;+\;preposition\;+\;noun~--- 
-\textbf{theory} of translation. 
-     
-     На пятом этапе ядерные элементы каждого терминологического 
-словосочетания приводятся к~форме именительного падежа единственного 
-числа, затем попарно сопоставляются с~моделями переводческих 
-трансформаций из базы данных и~проверяются на наличие в~терминологическом словаре. Оставшиеся словосочетания передаются на 
-ручную обработку:
-     {\small \begin{center}
-     \begin{tabular}{p{82mm}p{40mm}}
- ак\-ко\-мо\-да\-ции$^{\mathrm{СУЩ,неод,жр ед,рд }}$ %\newline
- яв\-ле\-нию$^{\mathrm{СУЩ,неод,ср\,ед,дт}}$ пе\-ре\-но\-са$^{\mathrm{СУЩ,неод,мр\,ед,рд}}$ %\newline
- ко\-ли\-чест\-ва$^{\mathrm{СУЩ,неод,ср\,ед,рд }}$ дви\-же\-ния$^{\mathrm{СУЩ,неод,ср\,ед,рд}}$ %\newline
- экс\-пе\-ри\-мен\-таль\-ные$^{\mathrm{ПРИЛ\,неод,мн,вн}}$ 
-ис\-сле\-до\-ва\-ния$^{\mathrm{СУЩ,неод,ср\,ед,рд}}$ %\newline
- про\-цес\-су$^{\mathrm{СУЩ,неод,мр\,ед,дт}}$ об\-ме\-на$^{\mathrm{СУЩ,неод,мр\,ед,рд}}$ 
-энер\-ги\-ей$^{\mathrm{СУЩ,неод,жр\,ед,тв}}$ %\newline
- меж\-ду$^{\mathrm{ПР}}$ па\-да\-ющи\-ми$^{\mathrm{ПРИЧ,несов,неперех,наст,действ\,мн,тв}}$ %\newline
- мо\-ле\-ку\-ла\-ми$^{\mathrm{СУЩ,неод,жр\,мн,тв}}$ %\newline
-   стен\-кой$^{\mathrm{СУЩ,неод,жр\,ед,тв}}$.${}^{\mbox{{\sout{\scriptsize ЗПР}}}}$
-   &
-   accommodation$^{\mathrm{noun}}$ %\newline 
-   phenomenon$^{\mathrm{noun}}$ of$^{\mathrm{prep}}$ momentum$^{\mathrm{noun}}$ 
-transfer$^{\mathrm{noun}}$ %\newline
-   experimental studies$^{\mathrm{noun}}$ %\newline
-     process$^{\mathrm{noun}}$ of$^{\mathrm{prep}}$ energy$^{\mathrm{noun}}$ 
-exchange$^{\mathrm{noun}}$ %\newline
-   between$^{\mathrm{prep}}$ incident$^{\mathrm{adj}}$ molecules$^{\mathrm{noun}}$ %\newline 
-   wall$^{\mathrm{noun}}$
-    \end{tabular}
-    \end{center}
-    }
-    
-    \begin{figure} %fig1
-  \vspace*{1pt}
-  \begin{center}
- \mbox{%
- \epsfxsize=125mm 
-\epsfbox{but-1.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Интерфейс системы извлечения многокомпонентных терминов}
-%\end{figure}
-%    
-%\begin{figure} %fig2
-  \vspace*{1pt}
-  \begin{center}
- \mbox{%
- \epsfxsize=125mm 
-\epsfbox{but-2.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Выбор терминов и~их переводных эквивалентов}
-\end{figure}
-  
-  Такой подход позволяет значительно сократить объем ручного труда при 
-извлечении и~выравнивании терминологических единиц, а также может быть 
-расширен на другие языки~[9]. При этом он позволяет находить неологизмы, 
-которые еще не имеют переводного эквивалента в~языке перевода, 
-а~переводятся описательным способом, например: \textit{squirt welding}~--- 
-\textit{полуавтоматическая дуговая сварка под флюсом с~подачей флюса из 
-бункера, укрепленного на держателе}, что является крайне важным при 
-исследовании процессов образования и~перевода терминов.
-  
-    На основе предложенного метода разработано приложение (рис.~1), 
-написанное на языке Python с~использованием библиотек Tkinter, NLTK, 
-pymorphy2, os, sys. В~результате работы приложения отобранные термины выводятся на экран, после чего их можно классифицировать и~сохранять в~базу 
-данных (рис.~2).
-    
-
-
-
-  Использование приложения позволяет в~несколько раз сократить время на 
-поиск терминов и~их эквивалентов в~параллельных текстах. Так, при обработке 
-научно-технической статьи по космонавтике объемом 2\,645~слов в~русской версии
- и~3\,041~слово в~переводе на английский приложение выделило~412~пар тер\-мин-кан\-ди\-дат и~его переводной эквивалент. Число 
-выделенных приложением пар будет уменьшаться по мере наполнения базы 
-данных терминами и~их переводными эквивалентами. При этом эффективность 
-работы приложения также зависит от тематики текста (технические тексты 
-могут содержать номенклатурные наименования или литеральные термины, включающие символы других алфавитов или обозначения химических 
-элементов).
-
-\vspace*{-2pt}
-
-\section{Заключение}
-
-     В работе предложен подход к~извлечению и~выравниванию терминов в~параллельных на\-уч\-но-тех\-ни\-че\-ских текстах на основе базы данных 
-моделей структурных переводческих трансформаций многокомпонентных 
-терминов при переводе. В~ходе исследования установлено, что 
-многокомпонентные термины разных предметных об\-ластей в~рамках одного 
-языка имеют одни и~те же способы словообразования и,~соответственно, один 
-и~тот же перечень структурных моделей, что позволяет использовать их при 
-извлечении многокомпонентных терминов. К~наиболее часто используемым 
-моделям терминов в~русском и~английском языках относят двух- 
-и~трехкомпонентные словосочетания. Модели структурных переводческих 
-трансформаций терминов отражают структуру термина в~язы\-ке-ис\-точ\-ни\-ке и~его 
-наиболее вероятные структуры в~языке перевода. Предлагаемый подход 
-к~автоматическому извлечению и~выравниванию терминов на основе базы 
-данных моделей структурных переводческих трансформаций 
-терминологических словосочетаний состоит из следующих основных этапов: 
-\begin{enumerate}[(1)]
-\item морфологический анализ текста; 
-\item отсеивание частей речи, которые не входят в~состав терминологических словосочетаний; 
-\item проверка 
-лингвистических ограничений на качественный состав терминологической 
-единицы; 
-\item сравнение словосочетаний со структурными моделями 
-терминологических словосочетаний; 
-\item проверка по терминологическому 
-словарю или передача на ручную об\-ра\-ботку.
-\end{enumerate}
-
-
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{9}
-\bibitem{1-but}
-\Au{Butenko Iu.\,I., Garazha~V.\,V.} BMSTU corpus of scientific and technical texts: Conceptual 
-framework~/\!\!/ Applied Linguistics Research~J., 2021. Vol.~5. Iss.~3. P.~76--81. doi: 
-10.14744\!/\!\mbox{alrj}.2021.15579.
-\bibitem{2-but}
-\Au{Лейчик В.\,М.} Исходные понятия, основные положения, определения современного 
-терминоведения и~терминографии~/\!\!/ Вестник Харьковского политехнического ун-та, 
-1994. №\,1. C.~147--180. 
-\bibitem{3-but}
-\Au{Гринев-Гриневич С.\,В., Сорокина~Э.\,А.} Опыт описания формальной структуры 
-термина (на материале английской терминологии лексикологии)~/\!\!/ Вестник Московского 
-государственного областного ун-та. Сер. Лингвистика, 2020. №\,5. С.~74--85. doi: 
-10.18384\!/\!2310-712X-2020-5-74-85.
-\bibitem{4-but}
-\Au{Бутенко Ю.\,И., Николаева Н.\,С., Карцева~Е.\,Ю.} Структурные модели англоязычных 
-терминов для автоматической обработки корпусов на\-уч\-но-тех\-ни\-че\-ских текс\-тов~/\!\!/ 
-Вестник Российского университета дружбы народов. Сер. Теория языка. Семиотика. 
-Семантика, 2022. Т.~13. №\,1. С.~80--95. doi: 10.22363\!/\!2313-2299-2022-13-1-80-95.
-\bibitem{5-but}
-\Au{Лейчик В.\,М., Шелов~С.\,Д.} Лингвистические проблемы терминологии  
-и~на\-уч\-но-тех\-ни\-че\-ский перевод.~--- М.: Всесоюз. центр переводов науч.-техн. лит. 
-и~документации, 1990. 78~с.
-\bibitem{6-but}
-\Au{Simon N.\,I., Ke\v{s}elj~V.} Automatic term extraction in technical domain using part-of-speech 
-and common-word features~/\!\!/ ACM Symposium on Document Engineering Proceedings.~--- 
-New York, NY, USA: ACM, 2018. Art.~51. 4~p. doi: 10.1145\!/\!3209280. 3229100.
-\bibitem{7-but}
-\Au{Сидорова Е.\,А.} Комплексный подход к~исследованию лексических характеристик  
-текс\-та~/\!\!/ Вестник СибГУТИ, 2019. №\,3. С.~80--88.
-\bibitem{8-but}
-\Au{Бизюкова Н.\,Ю., Тарасова О.\,А., Рудик~А.\,В., Филимонов~Д.\,А., Поройков~В.\,В.}
- Автоматическое распознавание названий химических соединений в~текст\-ах научных пуб\-ли\-ка\-ций~/\!\!/
- На\-уч\-но-тех\-ни\-че\-ская информация. Сер.~2: Информационные процессы и~сис\-те\-мы, 2020.
-№\,11. С.~36--46.
-  doi: 10.36535/0548-0027-2020-11-5. EDN: EPSCAL.
- 
-
- 
-
-
- 
- 
-
- 
- 
- 
-
-\bibitem{9-but}
-\Au{Becerro F.\,B.} Phraseological variations in medical-pharmaceutical terminology and its 
-applications for English and German into Spanish translations~/\!\!/ SciMedicine~J., 2020. Vol.~2. 
-Iss.~1. P.~22--29.
- \end{thebibliography}
-} }
-
-
-
-\vspace*{-8pt}
-
-\hfill{\small\textit{Поступила в~редакцию 06.09.22}}
-
-\vspace*{8pt}
-
-\hrule
-
-\vspace*{2pt}
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\def\tit{USING A DATABASE OF~STRUCTURAL TRANSFORMATIONS TO~EXTRACT 
-MULTICOMPONENT TERMINOLOGICAL UNITS}
-
-
-
-\def\titkol{Using a database of~structural transformations to~extract 
-%multicomponent
- terminological units}
-
-\def\aut{Yu.\,I.~Butenko}
-
-\def\autkol{Yu.\,I.~Butenko}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-15pt}
-
-\noindent
-N.\,E.~Bauman Moscow State Technical University, 5-1 Baumanskaya  2nd Str., Moscow 105005, Russian 
-Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2023 vol~33 no\,1}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics 2023 vol~33 no\,1
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}
-
-
-
-
-
-
-\Abste{The paper reveals the basic principles of using the database of structural models of 
-terminological phrases for the extraction and alignment of\linebreak\vspace*{-12pt}}
-
-\Abstend{English and Russian multicomponent terms. The 
-formal structure of terminological units and structural models of multicomponent terms in English and 
-Russian are described. The definition of structural transformations in translation is given and the main models of 
-structural transformations of English- and Russian-speaking terms in the translation of scientific and 
-technical texts are highlighted. It is substantiated that the use of structural models of terminological word 
-combinations requires taking into account the specific features of each language under analysis. An approach 
-to the extraction and alignment of terminological units in parallel scientific and technical texts is proposed. It 
-consists of~5~main stages. The approach to the extraction and alignment of terminological units is 
-illustrated by examples of processing the parallel scientific and technical text in Russian and English.}
-
-\KWE{structural model; multicomponent term; formal structure of the term; structural models of terminological phrases in translation; Russian-language 
-terminology; English-language terminology}
-
-\DOI{10.14357\!/\!08696527230104}  
-
-%\vspace*{-10pt}
-
-
-%\Ack
-%\noindent
-
-%\vspace*{-3pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{ %\baselineskip=12pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{9}
-\bibitem{1-but-1}
-\Aue{Butenko, Iu.\,I., and V.~Garazha.} 2021. BMSTU corpus of scientific and technical texts: Conceptual 
-framework. \textit{Applied Linguistics Research~J.} 5(3):76--81. doi: 10.14744\!/\!\mbox{alrj}. 2021.15579.
-\bibitem{2-but-1}
-\Aue{Lejchik, V.\,M.} 1994. Iskhodnye ponyatiya, osnovnye polozheniya, opredeleniya sovremennogo 
-terminovedeniya i~terminografii [Linguistic problems of terminology and scientific and technical 
-translation]. \textit{Bulletin of the Kharkiv Polytechnic Institute} 1:147--180. 
-\bibitem{3-but-1}
-\Aue{Grinev-Grinevich, S.\,V., and E.\,A.~Sorokina.} 2020. Opyt opisaniya formal'noy struktury termina 
-(na materiale angliyskoy terminologii leksikologii) [Describing the formal structure of a~term (based on the English terminology of lexicology)]. 
-\textit{Bulletin of the Moscow Region State University. Ser.\ Linguistics} 5:74--85. doi:  
-10.18384\!/\!2310-712X-2020-5-74-85.
-\bibitem{4-but-1}
-\Aue{Butenko, Iu.\,I., N.\,S.~Nikolaeva, and E.\,Yu.~Kartseva.} 2022. Struk\-tur\-nye mo\-de\-li 
-an\-glo\-yazych\-nykh ter\-mi\-nov dlya av\-to\-ma\-ti\-che\-skoy ob\-ra\-bot\-ki kor\-pu\-sov nauchno-tekhnicheskikh teks\-tov 
-[Structural models of English terms of automated processing of scientific and technical texts corpora]. 
-\textit{RUDN J.~Language Studies Semiotics 
- Semantics} 13(1):80--95. doi: 10.22363\!/\!2313-2299-2022-13-1-80-95.
-\bibitem{5-but-1}
-\Aue{Lejchik, V.\,M., and S.\,D.~Shelov.} 1990. \textit{Lingvisticheskie problemy terminologii 
- i~nauchno-tekhnicheskiy perevod} [Linguistic problems of terminology and scientific and technical 
-translation]. Moscow: Vsesoyuz. tsentr perevodov nauch.-tekhn. lit. i~do\-ku\-men\-ta\-tsii. 78~p.
-\bibitem{6-but-1}
-\Aue{Simon, N.\,I., and V.~Ke\v{s}elj}. 2018. Automatic term extraction in technical domain using  
-part-of-speech and common-word features. \textit{ACM Symposium on Document Engineering 
-Proceedings}. New York, NY: ACM. 51. 4~p. doi: 10.1145\!/\!3209280.3229100.
-\bibitem{7-but-1}
-\Aue{Sidorova, E.\,A.} 2019. Kompleksnyy podkhod k~issledovaniyu leksicheskikh kha\-rak\-te\-ri\-stik teksta 
-[The integrated approach to text lexical characteristics study]. \textit{Vestnik SiBGUTI} [The Herald of the Siberian 
-State University of Telecommunications and Informatics] 3:80--88.
-\bibitem{8-but-1}
-\Aue{Biziukova, N.\,Y., O.\,A.~Tarasova, A.\,V.~Rudik, \textit{et al.}} 2020. 
-Automatic recognition of chemical entity mentions in texts of scientific publications. \textit{Automatic 
-Documentation Mathematical Linguistics} 54(6):306--315. doi: 10.3103\!/\!S0005105520060023.
-\bibitem{9-but-1}
-\Aue{Becerro, F.\,B.} 2020. Phraseological variations in medical-pharmaceutical terminology and its 
-applications for English and German into Spanish translations. \textit{SciMedicine~J.}  2(1):22--29.
-\end{thebibliography}
-} }
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received September 6, 2022}} 
-
-\vspace*{-12pt} 
-
-\Contrl
-
-\vspace*{-2pt}
-
-
-\noindent
-\textbf{Butenko Yuliya I.} (b.\ 1987)~--- Candidate of Science (PhD) in technology, associate professor, 
-N.\,E.~Bauman Moscow State Technical University, 5-1 Baumanskaya 2nd Str., Moscow 105005, Russian 
-Federation; \mbox{iubutenko@bmstu.ru}
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 

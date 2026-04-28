@@ -1,955 +1,0 @@
-\documentstyle[% 
-righttag% 
-,11pt% 
-,amssymb% 
-,russian%               remove in Eng. 
-,izvru%                 Set izven% in Eng. 
-]{amsart} 
- 
-%       Math definitions 
- 
-\newcommand{\ctg}{\operatorname{ctg}} 
-\newcommand{\vb}[1]{\Vec{\bold{#1}}} 
-\newcommand{\tts}[1]{} 
- 
-\theoremstyle{definition} 
-\theorembodyfont{\rm} 
-\newtheorem{notenonum}{\hskip\parindent Замечание} 
-\renewcommand{\thenotenonum}{} 
- 
-%\hoffset=-15mm%                  For Eng. 
-  
-\setcounter{page}{60} 
-\god{1999} 
-\nomer{8~(447)} %                        Remove in Eng. 
-%\nomer{Vol.\,43, No.\,8}%               Set in Eng. 
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng. 
-\udk{517.44:593.3} 
- 
-\author{\it Ю.Э.\,Сеницкий, С.А.\,Лычев} 
-% NB:   ^^ remove in Eng. 
-\title{Определение нормы ядер конечных интегральных преобразований и их 
-приложение} 
- 
-\date{} 
-% \pagestyle{myheadings}%         Set in Eng. 
-\pagestyle{plain} %              Remove in Eng. 
-\begin{document} 
-% \thispagestyle{plain}%          Set in Eng. 
-\maketitle 
-\label{begin} 
- 
-Данная работа посвящена развитию алгоритмической процедуры конечных 
-интегральных преобразований (КИП), предусматривающей определение 
-вектор-функций ядра преобразования в процессе решения 
-начально-краевых задач [1]--[3]. Поскольку ядра вычисляются с 
-точностью до произвольной постоянной, то в формуле обращения КИП, как 
-правило, сохраняется выражение квадрата их нормы. В нестационарных 
-задачах динамической теории упругости, описываемых системами 
-дифференциальных уравнений в частных производных второго порядка, 
-ядра КИП обычно являются линейными комбинациями специальных функций 
-[2]--[6], поэтому точное вычисление их нормы представляет большие 
-затруднения. В прикладных задачах для этой цели используются 
-приближенные способы, основанные на квадратурных формулах и методах 
-аппроксимации [7]. Однако такой подход приводит к потере точности и 
-увеличению затрат машинного времени на вычисление старших гармоник 
-получающихся спектральных разложений. Предлагаемый новый подход 
-свободен от указанных недостатков, поскольку позволяет заменить 
-невыполнимую в общем виде операцию интегрирования ядерных 
-вектор-функций относительно несложным дифференцированием и получать 
-аналитические выражения для квадрата их нормы. 
- 
-Необходимо отметить, что из полученного в данной работе представления 
-следуют аналогичные результаты, справедливые для скалярного случая 
-[8], [9]. Известные приемы вычисления определенных интегралов, 
-основанные на классических уравнениях Бесселя и Гаусса [10], [11], 
-также могут рассматриваться как частные реализации предлагаемого 
-общего подхода. 
-\medskip 
- 
-{\bf 1.} Будем рассматривать в области $D=\{[a,b]\times[0,T]\}$, 
-$T<\infty$, начально-краевую задачу в 
-стандартной форме [12] 
-\begin{gather} 
-L[\vb{u}(x,t)]-\bold H\frac{\partial^2}{\partial t^2}\vb{u}(x,t)= 
-\vb{f}(x,t),\quad L[\vb{u}(x,t)]\equiv\sum^2_{r=0} 
-\bold a_r(x)\frac{\partial^{2-r}}{\partial x^{2-r}}\vb{u} 
-(x,t);\notag \\ 
-% 
-B_a[\vb{u}(x,t)]\equiv\bigg[\bold b_a\frac{\partial}{\partial x} 
-\vb{u}(x,t)+\bold c_a\vb{u}(x,t)\bigg]\bigg|_{x=a}=0,\quad 
-B_b[\vb{u}(x,t)]\equiv\bigg[\bold b_b 
-\frac{\partial}{\partial x}\vb{u}(x,t)+\bold c_b 
-\vb{u}(x,t)\bigg]\bigg|_{x=b}=0; \\ 
-% 
-\vb{u}(x,t)|_{t=0}=\vb{u}_0(x),\quad 
-\frac{\partial}{\partial t}\vb{u}(x,t)|_{t=0}=\Dot{\vb{u}}_0(x); 
-\quad x\in[a,b],\ \; t\in[0,T],\ \; \vb{u}(x,t), 
-\vb{f}(x,t)\in R^m,\notag 
-\end{gather} 
-где $\vb{f}(x,t)$ является заданной, а $\vb{u}(x,t)$ --- искомой 
-вектор-функцией. 
-В выражениях (1) $\bold H$, $\bold b_a$, $\bold b_b$, $\bold c_a$, 
-$\bold c_b$, $\bold a_r(x)$ --- матрицы размерностью $m\times m$, 
-причем $\bold H$, $\bold c_a$ и $\bold c_b$ невырожденные. 
- 
-Решение $\vb{u}(x,t)$ задачи (1) строится в классе вектор-функций, 
-интегрируемых 
-с квадратом по переменной $x$ и дважды дифференцируемых по переменной 
-$t$. Введем на сегменте $[a,b]$ гильбертово пространство $\vb{L}^2_\mu$ 
-с метрикой, 
-определяемой скалярным произведением 
-\begin{equation} 
-(\vb{v},\vb{w})=\int^b_a\vb{v}^\top\mu\bold H\vb{w}\,dx, 
-\end{equation} 
-где $\mu$ --- матрица весовых функций ($\mu\bold H$ --- 
-симметричная и 
-положительно определенная матрица ([13], с.\,12)); $\top$ --- знак 
-транспонирования. 
- 
-В области 
-$D_A=\{\vb{v}\mid\vb{v}\in\vb{L}^2_\mu,\ B_a[\vb{v}]=0,\ 
-B_b[\vb{v}]=0\}\subset\Vec L^2_\mu$ определим оператор $A$, порождаемый 
-дифференциальной 
-операцией $L$, 
-\begin{equation} 
-\forall\,\vb{v}\in D_A\quad A[\vb{v}]\equiv\bold H^{-1}L[\vb{v}]. 
-\end{equation} 
-Известно [2], что если $A$ --- самосопряженный оператор с простым 
-дискретным спектром, то его собственные вектор-функции 
-$\{\vb{K}_i(x)\}$, 
-порождающие ядро преобразования, образуют счетное множество, а 
-соответствующее КИП представляется двумя формулами обращения 
-\begin{equation} 
-\varphi_i=\int^b_a\vb{K}^\top(x)\mu(x)\vb{f}(x)dx,\quad 
-\vb{f}(x)=\sum^\infty_{i=1}\vb{K}_i(x) 
-\varphi_i\|\vb{K}_i(x)\|^{-2}. 
-\end{equation} 
-Здесь $\|\vb{K}_i(x)\|=(\vb{K}_i(x),\vb{K}_i(x))$ --- норма ядерных 
-функций в метрике (2). 
- 
-В соответствии с ([1], с.\,56) собственные функции оператора $A$ могут 
-быть представлены в виде 
-\begin{equation} 
-\vb{K}_i(x)=\vb{K}(x,\lambda)|_{\lambda=\lambda_i}= 
-\bold Y(x,\lambda)\vb{C}(\lambda)|_{\lambda=\lambda_i}, 
-\end{equation} 
-где $\bold Y(x,\lambda)=\|\vb{y}_1(x,\lambda)\dotsc 
-\vb{y}_{2m}(x,\lambda)\|$ --- матрица фундаментальных решений 
-\begin{equation} 
-L[\vb{y}_j(x,\lambda)]=-\lambda\bold H\vb{y}_j(x,\lambda), 
-\quad j=1,2,\dotsc,2m, 
-\end{equation} 
-$\lambda_i$ --- собственные значения, которые вычисляются как корни 
-трансцендентного уравнения 
-$$ 
-\det\bold B(\lambda_i)=0,\quad \bold B(\lambda)= 
-\begin{Vmatrix} 
-\displaystyle\bigg[\bold b_a\frac{\partial}{\partial x} 
-\bold Y(x,\lambda)+\bold c_a\bold Y(x,\lambda)\bigg] 
-\bigg|_{x=a}\\ 
-\dotsb\dotsb\dotsb\dotsb\dotsb\dotsb\dotsb\dotsb\dotsb\dotsb \\ 
-\displaystyle\bigg[\bold b_b\frac{\partial}{\partial x} 
-\bold Y(x,\lambda)+\bold c_b\bold Y(x,\lambda)\bigg] 
-\bigg|_{x=b}\end{Vmatrix} 
-, 
-$$ 
-а $\vb{C}(\lambda)$ --- постоянные интегрирования, определяемые из 
-краевых условий 
-задачи (1). При этом без потери общности рассуждений можно считать, 
-что последний элемент вектора $\vb{C}(\lambda)$ не зависит от $\lambda$ 
-и равен 1. Тогда 
-его остальные элементы являются решениями неоднородной системы 
-алгебраических уравнений 
-$$ 
-\sum^{2n-1}_{j=1}b_{ij}(\lambda)c_j(\lambda)=-b_{2n i}(\lambda), 
-\quad i=1,2,\dotsc,2n-1. 
-$$ 
-Здесь $b_{ij}(\lambda)$ --- компоненты матрицы $\bold B(\lambda)$, а 
-$c_j(\lambda)$ --- вектора $\vb{C}(\lambda)$. При условии 
-простоты спектра оператора $A$ указанная система уравнений невырождена [13]. 
- 
-Формула обращения КИП (4) представляет разложения, единственность и 
-сходимость которых обоснована в [14], а решение начально-краевой 
-задачи (1) может быть представлено в виде ([1], с.\,23) 
-\begin{equation} 
-\begin{split} 
-\varphi_i=\int^b_a\vb{K}_i(x)^\top\bigg\{\bold H[\vb{u}_0(x)\cos
-(\lambda^{1/2}_i t)+\lambda^{-1/2}_i\Dot{\vb{u}}_0(x) 
-&\sin(\lambda^{1/2}_i t)]-\lambda^{-1/2}_i\int^t_0 
-\sin(\lambda^{1/2}_i(t-\tau)\vb{f}(x,\tau)d\tau\bigg\}dx,\\ 
-\vb{u}(x,t)=\sum^\infty_{i=1}\vb{K}_i(x)&\varphi_i 
-\|\vb{K}_i(x)\|^{-2}. 
-\end{split} 
-\end{equation} 
- 
-{\bf 2.} При условии интегрируемости системы уравнений (6) входящий в 
-решение (7) квадрат нормы $\|\vb{K}_i(x)\|^2$, как правило, не мог быть 
-определен 
-точно. Следующая теорема устанавливает возможность строгого 
-вычисления квадратуры $\|\vb{K}_i(x)\|^2$. 
- 
-\begin{thm} Если $\lambda_i$ --- простая точка спектра оператора $A$, 
-то квадрат 
-нормы его собственной вектор-функции определяется выражением 
-\begin{equation} 
-\|\vb{K}_i(x)\|^2=\bigg\{ 
-\frac{\partial\vb{K}(\lambda,x)^\top}{\partial\lambda}\bold Q 
-\frac{\partial\vb{K}(\lambda,x)}{\partial x}- 
-\frac{\partial^2\vb{K}(\lambda,x)^\top} 
-{\partial\lambda\partial x}\bold P\vb{K}(\lambda,x) 
-\bigg|_{\lambda=\lambda_i}\bigg\}\bigg|^{x=b}_{x=a}, 
-\end{equation} 
-в котором 
-\begin{equation} 
-\bold P|_{x=a,b}=\mu\bold a_0|_{x=a,b},\ \; \bold Q|_{x=a,b}= 
-\{\mu\bold a_0-(\tfrac{\partial}{\partial x}(\mu\bold a_0)- 
-\mu\bold a_1)\bold R\}|_{x=a,b}, 
-\ \; \bold R|_{x=a}=-\bold c^{-1}_a\bold b_a, 
-\ \; \bold R|_{x=b}=-\bold c^{-1}_b\bold b_b. 
-\end{equation} 
-\end{thm} 
- 
-\begin{pf} Наряду с оператором $A$ рассмотрим возмущенный оператор 
-$A(\varepsilon)$ 
-$$ 
-\forall\,\vb{v}\in D_{A(\varepsilon)}\ \; A(\varepsilon) 
-[\vb{v}]\equiv\bold H^{-1}L[\vb{v}];\quad 
-D_{A(\varepsilon)}=\{\vb{v}\mid\vb{v}\in\vb{L}^2_\mu, 
-\ B_a[\vb{v}]=0,\ B_b[\vb{v}]=\varepsilon\bold M\vb{v}\}, 
-$$ 
-где $\bold M=\text{diag\,}(0,\dotsc,0,1)$ --- диагональная матрица, 
-$\varepsilon$ --- малый параметр. Таким 
-образом, возмущенным оказывается одно из граничных условий, 
-соответствующее последней строке матрицы $\bold B(\lambda)$. Обозначим 
-собственные 
-значения оператора $A(\varepsilon)$ и его собственные функции 
-соответственно через 
-$\lambda_i(\varepsilon)$ и $\vb{K}_i(x,\varepsilon)$. Заметим также, 
-что, благодаря специальному виду возмущения, в 
-выражение (5), соответствующее $\vb{K}_i(x,\varepsilon)$, параметр 
-возмущения $\varepsilon$ не входит в 
-явном виде. В соответствии с (6) для $\vb{K}_i(x)$ и 
-$\vb{K}_i(x,\varepsilon)$ справедливы равенства 
-\begin{align*} 
--\lambda_i(\vb{K}_i(x),\vb{K}_i(x,\varepsilon))&= 
-(A[\vb{K}_i(x)],\vb{K}_i(x,\varepsilon)),\\ 
--\lambda_i(\varepsilon)(\vb{K}_i(x),\vb{K}_i(x,\varepsilon))&= 
-(\vb{K}_i(x),A(\varepsilon)[\vb{K}_i(x,\varepsilon)]), 
-\end{align*} 
-из которых следует 
-\begin{equation} 
-(\vb{K}_i(x),\vb{K}_i(x,\varepsilon))(\lambda_i(\varepsilon)- 
-\lambda_i)=(A[\vb{K}_i(x)],\vb{K}_i(x,\varepsilon))- 
-(\vb{K}_i(x),A(\varepsilon)[\vb{K}_i(x,\varepsilon)]). 
-\end{equation} 
-После интегрирования по частям правой части (10) в силу 
-симметричности $L$ получаем выражение, содержащее только 
-внеинтегральные члены,
-\begin{equation} 
-(\vb{K}_i(x),\vb{K}_i(x,\varepsilon))(\lambda_i(\varepsilon)- 
-\lambda_i)=[\vb{K}_i(x),\vb{K}_i(x,\varepsilon)]|^b_a. 
-\end{equation} 
-Здесь 
-\begin{equation} 
-[\vb{K}_i(x),\vb{K}_i(x,\varepsilon)]=\vb{K}_i(x,\varepsilon)^\top 
-\mu\bold a_0\frac{\partial}{\partial x}\vb{K}_i(x)- 
-\frac{\partial}{\partial x}(\vb{K}_i(x,\varepsilon)^\top 
-\mu\bold a_0)\vb{K}_i(x)+\vb{K}_i(x,\varepsilon)^\top 
-\mu\bold a_1\vb{K}_i(x). 
-\end{equation} 
- 
-Представим собственные значения и собственные функции возмущенного 
-оператора $A(\varepsilon)$ в форме разложения по степеням $\varepsilon$ 
-([15], с.\,530), 
-т.\,е. 
-\begin{equation} 
-\lambda_i(\varepsilon)=\lambda_i+\varepsilon 
-\frac{\partial}{\partial\varepsilon}\lambda_i(\varepsilon) 
-|_{\varepsilon=0}+O(\varepsilon^2),\quad 
-\vb{K}_i(x,\varepsilon)=\vb{K}_i(x)+\varepsilon 
-\frac{\partial}{\partial\varepsilon}\vb{K}_i(x,\varepsilon) 
-|_{\varepsilon=0}+O(\varepsilon^2). 
-\end{equation} 
-Поскольку $\lambda_i$ --- простая точка спектра, то коэффициенты при 
-$\varepsilon$ в 
-равенствах (13) отличны от нуля. После подстановки разложений (13) в 
-выражение (11) оно преобразуется к виду 
-$$ 
-(\vb{K}_i(x),\vb{K}_i(x,\varepsilon))\varepsilon 
-\tfrac{\partial}{\partial\varepsilon}\lambda_i(\varepsilon) 
-|_{\varepsilon=0}=[\vb{K}_i(x),\vb{K}_i(x)]|^b_a+ 
-\varepsilon[\vb{K}_i(x),\tfrac{\partial}{\partial\varepsilon} 
-\vb{K}_i(x,\varepsilon)|_{\varepsilon=0}]|^b_a+ 
-O(\varepsilon^2), 
-$$ 
-причем в силу самосопряженности оператора $A$ ([13], с.\,479) 
-$[\vb{K}_i(x),\vb{K}_i(x)]|^b_a=0$. 
-Поскольку в выражение 
-$\vb{K}_i(x,\varepsilon)=\vb{K}(x,\lambda_i(\varepsilon))$\; 
-$\varepsilon$ не входит в явном виде, то 
-$$
-\bigg[\vb{K}_i(x),\frac{\partial}{\partial\varepsilon} 
-\vb{K}_i(x,\varepsilon)|_{\varepsilon=0}\bigg]=\bigg[ 
-\vb{K}_i(x),\frac{\partial}{\partial\lambda_i(\varepsilon)} 
-\vb{K}(x,\lambda_i(\varepsilon)) 
-|_{\lambda_i(\varepsilon)=\lambda_i}\bigg] 
-\frac{\partial}{\partial\varepsilon}\lambda_i(\varepsilon) 
-|_{\varepsilon=0} 
-$$
-и, следовательно, 
-$$ 
-(\vb{K}_i(x),\vb{K}_i(x,\varepsilon))=\bigg[ 
-\vb{K}_i(x),\frac{\partial}{\partial\lambda_i(\varepsilon)} 
-\vb{K}(x,\lambda_i(\varepsilon)) 
-|_{\lambda_i(\varepsilon)=\lambda_i} 
-\bigg]\bigg|^b_a+O(\varepsilon). 
-$$ 
-Устремляя $\varepsilon$ к нулю и принимая во внимание (5), получим 
-соотношение, определяющее квадрат нормы,
-\begin{equation} 
-\|\vb{K}_i(x)\|^2=\lim_{\varepsilon\to 0} 
-(\vb{K}_i(x),\vb{K}_i(x,\varepsilon))=\bigg[ 
-\vb{K}(x,\lambda_i)\frac{\partial}{\partial\lambda} 
-\vb{K}_i(x,\lambda)|_{\lambda=\lambda_i} 
-\bigg]\bigg|^b_a. 
-\end{equation} 
-С учетом выражения (12), соответствующих (1) краевых условий для 
-$\vb{K}_i(x)$ и 
-обозначений (9) из равенства (14) следует выражение (8). 
-\end{pf} 
- 
-Теорема 1 позволяет относительно просто вычислять квадраты нормы 
-спектральных разложений (7) для любых систем собственных 
-вектор-функций краевых задач (1). Она является естественным 
-обобщением аналогичного утверждения для скалярного случая, 
-приведенного в монографии ([8], с.\,325). Следует отметить также 
-близкие результаты для систем дифференциальных уравнений первого 
-порядка, приведенные в монографии ([16], с.\,378), не связанные, 
-однако, с вычислением нормы. 
-\medskip 
- 
-{\bf 3.} Представление решения в форме разложения (7) и 
-соответствующее ему выражение квадрата нормы (8) получены в 
-предположении, что оператор $A$, порожденный начально-краевой задачей 
-(1), самосопряжен в метрике пространства $\vb{L}^2_\mu$. Это условие, 
-во-первых, 
-определяет конкретный вид матрицы весовых функций $\mu=\mu(x)$, 
-во-вторых, 
-устанавливает ограничения на коэффициенты $\bold a_r=\bold a_r(x)$, 
-$\bold b_{a,b}$, $\bold c_{a,b}$ исходной задачи 
-(1). Конструктивно эти связи могут быть установлены на основании 
-следующей теоремы (в дальнейшем штрихом обозначается производная по 
-переменной $x$, а точкой --- по переменной $t$). 
- 
-\begin{thm} Если матрица весовых функций $\mu$ является частным 
-решением 
-системы уравнений 
-\begin{equation} 
-\bold a^\top_1\mu+\mu\bold a_1=2(\mu\bold a_0)', 
-\end{equation} 
-и при этом матрицы коэффициентов $\bold a_r$ удовлетворяют соотношениям 
-\begin{equation} 
-\mu\bold a_0=\bold a^\top_0\mu,\quad 
-2(\bold a^\top_2\mu-\mu\bold a_2)= 
-(\bold a^\top_1\mu-\mu\bold a_1)', 
-\end{equation} 
-а коэффициенты $\bold b_{a,b}$ и $\bold c_{a,b}$ --- равенствам 
-\begin{equation} 
-\{\bold R^\top\mu\bold a_0-\mu\bold a_0\bold R- 
-\bold R^\top((\mu\bold a_0)'-\mu\bold a_1) 
-\bold R\}|_{x=a,b}=0, 
-\end{equation} 
-то $A$ --- самосопряженный оператор в $\vb{L}^2_\mu$, и решение 
-начально-краевой 
-задачи $(1)$ может быть построено методом КИП в форме разложения 
-$(7)$ с квадратом нормы ядерной функции в виде $(8)$. 
-\end{thm} 
- 
-\begin{pf} Известно, что область определения оператора $A$\; $D_A$ 
-плотна в $\vb{L}^2_\mu$ ([13], с.\,477). Рассмотрим скалярные 
-произведения 
-произвольных вектор-функций $\vb{v},\vb{w}\in D_A$ в метрике (2) 
-\begin{gather} 
-(A[\vb{v}],\vb{w})=\int^b_a(\bold a_0\vb{v}''+\bold a_1\vb{v}'+ 
-\bold a_2\vb{v})^\top\mu\vb{w}\,dx=\int^b_a\vb{w}^\top\mu 
-(\bold a_0\vb{v}''+\bold a_1\vb{v}'+\bold a_2\vb{v})dx,\\ 
-% 
-(\vb{v},A[\vb{w}])=\int^b_a\vb{v}^\top\mu(\bold a_0\vb{w}''+ 
-\bold a_1\vb{w}'+\bold a_2\vb{w})dx=\int^b_a 
-((\vb{w}'')^\top\bold a^\top_0+(\vb{w}')^\top 
-\bold a^\top_1+\vb{w}^\top\bold a^\top_2)\mu\vb{v}\,dx. 
-\end{gather} 
-Интегрируя (18) по частям, имеем 
-\begin{multline} 
-(A[\vb{v}],\vb{w})=\{\vb{w}^\top\mu\bold a_0\vb{v}'- 
-(\vb{w}^\top\mu\bold a_0)'\vb{v}+\vb{w}^\top\mu\bold a_1\vb{v}\} 
-|^b_a+ \\ 
-% 
-+\int^b_a\{(\vb{w}'')^\top\mu\bold a_0+(\vb{w}')^\top 
-(2(\mu\bold a_0)'-\mu\bold a_1)+\vb{w}^\top((\mu\bold a_0)''- 
-(\mu\bold a_1)'+\mu\bold a_2)\}\vb{v}\,dx. 
-\end{multline} 
-При выполнении соотношений (15), (16) интегралы в правых частях (19) 
-и (20) тождественны. 
- 
-Из краевых условий задачи (1) выразим
-\begin{equation} 
-\vb{v}|_{a,b}=\bold R\vb{v}'|_{a,b},\quad 
-\vb{w}|_{a,b}=\bold R\vb{w}'|_{a,b}. 
-\end{equation} 
-С учетом (21) внеинтегральные члены в (20) запишутся в виде 
-\begin{equation} 
-\{(\vb{w}')^\top\bold R^\top\mu\bold a_0\vb{v}'- 
-(\vb{w}')^\top\mu\bold a_0\bold R\vb{v}'+ 
-(\vb{w}')^\top\bold R^\top((\mu\bold a_0)'-\mu\bold a_1) 
-\bold R\vb{v}'\}|^b_a= 
-\{(\vb{w}')^\top\bold T\vb{v}'\}|^b_a, 
-\end{equation} 
-где введено обозначение
-$$ 
-\bold T|_{x=a,b}=\{\bold R^\top\mu\bold a_0- 
-\mu\bold a_0\bold R-\bold R^\top((\mu\bold a_0)'- 
-\mu\bold a_1)\bold R\}|_{x=a,b}. 
-$$ 
-Поскольку при условии (17) матрицы $\bold T|_{x=a,b}=0$, то выражение 
-(22), а 
-следовательно, и внеинтегральные члены (20) обращаются в нуль 
-$\forall\,\vb{v},\vb{w}\in D_A$. 
-Таким образом, из соотношений (19), (20) следует 
-$(A[\vb{v}],\vb{w})=(\vb{v},A[\vb{w}])$, т.\,е. $A$ --- 
-симметрический оператор, и дифференциальные выражения $A$ и 
-сопряженного с ним оператора $A^*$ совпадают. В то же время выражение 
-(22) равно нулю только в том случае, когда обе функции $\vb{v}$, 
-$\vb{w}$ 
-удовлетворяют условиям (17), т.\,е. области определения $A$ и $A^*$ 
-совпадают, и, следовательно, $A$ является самосопряженным оператором. 
-\end{pf} 
- 
-\begin{notenonum} В случае сингулярных краевых условий в задаче (1) 
-равенства (17) заменяются соответствующими предельными соотношениями 
-([17], с.\,291). 
-\end{notenonum} 
- 
-{\bf 4.} Ниже приведены примеры вычислений $\|\vb{K}(x,\lambda_i)\|^2$ 
-по предлагаемой методике. 
- 
-\begin{exam} Задача для уравнения гиперболического типа 
-\begin{gather} 
-u''-\Ddot u=f;\notag\\ 
-u|_{x=0}=0,\quad u|_{x=\pi}=0,\quad 
-u_{t=0}=0,\quad \Dot u|_{t=0}=0;\\ 
-x\in[0,\pi],\ \; t\in[0,T];\ \; u,f\in R^1,\notag 
-\end{gather} 
-на основании теоремы 2 решена методом КИП в $L^2$ с метрикой 
-$\mu\equiv1$. 
-В соответствии с (1), (3), (23) оператор $A$ имеет вид 
-$$ 
-A[u]\equiv u'',\quad D_A=\{u\mid u\in L^2,\ u|_{x=0}=0, 
-\ u|_{x=\pi}=0\}. 
-$$ 
-Его собственные значения $\lambda_i$ и собственные функции $K_i(x)$ 
-определяются равенствами 
-\begin{equation} 
-\{\lambda_i\}=i^2,\quad 
-\{K_i(x)\}=\{\sin(\sqrt{\lambda_i}x)\},\quad i=1,2,\dotsc 
-\end{equation} 
- 
-Для вычисления квадрата нормы $\|K_i(x)\|^2$ воспользуемся формулой (8) 
-(теорема 
-1). Поскольку в рассматриваемом случае $K_i(0)=K_i(\pi)=0$ и, 
-следовательно, $c_a=c_b=1$, $b_a=b_b=0$, а 
-из (9) $P=Q=1$, то 
-$$ 
-\|K_i(x)\|^2=\frac{\partial K(x,\lambda)}{\partial\lambda} 
-\frac{\partial K(x,\lambda)}{\partial x} 
-\bigg|^{x=\pi}_{x=0,\ \lambda=i^2}=\bigg[ 
-\frac{x}{2\sqrt{\lambda}}\cos(\sqrt{\lambda}x)\sqrt{\lambda}\cos 
-(\sqrt{\lambda}x)\bigg]\bigg|^{x=\pi}_{x=0,\ \lambda=i^2}= 
-\frac{\pi}{2}.
-$$ 
-Естественно, что в этом случае такой же результат может быть получен 
-непосредственным интегрированием выражения (24), т.\,е. 
-$$ 
-\|K_i(x)\|^2=\int^\pi_0\sin^2(ix)dx=\frac{\pi}{2}. 
-$$ 
-\end{exam} 
- 
-\begin{exam} Для осесимметричных вынужденных колебаний жестко 
-защемленной на контуре круглой пластины в постановке уточненной 
-теории соответствующая начально-краевая задача формулируется 
-следующим образом ([1], с.\,75): 
-\begin{gather} 
-\begin{Vmatrix} 
-1 & 0 \\ 0 & 1 
-\end{Vmatrix} 
-\vb{u}''+ 
-\begin{Vmatrix} 
-x^{-1} & b \\ -1 & x^{-1} 
-\end{Vmatrix} 
-\vb{u}'+ 
-\begin{Vmatrix} 
--x^{-2}-b & 0 \\ -x^{-1} & 0 
-\end{Vmatrix} 
-\vb{u}- 
-\begin{Vmatrix} 
-c & 0 \\ 0 & d 
-\end{Vmatrix} 
-\Ddot{\vb{u}}=\vb{f};\notag \\ 
-%
-\vb{u}|_{x=0}<\infty,\quad \vb{u}|_{x=1}=0,\quad \vb{u}|_{t=0}=0,\quad 
-\Dot{\vb{u}}|_{t=0}=0; \\ 
-x\in [0,1],\ \; t\in[0,T];\ \; \vb{u}=\vb{u}(x,t), 
-\ \; \vb{f}=\vb{f}(x,t);\ \; \vb{u},\vb{f}\in R^2\notag. 
-\end{gather} 
-Здесь $\vb{u}=(\psi,w)^\top$ --- вектор перемещений, $\vb{f}$ --- 
-вектор динамической нагрузки, 
-$b$, $c$, $d$ --- постоянные коэффициенты, зависящие от 
-физико-механических и геометрических характеристик пластины [1]. 
-Согласно теореме 2 решение задачи (25) может быть построено методом 
-КИП в $\vb{L}^2_\mu$ с метрикой (2), определяемой весовыми функциями 
-$$ 
-\mu(x)= 
-\begin{Vmatrix} 
-x b^{-1} & 0 \\ 0 & x 
-\end{Vmatrix} 
-. 
-$$ 
-В соответствии с (3), (25) запишем выражение для оператора 
-\begin{gather*} 
-A\equiv 
-\begin{Vmatrix} 
-c^{-1} & 0 \\ 0 & d^{-1} 
-\end{Vmatrix} 
-\frac{d^2}{dx^2}+ 
-\begin{Vmatrix} 
-(cx)^{-1} & bc^{-1} \\ -d^{-1} & (dx)^{-1} 
-\end{Vmatrix} 
-\frac{\partial}{\partial x}+ 
-\begin{Vmatrix} 
--(x^{-2}+b)c^{-1} & 0 \\ -(dx)^{-1} & 0 
-\end{Vmatrix} 
-, \\ 
-D_A=\{\vb{u}\mid\vb{u}\in\vb{L}^2_\mu, 
-\ \vb{u}|_{x=0}<\infty,\ \vb{u}|_{x=1}=0\}. 
-\end{gather*} 
-Его собственные значения $\lambda_i$ являются нулями трансцендентного 
-уравнения 
-\begin{gather*} 
-(\nu_{1i}-\lambda_i c+b)\nu^{-1/2}_{1i}J_0 
-(\sqrt{\nu_{1i}})J_1(\sqrt{\nu_{2i}})-(\nu_{2i}- 
-\lambda_i c+b)\nu^{-1/2}_{2i}J_0(\sqrt{\nu_{2i}}) 
-J_1(\sqrt{\nu_{1i}})=0;\\ 
-%
-\nu_{1,\,2i}=1/2[\pm\sqrt{\lambda^2_i(d-c)^2+4\lambda_i d b}+ 
-\lambda_i(d+c)], 
-\end{gather*} 
-а собственные функции, удовлетворяющие условию ограниченности в 
-полюсе $x=0$, определяются выражением [1] 
-\begin{equation} 
-\vb{K}(x,\lambda_i)= 
-\begin{Vmatrix} 
-b[J_1(\sqrt{\nu_{1i}}x)J_1(\sqrt{\nu_{2i}})- 
-J_1(\sqrt{\nu_{2i}}x)J_1(\sqrt{\nu_{1i}})] \\ 
-(\nu_{2i}-\lambda_i c+b)\nu^{-1/2}_{2i}J_0 
-(\sqrt{\nu_{2i}}x)J_1(\sqrt{\nu_{1i}})- 
-(\nu_{1i}-\lambda_i c+b)\nu^{-1/2}_{1i}J_0 
-(\nu_{1i}x)J_1(\sqrt{\nu_{2i}}) 
-\end{Vmatrix} 
-, 
-\end{equation} 
-где $J_n(z)$ --- функции Бесселя первого рода порядка $n$. 
- 
-Квадрат нормы $\|\vb{K}_i(x)\|^2$ вычислим по упрощенной формуле (8). 
-Действительно, 
-поскольку $\mu(0)=0$, то в соответствии с (9)\; 
-$\bold P|_{x=0}=\bold Q|_{x=0}=0$. Кроме того, из краевых 
-условий задачи (25) при $x=1$ следует, что $\vb{K}_i(x)|_{x=1}=0$. 
-Имеем 
-\begin{multline} 
-\|\vb{K}(x,\lambda_i)\|^2= 
-\frac{\partial\vb{K}(x,\lambda)}{\partial\lambda} 
-\begin{Vmatrix} 
-x/b & 0 \\ 0 & x 
-\end{Vmatrix} 
-\frac{\partial\vb{K}(x,\lambda)}{\partial x} 
-\bigg|_{x=1,\,\lambda=\lambda_i}=a_1J_1 
-(\sqrt{\nu_{1i}})J_1(\sqrt{\nu_{2i}}) 
-[a_2J_0(\sqrt{\nu_{1i}})J_1(\sqrt{\nu_{2i}})+ \\ 
-% 
-+a_3J_1(\sqrt{\nu_{1i}})J_1(\sqrt{\nu_{2i}})+ 
-a_4J_1(\sqrt{\nu_{1i}})J_0(\sqrt{\nu_{2i}})+ 
-a_5J_0(\sqrt{\nu_{1i}})J_0(\sqrt{\nu_{2i}})], 
-\end{multline} 
-где 
-\begin{gather*} 
-a_1=\sqrt{\lambda^2_i(d-c)^2+4\lambda_i d b},\quad 
-a_2=[(\nu_{1i}-\lambda_i c+b)(\delta_{1i}/\nu_{1i}+ 
-\delta_{2i}/\nu_{2i})/2-\delta_{1i}+c]/\sqrt{\nu_{1i}},\\ 
-% 
-a_3=[\delta_{1i}-\delta_{2i}+(b-\lambda_i c)(\delta_{1i} 
-/\nu_{1i}-\delta_{2i}/\nu_{2i})]/2,\\
-%
-a_4=-[(\nu_{2i}-\lambda_i c+b) 
-(\delta_{1i}/\nu_{1i}+\delta_{2i}/\nu_{2i}) 
-/2-\delta_{2i}+c]/\sqrt{\nu_{2i}},\\ 
-% 
-a_5=[(\nu_{2i}-\lambda_i c+b)\delta_{1i}- 
-(\nu_{1i}-\lambda_i c+b)\delta_{2i}]/ 
-[2\sqrt{\nu_{1i}\nu_{2i}}],\quad 
-\delta_{k i}=\frac{\nu_{k i}(d+c)+d(b-2\lambda_i)} 
-{2\nu_{k i}-\lambda_i(d+c)}\quad (k=1,2). 
-\end{gather*} 
-Заметим, что выражение (27) может быть получено путем 
-непосредственного интегрирования квадрата выражения (26), если 
-воспользоваться известными квадратурами для произведений функций 
-Бесселя [9], [10]. Однако такой прием даже в случае известных 
-квадратур является более громоздким. 
-\end{exam} 
- 
-\begin{exam} Осесимметричная динамическая задача для упруго 
-закрепленной 
-трехслойной непологой сферической оболочки симметричной структуры 
-представляется в следующей матричной форме [2]: 
-\begin{gather} 
-\begin{Vmatrix} 
-a & 0 & 0 \\ 0 & k^2 & 0 \\ 0 & 0 & \alpha^2 d 
-\end{Vmatrix} 
-\frac{\partial^2\vb{u}}{\partial\theta^2}+
-\begin{Vmatrix} 
-a\ctg\theta & \vdots & b+k^2 & \vdots & 0 \\ 
-\hdotsfor[1.5]{5} \\ 
--b-k^2 & \vdots & k^2\ctg\theta^2 & \vdots & k^2 \\ 
-\hdotsfor[1.5]{5} \\ 
-0 & \vdots & -k^2 & \vdots & \alpha^2d\ctg\theta 
-\end{Vmatrix} 
-\frac{\partial\vb{u}}{\partial\theta}+\hspace{60mm}\notag\\ 
-% 
-+ 
-\begin{Vmatrix} 
-c-a/\sin^2\theta-k^2 & \vdots & 0 & \vdots & k^2 \\ 
-\hdotsfor[1.5]{5} \\ 
--(b+k^2)\ctg\theta & \vdots & -2b & \vdots & k^2\ctg\theta \\ 
-\hdotsfor[1.5]{5} \\ 
-k^2 & \vdots & 0 & \vdots & \alpha^2f-k^2-\alpha^2d/\sin^2\theta 
-\end{Vmatrix} 
-\vb{u}- 
-\begin{Vmatrix} 
-I_1 & 0 & I_2 \\ 0 & I_1 & 0 \\ I_2 & 0 & \alpha^2I_3 
-\end{Vmatrix} 
-\frac{\partial^2\vb{u}}{\partial t^2}=\vb{f};\\ 
-% 
-\left.\left[ 
-\begin{Vmatrix} 
-0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & \eta 
-\end{Vmatrix} 
-\frac{\partial}{\partial\theta}\vb{u}+ 
-\begin{Vmatrix} 
-1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 
-\end{Vmatrix} 
-\vb{u}\right]\right|_{\theta=\theta_1}=0;\quad 
-\vb{u}|_{\theta=0}<\infty,\quad 
-\vb{u}|_{t=0}=0,\quad 
-\frac{\partial}{\partial t}\vb{u}\Big |_{t=0}=0;\notag \\ 
-\theta\in[0,\theta_1],\ \; t\in[0,T]; 
-\ \; \vb{u}=\vb{u}(\theta,t),\ \; \vb{f}=\vb{f}(\theta,t); 
-\ \; \vb{u},\vb{f}\in R^3.\notag 
-\end{gather} 
-Здесь $\alpha$, $\eta$, $a$, $b$, $c$, $d$, $f$, $k$, $I_1$, $I_2$, 
-$I_3$ --- 
-постоянные, определяемые физическими и геометрическими 
-параметрами оболочки. 
- 
-Замкнутое решение задачи (28) построено методом КИП одним из авторов 
-[2]. Вместе с тем вопрос о вычислении нормы ядра КИП, представляющего 
-собой линейные комбинации присоединенных функций Лежандра 
-произвольной комплексной степени, оставался открытым, поскольку в 
-известных руководствах по специальным функциям [9], [18] отсутствуют 
-соответствующие квадратуры и приемы их точного вычисления. 
- 
-Из соотношений (15)--(17) теоремы 2 следует, что для решения задачи 
-(28) может быть применено КИП в $\vb{L}^2_\mu$ с метрикой (2), 
-определяемой 
-матрицей весовых функций $\mu(\theta)=\bold E\sin\theta$ с единичной 
-матрицей $E$. 
- 
-Как известно [2], собственные вектор-функции оператора $A$ 
-определяются выражениями 
-$$ 
-\vb{K}_i(\theta)=\bold Y(\lambda,\theta)\vb{C}(\lambda) 
-|_{\lambda=\lambda_i}. 
-$$ 
-Элементами матрицы $\bold Y(\lambda,\theta)$ являются ограниченные при 
-$\theta=0$ решения 
-соответствующей (28) однородной системы уравнений (6), т.\,е. 
-$$ 
-\bold Y(\lambda,\theta){=}\|\vb{y}_1(\theta,\lambda)\dotsc 
-\vb{y}_3(\theta,\lambda)\|;\ \;
-\vb{y}_j(\theta,\lambda){=}\|P^1_{\nu_j}(\cos\theta)\ \; 
-\beta_j(\lambda)P_{\nu_j}(\cos\theta)\ \; 
-\delta_j(\lambda)P^1_{\nu_j}(\cos\theta)\|^\top,\ \;
-j{=}1,2,3. 
-$$ 
-Здесь $P^m_{\nu_j}(\cos\theta)$ --- присоединенные функции Лежандра 
-комплексной степени $\nu_j$ 
-порядка $m$; 
-\begin{gather*} 
-\beta_j(\lambda)=d_j\zeta_j(\lambda a_6+a\zeta_j+a_7),\quad 
-\delta_j(\lambda)=d_j(\lambda^2a_1+\lambda(a_2+a_3\zeta_j)+ 
-a_4+a_5\zeta_j-a\zeta^2_j), \\ 
-% 
-d_j=[\lambda^2a_8+\lambda(a_9-I_2\zeta_j)+ 
-a_{10}+b\zeta_j]^{-1}, 
-\end{gather*} 
-где 
-\begin{gather*} 
-a_1=\frac{-I^2_1}{k^2},\ \; 
-a_2=I_1\bigg[\frac{2b-c}{k^2}+1\bigg],\ \; 
-a_3=I_1\bigg[\frac{a}{k^2}+1\bigg],\ \; 
-a_4=2b\bigg[\frac{c}{k^2}-1\bigg],\ \; 
-a_5=\frac{b^2}{k^2}-2b\bigg[\frac{a}{k^2}-1\bigg]+c, \\ 
-% 
-a_6=-I_1-I_2\bigg(\frac{b}{k^2}+1\bigg),\ \; 
-a_7=-c-b;\ \; a_8=\frac{I_1I_2}{k^2}, 
-\ \; a_9=I_1-2\frac{b I_2}{k^2},\ \; a_{10}=-2b, 
-\end{gather*} 
-а $\zeta_j=\nu_j(\nu_j+1)$, $j=1,2,3$, --- корни определяющего 
-кубического уравнения [2] 
-$$ 
-\zeta^3+(\varphi_1\lambda+\varphi_0)\zeta^2+ 
-(\psi_2\lambda^2+\psi_1\lambda+\psi_0)\zeta+ 
-\vartheta_3\lambda^3+\vartheta_2\lambda^2
-+\vartheta_1\lambda+\vartheta_0=0, 
-$$ 
-причем 
-\begin{gather*} 
-\vartheta_0=-2b w^{-1}_2(\alpha^2f w_3+c k^2),
-\ \; \vartheta_1=w^{-1}_2\{2\alpha^2b(I_1f-I_3w_3)+ 
-I_1(\alpha^2f w_3-k^2w_4)-4b k^2I_2\},\\ 
-% 
-\vartheta_2=w^{-1}_2\{\alpha^2I_1(I_3(w_4+k^2)- 
-I_1f)-2b I^2_2+k^2I_1w_6\},
-\ \; \vartheta_3=I_1w^{-1}_2(I^2_2-\alpha^2I_1I_3),\\ 
-% 
-\psi_0=w^{-1}_2\{2a b w_5-\alpha^2b(2c d-b f-2k^2(d+f))+ 
-\alpha^2c f k^2-b^2k^2\},\\ 
-% 
-\psi_1=w^{-1}_2\{2b I_2k^2-a(I_1w_5+2\alpha^2b I_3)- 
-\alpha^2(b(2w_7-b I_3-2k^2I_3)-c(k^2I_3+w_7)+ 
-k^2(w_7-f I_1))\}, \\ 
-% 
-\psi_2=w^{-1}_2\{\alpha^2I_1(I_3(a+k^2)+w_7)-k^2I^2_2\},\\ 
-% 
-\varphi_0=w^{-1}_1(a(2b d-f k^2)-d(b(b+2k^2)+c k^2)), 
-\ \; \varphi_1=-w^{-1}_1(a(w_7+k^2I_3)+w_7k^2),\\ 
-% 
-w_1=a d k^2,\ \; w_2=\alpha^2w_1,\ \; w_3=k^2-c, 
-\ \; w_4=2b-c,\ \; w_5=k^2-\alpha^2f, 
-\ \; w_6=I_1+2I_2,\ \; w_7=d I_1. 
-\end{gather*} 
-В соответствии с п.\,1 собственные значения $\lambda_i$ являются 
-корнями 
-трансцендентного уравнения 
-$$ 
-\det\bold B(\lambda)=0,\quad 
-\bold B(\lambda)=\bigg\{\bold b_b\frac{\partial}{\partial\theta}
-\bold Y(\lambda,\theta)+ 
-\bold c_b\bold Y(\lambda,\theta)\bigg\}\bigg|_{\theta=\theta_1}, 
-$$ 
-а компоненты векторов 
-$\vb{C}(\lambda)=(C_1(\lambda),C_2(\lambda),1)^\top$ вычисляются по 
-формулам 
-\begin{equation} 
-\begin{split} 
-C_1(\lambda)=[b_{12}(\lambda)b_{23}(\lambda)-b_{13}(\lambda) 
-b_{22}(\lambda)]/D(\lambda),\quad &C_2(\lambda)= 
-[b_{13}(\lambda)b_{21}(\lambda)-b_{11}(\lambda) 
-b_{23}(\lambda)]/D(\lambda),\\ 
-D(\lambda)=b_{11}(\lambda)b_{22}(\lambda) 
-&-b_{12}(\lambda)b_{21}(\lambda), 
-\end{split} 
-\end{equation} 
-где $b_{j s}(\lambda)$, $j=1,2$, $s=1,2,3$, --- элементы матрицы 
-$\bold B(\lambda_i)$. 
- 
-Для вычисления квадрата нормы $\|\vb{K}_i(\theta)\|^2$ воспользуемся 
-соотношениями (8), (9) 
-теоремы~1. Так как $\mu(0)=0$, то и 
-$\bold P|_{\theta=0}=\bold Q|_{\theta=0}=0$. Таким образом, 
-\begin{equation} 
-\|\vb{K}_i(\theta)\|^2=\bigg\{ 
-\frac{\partial\vb{K}(\lambda,\theta)^\top}{\partial\lambda} 
-\bold Q\frac{\partial\vb{K}(\lambda,\theta)}{\partial\theta}- 
-\frac{\partial^2\vb{K}(\lambda,\theta)^\top} 
-{\partial\lambda\partial\theta}\bold P\vb{K}(\lambda,\theta) 
-\bigg|_{\lambda=\lambda_i}\bigg\} 
-\bigg|_{\theta=\theta_1}. 
-\end{equation} 
-Здесь 
-$$ 
-\bold P=\text{diag\,}(a,k^2,\alpha^2d)\sin\theta,\quad 
-\bold Q= 
-\begin{Vmatrix} 
-a & 0 & 0 \\ 0 & k^2 & k^2\eta^{-1} \\ 0 & 0 & \alpha^2d 
-\end{Vmatrix} 
-\sin\theta. 
-$$ 
-Поскольку из краевых условий задачи (28) при $\theta=\theta_1$ следует 
-равенство 
-нулю первых двух компонентов ядра КИП (5) для любых значений $\lambda$, 
-т.\,е. 
-$$
-\vb{K}(\theta_1,\lambda)=(0,0,K_3(\theta_1,\lambda))^\top, 
-$$ 
-то выражение (30) существенно упрощается и может быть записано в виде 
-\begin{equation} 
-\|\vb{K}_i(\theta)\|^2=\alpha^2d\sin\theta_1\bigg\{ 
-\bigg[\frac{\partial}{\partial\lambda}K_3(\lambda,\theta)\bigg] 
-\bigg[\frac{\partial}{\partial\theta}K_3(\lambda,\theta)\bigg]- 
-\bigg[\frac{\partial^2}{\partial\theta\partial\lambda} 
-K_3(\lambda,\theta)\bigg]K_3(\lambda,\theta)\bigg|_{\lambda=\lambda_i} 
-\bigg\}\bigg|_{\theta=\theta_1}, 
-\end{equation} 
-где 
-\begin{gather} 
-K_3(\theta,\lambda)=\sum^3_{j=1}D_j(\lambda)P^1_{\nu_j}(\cos\theta), 
-\quad \frac{\partial}{\partial\theta}K_3(\theta,\lambda)= 
-\sum^3_{j=1}D_j(\lambda)[P^2_{\nu_j}(\cos\theta)+ 
-\ctg\theta P^1_{\nu_j}(\cos\theta)],\notag \\ 
-% 
-\frac{\partial}{\partial\lambda}K_3(\theta,\lambda)= 
-\sum^3_{j=1}\Phi_j(\lambda)[G_j(\lambda)P^1_{\nu_j} 
-(\cos\theta)+D_j(\lambda)V^1_{\nu_j}(\cos\theta)], \\ 
-% 
-\frac{\partial^2}{\partial\lambda\partial\theta} 
-K_3(\theta,\lambda)=\sum^3_{j=1}\Phi_j(\lambda) 
-[G_j(\lambda)[P^2_{\nu_j}(\cos\theta)+\ctg\theta 
-P^1_{\nu_j}(\cos\theta)]+D_j(\lambda) 
-[V^2_{\nu_j}(\cos\theta)+\ctg\theta V^1_{\nu_j}(\cos\theta)]];\notag\\ 
-% 
-D_j(\lambda)=C_j(\lambda)\delta_j(\lambda),\quad 
-G_j(\lambda)=C_j(\lambda)\Delta_j(\lambda)+\bigg[ 
-\frac{\partial}{\partial\lambda}C_j(\lambda)\bigg] 
-\delta_j(\lambda),\quad 
-V^{1,2}_{\nu_j}(\cos\theta)=\frac{1}{2+\nu_j} 
-\frac{\partial}{\partial\nu_j}P^{1,2}_{\nu_j}(\cos\theta). \notag
-\end{gather} 
-Здесь $C_j(\lambda)$ определяются соотношениями (29), а 
-$\Delta_j(\lambda)$, $\Phi_j(\lambda)$ вычисляются по 
-формулам 
-\begin{equation} 
-\begin{split} 
-\Delta_j(\lambda)=d_j[\Phi^{-1}_j(&a_2+2a_1\lambda+a_3\zeta_j- 
-(a_9+2a_8\lambda-I_2\zeta_j)\delta_j)+ 
-a_5+a_3\lambda-2a\zeta_j-(b-I_2\lambda)\delta_j],\\ 
-&\Phi_j(\lambda)=- 
-\frac{\zeta^2_j\varphi_1+\zeta_j(2\lambda\psi_2+\psi_1)+ 
-3\lambda^2\vartheta_3+2\lambda\vartheta_2+\vartheta_1} 
-{3\zeta^2_j+2\zeta_j(\lambda\varphi_1+\varphi_0)+ 
-\lambda^2\psi_2+\lambda\psi_1+\psi_0}. 
-\end{split} 
-\end{equation} 
-Таким образом, квадрат нормы в рассматриваемой задаче определяется 
-выражением (31) с учетом (32), (33). 
-\end{exam}
- 
-В заключение следует отметить, что приведенная форма решения (7) 
-является универсальной для различных задач математической физики, 
-описываемых гиперболическими системами линейных дифференциальных 
-уравнений в частных производных (1) с переменными коэффициентами и 
-удовлетворяющих условиям теоремы 2. Вычисление сложных квадратур 
-$\|\vb{K}_i(x)\|^2$ 
-разложений (7) для простого спектра оператора $A$ в соответствии с 
-теоремой 1 производится по формулам (8), (9) путем дифференцирования 
-его собственных функций $\vb{K}(x,\lambda_i)$. Предложенный новый 
-подход вычисления нормы 
-открывает возможность реализации более эффективных вычислительных 
-алгоритмов по сравнению с существующими. 
- 
-\begin{thebibliography}{99} 
- 
-\bibitem{1} 
-Сеницкий Ю.Э. {\em Исследование упругого деформирования элементов 
-конструкций при динамических воздействиях методом конечных 
-интегральных преобразований}. -- Саратов: Изд-во Саратовск. ун-та, 
-1985. -- 176 с. 
-\bibitem{2} 
-Сеницкий Ю.Э. {\em Многокомпонентное обобщенное конечное интегральное 
-преобразование и его приложение к нестационарным задачам механики} // 
-Изв. вузов. Математика. -- 1991. -- \No\,4. -- С.\,57--63. 
-\bibitem{3} 
-Сеницкий Ю.Э. {\em Биортогональное многокомпонентное конечное 
-интегральное 
-преобразование и его приложение к краевым задачам механики} // Изв. 
-вузов. Математика. -- 1996. -- \No\,8. -- С.\,71--81. 
-\bibitem{4} 
-Сеницкий Ю.Э. {\em О построении общего решения неосесимметричной 
-динамической задачи для пологой сферической оболочки с конечной 
-сдвиговой жесткостью} // Прикл. механ. -- 1989. -- Т.\,XXV. -- \No\,7. 
--- С.\,57--66. 
-\bibitem{5} 
-Сеницкий Ю.Э. {\em К решению осесимметричной задачи динамики для 
-анизотропного короткого толстостенного цилиндра} // Прикл. механ. -- 
-1981. -- Т.\,XVII. -- \No\,8. -- С.\,95--100. 
-\bibitem{6} 
-Сеницкий Ю.Э. {\em Динамическая задача электроупругости для 
-неоднородного 
-цилиндра} // ПММ. -- 1993. -- Т.\,57. -- \No\,1. -- С.\,116--122. 
-\bibitem{7} 
-Люк И. {\em Специальные математические функции и их аппроксимации}. -- 
-М.: Мир, 1980. -- 608 с. 
-\bibitem{8} 
-Айнс Э.Л. {\em Обыкновенные дифференциальные уравнения}. -- Харьков: 
-ОНТИ, 
-1939. -- 717 с. 
-\bibitem{9} 
-Маричев О.И. {\em Метод вычисления интегралов от специальных функций.
-Теория и таблицы формул}. -- Минск: Наука и техника, 1978. -- 
-310 с. 
-\bibitem{10} 
-Сеницкий Ю.Э. {\em О вычислении некоторых квадратур, содержащих 
-цилиндрические функции // Расчет пространств. строит.
-конструкций}. -- Куйбышев, 1974. -- Вып.\,4. -- С.\,102--104. 
-\bibitem{11} 
-Андреев А.А., Килбас А.А. {\em О решениях неоднородного 
-гипергеометрического уравнения и вычислении интегралов} // ДАН БССР. 
--- 1983. -- Т.\,27. -- \No\,6. -- С.\,493--496. 
-\bibitem{12} 
-Бутковский А.Г. {\em Характеристики систем с распределенными 
-параметрами}. 
--- М.: Наука, 1979. -- 224 с. 
-\bibitem{13} 
-Ахиезер Н.И., Глазман И.М. {\em Теория линейных операторов в 
-гильбертовом 
-пространстве}. -- М.: Наука, 1966. -- 543 с. 
-\bibitem{14} 
-Сеницкий Ю.Э. {\em Сходимость и единственность представлений, 
-определяемых 
-формулой обращения многокомпонентного обобщенного интегрального 
-преобразования} // Изв. вузов. Математика. -- 1991. -- \No\,9. -- 
-С.\,53--56. 
-\bibitem{15} 
-Като Т. {\em Теория возмущений линейных операторов}. -- М.: Мир, 1972. 
--- 740 с. 
-\bibitem{16} 
-Аткинсон Ф. {\em Дискретные и непрерывные граничные задачи}. 
--- М.: Мир, 1968. -- 750 c. 
-\bibitem{17} 
-Хатсон В., Пим Дж. {\em Приложения функционального анализа и теории 
-операторов}. 
--- М.: Мир, 1983. -- 431 с. 
-\bibitem{18} 
-Градштейн И.С., Рыжик И.М. {\em Таблицы интегралов, сумм, рядов и 
-произведений}. 
--- М.: Физматгиз, 1962. -- 1100 с. 
- 
-\end{thebibliography} 
- 
-\vskip 2cm 
- 
-\post{\it Самарская государственная}{\it Поступила} 
-\post{\it архитектурно-строительная академия}{26.05.1997} 
- 
-\label{end} 
-\end{document} 
- 

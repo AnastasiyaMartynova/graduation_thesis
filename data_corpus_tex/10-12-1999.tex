@@ -1,725 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-]{amsart}
-
-%       Math definitions
-
-\newcommand{\tts}[1]{}
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{74}
-\god{1999}
-\nomer{12~(451)} %                        Remove in Eng.
-%\nomer{Vol.\,43, No.\,12}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{519.854}
-
-\author{\it А.С.\,Стрекаловский, А.А.\,Кузнецова}
-% NB:   ^^ remove in Eng.
-\title{О сходимости алгоритма глобального поиска  в задаче
-выпуклой максимизации на допустимом множестве}
-\thanks{Работа выполнена при
-финансовой поддержке Российского фонда фундаментальных
-исследований (грант \No\,98-01-00043).}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-
-\section{Введение}
-
-В последние годы невыпуклые задачи оптимизации обращают на себя все
-большее внимание, в частности, ввиду широкого поля приложений 
-\cite{l1}--\cite{l5}. Примером является задача выпуклой максимизации 
-\cite{l3}--\cite{l7}
-\begin{equation}
-f(x)\rightarrow \max,\quad x\in D,
-\label{eq:m1} 
-\end{equation}
-где $f:R^{n}\rightarrow R\cup \{+\infty \}$ и $D\subset R^{n}$ выпуклы.
-Несмотря на внешнюю простоту, эта задача оказывается сложной
-как для исследований, так и, главное, для численного решения, 
-поскольку в ней может существовать большое количество
-локальных максимумов, не являющихся глобальными \cite{l1}--\cite{l7}.
-Поэтому для подобных задач считается естественным применение 
-популярных методов ветвей и границ, отсечений, погружений и т.\,п.
-В отличие от этих подходов в работах \cite{l6}--\cite{l10}
-методы глобального поиска основаны на теории необходимых 
-и достаточных условий глобальной оптимальности. 
-
-Естественным выглядит вопрос о глобальной сходимости 
-таких алгоритмов. 
-Теоремы сходимости дают, по-видимому, определенную теоретическую поддержку 
-численным экспериментам (\cite{l1}, с.\,415--420; \cite{l2}, с.\,40--42).
-Поэтому основной целью данной статьи является доказательство теоремы
-сходимости алгоритма глобального поиска, предлагаемого ниже, для
-задачи (1). Для этого используется вводящееся здесь понятие разрешающего
-набора.
-Ранее \cite{l7} подобная теорема была доказана только для квадратичной 
-задачи. К тому же некоторые требования из \cite{l7} удалось
-значительно ослабить. Для задачи (1) доказана также сходимость
-метода локального подъема.
-
-\section{Метод локального подъема}
-
-В дальнейшем будем считать, что в задаче (\ref{eq:m1}) функция
-$f:R^{n}\rightarrow R$ является 
-выпуклой и дифференцируемой в 
-некоторой (открытой) области $Q$, содержащей допустимое множество
-и множество Лебега функции $f(\cdot)$ вида
-$L(f)=\{x\in R \mid f(x)\leq \sup(f,D) \}$. При этом предполагается,
-что функция $f(\cdot)$ ограничена сверху на $D$
-\begin{equation}
-\sup (f,D)\triangleq f_{*}<+\infty.
-\label{eq:m2}
-\end{equation}
-Как известно (\cite{l2}, теорема~1, с.\,179), условие 
-\begin{equation}
-\langle \nabla f(z), x-z \rangle \leq 0 \ \; \forall x \in D 
-\label{eq:m3}
-\end{equation}
-локального максимума
-в задаче (\ref{eq:m1}) не является достаточным для глобальности
-максимума в
-допустимой точке $z\in D$.
-Эта точка является стационарной или критической (т.\,е. удовлетворяющей
-условию (\ref{eq:m3})), если она является решением линеаризованной 
-в точке $z$ задачи
-$$
-\langle \nabla f(z), x \rangle \uparrow \max, \ \; x \in D.
-$$ 
-
-Приведем простейшую вычислительную процедуру, основанную на решении
-линеаризованной задачи. Пусть дана числовая последовательность 
-$\{\delta_{s}\}$, $\delta_{s}>0$, $s=0,1,2,\dotsc$, и 
-допустимая точка $p^{0}\in D$. Последовательность $\{p^{s}\}$ будем строить
-по правилу
-\begin{equation}
-p^{s+1}\in D : \; \langle \nabla f(p^{s}), p^{s+1} \rangle + \delta_{s} \geq 
-\sup_{x \in D} \langle \nabla f(p^{s}), x \rangle . 
-\label{eq:m4}
-\end{equation} 
-Оказывается, такая простая вычислительная процедура при сделанных
-предположениях в задаче (\ref{eq:m1}) генерирует последовательность,
-сходящуюся к стационарной точке в следующем смысле.
-
-\begin{prop}
-Пусть функция $f$ выпукла и непрерывно дифференцируема на 
-открытой области $Q$ и ограничена сверху на допустимом множестве $D$,
-и пусть
-$\sum\limits_{s=1}^{\infty}\delta_{s}<+\infty$. Тогда
-последовательность $\{p^{s}\}$, генерируемая по правилу $(\ref{eq:m4})$,
-удовлетворяет условию
-\begin{equation}
-\lim_{s\rightarrow +\infty}
-[\sup_{x \in D} \langle \nabla f(p^{s}), x - p^{s}\rangle]=0 . 
-\label{eq:m5}
-\end{equation}
- 
-В случае ограниченности множества $D$ любая предельная точка $z$
-последовательности $\{p^s\}$ удовлетворяет условию оптимальности
-$(\ref{eq:m3})$. 
-\end{prop}
-
-{\bf Доказательство.}
-Из (\ref{eq:m4}) с учетом выпуклости функции $f(\cdot)$ следует
-\begin{equation}
-0\leq\sup_{x \in D} \langle \nabla f(p^{s}), x - p^{s}\rangle\leq 
-\langle \nabla f(p^{s}), p^{s+1} - p^{s}\rangle + \delta_{s}\leq
-f(p^{s+1})-f(p^{s})+\delta_{s}. 
-\label{eq:m6}
-\end{equation} 
-Отсюда
-$$
-f(p^{s})\leq f(p^{s+1})+ \delta_{s}.
-$$
-Последнее неравенство вместе с (\ref{eq:m2}) и условием
-$\sum\limits_{s=1}^{\infty}\delta_{s} < +\infty $
-гарантирует ({\cite{l1}, лемма~2.3.2}), что числовая последовательность
-$\{f(p^{s})\}$ сходится. Поэтому из (\ref{eq:m6}) следует (\ref{eq:m5}).
-А тогда последнее утверждение предложения становится очевидным.
-
-\begin{note}
-Как известно (напр., \cite{l1}, с.\,291--298),
-процедура из
-(\ref{eq:m4}) входит в стандартные градиентные методы выпуклой оптимизации
-для нахождения вспомогательной точки $\ov{x}^{k}$, с помощью которой затем,
-скажем, составлением выпуклой комбинации 
-$x(\alpha)=\alpha \ov{x}^{k}+(1-\alpha)x^{k}$
-поиск следующей точки $x^{k+1}$ сводится к одномерной минимизации функции
-$\varphi (\alpha)\triangleq f(x(\alpha))$ по параметру $\alpha$.
-В методе (\ref{eq:m4}) сложный одномерный поиск исключается,
-результат оказывается тот же --- стационарная точка. В выпуклой задаче
-стационарная точка уже будет глобальным решением, в то время как 
-в задаче (\ref{eq:m1}) это не так.
-\end{note}
-
-\begin{note}
-При реальном счете может быть использовано несколько 
-критериев останова метода (\ref{eq:m4}) от очень жесткого
-$$
-\| p^{s+1}-p^{s} \| \leq \frac{\varepsilon}{2\| \nabla f(p^{s}) \|}
-$$
-до более слабых
-$$
-f(p^{s+1})-f(p^{s})\leq \varepsilon/2,\quad
-\langle \nabla f(p^{s}), p^{s+1} - p^{s}\rangle \leq 
-\varepsilon/2,
-$$
-где $\varepsilon$ --- заданная точность. При этом из (\ref{eq:m6}) легко
-получить, что при $\delta_{s} \leq \varepsilon/2$
-точка $p^{s}$ оказывается $\varepsilon$-критической.
-\end{note}
-
-\section{Стратегия глобального поиска}
-
-Для задачи (\ref{eq:m1}) справедливы следующие
-необходимые и достаточные условия глобальности решения.
-
-\begin{thm}[{\series{m}\shape{n}\selectfont\cite{l6}, \cite{l7}}]
-\label{Theorem1}
-Пусть $D$ выпукло, $z \in D$ и, кроме того,
-\begin{equation}
--\infty \leq \inf (f,D)< f(z)< +\infty.
-\label{eq:m8}
-\end{equation}
-Тогда, для того чтобы $z$ было глобальным решением задачи $(\ref{eq:m1})$,
-необходимо и достаточно, чтобы
-\begin{equation}
-\begin{array}{c}
-\forall y \in D: \; f(y)=f(z),\\[2mm]
-\langle \nabla f(y), x-y \rangle \leq 0 \ \; \forall x \in D.
-\end{array}
-\label{eq:m9}
-\end{equation}
-\end{thm} 
-
-\begin{note}
-Нетрудно видеть, что условие (\ref{eq:m9})
-связано с классической теорией экстремума. Полагая $y=z$ в (\ref{eq:m9}),
-получаем (\ref{eq:m3}). Отметим, что использование в условии (\ref{eq:m9})
-только допустимых $y$ было предложено в \cite{l8}. С другой стороны,
-доказательство теоремы~\ref{Theorem1} \cite{l6}, \cite{l7}
-демонстрирует так называемое
-алгоритмическое свойство условия оптимальности (\ref{eq:m9}),
-т.\,е. если условие оптимальности нарушено, то можно построить
-допустимую точку лучшую, чем исследуемая. Нетрудно видеть, что все
-классические условия оптимальности (в частности (\ref{eq:m3})) обладают
-алгоритмическим свойством. Используя это свойство, 
-можно предложить алгоритм глобального поиска в задаче (\ref{eq:m1}). 
-\end{note}
-
-С помощью функции
-$$
-\varphi (z)=\sup_{x,y}\{\langle \nabla f(y),x-y\rangle \mid
-x,y \in D,\ f(y)=f(z)\}
-$$
-условие (\ref{eq:m9}) можно преобразовать \cite{l7} к виду
-$\varphi (z) \leq 0$.
-Иначе говоря, для проверки этого условия необходимо уметь решать
-задачу
-\begin{equation}
-\langle \nabla f(y),x-y\rangle \uparrow \sup_{x,y},\ \;
-x,y\in D,\ \; f(y)=f(z).
-\label{eq:m11}
-\end{equation}
-
-Поскольку задача совместной по $x$ и $y$ максимизации представляется
-достаточно трудной, предлагается ее разбить на три более простые
-задачи. Первая --- задача максимизации по $x$
-\begin{equation}
-\langle \nabla f(y),x\rangle \uparrow \max_{x}, \ \; x\in D,
-\label{eq:m12}
-\end{equation}
-где точка $y$ такая, что $f(y)=f(z)$,
-будет называться линеаризованной задачей, а вторая --- 
-максимизация по $v$ при фиксированном $u\in D$
-\begin{equation}
-\langle \nabla f(v),u-v\rangle \uparrow \max_{v}, \ \; f(v)=f(z),
-\label{eq:m13}
-\end{equation}
---- задачей уровня.
-Поэтому совершенно естественными выглядят следующие предположения.
-
-\begin{itemize}
-\item[(HL):] для любого $\varepsilon >0$ и для любого
-$y \in D: f(y)\geq \inf(f,D)$
-можно приближенно решить линеаризованную задачу (\ref{eq:m12}),
-т.\,е. отыскать элемент $u=u(\varepsilon,y)\in D $, для которого
-$\langle \nabla f(y),u\rangle \geq
-\sup\limits_{x\in D}\langle \nabla f(y),x\rangle -\varepsilon$.
-\item[(HU):] $\forall \varepsilon >0$ $\forall u \in D$ $\forall \zeta \in R:
-\inf(f,D)\leq \zeta \leq \sup(f,D)$
-можно приближенно решить задачу уровня (\ref{eq:m13}) при $\zeta=f(z)$,
-т.\,е. отыскать элемент $\omega \in R^{n}: f(\omega)=\zeta $ такой, что
-$\langle \nabla f(\omega ),u-\omega \rangle + \varepsilon \geq
-\sup\limits_{v}\{ \langle \nabla f(v),u-v \rangle :\,\, f(v)=\zeta \}$.
-\end{itemize}
-Отметим, что для квадратичной функции задача уровня решается
-аналитически~\cite{l7}.
-
-Нетрудно видеть, что последовательное решение задач (\ref{eq:m12}) и 
-(\ref{eq:m13}) не приводит, вообще говоря, к решению задачи (\ref{eq:m11})
-совместной максимизации по $x$ и $y$. Поэтому возникает третья задача ---
-задача выбора семейства точек $y^{i}$, $i=1,\dotsc,N$, на 
-поверхности уровня $f(x)=f(z)\triangleq\zeta $, или, как будет
-говориться в дальнейшем, задача аппроксимации поверхности уровня.
-
-Пусть даны некоторый элемент $z\in D$ и число
-$\varepsilon >0$. Обозначим $\zeta\triangleq f(z)$.
-Рассмотрим аппроксимацию
-\begin{equation}
-\Re (\zeta)=\{ v^{1},\dotsc,v^{N} \in R^{n} : \, \,
-f(v^{i})=\zeta,\ i=1,\dotsc N, \ N=N(\zeta) \}. 
-\label{eq:m14}
-\end{equation}
-Согласно предположению (HL) $ \forall i=1,\dotsc,N$ определим $u^{i} \in D$
-так, чтобы
-\begin{equation}
-\langle \nabla f(v^{i}),u^{i}\rangle \geq
-\sup_{x\in D} \langle \nabla f(v^{i}),x \rangle - \varepsilon,
-\label{eq:m15}
-\end{equation}
-а затем согласно предположению (HU) $\forall i=1,\dotsc,N$ определим 
-элементы $\omega^{i} \in R^{n} : f(\omega^{i})=f(z)$ из условия
-\begin{equation}
-\langle \nabla f(\omega^{i}),u^{i}-\omega^{i} \rangle + \varepsilon \geq
-\sup_{v}\{ \langle \nabla f(v),u^{i}-v \rangle :\,\, f(v)=\zeta \}.
-\label{eq:m16}
-\end{equation}
-
-\begin{defn}
-Набор $\Re(\zeta)$ назовем сильно $\varepsilon$-разрешающим,
-если из того, 
-что $z$ не является $\varepsilon$-решением задачи (\ref{eq:m1}), т.\,е.
-\begin{equation}
-f(z)< \sup(f,D)-\varepsilon,
-\label{eq:m17}
-\end{equation}
-следует выполнение неравенств
-\begin{align}
-\text{i)}\ \; \eta(\zeta,\varepsilon )&\triangleq
-\langle \nabla f(\omega^{j}),u^{j}-\omega^{j} \rangle =
-\max_{1\leq i\leq N}\langle \nabla f(\omega^{i}),u^{i}-\omega^{i} \rangle >0;
-\label{eq:m18} \\
-\text{ii)}\ \; \eta(\zeta,\varepsilon )&\geq 
-\langle \nabla f(y),p-y \rangle - 2\varepsilon,
-\label{eq:m19}
-\end{align}
-где $p$ --- некоторый допустимый элемент $(p \in D)$, для которого
-\begin{equation}
-f(p)\geq f(z) + \theta [\sup(f,D)-f(z)]-\varepsilon,
-\label{eq:m20}
-\end{equation}
-а число $\theta$ не зависит от $z$ и $\varepsilon$. При этом
-$0<\theta <1$, и элемент $y\in R^{n}$ определяется из условий $f(y)=f(z)$,
-\begin{equation}
-\langle\nabla f(y),p-y\rangle \ge \|\nabla f(y)\|\, \|p-y\|- \varepsilon.
-\label{eq:m21}
-\end{equation}
-\end{defn}
-
-\begin{note}
-Если найдется $p$, удовлетворяющее 
-(\ref{eq:m20}), то существование $y:\, f(y)=f(z)$, удовлетворяющего
-(\ref{eq:m21}), вытекает из предположения (HU) о решении
-задачи (\ref{eq:m13}), т.\,к.
-$$
-\langle \nabla f(v),p-v \rangle \leq 
-\| \nabla f(v) \|\, \| p-v \| \ \; \forall v \in Q.
-$$
-\end{note}
-
-\begin{lem}\label{Lemma1} Пусть существует допустимый элемент
-$p\in D: \; f(p)\leq f(z)+2\varepsilon $, для которого выполнено
-$(\ref{eq:m20})$. Тогда из неравенства
-$(\ref{eq:m18})$ следует $(\ref{eq:m19})$.
-\end{lem}
-
-{\bf Доказательство.} $\forall v: \; f(v)=f(z)$ имеем 
-$$
-\langle \nabla f(v),p-v \rangle \leq f(p)-f(v)=f(p)-f(z)\leq 2\varepsilon.
-$$
-Кроме того, из (\ref{eq:m18}) следует
-$$
-\langle \nabla f(v),p-v \rangle - 2\varepsilon \leq 0 <
-\eta(\zeta,\varepsilon),
-$$
-т.\,е. (\ref{eq:m19}) тоже имеет место, что и требовалось.
-
-\begin{defn}
-Пусть заданы числа $\varepsilon >0$ и $\zeta$. Рассмотрим аппроксимацию
-$$
-W (\zeta) =\{ v^{1},\dotsc,v^{N} \in R^{n} :
-f(v^{i})=\zeta,\ i=1,\dotsc, N,\ N=N(\zeta) \}.
-$$
-Построим точки $u^{i} \in D $ и $w^{i}: \, f(w^{i})=\zeta$ в соответствии
-с формулами (\ref{eq:m15}) и (\ref{eq:m16}). Будем называть набор
-$W (\zeta)$ слабо (или просто) $\varepsilon$-разрешающим, 
-если из неравенства (\ref{eq:m17}) следует только (\ref{eq:m18}).
-\end{defn}
-
-\begin{prop}\label{Prop2} Если $\forall \varepsilon >0$ и
-$\forall \lambda \in R$, \; $\inf(f,D) \leq \lambda < \sup (f,D)$,
-существует процедура построения слабо $\varepsilon$-разрешающего набора
-$W (\lambda, \varepsilon)$, то
-$$
-\forall z\in D, \ \ \sup(f,D) - \varepsilon > f(z) \geq \inf (f,D),
-$$ 
-можно построить и сильно $\varepsilon$-разрешающий набор
-$\Re (\zeta)$, где $\zeta=f(z)$.
-\end{prop}
-
-{\bf Доказательство.} Пусть $ z\in D$, $f(z) \geq \inf (f,D)$,
-$\varepsilon >0$.
-Предположим, что $z$ не является $\varepsilon$-решением
-задачи (\ref{eq:m1}), т.\,е. справедливо (\ref{eq:m17}). Положим
-\begin{equation}
-\lambda\triangleq f(z)+\theta[\sup(f,D)-f(z)],
-\label{eq:m22}
-\end{equation}
-где число $\theta$ таково, что $0< \theta <1$. Очевидно,
-$$
-\inf(f,D) \leq f(z) < \lambda < \sup (f,D).
-$$
-Выберем число $\delta > 0$ по формуле
-\begin{equation}
-\delta \triangleq\frac{1- \theta}{2}[\sup(f,D)-f(z)].
-\label{eq:m23}
-\end{equation}
-Нетрудно видеть, что в силу (\ref{eq:m22}) и (\ref{eq:m23})
-на уровне $\lambda$ не существует $\delta$-решений задачи (\ref{eq:m1}),
-т.\,е. $\lambda < \sup(f,D)- \delta$.
-Поэтому по предположению можно построить слабо $\delta$-разрешающий набор 
-$ W_{1}=W(\lambda)$.
-Тогда из определения 2 следует, что найдутся $u^{j} \in D$, 
-$w^{j}:\; f(w^{j})=\lambda$, при которых
-$$
-\eta (\lambda,\delta)\triangleq
-\langle \nabla f(w^{j}),u^{j}-w^{j} \rangle >0.
-$$ 
-Отсюда с учетом выпуклости $f(\cdot)$ следует
-\begin{equation}
-f(u^{j})>f(w^{j})=\lambda\triangleq f(z)+\theta[\sup(f,D)-f(z)]>
-f(z)+\theta[\sup(f,D)-f(z)]-\varepsilon=\lambda-\varepsilon.
-\label{eq:m24}
-\end{equation}
-В частности, $f(u^{j})>f(z)$. Положим $p\triangleq u^{j} \in D$.
-И вновь по предположению можно построить слабо $\varepsilon$-разрешающий
-набор $W_{2}=W(\zeta)$. Рассмотрим множество
-$$
-\Re_{0}=W_{2}\cup \{ y \},
-$$
-где $y$ таково, что $f(y)=f(z)$ и при данных $p$ и $y$ cправедливо
-(\ref{eq:m21}). Тогда из (\ref{eq:m24}) сразу же следует справедливость для
-$p=u^j$ неравенства (\ref{eq:m20}) из определения 1.
-С другой стороны, из предположения (HL) следует существование элемента
-$u \in D$ такого, что 
-$$
-\langle \nabla f(y),u \rangle \geq 
-\sup_{x \in D}\langle \nabla f(y),x \rangle - \varepsilon.
-$$
-Отсюда вытекает
-\begin{equation}
-\langle \nabla f(y),u-y \rangle \geq
-\langle \nabla f(y),p-y \rangle - \varepsilon.
-\label{eq:m25}
-\end{equation}
-
-Далее, по предположению (HU) можно построить $w \in R^{n}: \, f(w)=f(z)$,
-для которого
-$$
-\langle \nabla f(w),u-w \rangle + \varepsilon \geq
-\sup_{v} \{ \langle \nabla f(v),u-v \rangle : \, f(v)=f(z) \} \geq
-\langle \nabla f(y),u-y \rangle.
-$$
-Отсюда с помощью (\ref{eq:m25}) имеем
-$$
-\langle \nabla f(w),u-w \rangle \geq
-\langle \nabla f(y),p-y\rangle -2\varepsilon.
-$$ 
-А тогда для аппроксимации $\Re_{0}=W_{2} \cup \{ y \}$ получаем
-$$
-\eta(\zeta,\varepsilon) \geq \langle \nabla f(w),u-w \rangle \geq
-\langle \nabla f(y),p-y\rangle -2\varepsilon .
-$$
-Итак, неравенство (\ref{eq:m19}) из определения 1 оказывается выполненным.
-А неравенство (\ref{eq:m18}) справедливо по построению
-$W_{2}=W(\zeta)$. Поэтому $\Re_{0}$ является сильно
-разрешающим набором.
-
-\section{$\Re$-стратегия и ее сходимость}
-
-Пусть заданы элемент $x_{0} \in D$ и числовая последовательность 
-$\{ \varepsilon_{k} \}: \,
-\varepsilon_{k}>0$, $k=0,1,2,\dotsc$,
-$\varepsilon_{k} \downarrow 0$ ($k \rightarrow \infty$).
-Предположим, что найдется константа $\varkappa> 0$, для которой 
-\begin{equation}
-\| \nabla f(v) \| \geq \varkappa >0 \ \; \forall v: \,
-f(v) \geq f(x^{0}). 
-\label{eq:m26}
-\end{equation}
-
-Кроме того, рассмотрим предположение
-\begin{itemize}
-\item[(HR):] $\forall \varepsilon >0$ и для любой $\varepsilon$-стационарной
-точки $z \in D$,
-не являющейся $\varepsilon$-решением задачи (\ref{eq:m1}),
-можно построить слабо разрешающий набор $W(f(z))$.
-\end{itemize}
-Согласно предложению 2 предположение (HR) гарантирует возможность построения
-сильно разрешающего набора для любой допустимой точки, не являющейся
-$\varepsilon$-глобальным решением. Легко видеть, что для любой нестационарной 
-допустимой точки $x$ множество $W(f(x))=\{ x \}$ является слабо разрешающим
-набором благодаря выпуклости $f(\cdot)$. Действительно, в этом случае 
-найдется $u=u(x) \in D $, для которого
-$$
-0< \langle \nabla f(x),u-x \rangle \leq 
-\sup_{v} \langle \nabla f(v),u-v \rangle ,
-$$ 
-что, как нетрудно видеть, согласуется с определением 2.
-
-Для решения задачи (\ref{eq:m1}) предлагается следующий алгоритм.
-\begin{itemize}
-\begin{itemize}
-\item[Шаг 0.] Полагаем $k:=0$. Пусть задана некоторая допустимая
-точка $x^{0}$.
-\item[Шаг 1.] Исходя из точки $x^{k}$, методом локального подъема пункта~2
-получаем $\varepsilon_{k}$-ста\-ци\-о\-нар\-ную точку $z^{k}$,
-$f(z^{k})\triangleq\zeta_{k}$, т.\,е. точку, удовлетворяющую
-условию
-$$
-\sup_{x\in D} \langle \nabla f(z^k),x-z^k \rangle \leq \varepsilon_k .
-$$ 
-\item[Шаг 2.] Строим сильно $\varepsilon_k$-разрешающий набор
-$$
-\Re_{k}=\Re(\zeta_k)=\{ v^{1},\dotsc ,v^{N}\mid
-f(v^{i})=\zeta_{k},\ i=1,\dotsc,N,\ N=N(k) \}.
-$$
-\item[Шаг 3.] Для $ i=1,\dotsc,N$ находим точки $u^{i} \in D $ по правилу
-(\ref{eq:m15}).
-\item[Шаг 4.] Для $i=1,\dotsc ,N$ определяем точки 
-$w^{i}: \, f(w^{i})=\zeta_{k} $ по правилу (\ref{eq:m16}), 
-где $\zeta = \zeta_{k}$.
-\item[Шаг 5.] Формируем величину
-$\eta_{k}=\eta(\zeta_{k},\varepsilon_{k})=
-\langle \nabla f(w^{j}),u^{j}-w^{j} \rangle \triangleq
-\max\limits_{i} \langle \nabla f(w^{i}),u^{i}-w^{i} \rangle$. 
-\item[Шаг 6.] Если $\eta_{k}>0$, то полагаем $x^{k+1}:=u^{j}$, $k:=k+1$
-и возвращаемся на шаг~1.
-\item[Шаг 7.] Если $\eta_{k} \leq 0$, то полагаем $x^{k+1}:=z^{k}$, $k:=k+1$
-и возвращаемся на шаг~1.
-\end{itemize}
-\end{itemize}
-
-\begin{note}
-Шаги 1, 2, 3, 4 $\Re$-алгоритма являются обоснованными
-ввиду предложения 1 и предположений (HR) (HL) и (HU) соответственно.
-\end{note}
- 
-\begin{note}
-Из описания шага~1 видно, что последовательность,
-генерируемая $\Re$-ал\-го\-рит\-мом, является последовательностью 
-$\varepsilon_{k}$-стационарных точек.
-\end{note}
-
-\begin{note}
-При практической реализации алгоритма останов производится, если
-$\eta_{k}\leq 0 $ и $\varepsilon_{k} \leq \delta $, где $\delta$ 
---- заданная точность. В этом случае из определения сильно разрешающего
-набора следует
-$$
-f(z^{k}) \geq \sup(f,D) - \varepsilon_{k} \geq \sup(f,D)- \delta,
-$$
-так что $z^{k}$ является $\delta$-решением.
-\end{note}
-
-\begin{note}
-Нетрудно видеть, что вышеописанный метод не является
-алгоритмом в общепринятом смысле, поскольку, например, не уточнено, 
-каким алгоритмом решать линеаризованную задачу или задачу уровня. Не
-указано также, как строить (сильно или слабо) разрешающий набор. Да
-и на первом шаге пользователь может выбрать другой метод локального 
-подъема, если он считает его более подходящим в том или ином случае. 
-Отметим только, что эти методы должны работать очень быстро, поскольку
-они применяются по несколько раз на каждой итерации.
-\end{note}
-
-Поэтому разумнo назвать представленный выше метод глобального
-поиска принципиальным алгоритмом \cite{l23}
-или стратегией глобального поиска \cite{l9}. 
-Поскольку понятие разрешающего набора является определяющим для
-успешного поиска глобального максимума в задаче (\ref{eq:m1}), то будем
-называть вышеописанный метод для краткости $\Re$-стратегией.
-
-\begin{thm}\label{Theorem2}
-Пусть выполнены предположения $(\ref{eq:m2})$, $(\ref{eq:m26})$,
-$\mathrm{(HR)}$, $\mathrm{(HL)}$ и 
-$\mathrm{(HU)}$. Тогда последовательность $\{ z^{k} \}$, генерируемая
-$\Re$-стратегией, является максимизирующей в задаче $(\ref{eq:m1})$.
-\end{thm}
-
-{\bf Доказательство.}
-а) Пусть $\eta_{k} \leq 0$ $\forall k \geq m \geq 0$. 
-Тогда из определения разрешающего набора
-$f(z^{k}) \geq \sup(f,D)-\varepsilon_{k}$.
-Поэтому $\lim\limits_{k \rightarrow \infty}f(z^{k})=\sup(f,D)$.
-
-б) Пусть теперь $\eta_{k}>0$ $\forall k=0,1,2,\dotsc$ По построению
-$z^{k+1}$ является $\varepsilon_{k+1}$-стационарной точкой,
-полученной локальным подъемом раздела 2, исходя из
-$x^{k+1}:=u^{j_{k}} $, где
-$$
-\eta_{k}\triangleq \eta(f(z^{k}),\varepsilon_{k})=
-\langle \nabla f(w^{j_{k}}),u^{j_{k}}-w^{j_{k}} \rangle = 
-\max_{1\leq i \leq N} \langle \nabla f(w^{i}),u^{i}-w^{i} \rangle >0.
-$$ 
-Поэтому в силу выпуклости $f(\cdot)$ имеем
-\begin{equation}
-0< \eta_{k} \leq f(u^{j_{k}})-f(w^{j_{k}}) \leq f(z^{k+1})-f(z^{k}).
-\label{eq:m27}
-\end{equation}
-Нетрудно видеть, что при этом
-$f(z^{k})<f(x^{k+1}) \leq f(z^{k+1})$.
-
-Таким образом, числовая последовательность
-$\{ f(z^{k}) \}$, $k=0,1,2,\dotsc$, является монотонно возрастающей.
-И поскольку согласно (\ref{eq:m2}) $f(\cdot)$ ограничена сверху
-на $D$, то существует конечный предел
-$\lim\limits_{k \to \infty}f(z^{k})=\ov{f}$.
-При этом из (\ref{eq:m27}) следует, что
-\begin{equation}
-\eta_{k} \downarrow 0 \ \;(k\to +\infty).
-\label{eq:m28}
-\end{equation}
-Предположим, тем не менее, что $\{ z^{k} \}$ не является максимизирующей,
-т.\,е. найдется число $\gamma >0$, при котором 
-\begin{equation}
-\zeta_{k}\triangleq f(z^{k})\leq \ov{f} < \sup (f,D)-\gamma.
-\label{eq:m29}
-\end{equation}
-
-Поскольку в каждой точке $z^{k}$ можно построить слабо разрешающий набор,
-а потому согласно предложению 2 и сильно разрешающий набор,
-то будем иметь 
-\begin{equation}
-\eta_{k}=\eta(z^{k},\varepsilon_{k})\geq 
-\langle \nabla f(y^{k}),p^{k}-y^{k} \rangle -2\varepsilon_{k}, 
-\label{eq:m30}
-\end{equation}
-где $p^{k}$ таково, что 
-$f(p^{k})\geq f(z^{k})+\theta[\sup(f,D)-\zeta_{k}]-\varepsilon_{k}$.
-Из последнего неравенства и (\ref{eq:m29}) вытекает
-\begin{equation}
-f(p^{k})\geq f(z^{k})+\theta \gamma -\varepsilon_{k},
-\label{eq:m31}
-\end{equation}
-откуда в свою очередь следует
-\begin{equation}
-\liminf_{k \to \infty}f(p^{k})\geq \ov{f}+\theta \gamma.
-\label{eq:m32}
-\end{equation}
-
-С другой стороны, поскольку $\theta \gamma -\varepsilon_{k} >0 $ при
-достаточно больших $k$, то из (\ref{eq:m31}) выводим 
-$f(p^{k})>f(z^{k})\triangleq\zeta_{k}$ $\forall k\geq k_{0}$.
-Выберем теперь $y_{k},\:f(y^{k})=\zeta_{k}$, таким образом, чтобы 
-$\langle \nabla f(y^{k}),p^{k}-y^{k} \rangle \geq
-\| \nabla f(y^{k}) \|\, \|p^{k}-y^{k} \| -\varepsilon_{k}$.
-С учетом последнего неравенства из (\ref{eq:m30}) следует
-$\eta_{k}+2\varepsilon_{k} \geq 
-\| \nabla f(y^{k}) \|\, \|p^{k}-y^{k} \| -\varepsilon_{k}$.
-Отсюда получаем в силу предположения (\ref{eq:m26})
-$\eta_{k}+3\varepsilon_{k} \geq \varkappa \|p^{k}-y^{k} \|$.
-Поэтому с помощью (\ref{eq:m28}) заключаем, что 
-$\|p^{k}-y^{k} \| \downarrow 0$ ($k \to \infty$).
-А тогда в силу непрерывности $f(\cdot)$ имеем
-$$
-\lim_{k \to \infty}f(p^{k})=\lim_{k \to \infty}f(y^{k})=
-\lim_{k \to \infty}\zeta_{k}=\ov{f}.
-$$
-Однако последние равенства несовместны с (\ref{eq:m32}), поскольку 
-$\theta >0, \gamma >0 $.
-Итак, предположение о том, что последовательность $\{ z^{k} \}$ не является
-максимизирующей, привело нас к абсурду. Следовательно, $\{ z^{k} \}$ 
-оказывается максимизирующей.
-
-в) Очевидно, в общем случае последовательность $\{ \eta_{k} \}$
-разбивается на две
-подпоследовательности $\{ \eta_{k_{s}} \}$ и $ \{ \eta_{k_{t}} \}$
-посредством условий
-$\eta_{k_{s}}\leq 0 $ и $\eta_{k_{t}} >0$ 
-так, что ${k_{s}}\cup {k_{t}}=\{0, 1, 2, \dotsc \}.$
-Cоответственно и последовательность $ \{ z^{k} \}$ распадается на две
-подпоследовательности $\{z^{k_s}\}$ и $\{z^{k_t}\}$.
-%% $\{ z^{k} \}=\{z^{k_s}\} \cup \{z^{k_t}\}$.
-При этом $\{z^{k_s}\}$, для которой $\eta_{k_{s}}\leq 0$, $s=0,1,2,\dotsc$,
-будет максимизирующей по части~a), а подпоследовательность
-$\{z^{k_t}\}$ будет максимизирующей по части~б) доказательства. 
-Поэтому и вся последовательность $\{ z^{k} \}$
-будет максимизирующей в задаче (\ref{eq:m1}).
-
-\begin{thebibliography}{99}
-\bibitem{l1}
-Васильев Ф.П. {\em Численные методы решения экстремальных
-задач.} -- М.: Наука, 1988. -- 552~с.
-\bibitem{l23}
-Полак Э. {\em Численные методы оптимизации. Единый подход.}
--- М.:Мир, 1974. -- 374 с.
-\bibitem{l2}
-Поляк Б.Т. {\em Введение в оптимизацию.} -- М.: Наука,
-1983. -- 384 с.
-\bibitem{l3}
-Туй Х. {\em Вогнутое программирование при линейных
-ограничениях} // ДАН СССР. -- 1964. -- Т.\,159. -- \No\,9. -- С.\,32--35.
-\bibitem{l4}
-Horst R., Tuy H. {\em Global optimization $($deterministic 
-approaches$)$.} -- 2-nd edition. -- Berlin: Springer-Verlag, 1993. -- 698 p.
-\bibitem{l5}
-Horst R., Pardalos P.M., Thoai N.V. {\em Introduction to
-global optimization.} -- Dordrecht: Kluwer Acad. Publ.,
-1995. -- 246 p.
-\bibitem{l8}
-Hiriart-Urruty J.-B., Ledyaev Y.A. {\em Note on the
-characterization
-of the global maxima of a $($tangentially$)$ convex function over a 
-convex set} // J. of Convex Anal. -- 1996. -- V.\,3. -- \No\,1.
--- P.\,55--61.
-\bibitem{l6}
-Стрекаловский А.С. {\em К проблеме глобального экстремума в 
-невыпуклых задачах оптимизации} // Изв. вузов. Математика. -- 1990. -- \No\,8.
--- С.\,74--80.
-\bibitem{l7}
-Стрекаловский А.С. {\em О поиске глобального максимума выпуклого
-функционала на допустимом множестве} // Журн. вычисл. матем. и матем.
-физ. -- 1993. -- Т.\,33. -- \No\,3. -- С.\,349--364.
-\bibitem{l9}
-Strekalovsky A.S., Tsevendorj I. {\em Testing the $R$-strategy
-for a reverse convex problem} // J. of Global Optimization. -- 1998. --
-\No\,13. -- P.\,61--74.
-\bibitem{l10}
-Кузнецова А.А., Стрекаловский А.С., Цэвээндорж И. 
-{\em Об одном подходе к решению целочисленных задач оптимизации} //
-Журн. вычисл. матем. и матем. физ. -- 1999. -- Т.\,39. -- \No\,1. --
-С.\,9--16. 
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\postup{\em Институт динамики систем и теории}{$\qquad$\it Поступили}
-\postup{\em управления Сибирского отделения}{{\it первый вариант} 21.04.1998}
-\postup{\em Российской Академии Наук}{{\it окончательный вариант} 15.06.1999}
-
-\label{end}
-\end{document}

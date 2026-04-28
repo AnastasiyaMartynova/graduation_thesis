@@ -1,744 +1,0 @@
-\def\stat{konushin-luk}
-
-
-\def\tit{КЛАССИФИКАЦИЯ ЛЮДЕЙ ПО~ИЗОБРАЖЕНИЮ ЛИЦА 
-НА~ОСНОВЕ СРАВНИТЕЛЬНЫХ ПРИЗНАКОВ ВНЕШНОСТИ$^*$}
-
-\def\titkol{Классификация людей по~изображению лица 
-на~основе сравнительных признаков} % внешности} 
-
-\def\autkol{В.\,C.~Конушин, Т.\,М.~Лукина, А.\,И.~Кухаренко, 
-А.\,С.~Конушин}
-
-\def\aut{В.\,C.~Конушин$^1$, Т.\,М.~Лукина$^2$, А.\,И.~Кухаренко$^3$, 
-А.\,С.~Конушин$^4$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа выполнена при поддержке гранта Президента Российской Федерации 
-для государственной поддержки 
-молодых российских ученых~--- 
-кандидатов наук МК-4644.2012.9 и гранта РФФИ №\,11-01-00957-а.}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Московский государственный университет им.\ М.\,В.~Ломоносова, 
-vadim@graphics.cs.msu.ru} 
-\footnotetext[2]{Московский государственный университет им.\ М.\,В.~Ломоносова, tlukina@graphics.cs.msu.ru} 
-\footnotetext[3]{Московский государственный университет им.\ М.\,В.~Ломоносова,\\
-akuharenko@graphics.cs.msu.ru} 
-\footnotetext[4]{Московский государственный университет им.\ М.\,В.~Ломоносова, ktosh@graphics.cs.msu.ru} 
-
-      \thispagestyle{headings}
-      
-                  \label{st\stat}
-
-\vspace*{-12pt}
-
-\Abst{Предложен новый подход к классификации людей по 
-изображению лица. Подход состоит из двух шагов. На первом шаге оценивается 
-сходство между тестовым лицом и лицами из известной базы, для чего обуча\-ют\-ся 
-специальные классификаторы сравнительных признаков внеш\-ности. Сходство 
-оценивается отдельно по каждому фрагменту лица, таким как рот, нос, глаза. 
-В~качестве признаков используются цвета, яркости, величины и на\-прав\-ле\-ния 
-градиента пикселов как по отдельности, так и в совокупности в виде гистограммы 
-или параметров нормального распределения. На втором шаге выполняется 
-классификация по искомой характеристике на основе посчитанного сходства с 
-этими людьми. В качестве классификаторов используется метод опорных векторов 
-с ядром RBF (Radial Basis Function). Предложенный алгоритм был протестирован на задаче гендерной 
-классификации с использованием баз LFW (Labeled Faces in the
-Wild) и PubFig (Public Figures Face Database). Алгоритм показал точность 
-классификации в 92,96\%.}
-
-\KW{классификация людей; гендерная классификация людей; метод опорных 
-векторов}
-
-
-\DOI{10.14357\!/08696527130204}
-
-\section{Введение}
-
-Классификация людей по изображению лица является активно развивающейся 
-областью компьютерного зрения. По лицу человека можно определить такие 
-атрибуты, как пол, возраст, расовую принадлежность. Также можно определить 
-признаки текущего внешнего вида человека: цвет волос, наличие очков, усов или 
-бороды и~т.\,п.
-
-Область использования таких алгоритмов включает фильтрацию результатов 
-поиска изображений в Интернете, поиск людей в видеоархивах, анализ состава\linebreak\vspace*{-12pt}
-
-\noindent 
-аудитории, системы интеллектуальных интерфейсов, когда поведение системы 
-зависит, например, от пола и возраста пользователя. 
-
-Стандартным подходом к классификации людей по изображению лица является 
-извлечение низкоуровневых признаков из изображения и их передача в 
-классификатор, обученный с помощью алгоритма машинного обучения, который 
-по обучающей выборке находит зависимости классифицируемого атрибута от этих 
-признаков. При таком подходе не выполняется явного поиска похожих лиц или 
-ка\-ко\-го-ли\-бо сравнения с лицами из обучающей выборки. В~случае 
-использования в качестве классификатора метода опорных векторов некоторые 
-лица из обучающей выборки отбираются в качестве опорных векторов и 
-используются неявно. При этом результат классификации зависит от расстояний до 
-опорных векторов (т.\,е.\ лиц), но эти расстояния определяются используемым 
-ядром и могут плохо соответствовать реальной похожести между лицами.
-
-В настоящей статье предлагается явно обучить классификаторы похожести лиц, 
-чтобы оценить сходство тестируемого лица с лицами известных людей, после чего 
-использовать полученные расстояния во втором классификаторе, который уже даст 
-итоговый результат классификации. Данная работа основывается на идее 
-алгоритма идентификации лиц~\cite{10-k}, в которой было предложено сравнивать 
-людей на основе их атрибутов, таких как пол, возраст, ширина носа и~т.\,п., а 
-также их похожести на других <<эталонных>> людей. Для этого было предложено 
-обучить так называемые сравнительные признаки внешности для отдельных 
-компонент лица, таких как области глаз или губ. Эти признаки оценивают 
-похожесть конкретной компоненты лица на эту же компоненту данного 
-<<эталонного>> человека. 
-
-\begin{figure} %fig1
- \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm
- \epsfbox{kon-1.eps}
- }
- \end{center}
- \vspace*{-11pt}
-\Caption{Иллюстрация работы предложенного метода на задаче гендерной классификации. 
-Тестируемое лицо разбивается на компоненты, которые сравниваются с соответствующими 
-компонентами лиц известных людей. Итоговая классификация выполняется на основе 
-вычисленного сходства с известными людьми }
-\vspace*{-8pt}
-\end{figure}
-
-Предлагается использовать аналогичный подход, но для задачи классификации 
-людей по изображению лица. На рис.~1. изображена иллюстрация работы 
-предложенного алгоритма. Алгоритм был протестирован на базе LFW~\cite{8-k} 
-на примере задачи гендерной классификации и показал точность в 92,96\%.
-
-Статья организована следующим образом. В~разд.~2 дается обзор существующих 
-методов классификации людей по лицу, а также описываются методы 
-идентификации человека, на идеи которых опирается разработанный алгоритм. 
-Раздел~3 описывает предложенный алгоритм классификации. В~разд.~4 
-приводится описание и результаты тестирования и сравнения предложенного 
-алгоритма. Раздел~5 содержит заключение и подытоживает основные результаты 
-статьи. 
-
-\vspace*{-6pt}
-
-\section{Существующие подходы}
-
-\vspace*{-2pt}
-
-Большинство алгоритмов классификации людей по лицу следует одинаковой 
-последовательности действий, состоящей из нормализации лица, вычисления 
-признаков на изображении и непосредственно классификации. Различия между 
-алгоритмами заключаются в основном в методах, используемых на отдельных 
-указанных шагах. 
-
-Наиболее распространенным алгоритмом нормализации лица является поворот 
-изображения на такой угол, чтобы линия между глазами стала горизонтальной, 
-обрезка и масштабирование до стандартных размеров. В~\cite{20-k} для 
-нормализации лица было предложено использовать триангуляцию Делоне и 
-аффинное преобразование. В~\cite{13-k} использовалась стандартная 
-нормализация лица по глазам, но к обучающей выборке добавлялись примеры 
-нормализованных лиц при смещенных положениях глаз, что позволяло повысить 
-устойчивость классификации к неточному выделению глаз. Также может 
-применяться дополнительная нормализация освещения.
-
-
-
-В качестве признаков изображения в разных статьях предлагалось использовать 
-исходные интенсивности пикселов~\cite{14-k, 1-k}, признаки Хаара~\cite{12-k}, 
-параметры <<Активной модели внешности>>~[7--9], локальные 
-бинарные шаблоны~\cite{11-k, 18-k}. Наилучшие результаты показывают 
-биологически обусловленные признаки~\cite{16-k, 7-k}, основанные на фильтрах 
-Габора. 
-
-На этапе классификации может использовать бустинг~\cite{1-k, 12-k, 18-k}, метод 
-опорных векторов~[1, 5, 7--12, 14], 
-рандомизированный лес решающих деревьев~\cite{15-k}. При этом наиболее часто 
-применяется метод опорных векторов.
-
-В отдельных статьях~\cite{7-k, 4-k} изучалось влияние одного атрибута на другой, 
-например предварительной идентификации пола для оценки возраста~\cite{7-k} 
-или классификации по этнической принадлежности для классификации по 
-половому признаку~\cite{4-k}.
-
-Авторам не встретилось ни одной статьи по классификации людей по лицу, в 
-которой бы в явном виде искались наиболее похожие лица, а классификация 
-выполнялась на основе этой вычисленной похожести. Алгоритмы, использующие 
-метод опорных векторов, делают это неявным образом, выбирая некоторые лица из 
-обучающей выборки в качестве опорных векторов, однако используемая метрика 
-определяется используемом ядром и может быть плохой аппроксимацией реальной 
-похожести лиц. 
-
-Наиболее близким к предложенному методу является алгоритм идентификации 
-человека по лицу из~\cite{10-k}. В~целом, алгоритмы идентификации и 
-классификации людей по лицу обычно очень похожи и зачастую используют 
-одинаковые процедуры нормализации и вычисления признаков. В~\cite{10-k} для 
-верификации людей по лицам было предложено использовать их похожесть на 
-других, известных алгоритму людей в качестве признаков. Для этого обучались 
-специальные классификаторы сравнительных признаков внешности, которые, 
-например, могут оценить, <<насколько данные губы похожи на губы Анджелины 
-Джоли?>> или <<насколько похож этот нос на нос Брэда Питта?>>
-
-Другим, в чем-то похожим на предлагаемый, является алгоритм идентификации 
-людей по лицу из~\cite{21-k}, где предложено для повернутого тестируемого лица 
-искать наиболее похожие части (компоненты) лица у известных <<эталонных>> 
-людей. При сравнении тестируемых лиц их компоненты заменяются на наиболее 
-похожие компоненты известных людей, но показанных во фронтальном ракурсе. 
-Такая замена позволяет значительно повысить устойчивость идентификации к 
-поворотам лица.
-
-Авторами настоящей статьи предлагается похожий подход для классификации 
-людей по лицу: оценивать похожесть тестируемого человека на известных людей и 
-использовать посчитанные расстояния для классификации.
-
-\section{Предложенный алгоритм}
-
-Весь алгоритм состоит из 2~шагов:
-\begin{enumerate}[(1)]
-\item вычисление сравнительных признаков внешности для компонент каждого 
-лица на тестируемом изображении;
-\item классификация лиц по вектор-признакам, составленным из наборов 
-сравнительных признаков.
-\end{enumerate}
-
-\subsection{Классификаторы сравнительных признаков внешности}
-
-За основу взят подход к обучению классификаторов сравнительных признаков 
-внешности, предложенный в статье~\cite{10-k}.
-
-Вначале производится поиск лиц на изображении с помощью алгоритма 
-Viola--Jones~\cite{19-k}. После этого ищутся антропометрические точки лица, 
-включая уголки глаз и губ, с помощью предлагаемой реализации 
-алгоритма~\cite{3-k}. Затем на основе найденных точек выделяются компоненты 
-лица, как показано на рис.~2. Для каждой компоненты лица обучается отдельный 
-классификатор. 
-
-В обучаемых классификаторах используется ряд низкоуровневых признаков. 
-Каждый вид признака конструируется путем выбора типа пикселов, вида 
-нормализации и метода агрегации. 
-
-
-
-В качестве типов пикселов используются цвета в пространствах RGB (red, green, blue)
-и HSV (hue, saturation, value), 
-яркость пиксела, величина и направление градиента.
-
-
-\pagebreak
-
-\
-
-\vspace*{-12pt}
-
-\begin{floatingfigure}{65mm} %fig2
- \vspace*{-6pt}
- \begin{center}
- \mbox{%
- \epsfxsize=60mm
- \epsfbox{kon-2.eps}
- }
- \end{center}
- \vspace*{-9pt}
-\Caption{Выделяемые компоненты лица }
-\vspace*{9pt}
-\end{floatingfigure}
-
-Нормализацию значений признаков пикселов можно либо вообще не делать, либо 
-использовать усреднение значений пикселов $\hat{x}=x/\mu$, либо выполнить 
-нормализацию энергии $\hat{x}=(x-\mu)/\sigma$, где $x$~--- входное значение; 
-$\mu$ и~$\sigma$~--- среднее и стандартное отклонение всех пикселов $x$ внутри 
-компоненты; $\hat{x}$~--- нормализованное выходное значение.
-
-Виды агрегации включают в себя построение гистограммы значений признаков и 
-вычисление среднего и дисперсии.
-
-Все виды признаков собраны в единую таблицу.
-
-\begin{table}[h]\small
-\begin{center}
-\begin{tabular}{|c|c|c|}
-\multicolumn{3}{c}{Используемые виды признаков}\\[6pt]
-\hline
-Тип пикселов&Нормализация&Агрегация\\
-\hline
-\tabcolsep=0pt
-\begin{tabular}{c} 
-RGB\\ 
-HSV\\
-Интенсивность пикселов\\
-Величина градиента\\
-Направление градиента\end{tabular}&
-\tabcolsep=0pt\begin{tabular}{c} Нет\\
-Усреднение\\
-Нормализация энергии
-\end{tabular}&\tabcolsep=0pt\begin{tabular}{c} Нет\\
-Гистограмма\\
-Среднее, дисперсия
-\end{tabular}\\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-Для каждой компоненты и каждого <<эталонного>> человека обучается отдельный 
-классификатор, который оценивает похожесть данной компоненты на данного 
-человека. В~качестве положительных примеров обучающей выборки 
-используются соответствующие компоненты лица, взятые из разных изображений 
-этого человека, а в качестве отрицательных примеров используется эта же 
-компонента, но взятая из произвольных изображений других людей. 
-
-Отдельный классификатор обучается на основе метода опорных векторов с ядром 
-RBF для каждого вида признаков, каждой компоненты и каждого <<эталонного>> 
-человека. 
- 
-\subsection{Классификация людей на~основе сравнительных 
-признаков внешности}
-
-На данном этапе для тестируемого лица имеется дескриптор~$F$ размерности 
-$N\times M\times K$, где $N$~--- количество <<эталонных>> людей; $M$~--- 
-количество видов признаков; $K$~--- число компонент. Каждый элемент 
-дескриптора $F_{n,m,k}$ является оценкой похожести $k$-й компоненты 
-тестируемого лица и лица $n$-го <<эталонного>> человека, используя $m$-й вид 
-признака, и по сути является выходом соответствующего классификатора. 
-Остается найти класс $L(F)$ тестируемого человека.
-
-Рассматривается только случай бинарной классификации. Задача многоклассовой 
-классификации может быть сведена к бинарной через классификацию <<каждый с 
-каждым>> или <<один против всех>>. В~\cite{2-k} было предложено сведение 
-задачи оценки возраста к ряду бинарных задач классификации, которые отвечают 
-на вопрос: <<Больше ли данному человеку лет, чем заданное число?>> Этот метод 
-показал один из наиболее высоких на данный момент результатов по точности 
-классификации людей по возрасту. 
-
-Наиболее простым способом классификации людей на основе сравнительных 
-признаков внешности является метод ближайшего соседа или $k$~ближайших 
-соседей. В~этом случае просто ищутся наиболее похожие <<эталонные>> люди и в 
-качестве результата классификации берется класс этих известных людей. Однако 
-по результатам экспериментов данный подход показал относительно низкую 
-точность классификации. 
-
-Другим способом является обучение дополнительного классификатора, 
-принимающего на вход весь вектор $F_{n,m,k}$. Но высокая размерность вектора 
-признаков относительно размера обучающей выборки приводит к переобучению 
-классификатора. 
-%
-Поэтому было предложено использовать двухуровневый классификатор. 
-
-На 
-первом уровне $K$~классификаторов принимают решение на основании одной 
-компоненты:
-$$
-L_k(F) =\mathrm{Classifier}~1_k\left\{F_{i,j,k},\ i\in \{1, \ldots , N\}\,,\ j\in \{1,\ldots , 
-M\}\right\}\,.
-$$
-На втором уровне единственный классификатор объединяет $K$~выходов 
-классификаторов первого уровня для итогового решения:
-$$
-L(F)= \mathrm{Classifier}~2 \left\{ L_k(F)\,,\ k\in \{1, \ldots , K\}\right\}\,.
-$$
-
-В обоих случаях в качестве классификатора используется метод опорных векторов 
-с ядром RBF.
-
-Стоит отметить, что в этом случае, в отличие от метода $k$ ближайших соседей, не 
-требуется информации о метках <<эталонных>> людей. Классификаторы 
-автоматически обучаются зависимостям вида <<похожесть на данного человека 
-означает, что тестируемый человек скорее имеет метку $-1$, а сходство с этим 
-человеком~--- что метку~1>>.
-
-\section{Эксперименты}
-
-В качестве тестовой задачи была выбрана гендерная классификация, так как, с 
-одной стороны, это одна из наиболее исследуемых задач в силу своей широкой 
-применимости, а с другой стороны, в отличие от задачи оценки возраста человека, 
-для нее относительно легко можно подготовить эталонные данные.
-
-К сожалению, в отличие от задачи идентификации человека по лицу, для 
-гендерной классификации на данный момент нет стандартной эталонной тестовой 
-базы и протокола для сравнения алгоритмов. В~разных статьях для этого 
-используются выборки из баз FERET~\cite{17-k}, CAS-PEAL~\cite{5-k}, 
-FaceTracer~\cite{9-k} и LFW.
-
-Естественным выбором для проводимых экспериментов стало использование баз 
-PubFig~\cite{10-k} и LFW~\cite{8-k}, так как они использовались в 
-статье~\cite{10-k}, где были впервые предложены классификаторы сравнительных 
-признаков внешности.
-
-База LFW состоит из 13\,233 изображений 5749~человек. Все изображения 
-отобраны из Интернета. Единственным ограничением являлось то, что на них 
-должно находиться лицо с помощью алгоритма Viola--Jones. В~настоящее время 
-LFW является стандартной базой для сравнения алгоритмов идентификации 
-человека по лицу.
-
-База PubFig является дополнением к базе LFW, предложенным в 
-статье~\cite{10-k}. Она содержит 60\,000~изображений 200~разных людей. 
-Важным отличием базы PubFig является наличие как минимум 50~разных 
-изображений для каждого человека, что делает ее подходящей для составления 
-набора <<эталонных>> людей, так как в ней достаточно изображений для 
-обучения классификаторов сравнительных признаков внешности.
-
-Примеры изображений из баз LFW и PubFig приведены на рис.~3,\,\textit{а} и~3,\,\textit{б} 
-соответственно. Авторы вручную разметили пол всех людей из этих баз.
-
-В экспериментах использовался <<набор разработчика>> (Development Set) базы 
-PubFig для составления списка <<эталонных>> людей (всего 59~человек, исходно 
-в этом наборе было 60~человек, однако сама база предоставляется в виде списка 
-URL (uniform resource locator) и некоторые ссылки уже стали недействительными) и 5-крат\-ную 
-кросс-ва\-ли\-да\-цию на базе LFW.
-
-Для сравнения с существующими алгоритмами гендерной классификации были 
-выбраны 2~алгоритма с наиболее близким протоколом тестирования:
-\begin{enumerate}[(1)]
-\item в~\cite{10-k} гендерная классификация, наряду с классификацией других 
-атрибутов, использовалась для дальнейшей идентификации людей. Точные 
-выборки, используемые для обучения и тестирования, приведены не были, но 
-они являлись частью базы PubFig и LFW. Была заявлена точность в 81,22\%;
-\item в~\cite{18-k} для экспериментов использовалась 5-крат\-ная 
-кросс-ва\-ли\-да\-ция на базе LFW. Сильно повернутые лица, а также лица, для 
-которых сложно вручную разметить пол, были выведены из рассмотрения. 
-В~итоге использовалось 7443~изображения из~13\,233. Итоговая точность 
-составила 94,81\%.
-\end{enumerate}
-
-
-
-
-Точность предлагаемого алгоритма составила 92,96\%. При этом если на первом 
-уровне классификаторы обучать не по компонентам, а по виду признаков, то 
-точность понижается до 91,6\%. Метод на основе $k$ ближайших соседей, при 
-$k\hm= 4$ и объединении разных компонент и видов признаков с помощью метода 
-опорных векторов, дает всего 82\% точности.
-
-Достигнутая точность в 92,96\% значительно превосходит 81,2\% из~\cite{10-k}, 
-где использовались точно такие же низкоуровневые признаки. Стоит, правда, 
-отметить, что более низкая точность в~\cite{10-k} может быть также следствием 
-потенциально меньшего размера обучающей выборки.
-
-\begin{figure} %fig3
- \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=120mm
- \epsfbox{kon-3.eps}
- }
- \end{center}
- \vspace*{-6pt}
-\Caption{Примеры изображений из базы LFW~(\textit{а}) и 
-из базы PubFig~(\textit{б})}
-\end{figure}
-
-Проигрыш почти 2\% результату из~\cite{18-k} объясняется использованием 
-значительно более сложной тестовой выборки (не выкидывались изображения 
-сильно повернутых лиц), а также более простых низкоуровневых признаков. 
-
-\section{Заключение}
-
-В данной статье предложен новый подход к классификации людей по лицу. 
-Использована база изображений <<эталонных>> людей и проведено обучение на 
-ней классификаторов сравнительных признаков внешности, которые позволяют 
-оценивать сходство между тестируемым изображением лица человека и 
-<<эталонным>> человеком.
-
-Поверх вектор-признака, составленного из вычисленных значений сходства 
-тестируемого изображения с <<эталонными>> людьми, строится двухуровневый 
-классификатор на основе метода опорных векторов, который классифицирует 
-тестируемое лицо вначале отдельно по каждой компоненте, а потом используя 
-решения по всем компонентам. 
-
-Предложенный алгоритм был протестирован на задаче гендерной классификации и 
-показал точность в 92,96\% на базе LFW.
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{10-k} %1
-\Au{Kumar N., Berg A.\,C., Belhumeur P.\,N., Nayar~S.\,K.} Attribute and simile 
-classifiers for face verification~/\!\!/ IEEE Conference (International) on Computer 
-Vision.~--- N.Y.: IEEE, 2009. P.~365--372.
-
-\bibitem{8-k} %2
-\Au{Huang G., Ramesh M., Berg T., Learned-Miller~E.} Labeled faces in the wild: 
-A~database for studying face recognition in unconstrained environments. UMass 
-Amherst Technical Report 07-49, 2007. 
-
-\bibitem{20-k} %3
-\Au{Yang Z., Li M., Ai H.} An experimental study on automatic face gender 
-classification~/\!\!/ 18th Conference (International) on Pattern Recognition 
-Proceedings.~--- N.Y.: IEEE, 2006. P.~1099--1102. 
-
-\bibitem{13-k} %4
-\Au{Mayo M., Zhang E.} Improving face gender classification by adding deliberately 
-misaligned faces to the training data~/\!\!/ IVCNZ08:  23rd Conference (International) 
-Image and Vision Computing Proceedings.~---  New Zealand, 2008. P.~1--5.
-\bibitem{14-k} %5
-\Au{Moghaddam B., Yang M.} Learning gender with support faces~/\!\!/ IEEE 
-TPAMI, 2002. Vol.~24. No.\,5. 
-P.~707--711.
-
-\bibitem{1-k} %6
-\Au{Baluja S., Rowley H.\,A.} Boosting sex identification performance~/\!\!/ Int. 
-J.~Comput. Vision, 2007. Vol.~71. No.\,1. P.~111--119.
-
-\bibitem{12-k} %7
-\Au{Makinen E., Raisamo R.} Evaluation of gender classification methods with 
-automatically detected and aligned faces~/\!\!/ IEEE TPAMI, 2008. Vol.~30. P.~541--547.
-
-\bibitem{6-k} %8
-\Au{Guo G., Fu Y., Huang T.\,S., Dyer C.} A~probabilistic fusion approach to human 
-age prediction~/\!\!/ IEEE CVPR-SLAM Workshop.~--- N.Y.: IEEE, 2008. P.~1--6.
-
-\bibitem{2-k} %9
-\Au{Chang K.-Y., Chen C.-S., Hung Y.-P.} Ordinal hyperplanes ranker with cost 
-sensitivities for age estimation~/\!\!/ IEEE Conference on Computer Vision and Pattern 
-Recognition Proceedings.~--- N.Y.: IEEE, 2011. P.~585--592.
-
-\bibitem{11-k} %10
-\Au{Lian H.\,C., Lu B.\,L.} Multi-view gender classification using local binary patterns 
-and support vector machines~/\!\!/ 5th Conference (International) on Artificial Neural 
-Networks Proceedings, 2006. Vol.~2. P.~202--209.
-
-\bibitem{18-k} %11
-\Au{Shan C.} Learning local binary patterns for gender classification on real-world face 
-images~/\!\!/ Pattern Recogn. Lett., 2012. Vol.~33. No.\,4. P.~431--437. 
-
-\bibitem{16-k} %12
-\Au{Mu G.\,W., Guo G.\,D., Fu Y., Huang~T.\,S.} Human age estimation using 
-bio-inspired features~/\!\!/ IEEE Conference on
-Computer Vision and Pattern Recognition Proceedings.~--- N.Y.: 
-IEEE, 2009. P.~112--119.
-
-\bibitem{7-k} %13
-\Au{Guo G., Mu G., Fu Y., Dyer C., Huang~T.\,S.} A~study on automatic age estimation 
-using a large database~/\!\!/ 12th IEEE Conference (International) on Computer Vision
-Proceedings.~---  N.Y.: IEEE, 2009. P.~1986--1991.
-
-\bibitem{9-k} %14
-\Au{Kumar N., Belhumeur P.\,N., Nayar S.\,K.} FaceTracer: A~search engine for large 
-collections of images with faces~/\!\!/ Computer vision~--- ECCV 2008~/
-Eds. D.~Forsyth, Ph.~Torr, A.~Zisserman. Lecture notes in
-computer science ser.~--- Berlin, Heidelberg: Springer, 2008. Vol.~5305. P.~340--353. 
-
-\bibitem{15-k} %15
-\Au{Montillo A., Ling H.} Age regression from faces using random forests~/\!\!/ 16th
-IEEE  Conference (International) on Image Processing Proceedings.~--- N.Y.: IEEE, 2009. P.~2465--2468.
-
-\bibitem{4-k} %16
-\Au{Du P., Xiaoqing D.} The application of decision tree in gender classification~/\!\!/ 
-Congress on Image and Signal Processing Proceedings.~--- Los Alamitos: IEEE, 
-2008. Vol.~4. P.~657--660.
-
-\bibitem{21-k} %17
-\Au{Yin Qi, Tang X., Sun J.} An associate-predict model for face recognition~/\!\!/ IEEE 
-Conference on Computer Vision and Pattern Recognition Proceedings.~--- N.Y.: 
-IEEE, 2011. P.~497--504.
-
-\bibitem{19-k} %18
-\Au{Viola P., Jones M.\,J.} Robust real-time face detection~/\!\!/ Int. J.~Comput. 
-Vision, 2004. Vol.~57. No.\,2. P.~137--154.
-
-\bibitem{3-k} %19
-\Au{Cristinacce D., Cootes T.} Boosted regression active shape models~/\!\!/ British 
-Machine Vision Conference Proceedings.~--- Warwick, 2007. 
-Vol.~2. P.~880--889.
-
-\bibitem{17-k} %20
-\Au{Phillips P.\,J., Moon H., Rizvi S.\,A., Rauss~P.} The FERET evaluation 
-methodology for face recognition algorithms~/\!\!/ IEEE PAMI, 2000. Vol.~22. No.\,10. 
-P.~1090--1104.
-
-\bibitem{5-k} %21
-\Au{Gao W., Cao B., Shan S.\,G., \textit{et al}.} The CAS-PEAL large-scale chinese 
-face database and baseline evaluations. Technical Report of JDL, 2004.
-
-
-\end{thebibliography}
-} }
-
-
-\vspace*{12pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-\def\tit{PERSON CLASSIFICATION UPON FACE IMAGE BASED~ON~SIMILE~CLASSIFIERS}
-
-\def\aut{V.\,S.~Konushin$^1$,  T.\,M.~Lukina$^2$, A.\,I.~Kuharenko$^3$,
-and~A.\,S.~Konushin$^4$}
-
-
-\titelr{\tit}{\aut}
-
-\vspace*{3pt}
-
-\noindent
-$^1$M.\,V.~Lomonosov Moscow State University, vadim@graphics.cs.msu.ru\\
-\noindent
-$^2$M.\,V.~Lomonosov Moscow State University, tlukina@graphics.cs.msu.ru\\
-\noindent
-$^3$M.\,V.~Lomonosov Moscow State University, akuharenko@graphics.cs.msu.ru\\
-\noindent
-$^4$M.\,V.~Lomonosov Moscow State University,  ktosh@graphics.cs.msu.ru 
-
-
-
-\Abste{A new approach to person classification upon face images is presented. It 
-consists of two steps. First, similarity distances between a test face and faces from a 
-known sample are computed. For this task, special simile classifiers are trained. 
-Similarity distances are estimated independently for each face fragment,
-e.\,g., nose, 
-mouth, left or right eye, etc. Pixel colors, brightness, gradient\linebreak\vspace*{-12pt}}
-
-\Abstend{norm, and orientation are 
-used as features both for each pixel and for whole fragment in the form of a histogram or 
-Gaussian distribution parameters. Person classification is performed based on these 
-similarity distances. For classification, support vector machine with 
-radial basis function kernel is used. The proposed 
-algorithm was tested on a gender classification task, using Labeled Faces in the Wild 
-and Public Figures Face databases. 
-The algorithm achieved 92.96\% accuracy.}
-
-\KWE{face classification; gender classification; support vector machine}
-
-
-\DOI{10.14357\!/08696527130204}
-
-\Ack 
-\noindent 
-The study was supported by the Grant of the President of Russian Federation for the state
-support of young Russian scientists~--- PhD~--- No.\,MK-4644.2012.9 and by the Russian
-Foundation for Basic Research (Grant No.\,11-01-00957-a).
-
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-
- \renewcommand{\bibname}{\protect\rmfamily References}
-
- {\small\frenchspacing
-{%\baselineskip=10.8pt
-%\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{10-k-1} %1
-\Aue{Kumar, N., A.\,C.~Berg, P.\,N.~Belhumeur, and S.\,K.~Nayar}. 2009. Attribute and 
-simile classifiers for face verification. \textit{IEEE International Conference on 
-Computer Vision}. N.Y.: IEEE.  365--72.
-
-
-\bibitem{8-k-1} %2
-\Aue{Huang, G., M.~Ramesh, T.~Berg, and E.~Learned-Miller}. 2007.
-Labeled faces in the wild: A~database for studying face recognition in unconstrained 
-environments. UMass Amherst Technical Report 07-49. 
-
-\bibitem{20-k-1} %3
-\Aue{Yang, Z., M.~Li, and H.~Ai}. 2006. An experimental study on automatic face 
-gender classification. \textit{18th International Conference on Pattern Recognition 
-Proceedings}. N.Y.: IEEE. 1099--102. 
-
-\bibitem{13-k-1} %4
-\Aue{Mayo, M., and E.~Zhang}. 2008. Improving face gender classification by adding 
-deliberately misaligned faces to the training data. \textit{IVCNZ08: 23rd International 
-Conference Image and Vision Computing Proceedings}. New Zealand. 1--5.
-
-\bibitem{14-k-1} %5
-\Aue{Moghaddam, B., and M.~Yang}. 2002. Learning gender with support faces. 
-\textit{IEEE TPAMI}  24(5):707--11.
-
-\bibitem{1-k-1} %6
-\Aue{Baluja, S., and H.\,A.~Rowley}. 
-2007. Boosting sex identification performance. \textit{Int. J.~Comput. Vision} 
-71(1):111--19.
-
-\bibitem{12-k-1} %7
-\Aue{Makinen, E., and R.~Raisamo}. 2008. Evaluation of gender classification methods 
-with automatically detected and aligned faces. \textit{IEEE TPAMI} 30:541--47.
-
-\bibitem{6-k-1} %8
-\Aue{Guo, G., Y.~Fu, T.\,S.~Huang, and C.~Dyer}. 2008. A~probabilistic fusion 
-approach to human age prediction. \textit{IEEE CVPR-SLAM Workshop}. N.Y.: IEEE. 
-1--6.
-
-\bibitem{2-k-1} %9
-\Aue{Chang, K.-Y., C.-S.~Chen, and Y.-P.~Hung}. 2011. Ordinal hyperplanes ranker 
-with cost sensitivities for age estimation. \textit{IEEE Conference on Computer Vision 
-and Pattern Recognition Proceedings}. N.Y.: IEEE. 585--92.
-
-\bibitem{11-k-1} %10
-\Aue{Lian, H.\,C., and B.\,L.~Lu}. 2006. Multi-view gender classification using local 
-binary patterns and support vector machines. \textit{5th International Conference on 
-Artificial Neural Networks Proceedings}.  2:202--9.
-
-\bibitem{18-k-1} %11
-\Aue{Shan, C.} 2012. Learning local binary patterns for gender classification on 
-real-world face images. \textit{Pattern Recogn. Lett.}  33(4):431--37. 
-
-\bibitem{16-k-1} %12
-\Aue{Mu, G.\,W., G.\,D.~Guo, Y.~Fu, and T.\,S.~Huang}. 2009. Human age estimation 
-using bio-inspired features. \textit{IEEE Conference on Computer Vision and Pattern 
-Recognition Proceedings}.  N.Y.: IEEE. 112--19.
-
-\bibitem{7-k-1} %13
-\Aue{Guo, G., G.~Mu, Y.~Fu, C.~Dyer, and T.\,S.~Huang}. 2009. A~study on automatic 
-age estimation using a large database. \textit{12th IEEE  Conference (International) on 
-Computer Vision Proceedings}. N.Y.: IEEE. 1986--91.
-
-\bibitem{9-k-1} %14
-\Aue{Kumar, N., P.\,N.~Belhumeur, and S.\,K.~Nayar}. 2008. FaceTracer: A~search 
-engine for large collections of images with faces. \textit{Computer vision~--- ECCV 2008}.
-Eds. D.~Forsyth, Ph.~Torr, and A.~Zisserman. Lecture notes in computer science ser.
-Berlin, Heidelberg: Springer. 5305:340--53. 
-
-\bibitem{15-k-1} %15
-\Aue{Montillo, A., and H.~Ling}. 2009. Age regression from faces using random forests. 
-\textit{16th IEEE  Conference (International) on Image Processing Proceedings}.  
-N.Y.: IEEE. 2465--68.
-
-\bibitem{4-k-1} %16
-\Aue{Du, P., and D.~Xiaoqing}. 2008. The application of decision tree in gender 
-classification. \textit{Congress on Image and Signal Processing Proceedings}. 
-Los Alamitos: IEEE.  4:657--60.
-
-\bibitem{21-k-1} %17
-\Aue{Yin, Qi, X.~Tang, and J.~Sun}. 2011. An associate-predict model for face 
-recognition. \textit{IEEE Conference on Computer Vision and Pattern 
-Recognition Proceedings}. N.Y.: IEEE.  497--504.
-
-
-\bibitem{19-k-1} %18
-\Aue{Viola, P., and M.\,J.~Jones}. 2004. Robust real-time face detection. 
-\textit{Int. J.~Comput. Vision} 57(2):137--54.
-
-\bibitem{3-k-1} %19
-\Aue{Cristinacce, D., and T.~Cootes}. 2007. Boosted regression active shape models. 
-\textit{British Machine Vision Conference Proceedings}. Warwick. 2:880--89.
-
-
-
-\bibitem{17-k-1} %20
-\Aue{Phillips, P.\,J., H.~Moon, S.\,A.~Rizvi, and P.~Rauss}. 2000. The FERET 
-evaluation methodology for face recognition algorithms. \textit{IEEE PAMI} 
-22(10):1090--104.
-
-
-
- \label{end\stat}
- 
- \bibitem{5-k-1} %21
-\Aue{Gao, W., B.~Cao, S.\,G.~Shan, \textit{et al}.} 2004. The CAS-PEAL large-scale 
-chinese face database and baseline evaluations. Technical Report of JDL.
- 
- \end{thebibliography}
-} }
-
-\renewcommand{\bibname}{\protect\rmfamily Литература}

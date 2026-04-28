@@ -1,888 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-]{amsart}
-
-% 
-
-\newcommand{\loc}{\operatorname{loc}}
-\newcommand{\grad}{\operatorname{grad}}
-\newcommand{\Int}{\operatorname{int}}
-\newcommand{\Div}{\operatorname{div}}
-\newcommand{\mes}{\operatorname{mes}}
-\newcommand{\tts}[1]{}
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{9}
-\god{1999}
-\nomer{10~(449)} %                        Remove in Eng.
-%\nomer{Vol.\,43, No.\,10}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{517.988}
-
-\author{\it А.В.\,Лапин, Е.Г.\,Шешуков }
-% NB:   ^^ remove in Eng.
-\title{Задача фильтрации через пористую преграду
-на проницаемом основании
-со слоем соленой воды}
-\thanks{Работа выполнена при поддержке Российского фонда
-фундаментальный исследований (грант 98-01-00200).}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-
-Изучается стационарная задача фильтрации несжимаемой жидкости
-через плотину на проницаемом основании со слоем соленой воды с большей
-плотностью, чем фильтрующаяся. Жидкости 
-не смешиваются. В этом случае область фильтрации имеет свободную
-границу, состоящую из двух частей: депрессионной поверхности,
-отделяющей насыщенную часть грунта от сухой, и поверхности раздела
-движущейся жидкости и покоящейся соленой воды.
-
-Впервые вариационная формулировка и исследование простейшей задачи
-фильтрации жидкости через плотину даны в работе [1], где для этой цели
-введено преобразование искомой функции (преобразование Байокки).
-Позднее метод [1] был обобщен и применен к ряду других задач [2], [3], в
-которых, как правило, исходные геометрические параметры позволяли
-получить значение расхода фильтрующейся воды.
-Обзоры работ по решению задачи о плотине с использованием преобразования
-Байокки содержатся в [4]--[6].
-
-Общая линейная стационарная задача фильтрации воды в плотине
-произвольной формы на непроницаемом основании была решена независимо в
-[7] и [8]. В этих работах предложена вариационная формулировка
-в терминах функции давления и характеристической функции искомой
-области фильтрации, доказаны теоремы существования обобщенных решений.
-Вопрос единственности решения изучен в [9]. Подробный анализ поведения
-свободной границы проведен в [10]. Основные результаты в этой области
-изложены в монографии [11].
-
-В [12] результаты
-[7], [8] обобщены на случай одной задачи фильтрации жидкости через
-плотину со слабо проницаемым основанием. Наконец, в [13] исследована
-задача совместной фильтрации через плотину на непроницаемом основании
-двух несмешивающихся жидкостей.
-
-Первой работой, посвященной сеточному методу решения общей
-стационарной задачи фильтрации жидкости в плотине произвольной формы
-на непроницаемом основании, была работа [14]. В [15]--[17] были
-получены более общие результаты о сходимости сеточных схем и построены
-более эффективные итерационные методы их численной реализации.
-
-В нашей работе рассматривается новая задача линейной стационарной
-фильтрации --- фильтрация пресной воды через плотину и в обход плотины
-(в трехмерном случае) с учетом эффекта вытеснения соленой воды,
-заполняющей пористую среду. Эта задача формулируется в виде
-вариационного неравенства, частным случаем которого является
-неравенство, изученное в [7], [8]. Устанавливаются существование и
-единственность решения поставленной задачи. В этой части
-работы полученные результаты являются прямым обобщением известных
-результатов (см. [11]). Далее строится сеточная схема на основе
-применения квадратур
-к схеме метода конечных элементов. Доказывается ее разрешимость и
-сходимость приближенных решений к точному. Методы исследования
-отличаются от методов цитированных работ. Наконец, обосновывается сходимость
-различных итерационных алгоритмов, включая методы типа Гаусса--Зейделя
-и их блочные варианты. При исследовании сходимости итерационных
-процедур существенно используются и обобщаются результаты из [18].
-
-\section{Исходная задача и ее вариационная формулировка}
-
-Пусть $D$ --- открытый параллелепипед в $R^n$, который включает в себя априори
-неизвестную область фильтрации $\Omega_1=\Int(\ov{\Omega_1^+ \cup
-\Omega_1^-})$, где $\Omega_1^+ = \{ x \in \Omega_1 \mid x_n > 0\}$,
-$\Omega_1^-=\{x\in\Omega_1 \mid x_n<0\}$ --- непустые множества. Введем
-следующие обозначения для подобластей области $D$ (см. рис. для двумерного
-случая):
-\begin{center}
-\unitlength=1mm
-\begin{picture}(170,97) %% width, heigth, added 5 mm for signature
-\put(5,97){\special {em:graph lap-she.bmp}} %% left X, upper Y, -, /2, +toX
-% \put(78,0){\mbox Рис.\,2}
-\end{picture}
-\end{center}
-\begin{itemize}
-\item[] $\Omega_2$ --- область, занятая покоящейся соленой водой плотности
-$\rho>1$;
-\item[] $\Omega_3$ соответствует верхнему бьефу, плотность пресной воды
-считается равной 1;
-\item[] $\Omega_4$ соответствует нижнему бьефу, занятому атмосферным воздухом
-с давлением $p=0$;
-\item[] $\Omega_5$ --- сухая часть грунта с $p=0$;
-\item[] $\Omega=\Omega_1\cup\Omega_2\cup\Omega_5$;
-\item[] $\Omega^+$, $\Omega^-$ определены подобно
-$\Omega_1^+$ и $\Omega_1^-$.
-\end{itemize}
-
-Далее через $S_0=\ov\Omega_1\cap\ov\Omega_5$ обозначим депрессионную
-поверхность, а через $S_1=\ov\Omega_1\cap\ov\Omega_2$ ---
-границу раздела пресной и соленой вод; $H_0=\sup\{x_n
-\mid x \in D\}$ --- напор воды в верхнем бьефе,
-$H_1=\inf\{x_n\mid x \in D\}$. Граница $\partial D$ области $D$ состоит из
-$\Gamma_2=\ov D\cap\{x_n=H_0\bigvee x_n=H_1\}$ и $\Gamma_1=\partial D
-\setminus \Gamma_2$. В свою очередь, $\partial \Omega_1 = S_0 \cup S_1 \cup
-\gamma_1 \cup \gamma_2 \cup \gamma_3$, где $\gamma_1 = \Gamma_1 \cap
-\ov\Omega_1$, $\gamma_2 = \ov {\Omega}_3 \cap \ov
-{\Omega}_1$ и $\gamma_3 = \ov {\Omega}_4 \cap \ov {\Omega}_1$.
-Наконец, пусть $\gamma_0 = \Omega_1 \cap \{ x_n = 0\} $ и под
-$u|_{\gamma_0^+}$ ($u|_{\gamma_0^-}$) понимается след кусочно-непрерывной
-функции $u$ на $\gamma_0$ со стороны $\Omega_1^+$ ($\Omega_1^-$).
-
-Считаем, что фильтрация следует закону Дарси
-\begin{equation}
-{\bold v} = -k \nabla (p + x_n)
-\end{equation}
-с кусочно-постоянным коэффициентом фильтрации $k(x)=\{k_1 \text{ при }
-x_n > 0;\ k_2 \text{ при } x_n < 0\}$, $k_i > 0$. Тогда в точках $\Omega_1
-\cup \partial \Omega_1$
-выполняются следующие соотношения:
-\begin{gather}
-\Div{\bold v} = 0,\ \; x \in \Omega_1^+ \cup \Omega_1^-;\ \;
-p|_{\gamma_0^+} = p|_{\gamma_0^-};\ \; {\bold v \bold n}|_{\gamma_0^+} +
-{\bold v \bold n}|_{\gamma_0^-} = 0;
-\ \; {\bold v \bold n} = 0 \text{ на } \gamma_1; \notag \\
-%
-p = H_0 - x_n \text{ на }
-\gamma_2;\ \; p = 0,\ \; {\bold v \bold n} \geq 0 \text{ на } \gamma_3;
-\ \; p = p_d,\ \; {\bold v \bold n} = 0 \text{ на } S_0 \cap S_1.
-\end{gather}
-Здесь $p_d = \{0 \text{ при } x_n \geq 0;\ -\rho x_n \text{ при } x_n
-< 0\}$ --- заданная функция, соответствующая гидростатическому
-распределению давления в покоящейся соленой воде при $x_n < 0$ и
-атмосферному давлению при $x_n \geq 0$, ${\bold n}$ --- вектор внешней
-нормали к соответствующей подобласти $\Omega_1$.
-
-\begin{lem}
-Пусть $p$ --- решение задачи $(1)$, $(2)$
-и $z=p-p_d$, $g = \{ k_1 \text{ при }
-x_n > 0;\ k_2 (1 - \rho) \text{ при } x_n < 0 \}$. Тогда
-$p > p_d \text{ в }\Omega_1$,
-и справедливо неравенство
-\begin{equation}
-\int_{\Omega_1} k \nabla z \nabla \eta\, d \Omega + \int_{ \Omega_1 }g
-\eta_{ x_n } d \Omega \leq 0
-\end{equation}
-для любой гладкой функции $\eta$ такой, что $\eta = 0$ на $\gamma_2$
-и $\eta \geq 0$ на $\gamma_3$.
-\end{lem}
-
-\begin{pf}
-Введем функцию пьезометрического напора $ \phi = p +
-x_n$. В силу (1), (2) она является решением задачи
-\begin{gather*}
-\int_{\Omega_1} k \nabla \phi \nabla \eta\, dx = 0 \quad
-\forall \eta \in C^1(\ov{\Omega}_1): \eta (x) = 0 \text{ для }
-x \in \gamma_2 \cup \gamma_3; \\
-%
-\phi (x) = H_0 \text{ при } x \in \gamma_2,\ \; \phi (x) = x_n \geq 0
-\text{ при } x \in \gamma_3.
-\end{gather*}
-Нетрудно видеть, что $\phi (x)$ неотрицательна для всех $x \in
-\Omega_1$, в частности, $p = \phi \geq 0$ на $\gamma_0$. Пользуясь
-теперь строгим принципом максимума [19] для функции $p - p_d$ в каждой из
-подобластей $\Omega_1^+$ и $\Omega_1^-$, получаем
-$$
-p (x) > p_d (x) \quad \forall x \in \Omega_1^+ \cup \Omega_1^-.
-$$
-Отсюда следует, что $\phi = p + x_n > 0$ в точках $\Omega_1^+ \cup
-\Omega_1^-$. Допустим, что $p = p_d $ в некоторой точке $x \in \gamma_0$.
-Тогда по лемме о нормальной производной [19] в этой точке имеем
-неравенства
-$$
-\frac {\partial \phi}{ \partial {\bold n}}\bigg|_{ \gamma_0^+} < 0,\quad
-\frac {\partial \phi}{ \partial {\bold n}}\bigg|_{ \gamma_0^-} < 0,
-$$
-что
-противоречит условию непрерывности нормальной составляющей вектора
-скорости ${\bold v} {\bold n}$ при переходе через $\gamma_0$. Итак,
-$p (x) > p_d (x)$ $\forall x \in \Omega_1$.
-
-Неравенство (3) легко доказать
-прямыми вычислениями.
-\end{pf}
-
-Исходя из неравенства (3), можно определить обобщенное решение задачи (1),
-(2). С этой целью введем следующие выпуклые замкнутые множества в
-пространстве $ H^1(D)$:
-\begin{gather*}
-K_0 = \{ u \in H^1(D)\mid u \geq 0 \text { в } D \setminus \ov \Omega_4;
-\ u = 0 \text{ в } \ov \Omega_4\}; \\
-%
-K_1 = \{ u \in H^1(D) \mid u = H_0 - x_n \text{ в } \ov
-\Omega_3;\ u = 0 \text{ на } \Gamma_2 \};\quad K = K_0 \cap K_1; \\
-%
-M = \{ u \in H^1(D)\mid u \geq 0 \text { в } \ov \Omega_4 ;
-\ u = 0 \text{ в } \Omega_3;\ u = 0 \text{ на } \Gamma_2 \}.
-\end{gather*}
-
-\begin{lem}
-Если решение $z$ задачи
-\begin{equation}\label{4}
-\int_D(k \nabla z \nabla \eta + H(z) g \eta_{x_n}) dx \leq 0 \qquad \forall
-\eta \in M, z \in K
-\end{equation}
-достаточно гладкое и $\Omega_1^+ =
-\{ x \in \Omega\mid z(x)>0 \} \cap \{ x_n>0 \};$
-$\Omega_1^- = \{ x \in \Omega\mid
-z(x)>0 \} \cap \{ x_n<0 \}$, то функция $p = z + p_d$ удовлетворяет
-соотношениям $(1)$, $(2)$.
-\end{lem}
-
-Мы опускаем вполне традиционное доказательство этого утверждения.
-
-При исследовании существования обобщенного решения еще ослабим
-формулировку (4) (ср. с [7], [8]). Будем искать пару $(z,\chi) \in K
-\times L_{\infty}$, удовлетворяющую соотношениям
-\begin{equation}\label{5}
-\int_D(k \nabla z \nabla \eta + \chi g \eta_{x_n}) dx \leq 0 \quad \forall
-\eta \in M, \qquad \chi(x) \in H(z(x)) \text{ почти всюду в } D,
-\end{equation}
-где $H(t)=\{1\text{ при }t>0;\ [0,1]\text{ при }t=0;\ 0 \text{ при }
-t<0 \}$ --- максимально монотонный график функции Хевисайда.
-
-\begin{thm}
-Существует по крайней мере одно решение задачи $(5)$.
-\end{thm}
-
-Доказательство является прямым обобщением соответствующего результата из
-([11], гл.\,5), где рассмотрен случай $g(x) = 1$.
-
-\section{Регулярность решения и свободной границы. Единственность решения}
-
-При исследовании гладкости решения $z$, свободной границы $S_0 \cup S_1$
-и единственности $z$ будем использовать результаты и методы работ
-([9], [11], гл.\,5).
-Отметим, что большинство результатов о регулярности в этих
-работах получено на основе локального анализа решений. Это позволяет
-применить их при изучении нашей задачи, ``расщепляя'' ее на задачи в
-подобластях $\Omega^+$ и $\Omega^-$. В связи со сказанным не будем
-приводить доказательств формулируемых утверждений, указывая лишь схему
-получения основных результатов о регулярности и единственности решения.
-
-\begin{lem}
-Пусть $(z, \chi)$ --- решение задачи $(5)$. Тогда справедливы
-следующие соотношения $($понимаемые в смысле распределений$):$
-\begin{gather}
-\label{6}
-\Div (k \grad z ) + (\chi g)_{x_n} = 0 \text{ в } \Omega; \\
-\label{7}
-g \chi_{x_n} \geq 0 \text{ в } \Omega^+ \cup \Omega^-.
-\end{gather}
-\end{lem}
-
-Из (6) и теории регулярности решений эллиптических уравнений следует,
-что $ z \in W_{2,\loc}^1(\Omega^{+} \cup \Omega^{-})$ для $s \geq 1$.
-В силу (7) функция $\chi(x)$ монотонна по $x_n$ в $ \Omega^{+}$ и
-$ \Omega^{-}$. Применяя эти результаты и строгий принцип максимума,
-устанавливаем, что область фильтрации $\Omega_1$ может
-быть представлена в виде
-$$
-\Omega_1 = \{ x \in \Omega \mid \psi(x^{'}) < x_n <\phi(x^{'}) \},
-$$
-где
-$x^{'} = (x_1,..,x_{n-1})$;
-$\phi(x^{'}) = \max \{ 0;\ \sup \{ x_n \mid z(x) > 0 \}\}$;
-$\psi(x^{'}) = \min \{ 0;\ \inf \{ x_n \mid z(x) > 0 \}\}$.
-
-\begin{thm}
-Если $0 < \phi(x^{'}_0) < H_0$, то функция $\phi(x^{'})$
-непрерывна в некоторой окрестности $|x'-x'_0|<\delta$ точки
-$x'_0$ и $\chi(x') = 0$ при $x_n > \phi(x')$, $|x'-x'_0|< \delta$.
-
-Если $0 > \psi(x'_1) > H_1$, то функция $\psi(x')$
-непрерывна в некоторой окрестности $|x'-x'_1|<\delta_1$ точки
-$x'_1$ и $\chi(x') = 0$ при $x_n < \psi(x')$, $|x'-x'_1 |
-< \delta_1$.
-\end{thm}
-
-Доказательство первого утверждения проводится аналогично ([11], гл.\,5).
-При изучении
-непрерывности $\psi (x')$ в $\Omega^- = D^-$ задача в $D^-$ с помощью
-преобразования координат $ x_i = x_i (1 - \rho)$ сводится к задаче, подобной
-первой.
-
-Следствием теоремы 2 является равенство
-$\chi(x) = I_{\{z > 0\}}$ почти всюду в $\Omega$,
-где $I_{\{z > 0\}}$ --- характеристическая функция области фильтрации
-$\Omega_1$. Отсюда, в частности, вытекает, что решение задачи (5)
-совпадает с решением задачи (4).
-
-Пусть $z_1$, $z_2$ --- два решения задачи (4).
-Обозначим соответствующие им
-свободные границы через $S_0^i = \{ x_n = \phi_i (x')\}$,
-$S_1^i = \{ x_n = \psi_i(x')\}$, $i = 1,2$. Положим
-$\Omega_1^i = \{ x \in \Omega\mid z_i(x) > 0 \}$, $z_0(x) = \min (z_1(x),
-z_2(x))$, $\phi_0(x') = \min ( \phi_1(x'), \phi_2(x'))$, $\psi_0(x')
-= \max( \psi_1(x'), \psi_2(x'))$, $\Omega_1^0=\Omega_1^1\cap\Omega_1^2$.
-Используя свойство непрерывности функций $\phi_i(x')$, $\psi_i(x')$,
-устанавливаем следующий результат.
-
-\begin{lem}
-Справедливо равенство $(i = 1,2)$
-\begin{equation}\label{8}
-\int_{\Omega}(k \nabla ( z_i - z_0) \nabla \eta + g ( H(z_i) - H(z_0))
-\eta_{x_n}) dx = 0 \quad \forall \eta \in H^1( \Omega ).
-\end{equation}
-\end{lem}
-
-Решение $z$ задачи (4) называется $\gamma_2$-связным,
-если связно множество $\{ x \in \Omega \mid z(x) > 0 \} \cup \gamma_2$.
-
-\begin{lem}
-Задача $(4)$ имеет единственное $\gamma_2$-связное решение.
-\end{lem}
-
-При доказательстве используем равенство (8) и, действуя по аналогии с
-[11], доказываем вначале единственность сужения $z$ на $\Omega^+$. Далее
-преобразуем задачу в $\Omega^-$, как в теореме 2, и используем те же приемы,
-что и для задачи в $\Omega^+$, учитывая при этом установленную единственность
-$z(x',0)$ на $\gamma_0$.
-
-\begin{lem}
-Пусть $z$ --- решение задачи $(4)$ и $G$ --- связная
-компонента множества $\Omega_1$, для которой $\ov G \cap
-\gamma_2 = \emptyset$. Тогда $z = (c_1 - g/k x_n)^+ $ в $G$ с
-постоянной $c_1 = \sup \{ x_n | x\in G \}$.
-\end{lem}
-
-Таким образом, если допустить существование таких компонент, т.\,е.
-существование $c_1 \ne 0$, то $z(x) > 0$ в точках $x \in
-\partial G$ с $0 < x_n < c_1$. С другой стороны, в силу непрерывности
-$z(x)$ в $\Omega \ni G$, должно быть $z = 0 $ на $\partial G$. Итак,
-любое решение $z$ задачи (4) должно быть $\gamma_2$-связным. Отсюда
-и из леммы 6 вытекает
-
-\begin{thm}
-Задача $(4)$ имеет единственное решение.
-\end{thm}
-
-\section{Сеточная схема: существование решения и методы численной
-реализации}
-
-Разобьем $\ov{D}$ плоскостями, параллельными
-координатным, на совокупность $\tau_{h}$ параллелепипедов.
-Считаем, что
-плоскость $x_{n}=0$ --- одна из таких плоскостей, а индекс
-$h$ соответствует максимальному из диаметров $\delta \in \tau_{h}$.
-Пусть $Q_{1}$ --- пространство полиномов вида
-$\sum\limits_{\alpha_{i}=0}^{1} a_{\alpha} x_{1}^{\alpha_1}\dotsc
-x_{n}^{\alpha_n}$
-и $V_{h}=\{ u_{h} \in C(\ov D) \mid u_{h} \in Q_{1}$
-на каждом $\delta \in \tau_{h}\}$. Будем
-обозначать через $\Omega_{3h}$ ($\Omega_{4h}$) совокупность
-$\delta \in \tau_{h}$, входящих в $\Omega_{3}$ ($\Omega_{4}$).
-Определим далее следующие аппроксимации подмножеств
-$K_{0}$, $K_{1}$, $M$:
-\begin{gather*}
-K_{0h}=\{u_{h} \in V_{h} \mid u_{h}(x) \geq 0 \text{ в } D \setminus
-\ov{\Omega}_{4h};\ \; u_{h}(x)=0\text{ в } \ov{\Omega}_{4h}\}; \\
-%
-K_{1h}=\{u_{h} \in V_{h} \mid u_{h}(x) = H_{0} - x_{n} \text{ в }
-\ov{\Omega}_{3h};\ \; u_{h}(x)=0 \text{ на } \Gamma_{2}\};\ \;
-K_{h}=K_{0h}\cap K_{1h}, \\
-%
-M_{h}=\{u_{h} \in V_{h} \mid u_{h}(x)\geq 0\text{ в }
-\ov{\Omega}_{4h};\ \; u_{h}(x)=0\text{ в }
-\ov{\Omega}_{3h}\cup\Gamma_{2}\}.
-\end{gather*}
-
-На каждом $\delta \in \tau_{h}$, $\ov{\delta}=\prod\limits_{i=1}^{n}
-[a_{i},b_{i}]$, зададим квадратуры. С этой целью множество вершин
-$\ov{\delta}$ разобьем на две группы: $\omega_{+}(\delta)$ --- вершины
-в плоскости $x_{n}=b_{n}$ и $\omega_{-}(\delta)$ --- вершины
-в плоскости $x_{n}=a_{n}$ и определим
-\begin{gather*}
-S_{\delta}^{+}(v) = 2^{-(n-1)} \mes \delta \sum_{x \in \omega_{+}(\delta)}
-v(x); \quad
-S_{\delta}^{-}(v) = 2^{-(n-1)} \mes \delta \sum_{x \in
-\omega_{-}(\delta)} v(x); \\
-%
-S_{\delta}(v)=2^{-1} (S_{\delta}^{+}(v) + S_{\delta}^{-}(v))
-\end{gather*}
-для любой $v \in C(\ov{\delta})$.
-Через $S^{+}$, $S^{-}$ и $S$ обозначим соответствующие составные
-квадратуры на всей области $\ov{D}$. Функцию $g(x)$
-доопределим нулем при
-$x_{n}=0$, кроме того, положим $k_{0}(x) = (\mes \delta)^{-1}
-\int\limits_{\delta} k(x) dx$.
-Решением сеточной схемы для задачи (5) назовем пару функций
-$(z_{h},\chi_{h})\in K_{h} \times V_{h}$ таких, что
-\begin{gather}
-S(k_0 \nabla z_{h} \nabla \eta_{h})
-+ S^{+}\bigg(g^{+} \chi_{h}\frac{\partial\eta_{h}}
-{\partial x_{n}}\bigg) - S^{-}\bigg(g^{-} \chi_{h}
-\frac{\partial \eta_{h}}{\partial x_{n}}\bigg) \leq 0\quad
-\forall \eta_{h} \in M_h,\notag \\
-%
-\label{9}
-\chi_{h}(x) \in H(z_{h}(x)) \quad \forall x \in \ov{D},
-\end{gather}
-где $g^{+}=0.5(|g|+g)$,
-$g^{-} = 0.5(|g|-g)$.
-В дальнейшем будем использовать также ``поточечную'' запись
-сеточной схемы (9). Для ее определения введем вначале сеточные множества
-\begin{gather*}
-\ov{\omega} \text{ --- множество вершин элементов } \delta\in \tau_{h};\\
-%
-\partial \omega = \Gamma \cap \ov{\omega}; \quad
-\partial_2 \omega = \ov{\Gamma_2} \cap \ov{\omega}; \quad
-\partial_1 \omega =\partial \omega \setminus \partial_2 \omega; \\
-%
-\partial_0 \omega = \ov{\omega} \cap \{x_{n}=0\}; \quad
-\omega_0 = \ov{\omega} \setminus \partial_0 \omega; \quad
-\omega_{k} = \ov{\Omega}_{kh} \cap \ov{\omega},\ \; k=3,4.
-\end{gather*}
-
-Для сеточной функции $v_{h} \in V_{h}$ обозначим через $v$
-вектор ее узловых параметров, т.\,е. вектор значений $v_{h}$ в узлах
-$\ov{\omega}$. Будем писать $v \Leftrightarrow v_{h}$.
-Через $K$ ($K_{0}$, $K_{1}$) обозначим выпуклое замкнутое множество
-векторов $v$ таких, что
-$v \Leftrightarrow v_{h}$, $v_{h} \in K_{h}$
-($v_h \in K_{0h}$, $v_{h} \in K_{1h}$).
-Используем для векторов узловых параметров и их подмножеств те же
-обозначения, что и в пп.\,1, 2 для функций непрерывного аргумента и их
-подмножеств в соболевских пространствах. Это не должно привести к
-недоразумению, поскольку в данном пункте речь идет лишь о конечномерных
-векторах и сеточных функциях.
-
-Сеточная схема (9) эквивалентна следующей системе соотношений :
-\begin{gather}
-(Az+B\chi)_i=0 \quad \forall i \in (\ov{\omega} \setminus
-\omega_4) \cup \partial \omega,\notag \\
-%
-\label{10}
-(Az+B\chi)_i \leq 0
-\quad \forall i \in \omega_4 \setminus \partial \omega; \quad z \in K;
-\chi_i \in H(z_i) \quad \forall i \in \omega_0,
-\end{gather}
-где $A$ есть $M$-матрица,
-$B=(b_{ij})$; $b_{ii} > 0$ для $i \in \omega_0$; $b_{ii} =0$ для
-$i \in \partial_0 \omega$, $b_{ij} \leq 0$ для $i \neq j$.
-
-Введем множества
-$K_2 = \{v_{i} \leq 0 \ \forall i \in \omega_4\}$ и $F=K_1\cap K_2$.
-Пусть $C_1=\partial I_{F}$ --- субдифференциал индикаторной функции
-$I_{F}$ множества $F$. Тогда $C_1$ --- диагональный максимально монотонный
-оператор [17].
-
-Рассмотрим вспомогательную задачу
-\begin{equation}\label{11}
-Az + B\chi + C_{1}z \ni 0; \quad \chi_{i} \in H(z_{i})
-\quad \forall i \in \omega_0.
-\end{equation}
-
-Связь между задачами (10) и (11) устанавливает
-
-\begin{lem}
-Если $(z,\chi)$ --- решение задачи $(11)$, для которого $z\gg0$
-$($т.\,е. $z_{i} \geq 0$ $\forall i)$, то $(z,\chi)$ --- решение задачи
-$(10)$.
-\end{lem}
-
-Пусть $A=A_0 -A_1$, $B=B_0 - B_1$, где $A_{i}\gg0$,
-$B_{i}\gg0$ и $A_0$,
-$B_0$ --- диагональные подматрицы матриц $A$, $B$. Из [18] следуют
-однозначная разрешимость уравнения
-
-\begin{equation}\label{12}
-A_0 z + B_0 H(z) + C_1 z \ni A_1 \wt z +B_1 \wt \chi
-\end{equation}
-для любых $\wt z$, $\wt \chi$ и неравенство
-\begin{equation}\label{13}
-z_1-z_2 \ll A_0^{-1} [ A_1 (\wt z_1 -\wt z_2)
-+B_1 (\wt \chi_1 - \wt \chi_2) ]^+
-\end{equation}
-для решений $z_{i}$ уравнения (12) , соответствующих $(\wt z_{i},
-\wt \chi_{i})$.
-
-По решению $z$ уравнения (12) построим вектор $\chi=\chi(z)$,
-для которого
-\begin{equation}\label{14}
-\chi_{i}=
-\begin{cases}
-1 & \text{при } i\in (\omega_3 \setminus \partial_2 \omega) \cup
-\partial _0 \omega; \\
-\text{Pr}_{[0,1]} [ B_0^{-1} (A_1 \wt z + B_1
-\wt \chi - A_0 z)]_{i} & \text{при остальных } i ,
-\end{cases}
-\end{equation}
-где $\text{Pr}_{[0,1]} x $ --- проекция числа $x$ на отрезок $[0,1]$.
-
-Определим оператор $G$, который ставит в соответствие паре векторов
-$(\wt z,\wt \chi)$ пару $(z,\chi)$, где $z$ --- решение уравнения (12),
-а $\chi$ задано по формулам (14). Из (13), (14) следует
-
-\begin{lem}
-Оператор $G$ непрерывный и монотонный, т.\,е.
-$$
-(z_1,\chi_1)\ll (z_2,\chi_2) \Rightarrow G(z_1,\chi_1)
-\ll G(z_2,\chi_2).
-$$
-Кроме того, $G(0,0)\gg0$.
-\end{lem}
-
-\begin{lem}
-Пусть $\wt \chi_h^0 \equiv 1$, $\wt z_h^0 =
-\{ \wt H_0 - x_n$ при $x_n \geq 0$, $\wt H_0 + (\rho -1 )x_n$
-при $x_n <0 \}$ с $\wt H_0 \geq H_0$
-таким, что
-$\wt z_h^0(x) \geq 0$.
-Тогда вектор
-$(\wt z^0, \wt \chi^0) \Leftrightarrow (\wt z^0_h,
-\wt \chi^0_h)$ удовлетворяет неравенству
-$G(\wt z^0, \wt \chi^0) \ll (\wt z^0, \wt \chi^0)$.
-\end{lem}
-
-Используя леммы 8, 9 и результат о существовании неподвижных
-точек у монотонного оператора из [21], получаем следующее утверждение.
-
-\begin{thm}
-Существует по крайней мере одна неподвижная точка оператора
-$G$ на конусе неотрицательных векторов $(z,\chi)$.
-Эта точка является решением сеточной задачи $(10)$. Итерации
-\begin{equation}\label{15}
-(z^{k+1},\chi^{k+1})=G(z^k,\chi^k),\quad k=0,1,\dotsc,
-\end{equation}
-сходятся к неподвижной точке $G$, если $(z^0,\chi^0)=(\wt
-z_0,\wt \chi_0)$
-или $(z^0,\chi^0)=(\wt z^0,\wt \chi^0)$.
-\end{thm}
-
-Используя определение оператора $G$, запишем итерационный процесс (15)
-в виде
-\begin{equation}\label{16}
-A_{0}z^{k+1}+B_{0}H(z^{k+1})+C_{1}z^{k+1} \ni A_{1}z^k+B_{1}\chi^k,\quad
-\chi^{k+1}=\chi(z^{k+1}),
-\end{equation}
-что соответствует методу
-Якоби для уравнения, содержащего максимально
-монотонный оператор. Следуя [18], можно доказать сходимость и других
-вариантов релаксационных методов. Именно, справедлива
-
-\begin{lem}
-Пусть $A=A_0-A_1$, где $A_0$ --- $M$-матрица и $A_1\gg0$.
-Тогда итерационный метод $(16)$ сходится, начиная с
-$(z^0,\chi^0)=(\wt z_0,\wt \chi^0)$ или
-$(z^0,\chi^0)=(\wt z^0,\wt \chi^0)$.
-В частности, можно взять в качестве $A_0$ треугольную
-подматрицу $A$ $($метод Гаусса--Зейделя$)$ или блочно-треугольную подматрицу
-$A$ $($блочный метод Гаусса--Зейделя$)$.
-\end{lem}
-
-\section{Сходимость сеточной схемы}
-
-\begin{lem}
-Пусть $(z_h,\chi_h)$ --- решение сеточной схемы $(9)$, тогда
-\begin{equation}\label{17}
-\| z_h \|_1 \leq c.
-\end{equation}
-\end{lem}
-
-Через $\|\cdot\|_k$ здесь и далее обозначается норма
-пространства $ H^k(D) $, а через $c$ --- постоянная, не зависящая от
-$h$.
-
-\begin{pf}
-Пусть $\theta(x) \in H^1 (D) \cap C(\ov D)$
-такова, что $\theta = H_0 - x_n$ в $\Omega_3$, $\theta = 0$ в
-$\Omega_4 \cup \Gamma_2$. Поскольку $\ov {\Omega_3} \cap
-\ov {\Omega_4} = \emptyset$, а граница области $\Omega_3$ кусочно-гладкая,
-то такая функция существует. Пусть теперь $\theta_h$ ---
-ее $V_h$-интерполянт. Тогда
-\begin{equation}\label{18}
-\| \theta_h \|_1 \leq c, \quad \| \theta \|_1 \leq c.
-\end{equation}
-
-По построению имеем $\Omega_{3h} \subset \Omega_3$ и $\Omega_{4h} \subset
-\Omega_4$, поэтому $\theta_h = H_0 - x_n$ в $\Omega_{3h}$,
-$\theta_h = 0$ в $\Omega_{4h}$. Отсюда, в частности, следует, что для
-$z_h \in K_h$ функция $\eta_h = z_h -\theta_h$ входит в $M_h$. Выбирая в (9)
-такую функцию $\eta_h$, получим
-\begin{multline}\label{19}
-S(k_0 |\nabla z_h|^2) \leq S^{1/2}(k_0 |\nabla z_h|^2)
-S^{1/2}(k_0 |\nabla \theta_h|^2) + 
-c S^+(|\partial (z_h - \theta_h)/\partial x_n|) + \\
-%
-+ c S^-(|\partial (z_h - \theta_h)/\partial x_n|)
-\leq S^{1/2}(k_0 |\nabla z_h|^2) S^{1/2}(k_0 |\nabla \theta_h|^2)
-+ c S^{1/2}(|\nabla z_h|^2) + c S^{1/2}(|\nabla \theta_h|^2).
-\end{multline}
-
-При доказательстве (19) использованы положительность коэффициентов
-квадратур и неравенства типа $ S^{+}(z_h) \leq 2 S(z_h)$
-$\forall z_h \geq 0$.
-Используя в очередной раз положительность коэффициентов квадратуры
-$S$ и ее точность на полиномах $Q_1(\ov \delta)$, приходим к
-неравенствам
-\begin{gather}\label{20}
-S(k_0 |\nabla z_h|^2) \geq c \int_D k_0 |\nabla z_h|^2 dx \geq \alpha
-\int_D |\nabla z_h|^2 dx, \alpha > 0,\\
-%
-\label{21}
-S (|\nabla z_h|^2) \leq \beta \int_D |\nabla z_h|^2 dx\quad \forall
-z_h \in V_h.
-\end{gather}
-В силу (20), (21), (18) из (19) следует оценка
-$$
-\int_D |\nabla z_h|^2 dx \leq c_1 \bigg(\int_D |\nabla z_h|^2
-dx\bigg)^{1/2}+ c_2
-$$
-и тем самым $\| z_h \|_{1,2,D} \leq c$.
-\end{pf}
-
-Из (17) и неравенств $0 \leq \chi_h(x) \leq 1, x \in D$, следует
-существование такой подпоследовательности $\{(z_{h_k}, \chi_{h_k})\} =
-\{(z_k, \chi_k)\}$, что
-\begin{equation}\label{22}
-\begin{split}
-z_k &\longrightarrow z\; \text{ слабо в }
-W_2^1(D) \text { и сильно в } L_2(D), \\
-%
-\chi_k &\longrightarrow \chi\; \text{ $^*$-слабо в } L_{\infty}(D) \text
-{ и сильно в } L_2(D).
-\end{split}
-\end{equation}
-
-\begin{lem}
-Если $(z, \chi)$ --- предельные функции в $(22)$, то
-$z\in K$, $\chi(x) \in H(z(x))$ при почти всех $x \in D$.
-\end{lem}
-
-\begin{pf}
-Из условия $z_k(x) \geq 0$ в $D$ и (22) легко следует,
-что $z(x) \geq 0$ в $D$. Далее,
-$\mes(\Omega_3 \setminus \Omega_{3h}) \longrightarrow 0$ при $h_k
-\longrightarrow 0$, поэтому
-$$
-\int_{\Omega_3}|z - (H_0 -x_n)| dx = \int_{\Omega_3 \setminus
-\Omega_{3h_k}}|z - (H_0 -x_n)| dx +
-\int_{\Omega_{3h_k}}|z - z_k| dx \longrightarrow 0,
-\quad h_k \longrightarrow 0.
-$$
-Отсюда следует, что $z = H_0 - x_n$ почти всюду в $\Omega_3$.
-Аналогично устанавливается равенство $z = 0$ в $\Omega_4$. Итак,
-$z\in K$.
-
-Пусть теперь $\phi(u) = \int\limits_D u^+(x) dx$ --- функционал на
-$L_2(D)$. Известно [20], что $\chi \in L_2(D)$ принадлежит $\partial
-\phi(u)$ тогда и только тогда, когда $\chi(x) \in \partial u^+(x)
-\equiv H(u(x))$ при почти всех $x \in D$. Поскольку $\chi_k(x)
-\in H(z_k(x))$ $\forall x \in D$, то $\chi_k \in \partial \phi (z_k)$.
-Из (22) и сильно-слабой замкнутости максимально монотонного оператора
-$ \partial \phi: L_2(D) \longrightarrow L_2(D)$ ([20])
-вытекает, что $\chi \in \partial \phi(u)$, т.\,е. $\chi(x) \in H(z(x))$
-при почти всех $x \in D$.
-\end{pf}
-
-\begin{thm}
-Пусть $(z_h,\chi_h)$ --- решение сеточной схемы $(19)$,
-$(z,\chi)$ --- единственное решение задачи $(14)$. Тогда при
-$h\to 0$ имеем $z_h \to z$ слабо в $H^1(D)$,
-$\chi_h \to \chi$\, $^*$-слабо в $L_{\infty}(D)$.
-\end{thm}
-
-\begin{pf}
-В силу лемм 11, 12 остается установить, что пара
-$(z,\chi)$ из ( 22) удовлетворяет неравенству (5).
-
-Для произвольного $\delta \in \tau_h$ и произвольной функции
-$v(x) \in C(\ov \delta)$ обозначим через $\pi_i v(x)$ функцию, постоянную
-на $\ov \delta$ и равную $v(a_i)$, где ${a_i}$, $i=1,\dotsc,4$, ---
-совокупность вершин $\delta$. Положим далее
-\begin{gather*}
-\pi v(x) = \frac14 \sum_{i=1}^{4} \pi_i v(x);\quad
-\pi^+ v(x) = \frac14 \sideset{}{'}\sum \pi_i v(x),\\
-%
-\pi^- v(x) = \frac14 \sideset{}{''}\sum \pi_i v(x);\quad x \in \delta,
-\end{gather*}
-где в $\sum{}'$ суммирование распространяется на вершины, принадлежащие
-верхней по $x_n$ грани $\ov \delta$, в $\sum{}''$ --- на вершины нижней
-по $x_n$ грани $\ov \delta$. При таких обозначениях, как нетрудно видеть,
-\begin{align*}
-S(k_0 \nabla z_h \nabla v_h) &=
-\int_{D} k_0 \pi (\nabla z_h)\pi(\nabla v_h) dx,\\
-%
-S^\pm\bigg(g^\pm\gamma_h \frac {\partial v_h}{\partial x_n}\bigg) &=
-\int_{D} g^\pm
-\pi^\pm(\gamma_h)\pi^\pm\bigg(\frac {\partial v_h}{\partial x_n}\bigg) dx.
-\end{align*}
-% $$
-% S^-(g^-\gamma_h \frac {\partial v_h}{\partial x_n}) = \int_{D} g^-
-% \pi^-(\gamma_h)\pi^-(\frac {\partial v_h}{\partial x_n}) dx.
-% $$
-Для любой $\eta \in M$ построим такую последовательность
-$\eta_h \in M_h$, что
-\begin{gather*}
-\|\eta_h - \eta\|_1 \longrightarrow 0;\quad
-\bigg\|\pi\bigg(\frac {\partial \eta_h}{\partial x_i} -
-\frac {\partial \eta}{\partial x_i}\bigg)\bigg\|_0 \longrightarrow 0,
-\quad i = 1,\dotsc,n; \\
-%
-\bigg\|\pi^{\pm}\bigg(\frac {\partial \eta_h}{\partial x_n} -
-\frac {\partial \eta}{\partial x_n}\bigg)\bigg\|_0 \longrightarrow 0
-\end{gather*}
-% $$
-% \|\pi^{-}(\frac {\partial \eta_h}{\partial x_n} -
-% \frac {\partial \eta_h}{\partial x_n}\|_0 \longrightarrow 0;
-% $$
-при $h \to 0$. Далее, из леммы 11 легко вывести ограниченность
-$\pi(\nabla z_h)$ в $(L_2(D))^2$. Таким образом, можно считать, что наряду
-с (22) справедливы предельные соотношения
-\begin{equation}
-\begin{split}
-\pi(\nabla z_k) &\longrightarrow \ov q\; \text{ слабо в }(H^1(D))^2;\\
-%
-\pi^{\pm}(\chi_k)&\longrightarrow \ov l^{\pm}\; \text{ $^*$-слабо в }
-L_{\infty}(D).
-\end{split}
-\end{equation}
-% $$
-% \pi^{-}(\chi_k)\longrightarrow \ov l^{-} \quad ^* \text{- слабо в }
-% L_{\infty}(D);
-% $$
-Кроме того, $\|z_h - \pi z_h\|_0 \leq ch$, $\|z_h\|_1 \to 0$
-при $h \to 0$, поэтому
-\begin{equation}
-\pi z_h \to z \text{ сильно в } L_2(D).
-\end{equation}
-Докажем, что $\ov q = \nabla z$. С этой целью воспользуемся равенством
-\begin{equation}
-\int_{D} \pi\bigg(\frac {\partial z_k}{\partial x_i}\bigg) \phi\,dx =
-- \int_{D} \pi z_k \frac {\partial \phi}{\partial x_i}dx,
-\end{equation}
-справедливым $\forall \phi \in C_0^{\infty}(D)$, $i =1,\dotsc,n$.
-Переходя в (25) к пределу при $h_k \to 0 $ и пользуясь
-предельными соотношениями (23), (24), получим
-$$
-\int_{D} q_i \phi\, dx = - \int_{D} z \frac {\partial
-\phi}{\partial x_i}dx \quad \forall \phi \in C_0^{\infty}(D),
-$$
-откуда $q_i=\frac{\partial z}{\partial x_i}$, $i=\ov{1,n}$. Итак, установлено,
-что $\pi (\nabla z_k) \to \nabla z$ слабо в $ L_2(D)$ и $\pi z_k
-\to z$ сильно в $L_2(D)$. Используя эти предельные
-соотношения и равенства (22), из (9) при $h_k \to 0$ получим
-$$
-\int_{D} k \nabla z \nabla \eta\, dx + \int_{D} gl \frac {\partial
-\eta}{\partial x_n} dx \leq 0 \quad \forall \eta \in M,
-$$
-где $l=\{l^{+} \text{ в } D^{+};\ l^{-} \text{ в } D^{-} \}$ удовлетворяет
-неравенствам $0 \leq l(x) \leq 1$ почти всюду в $D$. Кроме того, подобно
-доказательству леммы 12 из соотношений $ \pi^+\chi_h(x) \in
-H(\pi^+ z_h(x))$, $\pi \chi_h(x) \in H(\pi z_h(x))$ легко вывести, что
-$l(x) \in H(z(x))$ для почти всех $x \in D$.
-
-Итак, пара $(z,l)$ является решением задачи (5). Но это решение
-единственно, причем из включения $ l(x) \in H(z(x))$ следует,
-что $l(x) = I_{\{z>0\}}(x)$ почти всюду в $\Omega$, где $I_{\{z>0\}}$
---- характеристическая функция множества $\{ x \in \Omega \mid z(x) >0 \}$.
-Отсюда следует, что предельная функция $\chi(x)$ из соотношений (22)
-почти всюду совпадает с $l(x)$, так что пара $(z,\chi)$ есть решение
-(5). В силу единственности $(z,\chi)$ и вся последовательность
-$\{(z_h,\chi_h)\}$ сходится к $(z,\chi)$.
-\end{pf}
-
-\begin{thebibliography}{99}
-
-\bibitem{1}
-Baiocchi C. {\em Su un problema a frontiera libera conesso a
-questioni di idraulica} // Ann. mat. pura ed appl. --
-1972. -- V.\,92. -- P.\,107--127.
-\bibitem{2}
-Baiocchi C., Comincioli V., Magenes E., Pozzi G.A. {\em Free boundary
-problems in the theory of fluid flow through porous media$:$ existence
-and uniqueness theorems} // Ann. mat. pura ed appl. --
-1973. -- V.\,97. -- \No\,4. -- P.\,1--82.
-\bibitem{3}
-Baiocchi C., Comincioli V., Guerry L., Volpi G. {\em Free boundary
-problems in the theory of fluid flow through porous media$:$ a numerical
-approach} // Calcolo. -- 1973. -- V.10. -- \No\,1. -- P.\,1--86.
-\bibitem{4}
-Bruch J.C. {\em A survey of free boundary value problems in the theory
-of fluid flow through porous media$:$ variational inequality
-approach}. Part 1 // Adv. Water Resourc. -- 1980. --
-V.\,3. -- P.\,65-80.
-\bibitem{5}
-Bruch J.C. {\em A survey of free boundary value problems in the theory
-of fluid flow through porous media$:$ variational inequality
-approach}. Part 2 // Adv. Water Resourc. -- 1980. --
-V.\,3. -- P.\,115--124.
-\bibitem{6}
-Bruch J.C. {\em Three-dimensional free and moving boundary seepage
-problems solved using an integral transformation in a fixed domain
-method} // Proc. of Conf. Solving Ground Water Problems with Models,
-Feb. 10--12, 1987, Denver, Colo. -- V.\,1. -- P.\,575--588.
-\bibitem{7}
-Alt H.W. {\em Str\"omungen durch in homogene por\"ose Medien mit
-freiem Rand} // J. reine und angew. Math. -- 1979. -- Bd.\,305. --
-S.\,89--115.
-\bibitem{8}
-Brezis H., Kinderlehrer D., Stampacchia G. {\em Sur une nouvelle
-formulation du probl\`eme de l'\'ecoulement \`a traverse une digue}
-// Compt. Rend. Acad. Sci. Paris, 1978. -- V.\,287. -- P.\,711--714.
-\bibitem{9}
-Carillo-Menendes J., Chipot M. {\em Sur l'unicit\'e de la solution
-du probl\`eme de l'\'ecoulement \`a travers une digue} // Compt. Rend.
-Acad. Sci. Paris, 1981. -- V.\,292. -- P.\,191--194.
-\bibitem{10}
-Alt H.W., Gilardi G. {\em The behavior of the free boundary for the
-dam problem} // Ann. Scuola Norm. Sup. Pisa Cl. Sci. -- 1981.
--- V.\,9. -- P.\,571--626.
-\bibitem{11}
-Фридман А. {\em Вариационные принципы и задачи со свободными границами}.
--- М.: Наука, 1990. -- 536 c.
-\bibitem{12}
-Friedman A., Huang Sh., Young J. {\em Bang-bang optimal control
-for the dam problem} // Appl. Math. Optim. -- 1987. --
-V.\,15. -- \No\,1. -- P.\,65--85.
-\bibitem{13}
-Alt H.W., Cafarelli L.A., Friedman A. {\em The dam problem with two
-fluids} // Commun. Pure Appl. Math. --
-1984. -- V.\,37. -- \No\,5. -- P.\,601--645.
-\bibitem{14}
-Alt H.W. {\em Numerical solution of steady-state porous flow free
-boundary problems} // Numer. Math. -- 1980. -- V.36. -- \No\,1. --
-P.\,73--98.
-\bibitem{15}
-Pietra P. {\em An up-wind finite element method for a filtration problem}
-// RAIRO, Anal. Numer. -- 1982. -- V.\,16. -- \No\,4. -- P.\,463--481.
-\bibitem{16}
-Marini L.D., Pietra P. {\em Fixed-point algorithms for stationary
-flow in porous media} // Comput. Math. Appl. Mech. Engr. -- 1986. --
-V.\,56. -- P.\,17--45.
-\bibitem{17}
-Bolrath C. {\em Two multi-level algorithms for the dam problem} //
-Preprint \No\,45. Math. Institut Ruhr. -- Bochum, 1985.
-\bibitem{18}
-Лапин А.В. {\em Методы релаксации для некоторых классов
-вариационных неравенств в $R^n$} // Числен. анализ и
-матем. моделирование. -- М., 1989. -- С.\,127--143.
-\bibitem{19}
-Ландис Е.М. {\em Уравнения второго порядка эллиптического и
-параболического типов}. -- М.: Наука, 1971. -- 287 c.
-\bibitem{20}
-Barbu V. {\em Nonlinear semigroups and differential equations in
-Banach spaces} // Intern. Publ. -- 1976.
-\bibitem{21}
-Красносельский М.А., Вайникко Г.М., Забрейко П.П. и др.
-{\em Приближенное решение операторных
-уравнений}. -- М: Наука, 1969. -- 455 c.
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Казанский государственный}{\it Поступила}
-\post{\it университет}{23.10.1997}
-
-\label{end}
-\end{document}

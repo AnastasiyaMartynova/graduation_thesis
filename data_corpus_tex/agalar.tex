@@ -1,999 +1,0 @@
-\def\stat{agalarov}
-
-\def\tit{ОБ УНИМОДАЛЬНОСТИ ФУНКЦИИ ДОХОДА СИСТЕМЫ МАССОВОГО ОБСЛУЖИВАНИЯ 
-ТИПА $G|M|s$\\ С~УПРАВЛЯЕМОЙ ОЧЕРЕДЬЮ}
-
-\def\titkol{Об унимодальности функции дохода 
-системы массового обслуживания типа $G|M|s$ с~управляемой очередью}
-
-\def\aut{Я.\,М.~Агаларов$^1$, В.\,Г.~Ушаков$^2$}
-
-\def\autkol{Я.\,М.~Агаларов, В.\,Г.~Ушаков}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Агаларов Я.\,М.}
-\index{Ушаков В.\,Г.}
-\index{Agalarov Ya.\,M.}
-\index{Ushakov V.\,G.}
-
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-%{Работа выполнена при частичной поддержке РФФИ (проект 16-07-00677).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проб\-лем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{agglar@yandex.ru}}
-\footnotetext[2]{Факультет вычислительной
-математики и~кибернетики Московского государственного университета
-имени М.\,В.~Ломоносова; Институт проб\-лем информатики Федерального
-исследовательского центра <<Информатика и~управ\-ле\-ние>> Российской
-академии наук, \mbox{vgushakov@mail.ru}}
-
-\vspace*{3pt}
-
- 
-\Abst{Рассматривается задача максимизации среднего
-дохода в~системе массового обслуживания (СМО) типа $G|M|s$ в~единицу
-времени на множестве чистых стационарных пороговых стратегий 
-с~одной  точкой переключения режима  ограничения доступа. Функция
-дохода зависит от следующих параметров, измеряемых в~стоимостных
-единицах: плата, получаемая за обслуживание заявок; затраты на
-техническое обслуживание прибора; вычет из дохода за задержку
-заявок в~очереди; штраф за необслуженные заявки. Доказано, что
-функция дохода является унимодальной на множестве рассматриваемых
-пороговых стратегий. Предложен алгоритм расчета оптимального
-порогового значения и~соответствующего значения максимального
-дохода. Приведены результаты вычислительного эксперимента,
-иллюстрирующего работу предложенного алгоритма.}
-
-\KW{многоканальная система массового
-обслуживания; пороговая стратегия; максимизация дохода}
-
-\DOI{10.14357/19922264190108}
-  
-%\vspace*{4pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-
-\vspace*{-3pt}
-
-
-
-Для повышения эффективности работы современных вычислительных
-сетей используют алгоритмы управления потоками (ограничения
-на\-грузки), из которых наиболее часто применяются различные
-модификации порогового управления (пороговых стратегий)~[1].
-Исследованием и~разработкой пороговых стратегий управления
-потоками занимались практически с~начала зарождения вычислительных
-сетей с~целью защиты связных и~вычислительных ресурсов от
-перегрузок. Одним из основных методов исследования эф\-фек\-тив\-ности
-пороговых стратегий  является математическое моделирование 
-с~использованием аппарата теории очередей,
-которая изучает СМО различного
-типа. Большинство работ, в~которых рассмотрены СМО с~пороговой
-стратегией управления потоками, посвящено расчету характеристик
-системы (средней длины очереди, среднего времени пребывания,
-вероятности отклонения заявки, загруженности приборов и~т.\,п.) при
-заданной пороговой стратегии. 
-
-В~ряде работ, посвященных данной
-тематике, ставится задача оптимизации пороговой стратегии в~смысле
-максимизации дохода системы, пред\-став\-лен\-но\-го в~виде стоимостного
-функционала (см., например,~[2--7]). Хотя практический интерес 
-к~такой постановке задачи в~смысле повышения эффективности сис\-тем,
-как  пред\-став\-ля\-ет\-ся, не ниже, чем к~задачам расчета
-характеристик систем при фиксированной пороговой стратегии, вопрос
-существования эффективных методов и~алгоритмов поиска оптимальных
-пороговых стратегий для СМО остается открытым, за исключением
-простых СМО ($M|M|1$,  $M|M|n$) и~простых целевых функций
-(допустимая средняя задержка заявок в~системе, допустимая
-интенсивность потери). Для более сложных СМО (например, $G|M|1,\
-M|G|1$) с~более сложными целевыми функциями результаты
-исследований ограничиваются математическими постановками задач 
-и~эвристическими алгоритмами их решения. 
-
-Из недавно опубликованных 
-в~отечественной литературе работ,  посвященных пороговой стратегии
-управления очередью с~одной  точкой переключения, отметим~\cite{3-aga}, где
-для системы $G|M|n$ сформулирована задача максимизации дохода
-сис\-те\-мы на множестве пороговых стратегий с~одним переключением,
-фиксированными платой за своевременное обслуживание и~штрафом за
-невыполнение этого условия для допущенной в~сис\-те\-му заявки. 
-В~работе предложен эвристический алгоритм поиска оптимальной
-стратегии и~выдвинута гипотеза о~том, что для сис\-тем $G|G|n$
-существует единственное решение указанной задачи в~виде прос\-той
-пороговой стратегии. 
-
-Аналогичная задача рас\-смот\-ре\-на в~работе~\cite{4-aga}
-для сис\-те\-мы $M|D|1$, где также приведена математическая постановка
-задачи и~получена нижняя оценка для оптимального порогового
-значения. 
-
-Постановки задач, наиболее близких к~рас\-смат\-ри\-ва\-емой в~настоящей статье, 
-приведены в~работах~\cite{5-aga, 6-aga, 7-aga}. В~\cite{5-aga}
-решение задачи максимизации\linebreak средне\-го дохода, получаемого сис\-те\-мой
-$M|G|1$ в~единицу времени, ищется на множестве смешанных пороговых
-стратегий при входной нагрузке меньше единицы. В~работе доказано,
-что если решение задачи существует, то оно принадлежит множеству
-чистых стратегий. В~работах~\cite{6-aga, 7-aga} аналогичная задача решена
-для СМО типа $M|G|1$ и~$G|M|1$ соответственно. 
-
-В~данной статье
-рассматривается задача максимизации среднего дохода СМО типа
-$G|M|s$ на множестве чистых пороговых стратегий с~одной точкой
-переключения режима доступа заявок в~сис\-те\-му. Ниже приведены
-результаты исследования, касающегося вопросов существования решения
-задачи и~метода поиска оптимальной стратегии.
-
-
-
-\section{Постановка задачи}
-
-Рассматривается СМО типа $G|M|s$ с~накопителем бесконечной емкости
-и~$s$~приборами обслуживания, в~которую поступает рекуррентный поток
-заявок с~функцией  распределения~$H(t)$. Время обслуживания
-заявки распределено по экспоненциальному закону с~параметром
-$\mu\hm>0$. Поступившая заявка допускается в~накопитель системы
-(занимает любое свободное место в~накопителе), если в~момент ее
-поступления число заявок в~системе меньше~$k$, $k\hm\geqslant s$~---
-некоторое заданное целое число (ниже тривиальный случай $k\hm<s$ не
-рассматривается). Такую процедуру доступа заявок в~систему
-называют в~литературе пороговой стратегией управ\-ле\-ния доступом, 
-и~в~дальнейшем для краткости назовем ее просто стратегией. Обозначим эту стратегию
-соответствующим пороговым значением~$k$. Если заявка допущена 
-в~накопитель, она занимает любое свободное место в~накопителе 
-и~обслуживается на приборе в~порядке поступления. Заявка покидает
-систему только при завершении обслуживания, освободив одновременно
-прибор и~накопитель, а~на освободившийся прибор поступает
-очередная заявка из накопителя (если таковая есть). Система получает
-доход, который формируется из следующих составляющих:
-\begin{description}
-\item $C_0v$~--- плата, получаемая системой, если поступившая заявка
-обслужена  системой (принята в~накопитель), $v\hm\geqslant 0$~--- время занятия заявкой прибора
- обслуживания;\\[-14.5pt]
-\item
-$C_1\geqslant 0$~--- величина штрафа, который платит сис\-те\-ма, если
-поступившая заявка отклонена;\\[-14.5pt]
-\item
-$C_2\geqslant 0$~--- вычет из дохода системы за единицу времени ожидания
-заявки в~системе;\\[-14.5pt]
-\item
-$C_3\geqslant 0$~--- затраты системы в~единицу времени на техническое
-обслуживание системы, $C_3\hm<C_0.$
-\end{description}
-
-Всюду ниже под доходом системы будем понимать суммарный доход 
-с~учетом всех указанных выше со\-став\-ля\-ющих. Отметим, что процесс
-обслуживания заявок в~данной сис\-те\-ме описывается цепью Маркова,
-где переходы цепи определяются моментами поступления заявок 
-и~состояние сис\-те\-мы есть чис\-ло заявок, находящихся в~сис\-те\-ме 
-в~момент поступления (см., например,~\cite{8-aga, 9-aga}).
-
-Введем обозначения:
-\begin{description}
-\item
-$\{\pi_i^k,\ 0\leqslant i\leqslant k\}$~--- стационарное распределение
-вероятностей цепи при стратегии $k$ ($\pi_i^k$ -- стационарная
-вероятность того, что цепь находится в~состоянии $i$);\\[-14.5pt]
-\item
-$\tilde{g}^k$~--- предельное среднее значение дохода системы в~единицу времени;\\[-14.5pt]
-\item
-$g^k$~--- предельное среднее значение суммарного дохода системы,
-усредненного по числу поступивших заявок;\\[-14.5pt]
-\item
-$q_i^k$~--- средний доход, получаемый системой в~состоянии~$i$ при
-стратегии~$k$, $i\hm\geqslant 0$;\\[-14.5pt]
-\item
-$\bar{v}=\int\nolimits_0^{\infty}t\,dH(t)$~--- среднее время между
-соседними моментами поступления заявок.
-\end{description}
-
-Из определения вложенной цепи Маркова следует:
-\begin{equation}
-\tilde{g}^k=\fr{1}{\bar{v}}\,g^k,
-\label{1} 
-\end{equation}
-где
-$$
-g^k=\sum\limits_{i=0}^k\pi_i^kq_i^k\,.
-$$
-
-
-Ставится задача нахождения оптимальной стратегии~$k^0$, такой что
-\begin{equation*}
- \max\limits_{k\geqslant s}g^k=g^{k^0}\,.
-\end{equation*}
-
-\vspace*{-6pt}
-
-\section{Метод решения}
-
-Стационарные вероятности состояний  $\pi_j^k$, $0\hm\leqslant j\hm\leqslant k,$ 
-вычисляются по формулам (см.~\cite{8-aga, 9-aga}):
-
-\noindent
-\begin{multline}
-\label{3}
-\pi_j^k=R_j^k\:\pi_k^k,\ j=0,\ldots,k-1\,,\\ \pi_k^k=
-\left(1+\sum\limits_{i=0}^{k-1}R_i^k\right)^{-1}\,,
-\end{multline}
-где
-\begin{equation*}
-R_k^k=1;\enskip R_{k-1}^k=\fr{1-r_0}{r_0}\,;
-\end{equation*}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
- R_{j-1}^k=\fr{R_j^k(1-r_1)-\sum\limits_{i=j+1}^{k-1}
-R_i^kr_{i+1-j}-r_{k-j}}{r_0},\\
- s\leqslant j\leqslant k-1\,;
-\end{multline*}
-
-\noindent
-\begin{equation*}
-R_{s-2}^k=\fr{R_{s-1}^k(1-r_0)-
-\sum\limits_{i=s}^{k-1}R_i^kb_{i,s-1}-b_{k,s-1}}{a_{s-2,s-1}}\,;
-\end{equation*}
-\begin{equation}
- r_{i}=\int\limits_0^{\infty}\fr{(s\mu t)^i}{i!}\,e^{-\mu ts}\,dH(t)\,;
- \label{q3}
-\end{equation}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
-R_{j-1}^k={}\\
-{}=\fr{R_{j}^k(1-a_{jj})-\sum\limits_{i=j+1}^{s-1}R_i^ka_{ij}-
-\sum\limits_{i=s}^{k-1}
-R_i^kb_{ij}-b_{kj}}{a_{j-1,j}},\\
-1\leqslant j\leqslant s-2\,;
-\end{multline*}
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
-a_{ij}=\int\limits_0^{\infty}\left(
-\begin{array}{c}i+1\\ j\end{array}
-\right)
-\left(1-e^{-\mu t}\right)^{i+1-j}e^{-\mu tj}\,dH(t),\\
- j\leqslant i+1\leqslant s-1\,;
-\end{multline*}
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
-b_{ij}=\int\limits_0^{\infty}\left(
-\begin{array}{c}s\\
-j\end{array}\right)
-e^{-\mu tj}\left(\int\limits_0^t\!
-\fr{(s\mu y)^{i-s}}{(i-s)!}\left( e^{-\mu y}-{}\right.\right.\\
-\left.\left.{}-e^{-\mu t}\right)^{s-j}s\mu
-\,dy\!
-\vphantom{\int\limits_0^t}
-\right)dH(t),\enskip j<s\leqslant i+1\leqslant k\,.
-\end{multline*}
-
-Положим
-\begin{equation*}
-Q_i^k=\sum\limits_{j=0}^i\pi_j^k\,;\quad
-A_{k+1}=\fr{1-Q_{s-1}^{k+1}}{1-Q_{s-2}^k}\,;
-\end{equation*}
-
-\noindent
-\begin{multline}
-F(k)=\fr{1}{1-A_{k+1}}\left(\sum\limits_{i=s}^k\pi_i^{k+1}\left(
-\vphantom{\sum\limits_{i=s}^k}
-\bar{v}-{}\right.\right.\\
-\left.{}-\fr{1}{\mu s}\sum\limits_{m=i+2-s}^{\infty}(m-(i+1-s))r_m
-\right)\pi_{k+1}^{k+1}
-+{}
-\\
-{}+\pi_{k+1}^{k+1}\left. \left(\bar{v}-\fr{1}{\mu s}
-\sum\limits_{m=k+2-s}^{\infty}(m-(k+1-s))r_m \right)\!\right)\,;\\
-G(k)=\left(C_0-C_3\right)\bar{v}-C_2F(k)\,,\enskip k\geqslant s\,.
-\label{5}
-\end{multline}
-
- Справедливы следующие утверждения.
- 
-\smallskip
-
- \noindent
-\textbf{Лемма~1.}\ 
-\textit{Среднее значение дохода, получаемого сис\-те\-мой при стратегии~$k$ 
-в~состоянии~$i,$ равно}
-\begin{equation}
-\left.
-\begin{array}{rl}
-\!q_i^k&=\begin{cases}
-\fr{C_2}{\mu s}\left(
-\vphantom{\sum\limits_{m=i+3-s}^{\infty}}
-\fr{1}{2}\sum\limits_{m=1}^{i+2-s}
-m(m+2s-2i-3)r_m-{}\right.\\[3pt]
-\displaystyle\left.\!{}-\fr{1}{2}(i+1-s)(i+2-s)\!\!\sum\limits_{m=i+3-s}^{\infty}
-\!\!\!\!\!r_m\right)+{}&\\[3pt]
-\displaystyle\hspace*{1mm}{} +\left(C_0-C_3\right)\bar{v},& 
-\hspace*{-33mm}s-1\leqslant i\leqslant k-1;\\[3pt]
-\displaystyle\left(C_0-C_3\right)\bar{v},&\hspace*{-27mm} 0\leqslant i\leqslant s-2;
-\end{cases}\\[6pt]
-\!q_k^k&=q_{k-1}^k-C_0\bar{v}-C_1.
-\end{array}\!\!\!\!\!\!\!\!
-\right\}\!\!
-\label{6}
-\end{equation}
-
-
-\noindent
-\textbf{Лемма~2.}\ 
-\textit{Справедливы равенства}:
-\begin{multline}
-\! q_{i+1}^k=q_i^k-\fr{C_2}{\mu s}
-\sum\limits_{m=1}^{i+2-s}mr_m-\fr{C_2(i+2-s)}{\mu s}
-\!\!\sum\limits_{m=i+3-s}^{\infty} \!\!\!\!\!r_m\,,\\
-s-1\leqslant i\leqslant k-2\,.
-\label{7}
-\end{multline}
-
-
-\smallskip
-
-\noindent
-\textbf{Лемма~3.}\ 
-\textit{
-Справедливы соотношения}:
-\begin{equation}
-\left.
-\begin{array}{rl}
-\!\! \pi_{j+1}^{k+1}&=A_{k+1}\pi_{j}^{k}\,,\enskip s-1\leqslant j\leqslant k\,;\\[6pt]
-\!\!g^k-g^{k+1}&=(1-A_{k+1})\left(g^k-G(k)\right),\enskip k\geqslant s\,.
-\end{array}\!
-\right\}\!
-\label{8}
-\end{equation}
-
-
-\noindent
-\textbf{Лемма~4.}\ 
-\textit{Функция $G(k)$ не возрастает по $k\geqslant s.$}
-
-\smallskip
-
-\noindent
-\textbf{Теорема~1.}\ 
-\textit{Справедливы следующие утверждения}:
-\begin{enumerate}[(1)]
-\item \textit{если $\inf\limits_{k\geqslant s}G(k)\hm<\sup\limits_{k\geqslant s}g^k,$ то при любых
-значениях параметров $C_i\geqslant 0$, $i\hm=0,1,3$, и~$C_2\hm>0$ существует
-оптимальная стратегия~$k_0$ такая, что $s\hm\leqslant k_0\hm<\infty.$ 
-В~противном случае $k_0\hm=\infty$};
-
-\item \textit{если $g^s\geqslant G(s),$ то $k^0\hm=s$};
-
-\item \textit{если $C_2=0$ и~$g^s<G(s),$ то $k^0\hm=\infty$};
-
-\item \textit{условие $g^{k^0-1}\hm<g^{k^0}\hm\leqslant g^{k^0+1}$ является необходимым 
-и~достаточным для того, чтобы $s\leqslant k^0<\infty$}.
-\end{enumerate}
-
-\smallskip
-
-При выполнении условий п.~4 теоремы можно предложить
-следующий алгоритм нахождения оптимальной стратегии.
-\begin{enumerate}[1.]
-\item Положить $k=s.$
-
-\item Вычислить $g^s$ и~$G(s).$
-
-\item Если $C_2=0$ и~$g^s\hm<G(s),$ то положить $k^0\hm=\infty$ и~перейти к~п.~8.
-
-\item Если $g^s\geqslant G(s),$ то положить $k^0=s$ и~перейти к~п.~8.
-
-\item Вычислить $g^{k+1}.$
-
-\item Если выполняется неравенство $g^k\hm<g^{k+1},$ то перейти к~п.~7, 
-иначе положить $k^0\hm=k$ и~пе\-рейти к~п.~8.
-
-\item Увеличить~$k$ на единицу и~перейти к~п.~5.
-
-\item Конец алгоритма.
-\end{enumerate}
-
-Доказательства лемм~1--4 и~тео\-ре\-мы~1 пред\-став\-ле\-ны в~приложении.
-
-\section{Пример}
-
-В качестве примера применения указанного выше алгоритма нахождения
-оптимальной стратегии рассмотрим СМО $H_2|M|s$ с~функцией
-распределения входящего потока
-$H(t)\hm=\sum\nolimits_{i=1}^2 f_i\left(1-e^{-\lambda_it}\right)$,
-$f_1\hm=0{,}4$, $\lambda_1\hm=0{,}8$, $\lambda_2\hm=2.$ Стоимостные параметры
-равны: $C_0\hm=20$, $C_1\hm=5$, $C_2\hm=1{,}5$, $C_3\hm=0{,}01.$
-
-На рисунке приведены зависимости функций~$g^k$ и~$G(k)$ от
-порогового значения. 
-
-
-{ \begin{center}  %fig1
- \vspace*{6pt}
- \mbox{%
- \epsfxsize=79.0mm 
- \epsfbox{aga-1.eps}
- }
-
-
-\end{center}
-
-\vspace*{-1pt}
-
-
-\noindent
-{\small{Зависимость предельного дохода~$g^k$~(\textit{1}) и~функции~$G(k)$~(\textit{2}) от
-порогового значения ($\mu\hm=0{,}5$): пустые значки~--- $s\hm=2$;
-залитые значки~--- $s\hm=3$}}
-}
-
-\vspace*{6pt}
-
-
-
-{\small \section*{\raggedleft Приложение}
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ леммы~1. 
-Фиксируем состояние $s\hm\leqslant i\hm\leqslant
-k\hm-1$, и~пусть время нахождения системы в~состоянии~$i$ равно~$v.$
-Найдем выражение для суммарного среднего времени ожидания всех
-заявок в~очереди в~состоянии~$i,$ т.\,е.\ в~интервале времени~$(0,v].$
-
-Рассмотрим случайные величины вида
-$W_l\hm=\sum\nolimits_{j=1}^l\tau_j$, $l\hm\geqslant 1,$ где~$\tau_j$~---
-независимые экспоненциально распределенные случайные величины (СВ) с~параметром
-$s\hm>0.$ Пусть $B_m$~--- событие вида $(W_m\hm\leqslant v,W_{m+1}\hm>v)$, $m\hm>0$,
-$B_0$~--- событие $(W_1\hm>v).$ Заметим, что~$B_m$, $m\hm\geqslant 0$,~---
-не\-сов\-мест\-ные события и~в совокупности составляют полную группу
-событий. Известно (см., например,~\cite{9-aga}), что сов\-мест\-ное
-распределение величин~$W_l$, $l\hm\leqslant m,$ при условии выполнения
-события~$B_m$ совпадает с~распределением порядковых статистик из
-выборки объема~$m$ из равномерного на~$(0,v]$ распределения, 
-а~маргинальным условным распределением СВ ${W_l}/{v}$
-является бе\-та-рас\-пре\-де\-ле\-ние с~плот\-ностью
-\begin{multline*}
-f(x|B_m)={}\\
-{}=\begin{cases}
-\fr{m!}{(l-1)!(m-l)!}x^{l-1}(1-x)^{m-l}\,, & 0<x<l\,;\\ 
-0 & \hspace*{-21pt}\mbox{в~противном~случае.}
-\end{cases}
-\end{multline*}
-Отсюда следует, что $M(W_l|B_m)\hm=({l}/{m+1})v.$
-
-Обозначим:  $\bar{W}_{\mathrm{обсл}/m}$~--- среднее суммарное время
-ожидания заявок, завершивших обслуживание или приступивших 
-к~обслуживанию в~состоянии~$i$ при условии~$B_m$;
-$\bar{W}_{\mathrm{необсл}/m}$~--- среднее суммарное время ожидания
-в очереди заявок, не поступивших на обслуживание в~состоянии~$i$
-при условии~$B_m.$ Заметим, что при $i\hm<s$ для всех $m\hm>0$ имеют
-место равенства
-$\bar{W}_{\mathrm{обсл}/m}\hm=\bar{W}_{\mathrm{необсл}/m}\hm=0.$  При $s\hm\leqslant
-i\hm\leqslant k-1$, $m\hm\leqslant i\hm-s\hm+1$ получим:
-\begin{equation}
- \bar{W}_{\mathrm{обсл}/m}=\fr{mv}{2}\,;\enskip
-\bar{W}_{\mathrm{необсл}/m}=(i+1-s-m)v\,.
-\label{9}
-\end{equation}
-Далее, при $m>i+1\hm-s$, $s\hm\leqslant i\hm\leqslant k-1$,
-\begin{equation}
- \bar{W}_{\mathrm{обсл}/m}=\fr{(i+1-s)(i-s+2)v}{2(m+1)}\,.
- \label{10}
-\end{equation}
-При $i=k$ и~$i\hm=k\hm-1$ значения~$\bar{W}_{\mathrm{обсл}/m}$ 
-и~$\bar{W}_{\mathrm{необсл}/m}$ совпадают.
-
-Обозначим $q_i^k(v)$ величину суммарного дохода системы 
-в~состоянии~$i$ при условии, что время пребывания в~нем равно~$v.$
-Из~\eqref{9} и~\eqref{10} при $s\hm\leqslant i\hm\leqslant k-1$ имеем:
-\begin{multline*}
-q_i^k(v)=C_0v-C_3v-{}\\
-{}-\sum\limits_{m=0}^{i-s+1}\!\!e^{-\mu sv}\fr{(\mu sv)^m}{m!}
-\left(C_2\left(\bar{W}_{\mathrm{обсл}/m}+\bar{W}_{\mathrm{необсл}/m}\right)\right)-{}\\
-{}-
-\sum\limits_{m=i+2-s}^{\infty}
-e^{-\mu sv}\fr{(\mu sv)^m}{m!}
-C_2\bar{W}_{\mathrm{обсл}/m}=C_0v-C_3v+{}\\
-{}+C_2
-\sum\limits_{m=0}^{i-s+1}\left(\fr{m}{2}-i-1+s\right)e^{-\mu sv}
-\fr{(\mu s)^mv^{m+1}}{m!}-{}
-\\
-{}-C_2\fr{(i+1-s)(i+2-s)}{2}\sum\limits_{m=i+2-s}^{\infty}e^{-\mu sv}
-\fr{(\mu s)^mv^{m+1}}{(m+1)!}.
-\end{multline*}
-Следовательно,
-\begin{multline*}
-q_i^k=\int\limits_0^{\infty}q_i^k(v)\,dH(v)=
-C_0\bar{v}-C_3\bar{v}+{}\\
-{}+\fr{C_2}{2\mu s}
-\sum\limits_{m=0}^{i-s+1}m(m+1)\int\limits_0^{\infty}
-\fr{(\mu sv)^{m+1}}{(m+1)!}e^{-\mu sv}\,dH(v)-{}
-\\
-{}-\fr{C_2(i+1-s)}{\mu s}
-\sum\limits_{m=0}^{i-s+1}(m+1)\int\limits_0^{\infty}\fr{(\mu sv)^{m+1}}
-{(m+1)!}e^{-\mu sv}\,dH(v)-{}\\
-{}-\fr{C_2(i+1-s)(i+2-s)}{2\mu s}\times{}\\
-{}\times\sum\limits_{m=i+2-s}^{\infty}
-\int\limits_0^{\infty}\fr{(\mu sv)^{m+1}}{(m+1)!}e^{-\mu sv}\,dH(v)\,.
-\end{multline*}
-Отсюда и~из~\eqref{q3} следует~\eqref{6} при $s\hm\leqslant i\hm\leqslant k\hm-1.$
-Справедливость~\eqref{6} при $i\hm=k$ очевидна.
-
-\smallskip
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ леммы~2.\ 
-При $s\hm-1\hm\leqslant i\hm\leqslant k\hm-2$ из~\eqref{10} имеем:
-\begin{multline*}
-q_{i+1}^k-q_i^k=\fr{C_2}{2\mu s}\sum\limits_{m=1}^{i+2-s}\!m(m-1)r_m+{}\\
-{}+
-\fr{C_2}{2\mu s}(i+2-s)(i+3-s)r_{i+3-s}-\fr{C_2(i+2-s)}{\mu s}
-\sum\limits_{m=1}^{i+2-s}mr_m- {}
-\\
-{}-\fr{C_2}{\mu s}(i+2-s)(i+3-s)r_{i+3-s}-{}\\
-{}-\fr{C_2(i+2-s)(i+3-s)}{2\mu s}
-\sum\limits_{m=i+4-s}^{\infty}r_m-{}\\
-{}-\fr{C_2}{2\mu s}
-\sum\limits_{m=1}^{i+2-s}m(m-1)r_m+{}
-\\
-{}+\fr{C_2(i+1-s)}{\mu s}\sum\limits_{m=1}^{i+2-s}mr_m+{}\\
-{}+
-\fr{C_2(i+1-s)(i+2-s)}{2\mu s}\sum\limits_{m=i+4-s}^{\infty}\!\!r_m+{}
-\\
-{}+\fr{C_2}{2\mu s}(i+1-s)(i+2-s)r_{i+3-s}={}\\
-{}=-\fr{C_2}{\mu s}
-\sum\limits_{m=1}^{i+2-s}mr_m-\fr{C_2(i+2-s)}{\mu s}
-\sum\limits_{m=i+3-s}^{\infty}r_m\,.
-\end{multline*}
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ леммы~3.
-
-Первое соотношение в~лемме~3 следует из~\eqref{3}. Теперь из~\eqref{1} имеем:
-\begin{multline*}
-g^k-g^{k+1}=\sum\limits_{i=0}^{k}\pi_i^{k}q_i^{k}-
-\sum\limits_{i=0}^{k+1}\pi_i^{k+1}q_i^{k+1}={}\\
-{}=
-\left(C_0-C_3\right)\bar{v}\sum\limits_{i=0}^{s-2}\pi_i^k+
-\sum\limits_{i=s-1}^{k}\pi_i^kq_i^k
--\sum\limits_{i=s}^{k+1}\pi_i^{k+1}q_i^{k+1}-{}
-\\
-{}-\left(C_0-C_3\right)\bar{v}\sum\limits_{i=0}^{s-1}
-\pi_i^{k+1}=\left(C_0-C_3\right)\bar{v}\left(Q_{s-2}^k-Q_{s-1}^{k+1}\right)+{}\\
-{}+
-\sum\limits_{i=s-1}^{k}\pi_i^kq_i^k-A_{k+1}
-\sum\limits_{i=s}^{k+1}\pi_{i-1}^kq_i^{k+1}\,.
-\end{multline*}
-
-Обозначим $\Delta_{i+1}^{k+1}\hm=q_{i+1}^{k+1}\hm-q_{i}^{k+1}$, $s\hm-1\hm\leqslant
-i\hm\leqslant k.$ Заметим, что $q_i^{k+1}\hm=q_i^k$, $0\hm\leqslant i\hm\leqslant k\hm-1,$
-$q_{k+1}^{k+1}\hm=q_k^{k+1}\hm-C_1\hm-C_0\hm=q_k^{k}\hm+\Delta_k^{k+1}.$ Имеем:
-\begin{multline*}
-g^k-g^{k+1}=\left(C_0-C_3\right)\bar{v}\left(
-Q_{s-2}^k-Q_{s-1}^{k+1}\right)+
-\sum\limits_{i=s-1}^k\pi_i^kq_i^k-{}\\
-{}- A_{k+1}
-\left(\sum\limits_{i=s-1}^{k-1}\pi_i^k\left(q_i^k+\Delta_{i+1}^{k+1}\right)+
-\pi_k^k\left(q_k^k+\Delta_k^{k+1}\right)\right)={}\\
-{}=
-\fr{Q_{s-1}^{k+1}-Q_{s-2}^k}{1-Q_{s-2}^k}
-\Bigg(g^k-\left(C_0-C_3\right)\bar{v}-{}\\
-{}-
-\fr{1-Q_{s-1}^{k+1}}{Q_{s-1}^{k+1}-Q_{s-2}^k}
-\left(\sum\limits_{i=s-1}^{k-1}\pi_i^k\Delta_{i+1}^{k+1}+
-\pi_k^k\Delta_k^{k+1}\right)\Bigg)\,.
-\end{multline*}
-Использовав~\eqref{7}, для $\Delta_{i+1}^{k+1}$ получим
-\begin{align*}
-\Delta_{i+1}^{k+1}&=-\fr{C_2}{\mu s}\sum\limits_{m=1}^{i+2-s}mr_m-\fr{C_2(i+2-s)}
-{\mu s}\sum\limits_{m=i+3-s}^{\infty}\!\!r_m={}\\
-&{}=\left(\fr{1}{\mu s}
-\sum\limits_{m=i+3-s}^{\infty}(m-i-2+s)r_m-\bar{v}\right) C_2\,,\\
-&\hspace*{45mm} s-1\leqslant i\leqslant k-1\,;
-\\
- \Delta_k^k&=-C_1-C_0\,;
- \\
-\Delta_k^{k+1}&=-C_2\left(\bar{v}-\fr{1}{\mu s}
-\sum\limits_{m=i+2-s}^{\infty}(m-k-1+s)r_m\right)\,.
-\end{align*}
-Отсюда
-\begin{multline*}
-g^k-g^{k+1}=\fr{Q_{s-1}^{k+1}-Q_{s-2}^k}{1-Q_{s-2}^k}\left(
-\vphantom{\sum\limits_{m=0}^{k+1-s}}
-g^k-\left(C_0-C_3\right)
-\bar{v}+\right.\\
-{}+C_2\fr{1-Q_{s-2}^{k+1}}{Q_{s-1}^{k+1}-Q_{s-2}^k}\left(
-\vphantom{\sum\limits_{m=0}^{k+1-s}}
-\pi_{k+1}^{k+1}\times{}\right.
-\\
-\left.{}\times\left(\bar{v}- \fr{1}{\mu
-s}\sum\limits_{m=k+2-s}^{\infty}(m-k-1+s)r_m\right)+{}\right.\\
-\left.\left.{}+
-\sum\limits_{i=s}^k
-\pi_i^{k+1}\left(\bar{v}-
-\fr{1}{\mu s}\sum\limits_{m=k+2-s}^{\infty}\!\!\!(m-i-1+s)r_m\right)
-\right)\right).
-\end{multline*}
-Подставляя в~последнее равенство~\eqref{5}, получаем~\eqref{8}.
-
-\smallskip
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ леммы~4.
-
-Положим $f_k=\left(1-A_{k+1}\right)F(k).$ Тогда
-\begin{multline*}
-f_k=\sum\limits_{i=s}^{k+1}\pi_i^{k+1}\bar{v}-\fr{1}{\mu s}
-\sum\limits_{i=s}^{k}\pi_i^{k+1}\!\sum\limits_{m=i+2-s}^{\infty}\!(m-i-1+s)r_m-{}\\
-{}-
-\fr{1}{\mu s}\pi_{k+1}^{k+1}\sum\limits_{m=i+2-s}^{\infty}(m-k-1+s)r_m={}
-\\
-{}=\fr{1}{\mu s}\sum\limits_{i=s}^{k}\pi_i^{k+1}\sum\limits_{m=1}^{i+1-s}mr_m+
-\fr{1}{\mu s}\pi_{k+1}^{k+1}\sum\limits_{m=1}^{k+1-s}mr_m+{}\\
-{}+
-\sum\limits_{i=s}^k\pi_i^{k+1} \left(
-1-\sum\limits_{m=0}^{i+1-s}r_m\right)\fr{i+1-s}{\mu s}+{}
-\\
-{}+\pi_{k+1}^{k+1}
-\left(1-\sum\limits_{m=0}^{k+1-s}\!r_m\right)\fr{k+1-s}{\mu s}\,.
-\end{multline*}
-Заметим, что правая часть последнего равенства выражает среднее значение 
-длительности времени,
-в течение которого в~произвольно взятом состоянии при стратегии $k\hm+1$ все 
-приборы заняты.
-
-Отсюда следует, что~$f_k$ возрастает по~$k.$ Докажем, 
-что~$A_{k+1}$ возрастает по $k\hm\geqslant s.$ Далее из-за громоздкости
-доказательства, полученного для рекуррентного входящего потока,
-приводим аналогичное, но гораздо более короткое доказательство для
-пуассоновского входящего потока. Пусть~$\lambda$~--- его
-интенсивность. Известно, что
-\begin{equation*}
-\pi_j^k=
-\begin{cases}
-\pi_0^k \fr{\alpha^j}{j!}, &\enskip 1\leqslant j\leqslant s;\\
-\pi_0^k\fr{\alpha^s}{s!}\left(\fr{\alpha}{s}\right)^{s-j},&\enskip
-s\leqslant j\leqslant k;
-\end{cases}
-\end{equation*}
-\begin{equation*}
-\pi_0^k=\left(1+\sum\limits_{j=1}^s \fr{\alpha^j}{j!}+
-\fr{\alpha^s}{s!} \sum\limits_{l=1}^{k-s}\left(\fr{\alpha}{s}\right)^{l}\right)^{-1},\enskip
-\alpha=\fr{\lambda}{\mu}\,.
-\end{equation*}
-Отсюда
-\begin{multline}
-\fr{1-Q_{s-1}^{k+2}}{1-Q_{s-2}^{k+1}}-
-\fr{1-Q_{s-1}^{k+1}}{1-Q_{s-2}^{k}}={}\\
-{}=
-\fr{\pi_0^{k+2}({\alpha^s}/{s!})
-\sum\limits_{i=0}^{k+2-s}\left({\alpha}/{s}\right)^i}
-{\pi_0^{k+1}\left({\alpha^{s-1}}/({(s-1)!})+({\alpha^s}/{s!})
-\sum\limits_{i=0}^{k+1-s}
-\left({\alpha}/{s}\right)^i\right)}-{}\\
-{}-
-\fr{\pi_0^{k+1}({\alpha^s}/{s!})
-\sum\limits_{i=0}^{k+1-s}\left({\alpha}/{s}\right)^i}
-{\pi_0^{k}\left({\alpha^{s-1}}/({(s-1)!})+({\alpha^s}/{s!})\sum\limits_{i=0}^{k-s}
-\left({\alpha}/{s}\right)^i\right)}\,.
-\label{p5}
-\end{multline}
-Далее
-\begin{multline}
-\fr{\alpha^s}{s!}\sum\limits_{i=0}^{k+2-s}\left(\fr{\alpha}{s}\right)^i
-\left(\fr{\alpha^{s-1}}{(s-1)!}+\fr{\alpha^s}{s!}\sum\limits_{i=0}^{k-s}
-\left(\fr{\alpha}{s}\right)^i\right)={}\\
-{}=\fr{\alpha^s}{s!}\sum\limits_{i=0}^{k+1-s}\left(\fr{\alpha}{s}\right)^i
-\left(\fr{\alpha^{s-1}}{(s-1)!}+\dfrac{\alpha^s}{s!}\sum\limits_{i=0}^{k+1-s}
-\left(\fr{\alpha}{s}\right)^i\right).
-\label{p6}
-\end{multline}
-Действительно, разность левой и~правой частей~\eqref{p6} равна
-\begin{multline*}
-\fr{\alpha^s}{s!}\,\fr{\alpha^{s-1}}{(s-1)!}\left(\sum\limits_{i=0}^{k+2-s}
-\left(\fr{\alpha}{s}\right)^i\left(1+\sum\limits_{i=0}^{k-s}
-\left(\fr{\alpha}{s}\right)^{i+1}\right)-{}\right.\\
-\left.{}-
-\sum\limits_{i=0}^{k+1-s}
-\left(\fr{\alpha}{s}\right)^i\left(1+\sum\limits_{i=0}^{k+1-s}
-\left(\fr{\alpha}{s}\right)^{i+1}\right)\right)={}
-\\
-{}=\fr{\alpha^s}{s!}\,\fr{\alpha^{s-1}}{(s-1)!}\left(\left(
-\fr{\alpha}{s}\right)^{k+2-s}+{}\right.\\
-{}+\fr{\alpha}{s}
-\left(\left(\fr{\alpha}{s}\right)^{k+1-s}\left(\fr{\alpha}{s}-1\right)
-\sum\limits_{i=0}^{k+1-s}
-\left(\fr{\alpha}{s}\right)^i-{}\right.{}\\
-\left.\left.{}-\left(\fr{\alpha}{s}\right)^{2k+3-2s}\right)\right)=0
-\end{multline*}
-Следовательно, знак правой части в~\eqref{p5} совпадает со знаком
-$\pi_0^{k+2}\pi_0^{k}\hm-\left(\pi_0^{k+1}\right)^2.$ Знак последнего
-выражения противоположен знаку разности:
-\begin{multline*}
-\left(1+\sum\limits_{j=1}^s \fr{\alpha^j}{j!}+
-\fr{\alpha^s}{s!} \sum\limits_{l=1}^{k+2-s}\left(\fr{\alpha}{s}\right)^{l}\right)\times{}\\
-{}\times
-\left(1+\sum\limits_{j=1}^s \fr{\alpha^j}{j!}+
-\fr{\alpha^s}{s!} \sum\limits_{l=1}^{k-s}\left(\fr{\alpha}{s}\right)^{l}\right)-{}
-\\
-{}-\left(1+\sum\limits_{j=1}^s\:\fr{\alpha^j}{j!}+
-\fr{\alpha^s}{s!}\sum\limits_{l=1}^{k+1-s}\left(\fr{\alpha}{s}\right)^{l}\right)^2.
-\end{multline*}
-Эта разность равна:
-\begin{multline*}
-\fr{\alpha^s}{s!} \left(\fr{\alpha}{s}\right)^{k+1-s}\left(\fr{\alpha}{s}-1\right)
-\left(
-\vphantom{\sum\limits_{l=1}^{k+1-s}}
-1+\sum\limits_{j=1}^s \fr{\alpha^j}{j!}+{}\right.\\
-\left.{}+
-\fr{\alpha^s}{s!} \sum\limits_{l=1}^{k+1-s}\left(\fr{\alpha}{s}\right)^{l}\right)-
-\left(\fr{\alpha^s}{s!}\right)^2\left(\fr{\alpha}{s}\right)^{2k+3-2s}={}
-\\
-{}=\fr{\alpha^s}{s!}\left(\fr{\alpha}{s}\right)^{k+1-s}
-\left(\sum\limits_{j=1}^s\fr{\alpha^j}{s(j-1)!}-
-\sum\limits_{j=1}^s\fr{\alpha^j}{j)!}\right).
-\end{multline*}
-Но
-$$
-\sum\limits_{j=1}^s\fr{\alpha^j}{s(j-1)!}- \sum\limits_{j=1}^s\fr{\alpha^j}{j!}<0.
-$$
-Итак, лемма~4 полностью доказана.
-
-\textit{Доказательство теоремы}~1 аналогично доказательству
-теоремы~1 в~\cite{7-aga}.
-
-}
-
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{9}
-\bibitem{1-aga}
-\Au{Welzl M.} Network congestion control: Managing internet traffic.~--- 
-New York, NY, USA: Wiley, 2005. 282~p.
-\bibitem{2-aga}
-\Au{Жерновый Ю.\,В.} Решение задач оптимального синтеза для некоторых 
-марковских моделей обслуживания~// Информационные процессы, 2010. 
-Т.~10. №\,3. C.~257--274.
-\bibitem{3-aga}
-\Au{Коновалов М.\,Г.} Об одной задаче оптимального управ\-ле\-ния нагрузкой на сервер~// 
-Информатика и~её применения, 2013. Т.~7. Вып.~4. С.~34--43.
-\bibitem{4-aga}
-\Au{Агаларов Я.\,М.} Пороговая стратегия ограничения доступа к~ресурсам 
-в~системе массового обслуживания $M|D|1$ с~функцией
-штрафов за несвоевременное обслуживание заявок~// Информатика и~её применения, 2015. 
-Т.~9. Вып.~3.  С.~55--64.
-\bibitem{5-aga}
-\Au{Гришунина Ю.\,Б.} Оптимальное 
-управление очередью в~системе 
-$M|G|1|\infty$ 
-с~возможностью ограничения приема 
-заявок~// Автоматика и~телемеханика, 2015. №\,3. 
-С.~79--93.
-\bibitem{6-aga}
-\Au{Агаларов Я.\,М.} Максимизация среднего стационарного дохода системы
-массового обслуживания типа
- $M|G|1$~// Информатика и~её применения, 2017. Т.~11. Вып.~2. С.~25--32.
-\bibitem{7-aga}
-\Au{Агаларов Я.\,М., Шоргин В.\,С.} Об одной задаче максимизации дохода 
-сис\-те\-мы
-массового обслуживания типа $G|M|1$ с~пороговым управ\-ле\-нием очередью~// Информатика и~её 
-применения, 2017. Т.~11. Вып.~4. С.~55--64.
-
-\bibitem{9-aga}
-\Au{Karlin S.} A~first course in stochastic processes.~--- 
-New York\,--\,London: Academic Press, 1968. 502~p.
-
-\bibitem{8-aga}
-\Au{Бочаров П.\,П., Печинкин~А.\,В.} Теория массового обслуживания.~--- М.: РУДН,
-1995. 529~с.
-
-
- \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 05.11.18}}
-
-%\vspace*{8pt}
-
-%\pagebreak
-
-\newpage
-
-\vspace*{-29pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-%\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{ON THE UNIMODALITY OF~THE~INCOME FUNCTION 
-OF~A~TYPE $G|M|s$ QUEUEING SYSTEM WITH~CONTROLLED QUEUE}
-
-
-\def\titkol{On the unimodality of~the~income function 
-of~a~type $G|M|s$ queueing system with~controlled queue}
-
-\def\aut{Ya.\,M.~Agalarov$^{1}$ and~V.\,G.~Ushakov$^{1,2}$}
-
-\def\autkol{Ya.\,M.~Agalarov and~V.\,G.~Ushakov}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-
-\noindent
-$^1$Institute of Informatics Problems, Federal Research Center 
-``Computer Science and Control'' of the 
-Russian\linebreak
-$\hphantom{^1}$Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
-\noindent
-$^2$Department of Mathematical Statistics, Faculty of 
-Computational Mathematics and Cybernetics, M.\,V.~Lo\-mo-\linebreak
-$\hphantom{^1}$no\-sov Moscow State University,
-1-52~Leninskye Gory, GSP-1, Moscow 119991,  Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 1}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 1
-\hfill \textbf{\thepage}}}
-
-\vspace*{6pt}
-
-
-\Abste{The problem of maximizing the average income in a~queuing system of type  
-$G|M|s$ on a~set of pure stationary threshold strategies with single point 
-switching access restriction mode is considered. The income function depends 
-on the following parameters, measured in value units: the fee received 
-for servicing requests, the cost of maintenance of the device,
- the deduction of income for the delay applications in the queue, 
- the penalty for unserved applications. It is proved that the income function 
- is unimodal on the set of considered threshold strategies. An algorithm for 
- calculating the optimal threshold value and the corresponding maximum value 
- income is proposed. The results of the computational 
-experiment that illustrate the work of the proposed algorithm are given.}
-
-\KWE{multichannel queueing system; threshold management; maximizing income}
-
-
-\DOI{10.14357/19922264190108}
-
-%\vspace*{-14pt}
-
-%\Ack
-%\noindent
-%This work was partially supported by the Russian Science Foundation (grant  
-%16-07-00677).
-
-
-
-%\vspace*{6pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{9}
-\bibitem{1-aga-1}
-\Aue{Welzl, M.} 2005. 
-\textit{Network congestion control}. New York, NY: Wiley. 282~p.
-\bibitem{2-aga-1}
-\Aue{Zhernovyj, Ju.\,V.} 2010. Reshenie zadach optimal'nogo 
-sinteza dlya nekotorykh 
-markovskikh modeley obsluzhivaniya [Solution of 
-optimum synthesis problem for some Markov models of service]. 
-\textit{Informatsionnye processy} [Information Processes] 
-10(3):257--274.
-\bibitem{3-aga-1}
-\Aue{Konovalov, M.\,G.} 2013. 
-Ob odnoy zadache optimal'nogo 
-upravleniya nagruzkoy na server [About one task of overload 
-control]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 7(4):34--43.
-\bibitem{4-aga-1}
-\Aue{Agalarov, Ya.\,M.} 2015. Porogovaya strategiya 
-ogranicheniya dostupa k~resursam v~sisteme massovogo obsluzhivaniya 
-$M/D/1$ s~funktsiey 
-shtrafov za nesvoevremennoe obsluzhivanie zayavok 
-[The threshold strategy 
-for restricting access in the $M/D/1$ queueing system with penalty 
-function for late service]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.}
-9(3):55--64. 
-\bibitem{5-aga-1}
-\Aue{Grishunina, Y.\,B.} 2015. 
-Optimal control of queue in the $M|G|1|\infty$ 
-system with possibility of customer admission restriction. 
-\textit{Automat. Rem. Contr.} 76(3):433--445.
-\bibitem{6-aga-1}
-\Aue{Agalarov, Ya.\,M.} 2017. 
-Maksimizatsiya srednego sta\-tsi\-o\-nar\-no\-go dokhoda sistemy massovogo obsluzhivaniya tipa 
-$M/G/1$
-[Maximization of average stationary profit in $M/G/1$ queuing system]. 
-\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 11(2):25--32.
-\bibitem{7-aga-1}
-\Aue{Agalarov, Ya.\,M., and V.\,S.~Shorgin.} 2017. 
-Ob odnoy zadache maksimizatsii dokhoda sistemy massovogo obsluzhivaniya
-tipa $G/M/1$ s~porogovym upravleniem oche\-red'yu
-[About the problem of profit maximization in $G/M/1$ queuing systems
-with threshold control of the queue]. \textit{Informatika i~ee Primeneniya~--- 
-Inform. Appl.} 11(4):55--64.
-\bibitem{8-aga-1}
-\Aue{Karlin, S.} 1968. \textit{A~first course in stochastic processes}. 
-New York\,--\,London: Academic Press. 502~p.
-\bibitem{9-aga-1}
-\Aue{Bocharov, P.\,P., and A.\,V.~Pechinkin.} 1995. 
-\textit{Teoriya massovogo obsluzhivaniya} [Queueing theory]. Moscow: RUDN. 529~p.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received November 5, 2018}}
-
-%\pagebreak
-
-%\vspace*{-18pt}
-
-\Contr
-
-\noindent
-\textbf{Agalarov Yaver M.} (b.\ 1952)~--- Candidate of Science (PhD) in technology,
-associate professor, leading scientist, Institute of Informatics Problems, Federal Research 
-Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{agglar@yandex.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Ushakov Vladimir G.} (b.\ 1952)~--- Doctor of Science in physics
-and mathematics, professor, Department of Mathematical Statistics, Faculty of 
-Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University,
-1-52~Leninskye Gory, GSP-1, Moscow 119991,  Russian Federation;
-senior scientist, Institute of Informatics Problems, Federal Research 
-Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{vgushakov@mail.ru}
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}       

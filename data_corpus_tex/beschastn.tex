@@ -1,770 +1,0 @@
-\def\stat{beschastn}
-
-\def\tit{АНАЛИЗ ПРОИЗВОДИТЕЛЬНОСТИ СИСТЕМ <<НОВОЕ РАДИО>> СЕТИ~5G 
-С~ПОМОЩЬЮ СИСТЕМЫ МАССОВОГО ОБСЛУЖИВАНИЯ С ПЕРЕМЕННЫМИ ТРЕБОВАНИЯМИ К~РЕСУРСУ$^*$}
-
-\def\titkol{Анализ производительности систем <<новое радио>> сети~5G 
-с~помощью СМО} % с~переменными требованиями к~ресурсу}
-
-
-\def\aut{В.\,А.~Бесчастный$^1$, Д.\,Ю.~Острикова$^2$, Ю.\,В.~Гайдамака$^3$}
-
-\def\autkol{В.\,А.~Бесчастный, Д.\,Ю.~Острикова, Ю.\,В.~Гайдамака}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Бесчастный В.\,А.}
-\index{Острикова Д.\,Ю.}
-\index{Гайдамака Ю.\,В.}
-\index{Beschastnyi V.\,A.}
-\index{Ostrikova D.\,Yu.}
-\index{Gaidamaka Yu.\,V.}
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Публикация подготовлена при поддержке программы РУДН <<5-100>> 
-  и~при финансовой 
-поддержке РФФИ (проекты 18-07-00576 и~18-37-00380).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Российский университет дружбы народов, beschastnyy-va@rudn.ru}
-\footnotetext[2]{Российский университет дружбы народов, ostrikova-dyu@rudn.ru}
-\footnotetext[3]{Российский университет дружбы народов; Федеральный исследовательский центр 
-<<Информатика и~управление>> Российской академии наук, \mbox{gaydamaka-yuv@rudn.ru}}
-
-
- \label{st\stat}
-
-                  \thispagestyle{headings}
-                  
-  \vspace*{-14pt}
-
-    
-  
-  \Abst{Развертывание перспективных телекоммуникационных систем пятого поколения 
-<<новое радио>> (\textit{англ}.\ 5G New Radio, 5G NR), ис\-поль\-зу\-ющих частоты в~миллиметровом 
-диапазоне, позволит достичь беспрецедентного увеличения пропускной способности 
-беспроводных сетей. С~помощью таких систем станет возможным внедрение специальных 
-ресурсоемких приложений с~крайне высокими требованиями к~инфраструктуре сети, которые 
-являются ключевым фактором развития систем~5G. В~работе предложен метод анализа 5G 
-NR систем на основе мультисервисной системы массового обслуживания (СМО)
-с~ограниченным 
-ресурсом и~заявками, требования к~ресурсу которых могут меняться в~процессе их 
-обслуживания. Моделирование переменных требований к~ресурсу позволяет получать более 
-точную оценку показателей качества функционирования системы по сравнению 
-с~традиционными мультисервисными моделями с~постоянными требованиями к~ресурсу. Для 
-рассмотренной модели предложен итерационный алгоритм расчета стационарного 
-распределения вероятностей с~заданной точностью.}
-   
-  \KW{новое радио; миллиметровый диапазон; прямая видимость; вероятность блокировки; 
-СМО; ограниченный ресурс; переменные требования}
-
-\DOI{10.14357\!/\!08696527190407} 
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-      
-  \vspace*{-18pt}
-  
-\section{Введение}
-
-\vspace*{-4pt}
-  
-  С появлением семейства технологий <<новое радио>>~[1] перед 
-разработчиками телекоммуникационных систем встало множество новых 
-проблем, с~которыми не приходилось сталкиваться в~прошлом~[2--4]. Среди 
-таких проблем можно выделить значительно большие потери при 
-распространении сигнала по сравнению с~микроволновой связью~[5], 
-блокировки сигнала небольшими динамическими объектами~[6], 
-необходимость эффективных интеллектуальных механизмов управления лучом 
-и~др.~\cite{2-bs, 3-bs, 7-bs}. В~реальных условиях эксплуатации подобных 
-систем основой сложностью для обеспечения непрерывного обслуживания 
-абонентов являются подвижные препятствия, такие как люди и~транспортные 
-средства, временно блокирующие распространение радиосигнала и~называемые 
-<<блокираторами>>.
-  
-  В зависимости от среды распространения сигнала, а также расстояния от 
-базовой станции (Base Station, BS) пользовательское оборудование в~состоянии 
-блокировки прямой видимости до базовой станции может либо выпасть из зоны 
-обслуживания, либо понизить схему модуляции и~кодирования для 
-удовлетворения требуемых показателей обслуживания. В~качестве решения для 
-случая с~выходом оборудования из зоны обслуживания консорциумом 3GPP 
-недавно был предложен механизм так называемого <<множественного 
-соединения>>~\cite{8-bs}, при котором одновременно устанавливаются 
-несколько активных каналов между пользовательским устройством 
-и~расположенными поблизости базовыми станциями, и~в~случае появления 
-блокиратора сессия меняет опорную точку доступа, т.\,е.\ соединение 
-переключается на один из активных каналов без препятствий прямой 
-видимости (Line of Sight, LoS). В~случае понижения схемы модуляции 
-и~кодирования активная сессия требует большего объема ресурса~[9], и~при его 
-нехватке может либо снизиться скорость передачи данных для 
-соответствующего соединения, либо сессия может быть сброшена.
-  
-\section{Описание системной модели }
-  
-  В работе рассматривается модель функционирования базовой станции 
-5G~NR, предложенная в~[10]. Базовая станция обеспечивает покрытие внутри 
-окружности радиуса~$d$, максимальное значение которого~$d^E_{\mathrm{LoS}}$ 
-рассчитывается, согласно~\cite{2-bs}, с~по\-мощью модели распространения 
-сигнала в~миллиметровом диапазоне при отсутствии блокираторов и~набора 
-схем модуляции и~кодирования~\cite{1-bs}. Предполагается, что пользователи 
-равномерно распределены по зоне покрытия в~соответствии с~пуассоновским 
-точечным процессом с~параметром~$\rho$. Таким образом, процесс 
-поступления запросов пользователей на установление соединений является 
-пуассоновским с~интенсивностью $\lambda\hm= \Lambda \rho \pi d^2$, где 
-$\Lambda$~--- параметр экспоненциально распределенных интервалов между 
-двумя последовательными запросами от одного пользователя, а~$\rho$~--- 
-плотность пользователей в~зоне покрытия (рис.~1).
-  
-
-  
-  Для обслуживания запросов пользователей базовая станция выделяет 
-радиоресурс, при этом объем ресурса зависит от местоположения пользователя и~является случайной величиной~[11]. Предположим, что с~точки зрения 
-требований к~объему ресурса область покрытия разбита на внутреннюю 
-и~внешнюю зоны~--- ближний к~точке доступа круг, в~центре которого расположена 
-базовая станция, и~оставшуюся зону вплоть до границ зоны покрытия, которая 
-имеет форму кольца. Радиус круга определяется моделью распространения 
-сигнала как максимальное расстояние~$d^E_{\mathrm{nLoS}}$, на котором можно 
-установить соединение\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\
-
-\vspace*{-12pt}
-
-  \begin{floatingfigure}{67mm} %fig1
-  \vspace*{-3pt}
- \begin{center}
- \mbox{%
- \epsfxsize=62mm 
- \epsfbox{bes-1.eps}
- }
- \end{center}
-\vspace*{-9pt}
-  \Caption{Модель движения блокираторов: \textit{1}~--- NR BS; \textit{2}
-  и~\textit{3}~--- пользовательское обору\-до\-ва\-ние с~прямой 
-и~без прямой видимости соответственно; \textit{4}~--- блокиратор; \textit{5}~--- 
-зона без прямой видимости; \textit{6}~--- траектория движения}
-\vspace*{6pt}
-  \end{floatingfigure}
-
-\noindent
- в~условиях блокировки линии прямой 
-видимости~\cite{2-bs}. Для кольца внут\-рен\-ний радиус равен радиусу \mbox{круга}, 
-а~внешний радиус определяется как $d\hm= \min (d_{\mathrm{ISD}} 
-\hm - d^E_{\mathrm{nLoS}}, 
-d^E_{\mathrm{LoS}})$, где $d_{\mathrm{ISD}}$~--- расстояние от целевой 
-до ближайшей соседней 
-NR BS. Также предположим, что требования\linebreak к~объему ресурса для 
-обслуживания запросов от пользователей, находящихся в~круге, ниже 
-соответствующих требований от пользователей в~кольце. Это предположение 
-соответствует простейшей модели распространения сигнала~\cite{7-bs}, 
-согласно которой объем ресурса обратно пропорционален расстоянию между 
-обору\-дованием пользователя и~точкой доступа.
-  
-  Модель учитывает возможность блокировки прямой видимости подвижными 
-препятствиями для пользователей в~круге и~в кольце. При\linebreak появлении 
-блокиратора на линии прямой видимости между точкой доступа 
-и~пользовательским устройством в~круге соединение не прерывается, но 
-увеличивается объем ресурса, выделенный точкой доступа для его 
-поддержания. Когда ситуация блокирования прямой видимости (non Line of 
-Sight, nLoS) возникает для устройства в~кольце, качество соединения 
-в~радиоканале падает настолько, что для его поддержания необходимо сменить 
-опорную точку доступа. В~следующем разделе по\-стро\-ена 
-СМО фазового типа для моделирования обслуживания 
-пользователей базовой станцией~5G~NR с~учетом появления и~исчезновения 
-блокираторов прямой видимости.
-  
-  %\vspace*{-7pt}
-  
-  
-\section{Анализ показателей эффективности с~помощью системы массового обслуживания 
-с~переменным требованием к~ресурсу}
-
-  %\vspace*{-5pt}
-  
-  Рассмотрим ресурсную СМО с~$N$~приборами, ресурсом конечного 
-объема~$R$ и~пуассоновским поступающим потоком 
-интенсивности~$\lambda$. Предположим, что длительности обслуживания 
-заявок не зависят от поступающего потока, независимы в~совокупности 
-и~имеют функции распределения фазового типа 
-$$
-B(x)= 1- \mathbf{a} 
-\exp (x\mathbf{M})\mathbf{u}\,.
-$$
- Здесь~$\mathbf{a}$~--- век\-тор-стро\-ка 
-длины~$n$ распределения вероятностей начальной фазы; $\mathbf{u}$~---  
-век\-тор-стол\-бец длины~$n$ из единиц; $\mathbf{M}\hm= [\mu_{ij}]$~--- 
-не\-вы\-рож\-ден\-ная квад\-рат\-ная мат\-ри\-ца порядка~$n$ интенсивностей переходов 
-между фазами обслуживания; $n$~--- чис\-ло фаз обслуживания.
-  
-  Изменение требований заявок к~ресурсам в~течение времени обслуживания 
-моделируется с~помощью смены фазы обслуживания. На $j$-й фазе 
-обслуживания заявке требуется~$r_j$ единиц ресурса. Если при поступлении 
-или в~момент смены фазы обслуживания выяснится, что объем требуемого 
-заявке ресурса превышает доступный объем незанятого ресурса, заявка 
-теряется. 
-  
-  Состояние системы в~момент~$t$ можно описать однородным марковским 
-процессом $\mathbf{X}(t)\hm= (X_1(t), \ldots , X_n(t))$, где $X_j(t)$~--- число 
-заявок, обслуживаемых на фазе~$j$. Процесс~$\mathbf{X}(T)$   имеет конечное 
-пространство состояний 
-  $$
-  {\sf X}(R)=\left\{ \left( k_1,\ldots , k_n\right)\vert k_j\geq 0\,,\ j=1,\ldots , n\,,\ 
-\sum\limits^n_{j=1} k_j\leq N\,,\ \sum\limits^n_{j=1} k_j r_j\leq R\right\}\,.
-  $$
-  
-  Обозначим через $\mu_{i0}\hm= -\sum\nolimits^n_{j=1} \mu_{ij}$ 
-интенсивность завершения обслуживания заявки после фазы~$i$. Система 
-уравнений равновесия для процесса $\mathbf{X}(t)$ имеет следующий 
-вид:
-  \begin{multline}
- \left( \lambda\mathbf{I}(\mathbf{ku}<N) \sum\limits^n_{i=1} \mathbf{I}\left( 
-\mathbf{kr}+r_i \leq R\right) a_i +\mathbf{k}\boldsymbol{\mu}\right) 
-p(\mathbf{k})= {}\\
-{}=\lambda \sum\limits^n_{i=1} \mathbf{I} \left( k_i>0\right) p\left( 
-\mathbf{k}-\mathbf{e}_i\right) a_i+\mathbf{I}(\mathbf{ku}<N) \sum\limits^n_{i=1} 
-p\left(\mathbf{k}+\mathbf{e}_i\right) (k_i+1)\mu_{i0}+{}\\
-  {}+ \mathbf{I}(\mathbf{ku}<N) \sum\limits^n_{i=1}
-   \sum\limits^n_{\substack{{j=1,}\\ {j\not= i}}} \mathbf{I}\left( \mathbf{kr}+r_j>R\right) p\left( \mathbf{k}+\mathbf{e}_i\right) 
-\left( k_i+1\right) \mu_{ij}+{}\\
-  {}+
-  \mathbf{I}\left( \mathbf{ku}<N\right) \sum\limits^n_{i=1} p\left( 
-\mathbf{k}+\mathbf{e}_i\right) \left( k_i+1\right) \mu_{i0}+{}\\
-  {}+
-  \mathbf{I} \left( \mathbf{ku}<N\right) \sum\limits^n_{i=1} 
-  \sum\limits^n_{\substack{{j=1,}\\ 
-{j\not= i}}} \mathbf{I}\left( \mathbf{kr}+r_j>R\right) p\left( 
-\mathbf{k}+\mathbf{e}_i\right) \left( k_i+1\right) \mu_{ij}\,,\enskip \mathbf{k}\in 
-{\sf X}(R)\,,
-  \label{e1-bs}
-  \end{multline}
-    где $\mathbf{I}(S)$~--- индикатор утверждения~$S$; $\mathbf{r}\hm= (r_1, 
-\ldots , r_n)$ и~$\boldsymbol{\mu} \hm= (\mu_1, \ldots, \mu_n)$~---  
-век\-то\-ры-столб\-цы; $\mathbf{e}_i$~--- век\-тор-стро\-ка, все компоненты 
-которого равны~0, кроме стоящей на $i$-м месте единицы. Эту систему 
-уравнений можно решить численно методом последовательных приближений. 
-В~качестве начального приближения возьмем равномерное распределение
-$$
-p(\mathbf{k}) =\fr{1}{\vert {\sf X}(R)\vert} \,, \quad \mathbf{k}\in {\sf X} (R)\,.
-$$
-
-  Затем, до тех пор пока не достигнута требуемая точность, вычисляем 
-очередные приближения, при этом каждая итерация состоит из трех шагов.
-  \begin{enumerate}[1.]
-  \item $G:= 0$.
-  \item $  p(\mathbf{k}):=$
-  \begin{multline}
-\hspace*{-8mm}:= \fr{1}{\lambda \mathbf{I} (\mathbf{ku} <N) 
-\sum\nolimits^n_{i=1} \mathbf{I}(\mathbf{kr}+r_i\leq R) a_i 
-+\mathbf{k}{\boldsymbol{\mu}}}\Bigg[
- \lambda \sum\limits^n_{i=1} 
-\mathbf{I}\left( k_i>0\right) p\left( \mathbf{k}-\mathbf{e}_i\right) a_i+{}\hspace*{-3.89pt}\\
-  {}+ \mathbf{I} (\mathbf{ku}<N) \sum\limits^n_{i=1} p\left( 
-\mathbf{k}+\mathbf{e}_i\right) \left( k_i+1\right) \mu_{i0}+{}\\
-  {}+ \mathbf{I} (\mathbf{ku}<N) \sum\limits^n_{i=1} 
-  \sum\limits^n_{\substack{{j=1,}\\ {j\not= i}}} \mathbf{I}\left( \mathbf{kr}+r_j>R\right) p\left( \mathbf{k}+\mathbf{e}_i\right) 
-\left( k_i+1\right) \mu_{ij}+{}\\
-   {}+ \sum\limits^n_{i=1} 
-  \sum\limits^n_{\substack{{j=1,}\\ {j\not=i}}} \mathbf{I} \left( 
-k_j>0\right) \mathbf{I} \left( \mathbf{kr}+r_j\leq R\right) p\left( 
-\mathbf{k}+\mathbf{e}_i -\mathbf{e}_j\right) \left( k_i+1\right) \mu_{ij} 
-\Bigg],
-  \label{e2-bs}
-  \end{multline}
-  $$
-  G:= G+p(\mathbf{k})\,,\quad \mathbf{k}\in {\sf X}(R)\,.
-  $$
-  \item $p(\mathbf{k}:=(1/G)p(\mathbf{k})$, $\mathbf{k}\in {\sf X}(R)$\,.
-  \end{enumerate}
-  
-  Система уравнений равновесия~(\ref{e1-bs}) и~алгоритм~(\ref{e2-bs}) дают метод расчета 
-стационарного распределения, который применен в~следующем разделе при 
-анализе показателей качества функционирования системы~5G~NR.
-
-\section{Численный анализ}
-  
-  В данном разделе проводится численный анализ функционирования базовой 
-станции системы~5G~NR с~точки зрения одной из ключевых характеристик 
-качества обслуживания~--- вероятности сброса сессий, которая для 
-рассматриваемой модели вычисляется как $B\hm= \mathbf{ab}$, где 
-$\mathbf{b}\hm=(b_1,\ldots , b_n)$, а~вероятность блокировки в~$i$-й фазе 
-вычисляется следующим образом:
-  \begin{equation*}
-  b_i=\sum\limits_{\substack{{\mathbf{k}\in {\sf X}(R),}\\ 
-  {\mathbf{kr}+r_i>R}}} 
-p(\mathbf{k}+\sum\limits_{\substack{{j\in \{1,\ldots , n\}\backslash i,}\\
-{ \mathbf{kr}-r_j+r_i 
->R}}}  p(\mathbf{k})\,,\quad 1\leq i\leq n\,.
-  %\label{e3-bs}
-  \end{equation*}
-Помимо вероятности сброса также исследуется доля занятого ресурса базовой 
-станции~NR:
-\begin{equation*}
-\mathrm{UTIL}=\sum\limits_{k\in {\sf X}(R)} \mathbf{kr} p(\mathbf{k})\,.
-%\label{e4-bs}
-\end{equation*}
-  
-  Рассматриваемая система функционирует на рабочей частоте~28~ГГц 
-с~доступной полосой частот в~1~ГГц и~коэффициентом затухания, равным~2,1. 
-Мощность передающей антенны составляет~0,2~Вт, а~ее~--- усиление~2,58~дБ. 
-Предполагаем, что все пользователи получают один тип услуг с~фиксированной 
-требуемой скоростью передачи данных~50~Мбит\!/\!с (соответствует передаче 
-видео в~высоком качестве). Эти параметры определяют требования для 
-установления пользовательских сессий, а~также величину доступного ресурса. 
-В~роли блокираторов выступают цилиндры радиуса~0,4~м 
-с~высотой~1,7~м, имитирующие человеческое тело. Частота наступления 
-и~длительность периодов отсутствия прямой ви\-ди\-мости зависят от модели 
-движения блокираторов. Для численного анализа выбрано случайное 
-блуждание со средней скоростью~1,1 м/с.
-  
-  Метод получения исходных данных таблицы для заданных значений 
-параметров системы~5G~NR изложен в~\cite{2-bs}.
-  
-  \begin{table}\small
-  \begin{center}
-  
-  \begin{tabular}{|c|l|c|}
-  \multicolumn{3}{c}{Входные параметры численного анализа}\\
-  \multicolumn{3}{c}{\ }\\[-6pt]
-  \hline
-Обозначение&\multicolumn{1}{c|}{Описание}&Значения\\
-\hline
-$d$&Радиус внешней зоны&400 м\\
-\hline
-$d_{\mathrm{ISD}}$&Расстояние между соседними BS&600 м\\
-\hline
-$R$&Число ресурсных блоков в~выделенной полосе частот&667\\
-\hline
-$r_1$&\tabcolsep=0pt\begin{tabular}{l}Требования сессий в~кольце при наличии
- прямой\\ видимости\end{tabular}&31 RB$^*$\\
-\hline
-$r_2$&\tabcolsep=0pt\begin{tabular}{l}Требования сессий в~круге при наличии прямой\\
- видимости\end{tabular}&16 RB\\
-\hline
-$r_3$&Требования сессий в~круге без прямой видимости&158 RB\\
-\hline
-$\lambda$&\tabcolsep=0pt\begin{tabular}{l}Интенсивность поступления запросов\\
- от одного устройства\end{tabular}&$
-10^{-3}$~с$^{-1}$ \\
-\hline
-&&\\[-9pt]
-$\mu$&Интенсивность обслуживания сессий&$1/30$~с$^{-1}$\\
-\hline
-$\alpha=\gamma$&\tabcolsep=0pt\begin{tabular}{l}Параметр распределения периодов
- между\\ последовательными 
-блокировками прямой видимости\end{tabular}&0,033~с$^{-1}$\\
-\hline
-&&\\[-9pt]
-$\beta$&Параметр распределения длительностей блокировок&0,34~c$^{-1}$\\
-\hline
-\multicolumn{3}{l}{\footnotesize \hspace*{2mm}$^*$RB~--- resource block (ресурсный блок).}
-\end{tabular}
-\end{center}
-\vspace*{-14pt}
-\end{table}
-  
-  Построенная для рассмотренной системы 5G NR модель СМО имеет три 
-фазы обслуживания ($n\hm=3$): первая фаза соответствует незаблокированным 
-сессиям из кольца, вторая фаза~--- незаблокированным сессиям из круга, 
-а~третья фаза~--- заблокированным сессиям из круга. Матрица переходов 
-$\mathbf{M}\hm= [\mu_{ij}]$ между фазами обслуживания имеет следующий 
-вид:
-  $$
-  \mathbf{M} =\begin{bmatrix}
-  -(\gamma+\mu) &0&0\\
-  0& -(\alpha +\mu) &\alpha\\
-  0& \beta & -(\beta+\mu)
-  \end{bmatrix}\,,
-  $$
-  где $\alpha^{-1}$ и $\gamma^{-1}$~--- средние интервалы между 
-  двумя последовательными блокировками прямой видимости 
-  в~круге и~кольце соответственно; $\beta^{-1}$~--- 
-средняя длительность блокировки. 
-%
-В~этом случае функция распределения 
-$$
-B(x)= 1- \mathbf{a}\exp 
-(x\mathbf{M})\mathbf{u}= 1- a_1 e^{-x(\mu+\gamma)} - \left(1-{a}_1\right)e^{-\mu x}
-$$ 
-представляет собой гиперэкспоненциальное распределение. 
-
-  На рис.~2 изображен график зависимости вероятности сброса сессии от 
-положения устройства, где~$B_I$ соотвествует вероятности сброса в~круге, 
-$B_O$~--- в~кольце, а~$B$~--- вероятности сброса вне зависимости от 
-положения устройства. Вероятность сброса сессий из внешней зоны (кольцо) 
-значительно выше, чем у~сессий из внутренней зоны (круг), так как их общее 
-число и~требования к~ресурсу выше. Это свидетельствует о~необходимости 
-использования принципа множественных соединений~\cite{8-bs}, который 
-позволил бы снизить вероятность сброса в~кольце за счет резервирования на 
-соседних точках доступа дополнительного ресурса для заблокированных 
-сессий, являющихся наиболее ресурсоемкими. Вследствие более жестких 
-требований к~ресурсу именно эти сессии в~большей степени подвержены 
-отказам в~обслуживании.
-   
-   \begin{figure} %fig2
-   \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=74.246mm 
- \epsfbox{bes-2.eps}
- }
- \end{center}
-\vspace*{-9pt}
-  \Caption{Вероятность сброса сессий в~зависимости от положения устройства: 
-  \textit{1}~--- $B_I$; \textit{2}~--- $B_O$; \textit{3}~--- $B$}
-  \end{figure}
-  
-  На рис.~3 изображена зависимость загрузки базовой станции от типа 
-и~положения устройств, где $\mathrm{UTIL}$~--- средняя доля ресурса, используемая 
-всеми типами пользователей, $\mathrm{UTIL}^I_{\mathrm{LoS}}$~--- пользователями из круга при 
-наличии прямой видимости до NR BS, $\mathrm{UTIL}^I_{\mathrm{nLoS}}$~--- пользователями из 
-круга без прямой видимости до NR BS, $\mathrm{UTIL}^O$~--- пользователями из кольца. 
-Следует отметить, что на сессии из внешней зоны приходится более~80\% от 
-общего используемого ресурса, что подтверждает необходимость 
-распределения нагрузки в~соответствующей зоне обслуживания между 
-соседними базовыми станциями. В~то же время видно, что с~ростом плотности 
-устройств доля ресурса, занимаемая незаблокированными сессиями, 
-уменьшается, что объясняется снижением их доли в~структуре трафика. 
-Снижение происходит из-за роста вероятности блокировки прямой видимости 
-вследствие увеличения числа потенциальных блокираторов.
-   
-  \begin{figure} %fig3
-  \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=74.14mm 
- \epsfbox{bes-3.eps}
- }
- \end{center}
-\vspace*{-9pt}
-  \Caption{Средняя доля занятого ресурса в~зависимости от положения устройства 
-и~условий прямой видимости: \textit{1}~--- $\mathrm{UTIL}^O$; \textit{2}~--- $\mathrm{UTIL}_{\mathrm{LoS}}^I$; 
-\textit{3}~--- $\mathrm{UTIL}_{\mathrm{nLoS}}^I$;  \textit{4}~--- $\mathrm{UTIL}$}
-  \end{figure}
-  
-  Из экспоненциального характера роста вероятности сброса сессий даже при 
-не полностью занятом ресурсе можно сделать вывод о том, что для подобных 
-систем необходимо исследовать механизмы резервирования ресурсов.
-
-\vspace*{-2pt}
-
-\section{Заключение}
-
-\vspace*{-2pt}
-  
-  В работе рассмотрен процесс выделения радиоресурсов базовой 
-станцией~5G~NR с~учетов временных блокировок прямой видимости 
-подвижными препятствиями. Предложена математическая модель в~виде 
-многоканальной СМО фазового типа с~ресурсными ограничениями 
-и~переменными требованиями к~ресурсу. Также разработан метод расчета 
-стационарных вероятностей для оценки ключевых показателей системы, 
-которые в~дальнейшем могут быть использованы для нахождения оптимальных 
-сценариев развертывания мобильных сетей на базе технологии~5G~NR.
-  
-  В качестве задачи дальнейших исследований планируется расширить модель 
-добавлением потока заявок с~перекрывающимися требованиями 
-к~ресурсу~\cite{12-bs}, что позволит моделировать процесс облуживания 
-многоадресных соединений~\cite{10-bs, 12-bs, 13-bs}, широко применяемых 
-в~современных проводных и~беспроводных сетях и~позволяющих значительно 
-улучшить эффективность использования ресурсов.
-  
-  \smallskip
-  
-  Авторы благодарят профессора Исследовательского института инноваций 
-г.~Хельсинки (Финляндия) В.\,А.~Наумова за советы по разработке алгоритма 
-для случая СМО фазового типа.
-
-
- {\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-\bibitem{1-bs}
-5G; NR; Physical channels and modulation (3GPP TS 38.211 version 15.2.0 Release 15). ETSI TS 
-138 211 V15.2.0 (2018-07).
-
-\bibitem{3-bs} %2
-\Au{Petrov V., Solomitckii~D., Samuylov~A., Lema~M.\,A., Gapeyenko~M., Moltchanov~D., 
-Andreev~S., Naumov~V., Samouylov~K., Dohler~M.} Dynamic multi-connectivity performance in 
-ultra-dense urban mmWave deployments~/\!\!/ IEEE J.~Sel. Area. Comm., 2017. 
-Vol.~35. Iss.~9. P.~2038--2055. doi: 10.1109\!/\!jsac.2017.2720482.
-
-\bibitem{2-bs} %3
-\Au{Kovalchukov R., Moltchanov~D., Begishev~V., Samuylov~A., Andreev~S., Koucheryavy~Ye., 
-Samouylov~K.} Improved session continuity in 5G NR with joint use of multi-connectivity and 
-guard bandwidth~/\!\!/ IEEE Global Communications Conference, 2018. P.~1--7. 
-doi: 10.1109\!/\!glocom.2018.8647608.
-
-\bibitem{4-bs}
-\Au{Чухно О.\,В., Чухно Н.\,В., Гайдамака~Ю.\,В., Шоргин~С.\,Я.} Аппроксимация 
-коэффициента усиления направленности антенны для анализа <<направленной глухоты>> 
-в~трехмерном пространстве~/\!\!/ Системы и~средства информатики, 2019. T.~29. №\,3. 
-С.~39--51.
-\bibitem{5-bs}
-\Au{Moltchanov D., Samuylov~A., Petrov~V., Gapeyenko~M., Himayat~N., And\-reev~S., 
-Koucheryavy~Ye.} Improving session continuity with bandwidth reservation in mmWave 
-communications~/\!\!/ IEEE Wirel. Commun. Le., 2019. Vol.~8. Iss.~1. P.~105--108. 
-doi: 10.1109\!/\!lwc.2018.2859988.
-\bibitem{6-bs}
-\Au{Gapeyenko M., Samuylov A., Gerasimenko~M., Moltchanov~D., Singh~S.\,A., Riza~M., 
-Aryafar~E., Himayat~N., Andreev~S., Koucheryavy~Ye.} On the temporal effects of mobile 
-blockers in urban millimeter-wave cellular scenarios~/\!\!/ IEEE~T. Veh. 
-Technol., 2017. Vol.~66. Iss.~11. P.~10124--10138. doi: 10.1109\!/\!tvt.2017.2754543.
-\bibitem{7-bs}
-Qualcomm: mmWave 5G NR prototype demo video. {\sf  
-https://www.qualcomm.com/\linebreak videos/mmwave-5g-nr-prototype-demo-video}.
-\bibitem{8-bs}
-3GPP Technical Specification 37.340; NR; Multi-connectivity; Overall description (Release 15), 
-Jan 2018.
-\bibitem{9-bs}
-3GPP 5G. Study on channel model for frequencies from~0.5 
-to~100~GHz (Release 14).  Technical Report 38.901, May 2017.
-\bibitem{10-bs}
-\Au{Samuylov A., Moltchanov D., Krupko~A., Kovalchukov~R., Moskaleva~F., Gaidamaka~Yu.} 
-Performance analysis of mixture of unicast and multicast sessions in 5G NR systems~/\!\!/ 
-Emerging Technologies for Connected Society: 10th Congress (International) on Ultra 
-Modern Telecommunications and Control Systems and Workshops (ICUMT) Proceedings.~--- 
-IEEE, 2018. P.~287--293. doi: 10.1109\!/\linebreak ICUMT.2018.8631230.
-\bibitem{11-bs}
-\Au{Наумов В.\,А., Самуйлов А.\,К.} Модель выделения ресурсов беспроводной сети 
-объемами случайной величины~/\!\!/ Вестник РУДН. Сер. Математика. Информатика. 
-Физика, 2015. Т.~2. С.~38--45.
-\bibitem{12-bs}
-\Au{Samouylov K., Gaidamaka~Y.} Analysis of loss systems with overlapping resource 
-requirements~/\!\!/ Stat. Pap., 2018. Vol.~59. Iss.~4. P.~1463--1470. doi: 
-10.1007\!/\!s00362-018-1041-x.
-\bibitem{13-bs}
-\Au{Biason A., Zorzi~M.} Multicast via point to multipoint transmissions in directional 5G 
-mmWave communications~/\!\!/ IEEE Commun. Mag., 2019. Vol.~57. Iss.~2.  
-P.~88--94. doi: 10.1109\!/\!mcom.2019.1700679.
-
-        \end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 02.09.19}}
-
-
-
-
-%\vspace*{8pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-\newpage
-
-\vspace*{-28pt}
-
-%\hrule
-
-%\vspace*{9pt}
-
-
-
-\def\tit{5G NEW RADIO BASE STATION PERFORMANCE ANALYSIS 
-USING~LIMITED RESOURCE LOSS SYSTEM\\ WITH~VARIABLE 
-DEMANDS\\[-7pt]}
-
-\def\titkol{5G new radio base station performance analysis 
-using~limited resource loss system} % with~variable  demands}
-
-
-
-\def\aut{V.\,A.~Beschastnyi$^1$, D.\,Yu.~Ostrikova$^1$, and~Yu.\,V.~Gaidamaka$^{1,2}$\\[-3pt]}
-\def\autkol{V.\,A.~Beschastnyi, D.\,Yu.~Ostrikova, and~Yu.\,V.~Gaidamaka}
-
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-15pt}
-
-
- \noindent
-$^1$Peoples' Friendship University of Russia (RUDN University), 6 Miklukho-\linebreak
-$\hphantom{^1}$Maklaya Str., 
-Moscow 117198, Russian Federation
-
-\noindent
-$^2$Federal Research Center ``Computer Science and Control'' of the Russian Academy\linebreak
-$\hphantom{^1}$of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2019 vol~29 no\,4}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2019   vol~29   no\,4
-\hfill \textbf{\thepage}}}
-
-
-
-\vspace*{-2pt}
-
-
-  
-  \Abste{The deployment of prospective 5G New Radio telecommunication systems 
-(5G NR) that utilizes millimeter-wave frequencies will allow achieving 
-an unprecedented increase in capacity of mobile wireless networks. This type of 
-communications will provide the possibility to introduce new special 
-resource-consuming and mission critical applications with extremely high 
-requirements for network infrastructure, which are the key driver in the development 
-of 5G~systems. The present authors propose an analytical method for the 
-analysis of 5G~NR systems based on a~multiservice loss system with limited 
-resources and customers that demand varying amount of resource within their service 
-time. For the considered model, the authors propose an approximate method that 
-allows to calculate the stationary probability distribution and other network 
-performance metrics to the specified accuracy. The findings are illustrated with 
-a~numerical example.}
-  
-  \KWE{New Radio; mmWave; Line of Sight, LoS; loss probability; loss system; 
-limited resource; variable demand}
-  
- \DOI{10.14357\!/\!08696527190407} 
-
-\vspace*{-18pt}
-
-\Ack
-
-\vspace*{-6pt}
-
-\noindent
-The publication has been prepared with the support of the ``RUDN University Program 5-100'' and 
-funded by the Russian Foundation for Basic Research
- according to the research projects Nos.\,18-07-00576 and 18-37-00380.
-
-\vspace*{-6pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-\vspace*{-6pt}
-
-\bibitem{1-bs-1}
-3GPP TR 38.211; NR; Physical channels and modulation (Release 15), Dec 2017.
-
-\bibitem{3-bs-1}
-\Aue{Petrov, V., D.~Solomitckii., A.~Samuylov, M.\,A.~Lema, M.~Gapeyenko, 
-D.~Moltchanov, S.~Andreev., V.~Naumov, K.~Samouylov, and M.~Dohler.} 
-2017. Dynamic multi-connectivity performance in ultra-dense urban mmWave 
-deployments. \textit{IEEE J.~Sel. Area. Comm.} 35(9):2038--2055.
-
-\bibitem{2-bs-1}
-\Aue{Kovalchukov, R., D.~Moltchanov, V.~Begishev, A.~Samuylov, 
-S.~Andreev, Y.~Koucheryavy, and K.~Samouylov.} 2018. Improved session 
-continuity in 5G NR with joint use of multi-connectivity and guard bandwidth. 
-\textit{2018 IEEE Global Communications Conference} 1--7.
-
-\bibitem{4-bs-1}
-\Aue{Chukhno, O.\,V., N.\,V.~Chukhno, Yu.\,V.~Gaidamaka, and 
-S.\,Ya.~Shorgin.} 2019. Approksimatsiya koeffitsienta usileniya napravlennosti 
-antenny dlya analiza ``napravlennoy glukhoty'' v~trekhmernom prostranstve 
-[Approximation of antenna directivity gain for directional deafness analysis in 
-three-dimensional space]. \textit{Sistemy i~Sredstva 
-Informatiki~--- Systems and Means of Informatics} 29(3):39--51.
-\bibitem{5-bs-1}
-\Aue{Moltchanov, D., A.~Samuylov, V.~Petrov, M.~Gapeyenko, N.~Himayat, 
-S.~Andreev, and Ye.~Koucheryavy.} 2019. Improving session continuity with 
-bandwidth reservation in mmWave communications. \textit{IEEE Wirel. 
-Commun. Le.} 8(1):105--108.
-\bibitem{6-bs-1}
-\Aue{Gapeyenko, M., A.~Samuylov, M.~Gerasimenko, D.~Moltchanov, 
-S.\,A.~Singh, M.~Riza, E.~Aryafar, N.~Himayat, S.~Andreev, and 
-Ye.~Koucheryavy.} 2017. On the temporal effects of mobile blockers in urban 
-millimeter-wave cellular scenarios. \textit{IEEE~T. Veh. 
-Technol.} 66(11):10124--10138.
-\bibitem{7-bs-1}
-Qualcomm, mmWave 5G NR prototype demo video. Available at {\sf 
-https://www.\linebreak qualcomm.com/videos/mmwave-5g-nr-prototype-demo-video} 
-(accessed July~17, 2019).
-\bibitem{8-bs-1}
-3GPP. NR: Multi-connectivity; Overall description (Release 15). 3GPP TS 37.34 
-V15.2.0. 2018.
-\bibitem{9-bs-1}
-3GPP. 5G. May 2017. Study on channel model for frequencies from~0.5 to~100~GHz 
-(Release 14). Technical Report~38.901.
-\bibitem{10-bs-1}
-\Aue{Samuylov, A., D. Moltchanov, A.~Krupko, R.~Kovalchukov, 
-F.~Moskaleva, and Yu.~Gaidamaka.} 2018. Performance analysis of mixture of 
-unicast and multicast sessions in 5G NR systems. \textit{10th Congress 
-(International) on Ultra Modern Telecommunications and Control Systems and 
-Workshops}. IEEE. 1--7.
-doi: 10.1109\!/\linebreak ICUMT.2018.8631230.
-\bibitem{11-bs-1}
-\Aue{Naumov, V.\,A., and A.\,K.~Samuylov.} 2015. Model' vydeleniya resursov 
-besprovodnoy seti ob''emami sluchaynoy velichiny
-[Queuing system with resource allocation of the random volume]. 
-\textit{RUDN~J. Mathematics Information Sciences Physics} 2:38--45.
-\bibitem{12-bs-1}
-\Aue{Samouylov, K., and Y.~Gaidamaka}. Y. 2018. Analysis of loss systems 
-with overlapping resource requirements. \textit{Stat. Pap.}  
-59(4):1463--1470.
-doi: 
-10.1007\!/\!\mbox{s00362-018-1041-x}.
-\bibitem{13-bs-1}
-\Aue{Biason, A., and M.~Zorzi.} 2019. Multicast via point to multipoint 
-transmissions in directional 5G mmWave communications. \textit{IEEE 
-Commun. Mag.} 57(2):88--94. doi: 10.1109\!/\!mcom.2019.1700679.
-\end{thebibliography}
-} }
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received September 2, 2019}} 
-
-\vspace*{-16pt}
-
-
-\Contr
-
-\vspace*{-6pt}
-
-\noindent
-\textbf{Beschastnyi Vitalii A.} (b.\ 1992)~--- PhD student, Department of Applied 
-Probability and Informatics, Peoples' Friendship University of Russia (RUDN 
-University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
-\mbox{beschastnyy-va@rudn.ru}
-  
-  %\vspace*{3pt}
-  
-  \noindent
-  \textbf{Ostrikova Daria Yu.} (b.\ 1988)~--- Candidate of Science (PhD) in 
-physics and mathematics, senior lecturer, Department of Applied Probability and 
-Informatics, Peoples' Friendship University of Russia (RUDN University), 
-6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation;  
-\mbox{ostrikova-dyu@rudn.ru}
-
-  %\vspace*{3pt}
-  
-  \noindent
-\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- Doctor of Science in physics and 
-mathematics, professor, Department of Applied Probability and Informatics, Peoples' 
-Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 
-117198, Russian Federation; senior 
-scientist, Federal Research Center ``Computer Science and Control'' of the Russian 
-Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian 
-Federation; \mbox{gaydamaka-yuv@rudn.ru}
-
-
-\label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}
-  

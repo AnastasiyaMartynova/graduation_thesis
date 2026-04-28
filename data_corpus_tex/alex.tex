@@ -1,1025 +1,0 @@
-\def\stat{alex}
-
-\def\tit{ИСПОЛЬЗОВАНИЕ ИНСТРУМЕНТОВ ДЛЯ ПАССИВНОГО
-ТЕСТИРОВАНИЯ ПРИ СЕРТИФИКАЦИИ КЛИЕНТОВ
-ТРЕЙДИНГОВЫХ СИСТЕМ$^*$}
-
-\def\titkol{Использование инструментов для пассивного
-тестирования при сертификации клиентов} %трейдинговых систем}
-
-\def\autkol{А.\,Н. Алексеенко, А.\,А. Аверина, Д.\,С. Шаров и др.}
-
-\def\aut{А.\,Н. Алексеенко$^1$, А.\,А. Аверина$^2$, Д.\,С. Шаров$^3$,
-П.\,А.~Проценко$^4$, И.\,Л.~Иткин$^5$}
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Статья рекомендована к публикации в журнале Программным комитетом конференции <<Tools \& Methods of Program
-Analysis>> (<<Инструменты и методы анализа программ>>, TMPA-2013, 10--12~октября 2013~г., г.~Кострома, РФ).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{ООО <<ИТС-ЭКСПЕРТ>>, г.\ Москва, Andrey.Alexeenko@exactprosystems.com}
-\footnotetext[2]{ООО <<ИТС-ЭКСПЕРТ>>, г.\ Кострома, Nastasya-89@bk.ru}
-\footnotetext[3]{ООО <<ИТС-ЭКСПЕРТ>>, г.\ Кострома, Daniel.Sharov@exactprosystems.com}
-\footnotetext[4]{Exactpro Systems LLC, США, Калифорния,  Pavel.Protsenko@exactprosystems.com}
-\footnotetext[5]{Exactpro Systems LLC, США, Калифорния, Iosif.Itkin@exactprosystems.com}
-
-            \label{st\stat}
-
-            \vspace*{-6pt}
-
-\Abst{Жизненный цикл разработки биржевого и брокерского программного
-обеспечения помимо проверки функциональных и технических характеристик
-системы включает в себя обязательный этап интеграционного тестирования,
-называемый сертификацией клиентов. Этот этап призван обеспечить
-совместимость систем автоматизированной торговли, под\-клю\-ча\-емых к бирже или
-брокеру посредством финансовых протоколов (таких как Financial
-Information eXchange (FIX)/FAST, ITCH или
-специализированные бинарные интерфейсы доступа). В~статье представлен
-оригинальный инструмент, разработанный для проверки совместимости торговых
-систем. Отличительная особенность разработанного инструмента~---
-унифицированный способ поддержки множества протоколов. Приведены
-примеры его использования при самостоятельной сертификации участников
-торгов, а также при масштабных миграциях трейдинговых платформ.}
-
-\KW{финансовые протоколы; FIX-протокол; тестирование совместимости;
-самостоятельная сертификация; торговый брокер; биржа}
-
-  \DOI{10.14357\!/\!08696527140206}
-
-              \vspace*{-9pt}
-
-
-
-\vskip 12pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-
-\section{Введение}
-
-Адаптация новых клиентов к трейдинговой платформе и их поддержка при
-обновлениях программного обеспечения~--- это один из ключевых
-биз\-нес-про\-цес\-сов биржевых и брокерских организаций~[1--3]. Существенной
-составляющей этого процесса служит тестирование, проводимое для выявления
-проблем с совместимостью трейдинговой платформы с системами,
-принадлежащими подключаемым к бирже или брокеру участникам торгов,
-называемое сертификацией клиентов~[4].
-
-Сертификация клиентов обязательна для любого оператора биржевой или
-брокерской платформы, предоставляющей возможность осуществлять
-финансовые транзакции, и в настоящее время широко используется в
-финансовой индустрии~[5]. Ссылки на правила сертификации клиентов и
-соответствующую документацию можно найти на официальных сайтах
-соответствующих организаций~[6--9].
-
-Программное обеспечение, ранее успешно прошедшее внутреннее
-интеграционное тестирование, проходит после этого через завершающий
-тест~--- интеграцию с клиентами (обычно юридическими лицами).
-Общепринятой практикой является ситуация, когда клиенты и оператор
-трейдинговой платформы задают временной интервал для выполнения
-активного тестирования и оценивают его результаты с обеих сторон.
-
-В связи с тем, что в процесс сертификационного тестирования вовлечены люди,
-представляющие разные компании, данный процесс требует значительной
-степени координации и слаженности работы. Это чрезвычайно важно как с
-финансовой, так и с репутационной точки зрения. Любой дефект про\-грам\-мно\-го
-обеспечения, обнаруженный на этапе сертификационного тестирования,
-является достаточно дорогостоящим с точки зрения его устранения, поскольку
-все стадии жизненного цикла программного обеспечения уже пройдены~[10], а
-любая задержка с обнаружением проблем совместимости вносит существенные
-дополнительные затраты.
-
-К характерным проблемам, с которыми приходится сталкиваться при
-проведении сертификации клиентов, относятся:
-\begin{itemize}
-\item наличие часовых поясов и возникающие в связи с этим сложности в
-планировании и координации проведения тестирования командами
-профессионалов, находящимися физически в разных частях земного шара;
-\item производительность: сертификация может потребоваться нескольким
-клиентам одновременно из-за бизнес- или технических событий, таких как
-выход новых версий программного обеспечения, изменения нормативных
-или технических требований;
-\item компетентность: специалист по обеспечению качества программного
-обеспечения, проводящий сертификацию, обязан обладать должным
-уровнем технических и биз\-нес-зна\-ний;
-\item покрытие: сертификационные тесты должны быть основаны на
-типичных сценариях и обеспечивать значимые результаты.
-\end{itemize}
-
-В трейдинговой индустрии начинает формироваться понимание того, что
-одним из способов преодоления этих проблем может стать создание более
-совершенных решений по автоматизации сертификационного тестирования и
-анализу его результатов~[11]. Несмотря на актуальность автоматизации
-процесса сертификации биржевых/брокерских клиентов, данная проблематика
-пока практически не освещена в отечественной и зарубежной научной
-литературе.
-
-На рынке присутствуют несколько коммерческих инструментов тестирования,
-созданных для ускорения процесса сертификации клиентов:
-\begin{itemize}
-\item FIX Conductor от компании Lasalletech~[12];
-\item FACTS (FIX Automated Certification and Testing Service)
-от B2BITS, EPAM Systems~[13];
-\item CertiFIX от Greenline~[14];
-\item Catalys Studio от Cameron~[15];
-\item Ignition от FIXFlyer~[16];
-\item VegaFABS от Pravega Financial Technologies~[17];
-\item Certpoint от Tradepoint Systems~[18];
-\item Certification Platform от FixSpec.com~[19].
-\end{itemize}
-
-Биржевые платформы используют два основных подхода к сертификации:
-\begin{enumerate}[(1)]
-\item предоставление клиентам специализированного симулятора для
-проведения сертификации~[20--22]. Клиенты проводят тестирование,
-используя предоставленный инструмент, и предоставляют логи
-сертификации;
-\item предоставление доступа к специализированному тестовому
-окружению, которое является уменьшенной копией промышленной
-системы; документирование процедуры; совместное проведение
-сертификации с клиентом либо использование самостоятельной
-сертификации~[23]; использование пассивных методов, таких как перехват
-трафика сетевых подключений или данные из лог-фай\-лов, для анализа
-успешности и полноты проведенной процедуры сертификации.
-\end{enumerate}
-
-Оба подхода в той или иной степени реализованы в существующих
-коммерческих решениях.
-
-Основное достоинство метода, основанного на использовании симуляторов,~---
-это снижение нагрузки на сертифицирующую организацию и клиентов,
-обеспечиваемое возможностью проводить сертификацию в любое время суток,
-а не только в период открытого торгового дня. Проблема, специфичная для всех
-симуляторов,~--- отсутствие гарантии, что фактическое сообщение, отправленное
-с его помощью, идентично сообщениям, отправляемым реальным
-программным обеспечением~[24].
-
-Пассивное тестирование является, на взгляд авторов, наиболее корректным
-методом проведения сертификации клиентов. Общая концепция пассивного
-тес\-ти\-ро\-ва\-ния и ее преимущества описаны в~[25], различные алгоритмы
-пассивного тес\-ти\-ро\-ва\-ния предложены в~[26, 27]. Основным преимуществом
-пассивного тестирования является то, что инструмент для тестирования не
-оказывает влияния на тестируемую систему и не приводит к созданию потоков
-дополнительных сообщений. Данное преимущество, однако, одновременно
-является и недостатком: для успешного проведения пассивного тестирования
-необходимые сообщения должны быть кем-то созданы. В~случае сертификации
-клиентов требуется привлекать представителей другой компании для создания
-входящего потока сообщений.
-
-Данная практика неизбежна при первичной сертификации. Однако с \mbox{целью}
-снижения временн$\acute{\mbox{ы}}$х затрат сторонних организаций требуется использовать
-более эффективные методы: например, предложенный в~[28] подход.
-Используя данные первичной сертификации для автоматизированного создания
-новых сценариев тестирования при сохранении неизменной спецификации
-протокола доступа, оператор трейдинговой платформы получает возможность
-провести повторную сертификацию клиента самостоятельно.
-
-Присутствующие на рынке инструменты для сертификации клиентов обладают
-следующими ограничениями:
-\begin{itemize}
-\item специализация на одном фиксированном протоколе, например
-FIX~[29];
-\item интерактивные инструменты анализа данных и создания новых
-сценариев малопригодны для обработки действительно больших объемов
-данных о гетерогенных клиентских подключениях.
-\end{itemize}
-
-Авторы принимают участие в разработке и использовании программного
-решения компании Exactpro Systems LLC, направленного на преодоление
-указанных ограничений~[30, 31]. Созданный инструмент описывается во
-второй части данной статьи. Третья часть содержит описание практического
-использования созданного инструмента для самостоятельной сертификации
-участников биржевых торгов. Четвертая часть описывает использование
-разработанного инструмента при масштабных миграциях брокерских систем.
-
-\section{Многопротокольное решение для пассивного
-тестировання трейдинговых систем}
-
-Инструмент для пассивного тестирования сетевых подключений к
-трейдинговым системам разработан с использованием языка Java и системы
-управления базами данных MySQL. В~основе подхода~--- унифицированное
-описание структуры протокольных сообщений: система словарей. Для каждого
-протокола создается словарь. Для групп протоколов может потребоваться
-написание специальных модулей, приводящих сетевые потоки данных к
-унифицированному внутреннему формату на основе словарей. Концепция
-близка к логике Complex Events Processing~[32]. Для создания шаблона словаря
-был взят и доработан для большей общности шаблон словарей, используемый в
-системе QuickFIX/J~[33].
-
-Разработанный инструмент может получать входящие данные о перехваченных
-сетевых сообщениях, полученных с использованием tcpdump~[34] или
-различных прокси-сер\-ве\-ров~[35]. Пользователю также предоставлена
-возможность загружать лог-фай\-лы, содержащие массив сообщений, в
-настраиваемом формате.
-
-\begin{figure}[b] %fig1
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128.167mm
- \epsfbox{ale-1.eps}
- }
- \end{center}
- \vspace*{-9pt}
-\Caption{Процесс обработки сообщений в инструменте тестирования и сертификации
-(UDP~--- User Datagram Protocol; CCP~--- Compression Control Protocol;
-PCAP~--- packet capture; LAS~--- Live Access Server;
-XML~--- eXtensible Markup Language}
-\vspace*{-9pt}
-\end{figure}
-
-
-Основная таблица в базе данных содержит информацию о каждом
-перехваченном пакете, включая повторную пересылку TCP (Transmission Control
-Protocol) дан\-ных.
-Если
-трейдинговая система находится под нагрузкой, сетевой пакет может содержать
-несколько сообщений или же сообщение может быть разбито между
-несколькими TCP-па\-ке\-та\-ми. Выделив сообщения из сетевых пакетов,
-инструмент делает попытку конвертации в унифицированный формат на основе
-словарей. Информация о сетевых пакетах и сообщениях, не прошедших
-проверку посредством словарей, заносится в отдельную таблицу, по сути
-содержащую список проблем сертификации первого уровня.
-
-\begin{figure}[b] %fig2
-\vspace*{-5pt}
- \begin{center}
- \mbox{%
- \epsfxsize=120mm
- \epsfbox{ale-2.eps}
- }
- \end{center}
- \vspace*{-11pt}
-  \Caption{Графический пользовательский интерфейс инструмента тестирования и
-сертификации}
-  \end{figure}
-
-Детали перехваченных и успешно обработанных сообщений могут быть
-сохранены в реляционную базу данных посредством двух основных методов:
-\begin{enumerate}[(1)]
-\item использования общей таблицы, содержащей идентификаторы
-сообщения, имя параметра и его значение;
-\item использования индивидуальной таблицы для каждого типа сообщения,
-размещая параметры сообщения в соответствующих колонках с именами,
-произведенными от имен параметров.
-\end{enumerate}
-
-Преимущество первого подхода~--- это большая общность. Преимущество
-второго подхода~--- удобство работы с SQL (Structured Query Language)
-за\-про\-са\-ми к базе данных.
-В~разработанном инструменте используется комбинация обоих подходов: для
-каждого типа сообщений создана индивидуальная таблица, а данные из
-повторяющихся групп хранятся в общей таблице. Рисунок~1 содержит схему
-использования разработанного инструмента для перехвата и хранения сетевых
-сообщений.
-
-
-Перехваченные сообщения декодируются и складываются в базу данных
-инструмента. Все отчеты по сертификации хранятся в виде SQL-за\-про\-сов.
-При добавлении нового вида отчетов или иного требования нет необходимости
-менять код самого инструмента.
-
-С помощью SQL-запроса можно найти сообщения по списку и их статус и
-выделить их цветом с помощью пользовательского интерфейса для лучшего
-зрительного восприятия.
-SQL-за\-про\-сы также могут быть использованы для нахождения необходимой
-статистики по сообщениям, числу заходов в приложения, синтаксически не
-проанализированным сообщениям и~т.\,д.
-
-Графический интерфейс пользователя разработанного инструмента позволяет
-аналитику, отвечающему за сертификацию или обеспечение качества
-трейдинговой платформы, просматривать в реальном режиме времени
-сообщения и события, включая детали сетевых пакетов, результаты
-верификации посредством системы словарей, значения индивидуальных полей
-и исходные бинарные данные.
-
-Сертификационные тесты и сверки данных могут быть реализованы
-посредством обычных SQL-за\-про\-сов. Инструмент предоставляет
-возможность подсветки и анализа сообщений, полученных в результате
-выполнения того или иного запроса. На рис.~2 представлен пример окна
-графического интерфейса разработанного инструмента.
-
-
-
-\section{Самостоятельная сертификация участников биржевых
-торгов}
-
-
-
-Регулирующие органы требуют от операторов биржевой системы
-пред\-о\-став\-ления эквивалентного доступа всем участникам торгов~[36]. При
-внесении изменений в технологическую платформу биржи ее оператор обязан
-провести сертификацию всех подключенных торговых систем в короткий
-промежуток времени. Данная особенность процесса создает существенную
-нагрузку на отделы организации~--- оператора биржевой площадки,
-отвечающие за поддержку клиентов. Для снижения этой нагрузки биржевые
-площадки используют метод самостоятельной сертификации.
-
-Клиентам предоставляется доступ к тестовому окружению и сценарий
-выполнения сертификационных тестов. После выполнения шагов
-предоставленного сценария клиент высылает логи процесса в
-сертифицирующую организацию, где они проходят дополнительную проверку.
-
-Пассивное тестирование значительно упрощает процесс сертификации для
-участников торгов. При данном подходе от них требуется только подключиться
-к тестовому окружению и отправить заявки, обозначенные в тестовом
-сценарии. Таким образом, участники торгов избавлены от выполнения любых
-шагов (таких как установка дополнительного программного обеспечения, сбор
-логов и~т.\,д.), кроме тех, которые непосредственно необходимы для
-подключения к технологической платформе биржи.
-
-Разработанный инструмент перехватывает все сообщения, переданные от
-клиента к бирже или в обратную сторону, разбирает структуру и содержимое
-каждого сообщения и сохраняет все в реляционную базу данных. Используя
-SQL-за\-про\-сы, аналитик сертифицирующей организации может получить
-статистику по попыткам выполнения шагов тестового сценария и их
-успешности для каждого из участников торгов. Данные о сетевых пакетах
-позволяют также обнаружить дополнительные проблемы, такие как разрывы
-соединений или проблемы с буферизацией сообщений.
-
-Приведем пример сертификационного SQL-сце\-на\-рия, проверяющего
-успешность размещения клиентом агрессивной рыночной заявки, в результате
-появления которой по исполнении ее против заявок, размещенных на
-противоположной стороне стакана заявок, образовались две и более сделки:
-
-\vspace*{-4pt}
-
-\noindent
-\begin{verbatim}
-insert into t_native_testcases
-(user,sourceip,sourceport,testcase,timestamp,clordid,ord
-erid,otherid)
-select distinct n.user, n.sourceip, n.sourceport, 'MEx-
-012.2 Agg. MO' as testcase, n.timestamp, n.clordid,
-e.orderid, ''
-from t_lsenative_neworder n
-, t_lsenative_executionreport e
-, t_lsenative_executionreport e2
-where n.user=e.user
-and n.sourceip=e.destinationip and
-n.sourceport=e.destinationport
-and n.clordid=e.clordid and n.user=e2.user and
-n.sourceip=e2.destinationip
-and n.sourceport=e2.destinationport and
-n.clordid=e2.clordid
-and n.ordertype=1 and e.ordstatus=1 and
-e.tradeliquidityindicator='R'
-and e2.typeoftrade='2' and e2.ordstatus in (1,2)
-and e2.tradeliquidityindicator='R' and
-e2.typeoftrade='2'
-and e.execid <> e2.execid
-order by user, clordid, orderid
-\end{verbatim}
-
-\vspace*{-2pt}
-
-Для нескольких биржевых платформ были разработаны совокупности
-SQL-сце\-на\-ри\-ев, покрывающие все требования по сертификации
-клиентских соединений, опубликованные организатором торгов~\cite{9-al}.
-
-\begin{figure}[b] %fig3
-\vspace*{-9pt}
- \begin{center}
- \mbox{%
- \epsfxsize=126.54mm
- \epsfbox{ale-3.eps}
- }
- \end{center}
- \vspace*{-13pt}
-\Caption{Схематичный пример реализации предлагаемого решения}
-\end{figure}
-
-\vspace*{-4pt}
-
-\section{Миграция брокерской платформы с~большим числом
-гетерогенных клиентских подключений}
-
-\vspace*{-2pt}
-
-В сравнении с биржевыми платформами брокерские системы обычно
-предо\-став\-ляют существенно более широкие возможности по настройке
-протокола взаимодействия с системами клиентов: например, используя
-возможности таких систем, как UL Bridge~[37]. Один и тот же клиент может
-использовать одновременно несколько брокеров для получения доступа на
-биржу. Часто брокеры стараются снизить количество изменений в протоколах
-коммуникации, которые конкретный клиент вынужден имплементировать со
-своей стороны. Облегчая взаимодействие с клиентом, этот подход
-одновременно приводит к появлению большого количества гетерогенных
-конфигураций со стороны брокерской трейдинговой платформы. При
-внутренних изменениях брокерской платформы возникает необходимость в
-регрессионном тесте на совместимость с клиентскими системами.
-
-Разработанный инструмент позволяет обработать имеющиеся данные из
-тес\-то\-вых и промышленных окружений и создать необходимый набор активных
-тестовых сценариев. Выполнив эти сценарии против тестового окружения без
-привлечения конечных клиентов, тестовый инструмент запускает
-SQL-сце\-на\-рии, выполняющие сверку ответов брокерской платформы до и
-после изменений. Особенность созданного авторами инструмента состоит в
-том, что он позволяет проводить этот процесс одновременно для большого
-числа клиентов, подключений, рынков и типов сообщений. Гибкость при
-создании сверяющих SQL-за\-про\-сов позволяет не только исключить из
-сравнения поля, про которые заранее известно, что их значения должны
-различаться (например, sequence numbers, timestamps и~др.), но и задать
-требования по обработке более сложных расхождений.
-
-Подход доказал свою жизнеспособность и эффективность при миграции
-трейдинговой платформы одного из крупнейших международных брокеров,
-предо\-став\-ля\-юще\-го доступ к торговле производными финансовыми
-инструментами. Последовательность шагов отображена на схеме (рис.~3).
-
-
-
-Логи из промышленной системы загружаются в базу данных инструмента для
-тестирования и сертификации. Генератор скриптов использует данную базу для
-создания совокупности тестовых сценариев, исполняемых активным
-инструментом для функционального тестирования. Логи выполнения тестовых
-сценариев загружаются в базу данных для сравнения с данными, полученными
-из промышленной системы.
-
-\vspace*{-6pt}
-
-\section{Заключение}
-
-С ростом объемов автоматизированной электронной торговли стабильность и
-устойчивость финансовых рынков будут во все большей степени зависеть от
-корректной совместной работы платформ, обеспечивающих инфраструктуру
-рынков, и подключенных к ним автоматизированных трейдинговых систем.
-Стоимость процессов подключения новых клиентов, их сертификации и
-сохранения со\-вмес\-ти\-мости при регулярно вносимых изменениях существенно
-влияет на общую стоимость функционирования биржевых и брокерских
-систем.
-
-Представленный в статье инструмент используется с целью повышения
-эффективности и экономичности указанных процессов. Имеется позитивный
-опыт его применения в рамках проектов компании Exactpro Systems LLC на
-заключительных этапах выпуска в промышленную эксплуатацию
-крупномасштабных трейдинговых систем для торговли финансовыми
-инструментами разных \mbox{классов}.
-{ %\looseness=-1
-
-}
-
-В статье описаны используемые в индустрии методы сертификации клиентских
-подключений и сделаны выводы о преимуществах подхода, основанного на
-использовании многопротокольного пассивного инструмента, сохраняющего
-данные в реляционную систему управления базами данных. Рассмотрен также вариант использования
-данного инструмента с целью создания активных тестов и сокращения затрат
-при масштабных миграциях систем с множеством гетерогенных клиентских
-подключений.
-
-Дальнейшие исследования будут направлены на оптимизацию структуры базы
-данных: в частности, в вопросе распространения разработанных методов на
-трейдинговые протоколы, основанные не на сетевых взаимодействиях, а на
-программных интерфейсах доступа (API).
-
-\vspace*{-6pt}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{1-al}
-Shock of the new~/\!\!/ Markit Magazine, Winter 2010. Iss.~10~--- Focus: Client Onboarding. {\sf
-http://www.markit.com/assets/en/docs/markit-magazine/issue-10/mm10\_focus5-onboardingroundtable.pdf}.
-
-\bibitem{3-al} %2
-\Au{Pierron A., Jaswal A.} Institutional client on-boarding in the financial industry: Time to move
-to the industrialization phase. Celent Report, 2012. {\sf
-http://www.celent.com/ reports/institutional-client-boarding-financial-industry}.
-
-\bibitem{2-al} %3
-Client onboarding: Solving challenges, maximizing opportunities~/\!\!/ Fenergo, April 2013. {\sf
-http://www.fenergo.com/industry-knowledge/whitepapers/client-onboarding-solving-challenges-maximizing-opportunities.html}.
-
-
-\bibitem{4-al}
-Challenges and solutions to onboarding trading clients.
-{\sf http://www. trdpnt.com/challenges-solutions-onboarding-trading-clients}.
-
-\bibitem{5-al}
-FIA market access risk management recommendations, 2010. {\sf
-http://www. futuresindustry.org/downloads/Market\_Access-6.pdf}.
-
-
-
-\bibitem{7-al} %6
-BOX Options Exchange. Software Certification.
-{\sf http://boxexchange.com/what-you-need-to-know/software-certification}.
-
-\bibitem{8-al} %7
-Eris exchange electronic trading platform certification process.
-Eris Exchange, LLC, 2013.
-{\sf http://www.erisfutures.com/sites/default/files/Electronic\_\linebreak  Trading\_Certification\_Process.pdf}.
-
-\bibitem{9-al} %8
-TQ 601~--- Technical specification: Turquoise equities guide to certification,
-2013. Iss.~2.2. {\sf
-http://www.lseg.com/sites/default/files/content/documents/TQ601\%20-\%20Guide\%20To\%20Application\%20Certifcation.pdf}.
-
-\bibitem{6-al} %9
-  Порядок сертификации ВПТС ОАО Московская биржа~/\!\!/ Московская биржа,
-2013. {\sf http://fs.moex.com/files/4531}.
-
-\bibitem{10-al} %10
-\Au{Shull F., Basili V., Boehm B., Brown A.\,W., Costa~P., Lindvall~M., Port~D., Rus~I.,
-Tesoriero~R., Zelkowitz~M.} What we have learned about fighting defects~/\!\!/ METRICS '02: 8th
-Symposium (International) on Software Metrics Proceedings.~--- Washington, DC, USA: IEEE
-Computer Society, 2002. P.~249--258.
-{\sf http://www.cs.umd.edu/$\sim$basili/publications/proceedings/P95.pdf}.
-\bibitem{11-al}
-\Au{Edelen C.} Making the case for automated FIX certification~/\!\!/ Wall Street \& Technology,
-May 24, 2013. {\sf http://www.advancedtrading.com/high-frequency/making-the-case-for-automated-fix-certif/240155554}.
-
-\bibitem{12-al}
-Lasalletech. FIX Conductor$^{\mathrm{TM}}$: Test, certify and onboard~--- with the ease of automation.
- {\sf http://www.lasalletech.com/products/fix-automated-onboarding}.
-
-\bibitem{13-al}
-B2BITS, EPAM Systems. FACTS 2.0~--- FIX Automated Certification and Testing.  {\sf
-http://www.b2bits.com/trading\_solutions/fix\_testing\_facts.html}.
-
-\bibitem{14-al}
-Greenline Financial Technologies, Inc. CertiFIX$^\registered$:
-Automate and simplify your FIX certification process,
- 2014. {\sf http://www.greenlinetech.com/products/certifix.php} (18.03.14).
-
-\bibitem{15-al}
-Cameron. Catalys studio: Enhance analysis quality and support for your FIX-based business.
-{\sf http://www.camerontecgroup.com/products/pdf/Catalys-Studio-US.pdf}.
-
-\bibitem{16-al}
-FIXFlyer. Ignition: Certification and trade validation,  2009. {\sf
-http://fixflyer.com/ materials/software/Ki/FlyerIgnition.pdf}.
-
-\bibitem{17-al}
-Pravega$^\registered$ Financial Technologies. VegaFABS,  2009.
-{\sf http://www.pravegatech.com/ index.php?option=com\_content\&view=article\&id=64\&Itemid=65}.
-
-\bibitem{18-al}
-Tradepoint Systems. Certpoint: Client onboarding \& certification.  {\sf
-http://www.\linebreak trdpnt.com/certpoint}.
-
-\bibitem{19-al}
-\Au{Siddiqui A.} FixSpec launches innovative multi-venue certification utility to streamline
-connectivity~/\!\!/ Forex Magnates, February 27, 2013.
-{\sf http://forexmagnates. com/fixspec-launches-innovative-multi-venue-certification-utility-to-streamline-connectivity}.
-
-\bibitem{20-al}
-HKEx Orion Central Gateway (OCG) \& HKEx Orion Market Data Platform (OMD)~---
-simulator packages~/\!\!/ The Stock Exchange of Hong Kong Ltd., December~31, 2012. {\sf
-http://www.hkex.com.hk/eng/market/partcir/sehk/2012/\linebreak Documents/CTMO06612E.pdf}.
-
-\bibitem{21-al}
- BM\&FBOVESPA. MyCTC (Certification and Testing Center): User Guide. Ver.~1.1.
- Last modified: 24.05.2013.
-{\sf http://www.bmfbovespa.com.br/en-us/services/ download/MyCTC-User-Guide.pdf}.
-
-\bibitem{22-al}
-CME Group. Client System Certification. {\sf
-http://www.cmegroup.com/confluence/ display/EPICSANDBOX/Client+System+Certification}.
-
-\bibitem{23-al}
-Customer Certification and Testing Services~/\!\!/ The London Stock Exchange. November~23,
-2013. {\sf
-http://www.lseg.com/areas-expertise/technology/market-connectivity/customer-certification-and-testing-services}.
-
-\bibitem{24-al}
-\Au{Zverev A., Bulda A.} Exchange simulators for SOR/Algo testing: Advantages vs.\
-shortcomings~/\!\!/ ExTENT Conference, 2011.
-{\sf http://www.slideshare.net/ IosifItkin/exchange-simulators-for-sor-algo-testing-advantages-vs-shortcomings}.
-
-\bibitem{25-al}
-\Au{Brzezinski K.\,M.} Towards the methodological harmonization of passive testing across ICT
-communities~/\!\!/ Engineering the Computer Science and IT.~--- InTech, 2009. P.~143--169. {\sf
-http://cdn.intechopen.com/pdfs-wm/8939.pdf}.
-
-\bibitem{26-al}
-\Au{Lee D., Chen D., Ruibing H., Miller~R.\,E., Jianping~Wu, Xia~Y}.
-Network protocol system monitoring~--- a~formal approach with passive
-testing~/\!\!/ IEEE/ACM Trans. Networking (TON), 2006. Vol.~14. No.\,2. P.~424--437.
-{\sf http://dl. acm.org/citation.cfm?id=1217634}.
-
-\bibitem{27-al}
-\Au{Cavalli A., Maag S., Montes de Oca E.} A~passive
-conformance testing approach for a
-MANET routing protocol~/\!\!/ SAC'09: 2009 ACM Symposium on Applied Computing
-Proceedings.~--- New York, NY, USA: ACM, 2009. P.~207--211. {\sf
-http:// dl.acm.org/citation.cfm?id=1529326}.
-
-\bibitem{28-al}
-\Au{Newsome J., Brumley D., Franklin J., Song~D.} Replayer: Automatic
-protocol replay by binary
-analysis~/\!\!/ CCS'06:  13th ACM Conference on Computer and Communications Security
-Proceedings.~--- Pittsburgh, PA, USA: Carnegie Mellon University, 2006. P.~311--321. {\sf
-http://bitblaze.cs.berkeley.edu/papers/replayer-ccs2006.pdf}.
-
-\bibitem{29-al}
-FIX Trading Community: Shaping the future of trading.
-{\sf http://www.\linebreak fixtradingcommunity.org}.
-
-\bibitem{31-al} %30
-\Au{Zaitseva N., Popovchuk N.} The next step in reconciliation testing~/\!\!/ ExTENT Conference,
-2012. {\sf
-http://www.slideshare.net/extentconf/extent3-exactpro-thenextstepinreconciliationtesting}.
-
-\bibitem{30-al} %31
-\Au{Zverev A., Moskaleva O., Kudryavtseva M., Doronichev~D., Bulda~A.} Four houses~--- test
-tools presentation~/\!\!/ ExTENT Conference, 2012. {\sf
-http://www.slideshare.net/ extentconf/extent3-exactpro-fourhousestesttools2012-1}.
-
-
-\bibitem{32-al}
-\Au{Cugola G., Margara A.} Processing flows of information: From data stream
-to complex event processing~/\!\!/ ACM Computing Surveys (CSUR), 2012. Vol.~44.
-Iss.~3. Article No.\,15.
-P.~359--360. {\sf http://dl.acm.org/citation.cfm?id=2187677}.
-
-\bibitem{33-al}
-QuickFIX/J: 100\% Java open source FIX engine.
-{\sf http://quickfixj.org}.
-
-\bibitem{34-al}
-\Au{Fuentes F., Kar D.\,C.} Ethereal vs.\ Tcpdump: A~comparative study on packet sniffing tools
-for educational purpose~/\!\!/ J.~Computing Sci. Colleges, 2005. Vol.~20. Iss.~4.
-P.~169--176. {\sf http://dl.acm.org/citation.cfm?id=1047873}.
-
-\bibitem{35-al}
-\Au{Aston Ph., Fitzgerald C.} TCP proxy~/\!\!/ The Grinder, 26.11.2013. {\sf
-http://grinder. sourceforge.net/g3/tcpproxy.html}.
-
-\bibitem{36-al}
-Investment Services Directive~--- Markets in Financial Instruments Directive (MiFID).
-The EU Single Market.
-{\sf http://ec.europa.eu/internal\_market/securities/ isd/mifid/index\_en.htm}.
-
-\bibitem{37-al}
-FIX Solutions. Ullink. {\sf http://www.ullink.com/fix-solutions.php}.
-
-\end{thebibliography}
-}
-}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в редакцию 13.03.14}}
-
-
-\vspace*{12pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-\def\tit{USAGE OF PASSIVE TESTING TOOLS FOR~CERTIFICATION
-OF~TRADING SYSTEMS CLIENTS}
-
-\def\titkol{Usage of passive testing tools for~certification
-of~trading systems clients}
-
-\def\aut{A.\,N.~Alexeenko$^1$, A.\,A.~Averina$^2$, D.\,S.~Sharov$^2$, P.\,A.~Protsenko$^3$, and~I.\,L.~Itkin$^3$}
-\def\autkol{A.\,N.~Alexeenko, A.\,A.~Averina, D.\,S.~Sharov, et al.}
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-6pt}
-
-\noindent
-$^1$``ITS-EXPERT,'' LLC, 20A/4 Yuzhnoportovy Proyezd 2nd,  Moscow 115088,\\
-$\hphantom{^1}$Russian Federation
-
-\noindent
-$^2$``ITS-EXPERT,'' LLC, 20 Lenin Str., Kostroma 156013, Russian Federation
-
-\noindent
-$^3$``Exactpro Systems,'' LLC, 4040 Civic Center Drive, Suite 200, San Rafael, CA,\\
-$\hphantom{^1}$USA
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2014 vol~24 no\,2}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2014   vol~24   no\,2
-\hfill \textbf{\thepage}}}
-
-
-\Abste{The life cycle of exchange and brokerage software development, along with
-verification of functional and technical characteristics of the system, includes a
-mandatory stage of integration testing called clients certification. The stage is designed
-to ensure the compatibility of automated trading systems which are connected by means
-of financial protocols (such as FIX/FAST, ITCH, or specialized binary access
-interfaces) to an exchange or a broker. The article presents a bespoke tool developed to
-verify the compatibility of trading systems. The distinctive feature of the tool is a
-unified way of supporting multiple protocols. The article also provides a few examples
-of using the tool in self-certification of trading participants and during large-scale
-migrations of trading platforms.}
-\KWE{financial protocols; FIX-protocol, compatibility testing, self-certification;
-trading broker; stock exchange}
-
-\DOI{10.14357\!/\!08696527140206}
-
-%\Ack
-%\noindent
-%  Статья рекомендована к публикации в журнале Программным комитетом конференции <<Tools \& Methods
-%of Program Analysis>> (<<Инструменты и методы анализа программ>>, TMPA-2013), 10--12~октября 2013~г.,
-%г.~Кострома, РФ.
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-
- {\small\frenchspacing
-{%\baselineskip=10.8pt
-%\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{1-al-1}
-Shock of the new. 2010. Focus:
-Client Onboarding.
-\textit{Markit Magazine}, Winter 2010. Iss.~10.  Available at: {\sf
-http://www.markit.com/assets/en/docs/markit-magazine/issue-10/mm10\_focus5-onboardingroundtable.pdf}
-(accessed March~18, 2014).
-
-\bibitem{3-al-1} %2
-\Aue{Pierron A., and A.~Jaswal.}
-2012. Institutional client on-boarding in the financial industry: Time to move
-to the industrialization phase. {Celent Report}. Available at: {\sf
-http://www.celent.com/reports/institutional-client-boarding-financial-industry}
-(accessed March 18, 2014).
-
-\bibitem{2-al-1} %3
-Client onboarding: Solving challenges, maximizing opportunities.
- April 2013. \textit{Fenergo}. Available at: {\sf
-http://www.fenergo.com/industry-knowledge/whitepapers/client-onboarding-solving-challenges-maximizing-opportunities.html}
-(accessed March 18, 2014).
-
-\bibitem{4-al-1}
-Challenges and solutions to onboarding trading clients.
-Available at: {\sf http://www.trdpnt.com/challenges-solutions-onboarding-trading-clients}
- (accessed March 18, 2014).
-
-\bibitem{5-al-1}
-FIA Market access risk management recommendations. April 2010.
-Available at: {\sf
-http://www.futuresindustry.org/downloads/Market\_Access-6.pdf}
-(accessed March 18, 2014).
-
-
-\bibitem{7-al-1} %6
-BOX Options Exchange. Software Certification.
-Available at: {\sf http://boxexchange. com/what-you-need-to-know/software-certification}
-(accessed March 18, 2014).
-
-\bibitem{8-al-1} %7
-Eris Exchange, LLC. 2013. Eris exchange electronic trading platform certification
-process. Available at:
-{\sf http://www.erisfutures.com/sites/default/files/Electronic\_\linebreak Trading\_Certification\_Process.pdf}
- (accessed March 18, 2014).
-
-\bibitem{9-al-1} %8
-TQ 601~--- Technical specification: Turquoise equities guide to certification.
-July~29, 2013. Iss.~2.2.
-Available at
-{\sf http://www.lseg.com/sites/default/files/ content/documents/TQ601\%20-\%20Guide\%20To\%20Application\%20Certifcation. pdf}
-(accessed March 18, 2014).
-
-\bibitem{6-al-1} %9
-Moskovskaya Birzha [Moscow Stock Exchange].
-2013. \textit{Poryadok sertifikacii VPTS OAO Moskovskaya birzha}
-[Procedure for external software and hardware certification of Open
-Joint Stock Company Moscow Stock Exchange].
-Available at: {\sf http://fs.moex.com/files/4531}  (accessed March 18, 2014).
-
-\bibitem{10-al-1}
-\Aue{Shull, F., V.~Basili, B.~Boehm, A.\,W.~Brown, P.~Costa, M.~Lindvall,
-D.~Port, I.~Rus, R.~Tesoriero, and M.~Zelkowitz.}
-2002. What we have learned about fighting defects. \textit{METRICS'02: 8th
-Symposium (International) on Software Metrics Proceedings}.
-Washington, DC, USA: IEEE Computer Society. 249--258.
-Available at: {\sf http://www.cs.umd.edu/$\sim$basili/publications/proceedings/P95.pdf}
-(accessed March~18, 2014).
-
-\bibitem{11-al-1}
-\Aue{Edelen, C.}
-May~24, 2013. Making the case for automated FIX certification.
-\textit{Wall Street \& Technology}.
- Available at: {\sf
-http://www.advancedtrading.com/high-frequency/making-the-case-for-automated-fix-certif/240155554}
-(accessed March 18, 2014).
-
-\bibitem{12-al-1}
-Lasalletech. FIX Conductor$^{\mathrm{TM}}$: Test, certify and onboard~--- with the ease
-of automation.  Available at: {\sf
-http://www.lasalletech.com/products/fix-automated-onboarding} (accessed March 18, 2014).
-
-\bibitem{13-al-1}
-{B2BITS, EPAM Systems}. FACTS 2.0~--- FIX Automated Certification and Testing.
-Available at: {\sf http://www.b2bits.com/trading\_solutions/fix\_testing\_facts.html}
-(accessed March 18, 2014).
-
-\bibitem{14-al-1}
-{Greenline
-Financial Technologies, Inc.} 2014. CertiFIX$^\registered$: Automate and simplify your FIX certification process.
-Available at: {\sf http://www.greenlinetech.com/\linebreak products/certifix.php} (accessed
-March 18, 2014).
-
-\bibitem{15-al-1}
- Cameron. Catalys studio: Enhance analysis quality and support for your FIX-based business.
-Available at: {\sf http://www.camerontecgroup.com/products/pdf/Catalys-Studio-US.pdf}
-(accessed March 18, 2014).
-
-\bibitem{16-al-1}
-FIXFlyer. 2009. Ignition: Certification and trade validation.  Available at: {\sf
-http:// fixflyer.com/materials/software/Ki/FlyerIgnition.pdf} (accessed March 18, 2014).
-
-\pagebreak
-
-\bibitem{17-al-1}
-Pravega$^\registered$ Financial Technologies. 2009. VegaFABS.
-Available at: {\sf http://www.\linebreak pravegatech.com/index.php?option=com\_content\&view=article\&id=64\&Itemid=65}
-(accessed March 18, 2014).
-
-\bibitem{18-al-1}
-Tradepoint Systems. Certpoint: Client onboarding \& certification.
-Available at: {\sf
-http:// www.trdpnt.com/certpoint} (accessed March 18, 2014).
-
-\bibitem{19-al-1}
-\Aue{Siddiqui, A.}
-February~27, 2013. FixSpec launches innovative multi-venue certification utility to streamline
-connectivity. \textit{Forex Magnates}.
-Available at: {\sf http://forexmagnates. com/fixspec-launches-innovative-multi-venue-certification-utility-to-streamline-connectivity}
-(accessed March 18, 2014).
-
-\bibitem{20-al-1}
-{The Stock Exchange of Hong Kong Ltd}. 2012.
-HKEx Orion Central Gateway (OCG) \& HKEx Orion Market Data Platform (OMD)~---
-simulator packages.
-Available at: {\sf
-http://www.hkex.com.hk/eng/market/partcir/ sehk/2012/Documents/CTMO06612E.pdf}
-(accessed March 18, 2014).
-
-\bibitem{21-al-1}
-BM\&FBOVESPA.
-MyCTC (Certification and Testing Center): User Guide. Ver.~1.1. Last modified:
-24.05.2013.  Available at: {\sf
-http://www.bmfbovespa.com.br/en-us/services/download/MyCTC-User-Guide.pdf}
-(accessed March 18, 2014).
-
-\bibitem{22-al-1}
-CME Group. Client System Certification.  Available at: {\sf
-http://www.cmegroup.\linebreak com/confluence/display/EPICSANDBOX/Client+System+Certification}
-(accessed March 18, 2014).
-
-\bibitem{23-al-1}
-Customer Certification and Testing Services.
-\textit{The London Stock Exchange}. November~23,  2013.
-Available at:  {\sf
-http://www.lseg.com/areas-expertise/technology/market-connectivity/customer-certification-and-testing-services}
-(accessed March 18, 2014).
-
-\bibitem{24-al-1}
-\Aue{Zverev, A., and A.~Bulda.}
-2011. Exchange simulators for SOR/Algo testing: Advantages vs.\
-shortcomings. \textit{ExTENT Conference}.
-Available at: {\sf http://\linebreak 
-www.slideshare.net/IosifItkin/exchange-simulators-for-sor-algo-testing-advantages-vs-shortcomings}
-(accessed March~18, 2014).
-
-\bibitem{25-al-1}
-\Aue{Brzezinski, K.\,M.} 2009.
-Towards the methodological harmonization of passive testing across ICT
-communities. \textit{Engineering the computer science and IT}.
-InTech. 143--169. Available at: {\sf
-http://cdn.intechopen.com/pdfs-wm/8939.pdf} (accessed March~18, 2014).
-
-\bibitem{26-al-1}
-\Aue{Lee, D., D.~Chen, H.~Ruibing, R.\,E.~Miller, Wu Jianping, and Y.~Xia}.
-2006. Network Protocol
-System Monitoring~--- a~formal approach with passive testing.
-\textit{IEEE/ACM Trans. Networking (TON)} 14(2):424--437.
-Available at: {\sf http:// dl.acm.org/citation.cfm?id=1217634} (accessed March 18, 2014).
-
-\bibitem{27-al-1}
-\Aue{Cavalli, A., S.~Maag, and E.~Montes de Oca.}
-2009. A~passive conformance testing approach for a
-MANET routing protocol. \textit{SAC'09: 2009 ACM Symposium on Applied Computing
-Proceedings}. New York, NY, USA: ACM. 207--211. Available at: {\sf
-http:// dl.acm.org/citation.cfm?id=1529326} (accessed March 18, 2014).
-
-\bibitem{28-al-1}
-\Aue{Newsome, J., D.~Brumley, J.~Franklin, and D.~Song.}
-2006. Replayer: Automatic protocol replay by binary
-analysis. \textit{CCS'06:  13th ACM Conference on Computer and Communications
-Security Proceedings}. Pittsburgh, PA, USA: Carnegie Mellon University.
-311--321. Available at: {\sf
-http://bitblaze.cs.berkeley.edu/papers/replayer-ccs2006.pdf} (accessed March 18, 2014).
-
-\bibitem{29-al-1}
-FIX Trading Community: Shaping the future of trading.
-Available at: {\sf http://www.\linebreak fixtradingcommunity.org}
-(accessed March 18, 2014).
-
-\pagebreak
-
-\bibitem{31-al-1}
-\Aue{Zaitseva, N., and N.~Popovchuk.}
-2012. The next step in reconciliation testing. \textit{ExTENT Conference}
-Available~at: {\sf
-http://www.slideshare.net/extentconf/extent3-exactpro-thenextstepinreconciliationtesting}
-(accessed March 18, 2014).
-
-
-\bibitem{30-al-1}
-\Aue{Zverev, A., O.~Moskaleva, M.~Kudryavtseva, D.~Doronichev, and A.~Bulda.}
-2012. Four houses~--- test
-tools presentation. \textit{ExTENT Conference}. Available~at:\linebreak {\sf
-http://www.slideshare.net/extentconf/extent3-exactpro-fourhousestesttools2012-1}
-(accessed March 18, 2014).
-
-\bibitem{32-al-1}
-\Aue{Cugola, G., and A.~Margara.} 2012.
-Processing flows of information: From data stream to complex event
-processing. \textit{ACM Computing Surveys (CSUR)}.  Article No.\,15.
-44(3):359--360. Available at: {\sf http://dl.acm.org/citation.cfm?id=2187677}
-(accessed March 18, 2014).
-
-\bibitem{33-al-1}
-QuickFIX/J: 100\% Java open source FIX engine.
-Available at: {\sf http://quickfixj.org} (accessed March 18, 2014).
-
-\bibitem{34-al-1}
-\Aue{Fuentes, F., and D.\,C.~Kar.}
-2005. Ethereal vs.\ Tcpdump: A~comparative study on packet sniffing tools
-for educational purpose. \textit{J.~Computing Sci. Colleges}
-20(4):169--176. Available at: {\sf http://dl.acm.org/citation.cfm?id=1047873}
-(accessed March 18, 2014).
-
-\bibitem{35-al-1}
-\Aue{Aston, Ph., and C.~Fitzgerald.}
-2013. TCP proxy. \textit{The Grinder}. Available at: {\sf
-http://grinder. sourceforge.net/g3/tcpproxy.html} (accessed March 18, 2014).
-
-\bibitem{36-al-1}
-Investment Services Directive~--- Markets in Financial Instruments Directive (MiFID).
-\textit{The EU Single Market}. Available at:
-{\sf http://ec.europa.eu/internal\_market/securities/ isd/mifid/index\_en.htm}
-(accessed March 18, 2014).
-
-\bibitem{37-al-1}
-FIX Solutions. \textit{Ullink}.
-Available at: {\sf http://www.ullink.com/fix-solutions.php} (accessed March 18, 2014).
-
-
-
-\end{thebibliography}
-} }
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received March 13, 2014}}
-
-\vspace*{-6pt}
-
-
-\Contr
-
-\noindent
-\textbf{Alexeenko Andrey N.} (b.\ 1983)~--- Head of Department, ``ITS-EXPERT,'' LLC, 20A/4
-Yuzhnoportovy Proyezd 2nd,  Moscow 115088, Russian Federation;
-Andrey.Alexeenko@exactprosystems.com
-
-\vspace*{3pt}
-
-\noindent
-  \textbf{Averina Anastasia A.} (b.\ 1989)~--- Head of Department,
-  ``ITS-EXPERT,'' LLC, 20 Lenin Str., Kostroma 156013, Russian Federation; Nastasya-89@bk.ru
-
-  \vspace*{3pt}
-
-\noindent
-  \textbf{Sharov Daniel S.} (b.\ 1991)~--- programmer, ``ITS-EXPERT,''
-  LLC, 20 Lenin Str., Kostroma 156013,
-  Russian Federation; Daniel.Sharov@exactprosystems.com
-
-  \vspace*{3pt}
-
-\noindent
-\textbf{Protsenko Pavel A.} (b.\ 1983)~--- senior project manager, ``Exactpro Systems,'' LLC,  4040
-Civic Center Drive, Suite 200, San Rafael, CA,  USA; Pavel.Protsenko@exactprosystems.com
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Itkin Iosif L.} (b.\ 1978)~---  Managing Director, ``Exactpro Systems,'' LLC, 4040 Civic Center
-Drive, Suite 200, San Rafael, CA,  USA; Iosif.Itkin@exactprosystems.com
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rmfamily Литература}

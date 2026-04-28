@@ -1,872 +1,0 @@
-\def\stat{lange}
-
-\def\tit{НИЖНЯЯ ГРАНИЦА ПОГРЕШНОСТИ ОЦЕНИВАНИЯ СЛУЧАЙНОГО ПАРАМЕТРА\\ ПРИ~ЗАДАННОМ 
-КОЛИЧЕСТВЕ ИНФОРМАЦИИ}
-
-\def\titkol{Нижняя граница погрешности оценивания случайного параметра при~заданном 
-количестве информации}
-
-\def\aut{М.\,М.~Ланге$^1$, A.\,M.~Ланге$^2$}
-
-\def\autkol{М.\,М.~Ланге, A.\,M.~Ланге}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Ланге М.\,М.}
-\index{Ланге A.\,M.}
-\index{Lange M.\,M.}
-\index{Lange A.\,M.}
-
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-%{Исследование выполнено за счет гранта Российского научного фонда №\,22-28-00588, {\sf 
-%https://rscf.ru/project/22-28-00588/}. Работа проводилась с использованием инфраструктуры Центра 
-%коллективного пользования <<Высокопроизводительные вычисления и большие данные>> (ЦКП 
-%<<Информатика>> ФИЦ ИУ РАН, Москва).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
-\mbox{lange\_mm@mail.ru}}
-\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
-\mbox{lange\_am@mail.ru}}
-
-\vspace*{-12pt}
-
-
-
-
-\Abst{Исследуется наименьшая средняя квадратичная по\-греш\-ность оценивания случайного 
-параметра плот\-ности распределения по выборкам независимых наблюдений как функция 
-средней взаимной информации в~выборках относительно множества значений оценок. 
-Рас\-смат\-ри\-ва\-емая функция строится в~форме обращения за\-ви\-си\-мости наименьшей средней 
-взаимной информации от сред\-ней по\-греш\-ности, которая пред\-став\-ля\-ет собой модификацию 
-известной в~теории информации функции ско\-рость--по\-греш\-ность (rate distortion function). 
-Полученная за\-ви\-си\-мость наименьшей сред\-ней по\-греш\-ности от количества используемой 
-информации не зависит от вида оценки и~дает ниж\-нюю границу средней по\-греш\-ности при 
-фиксированных значениях количества информации. Такая за\-ви\-си\-мость определяет 
-двухфакторный критерий качества решения, который поз\-во\-ля\-ет сравнивать эф\-фек\-тив\-ность 
-различных способов по\-стро\-ения оценок в~терминах из\-бы\-точ\-ности их сред\-ней по\-греш\-ности 
-относительно нижней границы при заданной энтропии квантованных значений оценок.}
-
-\KW{плотность распределения; выборка наблюдений; оценка па\-ра\-мет\-ра; квад\-ра\-тич\-ная 
-по\-греш\-ность; взаимная информация; функция ско\-рость--по\-греш\-ность; ниж\-няя граница; 
-из\-бы\-точ\-ность}
-
-\DOI{10.14357/19922264240203}{EFZGYW}
-  
-\vspace*{-1pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение }
-
-%\vspace*{-6pt}
-
-Восстановление случайного параметра функ-\linebreak ции распределения вероятностей остается важ\-ной\linebreak 
-проб\-ле\-мой в~задачах интеллектуальной обработки данных и,~в~част\-ности, в~задачах 
-машинного обуче\-ния~[1] и~универсального кодирования источ\-ников~[2]. Восстановление 
-сводится к~по\-стро\-ению оценки па\-ра\-мет\-ра, качество которой должно удовле\-тво\-рять допустимой 
-погрешности. Как правило, оценка па\-ра\-мет\-ра, при\-ни\-ма\-юще\-го значения на непрерывном 
-множестве, строится по выборке наблюдений, а~качество оценки определяется сред\-ним 
-значением квадратичной по\-греш\-ности, которое долж\-но уменьшаться с~рос\-том размера 
-выборки. Примеры таких оценок для двухпараметрических распределений Райса и~Парето 
-рас\-смот\-ре\-ны соответственно в~работах~[3, 4]. Оценки параметров гам\-ма-экс\-по\-нен\-ци\-аль\-ных 
-распределений, по\-стро\-ен\-ные на основе модификаций метода моментов, рассмотрены в~работах~[5, 6].
-
-Известный метод оптимизации оценки параметра распределения базируется на минимизации 
-средней квадратичной по\-греш\-ности при фиксированном размере выборки наблюдений~[7]. 
-В~этом случае наименьшая сред\-няя по\-греш\-ность может быть найдена либо путем 
-непосредственного вы\-чис\-ле\-ния дисперсии апостериорной плот\-ности оце\-ни\-ва\-емо\-го па\-ра\-мет\-ра, 
-либо с~привлечением неравенства Рао--Кра\-ме\-ра~[8]. За\-ви\-си\-мость указанной дисперсии от 
-размера выборки позволяет варьировать величину наименьшей сред\-ней по\-греш\-ности путем 
-изменения размера выборки как эвристической меры количества информации, но не позволяет 
-найти наименьшую среднюю погрешность оценки при заданной величине средней взаимной 
-информации~[9] между множеством выборок фиксированного размера и~множеством значений 
-оценок. Однако для вероятностной модели оценивания случайного параметра именно такая 
-тео\-ре\-ти\-ко-ин\-фор\-ма\-ци\-он\-ная мера может быть полезна для построения ниж\-ней границы средней 
-погрешности как функции среднего количества ис\-поль\-зу\-емой информации. При этом 
-наименьшее значение по\-греш\-ности долж\-но совпадать с~границей Рао--Кра\-ме\-ра, 
-которая соответствует наибольшей сред\-ней взаимной информации, а~наибольшее значение 
- по\-греш\-ности определяется дис\-пер\-си\-ей априорной плот\-ности распределения 
-оце\-ни\-ва\-емо\-го па\-ра\-мет\-ра и~соответствует нулевому значению взаимной информации. 
-
-В~теории 
-кодирования непрерывных сообщений с~заданным критерием качества аналогичная 
-зависимость наименьшей ско\-рости кодирования от заданной средней погрешности 
-определяется функцией ско\-рость--по\-греш\-ность~[9]. 
-
-Нижняя граница средней погрешности как функция средней взаимной информации позволяет 
-оценить избыточность сред\-ней по\-греш\-ности относительно нижней границы при различных 
-методах построения оценок па\-ра\-мет\-ра с~использованием моментов различных порядков, 
-функций правдоподобия и~др.~[8], а~также c использованием различных методов 
-квантования~[10]. Для заданного размера выборок минимум средней взаимной информации 
-между выборками и~значениями оценок па\-ра\-мет\-ра при ограничении средней погрешности 
-может быть найден с~использованием техники вы\-чис\-ле\-ния функции ско\-рость--по\-греш\-ность 
-в~схеме кодирования непрерывных сообщений, переданных по каналу с~шумом~[11]. 
-Обращение полученной в~результате пред\-ла\-га\-емо\-го подхода монотонной зависимости 
-наименьшей средней взаимной информации от сред\-ней по\-греш\-ности позволяет получить 
-наименьшую среднюю по\-греш\-ность как функцию средней взаимной информации. Такая 
-функция не зависит от вида оценки и~дает тео\-ре\-ти\-ко-ин\-фор\-ма\-ци\-он\-ную нижнюю границу 
-сред\-ней по\-греш\-ности оце\-ни\-ва\-ния па\-ра\-мет\-ра как функцию количества ис\-поль\-зу\-емой 
-информации.
-
-В настоящей работе указанная тео\-ре\-ти\-ко-ин\-фор\-ма\-ци\-он\-ная граница найдена для 
-средней квад\-ра\-тич\-ной по\-греш\-ности оцен\-ки па\-ра\-мет\-ра плот\-ности распределения. По форме 
-найденная \mbox{граница} аналогична границам вероятности ошибки, полученным ранее для 
-дискретных моделей кодирования и~классификации данных~[12].
-
-\section{Формализация задачи}
-
-Пусть $p_{X\vert\Theta} (x\vert\theta)$, $x\hm\in X$, $\theta\hm\in \Theta$,~--- условная 
-плотность распределения случайной величины на множестве значений~$X$ с~неизвестным 
-случайным па\-ра\-мет\-ром с~априорной плот\-ностью распределения $p_\Theta(\theta)$  на 
-множестве значений~$\Theta$. Будем считать, что оценки~$\hat{\theta}_n$ значений~$\theta$ 
-строятся по выборкам $x^n\hm= (x_1, \ldots , x_n)$, содержащим $n$ независимых наблюдений. 
-Погрешность оценок измеряется в~квад\-ра\-тич\-ной мере $(\hat{\theta}_n\hm-\theta)^2$, 
-а~множество значений оценок образует множество~$\hat{\Theta}_n$. Предполагается, что 
-множества $\Theta$, $X^n$ и~$\hat{\Theta}_n$ обладают свойством марковости, при котором 
-элементы каждого множества зависят только от элементов предыду\-ще\-го множества. 
-
-В принятых обозначениях множество выборок~$X^n$ с~условной по па\-ра\-мет\-ру плот\-ностью 
-$p_{X^n\vert\Theta} (x^n\vert\theta)\hm= \prod\nolimits^n_{k=1} p_{X\vert\Theta}(x_k\vert 
-\theta)$, $x_k\hm\in X$, и~множество значений оценок~$\hat{\Theta}_n$ с~некоторой условной 
-по выборке плот\-ностью $q_{\hat{\Theta}_n\vert X^n}(\hat{\theta}_n\vert x^n)$ поз\-во\-ля\-ют ввести сред\-нюю 
-по\-греш\-ность~[11] 
-
-\noindent
-\begin{multline}
-\!\!E_{q_{\hat{\Theta}_n\vert X^n}}\left(X^n;\hat{\Theta}_n\right)\! =\!\!
-\int\limits_{X^n} \!p_{X^n}(x^n) \!
-\int\limits_{\hat{\Theta}_n} \! q_{\hat{\Theta}_n \vert X^n} \left(\hat{\theta}_n\vert x^n\right)\times{}\hspace*{-0.3pt}\\
-{}\times \int\limits_{\Theta} 
-p_{\Theta\vert X^n}(\theta\vert x^n)\left(\theta - \hat{\theta}_n\right)^2 d\theta d\hat{\theta}_n dx^n
-\label{e1-lan}
-\end{multline}
-и среднюю взаимную информацию~[9]
-\begin{multline}
-I_{q_{\hat{\Theta}_n\vert X^n}} \left( X^n; \hat{\Theta}_n\right) =
-\int\limits_{X^n} p_{X^n}(x^n) \times{}\\
-{}\times
-\int\limits_{\hat{\Theta}_n} q_{\hat{\Theta}_n\vert X^n} \left( \hat{\theta}_n\vert x^n\right) 
-\ln\fr{q_{\hat{\Theta}_n\vert X^n} \left(\hat{\theta}_n\vert x^n\right)}{q_{\hat{\Theta}_n} 
-\left(\hat{\theta}_n\right)}\,d\hat{\theta}_n dx^n\,.
-\label{e2-lan}
-\end{multline}
-Здесь $p_{X^n}(x^n)$ и~$q_{\hat{\Theta}_n} ( \hat{\theta}_n)$~--- 
-безусловные плотности распределений на множествах~$X^n$ и~$\hat{\Theta}_n$:
-\begin{align*}
-p_{X^n}(x^n) &= \int\limits_{\Theta} p_\Theta(\theta) p_{X^n\vert \Theta} \left( 
-x^n\vert\theta\right)\,d\theta\,;\\
-q_{\hat{\Theta}_n} \left( \hat{\theta}_n\right) &= \int\limits_{X^n} p_{X^n}\left( x^n\right) 
-q_{\hat{\Theta}_n\vert X^n} \left( \hat{\theta}_n\vert x^n\right)\,dx^n\,;
-\end{align*}
- $p_{\Theta\vert X^n}(\theta\vert x^n)$~--- апостериорная плот\-ность на множестве~$\Theta$:
-$$
-p_{\Theta\vert X^n}(\theta\vert x^n) =\fr{p_\Theta(\theta) p_{X^n\vert \Theta}(x^n\vert 
-\theta)}{p_{X^n}(x^n)} \,.
-$$
-
-
-Функционалы~(1) и~(2) не зависят от функции вычисления оценки~$\hat{\theta}_n$ по выборке 
-$x^n$, но зависят от условной плот\-ности распределения $q_{\hat{\Theta}_n\vert X^n} 
-(\hat{\theta}_n\vert x^n)$. Указанные функционалы служат  
-тео\-ре\-ти\-ко-ин\-фор\-ма\-ци\-он\-ны\-ми мерами средней погрешности и~средней 
-информации, которые используются в~вероятностной модели, заданной парой стохастических 
-преобразований 
-\begin{equation*}
-\Theta \xrightarrow{p_{X^n\vert\Theta}(x^n\vert \theta)}
- X^n 
- \xrightarrow{q_{\hat{\theta}_n\vert x^n} (\hat{\theta}_n\vert x_n)} \hat{\Theta}_n.
-\end{equation*}
-
-Рассматриваемая вероятностная модель позволяет минимизировать сред\-нюю взаимную 
-информацию $I_{q_{\hat{\Theta}_n\vert X^n}} (X^n;\hat{\Theta}_n)$ по плот\-ности 
-$q_{\hat{\Theta}_n\vert X^n}(\hat{\theta}_n\vert x^n)$ при ограничении средней по\-греш\-ности 
-$E_{q_{\hat{\Theta}_n\vert X^n}}(X^n;\hat{\Theta}_n)\hm\leq \varepsilon$ допустимым 
-значением $\varepsilon\hm> 0$. При фиксированном размере выборки $n\hm\geq 1$ 
-и~различных значениях~$\varepsilon$ такой условный минимум дает 
-функцию 
-\begin{multline}
-R_n(\varepsilon) ={}\\
-{}= \min\limits_{q_{\hat{\Theta}_n\vert X^n}: E_{q_{\hat{\Theta}_n\vert X^n}} 
-(X^n;\hat{\Theta}_n)\leq \varepsilon} I_{q_{\hat{\Theta}_n\vert X^n}} (X^n; \hat{\Theta}_n),
-\label{e3-lan}
-\end{multline}
-которая аналогична функции ско\-рость--по\-греш\-ность для модели кодирования независимых 
-непрерывных сообщений, переданных по каналу с~аддитивным гауссовым шумом~[11]. Задача 
-состоит в~построении монотонно убывающей с~рос\-том~$\varepsilon$ нижней границы 
-$\underline{R}_n (\varepsilon) \hm\leq R_n(\varepsilon)$. Тогда обратная функция 
-$\underline{R}_n^{-1}(I)$ дает ниж\-нюю границу сред\-ней по\-греш\-ности при значении сред\-ней 
-взаимной информации $I_{q_{\hat{\Theta}_n\vert X^n}}(X^n; \hat{\Theta}_n)\hm=I$. 
-
-Последующее изложение включает построение нижней границы функции $R_n(\varepsilon)$ 
-(разд.~3) и~пример вы\-чис\-ле\-ния найденной границы в~случае оценивания сред\-не\-го значения 
-гауссовой плот\-ности (разд.~4). Заключение содержит краткие выводы и~перспективы 
-дальнейших исследований.
-
-\section{Нижняя граница функции $R_n(\varepsilon)$}
-
-Вычисление функции~(3) базируется на преобразованиях функционалов~(1) и~(2). Рассмотрим 
-сред\-нюю по\-греш\-ность оценки~$\hat{\theta}_n$ 
-\begin{multline}
-\int\limits_\Theta p_{\Theta\vert X^n} (\theta\vert x^n) \left(\theta- \hat{\theta}_n\right)^2\,d\theta = {}\\
-{}=
-\int\limits_{\Theta} p_{\Theta\vert X^n} (\theta\vert x^n) \left( \left(\theta-\theta_n\right) +\left(\theta_n-
-\hat{\theta}_n\right)\right)^2 d\theta
-\label{e4-lan}
-\end{multline}
-и, требуя 
-$$
-\int\limits_\Theta p_{\Theta\vert X^n} \left(\theta\vert x^n\right) \left(\theta- \theta_n\right)^2d\theta 
-\to \min\limits_{\theta_n},
-$$
- получим оптимальную оценку в~форме математического 
-ожидания 
-$$
-\theta_n(x^n) = \int\limits_{\Theta}  p_{\Theta\vert X^n} (\theta\vert x^n)\theta\,d\theta\,.
-$$
-%
- С~учетом оценки~$\theta_n(x^n)$ средняя 
-погрешность~(\ref{e4-lan}) преобразуется к~виду 
-\begin{multline}
-\int\limits_{\Theta} p_{\Theta\vert X^n} (\theta\vert x^n) \left(\theta-\hat{\theta}_n\right)^2d\theta 
-={}\\
-{}=\sigma_n^2(x^n) +\left( \theta_n(x^n) -\hat{\theta}_n\right)^2\!,
-\label{e5-lan}
-\end{multline}
-где $\sigma_n^2(x^n)$~--- дисперсия апостериорной плотности $p_{\Theta\vert X^n} (\theta\vert x^n)$:
-$$
-\sigma_n^2(x^n) \!=\!\! \int\limits_{\Theta} \!p_{\Theta\vert X^n} (\theta\vert 
-x^n)\theta^2\,d\theta - \left( \int\limits_{\Theta}\! p_{\Theta\vert X^n} (\theta\vert 
-x^n)\theta\,d\theta\right)^{\!\!2}\!.\hspace*{-0.65227pt}
-$$ 
-
-Пусть оптимальная оценка, построенная на выборках $x^n\hm\in X^n$, принимает значения на 
-множестве~$\Theta_n$ с~плот\-ностью распределения~$p_{\Theta_n} (\theta_n)$. 
-Множество~$X^n$ может быть пред\-став\-ле\-но набором\linebreak не\-пе\-ре\-се\-ка\-ющих\-ся подмножеств~$\{ 
-X^n_t\}$, где $X_t^n$~--- подмножество выборок~$x^n$, которые дают 
-значения~$\theta_n(x^n)$ на отрезке размера~$\Delta$. Такое пред\-став\-ле\-ние множества~$X^n$ 
-по\-рож\-да\-ет разбиение \mbox{множества}~$\Theta_n$ на непересекающиеся кван\-ты~$\Theta_{nt}$ 
-размера~$\Delta$. При $\Delta\hm\to 0$ значения оценок для всех выборок $x^n\hm\in X^n_t$ 
-близки к~величине $\theta_{nt}\hm\in \Theta_{nt}$ и~справедливы асимптотические равенства:
-\begin{align*}
-\int\limits_{X^n_t} p_{X^n} (x^n)\,dx^n &\approx p_{\Theta_n}(\theta_{nt})\Delta; \\  
-q_{\hat{\Theta}_n\vert X^n} \left(\hat{\theta}_n\vert x^n\right)&\approx q_{\hat{\Theta}_n\vert 
-\Theta_n}\left(\hat{\theta}_n\vert \theta_{nt}\right).
-\end{align*}
- Тогда замена интегралов на множестве~$X^n$ суммой 
-интегралов по подмножествам~$X_t^n$ поз\-во\-ля\-ет представить сред\-нюю по\-греш\-ность~(1) 
-и~среднюю взаимную информацию~(2) в~терминах со\-от\-вет\-ст\-ву\-ющих функционалов, заданных 
-на множествах~$\Theta_n$ и~$\hat{\Theta}_n$.
-
-С учетом соотношения~(\ref{e5-lan}) средняя по\-греш\-ность~(1) преобразуется к~виду 
-\begin{multline}
-E_{q_{\hat{\Theta}_n\vert X^n}}\left(X^n;\hat{\Theta}_n\right) = \varepsilon_{n\_\min} +{}\\
-{}+\int\limits_{\Theta_n}  p_{\Theta_n} (\theta_n) \!
-\int\limits_{\hat{\Theta}_n}  q_{\hat{\Theta}_n\vert \Theta_n}
-\left(\hat{\theta}_n\vert \theta_n\right) \left(\theta_n-\hat{\theta}_n\right)^2 d\hat{\theta}_nd\theta_n = {}\\
-{}=
-\varepsilon_{n\_\min} +E_{q_{\hat{\Theta}_n\vert\Theta_n}}(\Theta_n; \hat{\Theta}_n),
-\label{e6-lan}
-\end{multline}
-где $\varepsilon_{n\_\min}$~--- средняя по\-греш\-ность оптимальных оценок на множестве выборок~$X^n$:
-$$
-\varepsilon_{n\_\min}=\int\limits_{X^n} p_{X^n} (x^n) \sigma_n^2 (x^n)\,dx^n.
-$$  
- При этом сред\-няя 
-взаимная информация~(\ref{e2-lan}) принимает вид: 
-
-\vspace*{-3pt}
-
-\noindent
-\begin{multline}
-\! \! I_{q_{\hat{\Theta}_n\vert X^n}} \!\left(X^n; \hat{\Theta}_n\right) \!=\!I_{q_{\hat{\Theta}_n\vert\Theta_n}} 
-\!\left(\Theta_n;\hat{\Theta}_n\right) \!=\! \int\limits_{\Theta_n} \!p_{\Theta_n}(\theta_n)\times{}\\
-\!{}\times\!
- \int\limits_{\hat{\Theta}_n} \!
-q_{\hat{\Theta}_n\vert \Theta_n} \left(\hat{\theta}_n\vert \theta_n\right) \ln \fr{q_{\hat{\Theta}_n\vert 
-\Theta_n} \left(\hat{\theta}_n\vert \theta_n\right)}{q_{\hat{\Theta}_n}\left(\hat{\theta}_n\right)}\,d\hat{\theta}_n 
-d\theta_n\,.\!\!
-\label{e7-lan}
-\end{multline}
-
-\vspace*{-3pt}
-
-\noindent
-Поскольку функционалы $E_{q_{\hat{\Theta}_n\vert \Theta_n}} (\Theta_n; \hat{\Theta}_n)$ 
-и~$I_{q_{\hat{\Theta}_n\vert \Theta_n }} (\Theta_n; \hat{\Theta}_n)$ зависят от свободной 
-условной плотности распределения $q_{\hat{\Theta}_n\vert\Theta_n} (\hat{\theta}_n\vert 
-\theta_n)$, соотношения~(\ref{e6-lan}) и~(\ref{e7-lan}) поз\-во\-ля\-ют переопределить 
-функцию~(\ref{e3-lan}) в~форме 
-
-\noindent
-\begin{multline}
-R_n(\varepsilon) ={}\\
-\!{}=\!\!\min\limits_{q_{\hat{\Theta}_n\vert \Theta_n: E_{q_{\hat{\Theta}_n\vert 
-\Theta_n}} (\Theta_n;\hat{\Theta}_n)\leq \varepsilon -\varepsilon_{n\_\min}}} \!\!I_{q_{\hat{\Theta}_n\vert \Theta_n}}(\Theta_n;\hat{\Theta}_n),\!
-\label{e8-lan} 
-\end{multline}
-где минимум от $I_{q_{\hat{\Theta}\vert \Theta_n}}(\Theta_n; \hat{\Theta})$ берется по 
-всевозможным плотностям $q_{\hat{\Theta}_n\vert \Theta_n} (\hat{\theta}_n\vert \theta_n)$ при 
-условии  $E_{q_{\hat{\Theta}_n\vert \Theta_n}}(\Theta_n; \hat{\Theta}_n)\hm\leq \varepsilon\hm- 
-\varepsilon_{n\_\min}$.
-
-\smallskip
-
-\noindent
-\textbf{Теорема~1.} \textit{Для функции, определенной в}~(\ref{e8-lan}), \textit{справедлива 
-монотонно убывающая с~ростом~$\varepsilon$ неотрицательная ниж\-няя граница} 
-\begin{multline}
-R_n(\varepsilon) \geq \underline{R}_n(\varepsilon) =h(\Theta_n) -\fr{1}{2} \ln \left( 2\pi e 
-(\varepsilon - \varepsilon_{n\_\min} ) \right)\,,\\
- \varepsilon_{n\_\min} <\varepsilon \leq 
-\varepsilon_{\max}\,,
-\label{e9-lan}
-\end{multline}
-\textit{где} $h(\Theta_n) $~---  \textit{дифференциальная энтропия на множестве}~$\Theta_n$: 
-$$h(\Theta_n) \hm= -\int\nolimits_{\Theta_n} p_{\Theta_n} (\theta_n) \ln p_{\Theta_n} 
-(\theta_n) \,d\theta_n\,;
-$$
-$\underline{R}_n(\varepsilon_{n\_\min}) \hm\to \infty$;   
-$\underline{R}_n(\varepsilon_{\max} )\hm=0$:
-
-
-
-\smallskip
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \ Построение границы~(\ref{e9-lan}) базируется на 
-вычислении минимума вида~(\ref{e8-lan}) с~по\-мощью вариационного подхода, 
-предложенного Шенноном и~изложенного в~монографии~\cite{9-lan}. Опуская промежуточные 
-выкладки, получим ниж\-нюю границу для функции~$R_n(\varepsilon)$ в~форме 
-\begin{equation}
-\underline{R}_n(\varepsilon) =h(\Theta_n) -h_s \left(\hat{\Theta}_n\vert \Theta_n\right),
-\label{e10-lan}
-\end{equation}
-где $h_s(\hat{\Theta}_n\vert \Theta_n)$~--- 
-условная дифференциальная энт\-ро\-пия на множествах~$\hat{\Theta}_n$ 
-и~$\Theta_n$:
-\begin{multline*}
-h_s\left(\hat{\Theta}_n\vert \Theta_n\right)= -\int\limits_{\Theta_n} p_{\Theta_n}(\theta_n) \times{}\\
-{}\times
-\int\limits_{\hat{\Theta}_n} g^{(s)}_{\hat{\Theta}_n\vert \Theta_n} (\hat{\theta}_n\vert \theta_n) 
-\ln g^{(s)}_{\hat{\Theta}_n\vert \Theta_n} (\hat{\theta}_n\vert \theta_n)\,d\hat{\theta}_n 
-d\theta_n
-\end{multline*}
- с~условной плот\-ностью 
-\begin{multline}
-g^{(s)}_{\hat{\Theta}_n\vert \Theta_n} \left(\hat{\theta}_n\vert \theta_n\right) ={}\\
-{}=\fr{\exp \left(-s(\hat{\theta}_n-
-\theta_n)^2\right)}{\int\nolimits_{\hat{\Theta}_n} \exp \left( -s ( \hat{\theta}_n-\theta_n)^2\right) 
-d\hat{\theta}_n}\,.
-\label{e11-lan}
-\end{multline}
-Значение параметра $s\hm> 0$ плот\-ности $g^{(s)}_{\hat{\Theta}_n\vert \Theta_n} 
-(\hat{\theta}_n\vert\theta_n)$ следует из уравнения 
-\begin{multline*}
-\!\int\limits_{\Theta_n} \! p_{\Theta_n} (\theta_n) \!\int\limits_{\hat{\Theta}_n} \!
-g^{(s)}_{\hat{\Theta}_n\vert \Theta_n}\left( \hat{\theta}_n\vert \theta_n\right) \left(\theta_n-\hat{\theta}_n\right)^2 \,d\hat{\theta}_n d\theta_n 
-={}\hspace*{-0.47pt}\\
-{}=\varepsilon- \varepsilon_{n\_\min}.
-\end{multline*}
-
-Введение переменной $z_n\hm= (\hat{\theta}_n-\theta_n)$, при\-ни\-ма\-ющей значения на интервале 
-$(-\infty, \infty)$, преобразует плот\-ность~(\ref{e11-lan}) к~нормальному виду с~нулевым средним 
-и~дисперсией $\sigma_s^2\hm= 1/(2s)$, где 
-$$
-s= \fr{1}{2}\left(\varepsilon-\varepsilon_{n\_\min}\right)^{-1}>0\,.
-$$
-
-\vspace*{-2pt}
-
-\noindent
- Полученная нормальная плот\-ность поз\-во\-ля\-ет вы\-чис\-лить 
-условную дифференциальную энтропию в~форме 
-$$
-h_s\left(\hat{\Theta}_n\vert \Theta_n\right) \!=\! \fr{1}{2} 
-\ln \left(2\pi e \sigma_s^2\right)= \fr{1}{2} \ln \left(2\pi e (\varepsilon- \varepsilon_{n\_\min})\right),
-$$
-
-\vspace*{-2pt}
-
-\noindent
- которая не 
-зависит от значений $\theta_n\hm\in \Theta_n$, имеет в~точ\-ке $\varepsilon\hm= 
-\varepsilon_{n\_\min}$ разрыв типа~$-\infty$ и~монотонно воз\-рас\-та\-ет 
-с~увеличением~$\varepsilon$. Под\-ста\-нов\-ка полученной услов\-ной дифференциальной энтропии 
-в~(\ref{e10-lan}) дает границу в~форме~(\ref{e9-lan}). Поскольку наибольшая средняя 
-по\-греш\-ность реализуется при нулевом значении средней взаимной информации, обеспечивая 
-$\underline{R}_n(\varepsilon_{\max})\hm=0$, значение~$\varepsilon_{\max}$ не зависит от 
-размера выборки и~определяется дисперсией априорной плот\-ности~$p_{\Theta}(\theta)$. 
-Тео\-ре\-ма доказана. 
-
-\smallskip
-
-Практическая ценность границы $\underline{R}_n(\varepsilon)$ со\-сто\-ит в~воз\-мож\-ности ее 
-применения для вычисления из\-бы\-точ\-ности средней по\-греш\-ности квантованных значений 
-оценок при фиксированных \mbox{значениях} количества информации, которая измеряется энт\-ро\-пи\-ей 
-множества оценок. Особый интерес пред\-став\-ля\-ет из\-бы\-точ\-ность по\-греш\-ности для оценок, 
-строящихся на достаточных статистиках и~не зависящих от па\-ра\-мет\-ров априорных 
-распределений, которые, как правило, не известны. Поэтому полезно рассмотреть множество 
-оценок 
-$$
-\hat{\Theta}_n= \left\{ \hat{\theta}_n(x^n),\ \forall\,x^n\hm\in X^n\right\},
-$$
- которые 
-связаны с~оптимальными оценками линейным преобразованием
-\begin{equation}
-\hat{\theta}_n(x^n) =\alpha_n \theta_n(x^n) +\beta_n
-\label{e12-lan}
-\end{equation}
-
-\vspace*{-2pt}
-
-\noindent
-с коэффициентами $\alpha_n\hm\geq 1$, $-\infty \hm< \beta_n\hm< \infty$. Предполагается, что 
-с~увеличением размера выборки $(n\hm\to \infty)$ коэффициенты стремятся к~предельным 
-значениям $\alpha_n\hm\to 1$ и~$\beta_n\hm\to 0$, что обеспечивает асимптотическую 
-оптимальность оценок~(\ref{e12-lan}). 
-
-С учетом соотношения~(\ref{e12-lan}) равномерное квантование величин $\theta_n\hm\in 
-\Theta_n$ с~шагом~$\Delta$ соответствует равномерному квантованию величин 
-$\hat{\theta}_n\hm\in \hat{\Theta}_n$ с~шагом~$\alpha_n\Delta$. Тогда, согласно  
-работе~\cite{10-lan}, при значениях $\Delta\hm\to 0$ энтропия~$H_n$ и~средняя 
-погрешность~$E_n$ квантованных значений оценок из множества~$\hat{\Theta}_n$ 
-удовле\-тво\-ря\-ют соотношениям 
-
-\pagebreak
-
-\noindent
-\begin{align}
-H_n&= h\left(p_{\hat{\Theta}}\right)-\ln(\alpha_n\Delta)\,;\label{e13-lan}\\
-E_n&= \varepsilon_{n\_\min} +\fr{\alpha_n^2\Delta^2}{12}\,.\label{e14-lan}
-\end{align}
-
-Полагая $\underline{R}_n(\varepsilon)\hm=H_n$, избыточность средней погрешности~$E_n$ 
-относительно нижней границы мож\-но определить величиной $r_n\hm= E_n\hm- 
-\underline{R}_n^{-1} (H_n)$. С~учетом соотношения дифференциальных энтропий 
-$h(\hat{\Theta}_n) \hm= h(\Theta_n) \hm+ \ln\alpha_n$ на множествах~$\hat{\Theta}_n$ 
-и~$\Theta_n$ энтропия в~(\ref{e13-lan}) не зависит от~$\alpha_n$ и~равна $H_n\hm= h(\Theta_n) 
-\hm- \ln\Delta$. Учитывая последнее замечание, из~(\ref{e13-lan}) и~(\ref{e14-lan}) получим 
-\begin{equation}
-\fr{r_n}{E_n-\varepsilon_{n\_\min}}= 1-\fr{6}{\pi e \alpha_n^2}\,.
-\label{e15-lan}
-\end{equation}
-
-При значении $\alpha_n=1$ относительная из\-бы\-точ\-ность~(\ref{e15-lan}) достигает наименьшего 
-значения~0,297 и~увеличивается с~рос\-том~$\alpha_n$. В~общем случае для значений 
-$\Delta\hm\to 0$ и~$\alpha_n\hm\geq 1$ соотношение~(\ref{e15-lan}) демонстрирует меньшую 
-избыточность~$r_n$ средней по\-греш\-ности~$E_n$ относительно нижней границы 
-$\underline{R}_n^{-1}(H_n)$ по сравнению с~традиционно используемой величиной  $E_n\hm- 
-\varepsilon_{n\_\min}$. На практике величины~$H_n$ и~$E_n$ могут быть вы\-чис\-ле\-ны для 
-заданных способов построения оценок и~ис\-поль\-зу\-емых методов их квантования. 
-
-\section{Пример вычисления границы $\underline{R}_n(\varepsilon)$}
- 
-Рассмотрим пример вычисления границы~(\ref{e9-lan}) для гауссовой модели, когда 
-независимые наблюдения $x\hm\in X$ имеют нормальную плот\-ность распределения 
-$p_{X\vert\Theta} (x\vert \theta)$ со случайным сред\-ним значением $\theta\hm\in \Theta$ 
-и~известной дисперсией~$\sigma^2$. Предполагается так\-же, что значения~$\theta$ имеют 
-априорную нормальную плот\-ность распределения $p_{\Theta}(\theta)$ со средним~$\theta_0$ 
-и~дисперсией~$\sigma_0^2$. В~этом случае апостериорное по выборке $x^n\hm\in X^n$ 
-распределение имеет нормальную плот\-ность~\cite{7-lan} 
-$$
-p_{\Theta\vert X^n} (\theta\vert x^n) =\fr{p_{\Theta} (\theta) p_{X^n\vert \Theta} (x^n\vert \theta) }{p_{X^n}(x^n)}
-$$
-со средним значением
-\begin{equation}
-\theta_n= \fr{\sigma_0^2}{n\sigma_0^2+\sigma^2} \sum\limits^n_{k=1} x_k 
-+\fr{\sigma^2}{n\sigma_0^2+\sigma^2}\, \theta_0
-\label{e16-lan}
-\end{equation}
-и дисперсией 
-\begin{equation}
-\sigma_n^2= \fr{\sigma_0^2\sigma^2}{n\sigma_0^2+\sigma^2}\,,
-\label{e17-lan}
-\end{equation}
-которая для рас\-смат\-ри\-ва\-емой гауссовой модели не зависит от выборки~$x^n$.
-
-Пусть $\overline{X}_n$~--- множество значений выборочного среднего $\overline{x}_n\hm= 
-(1/n) \sum\nolimits^n_{k=1} x_k$. Известно, что случайная величина ${(\overline{x}_n - 
-\theta)}/({\sigma/\sqrt{n}})$ имеет нормализованную нормальную плот\-ность  
-распределения~\cite{13-lan}. Тогда условная плот\-ность $p_{\overline{X}_n\vert\Theta} 
-(\overline{x}_n\vert \theta)$ является нормальной со средним значением~$\theta$ 
-и~дисперсией~$\sigma^2/n$. Поэтому свертка нормальных плотностей 
-$p_{\overline{X}_n\vert\Theta} (\overline{x}_n\vert \theta)$ и~$p_\Theta(\theta)$ дает для 
-выборочного среднего~$\overline{x}_n$ нормальную плот\-ность 
-\begin{equation}
-p_{\overline{X}_n} (\overline{x}_n) =\int\limits_{-\infty}^{\infty} p_{\overline{X}_n\vert\Theta} 
-(\overline{x}_n\vert \theta) p_\Theta (\theta)\,d\theta
-\label{e18-lan}
-\end{equation}
-со сред\-ним значением~$\theta_0$ и~дисперсией $\sigma_0^2\hm+ \sigma^2/n$~\cite{13-lan}.
-
-Согласно~(\ref{e16-lan}), плотности распределений значений~$\theta_n$ и~$\overline{x}_n$ 
-удовле\-тво\-ря\-ют соотношению 
-$$
-p_{\Theta_n}(\theta_n) =p_{\overline{X}_n} (\overline{x}_n)\fr{d\overline{x}_n}{d\theta_n} = 
-p_{\overline{X}_n}(\overline{x}_n) \fr{n\sigma_0^2+\sigma^2}{n\sigma_0^2}\,,
-$$
-которое дает соотношение дифференциальных энтропий
-\begin{equation}
-h(\Theta_n) =h\left( \overline{X}_n\right) +\ln \left( 
-\fr{n\sigma_0^2}{n\sigma_0^2+\sigma^2}\right).
-\label{e19-lan}
-\end{equation}
-Учитывая, что дифференциальная энтропия на множестве~$\overline{X}_n$ значений 
-выборочных сред\-них с~нормальной плот\-ностью~(\ref{e18-lan}) равна 
-$$
-h(\overline{X}_n)=\fr{1}{2} \ln \left(2\pi e \left(\sigma_0^2+ \fr{\sigma^2}{n}\right)\right),
-$$
- из~(\ref{e19-lan}) имеем 
- $$
- h(\Theta_n) = \fr{1}{2} 
-\ln \left(2\pi e  \fr{n\sigma_0^4}{n\sigma_0^2+ \sigma^2}\right).
-$$
- Дисперсия~(\ref{e17-lan}) определяет 
-наименьшую по\-греш\-ность
-$$
-\varepsilon_{n\_\min} = \fr{\sigma_0^2 \sigma^2}{n\sigma_0^2\hm+ 
-\sigma^2}\,,
-$$
- которая убывает с~рос\-том размера выборки~$n$.
-
-Подстановка характеристик $h(\Theta_n)$ и~$\varepsilon_{n\_\min}$ в~(\ref{e9-lan}) дает 
-границу 
-\begin{multline}
-\underline{R}_n(\varepsilon)={}\\
-{}= \fr{1}{2} \ln \left( \fr{n\sigma_0^4}{n\sigma_0^2+\sigma^2}\right) -
-\fr{1}{2} \ln \left( \varepsilon - \fr{\sigma_0^2 \sigma^2}{n\sigma_0^2+\sigma^2}\right),
-\label{e20-lan}
-\end{multline}
-которая принимает нулевое значение в~точке $\varepsilon_{\max} \hm= \sigma_0^2$ при 
-$n\hm\geq 1$. 
-
-
-\begin{figure*} %fig1
-  \vspace*{1pt}
-      \begin{center}
-     \mbox{%
-\epsfxsize=127.646mm 
-\epsfbox{lan-1.eps}
-}
-
-\vspace*{3pt}
-
-\noindent
-{\small Поведение границы $\underline{R}_n(\varepsilon)$ для гауссовой модели с~параметрами 
-$n\hm=1$, $\sigma\hm>0$~(\textit{1}),  $n\hm>1$, $\sigma\hm >0$~(\textit{2}) и~$\sigma\hm=0$~(\textit{3})}
-
-\end{center}
-\end{figure*}
-
-Необходимо отметить, что при больших размерах выборки ($n\hm\to \infty$) оцен\-ка 
-$$
-\hat{\theta}_n= \fr{1}{n} \sum\limits^n_{k=1} x_k
-$$ 
-асимптотически оптимальна, поскольку 
-связана с~оценкой~(\ref{e16-lan}) преобразованием вида~(\ref{e12-lan}) с~коэффициентами 
-$$
-\alpha_n= \fr{n\sigma_0^2\hm+\sigma^2}{n\sigma_0^2} \to 1\,;
-\enskip
-\beta_n= -\fr{\theta_0\sigma^2}{n\sigma_0^2}\to 0\,.
-$$
- Из\-бы\-точ\-ность сред\-ней по\-греш\-ности квантованных 
-оценок~$\hat{\theta}_n$ при малом шаге квантования удовле\-тво\-ря\-ет  
-соотношению~(\ref{e15-lan}).
-
-Характер границы~(\ref{e20-lan}) при различных значениях параметров гауссовой модели 
-показан на рисунке кривыми~\textit{1}--\textit{3}. Кривые~\textit{1} и~\textit{2} соответствуют 
-модели\linebreak с~одиночными наблюдениями ($n\hm=1$) и~с выборками конечного размера 
-($n\hm>1$), когда $\sigma\hm>0$. Кривая~\textit{1} представляет нижнюю 
-границу~$\underline{R}_1(\varepsilon)$ функции ско\-рость--по\-греш\-ность для модели 
-\mbox{кодирования} независимых гауссовых величин~$\theta$ по сообщениям~$x$ на выходе канала 
-с~аддитивным гауссовым шумом $x\hm- \theta$~\cite{11-lan}. Кривая~\textit{2} представляет 
-ниж\-нюю границу~$\underline{R}_n(\varepsilon)$ средней взаимной информация как функцию 
-сред\-ней квад\-ра\-тич\-ной по\-греш\-ности для модели оценивания математического 
-ожидания~$\theta$ гауссовой плот\-ности по выборкам~$x^n$. В~случае\linebreak $\sigma\hm=0$ 
-кривая~\textit{3} пред\-став\-ля\-ет собой хорошо известную функцию ско\-рость--по\-греш\-ность 
-$$
-R(\varepsilon) = \fr{1}{2}\ln\left(\fr{\sigma_0^2}{\varepsilon}\right)
-$$ 
-для модели кодирования независимых 
-гауссовых величин~$\theta$ с~дисперсией~$\sigma_0^2$ и~до\-пус\-ти\-мой 
-по\-греш-\linebreak\vspace*{-12pt}
-
-\columnbreak
-
-\noindent
-ностью~$\varepsilon$~\cite{9-lan}. Следует отметить, что $\underline{R}_n(\varepsilon) 
-\hm\to R(\varepsilon)$, когда $n\hm\to \infty$.
-
-
-\vspace*{-11pt}
-
-
-\section{Заключение}
-
-\vspace*{-4pt}
-
-В рамках вероятностной модели вы\-чис\-ле\-ния\linebreak
- сред\-ней по\-греш\-ности для оценок па\-ра\-мет\-ра по 
-выборке независимых наблюдений получена аналитическая ниж\-няя граница сред\-ней 
-квад\-ра\-тич\-ной по\-греш\-ности как убы\-ва\-ющая функция средней \mbox{взаимной} информации между 
-множеством наблюдений и~множеством возможных оценок. Граница получена в~форме 
-обращения известной в~тео\-рии информации функции ско\-рость--по\-греш\-ность для модели, 
-в~которой наблюдаемые величины удовле\-тво\-ря\-ют заданной плот\-ности распределения со 
-случайным па\-ра\-мет\-ром. Полученная граница не зависит от метода по\-стро\-ения оценки 
-па\-ра\-мет\-ра, что поз\-во\-ля\-ет использовать ее для сравнения эф\-фек\-тив\-ности различных методов 
-восстановления па\-ра\-мет\-ра. При этом характеристикой эф\-фек\-тив\-ности любого метода служит 
-из\-бы\-точ\-ность сред\-ней квад\-ра\-тич\-ной по\-греш\-ности относительно ниж\-ней границы при 
-количестве информации, которое задается энт\-ро\-пи\-ей множества оценок. Приведен пример 
-вычисления границы для гауссовой модели, в~которой независимые наблюдаемые величины 
-удовле\-тво\-ря\-ют нормальной плот\-ности с~известной дис\-пер\-си\-ей и~случайным средним значением 
-с~заданной нормальной плот\-ностью распределения. Предложенный подход допускает 
-обобщение для получения ниж\-ней границы средней квад\-ра\-тич\-ной по\-греш\-ности как функции 
-количества ис\-поль\-зу\-емой информации при оценивании векторного па\-ра\-мет\-ра, заданного 
-набором независимых случайных величин.
-
-{\small\frenchspacing
- {\baselineskip=10.6pt
- %\addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-\bibitem{1-lan}
-\Au{Bishop С.\,M.} Pattern recognition and machine learning.~--- New York, NY, USA: Springer, 
-2006. 746~p. %doi: 10.1007/978-0-387-45528-0.
-\bibitem{2-lan}
-\Au{Davisson L.\,D., McEliece~R.\,I. Pursley~M.\,B., Wallace~M.\,S.} Efficient universal noiseless 
-source codes~// IEEE T. Inform. Theory, 1981. Vol.~27. No.\,3. Р.~269--279. doi: 
-10.1109/TIT.1981.1056355.
-\bibitem{3-lan}
-\Au{Яковлева Т.\,В., Кульберг~Н.\,С.} Методы математической статистики в~решении задачи 
-двухпараметрического анализа райсовского сигнала~// Докл. Акад. наук. Сер. 
-Математика, 2014. Т.~90. Вып.~3. С.~27--31.
-\bibitem{4-lan}
-\Au{Вайчюлис M., Маркович~Н.\,М.} Оценка параметров в~суженном распределении Парето~// 
-Автоматика и~телемеханика, 2021. Т.~82. Вып.~8. С.~85--107. doi: 10.31857/S0005231021080043.
-\bibitem{5-lan}
-\Au{Кудрявцев А.\,А., Шестаков~О.\,В., Шоргин~С.\,Я.} Метод оценивания параметров изгиба, 
-формы и~масштаба гам\-ма-экс\-по\-нен\-ци\-аль\-но\-го распределения~// Информатика и~её 
-применения, 2021. Т.~15. Вып.~3. С.~57--62. doi: 10.14357/19922264230308. EDN: IXMPXH.
-\bibitem{6-lan}
-\Au{Кудрявцев А.\,А., Шестаков~О.\,В.} Метод оценивания параметров  
-гам\-ма-экс\-по\-нен\-ци\-аль\-но\-го распределения по выборке со слабо зависимыми 
-компонентами~// Информатика и~её применения, 2023. Т.~17. Вып.~3. С.~58--63. doi: 
-10.14357/19922264230308.  EDN: PEXTVK.
-\bibitem{7-lan}
-\Au{Duda R.\,O., Hart P.\,E., Stork~D.\,G.} Pattern classification.~--- 2nd ed.~--- New York, NY, 
-USA: John Wiley \& Sons, 2001. 738~p.
-\bibitem{8-lan}
-\Au{Боровков А.\,А.} Математическая статистика. Оценка параметров. Проверка гипотез.~--- 
-М.: Наука, 1984. 472~c.
-\bibitem{9-lan}
-\Au{Berger~T.} Rate distortion theory. A~mathematical basis for data compression.~--- Englewood Cliffs, 
-NJ, USA: Prentice-Hall, 1971. 311~p.
-\bibitem{10-lan}
-\Au{Gray R.\,M., Neuhoff D.\,L.} Quantization~// IEEE T. Inform. Theory, 1998. Vol.~44. No.\,6. 
-P.~2325--2383. doi: 10.1109/18.720541.
-\bibitem{11-lan}
-\Au{Dobrushin R.\,L., Tsybakov~B.\,S.} Information transmission with additional noise~// I.~T. 
-Inform. Theor., 1962. Vol.~8. No.\,5. P.~293--304. doi: 10.1109/TIT.1962.1057738.
-\bibitem{12-lan}
-\Au{Lange M.\,M., Lange A.\,M.} Information-theoretic lower bounds to error probability for the 
-models of noisy discrete source coding and object classification~// Pattern Recognition Image Analysis, 2022. 
-Vol.~32. No.\,3. P.~570--574. doi: 10.1134/S105466182203021X.
-\bibitem{13-lan}
-\Au{Корн Г.\,А., Корн Т.\,М.} Справочник по математике для научных работников и~инженеров. 
-Определения, теоремы, формулы~/ Пер. с~англ.~--- М.: Наука, 1970. 720~c.
-(\Au{Korn~G., Korn~T.~} {Mathematical handbook for scientists and engineers}.~---  
-New York\,--\,San Francisco\,--\,Toronto\,--\,London\,--\,Sydney: McGraw Hill Book Co., 1968. 1147~p.)
-
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-8pt}
-
-\hfill{\small\textit{Поступила в~редакцию 30.01.24}}
-
-\vspace*{6pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-
-
-\def\tit{LOWER BOUND TO ESTIMATION DISTORTION OF~A~RANDOM PARAMETER FOR~A~GIVEN 
-AMOUNT OF~INFORMATION}
-
-
-\def\titkol{Lower bound to estimation distortion of~a~random parameter for~a~given 
-amount of~information}
-
-
-\def\aut{M.\,M.~Lange and A.\,M.~Lange}
-
-\def\autkol{M.\,M.~Lange and A.\,M.~Lange}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-15pt}
-
-
-\noindent
-Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
-Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 2}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2024\ \ \ volume~18\ \ \ issue\ 2
-\hfill \textbf{\thepage}}}
-
-\vspace*{6pt}
-
-
-
-
-\Abste{Given probability distribution density with an unknown value of a random parameter, a minimum of the 
-average square distortion for the parameter estimates via the samples of random values as a function of the 
-average mutual information between the samples and the estimates is investigated. This function is produced by 
-inverting a modified rate distortion function as the dependency of the minimal values of the average mutual 
-information on the appropriate values of the average distortion. The obtained smallest average square distortion 
-as the function of the average mutual information is independent on an estimation form and this function yields 
-the lower bound to the average distortion for the fixed values of the amount of information. The above relation 
-is the bifactor fidelity decision criterion that allows one to compare  various estimation functions by their 
-efficiency in terms of the average distortion redundancy relative to the lower bound when the entropy of the 
-quantized estimates is fixed.}    
-
-\KWE{probability distribution density; data sample; parameter estimate; square distortion; mutual information; 
-rate distortion function; lower bound; redundancy}
-
-\DOI{10.14357/19922264240203}{EFZGYW}
-
-%\vspace*{-12pt}
-
-%\Ack
-
-\vspace*{-6pt}
-
-
- %    \noindent
- 
-
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99} 
- 
- \vspace*{-3pt}
- 
-\bibitem{1-lan-1}
-\Aue{Bishop, С.\,M.} 2006. \textit{Pattern recognition and machine learning}. New York, NY: Springer. 
-746~p. %doi: 10.1007/978-0-387-45528-0.
-\bibitem{2-lan-1}
-\Aue{Davisson, L.\,D., R.\,I.~McEliece, M.\,B.~Pursley, and M.\,S.~Wallace.} 1981. Efficient universal 
-noiseless source codes. \textit{IEEE T.~Inform. Theory} 27(3):269--279.  doi: 10.1109/TIT.1981.1056355.
-\bibitem{3-lan-1}
-\Aue{Yakovleva, T.\,V., and N.\,S.~Kulberg.} 2014. Methods of mathematical statistics in two-parameter 
-analysis of Rician signals. \textit{Dokl. Math.} 90(3):675--679. doi: 10.1134/ S1064562414070060. EDN: 
-UFVVGL.
-\bibitem{4-lan-1}
-\Aue{\mbox{Vai{\!\ptb{\v{c}}}iulis,}~M., and N.\,M.~Markovich.} 2021. Estimating the parameters of a tapered 
-Pareto distribution. \textit{Automat. Rem. Contr.} 82(8):1358--1377. doi: 10.1134/ S000511792108004X.
-\bibitem{5-lan-1}
-\Aue{Kudryavtsev, A.\,A., O.\,V.~Shestakov, and S.\,Ya.~Shorgin.} 2021. Metod otsenivaniya parametrov 
-izgiba, formy i~masshtaba gamma-eksponentsial'nogo raspredeleniya [A~method for estimating bent, shape and 
-scale parameters of the gamma-exponential distribution]. \textit{Informatika i~ee Primeneniya~--- Inform. 
-Appl.} 15(3):57--62. doi: 10.14357/ 19922264230308. EDN: IXMPXH.
-\bibitem{6-lan-1}
-\Aue{Kudryavtsev, A.\,A., and O.\,V.~Shestakov.} 2023. Metod otsenivaniya parametrov gamma-eksponentsial'nogo 
-raspredeleniya po vyborke so slabo zavisimymi komponentami [A method for estimating 
-parameters of the gamma-exponential distribution from a~sample with weakly dependent components]. 
-\textit{Informatika i~ee Primeneniya~--- Inform. Appl.}  17(3):58--63. doi: 10.14357/ 19922264230308. EDN: 
-PEXTVK.
-\bibitem{7-lan-1}
-\Aue{Duda, R., P.~Hart, and D.~Stork.} 2001. \textit{Pattern classification}. 2nd ed. New York, NY: John 
-Wiley and Sons. 738~p.
-\bibitem{8-lan-1}
-\Aue{Borovkov, A.\,A.} 1984. \textit{Matematicheskaya statistika. Otsenka parametrov. Proverka gipotez} 
-[Mathematical statistics. Parameter estimation. Hypothesis testing].  Moscow: Nauka. 472~p.
-\bibitem{9-lan-1}
-\Aue{Berger, T.} 1971. \textit{Rate distortion theory. A~mathematical basis for data compression}. Englewood Cliffs, 
-NJ: Prentice-Hall. 311~p.
-\bibitem{10-lan-1}
-\Aue{Gray, R.\,M., and D.\,L.~Neuhoff.} 1998. Quantization. \textit{IEEE T. Inform. Theory} 44(6):2325--2383. 
-doi: 10.1109/ 18.720541.
-\bibitem{11-lan-1}
-\Aue{Dobrushin, R.\,L., and B.\,S.~Tsybakov.} 1962. Information transmission with additional noise. \textit{IRE 
-T. Inform. Theor.} 8(5):293--304. doi: 10.1109/TIT.1962.1057738.
-\bibitem{12-lan-1}
-\Aue{Lange, M.\,M., and A.\,M.~Lange.} 2022. Information-theoretic lower bounds to error probability for the 
-models of noisy discrete source coding and object classification. \textit{Pattern Recognition Image Analysis} 
-32(3):570--574. doi: 10.1134/S105466182203021X.
-\bibitem{13-lan-1}
-\Aue{Korn, G., and T.~Korn.} 1968. \textit{Mathematical handbook for scientists and engineers}.  
-New York\,--\,San Francisco\,--\,Toronto\,--\,London\,--\,Sydney: McGraw Hill Book Co. 1147~p. 
-
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received January 30, 2024}} 
-
-\vspace*{-12pt}
-
-
-\Contr
-
-\vspace*{-3pt}
-
-\noindent
-\textbf{Lange Mikhail M.} (b.\ 1945)~--- Candidate of Science (PhD) in technology, leading scientist, Federal 
-Research Center ``Computer Sciences and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
-Moscow 119333, Russian Federation; \mbox{lange\_mm@mail.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Lange Andrey M.} (b.\ 1979)~--- Candidate of Science (PhD) in physics and mathematics, scientist, 
-Federal Research Center ``Computer Sciences and Control'' of the Russian Academy of Sciences, 44-2~Vavilov 
-Str., Moscow 119333, Russian Federation; \mbox{lange\_am@mail.ru}
-
-
-
-
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 

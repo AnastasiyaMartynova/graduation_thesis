@@ -1,694 +1,0 @@
-\def\stat{grusho-3}
-
-\def\tit{БЕЗОПАСНАЯ АВТОМАТИЧЕСКАЯ РЕКОНФИГУРАЦИЯ 
-ОБЛАЧНЫХ ВЫЧИСЛИТЕЛЬНЫХ СРЕД$^*$}
-
-\def\titkol{Безопасная автоматическая реконфигурация 
-облачных вычислительных сред}
-
-
-\def\aut{А.\,А.~Грушо$^1$, М.\,И.~Забежайло$^2$, А.\,А.~Зацаринный$^3$, 
-В.\,О.~Писковский$^4$}
-
-\def\autkol{А.\,А.~Грушо, М.\,И.~Забежайло, А.\,А.~Зацаринный, 
-В.\,О.~Писковский}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Грушо А.\,А.}
-\index{Забежайло М.\,И.}
-\index{Зацаринный А.\,А.} 
-\index{Писковский В.\,О.}
-\index{Grusho A.\,A.}
-\index{Zabezhailo M.\,I.}
-\index{Zatsarinnyy A.\,A.}
-\index{Piskovski V.\,O.}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа поддержана РФФИ (проект 15-29-07981~офи-м).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского
-  центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{grusho@yandex.ru}}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского
-  центра <<Информатика и~управление>> Российской академии наук,
-  \mbox{zmizanv@ya.ru}}
-\footnotetext[3]{Институт проблем информатики Федерального исследовательского
-  центра <<Информатика и~управление>> Российской академии наук,
-  \mbox{azatsarinny@ipiran.ru}}
-\footnotetext[4]{Институт проблем информатики Федерального исследовательского
-  центра <<Информатика и~управление>> Российской академии наук,
-  \mbox{vpvp80@yandex.ru}}
-
-
-\label{st\stat}
-
-                  \thispagestyle{headings}
-   
-   
-   \Abst{Работа посвящена адаптации концепции непротиворечивости и~управления 
-транзакциями систем управления базами данных (СУБД) в~применении к~динамической реконфигурации облачных 
-вычислительных сред (ОВС). Даны определения операций и~процедур реконфигурации  
-ОВС. Их отличительная особенность~--- перевод сети из одного 
-корректного состояние в~другое корректное состояние. Представлены аномалии, 
-встречающиеся при работе СУБД, и~трактовка их аналогов при процедурах реконфигурации 
-ОВС. Также приведена теорема непротиворечивости для 
-процессов динамической реконфигурации ОВС.} 
-   
-   \KW{облачные вычислительные среды; автоматическая непротиворечивая 
-реконфигурация сети; software-defined network; СУБД; аномалии}
-
-\DOI{10.14357/08696527160306} 
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-   
-\section{Введение}
-
-   Для традиционных сетей характерны статические настройки маршрутизации 
-потоков, политики доступа и~иных компонентов конфигураций. Для ОВС 
-ха-\linebreak рак\-терна динамическая настройка и~применение 
-автоматизированных процедур настройки, например на основе software-defined 
-networks (SDN)~--- про\-грам\-мно-кон\-фи\-гу\-ри\-ру\-емых сетей (ПКС)~[1--5].
-   
-   Динамическая реконфигурация ОВС и~управление доступом пользователей к~
-вычислительным ресурсам приводят к~необходимости формирования 
-последовательности шагов на всех этапах подготовки и~настройки ОВС. Это 
-означает выполнение на каждом этапе настройки и~изменения конфигурации 
-ОВС условий, гарантирующих совместимость (непротиворечивость) 
-и~целостность сетевых соединений с~точки зрения маршрутизации, политик 
-безопасности и~достигнутых соглашений об уровне обслуживания. Аномалия, 
-или нарушение целостности и~совместимости объектов, определяющих сетевую 
-конфигурацию ОВС (таблицы маршрутизации, локализация сетевых 
-и~вычислительных ресурсов, настройки управления доступом и~пр.), 
-является потенциальной уязвимостью и~может привести к~снижению уровня 
-защиты ОВС вплоть до полной компрометации или прекращению работы 
-сервисов. 
-   
-   Для разработки методики построения непротиворечивой 
-автоматизированной конфигурации ОВС предлагается обобщить 
-и~использовать результаты концепции упорядочиваемости (serializability), 
-разработанной для ANSI SQL-92~[6--9].
-   
-\section{Аномалии реконфигурации SDN}
-
-   Рассмотрим аномалии в~работе СУБД и~их аналоги в~работе 
-<<автоматически>> конфигурируемых SDN-сетей.
-   
-     В случае SDN-сетей аналогом транзакции СУБД выступает процедура 
-реконфигурации, состоящая из нескольких операций по изменению таблиц 
-маршрутизации в~коммутаторах. Процедура реконфигурации сети может быть 
-вызвана изменением: состава активного оборудования; 
-состава обслуживаемых тенантов и~сетевых служб; 
-политик безопасности; уровней обслуживания потребителей 
-(тенанты, пользователи). 
-     
-     Данным, или строкам реляционных таблиц, применяемым для описания 
-транзакций и~аномалий при работе СУБД, в~SDN-се\-тях соответствуют строки 
-в~таблицах маршрутизации коммутаторов и~их содержимое. В~зависимости от 
-вносимых процедурой реконфигурации изменений в~коммутаторах может быть 
-затронуто несколько таблиц коммутации, расположенных в~нескольких 
-коммутаторах, а также несколько строк в~каждой из таблиц и~полей в~строке 
-коммутации соответственно. 
-     
-     Перечисленные выше объекты процедуры конфигурации сетей не могут 
-быть подвержены мгновенным изменениям. Даже изменение отдельного поля в~
-строке таблицы коммутации занимает время, определяемое аппаратурой 
-и~конфигурацией сети. В~случае использования нескольких строк, таблиц 
-коммутации и~коммутаторов необходимо учитывать время доступа к~объекту, 
-время внесения изменений и~время отклика о статусе произведенных операций 
-над данными (успешно или нет). Время доступа к~коммутаторам также зависит 
-от их реализации (виртуальное устройство или физически отдельный сетевой 
-компонент), расположения в~сети, способа соединений (например, in-bound~--- 
-управление проходит по тем же линиям, что и~данные, или out of bound~--- 
-выделенные линии для связи коммутатора с~контроллером), скорости 
-и~загруженности соединений ком\-му\-та\-тор--конт\-рол\-лер. 
-
-{
-\renewcommand{\baselinestretch}{0.85}
-  
-\begin{table}\small
-\begin{center}
-\tabcolsep=3pt
-%\begin{tabular}{|p{20mm}|p{42.5mm}|p{67mm}|}
-\begin{tabular}{|p{52.7pt}|p{130pt}|p{170.4pt}|}
-\multicolumn{3}{p{126mm}}{Аномалии, встречающиеся при работе СУБД, и~предлагаемая 
-трактовка их аналогов при групповых операциях реконфигурации ОВС}\\
-\multicolumn{3}{c}{\ }\\[-6pt]
-\hline
-\multicolumn{1}{|c|}{\raisebox{-6pt}[0pt][0pt]{Аномалия}} &\multicolumn{2}{c|}{Описание}\\
-\cline{2-3}
-&&\\[-9pt]
-&\multicolumn{1}{c|}{СУБД~\cite{10-g3}}&
-\multicolumn{1}{c|}{ОВС}\\
-\hline
-1. P0\newline 
-Dirty Write\newline (не\-пред\-ска\-зуемый результат записи)&Транзакция изменяет данные.
-Сторонняя 
-транзакция также меняет эти же данные до <<ввода в~действие>> или <<отмены 
-изменений>> данных первой транзакцией. Если ка\-кая-ли\-бо из указанных транзакций 
-отказывается от изменений и~возвращает корректные с~ее точки зрения данные, то неясно, 
-какие данные считать корректными&
-{%\baselineskip=10.5pt
-Конкурентно не менее двух процедур 
-реконфигурации вносят противоречащие друг другу изменения в~один и~тот же сетевой 
-объект~$x$ (это могут быть противоречащие друг другу значения полей или строки таблиц 
-маршрутизации) с~отложенным вводом в~действие измененных правил коммутации. Если 
-оказы\-вается, что ка\-кая-ли\-бо из указанных процедур реконфигурации отказывается от 
-изменений и~возвращает корректные с~ее\linebreak точки зрения данные полей или содержимое 
-таблиц коммутации, то не определено, останется ли корректным состояние объекта 
-реконфигурации и~конфигурация в~целом коммутатора, содержащего эти объ\-екты 
-}
-\\
-\hline
-2. P1\newline 
-Dirty Read\newline (не\-пред\-ска\-зу\-емый результат чтения)&
-Транзакция читает данные, которые 
-записаны другой транзакцией, но не <<введены в~действие>>&
-{%\baselineskip=10.5pt
-Контроллер(ы) опрашивает(ют) содер\-жимое 
-таблиц коммутации и~учитывает(ют) при
- реконфигурации данные,\linebreak которые не приобрели или 
-утеряли ак\-ту\-аль\-ность по вине стороннего процесса реконфигурации (происходящего 
-в~интересах достижения других целей)
-}\\
-\hline
-3. P4\newline 
-Lost Update\newline (потерянные данные)&
-{%\baselineskip=10.5pt
-Транзакция читает данные. В~это время сторонняя 
-транз\-ак\-ция изменяет эти данные\linebreak 
-(возможно, с~использованием ранее прочитанных 
-значений). Затем первая транз\-ак\-ция (на основе ранее прочитанных значений) 
-меняет данные 
-и~<<вводит их в~действие>>. Теперь, после ввода в~действие данных второй транзакцией, 
-данные с~точки зрения второй транзакции утеряны 
-}&
-Контроллер(ы) опрашивает(ют)~со\-дер\-жи\-мое таблиц коммутации и~учитывает(ют) 
-при реконфигурации данные, которые на момент выполнения самой\linebreak целевой 
-реконфигурации уже подверглись изменению другими реконфигурационными процессами. 
-В~результате получаем некорректно настроенный коммутатор\\
-\hline
-{%\baselineskip=10.5pt 
-4. P2 Fuzzy\newline Read  (Nonrepeatable) (изменение\newline \mbox{набора\,ранее\hspace*{-.8pt}} 
-прочитан- \mbox{ных\,данных)\hspace*{-.6pt}} 
-}&
-Транзакция еще раз пытается прочесть ранее прочитанные данные 
-и~находит, что сторонняя транзакция
-изменила или удалила эти данные &
-Контроллеры вносят изменения в объект управления. При этом оказывается, что изменения
-используют данные, которые изменены или удалены конкурирующим процессом
-реконфигурации\\
-\hline
-\multicolumn{3}{r}{\textit{Окончание таблицы на с}.~\pageref{aa}}
-\vspace*{-4.8pt}
-\end{tabular}
-\end{center}
-\end{table}
-
-}
-
- \renewcommand{\baselinestretch}{0.87}
-
-\begin{table}\small
-\begin{center}
-\label{aa}
-\tabcolsep=3pt
-%\begin{tabular}{|p{17mm}|p{43mm}|p{57mm}|}
-\begin{tabular}{|p{51.7pt}|p{131pt}|p{170.4pt}|}
-\multicolumn{3}{p{126mm}}{Аномалии, встречающиеся при работе СУБД, и~предлагаемая 
-трактовка их аналогов при групповых операциях реконфигурации ОВС (\textit{окончание})}\\
-\multicolumn{3}{c}{\ }\\[-6pt]
-\hline %\multicolumn{1}{|c|}{\raisebox{-6pt}[0pt][0pt]{
-\multicolumn{1}{|c|}{\raisebox{-6pt}[0pt][0pt]{Аномалия}} &\multicolumn{2}{c|}{Описание}\\
-\cline{2-3}
-&&\\[-9pt]
-&\multicolumn{1}{c|}{СУБД~\cite{10-g3}}&
-\multicolumn{1}{c|}{ОВС}\\
-\hline
-5. P3\newline Phantom (фантом)&
-Транзакция еще раз выполняет запрос, который возвращает набор строк, 
-удовле\-тво\-ря\-ющих условиям отбора, и~выясняет, что другая транзакция 
-добавила строки, также удовлетворяющие условиям отбора. 
-
-На\-при\-мер, 
-транзакция запрашивает количество 
-сотрудников. Через 5~мин этот же запрос возвращает большее значение, так как другой 
-пользователь за это время добавил сотрудника, под\-па\-да\-юще\-го под критерии выбора 
-в~запросе. %\linebreak 
-В~отличие от~P2, ранее полученные данные не изменились&
-Контроллеры вносят изменения в~объект управ\-ле\-ния. При этом 
-оказывается, что конкурирующим процессом в~таб\-ли\-цы маршрутизации внесены изменения, 
-делающие внесенные изменения недействительными\\
-\hline
-6. A5A\newline Read Skew\newline (асим\-мет\-рич\-ное чтение)&
-Пусть данные~$X$ и~$Y$ нахо\-дят\-ся в~некотором 
-соотно\-шении. Транзакция $T_1$ читает~$X$. Сторонняя транзакция~$T_2$ 
-меняет $X$ 
-и~$Y$ и~вводит их в~действие. Если сейчас~$T_1$ прочитает~$Y$, то это значение не будет 
-соответствовать ранее прочитанному~$X$ и~транзакция~$T_1$ вернет нарушение 
-целостности &
-Объекту реконфигурации~$X$ (поле, строка, таб\-ли\-ца 
-коммутации, содержимое таб\-лиц коммутатора) соответствует объ\-ект реконфигурации~$Y$. 
-Процесс~рекон\-фи\-гу\-ра\-ции/ве\-ри\-фи\-ка\-ции запрашивает данные объекта~$X$. Конкурирующий 
-процесс реконфигурации меняет~$X$ и~$Y$. Если первый процесс запросит содержимое 
-объекта~$Y$, то он найдет его несоответствие ранее прочитанному\\
-\hline
-7. A5B\newline Write Skew\newline (асим\-мет\-рич\-ная запись)&
-Пусть данные~$X$ и~$Y$ находятся в~некотором 
-соотношении. Транзакция~$T_1$ читает~$X$ и~$Y$ и~находит их корректными. Сторонняя 
-транзакция~$T_2$ читает~$X$ и~$Y$, меняет~$X$ и~вводит данные в~действие. 
-Затем~$T_1$ меняет~$Y$. Таким образом, соотношение между~$X$ и~$Y$ может быть 
-нарушено &
-Объекту реконфигурации~$X$ (поле, строка, таб\-ли\-ца коммутации, 
-содержимое\linebreak таб\-лиц коммутатора) соответствует объект 
-конфигурации~$Y$. Процесс ре\-кон\-фи\-гу\-ра\-ции/верификации запрашивает данные 
-объектов~$X$ и~$Y$ и~на\-хо\-дит их корректными. Конкурирующий процесс реконфигурации
-меняет~$X$. Если первый процесс изменит содержимое объекта~$Y$, то соответствие~$X$ 
-и~$Y$ будет нарушено\\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
- 
-  
-  Понятно, что соединения виртуальных устройств, физически расположенных 
-на одном сервере, происходят в~оперативной памяти компьютера, т.\,е.\ за 
-промежуток времени, существенно более короткий, чем при работе устройств, 
-реализованных на физически различных сетевых компонентах, что должно 
-учитываться при анализе таких диаграмм.
-  
-  Таким образом, построение и~анализ временн$\acute{\mbox{ы}}$х диаграмм реконфигурации 
-сети~--- сложная задача. 
-  
-  Пока же упростим анализ групповых операций по реконфигурации сети, 
-опустив из рассмотрения временные задержки между операциями, оставив 
-только их последовательность.
-  
-  В таблице представлены аномалии, встречающиеся при работе СУБД, 
-и~предлагаемая трактовка их аналогов при групповых операциях 
-реконфигурации SDN-се\-тей.
-
-    
-\section{Условия непротиворечивой реконфигурации SDN}
- 
-  Приведенная таблица показывает, что в~основе аномалий лежат 
-противоречия, возникающие при реконфигурации сети. Следуя идеологии 
-статей~\cite{6-g3} и~\cite{10-g3}, будем использовать следующие понятия.
-  
-  \textit{Объектами} процедуры конфигурации будем считать поле или 
-несколько строк в~таблице или таблицах маршрутизации, сами строки 
-в~таблицах маршрутизации или таблицы маршрутизации, а также 
-реконфигурируемые коммутаторы или иные сущности, влияющие на 
-конфигурацию сетей, и~некоторое множество указанных сущностей. 
-  
-  \textit{Граф} сети SDN определяется следующим образом:
-  \begin{itemize}
-\item вершины графа~--- сущности сетевой инфраструктуры (хосты, 
-коммутаторы, маршрутизаторы, контроллеры);
-\item дуги графа~--- разрешенные информационные потоки 
-непосредственно от одной вершины к~другой;
-\item конфигурация сети~--- множество разрешенных путей в~графе;
-\item реконфигурация сети~--- изменения в~множестве разрешенных 
-путей в~графе.
-\end{itemize}
-
-  Реконфигурация сети достигается изменениями в~таблицах коммутаций.
-  
-  \textit{Противоречия}~--- искажение графа разрешенных путей, т.\,е.
-  \begin{enumerate}[(1)]
-\item появление разрешения на недопустимый путь;
-\item запрет на допустимый путь;
-\item блокирование фрагментов графа.
-\end{enumerate}
-
-  Проблема состоит в~том, что переход от одного непротиворечивого 
-состояния сети к~другому непротиворечивому состоянию порождает временн$\acute{\mbox{ы}}$е 
-противоречия или конфликты. 
-  
-  Пример противоречия~(1) можно найти в~работе~\cite{11-g3}. Примеры 
-противоречий~(2) и~(3) можно найти в~таблице. Выбор разрешенных путей 
-в~графе SDN-се\-ти~--- это функция контроллера. В~данном разделе не 
-рассматриваются алгоритмы поиска путей, поэтому противоречия~(1)--(3) 
-считаются не связанными с~нарушениями работы контроллера. В~работе 
-рассматриваются противоречия, возникающие при реализации 
-последовательности шагов реконфигурации. Аналоги решения этой задачи 
-были найдены в~реализации транзакций СУБД~\cite{6-g3}.
-  
-  Любая реконфигурация сводится к~выполнению ряда операций над 
-объектами реконфигураций.
-  
-  \textit{Процедура} реконфигурации состоит из вектора $P^i\hm= 
-((O_1^i,e_1^i),\ldots , (O_n^i, e_n^i))$ операций и~объектов реконфигурации, где 
-$O_k^i$~--- операция; $e_k^i$~--- объекты реконфигурации $k$-й 
-операции~$O_k^i$ в~$i$-й процедуре. Операция рассматривается как атомарное 
-неделимое понятие. 
-  
-  Чтобы избежать временн$\acute{\mbox{ы}}$х противоречий, возникающих при 
-реконфигурации, вводятся операции блокировки (lock) и~разблокировки 
-(unlock) объектов. Если объект блокирован в~процедуре~$P$, то другие 
-процедуры не могут использовать его в~своих операциях, в~том числе 
-разблокировать и~заново блокировать. Для того чтобы каждая процедура 
-реконфигурации <<видела>> непротиворечивые состояния сети перед 
-выполнением каждой операции, в~каждой выполняющейся процедуре нельзя 
-после разблокировки объекта требовать его новой блокировки. Также если 
-объект заблокирован при выполнении шага~$i$ в~процедуре~$P$, то другие 
-процедуры не могут выполнять операции блокирования этого объекта начиная 
-с~шага~$i$ и~до шага, когда этот объект будет разблокирован процедурой~$P$. 
-Формальная модель блокировки объекта~$e$ в~процедуре~$P$ 
-следующая~\cite{6-g3}.
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Определение 1.}\ Процедура $P\hm= ((O_1, e_1),\ldots , (O_n, e_n))$ 
-заблокировала объект~$e$ на шаге~$i$, если выполняются следующие условия:
-  \begin{enumerate}[(1)]
-\item $\exists\,j\leq i:$ $O_j\hm=\mathrm{lock}$, $e_j\hm=e$;
-\item не существует~$k$: $j<k<i$: $O_k\hm=\mathrm{unlock}$, 
-$e_k\hm=e$.
-\end{enumerate}
-
-\noindent
-  \textbf{Определение 2.}\ Процедура $P\hm= ((O_1, e_1),\ldots , (O_n,e_n))$ 
-называется правильной, если $\forall\,i=\overline{1,n}$ выполняются следующие 
-условия:
-  \begin{enumerate}[(1)]
-\item если $O_i\hm= \mathrm{lock}$, объект~$e_i$ не был заблокирован на 
-предыдущих $i-1$ шагах;
-\item если $O_i\not=\mathrm{lock}$, то объект~$e_i$ был заблокирован 
-процедурой~$P$ до $i-1$ шага включительно;
-\item если в~процедуре~$n$ операций, то $O_n\hm=\mathrm{unlock}$, 
-а~единственным заблокированным объектом является~$e_n$. 
-\end{enumerate}
-
-  \textit{Расписание} реконфигурации~$S$~--- последовательность операций из 
-множества процедур~$P^i$, $i\hm= \overline{i,k}$. 
-  
-  Расписание не всегда бывает непротиворечивым. Однако если найдется 
-перестановка операций такая, что в~расписании~$S^\prime$ не будет 
-противоречий, то такое расписание называется правильным. Очевидно, что 
-проведение операций над заблокированным объектом является противоречием. 
-Такая операция может выполняться только после разблокирования объекта. 
-  
-  Расписание реконфигурации~$S$ называется \textit{допустимым}, когда 
-$\forall\ i\hm=\overline{1,n}$, если объект~$e$ блокируется на шаге 
-с~номером~$i$, то~$e$ не был блокирован ни одной процедурой ранее 
-шага~$i$. Это означает, что если другой процедуре~$P^\prime$ нужно заблокировать 
-объект~$e$, то ей надо ждать, когда этот объект будет разблокирован 
-процедурой~$P$, заблокировавшей его. 
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Определение 3.}\ Процедура $P\hm= ((O_1, e_1),\ldots , (O_n, e_n))$ 
-называется двухфазной, если для некоторого $j\hm<n$ выполняются 
-следующие условия:
-  \begin{enumerate}[(1)]
-\item если $i<j$, то $O_i \not=\mathrm{unlock}$;
-\item если $i=j$, то $O_i=\mathrm{unlock}$;
-\item если $i>j$, то $O_i\not=\mathrm{lock}$.
-\end{enumerate}
-  
-  Непротиворечивость реконфигурации требует, чтобы процедуры были 
-двухфазными, т.\,е.\ до тех пор, пока все процедуры не стали двухфазными, 
-можно построить допустимое, но противоречивое расписание. 
-  
-  Основные результаты, приведенные в~работе~\cite{6-g3}, сводятся к~двум 
-утверждениям.
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Утверждение~1.} Если все процедуры~$P^i$, $i\hm=\overline{1,k}$, 
-являются правильными и~двухфазными, то любое допустимое расписание 
-непротиворечиво. 
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Утверждение 2.} Если процедура~$P$ не является правильной 
-и~двухфазной, то существует правильная и~двухфазная процедура~$P^\prime$ 
-такая, что~$P$ и~$P^\prime$ имеют допустимое, но противоречивое 
-расписание.
-  
-\section{Заключение}
-
-     Условия непротиворечивости реконфигурации сети являются 
-достаточными. В~частности, двухфазность процедур является очень сильным 
-требованием. Вместе с~тем практика показывает, что противник может 
-использовать противоречивые реконфигурации сети для построения атак на 
-ОВС. Противоречия, возникающие при реконфигурации, являются 
-уязвимостями, которые необходимо и~можно закрыть.
-     
-     Построенная в~работе аналогия с~проблемами, возникающими в~СУБД, 
-позволяет утверждать, что существуют методы предотвращения указанных 
-уязвимостей при реконфигурации сети.
-     
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-    \bibitem{1-g3}
-    \Au{Revilak S., O'Neil P., O'Neil E.} Precisely serializable snapshot 
-isolation~/\!\!/ 27th Conference (International) on Data Engineering 
-Proceedings.~--- IEEE, 2011. P.~482--493.
-    \bibitem{2-g3}
-    \Au{Reitblatt M., Foster N., Rexford J., Walker~D.} Consistent updates for 
-software-defined networks: Change you can believe in!~/\!\!/ HotNets-X:  10th ACM 
-Workshop on Hot Topics in Networks Proceedings.~--- New York, NY, USA: ACM, 
-2011. Article No.\,7. P.~1--6.
-    \bibitem{3-g3}
-    \Au{Reitblatt M., Foster N., Rexford J., Schlesinger~C., Walker~D.} 
-Abstractions for network update~/\!\!/ ACM SIGCOMM 2012 Conference on 
-Applications, Technologies, Architectures, and Protocols for Computer 
-Communication Proceedings.~--- New York, NY, USA: ACM, 2012. P.~323--334.
-    \bibitem{4-g3}
-    \Au{McGeer R.} A~correct, zero-overhead protocol for network updates~/\!\!/ 
-2nd ACM SIGCOMM Workshop on Hot Topics in Software Defined Networking 
-Proceedings.~--- New York, NY, USA: ACM, 2013. P.~161--162. 
-    \bibitem{5-g3}
-    \Au{McGeer R.} Declarative verifiable SDI specifications~/\!\!/ 37th IEEE 
-Symposium on Security and Privacy Proceedings.~--- IEEE: 2016. P.~198--203.
-    \bibitem{6-g3}
-    \Au{Eswaran P., Gray J., Lorie R., Traiger~I.} The notions of consistency and 
-predicate locks in a~database system~/\!\!/ Commun. ACM, 1976. Vol.~19. No.\,11. 
-P.~624--633. 
-    \bibitem{7-g3}
-    \Au{Bernstein P.\,A., Hadzilacos V., Goodman~N.} Concurrency control and 
-recovery in database systems.~--- Reading, MA, US: Addison-Wesley, 1987. 264~p. 
-    \bibitem{8-g3}
-    \Au{O'Neil P.} Database: Principles, programming, performance.~---  
-San-Francisco, CA, USA: Morgan Kaufmann Publ., 1994. 860~p. 
-    \bibitem{9-g3}
-    \Au{Конолли Т., Бегг К., Страчан А.} Базы данных: проектирование, 
-реализация и~сопровождение. Теория и~практика~/ Пер. с~англ.~--- М.: Вильямс, 
-2001. 1120~с. (\Au{Conolly~T.\,M., Begg~C.\,E.} Database systems. A~practical 
-approach to design, implementation, and management.~--- 2nd ed.~--- Reading, MA, 
-USA: Addison-Wesley, 1999. 1093~p.)
-    \bibitem{10-g3}
-    \Au{Berenson H., Bernstein Ph., Gray J., Melton~J., O'Neil~E., O'Neil~P.} 
-A~critique of ANSI SQL isolation levels~/\!\!/ ACM SIGMOD Conference 
-(International) on Management of Data Proceedings.~--- New York, NY, USA: 
-ACM, 1995. P.~1--10.
-    \bibitem{11-g3}
-    \Au{Majumdar R., Tetali S.\,D., Wang Z.} Kuai: A~model checker for 
-    software-defined networks~/\!\!/  14th Conference on Formal Methods in 
-Computer-Aided Design Proceedings.~--- Lausanne, Switzerland: IEEE, 2014. 
-P.~163--170.
-     \end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 15.08.16}}
-
-
-
-
-\vspace*{8pt}
-
-\hrule
-
-%\newpage
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{9pt}
-
-
-
-\def\tit{SECURE AUTOMATIC RECONFIGURATION OF~CLOUDY~COMPUTING}
-
-\def\titkol{Secure automatic reconfiguration of~cloudy 
-computing}
-
-
-\def\aut{A.\,A.~Grusho, M.\,I.~Zabezhailo, A.\,A.~Zatsarinnyy, and~V.\,O.~Piskovski}
-\def\autkol{A.\,A.~Grusho, M.\,I.~Zabezhailo, A.\,A.~Zatsarinnyy, and~V.\,O.~Piskovski}
-
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-
-\noindent
-Institute of Informatics Problems, Federal Research Center 
-``Computer Science and Control'' of the Russian Academy of Sciences, 44-2 
-Vavilova Str., Moscow 119333, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2016 vol~26 no\,3}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2016   vol~26   no\,3
-\hfill \textbf{\thepage}}} 
-    
-    
-   
-   
-   \Abste{The paper is devoted to adaptation of the concept of consistency and management of 
-transactions of data base management systems (DBMS) 
-in application to a dynamic reconfiguration of cloudy computing 
-environments. Definitions of operations and procedures of a~reconfiguration of cloudy 
-computing environments are given. Their distinctive feature is to 
-transfer of network from one 
-correct state to another correct state. The anomalies which are found during\linebreak\vspace*{-12pt}}
-
-\Abstend{the work of DBMS and 
-an interpretation of their analogs at procedures of a~reconfiguration of cloudy computing 
-environments are presented. The theorem of consistency for processes of a~dynamic 
-reconfiguration of cloudy computing environments is also provided.} 
-   
-   \KWE{cloudy computing environments, automatic consistent reconfiguration of network, 
-software-defined network, DBMS, anomaly}
-   
-   
-\DOI{10.14357/08696527160306}
-
-%\vspace*{-24pt}
-
-\Ack
-\noindent
-The paper was supported by the Russian Foundation for 
-Basic Research (project 15-29-07981~ofi-m).
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99} 
-
-\bibitem{1-g3-1}
-\Aue{Revilak, S., P.~O'Neil, and E.~O'Neil}. 2011. Precisely serializable snapshot 
-isolation. \textit{27th Conference (International) on Data Engineering 
-Proceedings}. 482--493.
-\bibitem{2-g3-1}
-\Aue{Reitblatt, M., N. Foster, J. Rexford, and D.~Walker}. 2011. Consistent updates 
-for software-defined networks: Change you can believe in! \textit{HotNets-X:  10th 
-ACM Workshop on Hot Topics in Networks Proceedings}.~--- New York, NY: 
-ACM. 
-7:1--6. 
-\bibitem{3-g3-1}
-\Aue{Reitblatt, M., N. Foster, J.~Rexford, C.~Schlesinger, and D.~Walker}. 2012. 
-Abstractions for network update. \textit{ACM SIGCOMM 2012 Conference on 
-Applications, Technologies, Architectures, and Protocols for Computer 
-Communication Proceedings.} 323--334.
-\bibitem{4-g3-1}
-\Aue{McGeer, R.} 2013. A~correct, zero-overhead protocol for network 
-updates. \textit{2nd ACM SIGCOMM Workshop on Hot Topics in Software 
-Defined Networking Proceedings}. 161--162. Available at: 
-{\sf http://conferences.sigcomm. org/sigcomm/2013/papers/hotsdn/p161.pdf} 
-(accessed  September~19, 2016).
-
-\bibitem{5-g3-1}
-\Aue{McGeer, R.} 2016. Declarative verifiable SDI specifications. \textit{IEEE Security 
-and Privacy Workshops}. 198--203. Available at: 
-{\sf http://spw16.langsec.org/papers/mcgeer-verifiable-sdi-specs.pdf} 
-(accessed September~19, 2016).
-\bibitem{6-g3-1}
-\Aue{Eswaran, P., J. Gray, R. Lorie, and I.~Traiger}. 1976. The notions of 
-consistency and predicate locks in a~database system. \textit{Commun. ACM} 
-19(11):624--633. 
-\bibitem{7-g3-1}
-\Aue{Bernstein, P.\,A., V. Hadzilacos, and N.~Goodman}. 1987. \textit{Concurrency control 
-and recovery in database systems}. Reading, MA: Addison-Wesley Publ. 264~p. 
-\bibitem{8-g3-1}
-\Aue{O'Neil, P.} 1994. \textit{Database: Principles, programming, performance}. 
-San-Francisco, CA: Morgan Kaufmann Publ. 860~p. 
-\bibitem{9-g3-1}
-\Aue{Conolly, T.\,M., and C.\,E.~Begg}. 1999. \textit{Database systems. 
-A~practical approach to design, implementation, and management}. 2nd ed. Reading, MA: 
-Addison-Wesley. 1093~p.
-\bibitem{10-g3-1}
-\Aue{Berenson, H. Ph.~Bernstein, J.~Gray, J.~Melton, E.~O'Neil, and 
-P.~O'Neil}. 1995. A~critique of ANSI SQL isolation levels. \textit{ACM SIGMOD Conference 
-(International) on Management of Data Proceedings.} New York, NY: ACM. 1--10.
-Available at: {\sf 
-http://www.cs.umb.edu/$\sim$poneil/iso.pdf} (accessed  September~19, 2016).
-\bibitem{11-g3-1}
-\Aue{Majumdar, R., S.\,D.~Tetali, and Z.~Wang}. 2014. Kuai: A~model checker for 
-software-defined networks. \textit{14th Conference on Formal Methods in 
-Computer-Aided Design Proceedings}. Lausanne, Switzerland: IEEE. 163-170. 
-Available at: {\sf 
-http:// www.cs.utexas.edu/users/hunt/FMCAD/FMCAD14/proceedings/27\_majumdar.pdf}  
-(accessed  September~19, 2016).
-\end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Received August 15, 2016}}
-
- \Contr
-
-\noindent
-\textbf{Grusho Alexander A.} (b.\ 1946)~--- Doctor of Science in physics and 
-mathematics, professor, Head of Laboratory, Institute of Informatics Problems, 
-Federal Research Center ``Computer Sciences and Control'' of the Russian 
-Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{grusho@yandex.ru}
-
-\vspace*{3pt}
-   
-\noindent
-\textbf{Zabezhailo Michael I.} (b.\ 1956)~--- Candidate of Science (PhD) in physics and 
-mathematics, Head of Laboratory, Institute of Informatics Problems, Federal Research Center 
-``Computer Sciences and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
-Moscow 119333, Russian Federation; \mbox{m.zabezhailo@yandex.ru}   
-
-\vspace*{3pt}
-   
-\noindent
-\textbf{Zatsarinnyy Alexander A.} (b.\ 1951)~--- Doctor of Science in technology, professor, 
-Deputy Director, Federal Research Center ``Computer Sciences and Control'' of the Russian 
-Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{azatsarinny@ipiran.ru}
- 
-\vspace*{3pt}
-   
-\noindent
-\textbf{Piskovski Viktor O.} (b.\ 1963)~--- Candidate of Science (PhD) in physics and 
-mathematics, senior scientist, Institute of Informatics Problems, Federal Research Center 
-``Computer Sciences and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
-Moscow 119333, Russian Federation; \mbox{vpvp80@yandex.ru}
-\label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}

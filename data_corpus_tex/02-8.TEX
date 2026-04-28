@@ -1,634 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-]{amsart}
-
-%
-
-\newcommand{\Arg}{\operatorname{Arg}}
-\newcommand{\const}{\operatorname{const}}
-\newcommand{\Int}{\operatorname{int}}
-\newcommand{\tts}[1]{}
-
-\theoremstyle{definition}
-\theorembodyfont{\rm}
-\newtheorem{notenonum}{\hskip\parindent Замечание}
-\renewcommand{\thenotenonum}{}
-
-\numberwithin{equation}{section}
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{6}
-\god{2005}
-\nomer{8~(519)} %                        Remove in Eng.
-%\nomer{Vol.\,49, No.\,8}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{517.983}
-
-\author{\it Е.В.\,Архаров}
-% NB:   ^^ remove in Eng.
-\title{Итерационные методы регуляризации\\ задачи связанного псевдообращения}
-\thanks{}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-
-В работе для решения задачи связанного псевдообращения построены 
-двупараметрические явные и неявные итерационные методы.
-В случае существенной некорректности задачи исследованa сходимость методов при
-возмущенных входных данных, а также установлена оценка погрешности и приведен
-вариант априорного выбора параметров регуляризации.
-
-
-\section{Введение}
-
-Рассмотрим следующую задачу: {\it найти элемент $x_*\in X$, 
-удовлетворяющий условиям}
-\begin{equation}
-x_*\in X_1=\Arg\min_X\|{Ax-y}\|^2,\quad x_*\in X_2=\Arg\min_{X_1}\|Bx-z\|^2.
-\end{equation}
-Элемент $x_*$ называется связанным псевдорешением уравнения
-\begin{equation}
-Ax=y,
-\end{equation}
-а связанное псевдорешение минимальной нормы называется нормальным и 
-обозначается через~$x^*$.
-
-Задача нахождения 
-псевдорешения $x_*$, удовлетворяющего дополнительному условию
-\begin{equation}
-Bx=z,
-\end{equation}
-обобщающая классическую задачу псевдообращения, впервые поставлена в~[1].
-
-При отсутствии связей ($B=0$, $z=0$) $x_*$ --- псевдорешение уравнения (1.2). 
-Классическая задача псевдообращения состоит в нахождении нормального 
-псевдорешения, т.\,е. псевдорешения минимальной нормы.
-Для решения этой задачи в [2] предложен метод регуляризации. 
-Для изучаемой задачи (1.1) метод регуляризации В.А.\,Морозова 
-применим при следующем условии дополнительности операторов $A$, $B$:
-$$
-\exists \gamma >0 \text{ такое, что } \|Ax\|^2+\|Bx\|^2 \ge \gamma^2\|x\|^2
-\ \ \forall x \in X,
-$$
-что в терминах составного оператора $\Gamma=\begin{bmatrix}A\\ B\end{bmatrix}$
-означает замкнутость его образа и тривиальность ядра.
-
-Метод регуляризации вычисления нормального связанного псевдорешения, применимый 
-без каких-либо ограничений типа замкнутости образов или тривиальности ядер как 
-самих операторов, так и составного оператора $\Gamma$, предложен в [3], [4] 
-(см. также [5]). В данной работе на базе этого общего метода построены явные 
-и неявные итерационные схемы регуляризации задачи (1.1). При этом 
-предполагается, что вместо точных данных известны приближенные данные и уровни 
-их погрешностей:
-\begin{equation}
-\begin{split}
-\|A_t-A\| &\le t,\quad  \|B_h-B\| \le h,\\
-\|y_\tau-y\| &\le \tau, \quad \ \ \|z_\delta-z\| \le \delta.
-\end{split}
-\end{equation}
-Итерационные формулы удобно записать с помощью составного оператора 
-$\wt \Gamma_r$ и вектора $\wt g_r$:
-$$
-\wt \Gamma_r=\begin{bmatrix}A_t \\ \sqrt{r}B_h\end{bmatrix}:X\to Y\times Z,
-\quad \wt g_r=\begin{bmatrix}y_\tau\\ \sqrt{r}z_\delta\end{bmatrix}\in Y\times Z,
-$$
-где $Y\times Z$ --- декартово произведение гильбертовых пространств.
-При этом $\wt \Gamma_1$ будем писать без индекса,
-в невозмущенном случае составной оператор будем обозначать без волны.
-Возмущенная явная итерационная схема имеет вид
-\begin{equation}
-\wt x_{0,r}=x_0,\ \; 
-\wt x_{n,r}=\wt x_{n-1,r}-\mu \wt \Gamma_r^*(\wt\Gamma_r
-\wt x_{n-1,r}-\wt g_r),\ \; n=1,2,\dotsc,\ \; 0<r\le 1,\ \; 
-0<\mu\le {1}/{\|\wt \Gamma\|^2 },
-\end{equation}
-а неявная --- 
-\begin{equation}
-\alpha \wt x_{n,r}+\wt\Gamma_r^*\wt\Gamma_r\wt x_{n,r}=
-\alpha \wt x_{n-1,r}+\wt\Gamma_r^*\wt g_r,\quad n=1,2,\dotsc,
-\ \ r>0,\ \ \alpha=\const>0.
-\end{equation}
-Отметим, что для классической задачи псевдообращения эти методы переходят в 
-методы (2.3), (2.4) из ([6], с.\,24).
-
-
-\section{О задаче связанного псевдообращения}
-
-Приведем известные факты (напр., [4], [5]), касающиеся существования и 
-характеризации связанных псевдорешений.
-
-Для этого введем следующие обозначения: $P$, $Q$ --- ортопроекторы соответственно на 
-ядро $N(A)$ оператора $A$ и на пересечение ядер $N(A)\cap N(B)$ операторов 
-$A$ и $B$ и, как обычно, $P^\bot =I-P$, $Q^\bot =I-Q$. Очевидно, $N(\Gamma)=
-N(A)\cap N(B)$. Кроме того, псевдообратные операторы к соответствующим 
-операторам будем обозначать знаком ``$+$''.
-
-Из (1.1) видно, что существование связанного псевдорешения равносильно 
-непустоте множеств $X_1$ и $X_2$. Это накладывает следующие условия на правые 
-части уравнений (1.2), (1.3):
-$$
-y\in D(A^+)=R(A)\oplus N(A^*),\quad
-z-BA^+y\in D((BP)^+)=R(BP)\oplus N(PB^*).
-$$
-
-При выполнении этих условий доказывается, что в множестве всех связанных 
-псевдорешений $X_2$ существует единственный элемент минимальной нормы 
-$x^*\in N(\Gamma)^\bot $ и любое связанное псевдорешение $x_*$ имеет вид 
-$x_*=x^*+Qh$, $h\in X$.
-Отсюда для любого $x_0 \in X$ инфимум $\|x_0-x_*\|$ достигается на элементе
-\begin{equation}
-x_*=x^*+Qx_0,
-\end{equation}
-и расстояние 
-$$
-\rho(x_0, X_2)=\inf_{x_*} \|x_0-x_*\|=
-\|Q^\bot x_0-x^*\|^2+\inf_h \|Q(x_0-h)\|^2.
-$$
-Другими словами, ближайшее к $x_0$ связанное псевдорешение $x_*$ определяется 
-равенством (2.1) и характеризуется соотношением 
-\begin{equation}
-x_0-x_* \in N(\Gamma)^\bot.
-\end{equation}
-
-Из (1.1) также следует, что $x_*$ --- точка безусловного минимума функционала 
-$\|Ax-y\|^2$ и условного минимума функционала $\|Bx-z\|^2$, что равносильно 
-тому, что $x_*$ удовлетворяет равенствам
-\begin{equation}
-A^*(Ax_*-y)=0,\quad PB^*(Bx_*-z)=0.
-\end{equation}
-
-
-\section{Предварительные оценки}
-
-Как и в ([6], сс.\,25, 26), рассмотрим следующие порождающие системы функций:
-\begin{gather}
-f_n(\lambda)=\mu\sum_{i=0}^{n-1}(1-\mu\lambda)^i,\\
-f_{n,\alpha}(\lambda)=\frac{1}{\alpha}\sum_{i=0}^{n-1}
-(\alpha(\alpha+\lambda)^{-1})^{i+1}.
-\end{gather}
-Цель данной работы --- получить оценки для некоторых операторов, 
-в которых участвуют операторы 
-$f_n(\wt\Gamma_r^*\wt\Gamma_r)$ и $f_{n,\alpha}
-(\wt\Gamma_r^*\wt\Gamma_r)$. Для этого введем обозначения
-$S=I-\mu\wt\Gamma_r^*\wt\Gamma_r$, $S_\alpha=\alpha(\alpha I+
-\wt\Gamma_r^*\wt\Gamma_r)^{-1}$.
-В силу предположения $0<r\le 1$ имеем 
-$\|\wt\Gamma_r\| \le \|\wt\Gamma\|$,
-а потому 
-$$
-0<\mu\le \frac{1}{\|\wt\Gamma\|^2}\le \frac{1}{\|\wt\Gamma_r\|^2}.
-$$
-Отсюда следует, что самосопряженный оператор $S$ удовлетворяет соотношениям 
-\begin{equation}
-S\ge 0,\quad \|S\| \le 1.
-\end{equation}
-Из (3.3) с учетом того, что $f_n(\wt\Gamma_r^*\wt\Gamma_r)=\mu
-\sum\limits_{i=0}^{n-1}S^i$, легко получить следующие оценки:
-\begin{gather}
-f_n(\wt\Gamma_r^*\wt\Gamma_r)\ge 0,\quad 
-\|f_n(\wt\Gamma_r^*\wt\Gamma_r)\| \le \mu n,\\
-%
-S^k-S^n=S^k(I-S^{n-k})=S^k\wt\Gamma_r^*\wt\Gamma_rf_{n-k}(\wt
-\Gamma_r^*\wt\Gamma_r)\ge 0\ \ \forall k=0,1,\dotsc,n-1. \notag
-\end{gather}
-Теперь имеем
-$$
-I-\wt\Gamma_r^*\wt\Gamma_rf_n(\wt
-\Gamma_r^*\wt\Gamma_r)=S^n\le S^{n-1}=\frac{1}{n}\sum\limits_{i=0}^{n-1}
-S^{n-1}\le\frac{1}{n}\sum\limits_{i=0}^{n-1}S^i=
-\frac{1}{\mu n}f_n(\wt\Gamma_r^*\wt\Gamma_r),
-$$
-и значит,
-\begin{equation}
-\|(I-\wt\Gamma_r^*\wt\Gamma_rf_n(\wt
-\Gamma_r^*\wt\Gamma_r))x\| \le \frac{1}{\sqrt{\mu n}}\|f_n^{\frac{1}{2}}
-(\wt\Gamma_r^*\wt\Gamma_r)x\|.
-\end{equation}
-
-Получим еще две оценки, если рассмотрим оператор $K=f_n^{\frac{1}{2}}
-(\wt\Gamma_r^*\wt\Gamma_r)\wt\Gamma_r^*$.
-Тогда, очевидно,\linebreak $0\le KK^*=\wt\Gamma_r^*\wt\Gamma_rf_n
-(\wt\Gamma_r^*\wt\Gamma_r)=I-S^n\le I$,
-и следовательно,
-\begin{equation}
-\|f_n^{\frac{1}{2}}(\wt\Gamma_r^*\wt\Gamma_r)\wt\Gamma_r^*\|
-\le 1,\quad \|f_n(\wt\Gamma_r^*\wt\Gamma_r)\wt\Gamma_r^*\|
-\le \sqrt{\mu n}.
-\end{equation}
-Аналогично (3.3) для оператора $S_\alpha$ имеем
-\begin{equation}
-S_\alpha\ge 0,\quad \|S_\alpha\| \le 1,
-\end{equation}
-откуда, дословно повторяя предыдущие рассуждения, получим
-\begin{gather}
-\|f_{n,\alpha}(\wt\Gamma_r^*\wt\Gamma_r)\|\le \frac{n}{\alpha},
-\quad \|f_{n,\alpha}^{\frac{1}{2}}(\wt\Gamma_r^*\wt\Gamma_r)\| \le
-\sqrt{\frac{n}{\alpha}},\\
-%
-\|(I-\wt\Gamma_r^*\wt\Gamma_rf_{n,\alpha}(\wt
-\Gamma_r^*\wt\Gamma_r))x\| \le \sqrt{\frac{\alpha}{n}}\|f_{n,\alpha}
-^{\frac{1}{2}}(\wt\Gamma_r^*\wt\Gamma_r)x\|,\\
-%
-\|f_{n,\alpha}^{\frac{1}{2}}(\wt\Gamma_r^*\wt\Gamma_r)\wt
-\Gamma_r^*\|\le 1,\qquad \|f_{n,\alpha}(\wt\Gamma_r^*\wt\Gamma_r)
-\wt\Gamma_r^*\|\le \sqrt{\frac{n}{\alpha}}.
-\end{gather}
-
-          
-\section{Исследование явного метода}
-
-С помощью порождающей системы функций (3.1) приближение (1.5) можно 
-выразить через начальное приближение
-\begin{equation}
-\wt x_{n,r}=A_{rn}x_0+f_n(\wt\Gamma_r^*\wt\Gamma_r)
-\wt\Gamma_r^* \wt g_r,\quad
-A_{rn}=I-\wt\Gamma_r^*\wt\Gamma_r f_n(\wt \Gamma_r^*\wt\Gamma_r).
-\end{equation}
-
-
-\begin{lem}
-Для любого $x\in N(\Gamma)^\bot$
-\begin{equation}
-A_{rn}x\to 0
-\end{equation}
-при $n \to \infty$, $t,h\to 0$.
-\end{lem} 
-
-
-\begin{pf}
-В силу принципа равномерной ограниченности (напр., 
-[7], с.\,98) достаточно установить ограниченность семейства операторов из (4.2) 
-и показать, что (4.2) имеет место на плотном в $N(\Gamma)^\bot$ множестве.
-Из определения порождающей системы функций (3.1) следует
-$1-\lambda f_n(\lambda)=(1-\mu\lambda)^n$.
-Поэтому, пользуясь обозначением $S=I-\mu\wt \Gamma_r^* \wt \Gamma_r$
-и оценкой (3.3), имеем
-$$
-\|A_{rn}\|\le \|S^n\| \le 1,
-$$
-и равномерная ограниченность семейства операторов проверена.
-Очевидно, $N(\Gamma_r)=N(\Gamma)$ \, $\forall r$. Поэтому 
-$\overline{R(\Gamma_r^*)}=N(\Gamma)^\bot$. Таким образом, плотным в 
-$N(\Gamma)^\bot$ множеством является $R(\Gamma^*_r)$ при любом $r$.
-Пусть $x\in R(\Gamma_r^*)$, $r$ фиксировано. Тогда $\exists g\in Y\times Z$ 
-такая, что $x=\Gamma_r^*g$, и 
-$$
-A_{rn}\Gamma_r^*g=A_{rn}\wt\Gamma_r^*g+
-A_{rn}(\Gamma_r^*-\wt \Gamma_r^*)g.
-$$
-Подставляя первую оценку (3.6) в (3.5), получаем
-\begin{equation}
-\|A_{rn}\wt\Gamma_r^*g\| \le \frac{1}{\sqrt{\mu n}}\|g\|.
-\end{equation}
-Из (3.5) с учетом оценки (3.4) имеем
-\begin{equation}
-\|A_{rn}(\Gamma_r^*-\wt \Gamma_r^*)g\| \le \|(\Gamma_r^*-\wt \Gamma_r^*)g\|,
-\end{equation}
-и значит, в силу условий аппроксимации (1.4) правая часть в (4.4) стремится к 
-нулю при $t, h \to 0$.
-Таким образом, предельное соотношение (4.2) на плотном в $N(\Gamma)^\bot$ 
-множестве следует из (4.3) и (4.4).
-\end{pf}
-
-
-\begin{lem}
-Для любого $x\in D(A^{*+})$
-\begin{equation}
-\|f_n(\wt \Gamma_r^*\wt \Gamma_r)P^\bot x\|\le (\mu nt+\sqrt{\mu n})
-\|A^{*+}x\|.
-\end{equation}
-\end{lem}
-
-
-\begin{pf}
-Для $x\in D(A^{*+})$ имеем
-$$
-P^\bot x=A^*A^{*+}x=(A^*-A_t^*)A^{*+}x+\wt \Gamma_r^*
-\begin{bmatrix}A^{*+}x\\ 0\end{bmatrix}.
-$$
-Поэтому
-$$
-f_n(\wt \Gamma_r^*\wt \Gamma_r)P^\bot x
-=f_n(\wt \Gamma_r^*\wt \Gamma_r)(A^*-A_t^*)A^{*+}x+
-f_n(\wt \Gamma_r^*\wt \Gamma_r)
-\wt \Gamma_r^* \begin{bmatrix}A^{*+}x\\ 0\end{bmatrix}.
-$$
-Оценивая по норме это равенство с помощью (3.4), (3.6) и (1.4), получим (4.5).
-\end{pf}
-
-
-\begin{thm}                 
-Пусть задача связанного псевдообращения разрешима и 
-выполнено условие 
-\begin{equation}
-B^*(Bx^*-z)\in D(A^{*+}).
-\end{equation}
-
-Если в возмущенном явном итерационном методе $(1.5)$ параметры 
-$n=n(\eta, \sigma)$, $r=r(\eta,\sigma)$, где $\eta=\eta(t, \tau)$,
-$\sigma=\sigma(h,\delta)$, выбрать такими, что
-\begin{equation}
-n\to \infty,\ \ r \to 0,\ \ r \sqrt{n}\to 0,\ \ n(\tau ^2+t) \to 0,
-\ \ \sqrt{n}(\delta^2+h)\to 0
-\end{equation}
-при $\eta \to 0$, $\sigma \to 0$, то
-\begin{equation}
-\wt x_{n,r} \to x_* \ \text{ при } \ \eta \to 0,\quad \sigma \to 0,
-\end{equation}
-где $x_*$ --- ближайшее к $x_0$ связанное псевдорешение уравнения $(1.2)$.
-
-Если начальная погрешность представима в виде
-\begin{equation}
-x_0-x_*=A^*u,
-\end{equation}
-то справедлива оценка погрешности
-\begin{multline}
-\| \wt x_{n,r}-x_*\| \le \bigg(\frac{1}{\sqrt{\mu n}}+t\bigg)\|u\|+
-\sqrt{\mu n}[(t+\sqrt{r}h)\|x_*\|+\tau+\sqrt{r}\delta]+\\
-%
-+\mu n (t \|P_{N(A^*)}y\|+rh \|Bx_*-z\|)+r(\mu nt+\sqrt{\mu n})\|A^{*+}B^*
-(Bx_*-z)\|.
-\end{multline}
-\end{thm}
-
-
-\begin{pf}
-Для погрешности приближения (4.1) имеем равенство
-\begin{equation}
-\wt x_{n,r}-x_*=A_{rn}(x_0-x_*)+
-f_n(\wt \Gamma_r^*\wt \Gamma_r)\wt\Gamma_r^*(\wt g_r-\wt \Gamma_rx_*).
-\end{equation}
-Согласно (2.2) и лемме 1 первое слагаемое в (4.11) стремится к нулю при 
-$n \to \infty$. Преобразуем выражение
-$\wt \Gamma_r^*(\wt g_r-\wt \Gamma_r x_*)=A_t^*(y_\tau-A_tx_*)+
-rB_h^*(z_\delta-B_hx_*)$.
-Используя равенства (2.3), имеем
-\begin{gather*}
-A_t^*(y_\tau-A_tx_*)=(A^*-A^*_t)(Ax_*-y)+A_t^*((A-A_t)x_*+(y_\tau-y)),\\ 
-B_h^*(z_\delta-B_hx_*)=(B^*-B_h^*)(Bx_*-z)+B_h^*((B-B_h)x_*+(z_\delta-z))+
-P^\bot B^*(z-Bx_*).
-\end{gather*}
-Следовательно, второе слагаемое в (4.11)
-\begin{gather*}
-f_n(\wt \Gamma_r^*\wt \Gamma_r)\wt \Gamma_r^*(\wt g_r-
-\wt \Gamma_r^*x_*)=f_n(\wt \Gamma_r^*\wt \Gamma_r)\wt \Gamma_r^*
-\begin{bmatrix}(A-A_t)x_*+(y_\tau-y)\\ \sqrt{r}(B-B_h)x_*+\sqrt{r}
-(z_\delta-z)\end{bmatrix}+\\
-%
-+f_n(\wt \Gamma_r^*\wt \Gamma_r)(A^*-A_t^*)(Ax_*-y)+
-rf_n(\wt \Gamma_r^*\wt \Gamma_r)(B^*-B_h^*)(Bx_*-z)+
-rf_n(\wt \Gamma_r^*\wt \Gamma_r)P^\bot B^*(z-Bx_*).
-\end{gather*}
-Используя оценки (1.4), (3.4), (3.6), (4.5) и учитывая, что
-$Ax_*-y=P_{N(A^*)}y$, получаем
-\begin{multline}
-\|f_n(\wt \Gamma_r^*\wt \Gamma_r)\wt \Gamma_r^*(\wt g_r-
-\wt \Gamma_rx_*)\| \le \sqrt{\mu n}((t+\sqrt{r}h)\|x_*\|+\tau+\sqrt{r}\delta)+\\
-%
-+\mu n(t\|P_{N(A^*)}y\|+rh\|Bx_*-z\|)+r(\mu nt+\sqrt{\mu n})
-\|A^{*+}B^*(Bx_*-z)\|.
-\end{multline}
-Значит, при выполнении условий (4.7) второе слагаемое в (4.11) стремится к 
-нулю, и (4.8) доказано.
-
-Пусть начальной погрешностью является (4.9). 
-Тогда ее можно записать в виде\linebreak
-$x_0-x_*=\Gamma_r^*\begin{bmatrix}u\\ 0\end{bmatrix}$.
-Подставляя в оценки (4.3) и (4.4) $g=\begin{bmatrix}u\\ 0\end{bmatrix}$,
-получим
-\begin{equation}
-\|A_{rn}(x_0-x_*)\| \le \bigg(\frac{1}{\sqrt{\mu n}}+t \bigg)\|u\|.
-\end{equation}
-Теперь оценка погрешности (4.10) вытекает из (4.12) и (4.13).
-\end{pf}
-
-
-\begin{notenonum}
-Если параметры $n$ и $r$ выбирать из условия $nr\to 0$, 
-то уровни возмущений дополнительного уравнения (1.3) можно не согласовывать с 
-параметрами. Тогда (4.7) примет вид $n\to \infty$, $r\to 0$,
-$nr\to 0$, $n(\tau^2+t)\to 0$.
-\end{notenonum}
-
-
-\section{Исследование неявного итерационного метода}
-
-Через начальное приближение последовательность (1.6) выражается в виде
-\begin{equation}
-\wt x_{n,r}=A_{rn,\alpha}x_0+f_{n,\alpha}(\wt\Gamma_r^*\wt\Gamma_r)
-\wt\Gamma_r^* \wt g_r,\quad A_{rn,\alpha}=
-I-\wt\Gamma_r^*\wt\Gamma_r f_{n,\alpha}(\wt \Gamma_r^*\wt\Gamma_r),
-\end{equation}
-где $f_{n,\alpha}(\lambda)$ --- функция, определенная в (3.2).
-
-Справедлива аналогичная лемме 1
-
-\begin{lem}
-Для любого $x\in N(\Gamma)^\bot$
-\begin{equation}
-A_{rn,\alpha}x\to 0
-\end{equation}
-при $n \to \infty$, $t, h\to 0$.
-\end{lem} 
-
-Ограниченность семейства (5.2) следует из равенства
-$A_{rn,\alpha}=S_\alpha^n$,
-где $S_\alpha=\alpha(\alpha I+\wt \Gamma_r^* \wt \Gamma_r)^{-1}$,
-и второй оценки (3.7).
-
-Неравенства
-\begin{gather}
-\|A_{rn,\alpha}\wt\Gamma_r^*g\| \le \sqrt{\frac{\alpha}{n}}\|g\|,\\
-%
-\|A_{rn,\alpha}
-(\Gamma_r^*-\wt \Gamma_r^*)g\| \le \|(\Gamma_r^*-\wt \Gamma_r^*)g\|
-\end{gather}
-следуют из (3.9) аналогично (4.3) и (4.4) с учетом второй оценки (3.8) 
-и первой оценки (3.10) соответственно.
-
-Аналогично лемме 2 доказывается
-
-
-\begin{lem}
-Для любого $x\in D(A^{*+})$
-\begin{equation}
-\|f_{n,\alpha}(\wt \Gamma_r^*\wt \Gamma_r)P^\bot x\|\le 
-\bigg(\sqrt{\frac{n}{\alpha}}+\frac{n}{\alpha}t\bigg)\|A^{*+}x\|.
-\end{equation}
-\end{lem}
-
-\noindent{}Для этого используются оценки (3.8) и (3.10).
-
-Погрешность приближения (5.1) имеет вид
-$$
-\wt x_{n,r}-x_*=A_{rn,\alpha}(x_0-x_*)+
-f_{n,\alpha}(\wt \Gamma_r^*\wt \Gamma_r)\wt\Gamma_r^*
-(\wt g_r-\wt \Gamma_rx_*).
-$$
-Сходимость $\wt x_{n,r}\to x_*$ при $\eta \to 0$, $\sigma \to 0$ и выполнении 
-условий (4.7) имеет место согласно лемме 3 и оценке, аналогичной (4.12). При 
-выполнении условия (4.9) с использованием (5.3)--(5.5) доказывается оценка 
-погрешности:
-\begin{multline}
-\| \wt x_{n,r}-x_*\| \le \bigg(\sqrt{\frac{\alpha}{n}}+t\bigg)\|u\|+
-\sqrt{\frac{n}{\alpha}}[(t+\sqrt{r}h)\|x_*\|+\tau+\sqrt{r}\delta]+\\
-%
-+\frac{n}{\alpha}(t \|P_{N(A^*)}y\|+rh \|Bx_*-z\|)
-+r\bigg(\sqrt{\frac{n}{\alpha}}+\frac{n}{\alpha}t\bigg)\|A^{*+}B^*(Bx_*-z)\|.
-\end{multline}
-Таким образом, для неявного итерационного метода справедлива теорема 1, в которой 
-оценку погрешности (4.10) следует заменить на (5.6).
-
-
-\section{О выборе параметров регуляризации}
-
-Оценки (4.10) и (5.6) позволяют высказать принцип априорного выбора параметров 
-регуляризации.
-
-Введем обозначение
-\begin{equation}
-\beta=\begin{cases}\mu^{-1},\\ \alpha\end{cases}
-\end{equation}
-и запишем оценки (4.10) и (5.6) в виде
-\begin{multline}
-\| \wt x_{n,r}-x_*\| \le \sqrt{\beta}\|u\|n^{-\frac{1}{2}}+
-\frac{1}{\sqrt {\beta}}[(t\|x_*\|+\tau)+\sqrt{r}(h\|x_*\|+\delta)+
-r\|A^{*+}B^*(Bx_*-z)\|]n^{\frac{1}{2}}+\\
-%
-+\frac{1}{\beta}[t\|P_{N(A^*)}y\|+r(h \|Bx_*-z\|+t\|A^{*+}B^*(Bx_*-z)\|)]n+
-t\|u\|.
-\end{multline}
-
-
-\begin{thm}                                                               
-Пусть задача связанного псевдообращения разрешима и выполнено 
-условие $(4.6)$.
-
-Если в возмущенных методах $(1.5)$ и $(1.6)$ параметры выбрать такими, 
-что
-\begin{equation}
-n\to \infty, \ \ r\to 0,\ \ nr\to 0,\ \ n(\tau^2+t)\to 0
-\end{equation}
-при $\eta=\eta(t, \tau)\to 0$, $\sigma=\sigma(h, \delta)\to 0$, то 
-\begin{equation}
-\wt x_{n,r}\to x_*\ \ \text{при}\ \ \eta\to 0,\ \ \sigma\to 0,
-\end{equation}
-где $x_*$ --- ближайшее к $x_0$ связанное псевдорешение уравнения $(1.2)$
-
-Если начальная погрешность представима в виде $(4.9)$, то при выборе параметров
-\begin{equation}
-n=\Int(\beta \gamma^{\frac{2}{3}}(\tau+t)^{-\frac{2}{3}}),\quad
-r=(\tau+t)^{\frac{4}{3}},
-\end{equation}
-где $\gamma=\|u\| /(2\|P_{N(A^*)}y\|)$, а $\beta$ определено в $(6.1)$,
-то имеет место асимптотическая оценка погрешности
-\begin{equation}
-\underset{\eta \to 0,\ \sigma\to 0}{\varlimsup}{} \frac{\| \wt x_{n,r}-x_*\|}
-{(\tau+t)^{\frac{1}{3}}}\le \|u\| \gamma^{-\frac{1}{3}}
-+\gamma^{\frac{2}{3}}\|P_{N(A^*)}y\|.
-\end{equation}
-\end{thm}
-
-
-\begin{pf}
-При выборе параметров в виде (6.5) легко видеть, что
-выполняются предельные соотношения (6.3),
-и значит, имеет место сходимость (6.4).
-
-Параметр $n$ в (6.5) выбирается из условия минимизации суммы первого и третьего 
-членов оценки (6.2). Параметр $r$ выбран из условия $\sqrt{r}(\tau+t)^{-\frac
-{1}{3}}=(\tau+t)^{\frac{1}{3}}$. Тогда второе слагаемое в (6.2) ---
-бесконечно малая более высокого порядка, чем $(\tau+t)^{\frac{1}{3}}$.
-Поэтому асимптотическая 
-оценка (6.6) вытекает из (6.2).
-\end{pf}
-
-Отметим, что теорема 2 доказана при самом общем предположении относительно 
-разрешимости задачи (1.1), а именно, разрешимости уравнения (1.2):
-$y \in D(A^+)$, иначе $P_{R(A)}y\in R(A)$.
-
-Если предположить, что
-$$
-y\in R(A),
-$$
-то $P_{N(A^*)}y=0$, и оценка (6.2) примет вид
-\begin{multline}
-\| \wt x_{n,r}-x_*\| \le \sqrt{\beta}\|u\|n^{-\frac{1}{2}}+
-\frac{1}{\sqrt {\beta}}[(t\|x_*\|+\tau)+\sqrt{r}(h\|x_*\|+\delta)+\\
-%
-+r\|A^{*+}B^*(Bx_*-z)\|]n^{\frac{1}{2}}+
-\frac{r}{\beta}(h \|Bx_*-z\|+t\|A^{*+}B^*(Bx_*-z)\|)n+t\|u\|.
-\end{multline}
-Тогда условия (6.3) заменятся на
-$$
-n\to \infty,\ \ r\to 0,\ \ nr\to 0,\ \ \sqrt{n}(\tau+t)\to 0
-$$
-при $\eta \to 0$, $\sigma \to 0$. 
-
-Параметр $n$ найдем из условия минимума суммы первого и второго 
-членов в (6.7), а $r$ --- из условия $\sqrt{r}(\tau+tc)^{-1}=\const$, т.\,е. 
-$$
-n=\Int(\beta \|u\|(\tau+tc)^{-1}),\quad r=(\tau+tc)^2,
-$$
-где $c\ge \|x_*\|$. С этими параметрами асимптотическая оценка примет вид
-$$
-\underset{\eta \to 0,\ \sigma\to 0}{\varlimsup}{} \frac{\| \wt x_{n,r}-x_*\|}
-{(\tau+tс)^{\frac{1}{2}}}\le 2\|u\|^{\frac{1}{2}}.
-$$
-
-В заключение отметим, что следствия из полученных результатов для случая 
-$B=0,~~z=0$ согласуются с соответствующими результатами из теорем 2.3 и 2.4 
-из ([6], сс.\,99, 100).
-
-
-\begin{thebibliography}{9}
-
-\bibitem{1}
-Морозов В.А., Кирсанова Н.Н. {\em Об одном обобщении метода регуляризации}
-// Вычислит. методы и программ. -- М.: МГУ, 1970. -- Вып.\,14. -- C.\,40--45.
-\bibitem{2}
-Морозов В.А. {\em Регулярные методы решения некорректно поставленных задач}.
--- М.: Наука, 1987. -- 240~с. 
-\bibitem{3}
-Шафиев Р.А. {\em О регулярных методах вычисления $L$-псевдообратных 
-операторов} // Журн. вычисл. матем. и матем. физ. -- 1983. --
-Т.\,23. -- \No\,3. -- С.\,536--544.
-\bibitem{4}
-Шафиев Р.А. {\em К теории методов регуляризации Тихонова--Лаврентьева} // ДАН 
-СССР. -- 1985. -- Т.\,282. -- \No\,4. -- С.\,804--808.
-\bibitem{5}
-Шафиев Р.А. {\em Псевдообращение операторов и некоторые приложения}.
--- Баку: Элм, 1989. -- 152~с.
-\bibitem{6}
-Вайникко Г.М., Веретенников А.Ю. {\em Итерационные процедуры в некорректных 
-задачах}. -- М.: Наука, 1986. -- 181~c.
-\bibitem{7}
-Садовничий В.А. {\em Теория операторов}. Учеб. для вузов. -- 
-М.: Высш. школа, 1999. -- 368~c.
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Нижегородский государственный}{\it Поступила}
-\post{\it педагогический университет}{01.04.2003}
-
-\label{end}
-\end{document}
-
-%Архаров Евгений Валерьевич, аспирант
-%Нижегородский государственный педагогический университет
-%кафедра математического анализа
-%603950, Н.Новгород, ул. Ульянова, 1
-%тел. (8-8312) 36-37-12(доб.270)
-%E-mail:master@nypu.unn.ac.ru

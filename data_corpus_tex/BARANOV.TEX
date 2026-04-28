@@ -1,1658 +1,0 @@
-\def\stat{baranov}
-\renewcommand{\figurename}{\protect\bf Figure}
-\renewcommand{\tablename}{\protect\bf Table}
-\renewcommand{\bibname}{\protect\rmfamily References}
-
-\def\tit{CONCURRENT DESIGN AND VERIFICATION OF DIGITAL HARDWARE}
-\def\titkol{
-Concurrent design and verification of digital hardware}
-
-\def\autkol{S.~Baranov,  S.~Frenkel, V.~Sinelnikov, V.~Zakharov}
-\def\aut{S.~Baranov$^1$,  S.~Frenkel$^2$, V.~Sinelnikov$^3$, and~V.~Zakharov$^4$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnotetext[1]
-%{Работа выполнена при
-%поддержке РФФИ, гранты 08-01-00345, 08-01-00363,
-%08-07-00152.}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Holon Institute of Technology, Holon, Israel, samary@012.net.il}
-\footnotetext[2]{Institute of Informatics Problems, Moscow, Russia, slf-ipiran@mtu-net.ru}
-\footnotetext[3]{Holon Institute of Technology, Holon, Israel, samary@012.net.il}
-\footnotetext[4]{Institute of Informatics Problems, Moscow, Russia, VZakharov@ipiran.ru}
-
-
-\Abste{The main goal of this paper is to present a new design verification methodology for complicated digital
-systems, designed by high-level synthesis. This methodology is based on Algorithmic State Machine (ASM)
-transformations (composition, minimization, extraction, etc.), special algorithms for Data Path
-and Control Unit (CU)
-design, and very fast optimizing synthesis of finite state machines  (FSM) and combinational circuits with hardly any
-constraints on their size, that is, the number of inputs, outputs,
-and states. Design tools supporting this methodology
-allow very fast implement, check and estimate many possible design versions, to find an optimized decision of the
-design problem and to simplify the verification problem for digital systems.
- In contrast to existent semi-formal approaches to verification of industrial systems, based on combination of
-simulation and formal verification approaches,  a formalized method based on concurrency of synthesis
-and verification that is providing regular efficient way to verify the system designed properties starting from its
-semi-formal specification up to field programmable gate array (FPGA)
-implementation is considered.}
-
-\KWE{digital systems design; formal verification; finite state machine}
-
-      \vskip 24pt plus 9pt minus 6pt
-
-      \thispagestyle{headings}
-
-      \begin{multicols}{2}
-
-      \label{st\stat}
-
-
-
-\section{Introduction}
-
-\noindent
-Designers of complex digital systems on chips need in practical validation methods and tools to guarantee a
-perfect design before the process of manufacturing is started. This validation is performed mostly as a
-``veri\-fi\-cation,'' checking if a system design is correct with respect to a specification (which is understood here
-as an initial description of aimed design on a given representation level (e.g., FSM,
-register-transfer (RTL), or gate level)~\cite{1bar}. The goal of design verification is to ensure both the functional and
-timing correctness of a design implementation with respect to its specification.
-
-    How to verify the correctness of high-level synthesis becomes a key issue before mapping the synthesis
-results onto a silicon. In the meantime, it has been observed that verification becomes the major bottleneck, i.e.,
-up to 70\%--80\% of the overall design costs are due to verification.
-
-    To provide an ideal verification, one needs a specification of the target design, giving a unique description of
-requirements to the target design. In very general case, this is, in fact, a necessary condition of exhaustive
-verification. But realization of the algorithm verification is a
-very difficult problem, because presently, the design
-activity being a hierarchical in nature, involves different professionals in the design process. For example, a
-system designer transforms algorithms of the target design to a behavioral RTL
-description, logic designer transforms the behavioral RTL description to a structural RTL description. Circuit
-designers generate transistor-\linebreak level netlists that implement the structural RTL.\linebreak 
-Layout designers generate layouts for the transistor-level schematics. 
-
-At this stage, there are numerous verification problems.
-They include functional (logic) verification, timing
-verification, electrical verification, and physical design rule verification.
-
-    Full-automatic verification of complex processor design is a dream of all system designers. Hardware
-module is formally verified by stating a property on the design and then checking that the design satisfies the
-property. Ususally, the property expresses a condition on the hardware
-module that should never happen in a reachable state (or conversely, a condition that should always be true in a
-reachable state). Formally, the property is an \textit{invariant} which
-is a boolean formula over some signals of the module. The module
-$M$ satisfies the invariant $I$ if every reachable state of the module satisfies~$I$~\cite{2bar}.
-
-   Unfortunately, the exponential complexity of all formal verification algorithms
-is well known that, it
-seems, excludes this dream realization, at least for large designs with
-very large state spaces which cannot be
-handled. Therefore, one of the ways to overcome the verification complexity is using of the combination of
-formal and informal verification models~\cite{3bar} to solve the verification problem as effectively as possible.
-
-   Speaking on informal specification, they usually take into account the checking via simulation (driven by
-random and handwritten inputs). However, simulation test cannot handle all possible cases
-and also is rather
-expensive and not scalable~\cite{4bar}.
-
-    Further, from the economical point of view, it is desirable that a hardware design project should start with a
-modular and abstract specification. An implementation should be constructed through successive refinement of
-the specification while maintaining the interfaces between modules.
-
-    However, usually formal verification models are auto\-mati\-cal\-ly compiled from RTL source code, 
-    that is, from rather late and error-prone stages of design proc\-ess, when designer have to describe the
-logical structure of design  manually.
-
-    It would be desirable to use some knowledge received during synthesis, and moreover, the verification
-technique should match a target system synthesis. For this goal, a designer needs tools and methodology for
-concurrent activity in design and verification.
-
-    The main goal of this paper is to analyze the state-of-the-art of the current design verification practice to
-submit, relying on this analysis, a new methodology for high-level and logic design and verification of
-complicated digital systems. This methodology is based on using of the ASM for
-specification of digital systems at the high level~\cite{5bar}. In fact, the ASM model description of a digital
-system is a flowchart with microoperations and conditions of their execution in its nodes. One of novel aspects
-of this approach is that the verification should match the design (synthesis) technique. In fact, we can speak
-about ``concurrency'' of the synthesis and verification activities in the framework of this approach.
-
-
-    This methodology is supported by software design tool Abelite which allows very fast implement, check
-and estimate many possible design versions, to find an optimized decision of the design problems and to
-simplify the verification problem for digital systems. We consider a possibility to provide semi-formal
-specification, harmonized with the synthesis process, providing the receiving
-test benches for verification by
-simulation, guaranteed enough coverage if all synthesis requirements
-are carried out. The synthesis takes into account area/delay overhead constraints.
-
-\section{Principal Notions}
-
-   \noindent
-Let us outline some principal definitions for the hardware verification area.
-
-\subsection{Errors} %2.1
-
-\noindent
-As the cause of possible incorrectness of a design, there are some bugs of designers (at various stages of the
-design process). Let us consider, first of all, the fault model, presence of which forces us to study the
-verification. The causes of the faults (or bugs) can be the following:
- \begin{itemize}
-\item incorrect specifications;
-\item misinterpretation of specifications;
-\item missed cases;
-\item protocol nonconformance; and
-\item timing errors.
-\end{itemize}
-
-   Note that one of a frequent cause of these errors can be some misunderstanding between designers
-working at  various design stages.
-
-   So, we should take into account these possible errors (``bugs'') in our verification studies. As it was
-mentioned above, we can try to understand if there are some of the bugs in the design either by simulation of the
-design model under some stimulus or by formal verification.
-
-   These causes can lead to various errors at the structur\-al level of modeling, in CU and Data Path, in
-particular. These are, for example~\cite{6bar}:
-   \begin{itemize}
-\item \textit{Bus  error}: a bus of one or more lines is (totally) stuck-at-0 or stuck-at-1
-if all lines in the bus are
-stuck at logic level~0 or~1. This generalization of the standard
-single stuck line (SSL) model was introduced in~\cite{6bar} in the
-context of physical fault testing.
-\item \textit{Module substitution error}: This refers to mistakenly replacing a module by another module with
-the same number of inputs and outputs. This class includes word gate substitution errors and extra/missing
-inversion errors.
-\item \textit{Bus source error}: this error corresponds to connecting a module input to a wrong source.
-\end{itemize}
-
-   More advanced fault models of VHDL\footnote{VHDL~---
-very high-speed integrated circuits hardware description language.}
-RTL design were considered in~\cite{7bar}. For example, they have
-considered change of the value of any constant and of any occurrence of a variable, driving it to one of the values
-which have an Hamming distance equal to one from the fault free configuration (e.g., given the expression
-$a+b+a$, then the two $a$ may fail either together or sepa\-rate\-ly). Also,
-the following possible errors have been
-considered:
-   \begin{itemize}
-\item change of the value returned by a function, allowing it to return any of the faulty values with a unitary
-Hamming distance from the fault free value; and
-\item incorrect  loop conditions such that the cycle is never executed.
-\end{itemize}
-
-\subsection{Verification test plans} %2.2
-
-    \noindent
-The verification test plan identifies the features of the design that are to be verified. Generally, features to
-be verified are interpreted and extracted from the design's specification or requirements document, as well as
-being described or enumerated by the engineer based on his knowledge of the design implementation.
-
-\subsection{Verification levels} %2.3
-
-    \noindent
-The verification process is generally partitioned into the following design levels of granularity: block-level
-(sometimes referred to as unit-level verification), chip-level,
-and system-level. But from the modeling point of
-view, we have the following granularity: algoritmic level, computational model level
-(usually, FSM),
-  RTL, gate level, netlist, layout, and silicon~\cite{1bar}.
-Each design level can be
-considered in terms of the modeling levels.
-
-\section{State-of-the-Art of Verification} %3
-
-       \noindent
-Let us consider briefly all approaches to the design verification.
-
-Figure~1 shows a general model of verification where ``Design specification'' and
-``Implementation'' correspond to different stages of design process.
-For example, ``Design specification'' may
-correspond to an FSM while latter is an RTL one.
-
-   Design automation and verification from RTL and below has received most of the interests until the end of
-the 1990s, resulting in different software tools. At RTL, one or more automatic
-algorithms (BDD\footnote{BDD~--- binary decision diagram.}-based
-equivalence checking, satisfiability (SAT) solving, FSM,
-model checking (MC), and bounded MC) are
-applied to: ($i$)~prove a design equivalent to a specified logic function or to output of the circuit simulation;
-and ($ii$)~prove that the circuit design fulfills a set of logical and temporal properties~\cite{1bar}. Despite the
-inherent complexity of these methods, their combination with the techniques such as symbolic simulation
-(semi-formal, in fact) has been reported as being essential in the verification of processor components and memory
-subsystems~\cite{8bar}.
-
-   In contrast, the first formalized functional specification of a SoC\footnote{SoC~---
-system-on-chip.}, expressed at the so-called ``transaction
-level,'' is usually written in terms of algorithms and abstract communications between
-large macroblocks.
-
-   Designers extensively execute test cases on simu\-lation models written in languages such as Matlab, C,
-SystemC, etc. for which no formal hardware semantics and associated formal model extraction is available.
-%\medskip
-
-%\end{multicols}
-%\begin{figure*} %fig1
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=74.903mm
-\epsfbox{bar-1.eps}
-}
-\end{center}
-\vspace*{3pt}
-%\Caption{
-\centerline{{\figurename~1}\ \ \small{General verification model}}
-%\label{f1s}}
-%\end{figure*}
-\bigskip
-\addtocounter{figure}{1}
-
-
-In general, there are three classes of verification techniques: Simulation, Formal Verification, and Semi-formal
-Verification. Below we outline these techniques.
-
-\subsection{Simulation-based verification} %3.1
-
-\noindent
-In the modern chip design practice, design of micro\-archi\-tectur\-al specification is typically not formal and
-consists of textual descriptions, block diagrams, and pa\-ram\-eter values. Hardware
-(in particular, RTL) de\-scrip\-tion languages (HDLs) are such as Verilog or VHDL. Simulation-based design verification
-tries to cover design errors by detecting a circuit's faulty behavior when deterministic (functional) or
-pseudorandom tests (simulation vectors) are applied~\cite{3bar}. Simulation-based methods are readily applicable as
-typical design flows use an HDL, e.g., VHDL or Verilog, descriptions that can be
-simulated using standard logic simulation tools, or C/C++ descriptions in conjunction with a proprietary
-(cycle-based) simulator. Also, logic simulation is the area hardware designers are very familiar with.
-
-   Besides the immediate input vector simulation, so-called ``Symbolic simulation'' is used. The symbolic fault
-simulation is performed to avoid generation of new test vectors whenever a fault is covered by already generated
-test vectors. The internal BDD-based representation allows the analysis of more than one fault concurrently,
-thus improving the overall efficiency of the test gener\-ation procedure; in fact, implicit analysis of faults can be
-performed, while previous approaches required explicit analysis of each fault. More details are not reported here
-due to the space constraints~\cite{9bar, 10bar}.
-
- As for abstraction level, this approach deals with re\-lation between faults at the behavioral
-and register-transfer or logic levels.
-
-   The simulation algorithms depend on the design error models. A set of error models that satisfy the
-requirements for the restricted case of gate-level logic circuits was developed in~[3, 11].
-
-   The effectiveness of simulation can be increased if it is guided by coverage analysis~\cite{3bar}. A variety
-of coverage metrics have been proposed~\cite{6bar}: code coverage from software testing~[12],
-FSM-based metrics~[13]. The shortcoming of these metrics is that the relationship between a
-metric and the classes of design errors that they detect is not well understood.
-
-   The most important issues in simulation-based function\-al design verification are test generation, correctness
-checking, and functional quality measuring. Note that the effectiveness of the simulation depends on the design
-level. Block-level verification offers the best simu\-lation performance (i.e., takes less time to verify) while
-system-level verification offers the worst performance. A drawback of block-level verification is that creating a
-test-bench, which is required to model the block-level environment (i.e., used to drive input stimulus into the
-block-level design and validate output responses), might become as complex as the actual design itself.
-
-\subsection{Formal verification} %3.2
-
-    \noindent
-From the point of view of verification reliability, the main benefit of formal verification is that its every
-step is completely justified, that means that a formal proof of correctness can be easily performed. These
-methods rely on a language with mathematically-defined syntax and semantics. It is important
-that formal
-verification conducts exhaustive exploration of \textit{all} possible behaviors compare to simulation, which
-explores \textit{some} of possible behaviors:
-\begin{itemize}
-\item  if correct, all behaviors are verified;
-\item if incorrect, a \textit{counterexample} (proof) is presented.
-\end{itemize}
-   Then:
-   \begin{itemize}
-\item correctness is guaranteed mathematically, regardless the input values;
-\item no need to generate expected output sequences;
-\item can generate an error trace if a property fails: better understand, confirm by simulation;
-\item formal verification is useful to detect and locate errors in designs;
-\item consideration of \textit{all cases is implicit} in formal verification.
-   \end{itemize}
-   That is ensures consistency with specification for \textit{all}
-possible inputs (equivalent to 100~percent coverage!).
-
-   Presently, it is possible to define three principal approaches to formal verification:
-\begin{enumerate}[(1)]
-\item model checking;
-\item  theorem proving; and
-\item equivalence checking.
-\end{enumerate}
-
-\subsection{Theorem proving} %3.3
-
-\noindent
-The theorem proving approach to formal verification is to describe the implementation as well as the
-specification in a formal logic, that is considering the specification as a \textit{formal theory}~[14].
-
-   It means that theorem proving based \textit{verification} refers to the use of a finite set of well-founded
-formulas (\textit{axioms of a formal theory}) and proof rules to prove the correctness of systems.
-
-    That is:
-    \begin{enumerate}[1.]
-\item A finite set of rules of inference is given. A rule of inference allows the derivation of a new
-well-founded formula from a given finite set of well-formed formulas.
-\item A formal proof in the theory $S$ is a finite state of formulas $f_1$, $f_2, \ldots , f_i,\ldots , f_n$ 
-such that for every $i$,
-formula $f_i$ is either an axiom or can be derived by one of the rules of inference from the given set of
-formulas.
-\end{enumerate}
-
-   For example, let us specify by HOL (high-order logic) language~[15] formally the simple circuit
-from Fig.~2.
-
-\bigskip
-
-%\end{multicols}
-%\begin{figure*} %fig2
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=78.097mm
-\epsfbox{bar-2.eps}
-}
-\end{center}
-\vspace*{3pt}
-%\Caption{
-{\figurename~2}\ \ {\small Possible implementation of the AND circuit in NAND-NOT elementary gate basis}
-%\label{f1s}}
-%\end{figure*}
-
-\bigskip
-\addtocounter{figure}{1}
-
-We should specify the following objects:
-\begin{itemize}
-\item both NAND and NOT;
-\item implementation of the AND; and
-\item the behavior model of NAND and NOT;
-\item the intended behavior of the AND; and
-\item proof that the implementation satisfies its intended behavior.
-\end{itemize}
-
-
-
-The specification of implementation is, in fact, a defi\-nition of the AND circuit correct work. The AND gate
-correct work can be described by using predicate calculus (supported by HOL) in terms of correct behavior
-conditions of NAND and NOT:
-
-\noindent
-\begin{align*}
- \mathrm{NAND}(a,b,o) &\equiv o = \neg(a\&b)\,;\\
- \mathrm{NOT}(i,o) &\equiv o= \neg i\,.
-\end{align*}
-
-The AND correct implementation can be defined as:
-$$
-    \mathrm{AND}\_\,\mathrm{IMP}(a,b,o) \equiv \exists x. \mathrm{NAND}(a,b,o)\&\mathrm{NOT}(x,o)
-$$
-where $\neg$ means negation, $o$ is the output variable, $i$ is the formal variable of NOT input,
-$\mathrm{AND}\_\mathrm{IMP}(a,b,o)$ means an implementation of  desirable Boolean function by the
-circuit (see Fig.~2) that is the correct output of AND suppose that  will be formed by correct NAND and
-NOT.
-
-The desired behavior of the AND:
-
-\noindent
-        $$
-            \mathrm{AND}\_\,\mathrm{SPEC}(a,b,o)\equiv o =a\&b\,.
-$$
-
-To define what it means for an implementation to satisfy some specification (the theorem proving), we can verify
-that the input/output behavior of the imple\-men\-tation always agrees with input/output of the specification, that is
-
-\noindent
-$$
-\mathrm{AND}\_\,\mathrm{IMP}(a,b,o)  \rightarrow \mathrm{AND}\_\,\mathrm{SPEC}(a,b,o)\,,
-$$
-that is, the behavior of the implementation implies the behavior of the specification.
-
-   To prove this theorem it is enough to prove the satisfaction all of above logical conditions~\cite{13bar}.
-
-   It is important that it ensures that parts fit together with no gaps. Many parts of a big problem can be solved
-automatically~\cite{9bar}. However, theorem prover mostly check detailed manual proof~\cite{4bar}.
-Therefore, main obstacle is that this is a time-consuming process that can be performed only by experts who are
-educated in logical reasoning and have considerable experience in this area.
-{%\looseness=-1
-
-}
-
-%\vspace*{-3pt}
-
-\subsection{Model checking} %3.3
-
-   \noindent
-This is one of mostly popular formal verification methods. Model checking means to develop an
-abstract model of a circuit and to prove that this model satisfies the formal specification of the circuit
-implementation by comparing possible states of the system. If the model checker fails to prove a specified
-property of the model, an error is found~[16--18].
-
-   In contrast to above example from the theorem proving where we describe all objects to be implemented,
-the MC deals mostly with \textit{requirements} to target design, but not with the circuit structure. That is, a
-specification for MC verification is a collection of properties. There are many facets of hardware behavior that
-are of interest to the verification process including correct result generation, proper sequence of events including
-timing relationships between them, as well as other design properties such as arbitration
-``fairness.'' In particular, a property can be as a statement that particular pair of signals are never
-asserted at the same time, or it might state some complex relationship in timing of the signals.
-{\looseness=1
-
-}
-
-   Properties are specified in a notation called temporal logic. This allows concise specifications about
-temporal relationships between signals and can be automatically verified.
-
-   From the formal point of view, MC is used to verify finite state concurrent systems.
-
-    A labelled transition system is a tuple ($S, \Lambda , \rightarrow$)
-where~$S$ is a set (of states),
-$\Lambda$ is a set (of labels), and  $\rightarrow  S \times \Lambda \times S$ is a  ternary relation (of labelled
-transitions) If\ $p$, $q \varepsilon S$ and $\alpha \varepsilon \Lambda$, then $(p,\alpha ,q)  \rightarrow$
-represents the fact that there is a transition from state $p$ to state~$q$ with label~$\alpha$. Labels can represent
-different things depending on the language of interest. Therefore, we should represent input expected, conditions
-that must be true to trigger  transition, or actions performed during the transition.
-
-   However, there are also many reasons to use the MC for sequential
-hardware verification, say, for verification of
-their RTL implementation~[16].
-
-   Before verification, it is necessary to state the properties that the design must satisfy. The specification is
-usually given in some logical formalism. For hardware and software systems, it is common to use
-\textit{temporal logic}, usually CTL (computational tree logic) which can assert how the behavior of the system
-evolves over time. Let us consider briefly the CTL formulas.
-
-\begin{figure*} %[h] %fig3
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=109.25mm %120mm %165.176mm
-\epsfbox{bar-3.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\Caption{Three-bit counter property specification
-\label{f3bar}}
-\end{figure*} %\pagebreak
-
-   There are two types of formulas in CTL: state formulas and path formulas. State formulas represent the
-properties of a specific state, whereas path formulas specify the properties of a specific path. From the practical
-point of view, the notion ``path'' means a path in a tree of computations
-(in particular, operations).
-
-    Computational tree logic introduces the following two path quantifiers:
-\begin{enumerate}[(1)]
- \item A~--- the universal path quantifier; and
-\item  E~--- the existential path quantifier.
-\end{enumerate}
-
-
-
-
-   For example, let p1 and p2 denote various properties of paths. The path quantifiers are used as follows:
-
-Ap1~--- all paths beginning at some state~$s$ satisfy the property~p1.
-
-Ep2~--- property p2 is satisfied for some paths be\-ginning at some state~$s$.
-
-   Computational tree logic  introduces the following   temporal operators:
-
- X~--- the next time operator;
-
- F~--- the eventually/future time operator; and
-
- G~--- the global operator.
-
-   For example, the F operator is used to express a condition that must hold true at some time in the future.
-The formula Fp is true at a given time if p is true at some later time. On the other hand, Gp means that
-p is true at all times. Usually, we read Fp as ``eventually p'' and Gp
-as ``henceforth~p''~[17].
-
-
-
-   Using this notation, we can specify one property of a binary count Modulo~4
-with the control inputs ``stall''  and ``reset'' as:
-\begin{multline*}
-\mathrm{AG}[(\lnot \mathrm{stall}\; \&\lnot \mathrm{reset}\;\&
-(\mathrm{count}=C)\&(C<4)] \\
-{}\rightarrow \mathrm{A}x(\mathrm{count}=C+1)]
-\end{multline*}
-where ``count'' is the next state, $C$ is the current one,
-and ``$\rightarrow$'' means ``implies.''
-
-  This means that for all times when inputs ``stall'' and ``reset'' equal to logical one, the counter transits to
-the next state if the current state is less the~4.
-
-   In practice, MC often is used as a Symbolic Modeling Verification
-(SMV), e.g., in the Cadence SMV
-input language, Verilog~[18]. Symbolic modeling verification
-is quite effective in automatically verifying properties of
-combinational logic and interacting FSM. Sometimes, when the checking of a property fails, the
-tool will automatically produce a counterexample. This is a behavioral trace of the FSM that
-violates the specified property.
-
-   An implementation description for a circuit design at any given level serves also as a statement of the
-specification for a task at the next lower level. In this manner,
-top level specifications can be successively
-implemented and verified at each level, thus leading to the implementation of an overall verified system.
-%\end{multicols}
-
-
-
-
-%\begin{multicols}{2}
-
-Symbolic modeling verification uses Ordered BDD (OBDD) algorithm to check whether the CTL specifications
-are met~\cite{17bar}. Ordered BDDs provide a canonical form for Boolean formulas that is often substantially more
-compact than conjunctive or disjunctive normal form. Because the symbolic representation captures some of the
-regularity in the state space determined by circuits and protocols, it is possible to verify systems with extremely
-large numbers of states (more than~10$^{20}$).
-{%\looseness=1
-
-}
-
-
-   Figures~3 and~4 demonstrate verification a property of 3-bit counter by SMV
-version~2.1 tool.
-
-\begin{figure*} %[h] %fig4
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=109.25mm %100mm %65.158mm
-\epsfbox{bar-4.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\Caption{Result of the figure~3 property verification
-\label{f4bar}}
-\end{figure*}
-
-
-   We can see that even such simple design (3 possible states) requires 115 nodes of BDD to verify one
-property. All the more, for large designs, especially those including substantial data path components, the user
-must break the correctness proof down into small enough pieces for SMV to verify. 
-
-There are two mechanisms
-provided for this purpose: \textit{composition} and \textit{refinement}. In the compositional method, one
-verifies temporal logic properties of one part of the system and uses these properties as assumptions when
-verifying another part of the system. In the refinement method, one uses a high level model of the system as a
-specification and verifies separately that each system component implements its part of the high level
-specification~\cite{10bar}.
-
-In general, MC has a number of advantages over traditional other approaches to this problem that
-are based on simulation/testing and theorem proving mentioned above. Given sufficient resources, the
-procedure will always \textit{terminate} with corresponding negative or positive answer for the verification
-question. Although the restriction to finite state may seem to be a major disadvantage, MC is
-applicable to several very important classes of systems, e.g., hardware controllers~[16].
-{\looseness=1
-
-}
-
-The properties descriptions are performed usually manually. Also,
-analysis of the verification results is the
-manual activity. In case of a negative result, the user is often provided with an error trace. In this case, analyzing
-the error trace may require a modification of the system and reapplication of the
-MC algorithm.
-
-
-   Moreover, since it is necessary to convert a design into a formalism accepted by an MC
-tool, in the case of owing to limitations on time and memory, the modeling of a design may require the use of
-abstraction to eliminate irrelevant or unimportant details
-that require many efforts of the designer, and they
-must be experienced in formal logic.
-
-    Symbolic MC is primarily useful in verifying the control parts of a circuit. It is impractical for
-most data paths, since it suffers from the state explosion problem where the state space of the design that must
-be explored grows extremely large. In addition, performing MC on design modules requires that an
-interface specification for the module is available so that only legal inputs are considered. However, in practice,
-detailed interface specifications of design modules are rarely available and so verification often requires the
-creation of the interface specification. This can be a complex task.
-Besides, the MC formal
-verification approach is heavily dependent on experienced users who must specify the properties of the design
-that are to be checked. The reliance on a design engineer, who must provide knowledge about design behavior
-and the design properties to be analyzed, has limited the adoption of this technology. An additional issue is that
-there is no metric to judge design property coverage and, thus, there is no confidence that all design properties
-have been verified.
-
-\subsection{Equivalence checking} %3.4
-
-\noindent
- Equivalence Checking (EC)
-approach to design verification is used to check the functional equivalence of
-different versions of a design at various stages of the design and enables designers to identify and correct these
-errors. This approach is based on some algorithms of toggle equivalence of Boolean functions~[19].
-
-   One of widely used EC-based design verification tools is Encounter Conformal EC of
-Cadence~[19, 20]. The tool includes technologies developed independently from the design flow,
-including production-proven HDL parsing, synthesis, mapping, optimization, and data path algorithms. Using
-Encounter Conformal EC ensures that the maximum number of design bugs will be caught.
-
-   Unfortunately, it covers rather later stages of design process, usually starting from RTL, comparing, for
-example, RTL with gate level. Thereby, it checks only targets \textit{implementation errors}, not \textit{design
-errors}. But the hard bugs are usually in both descriptions.
-
-   Note that often designers try to combine different formal verification tools and methodologies, for example,
-theorem proving (for combinatorial parts of a design) and trajectory evaluation (that is a modification
-of MC)~\cite{9bar}.
-
-\subsection{Petri Nets based verification} %3.5
-
-  \noindent
-Petri Net theory formal verification algorithms are used presently to detect design errors for high-level
-synthesis of dataflow algorithms. In~[21], the Petri Net theory is adopted to verify the correctness of
-the synthesis result, because the Petri Net model has the nature of dataflow algorithms. In fact, it proposes
-three approaches to realize the Petri Net based formal verification algorithm and conclude the best one which
-outperforms the others in terms of processing speed and resource usage. Presently,
-there are several examples of
-using the Petri Nets in synthesis and verification of asynchronous circuit~[21,~22].
-
-\subsection{Semi-formal verification} %3.6
-
-   \noindent
-As it follows from the above, the formal verification  tehniques do not address the problems of finding bugs
-during verification. On the other hand, the most common problem is that these tools fail when they hit a
-capacity limit in time, memory, or both.
-
-   However, the simulation techniques are also very time-consumting due to the large number of test vectors
-needed to manifest all functional issues also prohibitively large.
-
-This problem leads to the concept of semi-formal verification~[23]. The idea is to combine the
-strengths of simulation~--- namely, ease of use and the ability to handle large designs with the thoroughness of
-formal verification along with various combinations of formal and simulation-based approaches to verification
-cost reduction.
-
-    In fact, there are two possibilities to perform such combination:
-    \begin{enumerate}[(1)]
-\item a ``mechanical'' combination of the verification techniques: part of design is verified by simulation,
-while another by a formal method; and
-\item by using a semi-formal specification for implementation and establishment of properties for the
-formal verification. For example, Property Specification Language (PSL) can be used for an alignment
-circuit~[24]. Finally, a set of properties for the veri\-fi\-cation of this module was established and
-proved using two verification tools.
-    \end{enumerate}
-    Property specification language is an extension of the CTL.
-The integrating feature of PSL tool (that is both formal and simulation-based
-abilities) is due to the fact that it can be used for functional specification on one hand and as input to
-functional verification tools on the other.
-
-    Property specification language can also be used as input
-to verification tools, for both verification by simulation, and as formal
-verification using a model checker or a theorem prover. Besides, PSL specification should be used to
-automatically generate checks of simulations. This can be done, for example, by directly integrating the checks
-in the simulation tool, by interpreting PSL properties in a testbench automation tool that drives the simulator, by
-generating HDL monitors that are simulated alongside the design, or by analyzing the traces produced at the end
-of the simulation.
-
-Since complex microprocessor systems design veri\-fi\-cation activity deals, in general, with many optional
-variants (formal verification and simulation), it should be useful to have a characterization of both verification
-algorithms and verification process on a whole which includes the decomposition issues, dividing possible
-(potential) design bugs classes between formal verification and simulation, final quality analysis, etc. Obviously,
-we need a guide to provide this hybridization~\cite{3bar}. Following well showed itself conception of coverage
-analysis used widely in test pattern generation practice, it would be very attractively to have also similar one for
-the design formal verification. Some steps towards this notion development are just in progress~[11, 25]. 
-As for formal verification, the notion of coverage in functional verification is to cover the entire
-functionality specification required from the implementation. This notion involves two questions~\cite{25bar}:
-    \begin{enumerate}[(1)]
-\item whether we can provide (to take into account) (explicitly or implicitly) all possible input sequence,
-and
-\item whether the specification contains a sufficient set of properties.
-\end{enumerate}
-
-    However, in fact, the coverage metrics computation has the same exponential complexity as the properties
-modeling, or exhaustive simulation. Thereby, it remains the mentioned above problem to find the design bugs
-relying on the semi-formal verification results. We can overcome these drawbacks
-if the verification activity
-would follow the target design synthesis. In particular, these circumstances allow the RTL as a higher possible
-level of design. Meanwhile, as it is shown by numerous results, many design bugs can be detected at the earlier
-design stages.
-
-Therefore, let us consider a new approach to the verification
-which takes into account the structure of
-synthesized system at every of abstraction levels, starting from algorithmic one up to gate level.
-
-\vspace*{-6pt}
-
-\section{Algorithmic-State-Machine-Based Synthesis and~Verification} %4
-
-    \noindent
-Let us consider an approach to concurrent synthesis and verification of digital systems, including complex
-microprocessors, based on design specification by ASM.
-
-Algorithmic state machine is a flowchart consisting
-of state boxes, condition boxes, and boxes ``Begin'' and ``End.''
-
-\medskip
-
-%\end{multicols}
-%\begin{figure*} %fig5
-%\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=80mm %.7mm
-\epsfbox{bar-5.eps}
-}
-\end{center}
-\vspace*{3pt}
-%\Caption{
-\centerline{{\figurename~5}\ \ \small{Example of ASM}}
-
-\ \\
-
-%\label{f1s}}
-%\end{figure*}
-\bigskip
-\addtocounter{figure}{1}
-
-
-As an example, we will use the ASM in Fig.~5. Let
-us look at operators following operator~$Y_b$.
-The fact that operator $Y_3$ is
- implemented after $Y_b$ when $x_1x_4x_3 = 1$, operator $Y_1$ is   
-implemented
-after $Y_b$ when $x_1x^\prime_4 = 1$,
-and operator $Y_5$ is implemented after $Y_b$ when $x_1x_4x^\prime_3 =1$
-or $x^\prime_1 = 1$, can be represented as a formula
-\begin{equation}
-Y_b \rightarrow x_1x_4x_3Y_3 + x_1x_4x^\prime_3Y_5 + x_1x^\prime_4Y_1 + x^\prime_1Y_5\,.
-\label{e1bar}
-\end{equation}
-
-    The ASM-based synthesis is based on ASM transformations (composition, minimization, extraction, etc.),
-special algorithms for Data Path and CU
-design, and very fast optimizing synthesis of FSM and
-combinational circuits with hardly any constraints on their size, that is,
-the number of inputs, outputs, and states.
-
-From the functional point of view, each rectangle (an operator vertex) of the diagram corresponds to
-execution of some microoperations written inside, and from the timing viewpoint,
-its passing means to transit to
-the next clock of synchronous system designed.\linebreak
-   
-  \medskip
-
-%\end{multicols}
-%\begin{figure*} %fig6
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=80.3mm
-\epsfbox{bar-6.eps}
-}
-\end{center}
-\vspace*{3pt}
-%\Caption{
-{\figurename~6}\ \ {\small Algorithmic state machine with included blocks (15~vertices)}
-%\label{f1s}}
-%\end{figure*}
-\bigskip
-%\smallskip
-\addtocounter{figure}{1}
-
-%\pagebreak
-\end{multicols}
-
-\begin{figure} %[h] %fig7
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=128.767mm
-\epsfbox{bar-7.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\Caption{Included blocks
-\label{f7bar}}
-\end{figure}
-
-\begin{multicols}{2}
-
-\noindent
-Each rhomb means corresponding conditions (con\-dition\-al
-vertexes)~--- Boolean variable. That is, the ASM represent both algorithmic and time-ordering specification of
-target systems with desirable ordering of the microoperations. The aim of this synthesis is to get both a
-CU and Data Path of the target design.
-
-
-   High-level synthesis based on the ASM contains three stages (Figs.~6 to~\ref{f8bar}).
-   
-{\bfseries\textit{Stage 1}} corresponds to the construction of combined functional ASM and FSM.
-  
-   In particular, drawing functional ASM in ASM Creator \textit{is presented in} box~1 in Fig.~6. At
-this stage, we suppose that we know the main units of Data Path, say memory, Arithmetic Logic Unit (ALU),
-Block of Registers (BoR), program counter, instruction register, input and output registers, etc. However, at this
-stage, we do not have a structure of Data Path~--- we do not know how these units are connected, what buses
-(multi\-plexers) should be used, which units are connected directly without buses, etc.
-
-Let us consider principal steps of this stage.
-
-\textit{Step~1. Functional ASMs specification} (see box~1 in Fig.~\ref{f8bar}). When constructing a very
-complicated digital system, sometimes it is very difficult to describe its whole behavior by one ASM. In such
-case, it is possible to describe separate subbehaviors with ASMs G$_1$ \ldots G$_Q$ and then to combine them
-into one combined functional ASM G. From the verification point of view, the decomposition ability described
-above is very important feature if the system models become very large. The drawing and decomposition are
-provided by the software tool named \textit{ASM Creator}.  At this step, a designer draws separate ASMs for
-each subbehavior (for each operation or a group of operations) in our \textit{ASM Creator}. We can use
-included blocks as well. It means that one operator vertex can represent a whole ASM or a subgraph of ASM.
-An example of ASM with four included blocks (see shaded operator vertices) is presented in Fig.~6.
-Blocks themselves are shown in Fig.~\ref{f7bar}.
-
-\textit{Step~2. Combining of several Functional ASMs into one Combined Functional ASM} (see box~2
-\textit{ASM combiner}, Fig.~\ref{f8bar}). At this step, separate subbehaviors presented by ASMs G$_1$, \ldots
-, G$_Q$ are combined into one combined functional ASM G. At the same time, this procedure minimizes the
-number of operator vertices in the combined ASM.
-
-\textit{Step~3. Minimization of combined Functional ASM} (see box~3 \textit{ASM minimizer},
-Fig.~\ref{f8bar}). This procedure\linebreak %\\[-36pt]
-\end{multicols}
-%\pagebreak
-
-\begin{figure} %[h] %fig8
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=136.614mm
-\epsfbox{bar-8.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\Caption{Construction of combined functional ASM and FSM
-\label{f8bar}}
-\vspace*{-6pt}
-\end{figure}
-
-\begin{multicols}{2}
-\noindent
-minimizes the number of conditional vertices in the combined functional
-ASM. Such minimization allows us to reduce dramatically the number of vertices in the ASM (sometimes, in
-two or three times) and to reduce the complexity of logic circuits at the stage of logic design.
-{\looseness=-1
-
-}
- 
- Again, in the description at the level of a functional ASM,
-we do not have Data Path structure and each unit
-in such functional ASM is presented as a variable. 
-For example,
-in microoperation BoR[AdrW]\,:=\,M[Adr1]
-for the word of memory M with address Adr, we do not know yet,
-and would not like to know, how these units are
-connected and what signals must come from the CU to Data Path to implement this transfer. Really, a
-Data Path does not exist yet and our goal at the second stage (Data Path Construction, see Fig.~\ref{f8bar}) is to
-construct a Data Path formally using only the combined functional ASM. But we
-have not finished yet with the first stage.
-{%\looseness=1
-
-}
-
-
-\textit{Step~4. Synthesis of FSM from combined Functional ASM} (see box~5
-\textit{FSM synthesizer}). This
-procedure constructs various types of minimized FSM
-tables for Mealy,
-Moore, and their
-combined model with or without state assignment (\textit{log} or \textit{one-hot}).
-
-\textit{Step~5. Construction of VHDL (Verilog) code for the functional FSM}
-(see box~6 \textit{FSM2HDL tranformer} that can include both \textit{VHDL and
-Verilog transformers}).
-
-\begin{figure*} %fig9
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=164.46mm
-\epsfbox{bar-9.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\begin{minipage}[t]{79.5mm}
-      \Caption{Data Path design
-      \label{f9bar}}
-%      \end{figure*}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{79.5mm}
-\Caption{Control unit design
-\label{f10bar}}
-\end{minipage}
-\end{figure*}
-
-   We can use Functional FSM in VHDL for a \textbf{function\-al simulation} (not an RTL simulation, it
-is possible to make it later when we construct a Data Path).
-
-\textit{Step~6. Extraction of one or several ASMs from Combined ASM} (see box~8
-\textit{ASM extractor}). If we
-detected error during the simulation, we can extract ASM with error
-(see box~8 \textit{ASM extractor}), repair it
-(see box~9 \textit{ASM corrector}),
-and return corrected ASM into combined Functional ASM (see box~10 \textit{ASM
-inserter}).
-
-We have a special program ``Check ASM equivalence'' that verifies the equivalence of two ASMs. That
-permits designer to check each step of ASM transformer.
-{\looseness=1
-
-}
-
-
-{\bfseries\textit{Stage 2}} corresponds to Data Path synthesis.  
-
- First, a Connection graph from the functional ASM design is constructed. Such graph contains a list of
-sources and targets for each component of an oper\-ation\-al unit and some metrics that will be used in the
-optimization of the Data Path. Next, an optimized list of parallel microoperations to increase the speed of the
-designed system is constructed. Then, we design the Graph of incompatibility from the Connection graph and the
-List of parallel microoperations. On the final step of Data Path synthesis,
-we construct multiplexers (buses) by
-coloring the Graph of incompatibility and the List of direct connections from the Connection graph
-(Fig.~\ref{f9bar}).
-
-{\bfseries\textit{Stage 3}} deals with a CU of the target system (Fig.~10). 
-It contains the foloowing three steps.
-
-\textit{Step~1.} After design of the Data Path, we can immediately transfer from the functional ASM to the
-structural ASM.
-
-\textit{Step~2. Construction of VHDL (Verilog) code for the structural FSM}
-(see box~17 \textit{FSM2HDL transformer} that can include both \textit{VHDL and Verilog transformers}).
-
-That is, using the functional ASM (stage~1) and the MUXes and the List of direct connections,
-we immediately
-construct the structural ASM. This ASM describes the behavior of the CU corresponding to the Data
-Path. 
-On the last step of this stage we construct the FSM
-and its multilevel logic circuit.
-
-\textit{Step~3. VHDL code design. }
-
-   The Data Path constructed according to our design methodology does not contain any ``cloud'' (irregular)
-circuits. It makes it possible to simplify considerably VHDL or Verilog code for the Data Path using the
-structure style of VHDL to combine VHDL or Verilog codes of units. Moreover, the presented formal methods
-of
-system design allow us to formalize the design of test bench for the Data Path and to reduce it considerably.
-VHDL code for the CU is constructed automatically. VHDL code for the top level of the system is the
-result of combining VHDL codes of the Data Path and the CU.
-
-
-   The design methodology is implemented in \textit{Abelite} software tool~\cite{26bar}.
-
-       \subsection{About algorithmic state machine formalities} %4.1
-
-\noindent
-A possibility to use some ASM-based formalized veri\-fi\-cation is due to some formal rules, used for ASM
-flowchart construction~\cite{5bar, 26bar}.  Namely, to provide this unique correspondence between the ASM
-flowchart and a target data path and CU, it is enough that a synthesis algorithm would obey the
-following rules~\cite{5bar}:
-\begin{enumerate}[1.]
-\item  State boxes should contain only register statements, control signals in parentheses.
-\item All operations within a state box should be con\-current\-ly executable in one clock cycle.
-\item If the operations in two consecutive state boxes can be executed in the same clock cycle, then these two
-state boxes can be combined into one state box.
-\item  For each register-transfer statement, there must be a path between the source and destination registers.
-\end{enumerate}
-
-If a transformation takes place during the transfer, then a combinational device, such as an adder or ALU, must
-be inserted into the path between the source and destination registers if there are several paths.
-
-   Finally, control signal inputs must be attached to each register and multiplexer so that register transfers can
-be precisely controlled.  It is essential that as it was mentioned above, we may simulate the ASM description to
-check its correctness regarding to some initial description (formal or informal) of the target design, providing
-necessary numbers of feedbacks, including customer's checking. This activity, as it was mentioned above, deals
-with generation of some test benches. Let us define the possible bugs of ASM description as \textit{Behavioral
-faults}.
-
-\subsection{Verification test benches preparation during synthesis  } %4.2
-
-   \noindent
-It can be shown that if a target system has been synthe\-sized with the use of design methodology described
-above, all paths of its Data Path are activated by the microoperations, represented in minimized ASM (obtained
-at Stage~1, see Fig.~8).  It means the verification of the Data Path if the synthesis leads to irredundant
-logical structure. This is achieved due to minimization mentioned above.
-
-   Let us describe explicitly some properties of the Abelite design methodology, affecting the verification
-problem, as well as some assumptions necessary to correctly map of behavioral faults to structural bugs in the
-synthesized structures~\cite{7bar}.
-\begin{enumerate}[1.]
-\item The behavioral synthesis tool maps each high-level operator
-to a regular structure of modules (in a single
-\textit{module, in particular}), and each \textit{such structure}
-corresponds to a single microoperation.  It means that the allocation
-algorithm cannot share \textit{modules} between equal microoperations
-(that is provided by the synthesis technique mentioned above).
-\item Taking into account the delay (in term of clock cycles) introduced in the high-level description, it is
-possible to include explicitly various synchronization statements in the behavioral (ASM) description. That is
-the description contains the ordering of microoperations, namely, each of rectangle take one clock for its
-execution.
-\item The structural bugs listed above of a structural (RTL, in particular) implementation are considered only at
-the interface of each block, that is, faults internal to blocks are not considered (this assumption will be partially
-removed in the following).
-   \end{enumerate}
-
-   This set of faults at the structural (Data Path, RT) level is called SF.
-
-   Let BF is a set of behavior design faults (possible incorrectness in the ASM description). Let MSF be the set
-of structural faults on the input and output lines of each \textit{module of data path}~\cite{7bar}.
-
-\medskip
-\textit{Proposition 1.} Each fault $\mathrm{msf}\in \mathrm{MSF}$ is equivalent to a fault belonging to BF and \textit{vice
-versa}.
-
-   The msf fault modifies maps the functionality of \textit{module }~$M$ into the
-\textit{module}~$M^\prime$. From property~1, there is one and only one micro\textit{operation OP} that is
-implemented by the \textit{module}~$M$. Moreover, from the definition
-of the behavioral fault, there is a fault
-$\mathrm{bf} \in \mathrm{BF}$ on the same input (or output) line affected
-by msf so that the faulty microoperation $OP^\prime$,
-associated with bf, has the same behavior of $M^\prime$. Moreover, the faulty behavior of the FSM-based
-CU is equivalent to the faulty behavioral description where $OP^\prime$ replaces $OP$. The equality
-of the faulty descriptions implies that each fault of MSF
-is equivalent to a fault of BF. The opposite can be
-shown in a similar way.
-
-   The most important result of the proposition concerns translation of behavioral test vectors into RTL test
-sequences~\cite{7bar}. In fact, a test vector, identified for a behavioral fault bf, detects the equivalent RTL
-fault smf, if the test vector is applied to the sequential circuit for $T$ clock cycles, where $T$ is at most the
-sequential depth of the faulty circuit. Since this information cannot be known at the behavioral level, it can be
-upper-bounded by using the worst-case complexity of the algorithm and the information concerning the chosen
-microoperations ordering.
-
-   This proposition~[7] shows that it is possible to formalize and to automate design of the test bench for
-Data Path using the Abelite design methodology. As it was mentioned above, the main thing in this
-methodology is the isomorphism of the Data Paths and the ASM paths, and the ability to minimize the number
-of possible ASM paths.
-
-
-   
-\end{multicols}
-
-\begin{table*}\small %tabl1
-\begin{center}
-\Caption{Instruction set
-\label{t1bar}}
-\vspace*{2ex}
-
-\tabcolsep=2.5pt
-\begin{tabular}{cllcccc}
-\hline
- &  &  & Code & \multicolumn{3}{c}{ Format and addressing mode}\\
-\cline{5-7}
-Type&\multicolumn{1}{c}{Name}&\multicolumn{1}{c}{Description}
-&$b0\mbox{--}b4$ & \tabcolsep=0pt\begin{tabular}{c}Short\\ $b5=0$\end{tabular} 
-&\multicolumn{2}{c}{\tabcolsep=0pt\begin{tabular}{c}Long\\ $b5=1$\end{tabular}}\\
-\cline{5-7}
-&&&&Dir & \tabcolsep=0pt\begin{tabular}{c}Dir\\ $b7=0$\end{tabular} &\tabcolsep=0pt\begin{tabular}{c} Imm\\ $b7=1$\end{tabular}\\
-\hline
-aosh & add & Add Op1 and Op2; store result in Op1 & 00\ 001 & $\bullet$ &&\\
-      & and &Bitwise logical AND between Op1 and Op2
- store result in Op1 & 00\ 010 & $\bullet$ &&\\
-      & sub & Subtract Op2 from Op1; store result in Op1 & 00\ 011 & $\bullet$ &&\\
-     & sh1 & Shift Op2 one bit to the left; store result in Op1 & 00\ 100 & $\bullet$ &&\\
-    & shr & Shift Op2 one bit to the right; store in Op1 & 00\ 101 & $\bullet$ &&\\
- & cil & Rotate Op2 to the left; store result in Op1 & 00\ 110 & $\bullet$\\
-& cir & Rotate Op2 to the right; store result in Op1 & 00\ 111 & $\bullet$ &&\\
-\hline
-load & lod & Copy Op2 into Op1 & 10\ 000 & $\bullet$ & $\bullet$ & $\bullet$\\
-& str & Copy Op1 into Op2 & 10\ 001 & $\bullet$ & $\bullet$ & \\
-& inc & Increment Op1; store result in Op1 & 10\ 010 & $\bullet$ &&\\
- & dec & Decrement Op1; store result in Op1 & 10\ 011 & $\bullet$ &&\\
- & com & Complement Op1; store result in Op1 & 10\ 100 & $\bullet$ &&\\
-\hline
-branch & bcz & If $z = 1$, load new address into PC & 01\ 000 & $\bullet$ & & $\bullet$\\
-& bcf & If $v = 1$, load new address into PC & 01\ 001 & $\bullet$ & & $\bullet$\\
-& bcc & If $c = 1$, load new address into PC & 01\ 010 & $\bullet$ & & $\bullet$\\
-& bun & Branch unconditionally to a new address & 01\ 011 &$\bullet$ & & $\bullet$\\
-\hline
-inout &ski & Skip next instruction (if flag of input $\mathrm{fgi} = 1$,   increment PC  twice) & 11\ 000 &&&\\
-& sko &Skip next instruction (if flag of output $\mathrm{fgo} = 1$, increment PC twice) & 11\ 001 &&&\\
-&inp & Copy input register into one of the registers of  BOR and reset fgi & 11\ 010 & $\bullet$ &&\\
-&out &Copy one of the registers from BOR into output  register and  reset fgo & 11\ 011 & $\bullet$ &&\\
-& ion &Set flag interrupt enable (ien) to 1 & 11\ 100 &&&\\
-& iof &Set flag interrupt enable (ien)  to 0     &11\ 101 & &&\\
-\hline
-\end{tabular}
-\end{center}
-\vspace*{15pt}
-\end{table*}
-
-\begin{multicols}{2}
-
-So, taking into account the mentioned above properties of designs synthesized by Abelite, we can produce
-in semiautomatic manner a set of test benches (both in VHDL and Verilog) to verify both ACM flowchart and
-synthesized circuit, including Data Path and CU, both functional (FSM-based) and RT levels.
-
-   The input for these test benches generation are some tables data which are collected during the synthesis.
-These data are the logical values which determine corresponding branches in the ASM flowchart. These data are
-used in corresponding section of VHDL (or Verilog) program of the target design, generated automatically
-during the synthesis. For example, let us consider the design of rather simple RISC processor, with instructions
-set from Table~\ref{t1bar}.
-
-
-
-   The test benches to verify the correspondence of the design functional
-and structural level can be extracted
-from Table~\ref{t2bar}, generated during the synthesis.
-This table, in fact, establishes a mapping between functional, microoperation-based model of the
-microprocessor (left part of the table), and structural representation of the Data Path. This is what we can use to
-generate any test benches both for functional and Data Path models verification.
-
-
-The desirable behavior we can get from {\bfseries\textit{functional simulation}}. Functional FSM
-simulation in VHDL for not an RTL simulation~--- it is possible to make such later when we
-construct a Data Path.
-
-   As for post-RTL levels verification (gate level, etc.),
-we can use presently the widely-spread tools such as
-Mentor Graphic, Cadence, Synopsis, using their VHDL (Verilog) models, generated as a result of described
-above synthesis with Abelite (Fig.~\ref{f11bar}).
-
-In contrast to the considered semi-formal methods, the ASM-based verification methodology saves a
-connection between diagrammatic description (formal, in fact) and its structural representation, as it deals not
-only with some system's properties, but also with structural elements, mapped from ASM by corresponding
-algorithm synthesis. It allows to localize errors at different description levels, while recognition of design errors
-is rather difficult to derive from a fact of violation of some properties.
-
-\begin{table*}\small %tabl2
-\begin{center}
-\Caption{Process table
-\label{t2bar}}
-\vspace*{2ex}
-
-\begin{tabular}{cp{5mm}p{40mm}p{10mm}p{30mm}p{30mm}p{5mm}}
-\hline
-\multicolumn{4}{c}{Functional ASM}&
-\multicolumn{3}{c}{Structural ASM}\\
-\hline
-Microinstr&
-\multicolumn{3}{c}{Functional microoperations}& 
-\multicolumn{1}{c}{\tabcolsep=0pt\begin{tabular}{c}Structural\\ microoperations\end{tabular}}&
-\multicolumn{2}{c}{\tabcolsep=0pt\begin{tabular}{c}Minimized\\ structural\\ microoperations\end{tabular}}\\
-\hline
-Y1&y1\newline y2&AdrW:=IR1(8-11)\newline BoR[AdrW]:=RALU&
-\ \ 4\newline 16&
-ctr\_mux3 := 0\newline ctr\_mux2 := 0110\newline bor\_en := 1&ctr\_mux2[1] := 1\newline ctr\_mux2[2] := 1\newline
-sbor\_en      := 1&
-y1\newline y2\newline y3\\
-\hline
-Y2&y3\newline y4\newline y5\newline y6\newline y7\newline y8\newline y9\newline y10\newline y11&
-AdrR1:=IR1(8-11) \newline AdrR2:=IR1(12-15) \newline ALU1:=BoR[AdrR1] \newline
-ALU2:=BoR[AdrR2] \newline ctrALU:=IR1(0-4) \newline RALU:=ALU\newline
-cf:=c\newline zf:=z\newline vf:=v&
-\ \ 4\newline \ \hphantom{9}4\newline 16\newline 16\newline \ \hphantom{9}5\newline 16\newline \ \hphantom{9}1\newline \ \hphantom{9}1\newline \ \hphantom{9}1\newline&
-ralu\_en := 1\newline cf\_en := 1\newline zf\_en := 1\newline vf\_en := 1&
-ralu\_en     := 1\newline cf\_en       := 1\newline zf\_en       := 1\newline vf\_en       := 1\newline
-&y4\newline y5\newline y6\newline y7\\
-\hline
-Y3&y4\newline y6\newline y7\newline y8\newline y9\newline y10\newline y11&
-AdrR2:=IR1(12-15) \newline ALU2:=BoR[AdrR2] \newline ctrALU:=IR1(0-4) \newline
-RALU:=ALU\newline cf:=c\newline zf:=z\newline vf:=v&
-\ \ 4\newline 16\newline \ \hphantom{9}5\newline 16\newline \ \hphantom{9}1\newline \ \hphantom{9}1\newline \ \hphantom{9}1&
-ralu\_en := 1\newline cf\_en := 1\newline zf\_en := 1\newline vf\_en := 1\newline&
-ralu\_en     := 1\newline  cf\_en       := 1\newline zf\_en       := 1\newline vf\_en       := 1&
-y4\newline y5\newline y6\newline y7\\
-\hline
-Y4&
-y12\newline y1\newline y13&
-Adr1:=IR2\newline AdrW:=IR1(8-11) \newline BoR[AdrW]:=M1[Adr1]&
-16\newline \ \hphantom{9}4\newline 16&
-ctr\_mux1 := 001\newline ctr\_mux3 := 0\newline ctr\_mux2 := 0001\newline rdwrM1 := 0\newline bor\_en := 1&
-ctr\_mux1[2] := 1\newline ctr\_mux2[3] := 1\newline bor\_en      := 1&
-y8\newline y9\newline y3\\
-\hline
-Y5 &y1\newline y14&
-AdrW:=IR1(8-11) \newline BoR[AdrW]:=IR2&\ \ 4\newline 16&ctr\_mux3 := 0\newline
-ctr\_mux2 := 1000\newline bor\_en := 1&
-ctr\_mux2[0] := 1\newline bor\_en      := 1&
-y10\newline y3\\
-\hline
-Y6&y4\newline y1\newline y15&
-AdrR2:=IR1(12-15) \newline AdrW:=IR1(8-11) \newline BoR[AdrW]:=BoR[AdR2]&
-\ \ 4\newline \ \hphantom{9}4\newline 16&
-ctr\_mux3 := 0\newline ctr\_mux2 := 0101\newline bor\_en := 1&
-ctr\_mux2[1] := 1\newline ctr\_mux2[3] := 1\newline bor\_en      := 1&
-y1\newline y9\newline y3\\
-\hline
-Y7&y12\newline y3\newline y16&
-Adr1:=IR2\newline AdrR1:=IR1(8-11) \newline M1[Adr1]:=BoR[AdrR1]&
-16\newline  \ \hphantom{9}4\newline 16&
-ctr\_mux1 := 001\newline ctr\_mux2 := 0000\newline rdwrM1 := 1&
-ctr\_mux1[2] := 1\newline rdwrm1      := 1&
-y8\newline y11\\
-\hline
-Y8&y3\newline y17\newline y18&
-AdrR1:=IR1(8-11) \newline
-AdrW:=IR1(12-15) \newline
-BoR[AdrW]:=BoR[AdrR1]&
-\ \ 4\newline  \ \hphantom{9}4\newline 16&
-ctr\_mux3 := 1\newline ctr\_mux2 := 0000\newline bor\_en := 1&
-ctr\_mux3    := 1\newline bor\_en      := 1&
-y12\newline y3\\
-\hline
-Y9 &y3\newline y5\newline y7\newline y8\newline y9\newline y10\newline y11&
-AdrR1:=IR1(8-11) \newline ALU1:=BoR[AdrR1] \newline ctrALU:=IR1(0-4) \newline RALU:=ALU\newline cf:=c\newline zf:=z\newline
-vf:=v&
-\ \ 4\newline 16\newline \ \hphantom{9}5\newline 16\newline  \ \hphantom{9}1\newline  \ \hphantom{9}1\newline  \ \hphantom{9}1&
-ralu\_en := 1\newline cf\_en := 1\newline zf\_en := 1\newline vf\_en := 1&ralu\_en     := 1\newline
-cf\_en       := 1\newline zf\_en       := 1\newline vf\_en       := 1&y4\newline
-y5\newline y6\newline y7\\
-\hline
-Y10&y4\newline y19&
-AdrR2:=IR1(12-15) \newline PC:=BoR[AdrR2]& \ \ 4\newline 16&ctr\_mux1 := 100\newline
-pc\_en := 1&ctr\_mux1[0] := 1\newline pc\_en       := 1&y13\newline
-y14\\
-\hline
-Y11&y20&PC:=IR2&16&ctr\_mux1 := 001\newline pc\_en := 1&ctr\_mux1[2] := 1\newline
-pc\_en       := 1&
-y8\newline y14\\
-\hline
-Y12&y21& PC:=PC+1& \ \ 0& pc\_count := 1&pc\_count    := 1&y15\\
-\hline
-\multicolumn{7}{p{162mm}}{\hfill (Continued)}
-\end{tabular}
-\end{center}
-\end{table*}
-
-
-On the other hand, while traditional formal methods\linebreak deal explicitly either with functional faults or timing\linebreak
-ones, ASM-based specification represents both function\-al (as microoperations) and timing-ordering aspects.
-{ %\looseness=1
-
-}
-
-\end{multicols}
-
-\addtocounter{table}{-1}
-\begin{table}\small
-\begin{center}
-\Caption{Process table (Continued)
-%\label{t2bar}
-}
-\vspace*{2ex}
-
-\begin{tabular}{cp{5mm}p{40mm}p{10mm}p{30mm}p{30mm}p{5mm}}
-\hline
-\multicolumn{4}{c}{Functional ASM}&
-\multicolumn{3}{c}{Structural ASM}\\
-\hline
-Microinstr&
-\multicolumn{3}{c}{Functional microoperations}& 
-\multicolumn{1}{c}{\tabcolsep=0pt\begin{tabular}{c}Structural\\ microoperations\end{tabular}}&
-\multicolumn{2}{c}{\tabcolsep=0pt\begin{tabular}{c}Minimized\\ structural\\ microoperations\end{tabular}}\\
-\hline
-Y13 &y1\newline y22\newline y23 & AdrW:=IR1(8-11) \newline
-BoR[AdrW]:=InpR\newline
-FGI:=0 &  \ \ 4\newline 16\newline
- \ \hphantom{9}0 & ctr\_mux3 := 0\newline 
- ctr\_mux2 := 0100\newline bor\_en := 1\newline
-fgi\_reset := 1\newline
-ctr\_mux2[1] := 1\newline bor\_en      := 1\newline
-fgi\_reset   := 1 &
-y1\newline &
-y3\newline y16\\
-\hline
-Y14& y3\newline y24\newline
-y25 & 
-AdrR1:=IR1(8-11) \newline OutR:=BoR[AdrR1] \newline
-FGO:=0  & \ \ 4\newline 16\newline  \ \hphantom{9}0 
-& outr\_en := 1\newline
-fgo\_reset := 1\newline
-outr\_en     := 1\newline
-fgo\_reset   := 1 &
-y17\newline y18\\
-\hline
-Y15 &  y26 &IEN:=1 &  \ \ 0 & ien\_set := 1 &   ien\_set     := 1 &   y19\\
-\hline
-Y16& y27& IEN:=0 &  \ \ 0 & ien\_reset := 1 & ien\_reset   := 1 &   y20\\
-\hline
-Y17& y28\newline y27\newline y29 & PC:=x``FFFE''\newline
-IEN:=0\newline
-R:=0  &  16\newline  \ \hphantom{9}0\newline  \ \hphantom{9}0 & ctr\_mux1 := 011\newline
-pc\_en := 1\newline ien\_reset := 1\newline
-r\_reset := 1  &  ctr\_mux1[1] := 1\newline
-ctr\_mux1[2] := 1\newline
-pc\_en       := 1\newline
-ien\_reset   := 1\newline
-r\_reset     := 1  &  y21\newline y8\newline y14\newline y20\newline y22\\
-\hline
-Y18 &y30\newline
-y31&Adr1:=x``FFFF''\newline
-M1[Adr1]:=PC&16\newline
-16&ctr\_mux1 := 101\newline
-ctr\_mux2 := 1001\newline
-rdwrM1 := 1&ctr\_mux1[0] := 1\newline
-ctr\_mux1[2] := 1\newline
-ctr\_mux2[0] := 1\newline
-ctr\_mux2[3] := 1\newline
-rdwrm1      := 1&y13\newline
-y8\newline y10\newline y9\newline y11\\
-\hline
-Y19&y32\newline y33&Adr0:=Ext\_Adr\newline
-M0[Adr0]:=Ext\_Out&16\newline 16&ctr\_mux1 := 000\newline
-rdwrM0 := 1&rdwrm0      := 1&y23\\
-\hline
-Y20 &y34\newline y35&Adr1:=Ext\_Adr\newline M1[Adr1]:=Ext\_Out&16\newline
-16&ctr\_mux1 := 000\newline
-ctr\_mux2 := 0010\newline rdwrM1 := 1&ctr\_mux2[2] := 1\newline
-rdwrm1      := 1&
-y2\newline y11\\
-\hline
-Y21&y34\newline
-y36&Adr1:=Ext\_Adr\newline
-Ext\_in:=M1[Adr1]&16\newline
-16&ctr\_mux1 := 000\newline
-ctr\_mux2 := 0001\newline
-rdwrM1 := 0&ctr\_mux2[3] := 1&y9\\
-\hline
-Y22&y32\newline
-y37&Adr0:=Ext\_Adr\newline
-Ext\_in:=M0[Adr0]&16\newline
-16&ctr\_mux1 := 000\newline
-ctr\_mux2 := 0011\newline
-rdwrM0 := 0&ctr\_mux2[2] := 1\newline
-ctr\_mux2[3] := 1&y2\newline y9\\
-\hline
-Y23&y38&R:=1& \ \ 0&r\_set := 1&r\_set       := 1&y24\\
-\hline
-Y24&y39\newline y40&
-Adr0:=PC\newline IR1:=M0[Adr0]&
-16\newline 16&
-ctr\_mux1 := 010\newline rdwrM0 := 0\newline ir1\_en := 1&
-ctr\_mux1[1] := 1\newline
-ir1\_en      := 1&
-y21\newline y25\\
-\hline
-Y25&y39\newline y41&
-Adr0:=PC\newline
-IR2:=M0[Adr0]&16\newline 16&ctr\_mux1 := 010\newline rdwrM0 := 0\newline
-ir2\_en := 1&ctr\_mux1[1] := 1\newline
-ir2\_en      := 1&y21\newline
-y26\\
-\hline
-\end{tabular}
-\end{center}
-\vspace*{-6pt}
-\end{table}
-
-
-\begin{multicols}{2}
-
-   As it was mentioned above, one of very important thing in this methodology is the ability to minimize the
-number of possible ASM paths. For example, let a microprocessor that should be synthesized contains a
-multiplexer   presented in Fig.~\ref{f12bar}.
-
-
-
-   From this figure for MUX1, it is evident that ext\_adr (in0) must be transferred only to two inputs of
-our units~--- adr0 and adr1, ir2 (in1)~--- to adr1 and pc, all other inputs
-of MUX1 must be transferred only to one of the three possible units
-reachable from MUX1. 
-So, instead
-of checking $6\times 3=18$ transfers through MUX1, we must check only 9 (the number of units written over
-the inputs of MUX1). In the same way, instead of checking $10\times 3=30$ transfers, it is sufficient to check only
-11~transfers through MUX2 during simulation of Data Path.
-{%\looseness=-1
-
-}
-
- 
-\begin{figure*} %fig11
-\vspace*{1pt}
-\begin{center}
-\mbox{%
-\epsfxsize=163.32mm
-\epsfbox{bar-11.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\begin{minipage}[t]{79.5mm}
-\Caption{Algorithmic-state-machine-based verification
-\label{f11bar}}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{79.5mm}
-       \Caption{Multiplexer $6\times 16$
-       \label{f12bar}}
-       \end{minipage}
-       \end{figure*}
-
-
-  The test benches for CUs in case of using Abelite will be obtained automatically.
-
-   Another experience of using Abelite for verification goals dealt with design and verification of a bridge for
-PCI to AXI protocols buses. The formal model of the bridge verification (e.g., based on a language of the
-temporal logic) becomes very big and time-consuming for implementation~\cite{27bar}. The semi-formal
-Abelite methodology allowed to prepare some test benches with reasonable time expenses relying on ASM-based
-high-level specification of the bus protocols for verification purposes.
-{%\looseness=1
-
-}
-
-\vspace*{-9pt}
-
-\section{Concluding Remarks} %5
-
-   \noindent
-Main benefit of formal-verification approahes  is that  they do not require the user to create any test vectors
-and can significantly accelerate verification efforts for large designs.
-
-   However, formal verification is a time-consuming process that can be performed only by experts who are
-educated in logical reasoning and have considerable experience. Besides, present formal verification techniques
-allow the model levels starting from FSM and RTL levels, while the higher levels can be very error-prone ones.
-
-   Various semi-formal approaches dealing with combinations of formal methods with some fault-simulation
-techniques also require a lot of manual work. This activi\-ty affects considerably on the amount of verification
-cost of general design process~\cite{3bar}.
-
-   The suggested approach allows to overcome these drawbacks in cases, when the design process is be\-ginning
-just from an algorithmic level of a target system. It is possible also to use this approach in cases, when there is
-an HDL description at RTL level, and we would like to verify relatively the algorithm of the target system.
-
-   These possibilities are due to concurrency of design\linebreak synthesis and verification test bench generation, which
-provide a congruency of models at different design\linebreak levels, which are
-the objects of comparison for design
-veri\-fi\-cation. Note that in contrast to formal veri\-fi\-cation, which do not address the problems of finding bugs\linebreak
-during veri\-fi\-cation purgatory, the Abelite-based verification allows to localize possible errors (bugs) in target
-designs.
-
-\vspace*{-9pt}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-\bibitem{1bar}
-\Au{Bening L., Foster~H.}
-Principles of verifiable RTL design.~---  Kluwer Academic Publishers, 2001.
-
-\bibitem{2bar}
-\Au{Henzinger~T.\,A., Liu~X., Qadeer~S., Rajamani~S.}
-Formal specification and verification of a dataflow processor array~// ICCAD99: IEEE/ACM International
-Conference on Computer-Aided Design, 1999. P.~494--499.
-
-\bibitem{3bar}
-\Au{Frenkel~S.\,L.}
-Verification model structures for digital systems design~//
-17th  European  Simulation Multiconference
-ESM2003 Proceedings.   Trent University, Nottingham, England.
-9--11 June. 2003. P.~462--467.
-
-\bibitem{4bar}
-\Au{Seger~C-J.\,H., Jones~R.\,B., O'Leary~J.\,W., Melham~T.\,F., Aagaard~M., Barret~C.}
-An industrial effective environment for formal hardware verification~//
-IEEE Transaction
-on Computer-Aided Design of Integrated Circuits and Systems, 2005. Vol.~24.  No.\,9.
-P.~1381--1405.
-
-\bibitem{5bar}
-\Au{Abielmona~R.}
-Advanced Topic Lecture \#3, ASM, Design High Level Computer Systems Design,
-SMRLab, University of Ottawa, CEG 3151, May 21, 2003.
-
-\bibitem{6bar}
-\Au{Campenhout~D., Mudge~T., John~P.}
-Hayes, evaluation of design error models for verification testing of
-micro\-processors~//  IEEE 1st International Workshop on Micro\-processor Test and
-Verification. Washington DC, October~23, 1998.
-
-\bibitem{7bar}
-\Au{Buonanno~G., Ferrandi~F., Ferrandi~L., Fummi~F., Sciuto~D.}
-How an ``evolving'' fault model improves the
-behavioral test generation~//
-IEEE Seventh Great lakes Simposium on VLSI. March, 1997.
-
-\bibitem{8bar}
-\Au{Borrione~D., Gascard~E., Helmy~A., Morin-Allory~K., Oddos~Y., Pierre~L., Schmaltz~J.}
-Multi-paradigm formal methods in the design flow. TIMA ANNUEL report. TIMA
-Lab., Grenoble, France, 2006.
-
-\bibitem{9bar}
-\Au{Jones~R.B., Seger~C.-J.\,H., Aagaard~M.}
-Combining theorem proving and trajectory evaluation in an
-industrial environment~// 35th Design Automation Conference (DAC~98)
-Proceedings. ACM Press, 1998. P.~538--541.
-
-\bibitem{10bar}
-\Au{Mir~A.\,A., Balakrishnan~S., Tahar~S.}
-Modeling and veri\-fi\-cation of embedded systems using
-cadence SMV~//  2000 Canadian Conference on Electrical and
-Computer Engineering Proceedings, 2000.
-
-\bibitem{24bar}           %11
-\Au{Chockler~H., Kupferman~O., Kurshan~R., Vardi~M.}
-A practical approach to coverage in model checking~// 13th
-International Conference CAV 2001 Proceedings. Paris, France, 2001. LNCS~2102. P.~66.
-
-\bibitem{11bar}
-\Au{Vemuri~R., Kalyanaraman~R.}
-Generation of design verification tests from behavioral VHDL programs
-using path enumeration and constraint programming~// IEEE Trans. on VLSI, 1995.
- P.~201--214.
-
-\bibitem{12bar}
-\Au{Ho~R.\,C., Yang~C.\,H., Horowitz~M.\,A., Dill~D.\,L.}
-Architecture validation for processors~// International
-Symposium Computer Architecture Proceedings, 1995. P.~404--413.
-
-\bibitem{13bar}
-\Au{Seger~C-J.}
-An introduction to formal hardware verification 92-13.
-Technical Report 92-13.  Department
-of Computer Science, University of Bruish Columbia, June 1992.
-
-\bibitem{14bar}
-Introduction to HOL: A theorem proving environment for higher-order logic~/
-Eds.\ Gordon~M.\,J.\,C., Melham~T.\,F.
-Cambridge Univ. Press, 1993.
-
-\bibitem{15bar}
-\Au{Burch~J.\,R., Clarke~E.\,M., Long~D.\,E., McMillan~K.\,L., Dill~D.\,L.}
-Symbolic model checking for
-sequential circuit verification~//
-IEEE Transactions on Computer-Aided Design of Integrated Circuits and
-Systems, 1994. Vol.~13. No.\,4. P.~401--424.
-
-\bibitem{16bar}
-\Au{Kern~C., Greenstreet~M.}
-Formal verification in hardware design: A survey~// ACM Transactions on
-Design Auto\-mation of E.~Systems, 1999. Vol.~4. P.~123--193.
-
-\bibitem{17bar}
-\Au{McMillan~K.}
-Getting started with SMV. User's Manual.
-Cadence Berkeley Laboratories, USA, 1998.
-
-\bibitem{18bar}
-\Au{Goldberg~E., Gulati~K., Khatri~S.}
-Toggle equivalence preserving (TEP) logic synthesis~//
-IWLS-2007. San Diego, 2007. {\sf
-http://eigold.tripod.com/papers/iwls-2007-tep.pdf}.
-
-\bibitem{28bar}       %19
-Cadence Design System Products, 2007.
-
-\bibitem{19bar} %20
-\Au{Cortes~L.\,A., Eles~P., Peng~Z.}
-Modeling and formal veri\-fi\-cation of embedded systems based on Petri Net
-repre\-sen\-tation~// J. Systems Architecture, 2003. Vol.~49. No.\,12--15.
-P.~571--598.
-
-\bibitem{20bar} %21
-\Au{Semenov~A., Koelmans~I., Yakovlev~A.}
-Designing an asynchronous processor using Petri Nets~//
-IEEE Micro, 1997. Vol.~17. No.\,2. P.~54--65.
-
-\bibitem{21bar}    %22
-\Au{Bhadra~J., Abadir~M., Ray~S., Wang Li.}
-A survey of hybrid techniques for functional verification~//
-IEEE Design \& Test of Computers, 2007. P.~112--122.
-
-\bibitem{22bar}      %23
-Property specification language. Reference Manual,  version~1.1.
-ACCELERA, 2004.
-
-\bibitem{23bar}         %24
-\Au{Hoskote~Y., Kam~T., Ho~Pei-Hsin, Zhao~Xudong}.
-Coverage estimation for symbolic model checking~//
-DAC'99,  1999. P.~300.
-
-
-\bibitem{25bar} %26
-\Au{Katz~D., Geist~D., Grumberg~O.}
-Have I written enough properties~--- a method of comparison between
-specification and implementation~// 10th CHARME Proceedings, 1999.
-LNCS~1703. P.~280--297.
-
-\bibitem{26bar} %27
-\Au{Baranov~S.}
-Logic and system design of digital systems.~--- Tallinn: TUT Press, 2008.
-
-\bibitem{27bar}    %28
-\Au{Mokkedem~A., Hosabettu~R., Gopalakrishnan~G.}
-Formalization and proof of a solution to the PCI~2.1
-bus transaction ordering problem. FMCAsD, 1998.
-
-\end{thebibliography}
-}
-}
-\end{multicols}
-
-\hrule
-
-\smallskip
-
-\def\tit{О ВЕРИФИКАЦИИ НА ЭТАПЕ СИНТЕЗА ЦИФРОВЫХ СИСТЕМ}
-\def\aut{С.~Баранов$^1$, С.\,Л.~Френкель$^2$, В.~Синельников$^3$, В.\,Н.~Захаров$^4$}
-
-\titelr{\tit}{\aut}
-
-\vspace*{12pt}
-
-\noindent
-$^1$Холонский технологический институт, Израиль, samary@012.net.il\\
-\noindent
-$^2$Институт проблем информатики Российской академии наук, slf-ipiran@mtu-net.ru\\
-\noindent
-$^3$Университет Бар-Илан, Израиль, samary@012.net.il\\
-\noindent
-$^4$Институт проблем информатики Российской академии наук, VZakharov@ipiran.ru
-
-%\vspace*{10mm}
-\medskip
-
-
-\Abst{Описана новая методология учета требований верификации проектов цифровых систем в процессе их разработки, 
-начиная с этапа  алгоритмического описания. Методология основана на использовании модели  Algorithmic State Machine 
-(ASM)  и алгоритмах их композиции и минимизации.\linebreak}
-
-\begin{center}\small\nwt
-\parbox{150mm}{ Данный подход  предназначен для синтеза в виде управляющего автомата и подсистемы обработки данных (Data Path) цифровых систем любого типа и сложности (в том числе микропроцессоров с конвейером), 
-микропрограммных автоматов, контроллеров протоколов и~т.\,д.).
-В отличие от известных полуформальных подходов к верификации проектов, основанных на комбинации моделирования и формальной верификации различных частей проекта, рассматривается формализованная процедура, позволяющая получить тестбенчи для 
-верификации всех элементов синтезируемой схемы непосредственно из исходного алгоритмического описания, с учетом особенностей реализации структуры  Data Path и управляющего автомата.}
-\end{center}
-
-\KW{проектирование цифровых систем; формальная верификация; конечные автоматы}
-
-\label{end\stat}
-
-\renewcommand{\figurename}{\protect\bf Рис.}
-\renewcommand{\tablename}{\protect\bf Таблица}
-\renewcommand{\bibname}{\protect\rmfamily Литература}

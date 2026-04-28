@@ -1,923 +1,0 @@
-\def\stat{gaziz}
-
-\def\tit{ПРОГНОЗИРОВАНИЕ ОБЪЕМОВ ЖЕЛЕЗНОДОРОЖНЫХ ГРУЗОПЕРЕВОЗОК ПО ПАРАМ ВЕТОК$^*$}
-
-\def\titkol{Прогнозирование объемов железнодорожных грузоперевозок по парам веток}
-
-\def\autkol{Р.\,К.~Газизуллина, М.\,М.~Стенина, В.\,В.~Стрижов}
-
-\def\aut{Р.\,К.~Газизуллина$^1$, М.\,М.~Стенина$^2$, В.\,В.~Стрижов$^3$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа выполнена при финансовой поддержке РФФИ (проект \,14-07-31046).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Московский физико-технический институт, rimma.gazizullina@gmail.com}
-\footnotetext[2]{Московский физико-технический институт, mmedvednikova@gmail.com}
-\footnotetext[3]{Вычислительный центр им.\,А.~А.\,Дородницына РАН, strijov@ccas.ru}
-
-\label{st\stat}
-
-                 \thispagestyle{headings}
-
-\Abst{Работа посвящена исследованию алгоритма
-непараметрического прогнозирования объемов железнодорожных
-грузоперевозок. Решается задача прогнозирования числа вагонов
-с~различными грузами, следующих по различным маршрутам. Задана
-топология железнодорожной сети~--- для всех возможных пар
-железнодорожных веток дана информация о~всех блоках вагонов,
-совершивших переезд с~одной ветки на другую, включая число вагонов
-в~блоке, вид груза и~дату прохождения маршрута. Для построения
-прогноза используется  алгоритм, основанный на свертке эмпирической
-плотности распределения значений временн$\acute{\mbox{о}}$го ряда с~функцией потерь.
-Ранее прогноз выполнялся для каждого железнодорожного узла
-в~отдельности. Предлагается повысить качество прогноза за счет
-прогнозирования по парам веток  вместо прогнозирования отправления
-всех вагонов с~данного узла. Алгоритм проиллюстрирован посуточными
-данными за полтора года о~перевозках 38~типов грузов.}
-
-\KW{прогнозирование; непараметрический метод; загруженность железнодорожного узла;
-функция потерь; эмпирическое распределение; свертка}
-
-\DOI{10.14357\!/\!08696527150109}
-
-
-
-\vskip 12pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-
-
-
-\section{ Введение}
-
-Повышение эффективности транспортировки грузов по железнодорожным
-путям требует решения задачи прогнозирования объемов и~времени перевозок грузов
-с ветки на ветку и~загруженности железнодорожных узлов на
-основании данных о времени прибытия и~отправления вагонов.
-Решение этой задачи необходимо для повышения качества управления
-в~сложных инфокоммуникативных средах~\cite{SSI1}. Управленческие решения
-принимаются на основании работы систем сбора статистической информации
-высокой точности и~доступности~\cite{SSI3, SSI2}.
-Данная работа расширяет и~уточняет метод решения задачи прогнозирования,
-изложенный в~статье~\cite{Valkov2012NP}. Используемый
-в~ней алгоритм основан на алгоритме
-квантильной регрессии~\cite{Koenker1978RQ, Postnikova2006KR},
-модифицированном сверткой
-гистограммы с~функцией потерь, что позволяет учитывать стоимость ошибок
-в~реальной задаче.
-
-Для получения прогноза по временн$\acute{\mbox{о}}$му ряду предлагается построить
-гис\-то\-грам\-му.
-Прогнозируемое значение (последующий элемент временного ряда) ищется как значение,
-соответствующее оптимальному значению свертки гистограммы и~функции потерь,
-которая задана исходя из экспертных предположений об экономических потерях при
-недостаточном или избыточном наличии составов на железнодорожном узле.
-В~работе~\cite{Valkov2012NP} показано, что данное решение находит более
-точные прогнозы в~сравнении с~алгоритмом ARMA (autoregressive--moving-average)~\cite{Cortez2004ARMA,Shumway2006ARMA},
-также используемым для решения подобных задач. Кроме того, данное решение
-позволяет в~некоторых случаях решить задачу, когда алгоритм ARMA не может работать.
-
-Согласно работе~\cite{Tihonov2006P}, в~настоящее время насчитывается
-свыше 100 классов моделей прогнозирования, в~связи с~чем возникает
-задача выбора моделей, которые давали бы адекватные прогнозы для
-изучаемых процессов или систем. Одними из основных методов решения
-подобных задач являются методы непараметрической регрессии
-и~модификации, такие как ядерное сглаживание, сглаживание сплайнами,
-авторегрессия, скользящее среднее и~др., описанные в~[10--13].
-Они заключаются в~комбинации взвешенных значений элементов
-временн$\acute{\mbox{о}}$го ряда для получения прогноза. Также для решения подобных
-задач применяют нейронные сети ~\cite{Thiesing1997NN, Gheyas2009NN}.
-
-Данные, описывающие объемы грузоперевозок, имеют следующий формат.
-Для каждой станции для каждого дня запись содержит число вагонов с~грузами
-различного типа с~указанием ветки прибытия и~отправления. Для построения
-прогнозов используются временн$\acute{\mbox{ы}}$е ряды двух типов:
-\begin{enumerate}[(1)]
-    \item число отправленных с~ветки вагонов с~грузом конкретного типа;
-    \item  число отправленных на заданную ветку вагонов с~грузом конкретного типа.
-    \end{enumerate}
-
-Основной идеей и~новизной работы является использование для прогноза временн$\acute{\mbox{ы}}$х
-рядов грузоперевозок по парам веток, в~отличие от ранее предложенного метода,
-использовавшего грузоперевозки по одному узлу. Это позволяет точнее отслеживать
-особенности грузоперевозок между различными парами веток
-и,~как следствие, точнее предсказывать будущие перевозки. В~данной работе
-предполагается, что благодаря рассмотрению более детализированных данных
-по перевозкам удастся выявить тренды и~периодичность. С~другой стороны, решение
-этой задачи может сделать весь прогноз в~целом более точным.
-
-\section{ Постановка задачи гистограммного прогнозирования}
-
-Задан набор временн$\acute{\mbox{ы}}$х рядов, в~котором временной ряд $\mathbf{x} \hm=
-\{x_i\}_{i=1}^T$, и~горизонт
-отсрочки прогноза $h$ (число отсчетов от конца временн$\acute{\mbox{о}}$го ряда до
-точки прогноза включительно). Требуется спрогнозировать следующую
-точку~$x_{T+1}$ временн$\acute{\mbox{о}}$го ряда~$\mathbf{x}$ так, чтобы выполнялось условие
-оптимальности функции потерь~($\ref{loss}$) и~свертки гистограммы~($\ref{hist_def}$), построенной по значениям
-временн$\acute{\mbox{о}}$го ряда.
-
-Гистограмма $\mathcal{H}$~--- набор пар
-\begin{equation}
-\label{hist_def}
-\mathcal{H} = \{(y_k,g_k)\}_{k=1}^K,
-\end{equation}
-где $K$~--- число интервалов $\left[y_k^{\min},y_k^{\max}\right]$
-%где $K$~--- число интервалов $[y_k^{\text{min}},y_k^{\text{max}}]$
-со средним значением~$y_k$, на которые разбита ось значений ряда~\textbf{x};
-$g_k$~--- высота столбца гистограммы на интервале $\bar y_k$,
-равная взвешенной сумме количества точек ряда, попавших в~этот интервал.
-
-Предполагается, что ряд $\mathbf{x} = \{x_i\}_{i=1}^T$
-стационарен, т.\,е.\ совместное распределение вероятностей~$T$
-наблюдений $x_1,x_2,x_3,\ldots,x_T$ совпадает с~распределением
-$x_{1+\tau},x_{2+\tau},x_{3+\tau}\ldots ,x_{T+\tau}$ при любых~$T$
-и~$\tau$.
-
-Введем функцию потерь $L(\hat{y},y)$~--- штраф за несоответствие
-прогнозируемого значения~$\hat{y}$ историческому значению~$y$.
-Например:
-\begin{enumerate}[(1)]
-    \item  $L(z,x) = (z-x)^2$;
-    \item  $L(z,x) = |z-x|$;
-    \item  $L(z,x) = \displaystyle\begin{cases}
-                           0, &\mbox{если} |z-x|<a\,;\\
-                           |z-x|-a,  &\mbox{если} |z-a|\geq a\,,
-                            \end{cases}$\newline
-где  $a>0$~--- экспертно заданный параметр.
-\end{enumerate}
-В данной работе используется функция
-\begin{equation}
-\label{loss}
-    L(z,x) = |z-x|\,.
-\end{equation}
-
-Задача нахождения прогнозируемого значения~$\hat{y}$
-временн$\acute{\mbox{о}}$го ряда с~использованием функции~$L$ имеет вид:
-\begin{equation*}
-%\label{forecast}
-   \hat{y} = \mathop{\mathrm{argmin}}\limits_{z\in\mathbb{N}}
-   \sum\limits_{k=1}^K{L(z,y_k)}\,,
-\end{equation*}
-где связанная переменная $z$ принадлежит множеству натуральных
-чисел, так как требуется спрогнозировать число вагонов.
-
-Пусть построен прогноз значений ряда $\{\hat{y_1}, \hat{y_2},\ldots, \hat{y_k}\}$
-в~некоторых точках, при этом реальные значения ряда~\textbf{x} в~этих же точках равны
-$\{{y_1}, {y_2}, \ldots {y_k}\}$. Эти значения не использовались при
-построении прогноза и~нужны для получения ретроспективной оценки
-качества прогностической модели. Вычислим среднюю ошибку ретроспективного
-прогноза:
-\begin{equation}
-\label{MeanEr}
-\text{MeanError} = \fr{1}{k}\sum\limits_{i=1}^{k} L(\hat{y_i}, y_i) \to
-\min\limits_{\hat{y_1},\ldots ,\hat{y_k}}.
-\end {equation}
-
-Чем меньше средняя ошибка, тем точнее прогноз. Таким образом, требуется
-решить задачу минимизации средней ошибки прогнозирования, т.\,е.\
-найти значения $\{\hat{y_1}, \hat{y_2}, \ldots ,\hat{y_k}\}$ такие, что
-значение $\text{MeanError}$ минимально.
-
-
-\section{Алгоритм прогнозирования}
-
-Первым шагом работы алгоритма является разбиение исходных данных для
-получения временн$\acute{\mbox{ы}}$х рядов. Для каждого дня~$\tau$
-для всех возможных
-комбинаций типа груза~$G$, веток отправления и~прибытия~$L$ и~$A$
-считается число вагонов с~грузом~$G$, отправленных в~день~$\tau$
-с~ветки~$L$ на ветку~$A$. При фиксированных значениях $G$, $L$ и~$A$
-получаем зависимость числа вагонов от дня $\tau$, т.\,е.\ временн$\acute{\mbox{о}}$й
-ряд~\textbf{x}. Если при фиксированных значениях~$G$ и~$L$ просуммировать
-временн$\acute{\mbox{ы}}$е ряды для разных веток прибытия~$A$, то получим временной
-ряд, соответствующий суммарному количеству отправленных грузов
-определенного типа с~ветки~$L$.
-
-Вторым шагом работы является применение базового алгоритма
-к полученным на первом этапе временн$\acute{\mbox{ы}}$м рядам для построения прогнозов.
-Базовый алгоритм основан на описанном в~\cite{Valkov2012NP} алгоритме
-непараметрического прогнозирования вре\-мен\-н$\acute{\mbox{о}}$го ряда. Для построения
-гистограммы~($\ref{hist_def}$) для каждой точки~$i$ временн$\acute{\mbox{о}}$го ряда~$\mathbf{x}$
-определим ее вес
-как произведение $w_i\hm=w_i^F w_i^H$. Сомножитель~$w_i^F$ задает
-показательную весовую функцию
-\begin{equation}
-\label{forget}
-w_i^F = v^{(-i+T+h)/{F}} \in(0\,,1]\,,
-\end{equation}
-убывающую к~началу временн$\acute{\mbox{о}}$го ряда и~равную~1 в~точке прогноза.
-Сомножитель~$w_i^H$ задан как
-
-\noindent
-\begin{equation}
-\label{period}
-    w_i^H = \begin{cases}
-                K(i_H, PH)\,, &\ \mbox{если }  H>0\,;\\
-                1\,, &\ \mbox{если  } H=0\,,
-            \end{cases}
-\end{equation}
-где индекс $H$ вычисляется в~результате решения оптимизационной
-задачи
-\begin{equation}
-\label{optim}
-i_H = \min\limits_{n=0,\ldots,\mbox{\scriptsize floor}\left((T+h)/P\right)}
-\left\vert T+H-nP-i\right\vert \,.
-\end{equation}
-Эта формула задает вес $i$-й точки, соответствующей годовой
-сезонности. Ядро задается выражением:
-
-\noindent
-$$
-    K(x,z) = \begin{cases}
-                \left( 1 - \left(\fr{x}{z}\right)^2\right)^2\,, &\
-                \mbox{если } |x|<z\,;\\
-                0 &\ \mbox{иначе}.
-            \end{cases}
-$$
-Взвешенные точки $x_i w_i$ используются для построения~(\ref{hist_def})
-гистограммы~$\mathcal{H}$.
-
-Настраиваемые параметры:
- $v\hm\in[0,1]$ в~выражении~(\ref{forget})~--- параметр показательного
- взвешивания точек ряда, параметр <<забывания>>;
- $H\hm\in[0, 0,5]$ в~выражениях~(\ref{period}) и~(\ref{optim})~---
- параметр ядра весовой функции для годовой
-    сезонности, половина  ширины <<шапки>> годовой сезонности.
-
-Ненастраиваемые параметры: $P$ в~выражениях~(\ref{period}) и~(\ref{optim})~---
-длина годового сезонного периода (обычно
-    $P\hm=365$);
-$w^{\min}$ в~выражении~(\ref{weighted_sum})~--- минимальный
-допустимый вес; $F$~в~выражении~(\ref{forget})~--- нормировочная
-константа <<забывания>>. Предлагается выбрать~$F$ следующим
-образом: $F \hm= (T+H)\varepsilon\log_{10}(0,1)$, где $\varepsilon\hm =
-10^{-3}$.
-
-Выберем границы гистограммы, число столбцов и~разбиение на столбцы
-следующим образом:
-\begin{enumerate}[(1)]
-    \item  пусть $n$~--- число точек~$x_i$, для которых
-    $w_i>w^{\min}$;
-    \item  выберем число столбцов (обоснование см.\ в~\cite{Scott1979HG})
-    $K \hm= \lceil 3\sqrt[3]{n}\,\rceil$;
-    если $K\hm<5$, то $K\hm=5$, если $K\hm>100$, то $K\hm=100$;
-    \item  границы $y_1 = \min\limits_{i:w_i>w^{\min}}(x_i)$, $y_k \hm=
-    \max\limits_{i:w_i>w^{\min}}(x_i)$;
-    \item  столбцы выбираются равной ширины.
-\end{enumerate}
-
-Для каждого $k=1,\ldots,K$ высота столбца гистограммы~$g_k$ равна
-
-\noindent
-\begin{equation}
-\label{weighted_sum}
-    g_k = \sum\limits_{i=1}^T w_i\left[x_i\in y_k\right]\left[w_i>w^{\min}\right],
-\end{equation}
-где выражение $[\cdot]$ равно~1, если в~скобках стоит истинное
-логическое выражение, и~0~в~противном случае.
-
-Прогнозируемое значение ряда $x_{T+h}$ находится как значение
-$\hat{y}\hm\in\{y_1,\ldots,y_K\}$, соответствующее оптимальному
-значению свертки распределения $\{g_k\}_{k=1}^K$ и~функции
-потерь~$L$:
-
-\noindent
-\begin{equation*}
-%\label{forecast}
-    \hat{y} =
-    \mathop{\mathrm{argmin}}\limits_{z\in\{y_1,\ldots,y_K\}}\sum\limits_{k=1}^K{g_k
-    L(z,y_k)}\,.
-\end{equation*}
-
-
-\vspace*{-12pt}
-
-\section{Эксперимент}
-\label{experiment}
-
-\textit{Цель эксперимента.} Сделать прогноз для заданных комбинаций
-<<пара ве\-ток\,--\,гру\-зы>>, проверить, что разбиение данных
-по веткам повышает качество прогноза базового алгоритма.
-
-В эксперименте использованы данные о посуточной загруженности
-железнодорожных узлов с~1~января 2007~г.\ по 22~апреля 2008~г.
-В~табл.~\ref{table} приведен пример записи.
-
-\begin{table}[b]\small
-\vspace*{-12pt}
-\begin{center}
-\Caption{Вид записи базы данных железнодорожных перевозок}
-\label{table}
-\vspace*{2ex}
-
-\tabcolsep=1pt
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
-  \hline
-  \tabcolsep=0pt\begin{tabular}{c}Дата\\ погрузки\end{tabular} &
-  \tabcolsep=0pt\begin{tabular}{c}Станция\\ отправления\end{tabular} &
-  \tabcolsep=0pt\begin{tabular}{c}Станция\\ назначения\end{tabular} &
-  \tabcolsep=0pt\begin{tabular}{c}Количество\\ вагонов\end{tabular} &
-  \tabcolsep=0pt\begin{tabular}{c}Код\\ груза\end{tabular} &
-  \tabcolsep=0pt\begin{tabular}{c}Род\\ вагона\end{tabular} &
-  \tabcolsep=0pt\begin{tabular}{c}Суммарный\\ вес груза\end{tabular} &
-  \tabcolsep=0pt\begin{tabular}{c}Признак\\ маршрутной\\ отправки\end{tabular} \\
-  \hline
-  2007-01-01 & 020108 & 932902 & 1 & 1 & 216 & 56 & 9 \\
-  \hline
-\end{tabular}
-\end{center}
-\end{table}
-
-Коды станций представляют собой шестизначные числа. Станции, в~коде
-которых две первые цифры совпадают, входят в~одну железнодорожную
-ветку. Станций отправления~--- 1566, станций назначения~--- 1902,
-веток~--- 99. Код груза~--- натуральное число от~1 до~43; также
-имеются перевозки, где код груза не указан. Род вагона~---
-натуральное число, в~имеющихся данных 75~различных типов вагонов.
-
-Для экспериментов были выбраны данные об отправлении поездов
-с 83-й ветки на все другие. Весь временной ряд  разбивался так, что
-последние 100~дней образовывали контрольную выборку, а~первые~300~--- обучающую.
-
-\begin{figure}[b] %fig1
-      \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=127.191mm
- \epsfbox{gaz-1.eps}
- }
- \end{center}
- \vspace*{-9pt}
- \Caption{Графики временн$\acute{\mbox{ы}}$х рядов числа отправленных вагонов
- с~нефтью с~83-й ветки с~прогнозом, выполненным для промежутка в~16~мес.:
- (\textit{а})~на все ветки;  (\textit{б})~на ветку~96;  (\textit{в})~на ветку~97;
-  (\textit{г})~на ветку~98}
-  \label{fig:Leave}
-\end{figure}
-
-Было проведено два эксперимента, в~которых обрабатывались одни
-и~те же данные и~выполнялись одни и~те же алгоритмы, но в~которых
-преследовались различные цели: в~обоих исследовались данные о~количестве грузов,
-отправленных с~83-й ветки на другие. Данные в~обоих случаях были разбиты
-таким образом: временн$\acute{\mbox{ы}}$е ряды строились для числа вагонов с~товарами,
-отправленных с~83-й ветки на другие конкретные ветки. Для них был
-запущен алгоритм и~найдены значения прогноза и~средней ошибки.
-В~первом эксперименте исследовались данные об отправленных грузах
-на некоторые конкретные ветки для всех видов грузов (при этом графики,
-отображающие некоторые зависимости,  представлены только для некоторых грузов),
-а~также о суммарном количестве различных отправленных грузов на все ветки,~---
-задачей было визуализировать зависимость прогноза и~ошибок для разных рядов.
-Второй эксперимент был проведен для всех видов грузов, отправленных на все
-ветки,~--- целью было для каждого вида груза вычислить среднее и~максимальное
-значения усредненной ошибки по всем веткам и~сравнить их со средней ошибкой
-для суммарного количества отправленных грузов этого типа.
-
-
-
-
-\begin{figure}[b] %fig2
-      \vspace*{-6pt}
- \begin{center}
- \mbox{%
- \epsfxsize=124.601mm
- \epsfbox{gaz-2.eps}
- }
- \end{center}
- \vspace*{-11pt}
- \Caption{Средняя ошибка прогноза для всех типов грузов:
-(\textit{а})~все ветки; (\textit{б})~ветка~96;
-(\textit{в})~ветка~97; (\textit{г})~ветка~98}
-  \label{fig:Mean_error}
-\end{figure}
-
-Перейдем к~описанию полученных результатов. Начнем с~первого
-эксперимента. На рис.~\ref{fig:Leave} изображены графики временн$\acute{\mbox{ы}}$х рядов~---
-с~датой по оси~$X$ и~числом вагонов по оси~$Y$.
-Графики приведены как для полного числа от\-прав\-лен\-ных вагонов,
-так и~для вагонов, от\-прав\-лен\-ных на некоторые конкретные ветки.
-Ветки выбирались таким образом, чтобы отразить различные варианты
-характеристик временных рядов.
-
-
-Эксперименты также были проведены для всех грузов, отправленных с~83-й
-ветки. Для каждого вычисления (т.\,е.\ для каж\-дой отдельной ветки прибытия груза,
-а~также для суммарного количества отправленных грузов) была найдена
-средняя относительная ошибка~(\ref{MeanEr}).
-На рис.~\ref{fig:Mean_error} представлены результаты этих вычислений
-для полного количества отправленных грузов (рис.~2,\,\textit{а}) и~для трех
-различных веток (рис.~2,\,\textit{б}\,--\,2,\,\textit{г}).
-На рис.~2 отображена зависимость средней относительной ошибки
-от вида груза.
-
-\begin{figure}[b] %fig3
-      \vspace*{-6pt}
- \begin{center}
- \mbox{%
- \epsfxsize=126.119mm
- \epsfbox{gaz-3t.eps}
- }
- \end{center}
- \vspace*{-11pt}
- \Caption{Сравнение средней ошибки с~ошибкой базового алгоритма:
-(\textit{а})~груз~2; (\textit{б})~груз~4;
-(\textit{в})~груз~12; (\textit{г})~груз 13;
-(\textit{д})~груз~15}
-  \label{fig:Error_comp}
-\end{figure}
-
-Для сравнения результатов прогнозирования с~базовым алгоритмом
-(без разбивки по веткам) для некоторых типов грузов были проделаны следующие
-вычисления: найдена средняя ошибка при прогнозе числа вагонов с~нефтью,
-от\-прав\-ленных
- с~83-й ветки на каждую другую, а~также средняя ошибка
- при\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\
-
-\vspace*{-12pt}
-
-\begin{floatingfigure}{72mm} %fig4
-      \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=62mm %71.079mm
- \epsfbox{gaz-4t.eps}
- }
- \end{center}
- \vspace*{-9pt}
- \Caption{Минимальная~(\textit{1}), средняя~(\textit{2}) и~максимальная~(\textit{3})
- ошибки по всем веткам  в~сравнении с~ошибкой базового алгоритма~(\textit{4})}
-  \label{fig:Mean_errors_comp}
-  \vspace*{12pt}
-\end{floatingfigure}
-
-\noindent
-прогнозе
-суммарного числа вагонов с~нефтью, отправленных с~83-й ветки. Результаты
-%\linebreak
-этих
-вычислений представлены %\linebreak
-{в~виде} графиков зависимости %\linebreak
-ошибки от ветки. В~качест\-ве %\linebreak
-ориен\-ти\-ра горизонтальной штриховой линией отображен уровень ошибки
-для суммарного количества
-грузов. Результаты представлены на рис.~\ref{fig:Error_comp}.
-
-Далее рассмотрим результаты второго эксперимента. Для каждого вида
-груза вычислено среднее, минимальное (ненулевое) и~максимальное
-значение усредненной ошибки по всем веткам прибытия, построены
-графики зависимости этих значений от вида груза (рис.~\ref{fig:Mean_errors_comp}).
-Для некоторых грузов эти данные
-выписаны в~табл.~\ref{table_errors}.
-
-\begin{table}[h]\small %tabl2
-\vspace*{-6pt}
-\begin{center}
-\parbox{322pt}{\Caption{Минимальная, средняя и~максимальная ошибка
-по всем веткам в~сравнении с~ошибкой базового \label{table_errors} алгоритма}
-
-}
-
-
-\vspace*{2ex}
-
-   \tabcolsep=5.8pt
-    \begin{tabular}{|c|c|c|c|c|}
-    \hline
-\tabcolsep=0pt\begin{tabular}{c}Тип\\ груза\end{tabular} &
-\tabcolsep=0pt\begin{tabular}{c}Минимальная\\ ошибка\end{tabular} &
-\tabcolsep=0pt\begin{tabular}{c}Средняя\\ ошибка\end{tabular} &
-\tabcolsep=0pt\begin{tabular}{c} Максимальная\\ ошибка\end{tabular} &
-\tabcolsep=0pt\begin{tabular}{c}Ошибка\\ базового алгоритма\end{tabular}\\
-     \hline
-    1 &  0,001 & 0,003& 0,010&0,004\\
-        2 &  0,005& 0,010 & 0,150& 0,150\\
-        3 &  0,003 & 0,010& 0,130& 0,120\\
-        4 &  0,010& 0,040& 0,190& 0,130\\
-        5 &  0,001& 0,002& 0,006& 0,009\\
-        6 &  0,001 & 0,009& 0,040& 0,030\\
-        7 &  0,020&  0,050 & 0,080& 0,080\\
-        8 & 0,010 & 0,013& 0,030& 0,010\\
-    \hline
-    \end{tabular}
-\end{center}
-\vspace*{-12pt}
-\end{table}
-
-
-\vspace*{-6pt}
-
-\section{Оценка результатов}
-
-На рис. \ref{fig:Mean_error} показано, что средняя относительная ошибка
-прогноза для разных веток почти всегда меньше, чем ошибка прогноза для
-суммарного числа вагонов. Это означает, что прогноз количества отправленных грузов
-на определенную ветку в~среднем точнее, чем прогноз суммарного числа вагонов.
-Однако есть и~грузы, для которых средняя ошибка прогноза для некоторой конкретной
-ветки превосходит ошибку прогноза суммарного числа отправленных вагонов.
-
-Это же подтверждают графики на рис.~\ref{fig:Error_comp}, которые дают более
-подробную информацию о средней ошибке прогнозирования для некоторых грузов.
-В~целом, средняя относительная ошибка для веток меньше, чем уровень ошибки для
-суммарного количества. Тем не менее есть и~значения ошибок, б$\acute{\mbox{о}}$льшие уровня
-ошибки для суммарного количества. С~другой стороны, видно, что веток, для
-которых средняя ошибка прогноза превосходит ошибку для прогноза суммарного
-количества грузов, немного (таких нет для груза~2, и~5--10 для остальных
-рассмотренных типов грузов).
-
-
-
-Результаты второго эксперимента~--- на рис.~\ref{fig:Mean_errors_comp}.
-Таблица~\ref{table_errors} также подтверждает тот факт, что средняя ошибка
-для прогноза количества грузов, отправленных на конкретные ветки, меньше,
-чем такая же ошибка для прогноза суммарного количест\-ва отправленных грузов.
-Однако средняя ошибка в~некоторых случаях меньше минимальной~--- минимум брался
-по всем ненулевым значениям, иначе он был бы равен нулю для всех грузов,
-поскольку для каждого груза есть ветка, на которую такой груз с~83-й ветки не
-прибывает в~течение рассматриваемого периода. Рисунок~\ref{fig:Mean_errors_comp}
-наглядно демонстрирует, что, во-пер\-вых, усредненная по всем веткам подсчитанная
-ошибка существенно меньше, чем ошибка для суммарного количества грузов.
-Во-вто\-рых, максимальная ошибка по веткам если и~превосходит ошибку для суммы,
-то ненамного~--- более того, можно заметить, что они зачастую совпадают
-или очень близки.
-
-
-
-\section{Заключение}
-
-Поставлен вычислительный эксперимент, который подтвердил предположение
-о~том, что прогноз для отдельных веток точнее, чем прогноз суммарного
-числа отправленных вагонов. Приведенные результаты подтверждают выдвинутое
-предположение. Дальнейшие исследования данной задачи могут быть продолжены
-в~следующих направлениях: во-пер\-вых, для прогноза количества отправленных
-грузов можно попытаться в~рассматриваемых временн$\acute{\mbox{ы}}$х
-рядах выделять тренд и,~если
-возможно, искать периодическую компоненту. Во-вто\-рых,
-для построения прогноза предлагается применить различные варианты алгоритма.
-Например, использовать вариацию со скользящим средним.
-
-
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{SSI1} %1
-\Au{Зацаринный А.\,А., Шабанов А.\,П.}
-Методический подход к~управлению качеством информации в~сложных
-инфокоммуникационных проектах~/\!\!/ Системы и~средства информатики, 2011.
-T.~21. №\,2. C.~3--20.
-
-
-
-\bibitem{SSI3}
-\Au{Синицын И.\,Н., Корепанов Э.\,Р., Белоусов В.\,В., Шоргин~В.\,С.,
-Макаренкова~И.\,В., Конашенкова~Т.\,Д., Агафонов~Е.\,С., Семендяев~Н.\,Н.}
-Развитие компьютерной поддержки статистических научных исследований систем
-высокой точности и~доступности~/\!\!/ Системы и~средства информатики, 2011.
-T.~21. №\,1. C.~3--33.
-
-\bibitem{SSI2}
-\Au{Синицын И.\,Н., Шаламов А.\,С., Сергеев И.\,В., Синицын~В.\,И.,
-Корепанов~Э.\,Р., Белоусов~В.\,В., Агафонов~Е.\,С., Шоргин~В.\, С.}
-Методы и~средства анализа и~моделирования стохастических систем
-интегрированной логистической поддержки~/\!\!/ Системы и~средства информатики,
-2012.  T.~22. №\,2. C.~3--28.
-
-\bibitem{Valkov2012NP} %4
-\Au{Вальков А.\,С., Кожанов Е.\,М., Медведникова~М.\,М., Хусаинов~Ф.\,И.}
-Непараметрическое прогнозирование загруженности системы железнодорожных узлов
-по историческим данным~/\!\!/ Машинное обучение и~анализ данных, 2012.  T.~1. №\,4. C.~448--465.
-
-\bibitem{Koenker1978RQ} %5
-\Au{Koenker R.,  Bassett, Jr., G.}  Regression quantiles~/\!\!/ Econometrica, 1978.
-Vol.~46. No.\,1. P.~33--50.
-
-\bibitem{Postnikova2006KR} %6
-\Au{Постникова~Е.} Квантильная регрессия.~--- Новосибирск: НГУ, 2006. 34~с.
-
-\bibitem{Cortez2004ARMA} %7
-\Au{Cortez P.,  Rotcha M.,  Neves~J.} Evolving time series forecasting ARMA models~/\!\!/
-J.~Heuristics, 2004. Vol.~10. No.\,4. P.~419--429.
-
-\bibitem{Shumway2006ARMA} %8
-\Au{Shumway R.\,H., Stoffer D.\,S.} Time series analysis and its applications with
-$R$~examples.~--- Springer, 2006. 590~p.
-
-\bibitem{Tihonov2006P} %9
-\Au{Тихонов Э.\,Е.} Прогнозирование в~условиях рынка.~---
-Невинномысск: СевКавГТУ, 2006. 221~с.
-
-\bibitem{Hardle1993NR} %10
-\Au{Хардле В.}  Прикладная непараметрическая регрессия~/
-Пер.\ с англ. А.\,В.~Назина под ред. М.\,Б.~Малютова.~--- М.: Мир, 1993. 349~с.
-(\Au{H$\ddot{\mbox{a}}$rdle~W.} Applied nonparametric regression. New York\,--\,New Rochell\,--\,Melbourne\,--\,Sydney: Cambridge University
-Press, 1989. 433~p.)
-
-\bibitem{Shurygin2000P} %11
-\Au{Шурыгин А.\,М.} Прикладная стохастика: робастность, оценивание, прогноз.~---
-М.: Финансы и~статистика, 2000. 224~с.
-
-\bibitem{Lukashin2003P} %12
-\Au{Лукашин Ю.\,П.} Адаптивные методы краткосрочного прогнозирования
-временн$\acute{\mbox{ы}}$х рядов.~--- М.: Финансы и~статистика, 2003. 416~с.
-
-\bibitem{Djefry2008NR} %13
-\Au{Джефри Р.}  Непараметрическая эконометрика: вводный курс~/\!\!/
-Машинное обучение и~анализ данных, 2013. Т.~1. №\,5. С.~505--518.
-
-\bibitem{Thiesing1997NN} %14
-\Au{Thiesing F.\,M.,  Vornberger~O.} Forecasting sales using neural networks~/\!\!/
-Computational intelligence, theory and
-applications~/ Ed.\ B.~Reusch.~---
-Lecture notes in computer science ser.~--- Springer,
-1997. Vol.~1226. P.~321--328.
-
-\bibitem{Gheyas2009NN} %15
-\Au{Gheyas I.\,A.,  Smith L.\,S.} Neural
-network approach to time series forecasting~/\!\!/
-World Congress on Engineering Proceedings, 2009. Vol.~2. P.~245--253.
-
-
-
-\bibitem{Scott1979HG} %16
-\Au{Scott D.\,W.} On optimal and data-based histograms~/\!\!/ Biometrika, 1979.
-Vol.~66. No.\,3. P.~605--610.
-
-%\bibitem{Motrenko2013CM}
-%\Au{Мотренко А.\,П., Вальков А.\,С., Хусаинов~Ф.\,И, Кожанов~Е.\,М.}
-%Построение кросс-кор\-ре\-ля\-ци\-он\-ных зависимостей при  прогнозе
-%загруженности железнодорожного узла~/\!\!/ Машинное обучение и~анализ данных, 2013.
-%Т.~1. №\,5. С.~505--518.
-
-%\bibitem{Kuznetsov2011AP}
-%\Au{Кузнецов М.\,П., Мафусалов А.\,А., Животовский~Н.\,К., Зайцев~Е.,
-%Сунгуров~Д.\,С.} Сглаживающие алгоритмы прогнозирования~/\!\!/
-%Машинное обучение и~анализ данных, 2011. Т.~1. №\,1. С.~104--112.
-
-%\bibitem{Kuznetsov2011APR}
-%\Au{Фирстенко А.\,Н., Кононенко Д.\,С., Кузнецов~М.\,П., Морозов~А.\,А.,
-%Сунгуров~Д.\,С., Савинов~Н.\,А., Корниенко~А.\,И., Джамтырова~Р.\,Б.,
-%Ивкин~Н.\,П., Зайцев~Е., Животовский~Н.\,К., Кононенко~Д.\,С., Быстрый~Р.\,Б.}
-%Технологические карты разработки библиотеки алгоритмов прогноза временн$\acute{\mbox{ы}}$х
-% рядов~/\!\!/ Машинное обучение и~анализ данных, 2011. Т.~1. №\,1. С.~113--121.
-
-\end{thebibliography}
-} }
-
-
-\vspace*{-5pt}
-
-\hfill{\small\textit{Поступила в~редакцию 20.08.14}}
-
-\vspace*{7pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{9pt}
-
-%\newpage
-
-%\vspace*{-24pt}
-
-\def\tit{LARGE CAPACITY OF RAILWAY CARGO TRANSPORTATION FORECASTING}
-
-\def\titkol{Large capacity of railway cargo transportation forecasting}
-
-
-\def\aut{R.\,K.~Gazizullina$^1$, M.\,M.~Medvednikova$^1$, and~V.\,V.~Strijov$^2$}
-\def\autkol{R.\,K.~Gazizullina, M.\,M.~Medvednikova, and V.\,V.~Strijov}
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-6pt}
-
-\noindent
-$^1$Moscow Institute of Physics and Technology,
-9~Institutskiy per., Dolgoprudny,\linebreak
-$\hphantom{^1}$Moscow Region 141700, Russian Federation
-
-\noindent
-$^2$Dorodnicyn Computing Center,
-Russian Academy of Sciences, 40~Vavilov Str.,\linebreak
-$\hphantom{^1}$Moscow 119333, Russian Federation
-
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2015 vol~25 no\,1}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2015   vol~25   no\,1
-\hfill \textbf{\thepage}}}
-
-\Abste{The article is devoted to research of the algorithm of nonparametric
-forecasting of railway cargo transportation capacity.
-The problem considered is\linebreak\vspace*{-12pt}}
-
-\Abstend{forecasting the number of wagons with various goods,
-following various routes. The topology of the railway network is given~---
-for all possible pairs of railway lines, information about all blocks
-of wagons, which have moved from one line to another, including the number
-of wagons in a~block, the type of cargo, and the date of the route, is provided.
-The algorithm, based on convolution of the empirical density distribution of
-the values of time series with the loss function is used for prediction.
-Previously, forecasting was carried out for each railway junction separately.
-It is proposed to be improved by the quality of forecasting predicting
-by pairs of lines instead of predicting departure of all wagons from the given
-junction. The algorithm is illustrated by the daily data on transportation
-of~38~types of cargo collected during a~year and a~half.}
-
-\KWE{forecasting; nonparametric method; railroad station occupancy; loss function; empirical distribution; compression}
-
-\DOI{10.14357\!/\!08696527150109}
-
-%\vspace*{-24pt}
-
-\Ack
-\noindent
-The research was financially supported by the Russian Foundation
-for Basic Research (project \,14-07-31046).
-
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-\bibitem{SSI1-1}
-\Aue{Zatsarinnyi, A.\,A., and A.\,P. Shabanov}. 2011.
-Metodicheskiy podkhod k~upravleniyu kachestvom informatsii
-v~slozhnykh infokommunikatsionnykh proektakh
-[Methodological approach to quality management of information in complex
-infocommunication projects]. \textit{Sistemy i Sredstva Informatiki}~---
-\textit{Systems and Means of Informatics}  21(2):3--20.
-
-\bibitem{SSI3-1}
-\Aue{Sinitsyn, I.\,N., E.\,R. Korepanov, V.\,V.~Belousov, V.\,S.~Shorgin,
-I.\,V.~Makarenkova,  T.\,D.~Konashenkova, E.\,S.~Agafonov, and
-N.\,N.~Semendyaev.} 2011. Razvitie komp'yuternoy podderzhki statisticheskikh
-nauchnykh issledovaniy sistem vysokoy tochnosti i~dostupnosti [Development
-of computer-aided statistical scientific support for high precision and
-with high availability systems]. \textit{Sistemy i~Sredstva Informatiki}~---
-\textit{Systems and Means of Informatics}  21(1):3--33.
-
-\bibitem{SSI2-1}
-\Aue{Sinitsyn, I.\,N., A.\,S. Shalamov, I.\,V. Sergeev, V.\,I.~Sinitsyn,
-E.\,R.~Korepanov, V.\,V.~Belousov, E.\,S.~Agafonov, and V.\,S.~Shorgin}.
-2012. Metody i~sredstva analiza i~modelirovaniya stokhasticheskikh sistem
-integrirovannoy logisticheskoy podderzhki [Analysis and modeling methods
-and tools for integrated logistic support of stochastic systems].
-\textit{Sistemy i~Sredstva Informatiki}~--- \textit{Systems and Means
-of Informatics}  22(2):3--28.
-
-\bibitem{Valkov2012NP-1} %4
-\Aue{Val'kov, A.\,S.,  E.\,M.~Kozhanov, M.\,M.~Medvednikova,
-and F.\,I.~Khusainov.} 2012. Neparametricheskoe prognozirovanie zagruzhennosti
-sistemy zheleznodorozhnykh uzlov po istoricheskim dannym
-[Nonparametric forecasting of railroad stations occupancy
-according to historical data]. \textit{Mashinnoe Obuchenie i Analiz Dannykh}
-[J.~Machine Learning Data Analysis] 4(1): 448--465.
-
-\bibitem{Koenker1978RQ-1} %5
-\Aue{Koenker, R.,  and G.~Bassett} 1978. Regression quantiles.
-\textit{Econometrica} 46(1):33--50.
-
-\bibitem{Postnikova2006KR-1} %6
-\Aue{Postnikova, E.} 2006. \textit{Kvantil'naya regressiya}
-[Quantile regression]. Novosibirsk: NGU [Novosibirsk: NSU]. 34~p.
-
-
-
-\bibitem{Cortez2004ARMA-1} %7
-\Aue{Cortez, P.,  M.~Rotcha,  and J.~Neves.} 2004. Evolving
-time series forecasting ARMA models. \textit{J.~Heuristics} 10(4):419--429.
-
-\bibitem{Shumway2006ARMA-1} %8
-\Aue{Shumway, R.\,H., and D.\,S. Stoffer.} 2006. Time
-series analysis and its applications with $R$~examples. Springer. 590~p.
-
-\bibitem{Tihonov2006P-1} %9
-\Aue{Tikhonov, E.} 2006. \textit{Prognozirovanie v~usloviyakh rynka}
-[Forecasting in market conditions]. Nevinnomyssk. 221~p.
-
-\bibitem{Hardle1993NR-1} %10
-\Aue{H$\ddot{\mbox{a}}$rdle,~W.} 1989.
-Applied nonparametric regression.
-New York\,--\,New Rochell\,--\,Melbourne\,--\,Sydney: Cambridge University
-Press, 1989. 433~p.
-
-\bibitem{Shurygin2000P-1} %11
-\Aue{Shurygin, A.\,M.} 2000. \textit{Prikladnaya stokhastika: Robastnost',
-otsenivanie, prognoz} [Applied stochastic: Robustness, estimation, forecast].
-Moscow: Finansy i~Statistika. 224~p.
-
-\bibitem{Lukashin2003P-1} %12
-\Aue{Lukashin, Y.\,P.} 2003. Adaptivnye metody kratkosrochnogo
-prognozirovaniya vremennykh ryadov [Adaptive methods of short-term
-time series forecasting]. Moscow: Finansy i~Statistika. 416~p.
-
-\bibitem{Djefry2008NR-1} %13
-\Aue{Dzheffri, R.} 2008. Neparametricheskaya ekonometrika: Vvodnyy kurs
-[Nonparametric econometrics: An introductory course]. \textit{Kvantil'} 7:56.
-
-\bibitem{Thiesing1997NN-1} %14
-\Aue{Thiesing, F.\,M.,  and O.~Vornberger.} 1997.
-Forecating sales using neural networks. \textit{Computational intelligence,
-theory and applications}. Ed.~ B.~Reusch.
-Lecture notes in computer science ser. 1226:321--328.
-
-
-\bibitem{Gheyas2009NN-1} %15
-\Aue{Gheyas,~I.\,A., and  L.\,S. ~Smith.}
-2009. Neural network approach to time series forecasting. \textit{World
-Congress on Engineering Proceedings}. 2:245--253.
-
-
-
-\bibitem{Scott1979HG-1} %16
-\Aue{Scott, D.\,W.} 1979. On optimal and data-based histograms.
-\textit{Biometrika} 66(3):605--610.
-
-%\bibitem{Motrenko2013-1}
-%\Aue{Valkov, A.\,S.,  E.\,M. Kozhanov,  A.\,P.~Motrenko,  and
-%F.\,I.~Husainov.}  2013. Po\-stro\-enie kross-korrelyatsionnykh zavisimostey
-%pri prognoze zagruzhennosti zhe\-lez\-no\-do\-rozh\-no\-go uzla [Constructing
-%a~cross-correlation model to forecast the utilization of a~railway junction
-%station]. \textit{Mashinnoe Obuchenie i~Analiz Dannykh}
-%[J. Machine Learning Data Analysis] 5(1):505--518.
-
-%\bibitem{Kuznetsov2011AP-1}
-%\Aue{Kuznetsov, M.,  A. Mafusalov,  N. Zhivotovskiy, E.~Zaytsev, and
-%D.~Sungurov.} 2011. Sglazhivayushchie algoritmy prognozirovaniya
-%[Smoothing prediction algorithms]. \textit{Mashinnoe Obuchenie i~Analiz Dannykh}
-%[J.\ Machine Learning Data Analysis] 1(1):104--112.
-
-%\bibitem{Kuznetsov2011APR-1}
-%\Aue{Firstenko, A.\,N., D.\,S. Kononenko, M.\,P. Kuznetsov, A.\,A.~Morozov,
-%D.\,S.~Sungurov, N.\,A.~Savinov, A.\,I.~Kornienko, R.\,B.~Dzhamtyrova,
-%N.\,P.~Ivkin, E.~Zaytsev, N.\,K.~Zhivotovskiy,
-%D.\,S.~Kononenko, and R.\,B.~Bystryy.} 2011. Tekhnologicheskie karty
-%razrabotki biblioteki algoritmov prognoza vremennykh ryadov
-%[Technological maps of development of algorithms library of time series
-%prediction]. \textit{Mashinnoe Obuchenie i~Analiz Dannykh}
-%[J.\ Machine Learning Data Analysis] 1(1):113--121.
-\end{thebibliography}
-} }
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received August 20, 2014}}
-
-\vspace*{-6pt}
-
-\Contr
-
-\vspace*{-3pt}
-
-\noindent
-\textbf{Gazizullina Rimma K.} (b.\ 1993)~---
-student, Moscow Institute of Physics and Technology,
-9~Institutskiy per., Dolgoprudny, Moscow Region 141700, Russian Federation;
-rimma.gazizullina@gmail.com
-
-\vspace*{1pt}
-
-\noindent
-\textbf{Stenina Mariya M.} (b.\ 1991)~---
-student, Moscow Institute of Physics and Technology, 9~Institutskiy per.,
-Dolgoprudny, Moscow Region 141700, Russian Federation; mmedvednikova@gmail.com
-
-\vspace*{1pt}
-
-\noindent
-\textbf{Strijov Vadim V.} (b.\ 1967)~---
-Candidate of science (PhD) in physics and mathematics,
-associate professor, scientist, Dorodnicyn Computing Center,
-Russian Academy of Sciences, 40~Vavilov Str., Moscow 119333,
-Russian Federation; strijov@gmail.com
-
- \label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}
-
-
-

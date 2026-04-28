@@ -1,885 +1,0 @@
-    \def\stat{khazi}
-
-\def\tit{СВОЙСТВА ПРИРАЩЕНИЙ ОКОННОЙ ДИСПЕРСИИ МИОГРАММЫ КАК~СЛУЧАЙНОГО ПРОЦЕССА}
-
-\def\titkol{Свойства приращений оконной дисперсии миограммы как случайного процесса}
-
-\def\autkol{М.\,Ш.~Хазиахметов, Т.\,В.~Захарова,  О.\,В.~Шестаков}
-
-\def\aut{М.\,Ш.~Хазиахметов$^1$, Т.\,В.~Захарова$^2$,  О.\,В.~Шестаков$^3$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-%\footnotetext[1]
-%{Работа выполнена при частичной финансовой поддержке  программы
-%<<Интеллектуальные информационные технологии, системный анализ и
-%автоматизация>> (проект 1.7).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Московский государственный университет им.\ М.\,В.~Ломоносова,
-факультет вычислительной математики и кибернетики, khaziakhmetov@yandex.ru}
-\footnotetext[2]{Московский государственный университет им.\ М.\,В.~Ломоносова,
-факультет вычислительной математики и кибернетики, lsa@cs.msu.ru}
-\footnotetext[3]{Московский государственный университет им.\
- М.\,В.~Ломоносова, факультет вычислительной математики и~кибернетики;
- Институт проблем информатики Российской академии наук, oshestakov@cs.msu.ru}
-
-
-\label{st\stat}
-
-                  \thispagestyle{headings}
-
-
-\Abst{Исследование активности головного мозга~--- одно из
-наиболее активно развивающихся направлений в~современной медицине.
-Существует множество методик проведения экспериментов в~этой
-области. Один из подходов~--- так называемый метод вызванных
-потенциалов:  испытуемый многократно повторяет некоторые действия,
-а~его мозговая активность и~некоторые вспомогательные сигналы
-записываются для дальнейшего анализа. В~ряде работ авторов,
-выполненных совместно с~коллегами, рассматриваются алгоритмы
-локализации опорных точек в~миограмме (и~некоторых других сигналах),
-соответствующих началам движения в~эксперименте с~движением пальца
-руки. Точность определения этих точек критична для дальнейшей
-обработки магнитоэнцефалограммы (МЭГ, МЭГ-сиг\-на\-ла)~--- вокруг них производится
-усреднение сигнала с~целью выделить датчик с~наилучшим откликом,
-т.\,е.\ находящийся ближе всего к~источнику активности. В~данной
-статье рассматриваются некоторые теоретические аспекты данных
-алгоритмов, а~именно: миограмма и~приращения ее оконной дисперсии  (ОДМ) как
-случайные процессы.}
-
-\KW{выборочная оконная дисперсия; приращения
-выборочной оконной дисперсии; миограмма; магнитоэнцефалограмма}
-
-
-
-\DOI{10.14357\!/\!08696527140405}
-
-
-
-\vskip 12pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-
-\section{Введение}
-Приведем схему эксперимента, порядок работы с~полученными в~его ходе данными,
-а~также краткое описание рассматриваемых алгоритмов нахождения опорных точек.
-
-Испытуемый кладет ладонь на стол и~в течение нескольких минут ударяет указательным
-пальцем по его поверхности. При этом обязательно записываются его
- МЭГ-сиг\-нал и~миограмма. Дополнительно могут
-быть сняты такие сигналы, как ускорение пальца (сигнал акселерометра)
-и~периоды касания стола (сигнал с~кнопки на основе фотоэлемента). Все
-сигналы снимаются синхронно и~со строго фиксированной частотой дискретизации.
-Магнитоэнцефалограмма представляет собой набор временн$\acute{\mbox{ы}}$х рядов с~датчиков, размещаемых на голове
-человека, каждый такой ряд называют каналом. Все прочие сигналы представляют
-собой индивидуальные временн$\acute{\mbox{ы}}$е ряды.
-
-Цель исследования~--- выделить участок коры головного мозга,
-иницииру\-ющий движение. Это частный случай так называемой обратной задачи~---
-поиска источника сигнала по наблюдаемым на расстоянии
-характеристикам поля, генерируемого им. Одно из наиболее простых
-решений заключается в~поиске канала МЭГ с~наилучшим
-<<откликом>>. Для этого можно, например, усреднить отрезки
-МЭГ вокруг моментов начала движения (моментов, когда мозг отдает
-команду на движение пальцем) наложением друг на друга отдельно на
-каждом канале и~найти среди полученных кривых кривую, имеющую форму,
-максимально отличную от константы~--- достаточно очевидный способ
-улучшения отношения сиг\-нал--шум. Однако моменты начала движения по
-МЭГ-сиг\-на\-лу определить невозможно, даже если знать, какой канал
-является искомым, так как доля шума на нем со\-став\-ля\-ет примерно 95\% (на других
-каналах зашумление еще сильнее). Миограмма, показания акселерометра
-и~кнопки соответствуют вызванной активности, которая производится
-с~некоторой задержкой относительно работы мозга. По ним можно
-определить только так называемые опорные точки~--- моменты начала вызванной
-активности, но этого оказывается вполне достаточно для проведения
-усреднения МЭГ. Дело  в~том, что смещение по времени, возникающее
-в~миограмме относительно МЭГ, можно считать
-постоянным (оно зависит только от времени передачи импульса от мозга
-к мышце). Показания акселерометра и~кнопки имеют еще б$\acute{\mbox{о}}$льшие сдвиги
-по времени, так как фиксируют показатели движения как результат
-работы мышцы; кроме того, считать их постоянными уже нельзя. Таким
-образом, наиболее ценным источником информации о~начале движения
-считается миограмма: она позволяет локализовать опорные точки
-с~максимальной точностью. Вместе с~тем другие сигналы также имеют
-значение. Например, показания кнопки~--- простой и~эффективный способ
-определить наличие движения в~окрестности заданной точки.
-
-Есть и~другие подходы к~решению обратной задачи магнитоэнцефалографии
-(см., например,~\cite{bi_5, bi_6}).
-
-Фиксация опорных точек по показаниям кнопки проста, так как
-сигнал с~нее представляет собой ку\-соч\-но-по\-сто\-ян\-ную функцию с~двумя значениями
-напряжения: 0 и~5~В. Как уже говорилось, этот сигнал записывался
-не всегда и~имел наибольшую дисперсию сдвига относительно момента
-начала движения. Миограмма и~показания акселерометра~--- весьма
-схожие по природе сигналы, для поиска опорных точек на них
-использовались одни и~те же подходы, поэтому в~дальнейшем будем
-говорить только о~миограмме, которая записывалась всегда.
-
-В качестве базового алгоритма локализации опорных точек был взят метод,
-подробно описанный в~\cite{bi_2, bi_1}. Для миограммы вычисляются
-ОДМ и~эмпирическая функция распределения (ЭФР).
-Опорными точками считаются целые части абсцисс точек пересечения отрезков
-роста ОДМ с~заданной квантилью ЭФР, прошедшие дополнительную фильтрацию
-(учитывалось, что частота движений человека ограничена, поэтому не может
-быть двух моментов начала движения с~разницей по времени меньше заданной).
-
-Наиболее слабая сторона указанного подхода~--- выбор глобальной
-квантили. Это не учитывает специфику эксперимента: несмотря на
-указание совершать как можно более однородные движения, испытуемый
-как минимум постепенно устает. Таким образом, каждый конкретный
-эксперимент требует подбора квантили даже для одного и~того же
-человека. Зачастую подобрать ее вообще не удается, так как одна и~та
-же квантиль на одних участках сигнала дает значительную потерю
-опорных точек, а~на других, наоборот, высокий процент ложных
-срабатываний. Проблема неоднородности миограммы рассматривается в~\cite{bi_7}.
-
-Модифицированная версия алгоритма призвана устранить выявленные
-недостатки (см.\ подробное описание метода в~\cite{bi_3}). Итоговый
-алгоритм обрабатывает сигнал в~несколько проходов. Первая итерация
-базового алгоритма выполняется с~высокой квантилью~--- ее цель
-определить моменты времени, когда движение точно было (и не важно,
-что значительное число движений при этом может быть потеряно). По
-этим точкам производится разбиение ОДМ на отрезки, границы которых
-на движения не попадают. Далее базовый алгоритм запускается уже
-отдельно на каждом отрезке с~пересчитанной для него ЭФР. В~итоге
-получается набор так на\-зы\-ва\-емых предварительных опорных точек. Их значения
-уточняются следующим образом: для каждой точки определяется
-предшествующий ей период покоя, для него строится ЭФР и~определяется
-высокая квантиль, опорной точкой считается последний момент времени
-до предварительного значения, когда ОДМ меньше этой квантили. Таким
-образом, во-пер\-вых, модифицированный алгоритм за счет разбиения
-анализируемого временн$\acute{\mbox{о}}$го ряда адаптируется под характер ОДМ на
-конкретном временн$\acute{\mbox{о}}$м промежутке, что положительно сказывается на
-качестве определения собственно наличия/отсутствия движения.
-Во-вто\-рых, за счет сдвига по уровню шума (вновь адаптивного)
-значительно увеличивается точность локализации опорной точки на
-каждой конкретной эпохе (последовательной паре отрезков покоя и~движения).
-Как показано в~\cite{bi_4}, базовый алгоритм, в~отличие от
-модифицированного, помещает опорную точку в~практически произвольную
-позицию на отрезке роста ОДМ как по времени, так и~по значению.
-
-
-\section{Миограмма и~приращения ее~оконной дисперсии как случайные процессы}
-
-Миограмма в~оцифрованном варианте представляет собой временн$\acute{\mbox{о}}$й
-ряд $M_t$, где $t \hm\in \{0 ,  1 , \ldots ,  T-1\}$. Условно ее
-можно разделить на чередующиеся между собой отрезки, соответствующие
-неподвижному состоянию пальца испытуемого и~движению.
-Период времени, представляющий собой последовательную пару
-отрезков покоя и~движения, будем называть эпохой.
-Границы эпох представляют собой множество точек вида
-\begin{equation*}
-    \{\tau_0 , \tau_1 , \ldots ,\tau_k\} \subset \mathbb{N} \mbox{: } 0 =
-    \tau_0 < \tau_1 < \cdots < \tau_k = T\,.
-\end{equation*}
-Тогда $\{\tau_{j-1} , \tau_{j-1} + 1 , \ldots , \tau_{j} - 1\}$~---
-точки $j$-й эпохи ($j=\overline{1,\,k}$).
-
-Для каждой эпохи представим наблюдаемое значение миограммы $M_t$
-как сумму истинного неслучайного значения $m_t$ и~шума~$\xi_t$,
-имеющего нормальное распределение с~нулевым математическим ожиданием
-и~дисперсией $\sigma^2_j$, причем
-$\{\xi_{\tau_{j-1}} ,  \xi_{\tau_{j-1}+1} , \ldots,  \xi_{\tau_{j}-1}\}$~---
-совокупность независимых одинаково распределенных случайных величин
-(н.о.р.с.в.),
-а $\{\xi_0 ,  \xi_1 , \ldots ,  \xi_{T-1}\}$~--- совокупность независимых
-случайных величин (н.с.в.):
-\begin{equation}
-\left.
-\begin{array}{l}
-    \forall j=\overline{1,\, k}
-    \begin{cases}
-        \forall t \in \{\tau_{j-1} , \tau_{j-1} + 1 , \ldots , \tau_{j} - 1\}
-        \begin{cases}
-            M_t = m_t + \xi_t \,;  \\
-            \xi_t \sim N\left(0,\sigma^2_j\right) \,;
-        \end{cases}\\
-        \{\xi_{\tau_{j-1}} ,  \xi_{\tau_{j-1}+1} , \ldots ,
-         \xi_{\tau_{j}-1}\} \mbox{ --- н.о.р.с.в.};
-    \end{cases}\\
-    \{\xi_0 ,  \xi_1 , \ldots ,  \xi_{T-1}\} \mbox{ --- н.с.в.}
-\end{array}
-\right\}
-     \label{miogramma}
-\end{equation}
-Заметим, что в~реальной миограмме нет жесткой границы между эпохами~---
-в~принципе, граничную точку можно поставить в~любом месте на периоде покоя.
-Вместе с~тем, учитывая особенности работы модифицированной версии алгоритма,
-граничные точки берутся по возможности меньшими, чтобы обеспечить достаточный
-интервал значений ОДМ для вычисления квантили шума. Кроме того, нет и~резких
-переходов от одного значения дисперсии шума миограммы к~другому. Благодаря
-этому отрезки миограммы на стыке эпох можно считать статистически
-соответствующими с~точки зрения распределения шума обеим эпохам, поэтому,
-если в~дальнейшем при расчете характеристик одной эпохи используются
-первые несколько точек из следующей, никак не учитывается тот факт,
-что формально, с~точки зрения предложенной в~(\ref{miogramma}) модели, они
-имеют другое распределение. Сформулируем это в~следующем виде:
-
-
-\smallskip
-
-\noindent
-\textbf{Допущение.}
- \textit{Если $n$~--- ширина окна при расчете скользящего среднего
- и~ОДМ, тогда будем считать, что для каждой эпохи, начиная
- со второй, первые $n$ точек можно использовать при вычислении значений
- скользящего среднего и~ОДМ предыдущей эпохи с~ее параметрами распределения шума.}
-
-
-\smallskip
-
-Пусть $n$~--- ширина окна при расчете ОДМ, тогда на каждой эпохе для
-соответствующего скользящего среднего $\overline{M_{n,t}}$ наблюдаемого
-сигнала будем иметь представление
-в~терминах скользящих средних истинного сигнала $\overline{m_{n,t}}$
-и~шума~$\overline{\xi_{n,t}}$:
-\begin{equation}
-    \label{window_mean}
-        \overline{M_{n,t}} = \fr{1}{n}\sum\limits^{n-1}_{i=0}M_{t+i} =
-        \fr{1}{n}\sum\limits^{n-1}_{i=0}m_{t+i} +
-        \fr{1}{n}\sum\limits^{n-1}_{i=0}\xi_{t+i} =
-        \overline{m_{n,t}} + \overline{\xi_{n,t}}\,.
-\end{equation}
-
-Оконная дисперсия миограммы по определению имеет вид:
-\begin{equation*}
-    \label{window_moment_2}
-        W_{n,t} = \fr{1}{n}\sum\limits^{n-1}_{i=0}\left(M_{t+i} -
-        \overline{M_{n,t}}\right)^2.
-\end{equation*}
-
-
-\noindent
-\textbf{Лемма~1.}
-\textit{Для приращений ОДМ, соответствующей
-модели~$(\ref{miogramma})$ со сделанным выше допущением, справедливо разложение}:
-        \begin{multline}
-                W_{n,t+1} - W_{n,t} =
-                \fr{n-1}{n^2}\left(m^2_{t+n} - m^2_t\right) -
-                \fr{2}{n^2}\left(m_{t+n}-m_t\right)\sum\limits^{n-1}_{i=1}m_{t+i} + {}\\
-                {}+
-                \fr{n-1}{n^2}\left(\xi^2_{t+n} - \xi^2_t\right) -
-                \fr{2}{n^2}\left(\xi_{t+n}-\xi_t\right)\sum\limits^{n-1}_{i=1}
-                \xi_{t+i} +{} \\
-                {}+
-                \xi_{t+n}\left(\fr{2\left(n-1\right)}{n^2}m_{t+n} -
-                \fr{2}{n^2}\sum\limits^{n-1}_{i=1}m_{t+i}\right) - {}\\
-                {}- \xi_t\left(\frac{2\left(n-1\right)}{n^2}m_t -
-                \fr{2}{n^2}\sum\limits^{n-1}_{i=1}m_{t+i}\right) - \fr{2}{n^2}(m_{t+n}-m_t)\sum\limits^{n-1}_{i=1}\xi_{t+i}\,.
-                            \label{window_dispersion_increment}
-        \end{multline}
-
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
-    Рассмотрим приращения ОДМ.
-    По определению можем записать:
-    \begin{equation*}
-        W_{n,t+1} - W_{n,t} =
-            \fr{1}{n}\sum\limits^{n}_{i=1}\left(M_{t+i} -
-            \overline{M_{n,t+1}}\right)^2 - \fr{1}{n}\sum\limits^{n-1}_{i=0}
-            \left(M_{t+i} - \overline{M_{n,t}}\right)^2.
-    \end{equation*}
-
-    Возведем компоненты сумм в~квадрат, раскроем скобки и~перегруппируем слагаемые:
-    \begin{multline*}
-        W_{n,t+1} - W_{n,t} = \fr{1}{n}\left(\sum\limits^{n}_{i=1}M^2_{t+i} +
-         \sum\limits^{n}_{i=1}\overline{M_{n,t+1}}^2 -
-         2\sum\limits^{n}_{i=1}M_{t+i}\overline{M_{n,t+1}}\right) -{} \\
-         {}- \fr{1}{n}\left(\sum\limits^{n-1}_{i=0}M^2_{t+i} +
-         \sum\limits^{n-1}_{i=0}\overline{M_{n,t}}^2 -
-         2\sum\limits^{n-1}_{i=0}M_{t+i}\overline{M_{n,t}}\right) ={}\\
-         {}=
-            \fr{1}{n}\left(M^2_{t+n} - M^2_t\right) +
-            \left(\overline{M_{n,t+1}}^2 - \overline{M_{n,t}}^2\right) -{} \\
-            {}-  \fr{2}{n}\left(\sum\limits^{n}_{i=1}\left(M_{t+i}
-            \overline{M_{n,t+1}}\right) - \sum\limits^{n-1}_{i=0}
-            \left(M_{t+i}\overline{M_{n,t}}\right)\right) ={}
-            \end{multline*}
-
-\noindent
-\begin{multline*}
-            {}=
-            \fr{1}{n}\left(M^2_{t+n} - M^2_t\right) +
-            \left(\overline{M_{n,t+1}} - \overline{M_{n,t}}\right)\left(
-            \overline{M_{n,t+1}} + \overline{M_{n,t}}\right) - {}\\
-            {}- \fr{2}{n}\left(M_{t+n}\overline{M_{n,t+1}} -
-            M_t\overline{M_{n,t}} + \sum\limits^{n-1}_{i=1}M_{t+i}\left(
-            \overline{M_{n,t+1}} - \overline{M_{n,t}}\right)\right).
-    \end{multline*}
-
-    Воспользовавшись~(\ref{window_mean}), получаем:
-    \begin{multline*}
-        W_{n,t+1} - W_{n,t} =
-            \fr{1}{n}\left(M^2_{t+n} - M^2_t\right) +
-            \fr{1}{n}\left(M_{t+n} - M_t\right)\left(\overline{M_{n,t+1}} +
-            \overline{M_{n,t}}\right) - {}\\
-            {}- \fr{2}{n}\left(M_{t+n}\overline{M_{n,t+1}} - M_t\overline{M_{n,t}}
-            + \sum\limits^{n-1}_{i=1}M_{t+i}\fr{1}{n}\left(M_{t+n} -
-            M_t\right)\right) ={} \\
-            {}=
-            \fr{1}{n}\left(M_{t+n} - M_t\right)\left(M_{t+n} + M_t\right) +{} \\
-            {}+ \fr{1}{n}\left(M_{t+n} - M_t\right)\left(\fr{1}{n}\left(
-            M_{t+n} + M_t\right) + \fr{2}{n}\sum\limits^{n-1}_{i=1}M_{t+i}\right) - {}\\
-            {} - \fr{2}{n}\left(M_{t+n}\overline{M_{n,t+1}} -
-            M_t\overline{M_{n,t}}\right) - \fr{2}{n^2}\left(M_{t+n} - M_t\right)
-            \sum\limits^{n-1}_{i=1}M_{t+i} ={} \\
-            {}=
-            \fr{n+1}{n^2}\left(M_{t+n} - M_t\right)\left(M_{t+n} + M_t\right) -
-            \fr{2}{n}\left(M_{t+n}\overline{M_{n,t+1}} - M_t\overline{M_{n,t}}
-            \right) ={} \\
-            {}=
-            \fr{n+1}{n^2}\left(M_{t+n}^2 - M_t^2\right) -
-            \fr{2}{n^2}\left(M_{t+n}^2 - M_t^2\right) -
-            \fr{2}{n^2}\left(M_{t+n} - M_t\right)\sum\limits^{n-1}_{i=1}M_{t+i} ={} \\
-            {} =
-            \fr{n-1}{n^2}\left(M_{t+n}^2 - M_t^2\right) -
-            \fr{2}{n^2}\left(M_{t+n} - M_t\right)\sum\limits^{n-1}_{i=1}M_{t+i}\,.
-\end{multline*}
-
-    Осуществим подстановку $M_t = m_t + \xi_t$ из~(\ref{miogramma}):
-    \begin{multline*}
-        W_{n,t+1} - W_{n,t} =
-            \fr{n-1}{n^2}\left(\left(m_{t+n} + \xi_{t+n}\right)^2 -
-            \left(m_t + \xi_t\right)^2\right) - {}\\
-             {}- \fr{2}{n^2}\left(m_{t+n} + \xi_{t+n} - m_t -
-             \xi_t\right)\sum\limits^{n-1}_{i=1}\left(m_{t+i} + \xi_{t+i}\right) = {}\\
-             {} =
-            \fr{n-1}{n^2}\left(m^2_{t+n} - m^2_t\right) -
-            \fr{2}{n^2}\left(m_{t+n}-m_t\right)\sum\limits^{n-1}_{i=1}m_{t+i} + {}
-                                     \end{multline*}
-
-\noindent
-\begin{multline*}
-            {} + \fr{n-1}{n^2}\left(\xi^2_{t+n} - \xi^2_t\right) -
-            \fr{2}{n^2}\left(\xi_{t+n}-\xi_t\right)\sum\limits^{n-1}_{i=1}
-            \xi_{t+i} + \fr{2\left(n-1\right)}{n^2}\left(m_{t+n}\xi_{t+n} -
-            m_t\xi_t\right) - {}\\
-            {} -  \fr{2}{n^2}(m_{t+n}-m_t)\sum\limits^{n-1}_{i=1}\xi_{t+i} -
-            \fr{2}{n^2}(\xi_{t+n}-\xi_t)\sum\limits^{n-1}_{i=1}m_{t+i}\,.
-    \end{multline*}
-
-    Получили, что приращение ОДМ распадается на
-    три компонента:
-    \begin{enumerate}[(1)]
-        \item $A_{n,t} = (({n-1}){n^2})\left(m^2_{t+n} - m^2_t\right) -
-        ({2}/{n^2})\left(m_{t+n}-m_t\right)\sum\limits^{n-1}_{i=1}m_{t+i}$~---
-        описывает неслучайную часть приращения;
-        \item $B_{n,t} = (({n-1})/{n^2})\left(\xi^2_{t+n} - \xi^2_t\right) -
-        ({2}/{n^2})\left(\xi_{t+n}-\xi_t\right)\sum\limits^{n-1}_{i=1}\xi_{t+i}$~---
-        описывает компонент приращения ОДМ, возникающий исключительно вследствие
-        наличия шума;
-        \item $C_{n,t} = (({2\left(n-1\right)})/{n^2})\left(m_{t+n}\xi_{t+n}
-        \hm- m_t\xi_t\right) \hm- ({2}/{n^2})(m_{t+n}\hm-m_t)\sum\limits^{n-1}_{i=1}
-        \xi_{t+i}\hm - ({2}/{n^2})(\xi_{t+n}\hm-\xi_t)\sum\limits^{n-1}_{i=1}
-        m_{t+i}$~--- описывает компонент приращение ОДМ, возникающий как
-        суперпозиция истинного сигнала и~шума.
-    \end{enumerate}
-
-    Перегруппировав слагаемые в~3-м компоненте, получаем:
-    \begin{multline}
-        \label{C_n_t_final}
-            C_{n,t} = \xi_{t+n}\left(\fr{2\left(n-1\right)}{n^2}m_{t+n} -
-            \fr{2}{n^2}\sum\limits^{n-1}_{i=1}m_{t+i}\right) -{} \\
-            {}- \xi_t\left(\fr{2\left(n-1\right)}{n^2}m_t -
-            \fr{2}{n^2}\sum\limits^{n-1}_{i=1}m_{t+i}\right) -
-\fr{2}{n^2}(m_{t+n}-m_t)\sum\limits^{n-1}_{i=1}\xi_{t+i}\,.
-    \end{multline}
-
-    Объединив полученные представления для $A_{n,t}$, $B_{n,t}$ и~$C_{n,t}$,
-    получаем~(\ref{window_dispersion_increment}).~\hfill$\square$
-
-\smallskip
-
-\noindent
-\textbf{Лемма~2.}
-\textit{Компонент $B_{n,t}$ приращения ОДМ,
-соответствующей модели~$(\ref{miogramma})$ со сделанным выше допущением,
-представим в~виде произведения двух независимых случайных величин с~распределениями
-$N\left(0, 2\sigma_j^2\left(n^2-1\right)\right)$
-и~$N\left(0, {2\sigma_j^2}/{n^4}\right)$.}
-
-\smallskip
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
-    Сделаем замену следующего вида:
-    \begin{equation}
-        \label{xi2uv}
-             u = \xi_{t+n} + \xi_t\,;\qquad
-            v = \xi_{t+n} - \xi_t\,.
-    \end{equation}
-    Заметим, что $u,\, v \sim N\left(0, 2\sigma_j^2\right)$.
-    Кроме того, их ковариация равна нулю:
-    \begin{multline*}
-        \mbox{cov}\left(u\mbox{, }v\right) = E\left(u-Eu\right)\left(v-Ev\right) =
-        Euv = E\left(\xi_{t+n}+\xi_t\right)\left(\xi_{t+n}-\xi_t\right) ={} \\
-        {} =
-        E\left(\xi^2_{t+n} - \xi^2_t\right) = E\xi^2_{t+n} - E\xi^2_t = 0\,.
-    \end{multline*}
-    Случайные величины $u$ и~$v$ имеют нормальное распределение и~не
-    коррелированы; следовательно, они независимы. Тогда можем записать
-    представление для $B_{n,t}$, полученное в~лемме~1, в~следующем виде:
-    \begin{multline*}
-        B_{n,t} = \fr{n-1}{n^2}\left(\xi^2_{t+n} - \xi^2_t\right) -
-        \fr{2}{n^2}\left(\xi_{t+n}-\xi_t\right)\sum\limits^{n-1}_{i=1}\xi_{t+i} = {}\\
-        {}=
-        \fr{n-1}{n^2} uv - \fr{2}{n^2}v\sum\limits^{n-1}_{i=1}\xi_{t+i} =
-        \fr{1}{n^2}v\left(\left(n-1\right)u -
-        2\sum\limits^{n-1}_{i=1}\xi_{t+i}\right).
-    \end{multline*}
-    Далее получаем:
-    \begin{align*}
-        B_{1,n,t} &= \fr{v}{n^2} \sim N\left(0, \, \frac{2\sigma_j^2}{n^4}\right)\,;
-\\[6pt]
-        B_{2,n,t} &= \left(n-1\right)u - 2\sum\limits^{n-1}_{i=1}\xi_{t+i}
-        \sim N\left(0,\,  2\sigma_j^2\left(n-1\right)^2 + 4\sigma_j^2
-        \left(n-1\right)\right) ={} \\[3pt]
-        &\hspace*{70mm}{}= N\left(0,\,  2\sigma_j^2\left(n^2-1\right)\right).
-    \end{align*}
-    Заметим также, что в~силу~(\ref{miogramma}) и~(\ref{xi2uv}) $B_{1,n,t}$
-    и~$B_{2,n,t}$ независимы. \hfill$\square$
-
-
-\smallskip
-
-\noindent
-\textbf{Лемма~3.}
-\textit{Компонент $C_{n,t}$ приращения ОДМ,
-соответствующей модели~$(\ref{miogramma})$ со сделанным выше допущением,
-имеет нормальное распределение с~нулевым математическим ожиданием и~дисперсией}
-    \begin{equation}
-        \label{disp_C}
-        \fr{4\sigma_j^2}{n^2}\left(\left(m_{t+n} -
-        \overline{m_{n,t+1}}\right)^2 + \left(m_t -
-        \overline{m_{n,t}}\right)^2 + \fr{n-1}{n^2}\left(m_{t+n} -
-        m_t\right)^2\right)
-    \end{equation}
-\textit{(при условии, что хотя бы одно из трех слагаемых в~скобках отлично от нуля).}
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
-    Воспользуемся представлением~(\ref{C_n_t_final}) для $C_{n,t}$
-    и~(\ref{miogramma}) и~рассмотрим каждое из слагаемых:
-    \begin{multline*}
-        \xi_{t+n}\left(\fr{2\left(n-1\right)}{n^2}m_{t+n} -
-        \fr{2}{n^2}\sum\limits^{n-1}_{i=1}m_{t+i}\right) = {}\\
-        {}= \fr{2}{n^2}\xi_{t+n}\left(\left(n-1\right)m_{t+n} -
-        \sum\limits^{n-1}_{i=1}m_{t+i}\right) \sim {}\\
-        {}\sim N\left(0, \fr{4\sigma_j^2}{n^4}\left(\left(n-1\right)m_{t+n} -
-        \sum\limits^{n-1}_{i=1}m_{t+i}\right)^2\right);
-    \end{multline*}
-
-    \vspace*{-12pt}
-
-    \noindent
-    \begin{multline*}
-        \xi_t\left(\fr{2\left(n-1\right)}{n^2}m_t -
-        \fr{2}{n^2}\sum\limits^{n-1}_{i=1}m_{t+i}\right) =
-         \fr{2}{n^2}\xi_t\left(\left(n-1\right)m_t - \sum\limits^{n-1}_{i=1}m_{t+i}
-         \right) \sim{} \\
-         {}\sim N\left(0, \fr{4\sigma_j^2}{n^4}\left(\left(n-1\right)m_t -
-         \sum\limits^{n-1}_{i=1}m_{t+i}\right)^2\right);
-    \end{multline*}
-
-    \noindent
-    \begin{equation*}
-        \fr{2}{n^2}(m_{t+n}-m_t)\sum\limits^{n-1}_{i=1}\xi_{t+i}
-        \sim N\left(0, \fr{4\sigma_j^2}{n^4}\left(n-1\right)\left(
-        m_{t+n}-m_t\right)^2\right).
-    \end{equation*}
-
-    Поскольку все компоненты независимы, то из-за усиленной воспроизво\-ди\-мости
-    распределение их суммы останется нормальным с~нулевым математическим
-    ожиданием, а~для получения дисперсии $C_{n,t}$ необходимо сложить
-    дисперсии слагаемых:
-    \begin{multline*}
-        {\sf D} C_{n,t} = {}\\
-{}        =
-        \fr{4\sigma_j^2}{n^4}\left(\left(n-1\right)m_{t+n} -
-        \sum\limits^{n-1}_{i=1}m_{t+i}\right)^2 + \fr{4\sigma_j^2}{n^4}\left(
-        \left(n-1\right)m_t - \sum\limits^{n-1}_{i=1}m_{t+i}\right)^2 + {}\\
-        {}+ \fr{4\sigma_j^2}{n^4}\left(n-1\right)\left(m_{t+n}-m_t\right)^2 ={}         \\
-         {}=
-        \fr{4\sigma_j^2}{n^4}\left(nm_{t+n} - \sum\limits^{n}_{i=1}m_{t+i}\right)^2
-        + \fr{4\sigma_j^2}{n^4}\left(nm_t - \sum\limits^{n-1}_{i=0}m_{t+i}\right)^2         +{} \\
-        {}+ \fr{4\sigma_j^2}{n^4}\left(n-1\right)\left(m_{t+n}-m_t\right)^2 ={} \\
-        {}=
-        \fr{4\sigma_j^2}{n^2}\left(\left(m_{t+n} - \overline{m_{n,t+1}}\right)^2 +
-        \left(m_t - \overline{m_{n,t}}\right)^2 +
-        \fr{n-1}{n^2}\left(m_{t+n} - m_t\right)^2\right).
-    \end{multline*}
-    Заметим, что если каждое из слагаемых в~скобках равно~0, то компонент
-    $C_{n,t}$ в~разложении отсутствует.\hfill~$\square$
-
-
-\noindent
-\textbf{Теорема.} \textit{В точке $t$, принадлежащей $j$-й эпохе
-($j=\overline{1,\,k}$), шумовая составля\-ющая приращения
-ОДМ, соответствующей модели~$(\ref{miogramma})$
-со сделанным выше допущением, представляет собой либо случайную величину
-с~плотностью распределения вида}
-    \begin{equation}
-        \label{noise_density_B}
-        p(x) = \fr{n^2}{2\pi\sigma_j^2\sqrt{n^2-1}}K_0\left(
-        \fr{n^2}{2\sigma_j^2\sqrt{n^2-1}}\left|x\right|\right),
-    \end{equation}
-    \textit{где $K_0$~--- модифицированная функция Бесселя второго рода
-    нулевого порядка,
-    либо сумму случайных величин, первая из которых имеет плотность
-    распределения}~(\ref{noise_density_B}), \textit{а~вторая распределена
-    нормально с~нулевым математическим ожиданием и~дисперсией}~(\ref{disp_C}).
-
-    \smallskip
-
-    \noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
-    Согласно лемме~1 приращение ОДМ представимо
-    в~виде суммы трех компонентов, два из которых являются шумовыми.
-    В~силу леммы~2 для компонента $B_{n,t}$ имеем представление в~виде произведения
-    двух независимых нормально распределенных случайных величин
-    $B_{1,n,t}$ и~$B_{2,n,t}$.
-
-   В~общем случае для двух независимых нормально распределенных случайных
-   величин~$\xi_x$ и~$\xi_y$ с~нулевыми математическими ожиданиями
-   и~дисперсиями $\sigma^2_x$ и~$\sigma^2_y$ имеем следующий вид плотности их
-    произведения:
-    \begin{multline*}
-        p(z) = \fr{1}{2\pi\sigma_x\sigma_y}
-        \int\limits^{+\infty}_{-\infty}\int\limits^{+\infty}_{-\infty}
-        \exp\left(-\fr{x^2}{2\sigma^2_x}\right)\exp\left(-\fr{y^2}{2\sigma^2_y}
-        \right)\delta(z-xy)\,dxdy ={}\\
-{}= \fr{1}{2\pi\sigma_x\sigma_y}\int\limits^{+\infty}_{-\infty}
-\exp\left(-\fr{z^2}{2\sigma^2_xy^2}\right)\exp\left(
--\fr{y^2}{2\sigma^2_y}\right)\fr{dy}{y} ={}
- \\
- {}= \fr{1}{\pi\sigma_x\sigma_y}\int\limits^{+\infty}_{0}
- \exp\left(-\fr{z^2}{2\sigma^2_xy^2}\right)\exp\left(
- -\fr{y^2}{2\sigma^2_y}\right)\fr{dy}{y} = \fr{1}{\pi\sigma_x\sigma_y}K_0\left(\fr{\left|z\right|}
- {\sigma_x\sigma_y}\right).
-    \end{multline*}
-    Применив полученный результат к~$B_{1,n,t}$ и~$B_{2,n,t}$
-    и~воспользовавшись тем, что
-    \begin{equation*}
-        \int\limits^{+\infty}_{0}\exp\left(-\fr{a}{y^2} - by^2\right)
-        \fr{dy}{y} = K_0\left(2\sqrt{ab}\right) \mbox{ при }a\mbox{, }b>0,
-    \end{equation*}
-    где $K_0$~--- модифицированная функция Бесселя второго рода
-    нулевого порядка, получаем~(\ref{noise_density_B}). Исходя из этого
-    и~леммы~3, получаем требуемое.\hfill~$\square$
-
-\section{Заключение}
-
-    Полученные результаты позволяют объяснить, как и~почему работают
-    базовый и~модифицированный алгоритмы. По сути, возможность выявить
-    опорную точку, используя их, обусловлена двумя фактами. Во-пер\-вых,
-    незашумленная ОДМ в~малой окрестности опорной точки представляет собой
-    достаточно быстро возрастающую функцию, в~то время как до этой окрестности
-    она практически нулевая. Во-вто\-рых, шумовые составляющие приращений
-    ОДМ распределены так, что слабо искажают рост ОДМ в~окрестности опорной точки.
-
-    Первое утверждение связано с~природой миограммы:
-    есть <<истинная>> часть~--- низкочастотная функция с~выбросами
-    (высокочастотными включениями), локализованными в~окрестности опорных точек,
-    и~шумовая~--- высо\-ко\-час\-тот\-ная. Все это заложено в~модели~(\ref{miogramma}).
-    Явно не указаны лишь соотношения между амплитудой шума и~выбросов.
-    На основе имеющихся миограмм можно утверждать о различии в~2--10~раз~---
-    зоны движений в~большинстве случаев различимы просто визуально без ка\-кой-ли\-бо
-    дополнительной обработки.
-
-    Рассмотрим второе утверждение. Поскольку дисперсия произведения независимых
-    случайных величин с~нулевым математическим ожиданием равна произведению
-    их дисперсий, в~силу леммы~2 получаем, что дисперсия $B_{n,t}$ равна
-    \begin{equation}
-        \label{disp_B}
-        {\sf D}B_{n,t} = \fr{4\sigma_j^4\left(n^2-1\right)}{n^4} \approx
-        \fr{4\sigma_j^4}{n^2}\,.
-    \end{equation}
-По лемме~3 дисперсия $C_{n,t}$ имеет вид~(\ref{disp_C}).
-Таким образом, средние квадратичные отклонения
-обоих компонентов, как и~следовало ожидать, обратно пропорциональны~$n$.
-В~выражение для $C_{n,t}$ входят также величины, зависящие от
-истинных значений миограммы. Поэтому взаимный эффект от
-шумовых компонентов определяется тем, как соотносятся $\sigma_j^2$
-и~$\left(m_{t+n} \hm- \overline{m_{n,t+1}}\right)^2 \hm+ \left(m_t \hm-
-\overline{m_{n,t}}\right)^2\hm + (({n-1})/{n^2})\left(m_{t+n} \hm-
-m_t\right)^2$. Заметим, что приращения, как и~разности со средним,
-в~начале движения превышают средний уровень шума, поэтому имеет место
-преобладание компонента $C_{n,t}$. Кроме того, интересен вопрос
-соотношения между $A_{n,t}$ и~суммой шумовых компонент, так как
-точность определения опорной точки напрямую связана с~тем, насколько
-резко возрастает ОДМ в~ее окрестности~--- если шум с~высокой
-вероятностью способен подавлять рост оконной дисперсии истинного
-сигнала, то точность будет низкой.
-
-    Заметим, что $A_{n,t}$ из леммы~1 можно записать также в~виде:
-    \begin{multline*}
-        A_{n,t} = \fr{m_{t+n}-m_t}{n^2}\left(nm_{t+n} -
-        \sum\limits^{n}_{i=1}m_{t+i}+ nm_t-\sum\limits^{n-1}_{i=0}m_{t+i}\right) ={}\\
-        {}=\fr{m_{t+n}-m_t}{n}\left(\left(m_{t+n}-\overline{m_{n,t+1}}\right) + \left(m_t - \overline{m_{n,t}}\right)\right).
-    \end{multline*}
-    Возведя это выражение в~квадрат и~соотнеся с~(\ref{disp_C}) и~(\ref{disp_B}),
-    получаем, что влияние шума на итоговое приращение ОДМ вновь определяется
-    соотношением приращений в~<<истинной>> миограмме и~дисперсией шума.
-
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{9}
-
-\bibitem{bi_5} %1
-\Au{Захарова Т.\,В., Гончаренко М.\,Б., Никифоров~С.\,Ю.}
-Метод решения обратной задачи магнитоэнцефалографии, основанный на
-кластеризации поверхности мозга~/\!\!/ Статистические методы оценивания
-и~проверки гипотез:  Межвузовский сб. науч. тр.~---
-Пермь: ПГНИУ, 2013.  Т.~25. С.~120--125.
-\bibitem{bi_6} %2
-\Au{Бенинг В.\,Е., Драницына М.\,А., Захарова~Т.\,В., Карпов~П.\,И.}
-Решение обратной задачи в~многодипольной модели источников
-магнитоэнцефалограмм методом независимых компонент~/\!\!/ Информатика и~её
-применения, 2014. Т.~8. Вып.~2. С.~79--87.
-
-\bibitem{bi_2} %3
-\Au{McGillem C.\,D., Aunon J.\,I.} Analysis of event-related potentials~/\!\!/
-Methods of analysis of brain electrical and magnetic signals: EEG handbook.~---
-Amsterdam: Elsevier Science Publs., 1987. P.~131--169.
-\bibitem{bi_1} %4
-\Au{Fabiani M., Gratton G., Federmeier~K.\,D.}
-Event-related brain potentials: Methods, theory and applications~/\!\!/
-Handbook of psychophysiology~/ Eds. J.\,T.~Cacioppo, L.\,G.~Tassinary,
-G.\,G.~Berntson~--- Cambridge: Cambridge University Press, 2007. P.~85--119.
-
-\bibitem{bi_7} %5
-\Au{Dranitsyna M., Zakharova T., Allakhverdiyeva~V., Chshenyavskaya~E.}
-Probability density function of myogram noise and its role in localization
-of brain activity sources~/\!\!/ 32nd Seminar (International)
-on Stability Problems for Stochastic Models (ISSPSM'2014) and
-8th  Workshop (International)
-``Applied Problems in Theory of Probabilities and Mathematical Statistics
-Related to Modeling of Information Systems'' (APTP\;+\;MS'2014):
-Book of abstracts.~--- Moscow: IPI RAN, 2014. P.~25--26.
-
-\bibitem{bi_3} %6
-\Au{Захарова Т.\,В., Никифоров С.\,Ю., Гончаренко~М.\,Б.,
-Драницына~М.\,А., Климов~Г.\,А., Хазиахметов~М.\,Ш., Чаянов~Н.\,В.}
-Методы обработки сигналов для локализации невосполнимых областей головного мозга~/\!\!/
-Системы и~средства информатики, 2012. Т.~22. №\,2. С.~157--175.
-\bibitem{bi_4} %7
-\Au{Хазиахметов М.\,Ш., Захарова Т.\,В.}
-Об алгоритмах нахождения опорных точек миограммы для использования
-в~локализации невосполнимых областей головного мозга~/\!\!/ Статистические
-методы оценивания и~проверки гипотез: Межвузовский сб. науч. тр.~---
-Пермь: ПГНИУ, 2013. Т.~25. С.~56--63.
-\end{thebibliography}
-} }
-
-
-\vspace*{-9pt}
-
-\hfill{\small\textit{Поступила в редакцию 01.10.14}}
-
-%\newpage
-
-
-\vspace*{9pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-\vspace*{9pt}
-
-
-\def\tit{PROPERTIES OF WINDOW DISPERSION INCREMENTS OF~A~MYOGRAM AS~A~STOCHASTIC
-PROCESS}
-
-\def\titkol{Properties of window dispersion increments of a~myogram as a~stochastic process}
-
-
-
-\def\aut{M.\,Sh.~Khaziakhmetov$^1$, T.\,V.~Zakharova$^1$, and~O.\,V.~Shestakov$^{1,2}$}
-\def\autkol{M.\,Sh.~Khaziakhmetov, T.\,V.~Zakharova, and~O.\,V.~Shestakov}
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-12pt}
-
-\noindent
-$^1$Faculty of Computational
-Mathematics and Cybernetics, M.\,V.~Lomonosov\linebreak
-$\hphantom{^1}$Moscow State University,
-1-52  Leninskiye Gory, GSP-1, Moscow 119991,\linebreak
-$\hphantom{^1}$Russian Federation
-
-\noindent
-$^2$Institute of Informatics Problems,
-Russian Academy of Sciences, 44-2 Vavilov\linebreak
-$\hphantom{^1}$Str., Moscow 119333, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2014 vol~24 no\,4}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2014   vol~24   no\,4
-\hfill \textbf{\thepage}}}
-
-
-
-\Abste{One of the most rapidly progressing directions in the modern medicine
-is brain activity research. There is a set of techniques of carrying
-out
-experiments in this area. One of the approaches is the so-called method
-of
-caused potentials: a testee repeats some actions and his brain activity and\linebreak\vspace*{-12pt}}
-
-\Abstend{some auxiliary signals are registered for further analysis. The authors of
-this paper and their colleagues published several papers about algorithms of
-reference points localization by a myogram (and some other signals) for the
-experiment with finger movements. Accuracy of detection of these points is
-critical for processing a~magnetoencephalogram~--- signal average by multiple
-epochs centered by them is computed to find a sensor with the best response
-(it should be closer to the source of activity than other). In this paper,
-some theoretical aspects of these algorithms such as a~myogram and increment
-of its window dispersion as random processes are discussed.}
-
-\KWE{window dispersion; window dispersion increments; myogram;
-magnetoencephalogram
-}
-
-
-
-\DOI{10.14357\!/\!08696527140405}
-
-%\vspace*{-24pt}
-
-%\Ack
-%\noindent
-
-
-\vspace*{-2pt}
-
-
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{9}
-
-
-\bibitem{3-khz} %1
-\Aue{Zakharova, T.\,V., M.\,B. Goncharenko, and S.\,Yu.~Nikiforov}.
-2013. Metod resheniya obratnoy zadachi magnitoentsefalografii, osnovannyy
-na klasterizatsii poverkhnosti mozga [Method for solving the inverse problem
-of magnetoencephalography, based on brain surface clastering].
-\textit{Statisticheskie metody otsenivaniya i proverki gipotez: Mezhvuzovskiy
-sbornik nauchnykh trudov} [Statistical methods of estimation and hypothesis
-testing: Interuniversity collection of scientific papers].
-Perm: Perm State National Research University. 25:120--125.
-
-\bibitem{4-khz} %2
-\Aue{Bening, V.\,E., M.\,A.~Dranitsyna, T.\,V.~ Zakharova, and P.\,I.~Karpov}.
-2014. Reshenie obratnoy zadachi v~mnogodipol'noy modeli istochnikov
-magnitoentsefalogramm metodom nezavisimykh komponent [Independent
-component analysis for the inverse problem in the multidipole model of
-magnetoencephalogram's sources]. \textit{Informatika i ee Primeneniya}~---
-\textit{Informatics Appl.} 8(2):79--87.
-doi: 10.14357\!/\!19922264140208.
-
-\bibitem{6-khz} %3
-\Aue{McGillem, C.\,D., and J.\,I.~Aunon}.
-1987. Analysis of event-related potentials.
-\textit{Methods for analysis of brain electrical and magnetic signals.
-EEG handbook}.
-Eds. A.~Gevins and A.~R$\acute{\mbox{e}}$mond.
-Amsterdam: Elsevier. 131--169.
-
-
-\bibitem{5-khz} %4
-\Aue{Fabiani, M., G. Gratton, and K.\,D.~Federmeier}.
-2007.  Event-related brain potentials: Methods, theory and applications.
-\textit{Handbook of psychophysiology}.  Eds. J.\,T.~Cacioppo,
-L.\,G.~Tassinary, and G.\,G.~Berntson.
-Cambridge: Cambridge University Press.  85--119.
-
-
-\bibitem{7-khz} %5
-\Aue{Dranitsyna, M., T. Zakharova, V.~Allakhverdiyeva, and E.~Chshenyavskaya}.
-2014. Probability density function of myogram noise and its role in localization
-of brain activity sources. \textit{32nd  Seminar (International)
-on Stability Problems for Stochastic Models (ISSPSM'2014) and
-8th  Workshop (International) ``Applied Problems in Theory of Probabilities
-and Mathematical Statistics Related to Modeling of Information Systems''
-(APTP\;+\;MS'2014). Book of abstracts}. Moscow: IPI RAN. 25--26.
-
-\bibitem{1-khz} %6
-\Aue{Zakharova, T.\,V., S.\,Yu.~Nikiforov, M.\,B.~Goncharenko,
-M.\,A.~Dranitsyna, G.\,A.~Klimov, M.\,Sh.~Khaziakhmetov, and N.\,V.~Chayanov}.
-2012. Metody obrabotki signalov dlya lokalizatsii nevospolnimykh oblastey
-golovnogo mozga [Signal processing methods for localization of nonrenewable
-brain regions]. \textit{Sistemy i Sredstva Informatiki}~---
-\textit{Systems and Means of Informatics} 22(2):157--175.
-
-\bibitem{2-khz} %7
-\Aue{Khaziakhmetov, M.\,Sh., and T.\,V.~Zakharova}.
-2013. Ob algoritmakh nakhozhdeniya opornykh tochek miogrammy dlya ispol'zovaniya
-v~lokalizatsii nevospolnimykh oblastey golovnogo mozga
-[About algorithms of localization of reference points in myogram
-for usage in nonrenewable brain regions detection].
-\textit{Statisticheskie metody otsenivaniya i~proverki gipotez:
-Mezhvuzovskiy sbornik nauchnykh trudov}
-[Statistical methods of estimation and hypothesis testing: Interuniversity
-collection of scientific papers]. Perm: Perm State National Research University.
-25:56--63.
-
-\end{thebibliography}
-} }
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received October 1, 2014}}
-
-\Contr
-
-\noindent
-\textbf{Khaziakhmetov Maxim Sh.} (b.\ 1989)~---
-PhD student, Faculty of Computational Mathematics and Cybernetics,
-M.\,V.~Lomonosov Moscow State University,
-1-52  Leninskiye Gory, GSP-1, Moscow 119991, Russian Federation;\linebreak
-khaziakhmetov@yandex.ru
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Zakharova Tatyana V.} (b.\ 1962)~---
-Candidate of Science (PhD) in physics and mathematics,
-senior lecturer, Faculty of Computational Mathematics and Cybernetics,
-M.\,V.~Lomonosov Moscow State University,
-1-52  Leninskiye Gory, GSP-1, Moscow 119991, Russian Federation;  lsa@cs.msu.ru
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Shestakov Oleg V.} (b.\ 1976)~---
-Doctor of Science in physics and mathematics, associate professor,
-Faculty of Computational Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow
-State University; 1-52  Leninskiye Gory, GSP-1, Moscow 119991, Russian Federation;
-senior scientist, Institute of Informatics Problems, Russian Academy of Sciences,
-44-2 Vavilov Str., Moscow 119333, Russian Federation;  oshestakov@cs.msu.ru
-
- \label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}

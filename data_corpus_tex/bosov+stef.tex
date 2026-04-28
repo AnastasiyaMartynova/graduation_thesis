@@ -1,740 +1,0 @@
-\def\stat{bosov+stef}
-
-\def\tit{УПРАВЛЕНИЕ ВЫХОДОМ СТОХАСТИЧЕСКОЙ ДИФФЕРЕНЦИАЛЬНОЙ СИСТЕМЫ 
-ПО~КВАДРАТИЧНОМУ КРИТЕРИЮ. II.~ЧИСЛЕННОЕ РЕШЕНИЕ УРАВНЕНИЙ 
-ДИНАМИЧЕСКОГО ПРОГРАММИРОВАНИЯ$^*$}
-
-\def\titkol{Управление выходом стохастической дифференциальной системы 
-по квадратичному критерию. II %.~Численное решение уравнений  
-%динамического программирования
-}
-
-\def\aut{А.\,В.~Босов$^1$, А.\,И.~Стефанович$^2$}
-
-\def\autkol{А.\,В.~Босов, А.\,И.~Стефанович}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Босов А.\,В.}
-\index{Стефанович А.\,И.}
-\index{Bosov A.\,V.}
-\index{Stefanovich A.\,I.}
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Работа выполнена при частичной поддержке РФФИ (проект 16-07-00677).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проб\-лем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{AVBosov@ipiran.ru}}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук, \mbox{AStefanovich@frccsc.ru}}
-
-\vspace*{-8pt}
-
- 
-  
-
-\Abst{Представлена вторая часть исследования задачи оптимального управления 
-для диффузионного процесса Ито и~линейного управляемого выхода. 
-Оптимальное управление выходом $dz_t\hm= a_t y_t \,dt\hm+b_t z_t \,dt\hm+ 
-c_tu_t\,dt\hm+\sigma_t 
-\,dw_t$ стохастической дифференциальной системы с~состоянием $dy_t\hm= 
-A_t(y_t)\,dt +\Sigma_t (y_t)\, dv_t$ и~квадратичным критерием качества, 
-определяемое функцией Беллмана вида $V_t(y,z)\hm= \alpha_t z^2\hm+\beta_t(y) 
-z\hm+\gamma_t(y)$, рассчитывается путем приближенного решения сеточными 
-методами дифференциальных уравнений для коэффициентов~$\alpha_t$, 
-$\beta_t(y)$ и~$\gamma_t(y)$. Подробно рассмотрен модельный пример, 
-опирающийся на простую дифференциальную модель для показателя RTT (Round-Trip Time)
-сетевого протокола TCP (Transmission Control Protocol). 
-Приводятся результаты численного эксперимента, 
-позволяющие оценить трудности практической реализации оптимального 
-решения и~обозначить задачи дальнейшего исследования.}
-
-\KW{стохастическое дифференциальное уравнение; оптимальное управление; 
-динамическое программирование; функция Беллмана; уравнение Риккати; 
-линейные уравнения параболического типа}
-
-\DOI{10.14357/19922264190102}
-  
-\vspace*{-4pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-     
-     В работе~\cite{1-b} получены аналитические соотноше\-ния, 
-описывающие оптимальное решение в~задаче\linebreak управления линейным выходом 
-стохастической дифференциальной системы по квадратичному критерию 
-качества. Оптимизируемая динамическая система описывается двумя 
-уравнениями: нелинейным стохастическим дифференциальным уравнением 
-Ито для состояния и~линейным уравнением для управляемого выхода. 
-Квадратичный целевой функционал обеспечил возможность решения задачи 
-методом динамического программирования: получены аналитические 
-выражения для функции Беллмана и, как следствие, для оптимального 
-управления и~для значения функционала качества. Соответствующие 
-соотношения содержат, как и~всегда в~подобных задачах, решения 
-определенных дифференциальных уравнений (обыкновенных и~в~частных 
-производных). Формальная постановка задачи и~основной теоретический 
-результат кратко сформулированы в~следующем разделе статьи. В~данной 
-работе исследование этой же задачи продолжено, но внимание сосредоточено 
-на аспектах практической реализации результата.
-     
-     С фундаментальной точки зрения в~сравнении с~исходной постановкой 
-задачи оптимизации в~стохастической системе поиск решений 
-дифференциальных уравнений~--- это удовлетворительный итог 
-исследования, достаточный для перехода в~практическую область, т.\,е.\ 
-проведения расчетов, модельных как минимум, а то и~с реальными данными. 
-На самом деле нюансы численной реализации полученного в~\cite{1-b} 
-оптимального управления в~совокупности сами по себе представляют 
-исследовательский вызов. В~полном объеме ответить на него пока не 
-удается, но начальные результаты, приближенные алгоритмы, модельные 
-расчеты получены и~составляют предмет настоящей работы. 
-
-Итоги 
-подводятся в~заключении, где в~том числе обозначены перспективы 
-дальнейших исследований.
-
-\section{Оптимальное решение задачи управления выходом}
-
-     Следуя~\cite{1-b}, будем предполагать рас\-смат\-ри\-ва\-емые далее 
-случайные функции скалярными. Скалярная модель позволяет обойти 
-трудности численной реализации, неизбежно возникающие при рос\-те 
-размерности. Это принципиально важно для данного этапа исследования, 
-поскольку дальнейшие усилия предполагаются в~направлении 
-совершенствования предложенных здесь методов приближенного численного 
-решения, в~том числе с~учетом возможности роста размерности.
-     
-     Итак, рассматривается состояние~$y_t$ стохастической 
-дифференциальной системы, описываемое нелинейным стохастическим 
-дифференциальным уравнением Ито:
-     \begin{equation*}
-     dy_t=A_t\left( y_t\right) dt+\Sigma_t \left( y_t\right) dv_t\,,\enskip y_0=Y\,,
-     %\label{e1-b}
-     \end{equation*}
-где $v_t$~--- стандартный винеровский процесс; $Y$~--- случайная величина 
-с~конечным вторым моментом; функции $A_t$ и~$\Sigma_t$ удовлетворяют 
-условиям Ито, обеспечивающим существование единственного 
-решения~\cite{2-b}.
-
-     С состоянием этой системы связан выход, который описывается 
-функцией~$z_t$, линейно связанной с~$y_t$:
-     \begin{equation}
-     dz_t=a_t y_t\,dt+b_t z_t \,dt+c_t u_t \,dt+\sigma_t \,dw_t,\enskip z_0=Z,
-     \label{e2-b}
-     \end{equation}
-где $w_t$~--- не зависящий от $v_t$, $Y$ и~$Z$ стандартный винеровский 
-процесс; $Z$~--- случайная величина с~конечным вторым моментом; $u_t$~--- 
-допустимое управ\-ле\-ние. Функции~$a_t$, $b_t$, $c_t$ и~$\sigma_t$ 
-предполагаются ограниченными, процесс управления~--- допустимым 
-неупреждающим~\cite{2-b}, что обеспечивает существование решения 
-уравнения~(\ref{e2-b}) для любого допустимого управления.
-     
-     Используется целевой функционал следующего вида:
-     \begin{multline*}
-     \!J\left( U_0^T\right) =E\!\left\{ \int\limits_0^T\!\big( S_t\left( s_t y_t -g_t z_t-h_t 
-u_t\right)^2+G_t z_t^2+{}\right.\\
-\left.{}+H_t u_t^2\big)\,dt+
- S_T\left( s_T y_T-g_T z_T\right)^2+G_T z_T^2
-      \vphantom{\int\limits_0^T}\right\}\,,\\
-     U_0^T=\left\{ u_t, 0\leq t\leq T
-     \right\}\,,
-     %\label{e3-b}
-     \end{multline*}
-где $S_t$, $G_t$ и~$H_t$~--- неотрицательные функции.
-
-     Решение задачи поиска $u_t^*$~--- допустимого управ\-ле\-ния, 
-доставляющего минимум квадратичному функционалу $J(U_0^T)$, 
-составляют следующие соотношения.
-     
-     Функция Беллмана $V_t(y,z)$ может быть пред\-став\-ле\-на в~виде:
-     \begin{equation*}
-     V_t(y,z)=\alpha_t z^2+\beta_t(y) z+\gamma_t(y)\,,
-     %\label{e4-b}
-     \end{equation*}
-а оптимальное управление
-\begin{multline}
-u_t^* =u_t^*(y,z)={}\\[2pt]
-{}=-\fr{1}{2}\left( S_th_t^2+H_t\right)^{-1}\left( c_t \left(
-2\alpha_t z+\beta_t(y)\right)+{}\right.\\[2pt]
-\left.{}+2S_t \left( s_t y-g_t z\right) h_t\right)\,,\enskip
-y=y_t\,,\enskip z=z_t\,.
-\label{e5-b}
-\end{multline}
-     
-     Коэффициенты $\alpha_t$, $\beta_t(y)$ и~$\gamma_t(y)$ задаются 
-следующими дифференциальными уравнениями:
-     \begin{multline}
-     \fr
-{\partial \alpha_t}{\partial t}+
-2\alpha_t
-     \left( b_t-\left( S_t h_t^2+H_t\right)^{-1} c_t S_t h_t g_t\right)+{}\\[2pt]
-     {}+\left( S_t-\left( S_t h_t^2+H_t\right)^{-1} S_t^2 h_t^2\right) g_t^2+{}\\[2pt]
-     {}+G_t-
-     \left( S_t h_t^2+H_t\right)^{-1} c_t^2 \alpha_t^2=0\,,\\[2pt]
-     \alpha_T=S_T g_T^2+G_T\,;
-     \label{e6-b}
-     \end{multline}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\fr{\partial \beta_t(y)}{\partial y}+\fr{1}{2}\Sigma_t^2(y)
-\fr{\partial^2\beta_t(y)}{\partial y^2} 
-+A_t(y)\fr{\partial \beta_t(y)}{\partial y}+{}\\[2pt]
-{}+2\alpha_t\left( a_t+\left( S_t h_t^2+H_t\right)^{-1} c_t S_t h_t 
-s_t\right)y+{}\\[2pt]
-{}+\beta_t(y) \left( b_t-\left( S_t h_t^2+H_t\right)^{-1} c_t S_t h_t 
-g_t\right)-{}\\[2pt]
-{}-2\left( S_t-\left( S_t h_t^2+H_t\right)^{-1} S_t^2 h_t^2\right) s_t g_t y-{}\\[2pt]
-{}-\left( 
-S_t h_t^2+H_t\right)^{-1} c_t^2 \alpha_t \beta_t(y)=0\,,\\[2pt]
-\beta_T(y)=-2S_T s_T g_T y\,;
-\label{e7-b}
-\end{multline}
-
-\vspace*{-12pt}
-
-\begin{multline}
-\fr{\prt \gamma_t(y)}{\prt  t}+\fr{1}{2}\,\Sigma_t^2(y)\fr{\prt^2 
-\gamma_t(y)}{\prt y^2} +\sigma^2_t \alpha_t +A_t(y) \fr{\prt \gamma_t(y)}{\prt 
-y}+{}\\[2pt]
-{}+ \beta_t(y)\left( a_t+\left( S_t h_t^2+H_t\right)^{-1} c_t S_t h_t s_t\right) 
-y+{}\\[2pt]
-{}+\left( S_t- \left( S_t h_t^2 +H_t\right)^{-1} S_t^2 h_t^2\right) s_t^2 y^2-{}\\[2pt]
-{}-\fr{1}{4}\left( S_t h_t^2 +H_t\right)^{-1} c_t^2 \beta_t^2(y)=0\,,\\[2pt] 
-\gamma_T(y)=S_T s_T^2 y^1\,.
-\label{e8-b}
-\end{multline}
-     
-     Уравнение~(\ref{e6-b}) является уравнением Риккати и~имеет 
-единственное неотрицательное решение для всех $0\hm\leq t\hm\leq T$, так 
-как предполагается $S_t h_t^2\hm+ H_t\hm>0$. 
-Уравнения~(\ref{e7-b}) 
-и~(\ref{e8-b}) представляют собой линейные уравнения в~частных 
-производных второго порядка, относятся к~параболическому типу, поскольку 
-$\Sigma_t^2(y)\hm>0$. Предполагается, что данные уравнения имеют 
-на рассматриваемом интервале $0\hm\leq t\hm\leq T$ хотя бы одно 
-ограниченное решение, которое и~определяет оптимальное решение 
-рассматриваемой задачи оптимизации.
- 
-
-\section{Модельный эксперимент и~приближенное численное 
-решение}
-     
-     Практическая реализация оптимального управ\-ле\-ния~(\ref{e5-b}), 
-конечно, возможна только приближенно, рассматривать варианты, когда 
-уравнения~(\ref{e6-b}) и~(\ref{e7-b}) могут быть решены аналитически, 
-бесперспективно. Приближенное решение очевидным образом получается 
-в~результате численного интегрирования уравнений~(\ref{e6-b})  
-и~(\ref{e7-b}), а~при не\-об\-хо\-ди\-мости и~(\ref{e8-b}). Для реализации этого 
-требуется модельный пример, который позволит, с~одной стороны, 
-поэкспериментировать с~численными процедурами, сформировать 
-представление об их точности и~ресурсоемкости. С~другой стороны, при 
-выборе модельного примера следует ориентироваться на потенциальные 
-прикладные области применения представленного результата. В~качестве 
-такой возможной области видится область телекоммуникаций~--- 
-популярный современный источник приложений для различных 
-теоретических задач. Из моделей, исследуемых в~этой области, была выбрана 
-простая модель для показателя RTT сетевого протокола 
-TCP, предложенная в~\cite{3-b}. Опуская 
-детали выбора параметров в~используемой диффузионной модели RTT, 
-укажем только итоговое уравнение рассматриваемого модельного примера:
-     \begin{multline}
-     dy_t= \left( 1-0{,}1y_t\right) dt+0{,}5\sqrt{y_t}\,dv_t,\\ y_0=Y\sim 
-N(15,9)\,.
-     \label{e9-b}
-     \end{multline}
-Здесь $N(M,{\sf D})$~--- нормальное распределение со средним~$M$ 
-и~дисперсией~${\sf D}$.
-     
-     Надо отметить, что такое уравнение (с~точ\-ностью до варьируемых 
-параметров) изначально известно как модель Кок\-са--Ин\-гер\-со\-на--Рос\-са 
-(Cox--Ingersoll--Ross model)~\cite{4-b} и~описывает эволюцию процентных 
-ставок. Конечно, для описания реальных данных RTT модель  
-типа~(\ref{e9-b}) представляет не более чем начальное приближение, но оно 
-удачно уже потому, что дает основу для дальнейших обобщений, уточнений 
-модели (см., например,~\cite{5-b}), поэтому удобна и~для целей настоящей 
-работы. Свойства процесса~$y_t$ из~(\ref{e9-b}) хорошо изучены, 
-в~частности имеется свойство неотрицательности выборочных значений, 
-наличие эргодичности, известно предельное распределение и~переходная 
-вероятность. Отметим, что начальные условия в~(\ref{e9-b}) выбраны так, 
-что $M$ и~${\sf D}$ отличаются от моментных характеристик предельного 
-распределения, т.\,е.\ управление ведется в~рамках переходного процесса, 
-а~не в~стационарном режиме.
-     
-     Выход для~(\ref{e9-b}) задается уравнением
-          \begin{multline}
-     dz_t=0{,}1 y_t\, dt-z_t \,dt+u_t \,dt+dw_t\,,\\ z_0=Z\sim N(9, 9)\,,
-     \label{e10-b}
-     \end{multline}
-    целевой функционал
-\begin{multline*}
-J\left( U_0^T\right) =E\left\{ \int\limits_0^T \left( \left( y_t-
-z_t\right)^2+z_t^2+u_t^2\right) \,dt +{}\right.\\
-\left.{}+\left( y_T -z_T\right)^2+z_T^2
-     \vphantom{\int\limits_0^T}
-     \right\}\,.
-%\label{e11-b}
-\end{multline*}
-     
-     Моделировалось $N\hm=1000$ траекторий $y_t$, $z_t^*$ и~$u_t^*$ для 
-$T\hm=5$ и~$50$ (через~$z_t^*$ обозначен выход~(\ref{e10-b}), рассчитанный 
-для $u_t\hm=u_t^*$). Кроме того, моделировались траектории $z_t^{\mathrm{prog}}$ 
-и~$u_t^{\mathrm{prog}}$ для наилучшего программного управления $u_t^{\mathrm{prog}}\hm= E\{ 
-u_t^*\}$ и~$z_t^0$ и~$u_t^0$ для неуправляемого выхода~(\ref{e10-b}), т.\,е.\ для 
-$u_t\hm=0$. В~каждом случае путем осреднения по пучку траекторий 
-оценивались величины~$J(U_0^t)$. Соответственно, в~результате можно 
-увидеть не только конечные значения целевой функции для разных 
-вариантов управления $J((U^*)_0^T)$, $J((U^{\mathrm{prog}})_0^T)$ и~$J((U^0)_0^T)$, 
-но и~их формирование в~динамике.
-     
-     Для определения оптимального управления чис\-лен\-но решались 
-уравнения для~$\alpha_t$ и~$\beta_t(y)$. Сначала было получено чис\-лен\-ное 
-решение урав\-не\-ния~(\ref{e6-b}). Это уравнение Риккати, оно имеет 
-единственное решение, и~вы\-чис\-ле\-ние этого решения не пред\-став\-ля\-ет труда, 
-например неявным методом Эйлера.
-     
-     Далее решалось уравнение~(\ref{e7-b}). Как уже отмечалось, 
-нахождение решений уравнений~(\ref{e7-b}) и~при  
-необходимости~(\ref{e8-b}) (это уравнение можно использовать для 
-определения качества оптимального управ\-ле\-ния) пред\-став\-ля\-ет 
-определенные труд\-но\-сти. Для целей данной работы достаточно использовать 
-традиционный подход к~чис\-лен\-но\-му решению~--- метод конечных 
-разностей, тем более что варианты этого метода для урав\-не\-ния 
-параболического типа дав\-но и~хорошо изучены~\cite{6-b}.
-     
-     Первое, что требуется сделать,~--- это ограничить область значения 
-аргумента~$y$ для формирования численной схемы расчета. С~этой целью 
-использовались~$N$~смоделированных методом Эйлера 
-траекторий~(\ref{e9-b}): выборочные значения использовались для 
-оценивания функций математического ожидания и~дисперсионной, далее 
-задавалась  
-$3\sigma$-труб\-ка, а~в~расчетах граница значений~$y$ задавалась путем 
-добавления 10\% к~границе $3\sigma$-труб\-ки. Рисунок~1 иллюстрирует 
-характерные траектории~(\ref{e9-b}), среднее значение процесса 
-и~вычисленные границы (закрашенная серым область).
-
-\begin{figure*} %fig1
-\vspace*{1pt}
- \begin{center}  
-  \mbox{%
- \epsfxsize=163mm 
- \epsfbox{bos-1.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Выборочные траектории и~характеризация границы}
-\end{figure*}
-
-     Определение границы создает следующую проб\-ле\-му, обычную при 
-применении любого сеточного метода, а~именно: отсутствие граничных 
-условий для рассматриваемых уравнений. Этих условий нет, и~нет 
-физических оснований для их обоснованного выбора. Из-за этого приходится 
-выбирать граничные условия довольно волюнтаристски и~надеяться на 
-устойчивость решения в~отношении этих граничных условий. 
-
-Выбор 
-граничного условия и~анализ его устойчивости выполнялся следующим 
-образом. Были взяты два традиционных варианта граничных условий~--- 
-в~задаче Дирихле: $\beta_t(y)\hm=0$, т.\,е.\ условие поглощения, и~в~задаче 
-Неймана: $\partial \beta_t(y)/\partial y\hm=0$, т.\,е.\ условия отражения, для 
-всех граничных точек. Далее уравнение решалось методом конечных 
-разностей с~использованием явной и~неявной численных схем сначала для 
-одного граничного условия, затем для второго, и~полученные решения 
-сравнивались. Устойчивость в~таком случае означает совпадение (близость) 
-решений в~заданной области за исключением границы.
-     
-     Для численного интегрирования в~области $[0,T]\cup \left[\, 
-\underline{y}, \overline{y}\right]$ ($\underline{y}$ и~$\overline{y}$~--- 
-определенные в~результате моделирования границы) формируется сетка 
-$\{t_k, y_i\}$ с~шагами~$\delta_t$ (для интегрирования по переменной~$t$) 
-и~$\delta_y$ (для интегрирования по переменной~$y$). С~использованием 
-обозначения~$\beta_i^k$ для значения~$\beta_t(y)$ в~узле $(t_k, y_i)$ ее 
-производные аппроксимировались следующим образом:
-     \begin{gather*}
-     \fr{\prt \beta_t(y)}{\prt t}\approx \fr{\beta_i^{k+1}-\beta_i^k}{\delta_t}\,;\quad
-     \fr{\prt \beta_t(y)}{\prt y}\approx \fr{\beta^K_{i+1}-\beta^K_{i-
-1}}{2\delta_y}\,;\\
-     \fr{\prt^2\beta_t(y)}{\prt y^2}\approx \fr{\beta^K_{i+1}-
-2\beta_i^K+\beta^K_{i-1}}{\delta_y^2}\,,
-     \end{gather*}
-где $K=k$ для явной схемы и~$K\hm=k\hm+1$~--- для неявной.
-     
-     Шаги интегрирования $\delta_t$ и~$\delta_y$ при анализе устойчивости 
-выбирались разными, например явная схема обсчитывалась для 
-$\delta_t\hm=0{,}0002$ и~$\delta_y\hm=0{,}1$, в~том числе с~учетом того, 
-что для нее самой вопрос устойчивости ограничивает вариации шагов. 
-Главное, что в~итоге подтвердилась устойчивость результатов численного 
-интегрирования $\beta_t(y)$ по отношению к~граничным условиям по 
-крайней мере для выбранной модели.
-     
-     Итоговый расчет выполнен для неявной схемы с~шагами 
-$\delta_t\hm=0{,}001$ (в~том числе для приближенного 
-вычисления~$\alpha_t$) и~$\delta_y\hm=0{,}01$. Результаты расчетов 
-представлены на рис.~2--4, в~частности приведены примеры траекторий для 
-выхода и~управлений $z_t^*, u_t^*, z_t^{\mathrm{prog}}, u_t^{\mathrm{prog}}$ и~$z_t^0, u_t^0$.
-
-
-
-     Рисунок~4 демонстрирует ожидаемый проигрыш\linebreak неуправляемой 
-системы $z_t^0, u_t^0$. Кроме того, обращает на себя внимание высокое 
-качество про\-граммного управления и~выхода $z_t^{\mathrm{prog}}, u_t^{\mathrm{prog}}$. 
-Объ\-ективных оснований последнее обстоятельство,\linebreak конечно, не имеет 
-и~объясняется исключительно выбранными параметрами рассматриваемого 
-модельного примера, прежде всего интенсивностями возмущений~--- 
-коэффициентов при $v_t$ и~$w_t$, что в~свою очередь сделано для того, чтобы 
-на рис.~4 изменения целевого функционала для разных стратегий управ\-ле\-ния 
-можно было представить в~одном масштабе.
-     
-     Наконец, отметим, что существенных техниче\-ских трудностей при 
-выполнении расчетов не возникло. Без дополнительных усилий сетка 
-размещалась в~оперативной памяти: для интегрирования\linebreak
- с~выбранными 
-шагами в~об\-ласти $[0,50]\cup [-10,40]$ было использовано всего лишь~2~ГБ 
-памяти, что позволило провести расчеты на обычном персональном 
-компьютере. При этом размещение сетки в~оперативной памяти обеспечило 
-довольно быст\-рое проведение расчетов. Гораздо больше времен-\linebreak н$\acute{\mbox{ы}}$х ресурсов 
-требуется для моделирования пучков траекторий, осред\-не\-ния~--- срав\-не\-ния 
-свойств управ\-ле\-ний. Конечно, с~рос\-том размерности ситу-\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\end{multicols}
-
-\begin{figure*} %fig2
-\vspace*{1pt}
- \begin{center}  
-  \mbox{%
- \epsfxsize=162.963mm 
- \epsfbox{bos-2.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Выборочные траектории $z_t^*$~(\textit{1}), $z_t^{\mathrm{prog}}$~(\textit{2}) 
-и~$z_t^0$~(\textit{3})}
-%\end{figure*}
-%\begin{figure*} %fig3
-\vspace*{6pt}
- \begin{center}  
-  \mbox{%
- \epsfxsize=163mm 
- \epsfbox{bos-3.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Выборочные траектории $u_t^*$~(\textit{1}), $u_t^{\mathrm{prog}}$~(\textit{2}) 
-и~$u_t^0$~(\textit{3})}
-%\end{figure*}
-%\begin{figure*} %fig4
-\vspace*{6pt}
- \begin{center}  
-  \mbox{%
- \epsfxsize=162.528mm 
- \epsfbox{bos-4.eps}
- }
-\end{center}
-\vspace*{-11pt}
-\Caption{Динамика целевого функционала:
-\textit{1}~--- $J((U^*)^t_0)$; \textit{2}~---  $J((U^0)_0^t)$; \textit{3}~--- 
-$J((U^{\mathrm{prog}})^t_0)$}
-\end{figure*}
-
-\begin{multicols}{2}
-
-\noindent
-ация 
-принципиально изменится и~затраты на чис\-лен\-ное интегрирование 
-дифференциальных уравнений вырастут на порядки.
-
-\vspace*{-9pt}
-
-
-
-\section{Заключение}
-
-\vspace*{-2pt}
-
-     Настоящая статья содержит вторую, практическую часть исследования 
-задачи оптимизации линейного выхода нелинейной дифференциальной 
-системы по квадратичному критерию. В~отношении представленного 
-результата следует отметить, что полученное решение представляет 
-определенные вычислительные трудности при его приближенной реализации 
-путем численного решения дифференциальных уравнений для 
-соответствующих коэффициентов. 
-
-Отсутствие физически обоснованных 
-граничных условий потребовало значительных усилий для анализа 
-численного решения на границе. Кроме того, очевидное обобщение 
-постановки на многомерный случай  еще более 
-усугубит вычислительные проблемы. Таким образом, затраты вы\-чис\-ли\-тель\-ных ресурсов даже на 
-модельные расчеты в~скалярном случае оказались слишком значительными, 
-чтобы не учитываться в~теоретической час\-ти решения. По этой причине, 
-прежде чем двигаться с~рассмотренной задачей дальше, обобщать постановку 
-на многомерный случай, нуж\-но предложить более действенные инструменты 
-в~час\-ти чис\-лен\-ной реализации полученных точных решений. Возможности 
-для этого имеются, а~соответствующие результаты должны составить 
-ближайшие перспективы дальнейших исследований.
-     
-     Представленная в~данной работе задача оптимизации пока не 
-исследовалась детально на предмет практического применения. 
-Выполненные модельные расчеты~--- это, скорее, первый шаг в~на\-прав\-ле\-нии 
-поиска реальных приложений. При этом основным представляется поиск 
-моделей, обладающих практической ценностью и~достаточно исследованных 
-в~рамках задач анализа. Источником таких моделей видится область 
-инфотелекоммуникаций, активно развиваемая в~последние годы, в~част\-ности 
-модели сетевых транспортных протоколов на основе скачкообразных 
-марковских процессов~[7--10]. Применение рассмотренной 
-оптимизационной задачи к~таким моделям также может стать 
-содержательным продолжением представленного в~данной работе 
-исследования.
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-\bibitem{1-b}
-\Au{Босов А.\,В., Стефанович~А.\,И.} Управление выходом 
-стохастической дифференциальной системы по квад\-ра\-тич\-но\-му критерию. 
-I.~Оптимальное решение методом динамического программирования~// 
-Информатика и~её применения, 2018. Т.~12. Вып.~3. С.~99--106. doi: 
-10.14357/19922264180314.
-\bibitem{2-b}
-\Au{Флеминг У., Ришел~Р.} Оптимальное управление 
-детерминированными и~стохастическими системами~/ Пер. с~англ.~--- М.: 
-Мир, 1978. 316~с. (\Au{Fleming~W.\,H., Rishel~R.\,W.} Deterministic and 
-stochastic optimal control.~--- New York, NY, USA: Springer-Verlag, 1975. 
-222~p.)
-\bibitem{3-b}
-\Au{Bohacek S., Rozovskii~B.} A~diffusion model of roundtrip time~// 
-Comput. Stat. Data An., 2004. Vol.~45. Iss.~1. P.~25--50. 
-doi: 10.1016/S0167-9473(03)00114-2.
-\bibitem{4-b}
-\Au{Cox J.\,C., Ingersoll~J.\,E., Ross~S.\,A.} A~theory of the term structure of 
-interest rates~// Econometrica, 1985. Vol.~53. Iss.~2. P.~385--407. doi: 
-10.2307/1911242.
-\bibitem{5-b}
-\Au{Bohacek S.} A~stochastic model of TCP and fair video transmission~// 
-Proc. IEEE INFOCOM, 2003. P.~1134--1144. doi: 
-10.1109/INFCOM.2003.1208950.
-\bibitem{6-b}
-\Au{Саульев В.\,К.} Интегрирование уравнений параболического типа 
-методом сеток.~--- М.: Физматлит, 1960. 324~с.
-\bibitem{7-b}
-\Au{Борисов А.\,В., Миллер~Г.\,Б.}
-Анализ и~фильтрация специальных марковских процессов в~дискретном 
-времени. II.~Оптимальная фильтрация~// Автоматика и~телемеханика, 
-2005. №\,7. С.~112--125. doi: 10.1007/s10513-005-0153-7.
-\bibitem{8-b}
-\Au{Борисов А.\,В., Миллер~Б.\,М., Семенихин~К.\,В.} Фильт\-ра\-ция 
-марковского скачкообразного процесса по наблюдениям 
-мультивариантного точечного процесса~// Автоматика и~телемеханика, 
-2015. №\,2. С.~34--60. doi: 10.1134/S0005117915020034.
-\bibitem{9-b}
-\Au{Borisov A., Bosov~A., Miller~G.} Modeling and monitoring of RTP link on 
-the receiver side~// Internet of things, smart spaces, and next generation
-networks and systems~/ Eds. S.\,I.~Balandin, S.\,D.~Andreev,
-Y.~Koucheryavy.~--- Lecture notes in computer science ser.~--- Springer, 2015. Vol.~9247. 
-P.~229--241. doi: 10.1007/978-3-319-23126-6\_21.
-\bibitem{10-b}
-\Au{Борисов А.\,В.} Применение методов оптимальной фильтрации для 
-оперативного оценивания состояний сетей массового обслуживания~// 
-Автоматика и~телемеханика, 2016. №\,2. С.~115--141. doi: 
-10.1134/S0005117916020053.
- \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 07.06.18}}
-
-\vspace*{8pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{STOCHASTIC DIFFERENTIAL SYSTEM OUTPUT CONTROL 
-BY~THE~QUADRATIC CRITERION. II.~DYNAMIC PROGRAMMING 
-EQUATIONS NUMERICAL SOLUTION}
-
-\def\titkol{Stochastic differential system output control 
-by~the~quadratic criterion. II.~Dynamic programming 
-equations numerical solution}
-
-\def\aut{A.\,V.~Bosov and~A.\,I.~Stefanovich}
-
-\def\autkol{A.\,V.~Bosov and~A.\,I.~Stefanovich}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-
-\noindent
-Institute of Informatics Problems, Federal Research Center 
-``Computer Science and Control'' of the 
-Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 1}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2019\ \ \ volume~13\ \ \ issue\ 1
-\hfill \textbf{\thepage}}}
-
-\vspace*{6pt}
-
-
-\Abste{The second part of the optimal control problem investigation for the Ito 
-diffusion process and the controlled linear output is presented. Optimal control for 
-output $dz_t= a_t y_t \,dt+b_t z_t \,dt+ c_t u_t\,dt+\sigma_t \,dw_t$ of the stochastic 
-differential system $dy_t\hm= A_t(y_t)\,dt +\Sigma_t (y_t) \,dv_t$ and quadratic quality 
-criterion defined by Bellman
-function having form $V_t(y,z)\hm= \alpha_t 
-z^2\hm+\beta_t(y) z\hm+\gamma_t(y)$ is determined numerically by an approximate 
-solution to\linebreak\vspace*{-12pt}}
-
-\Abstend{the grid methods of differential equations for the coefficients $\alpha_t$, 
-$\beta_t(y)$, and~$\gamma_t(y)$. A~model experiment based on a~simple differential 
-presentation for the RTT (Round-Trip Time)
-parameter of the TCP (Transmission Control Protocol)
-network protocol is considered in detail. 
-The results of numerical simulation are given and allow one to assess the difficulties in 
-the practical implementation of the optimal solution and define the tasks of further 
-research.}
-
-\KWE{stochastic differential equation; optimal control; dynamic programming; 
-Bellman function; Riccati equation; linear differential equations of parabolic type}
-
-
-\DOI{10.14357/19922264190102}
-
-%\vspace*{-14pt}
-
-\Ack
-\noindent
-This work was partially supported by the Russian Science Foundation (grant  
-16-07-00677).
-
-
-
-%\vspace*{6pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-\bibitem{1-b-1}
-
-\Aue{Bosov, A.\,V., and A.\,I.~Stefanovich.} 2018. Upravlenie vykhodom stokhasticheskoy differentsial'noy
-sistemy po kvadratichnomu kriteriyu. I.~Optimal'noe reshenie
-metodom dinamicheskogo programmirovaniya
-[Stochastic differential system output control
-by the quadratic criterion. I.~Dynamic
-programming optimal solution]. \textit{Informatika i ee~Primeneniya~--- Inform. Appl.}  
-12(3):99--106. doi: 
-10.14357/19922264180314. 
-\bibitem{2-b-1}
-\Aue{Fleming, W.\,H., and R.\,W.~Rishel.} 1975. \textit{Deterministic and 
-stochastic optimal control}. New York, NY: Springer-Verlag. 222~p.
-\bibitem{3-b-1}
-\Aue{Bohacek, S., and B.~Rozovskii.} 2004. A~diffusion model of roundtrip 
-time. \textit{Comput. Stat.  Data An}. 45(1):25--50.
-doi: 10.1016/S0167-9473(03)00114-2.
-\bibitem{4-b-1}
-\Aue{Cox, J.\,C., J.\,E.~Ingersoll, and S.\,A.~Ross.} 1985. A~theory of the 
-term structure of interest rates. \textit{Econometrica} 53:385--407.
-doi: 10.2307/1911242.
-\bibitem{5-b-1}
-\Aue{Bohacek, S.} 2003. A~stochastic model of TCP and fair video 
-transmission. \textit{Proc. IEEE INFOCOM}. 1134--1144.
-doi: 10.1109/INFCOM.2003.1208950.
-\bibitem{6-b-1}
-\Aue{Sauliev, V.\,K.} 1960. \textit{Integrirovanie uravneniy pa\-ra\-bo\-li\-che\-sko\-go 
-tipa metodom setok} [Integration of parabolic equations by the grid method]. 
-Moscow: Fizmatlit. 324~p.
-\bibitem{7-b-1}
-\Aue{Borisov, A.\,V., and G.\,B.~Miller.} 2005. Analysis and filtration of 
-special discrete-time Markov processes. II.~Optimal filtration. \textit{Autom. 
-Rem. Contr.} 66(7):1125--1136.
-\bibitem{8-b-1}
-\Aue{Borisov, A.\,V., G.\,B.~Miller, and K.\,V.~Semenikhin.} 2015. Filtering 
-of the Markov jump process given the observations of multivariate point 
-process. \textit{Autom. Rem. Contr.} 76(2):219--240.
-\bibitem{9-b-1}
-\Aue{Borisov, A., A.~Bosov, and G.~Miller.} 2015. Modeling and monitoring 
-of RTP link on the receiver side. 
-\textit{Internet of things, smart spaces, and next generation
-networks and systems}. Eds. S.\,I.~Balandin, S.\,D.~Andreev,
-and Y.~Koucheryavy. Lecture notes in computer science ser. Springer, 
-2015. 9247:229--241. doi: 10.1007/978-3-319-23126-6\_21.
-
-\bibitem{10-b-1}
-\Aue{Borisov, A.\,V.} 2016. Application of optimal filtering methods for  
-on-line of queueing network states. \textit{Autom. Rem. Contr.} 
-77(2):277--296.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received June 7, 2018}}
-
-%\pagebreak
-
-%\vspace*{-18pt}
-     
-     \Contr
-     
-\noindent
-\textbf{Bosov Alexey V.} (b.\ 1969)~--- Doctor of Science in technology, 
-principal scientist, Institute of Informatics Problems, Federal Research 
-Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-44-2 Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{AVBosov@ipiran.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Stefanovich Alexey I.} (b.\ 1983)~--- principal specialist, Institute of Informatics Problems, 
-Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences,  
-44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{AStefanovich@frccsc.ru}
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}       
-
-      

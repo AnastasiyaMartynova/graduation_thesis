@@ -1,1291 +1,0 @@
-\def\stat{bitugov}
-
-\def\tit{ПРИМЕНЕНИЕ ВЕЙВЛЕТОВ ДЛЯ РАСЧЕТА ЛИНЕЙНЫХ СИСТЕМ УПРАВЛЕНИЯ  
-С~СОСРЕДОТОЧЕННЫМИ ПАРАМЕТРАМИ$^*$}
-
-\def\titkol{Применение вейвлетов для расчета линейных систем управления  
-с~сосредоточенными параметрами}
-
-\def\aut{Ю.\,И.~Битюков$^1$, Е.\,Н.~Платонов$^2$}
-
-
-\def\autkol{Ю.\,И.~Битюков, Е.\,Н.~Платонов}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Битюков Ю.\,И.}
-\index{Платонов Е.\,Н.}
-\index{Bityukov Yu.\,I.}
-\index{Platonov E.\,N.}
-
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Результаты работы получены в~рамках выполнения государственного 
-задания Минобрнауки №\,2.2461.2017/ПЧ.}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Московский авиационный институт (национальный исследовательский университет),  
-\mbox{yib72@mail.ru}}
-\footnotetext[2]{Московский авиационный институт (национальный исследовательский 
-университет),  \mbox{en.platonov@gmail.com}}
-
-%\vspace*{-18pt}
-
-\Abst{Задачи многих дисциплин могут привести к~дифференциальным и~интегральным 
-уравнениям. В~простых случаях такие уравнения могут быть решены аналитически, 
-но в~более сложных приходится находить приближенные решения этих уравнений. 
-В~последнее время большую популярность получили методы, основанные на использовании 
-вейвлетов. Среди применяемых были вейвлеты Дебеши, койфлеты и~т.\,д. 
-Недостаток таких вейвлетов состоит в~том, что у~них нет аналитического выражения. 
-Поэтому возникают большие сложности при интегрировании и~дифференцировании выражений, 
-содержащих эти вейвлеты. В~данной статье представлены алгоритмы численного 
-решения линейных интегральных и~дифференциальных уравнений, основанные на 
-сплайн-вейв\-ле\-тах на отрезке. Представленные алгоритмы обобщают 
-известные методы, основанные на вейвлетах Хаара, которые являются частным 
-случаем сплайн-вейв\-ле\-тов. Результаты статьи применяются для анализа 
-линейных систем управ\-ле\-ния с~сосредоточенными параметрами.}
-
-\KW{сплайн-вейвлет; дифференциальные уравнения; интегральные уравнения}
-
-\DOI{10.14357/19922264170412} 
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение} 
-
-Для численного решения линейных интегральных уравнений традиционно 
-применяется метод, основанный на замене интегрального уравнения 
-алгебраической системой линейных уравнений с~помощью применения 
-квадратурной формулы. Мат\-ри\-ца такой системы имеет большой размер, и,~как следствие, 
-для нахождения решения требуется большое число арифметических операций. 
-
-В~\cite{Lepik3} было предложено использовать вейвлеты Хаара 
-для приближенного решения интегрального уравнения, что приводило 
-к~системе линейных уравнений с~разреженной матрицей. Получаемое приближенное 
-решение было ку\-соч\-но-не\-пре\-рыв\-ным. 
-
-В~\cite{Blatov}  показано, что, если использовать вместо вейвлетов Хаара 
-сплайн-вейв\-ле\-ты на отрезке, матрица системы линейных уравнений получается 
-псевдоразреженной, т.\,е.\ имеет очень много малых по модулю элементов. 
-
-В~данной статье будут обобщены результаты 
-работ~\cite{Lepik1, Lepik2, Lepik3, Lepik4, Lepik} и~развиты результаты 
-работы~\cite{Blatov} для получения приближенных решений любого класса гладкости 
-линейных интегральных и~дифференциальных уравнений. 
-В~качестве примера рассмотрим анализ линейной системы управления  с~сосредоточенными 
-параметрами.
-
-\section{Сплайн-вейвлеты на~отрезке}
-
-В этом разделе  кратко рассмотрим подход к~построению вейв\-лет-сис\-тем 
-на отрезке, предложенный в~\cite{ArticleFinkelstein}. Пусть действительная 
-функция~$\varphi $ принадлежит действительному пространству 
-$\mathrm{L}^{2} \left({\bf R}\right)$, удовлетво\-ряет равенству
-\begin{equation} 
-\label{Pr1}
-\varphi \left(x\right)\hm=\sqrt{2} \sum\limits_{k\in {\bf Z}}u_{k} 
-\varphi \left(2x-k\right)\,,\enskip u_{k} \in \mathbf{R}\,,
-\end{equation}
-и имеет компактный носитель, содержащийся в~отрезке $[a;b]$. 
-Обозначим $\varphi _{jk} (x)\hm=2^{{j}/{2}}\varphi \left(2^{j} x-k\right)$,
-$x\hm\in [a;b]$. Функция~$\varphi $ в~теории вейвлетов называ\-ется масштабирующей,
- а~равенство~\eqref{Pr1}~--- масштаб\-ным соотношением~\cite{Frazer}. 
- Ясно, что отличными\linebreak от нуля на отрезке $[a;b]$ будет лишь конечное чис\-ло
-  таких функций. Пусть для определенности это будут функции $\varphi _{j,0},
-\varphi _{j,1} ,\ldots,\varphi _{j,n_{j} -1}$. 
-
-Если рассмотреть линейные пространства $ V_{j} \hm= \mathrm{lin}
-\left\{\varphi _{j,0} ,\varphi _{j,1} ,\ldots,\varphi _{j,n_{j} -1} \right\}$,
-$\dim V_{j} \hm=n_{j}$, то  в~силу равенства~\eqref{Pr1}  будет выполняться 
-$V_{0} \hm\subset V_{1} \subset \cdots$\linebreak $\cdots \subset L^{2} \left[a;b\right]$. 
-Поэтому $\varphi _{j-1,k} \hm=\sum\nolimits _{s=0}^{n_{j} -1}p_{s,k} \varphi _{j,s}$. 
-
-Как и~в~\cite{ArticleFinkelstein}, введем обозначения: 
-
-\noindent
-\begin{align*}
-\Phi _{j} (x)&=
-\left(\varphi _{j,0} (x),\varphi _{j,1} (x),\ldots,\varphi _{j,n_{j} -1} (x)\right)\,;\\
-{P}_{j} &=\left(p_{s,k} \right)_{s=0, k=0}^{n_{j} -1, n_{j-1} -1}\,.
-\end{align*}
-Тогда $\Phi _{j-1}\hm =\Phi _{j} {P}_{j} $. 
-
-\pagebreak
-
-Обозначим символом~$W_{j-1} $ 
-ортогональное дополнение к~пространству~$V_{j-1} $ в~пространстве~$V_{j}$. 
-Поскольку $V_{j}\hm =V_{j-1} \oplus W_{j-1} $ и~$W_{j-1} \hm\subset V_{j} $, 
-то~$W_{j-1} $~--- конечномерное пространство $ W_{j} \hm = 
-\mathrm{lin} \left\{\psi _{j,0} ,\psi _{j,1} ,\ldots,\psi _{j,m_{j} -1} \right\}$,
-$\dim W_{j} \hm=m_{j}$ и~$\psi _{j-1,k} \hm=
-\sum\nolimits_{s=0}^{n_{j} -1}q_{s,k}^{j} \varphi _{j,s}.$ 
-Функции~$\psi _{j,k} $ называются вейвлетами, а~пространства~$W_{j} $ 
-называются вейв\-лет-про\-стран\-ст\-вами.
-
-Снова введем в~рассмотрение матрицы~\cite{ArticleFinkelstein}:
-\begin{align*}
-\Psi _{j} (x)&=\left(\psi _{j,0} (x),\psi _{j,1} (x),\ldots,\psi_{j,m_{j} -1}
- (x)\right)\,;\\
-{Q}_{j}&=\left(q_{s,k}^{j} \right)_{s=0, k=0}^{n_{j}-1,m_{j-1}-1}\,.
-\end{align*}
-Тогда $\Psi _{j-1} \hm=\Phi _{j} {Q}_{j} $. 
-Следует заметить, что $n_{j} \hm+m_{j} \hm=n_{j+1} $.
-Пусть $f\hm\in {L}^{2} (X)$ и~$\Pi _{j} : {L}^{2} (X)\hm\to V_{j} $. Тогда
-\begin{multline*}
-\Pi _{j} f=\sum\limits_{k=0}^{n_{j} -1}c_{jk} \varphi _{jk}  =
-\Pi _{j-1} f+\Pi _{j-1}^{W} f={}\\
-{}=\sum\limits_{k=0}^{n_{j-1} -1}c_{j-1,k} \varphi _{j-1,k}  +
-\sum\limits_{k=0}^{m_{j-1} -1}d_{j-1,k} \psi _{j-1,k}\,.
-\end{multline*}
-Данное равенство можно переписать в~матричном виде, если ввести в~рассмотрение 
-векторы ${C}_{j} \hm=\left(c_{j,0} ,\dots,c_{j,n_{j} -1} \right)^{\mathrm{T}}$,
-${D}_{j} \hm=\left(d_{j,0} ,\dots,d_{j,m_{j} -1} \right)^{\mathrm{T}}$. 
-Первый вектор описывает приближение функции~$f$, а~второй вектор представляет 
-собой вейв\-лет-ко\-эф\-фи\-ци\-ен\-ты, которые характеризуют отклонение
-$\Pi _{j-1} f$ от~$\Pi _{j} f$. Как показано в~\cite{ArticleFinkelstein}, 
-имеет место равенство
-${C}_{j} \hm={P}_{j} {C}_{j-1} \hm+{Q}_{j} {D}_{j-1}.$
-По данному равенству можно восстановить приближение~$\Pi _{j} f$ 
-по более грубому приближению~$\Pi _{j-1} f$ и~вейв\-лет-ко\-эф\-фи\-ци\-ен\-там.
-
-Поскольку линейные операторы (проекторы) $V_{j} \hm\to V_{j-1}$,
-$V_{j} \hm\to W_{j-1} $ определяются некоторыми матрицами~${A}_{j}$,
-${B}_{j}$, то ${C}_{j-1} \hm={A}_{j} {C}_{j}$,
-${D}_{j-1} \hm={B}_{j} {C}_{j}$.
-
-Под вейвлет-преобра\-зо\-ва\-ни\-ем функции~$f$ будем понимать 
-нахождение векторов ${C}_{0}$, ${D}_{0}$, ${D}_{1} ,
-\dots, D_{j-1}$. Матрицы~${Q}_j$ и~${P}_j$ 
-известны как фильт\-ры синтеза. Матрицы~${A}_j$ и~${B}_j$ 
-известны как фильт\-ры анализа. Множество 
-$\{{A}_j, {B}_j, {P}_j,{Q}_j\}$ 
-называется банком фильтров.
-
-Как показано в~\cite{ArticleFinkelstein}, между 
-матрицами~${A}_{j}$, ${B}_{j}$ и~${P}_{j}$, 
-${Q}_{j} $ существует следующая связь:
-$$
-\begin{pmatrix} {A}_{j} \\ {B}_{j} \end{pmatrix}=
-\begin{pmatrix} {P}_{j} {Q}_{j}\end{pmatrix}^{-1}\,.
-$$
-
-Посмотрим теперь, как определить мат\-ри\-цу~${Q}_{j}$. 
-Введем следующее обозначение. Если ${f}\hm=\left(f_{1} ,\dots, f_{r} \right)$,
-${g}\hm=\left(g_{1} ,\dots,g_{r} \right)$~--- 
-некоторые векторы, то $[({f},{g})]\hm=
-\left(\left(f_{i} ,g_{j} \right)\right)_{i,j=1}^{r} $~--- 
-мат\-ри\-ца скалярных произведений.  Как показано в~\cite{ArticleFinkelstein}, 
-мат\-ри\-ца~${Q}_{j} $ удовлетворяет следующему уравнению: 
-${P}_{j}^{\mathrm{T}} \left[\left(\Phi _{j}, \Phi _{j} 
-\right)\right]{Q}_{j} \hm=0.$
-
-Перейдем теперь к~сплайн-вейв\-ле\-там на отрезке. Определим В-сплай\-ны порядка~$n$  
-как свертку~\cite{Chui}:
-$$
-N_{n} =N_{n-1} *N_{0}\,,\quad
-N_{0} (x)=\begin{cases} 
-1\,, & x\in [0;1)\,; \\ 
-0\,, & x\notin [0;1)\,.
-\end{cases}
-$$
-Как показано в~\cite{Chui}, если определить функцию $\varphi (x)\hm=N_{n} (x)$, 
-то она удовлетворяет равенству $\varphi (x)\hm=\sum\nolimits _{k=0}^{n+1}
-({C_{n+1}^{k} }/{2^{n}}) \varphi (2x\hm-k)$, где $C_{n+1}^k\hm={(n+1)!}/({k!(n\hm+1\hm-k)!})$.
-В~\cite{Yurgu} пред\-став\-лен банк фильт\-ров, соответствующий функции  
-$\varphi (x)\hm=N_{n} (x)$, а~именно:  справедливы следующие результаты.
-
-\smallskip
-
-\noindent
-\textbf{Лемма~2.1.}\
-\textit{Функция $\varphi(x)\hm=N_n(x)$ определяет последовательность подпространств}
-\begin{multline*}
-V_{\alpha,0}\subset V_{\alpha,1}\subset\cdots,\\
-V_{\alpha,j}=\mathrm{lin}\left\{\varphi_{j,-n},\varphi_{j,-n+1},\dots,
-\varphi_{j,2^j\alpha(n+1)-1}\right\}
-\end{multline*}
-\textit{пространства} ${L}^2[0;\alpha(n+1)]$, $\alpha\hm=1,2,\ldots$, 
-\textit{такую, что} 
-$\overline{\bigcup\nolimits_{j=0}^{+\infty}V_{\alpha,j}}\hm={L}^2
-[0;\alpha(n+1)]$.
-
-\smallskip
-
-\noindent
-\textbf{Лемма~2.2.}\
-\textit{Имеет место равенство} 
-$\sum\nolimits_{k=-n}^{2^j\alpha (n+1)-1} \varphi_{j,k}(x) \hm\equiv 
-2^{{j}/{2}}$, $x\hm\in [0;\alpha (n+1)].
-$
-\textit{Если}  $V_{\alpha ,j} \hm=V_{\alpha ,j-1} \oplus W_{\alpha ,j-1} $, 
-\textit{то} $\dim W_{\alpha ,j-1}\hm =2^{j-1} \alpha (n+1)$.
-
-\smallskip
-
-Пусть $\lambda_{m,k}\hm=\int\nolimits_k^{k+1} N_n(z)N_n(z-m)\,dz$, 
-$m\hm=-n,\ldots ,n$, $k\hm=0,1,\ldots ,n$, и~$\omega_{i,k}\hm=\omega_{k,i}
-\hm=\sum\nolimits_{s=n-i+1}^n \lambda_{k-i,s}$, 
-$\theta_{i,k}\hm=\theta_{k,i}\hm=\sum\nolimits_{s=0}^{n-k} \lambda_{i-k,s}$, 
-$1\hm\leqslant i \hm\leqslant k \hm\leqslant n.$ Введем в~рассмотрение 
-вектор\linebreak ${p}\hm\in \textbf{R}^{2^j\alpha (n\hm+1)\hm+n}$, 
-который определим равенством:
-\begin{multline*}
-%\label{vecp}
-{p}={}\\
-{}=\begin{cases}
- \begin{pmatrix} 
- C_{n+1}^{0} \cdots  C_{n+1}^{k}&C_{n+1}^{k} \cdots  C_{n+1}^{0}&0 \cdots 0
- \end{pmatrix}^{\mathrm{T}},
- &\\
- & \hspace*{-30mm}\mbox{ если } n=2k\,;\\
-\begin{pmatrix} 
-C_{n+1}^{0} \cdots C_{n+1}^{k}&C_{n+1}^{k+1}&C_{n+1}^{k} \cdots  C_{n+1}^{0}&0 \cdots 0
-\end{pmatrix}^{\mathrm{T}}\!,\hspace*{-10.94377pt}
-&\\
-&\hspace*{-30mm} \mbox{ если } n=2k+1\,.
-\end{cases}
-\end{multline*}
-Определим оператор сдвига~$R_s$:  $\textbf{R}^m \hm\rightarrow  \textbf{R}^m$ 
-сле\-ду\-ющим правилом:
-\begin{multline*}
-\!\!\!\!\!R_s {a}=\!\begin{cases} 
-\begin{pmatrix} 
-\underbrace{0 \cdots 0}_s & a_1 \cdots a_{m-s}\end{pmatrix}^{\mathrm{T}}\!, &\!\!\!\! \mbox{ если } 
-0\leqslant s < m\,;\\
-\begin{pmatrix} 
-a_{|s|+1} \cdots  a_m&0 \cdots 0\end{pmatrix}^{\mathrm{T}}\!, &\!\!\!\! \mbox{ если }
- -m<s<0\,;\hspace*{-10.8pt}\\
- 0\,, &\!\!\!\! \mbox{ если } \vert s\vert \geqslant m\,,
- \end{cases}
- \end{multline*}
- где
- $$
-{a}=\left(a_1,\dots,a_m\right)^{\mathrm{T}}\,.
-$$
-
-
-%\smallskip
-
-\noindent
-\textbf{Лемма 2.3.}\ 
-\textit{Матрицы ${P}_j$ и~$[(\Phi_j,\Phi_j)]$ 
-для последовательности подпространств  $V_{\alpha,0}\hm\subset V_{\alpha,1}
-\subset\cdots$ имеют вид}:
-
-\pagebreak
-
-\noindent
-\begin{equation*}
-{P}_j=\fr{1}{2^{n+{1}/{2}}}
-\begin{pmatrix} 
-R_{-n}{p}&R_{-n+2}{p}&\cdots&R_{n-2+2^j\alpha (n+1)}{p}
-\end{pmatrix};
-\end{equation*}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
-[(\Phi_j,\Phi_j)]=\left( 
-{d}_1\  \cdots\  {d}_n\ {q}\ 
-R_1{q}\ \cdots\right.\\
-\left.\cdots  \ R_{2^j\alpha (n+1)-n-1}
-{q}\ {u}_1\ \cdots\ {u}_n\right)^{\mathrm{T}}\,,
-\end{multline*}
-\textit{где }
-\begin{align*}
-&{d}_s=
-\begin{pmatrix} \omega_{1,s}&\omega_{2,s}&\cdots&\omega_{n,s}&q_{n-s+1}&\cdots&
-q_n&0 \cdots 0\end{pmatrix}^{\mathrm{T}}\,;
-\\
-&{u}_s=
-\begin{pmatrix}0 \cdots 0&q_n&\cdots&q_s&\theta_{1,s}&\cdots&\theta_{n,s}\end{pmatrix}^{\mathrm{T}}\,;\\
-&{q}=
-\begin{pmatrix} q_n & q_{n-1}  \cdots  q_1 & q_0 & q_1  \cdots  q_{n-1} & q_n &
- 0 \cdots 0 \end{pmatrix}^{\mathrm{T}}   \in{}\\
-& \hspace*{8mm}{}\in  \mathbf{R}^{2^j\alpha (n+1)+n}\,,
- \enskip q_{k} =\left(N_{n}(\cdot),N_{n} (\cdot -k)\right).
-\end{align*}
-\textit{Матрица, транспонированная к~${T}_j\hm={P}_j^{\mathrm{T}}
- [(\Phi_j,\Phi_j)]\hm=2^{-n-{1}/{2}}
- (t_{i,s})_{i=1,s=1}^{2^{j-1}\alpha (n+1)+n,~2^j\alpha (n+1)+n}$,
-имеет вид}:
-\begin{multline*}
-{T}_j^{\mathrm{T}}=\fr{1}{2^{n+{1}/{2}}}
-\left( 
-{L}_1 \cdots {L}_n\  \  {w}\ \  R_2 {w} \cdots \right.\\
-\cdots
-R_{2^j\alpha (n+1)-2n-2} {w}\ \  {L}_{2^{j-1}\alpha (n+1)+1} \cdots \\
-\left.\cdots {L}_{2^{j-1}\alpha (n+1)+n}\right)\,,
-\end{multline*}
-\textit{где} 
-\begin{multline*}
-\hspace*{-2pt}{w}=\begin{pmatrix}
-{p}^{\mathrm{T}} R_{-2n}{q}&{p}^{\mathrm{T}} R_{-2n+1}{q} 
-\cdots {p}^{\mathrm{T}} R_{n+1}{q}&0 \cdots 0 
-\end{pmatrix}^{\mathrm{T}}
- \in{}\\
- {}\in \mathbf{R}^{2^j\alpha (n+1)+n}\,;
-\end{multline*}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
-{L}_i={}\\
-{}=\begin{pmatrix} 
-\left(R_{-n+2i-2}{p}\right)^{\mathrm{T}} {d}_1 \cdots 
-\left(R_{-n+2i-2}{p}\right)^{\mathrm{T}} {d}_n&0 \cdots 0
-\end{pmatrix}^{\mathrm{T}}+ {}\\
-{}+
-\left(R_n\circ R_{-3n+2i-2}\right){w},\enskip
-i=1,\dots,n\,;
-\end{multline*}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
-\hspace*{-8.5727pt}{L}_{i+1}=\begin{pmatrix} 
-0 \cdots 0&\left(R_{-n+2i}{p}\right)^{\mathrm{T}} {u}_1 
-\cdots \left(R_{-n+2i}{p}\right)^{\mathrm{T}}{u}_n
-\end{pmatrix}^{\mathrm{T}}\!  
-+{}\\
-{}+\left(R_{-n}\circ R_{-n+2i}\right){w}\,,
-\end{multline*}
-
-\vspace*{-12pt}
-
-\noindent
-$$
-\hspace*{8mm}i=2^{j-1}\alpha (n+1),\dots,n-1+2^{j-1}\alpha (n+1)\,.
-$$
-
-С использованием леммы~2.3  в~\cite{Yurgu} найдены $2^{j-1}\alpha (n+1)$ 
-линейно независимых решений ${h}_s\hm=
-(h_{1,s},h_{2,s},\dots,h_{2^j\alpha (n+1)+n,s})^{\mathrm{T}}$ 
-системы линейных уравнений  ${T}_j {h}_s\hm=0$. 
-Эти решения и~представляют собой столбцы матрицы ${Q}_j\hm=
-({h}_1,\dots,{h}_{2^{j-1}\alpha (n+1)}).$
-Столбцы ${h}_{s} $ выбирались таким образом, чтобы функции
-$$
-\psi _{j-1,s} (x)=\Phi_j(x){h}_s=
-\sum\limits_{i=1}^{2^{j} \alpha (n+1)+n}h_{i,s}  \varphi _{j,-n+(i-1)}(x)
-$$
-по возможности представляли собой сдвинутые версии одной функции, т.\,е.\ 
-имели бы одну форму (за исключением, конечно, граничных вейвлетов).  
-Введем сокращенные обозначения для матриц, составленных из элементов
- матрицы~${T}_j$:
-$$
-T_j\left(\begin{smallmatrix} 
-i_1,\dots,i_k \\ j_1,\dots,j_m \end{smallmatrix} 
-\right) = 
-\begin{pmatrix} t_{i_1,j_1} & \cdots & t_{i_1,j_m} \\ 
-\vdots & \vdots&\vdots \\ 
-t_{i_k,j_1} & \cdots & t_{i_k,j_m} 
-\end{pmatrix}.
-$$
-Для внутренних вейвлетов (носитель содержится в~отрезке $[0;\alpha (n+1)]$):
-\begin{multline*}
-{h}_s=(0,\dots,0,h_{2s-n-1,s},\dots, h_{2s+2n,s},0,\dots,0)^{\mathrm{T}},
-\\
- s=n+1,\dots,2^{j-1}\alpha (n+1)-n\,,
-\end{multline*}
- где $ T_j\left(\begin{smallmatrix} s-n,\dots,s+2n \\ 
- 2s-n-1,\dots,2n+2s \end{smallmatrix} \right)(h_{2s-n-1,s},\dots,h_{2s+2n,s})^{\mathrm{T}}\hm=0.$
-
-Решения, соответствующие граничным вейвлетам, выбираются следующим образом. 
-Для $s\hm=1,2,\dots,n$ положим
-$$
-{h}_{s}=(0,\dots,0,h_{s,s},\dots,h_{2n+2s,s},0,\dots,0)^{\mathrm{T}},
-$$
-где $T_j\left(\begin{smallmatrix} 1,\dots,s+2n \\ 
-s,\dots,2s+2n\end{smallmatrix} \right)(h_{s,s},\dots,h_{2s+2n,s})^{\mathrm{T}}\hm=0.$
-Для $s\hm=2^{j-1}\alpha (n+1)\hm-n+1,\dots ,2^{j-1}\alpha (n+1)$ положим 
-\begin{multline*}
-{h}_{s}=\left(
-0,\dots,0,h_{2s-n-1,s},\dots\right.\\
-\left.\dots,h_{2^{j-1}\alpha (n+1)+n+s,s},0,
-\dots,0\right)^{\mathrm{T}},
-\end{multline*}
-где
-\begin{multline*}
-T_j\left(\begin{smallmatrix} 
-s-n,\dots,n+2^{j-1}\alpha (n+1) \\ 2s-n-1,\dots,2^{j-1}\alpha (n+1)+n+s 
-\end{smallmatrix} \right)={}\\
-{}=\left(h_{2s-n-1,s},\dots,h_{2^{j-1}\alpha (n+1)+n+s,s}\right)^{\mathrm{T}}.
-\end{multline*}
-
-Кратко рассмотрим применение вейв\-лет-сис\-тем на отрезке к~построению 
-двумерных вейвлетов на прямоугольной области. Пусть даны последовательности $V_{0,i} 
-\hm\subset V_{1,i} \subset \cdots \subset V_{j,i} \subset \cdots$ 
-конечномерных подпространств ${L}^{2} [a_{i} ;b_{i} ]$, 
-масштаби\-ру\-ющие функции~$\varphi ^{(i)} $ и~банки фильтров 
-${P}_{j,i}$, ${Q}_{j,i}$, ${A}_{j,i}$, ${B}_{j,i}$, 
-$ i\hm=1,2$. Стандартный подход к~построению многомерных вейв\-лет-сис\-тем~--- 
-это взятие тензорных произведений функций из одномерных базисов~\cite{Novikov}. 
-Определим подпространства $V_{j}^{2} \hm=V_{j,1}\;\otimes$\linebreak
-$\otimes\;V_{j,2} \hm= \mathrm{lin}
-\left\{f_{1} \otimes f_{2} : f_{1} \hm\in V_{j,1},\ f_{2} \hm\in V_{j,2} \right\}$, 
-где функция $f_{1} \otimes f_{2} $ определяется правилом 
-$f_{1} \hm\otimes f_{2} \left(x,y\right)\hm=f_{1} (x)f_{2} (y)$. 
-Ясно, что функции $\varphi _{j,k}^{(1)} \otimes \varphi _{j,s}^{(2)} $ 
-образуют базис в~пространстве~$V_{j}^{2} $.  Вейв\-лет-про\-стран\-ст\-ва~$W_{j}^{2} $ 
-определяются следующим образом: 
-$$
-V_{j}^{2} =V_{j-1}^{2} \oplus W_{j-1}^{2} \,.
-$$
-
-Следующие две леммы очевидны.
-
-\begin{figure*}[b] %fig1
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=162.046mm 
- \epsfbox{bit-1.eps}
- }
- \end{center}
-\vspace*{-9pt}
-\Caption{Графики функций $w_l$ для $n\hm=5$}
-\end{figure*}
-
-
-\noindent
-\textbf{Лемма 2.4.}\ 
-\textit{Пусть $f\hm\in {L}^{2}[0;n+1]$, тогда 
-$\Pi _{j} f=\Phi _{j} {C}_{j}^{*} $, где
- ${C}_{j}^{*}\hm =[(\Phi _{j} ,\Phi _{j})]^{-1}[(f,\Phi _{j})]$. 
- При этом} 
- $$
- \| f-\Pi _{j} f\| _{{L}^{2} }^{2} =
- \| f\| _{{L}^{2} }^{2} -\left[(f,\Phi _{j})\right]^{\mathrm{T}}
- \left[(\Phi _{j} ,\Phi _{j})\right]\left[(f,\Phi _{j})\right].
- $$
-
-\smallskip
-
-\noindent
-\textbf{Лемма 2.5.}\ 
-\textit{Пусть $f\in {L}^2([a_1;b_1]\times [a_2;b_2])$ 
-и~$\Pi_j^{(2)} : {L}^2([a_1;b_1]\times [a_2;b_2])\hm\to V_j^2$~--- 
-проектор. Если}
-\begin{multline*}
-%\label{G35}
-{G}_j={}\\
-{}=\left(\int\limits_{\,\,\,a_1}^{b_1}\,dx\!
-\int\limits_{a_2}^{b_2}\!\varphi_{j,s}^{(1)}(x)\varphi_{j,k}^{(2)}(y)f(x,y)\,dy
-\right)_{s,k=0}^{n_{j,1}-1,n_{j,2}-1},\hspace*{-5.4785pt}
-\end{multline*}
-\textit{то $\Pi_j^{(2)}f (x,y)\hm=\Phi_j^{(1)}(x)\mathrm{C}_j (\Phi_j^{(2)}
-(y))^{\mathrm{T}}$, где $\Phi_j^{(i)}\hm=(\varphi_{j,0}^{(i)}\cdots \varphi_{j,n_{j,i}-1}^{(i)})$, 
-а~матрица~${C}_j$ определяется равенством}:
-\begin{equation*}
-%\label{Cj35}
-{C}_j=\left[\left(\Phi_j^{(1)},\Phi_j^{(1)}\right)\right]^{-1}
-{G}_j\left[\left(\Phi_j^{(2)},\Phi_j^{(2)}\right)\right]^{-1}\,.
-\end{equation*}
-
-%\vspace*{-24pt}
-
-\section{Интегралы от~сплайн-вейвлетов}
-
-Пусть ${Q}_j=({h}_1^j,\dots,{h}_{2^{j-1}(n+1)}^j)$, 
-где ${h}_s^j\hm=(h_{1,s}^j,h_{2,s}^j,\dots,h_{2^j (n+1)+n,s}^j)^{\mathrm{T}}$. 
-Тогда,   согласно результатам предыдущего раздела,
-
-\noindent
-\begin{multline}
-\label{U31}
-\psi_{j-1,s}(x)={}\\
-{}=
-\begin{cases}
-\displaystyle\sum\limits_{i=s}^{2s+2n} \! h_{i,s}^j\varphi_{j,-n+i-1}(x)\,,&\hspace*{-10mm}
-s=1,\dots,n\,;\\
-\displaystyle\sum\limits_{i=2s-n-1}^{2s+2n}\!\!
-h_{i,s}^j\varphi_{j,-n+i-1}(x)\,,&\\ 
-&\hspace*{-38mm}s=n+1,\dots,2^{j-1}(n+1)-n\,;
-\\
-%\label{U33}
-\displaystyle\sum\limits_{i=2s-n-1}^{2^{j-1}(n+1)+n+s}\!\!\!\!
-h_{i,s}^j
-\varphi_{j,-n+i-1}(x)\,,&\\
-&\hspace*{-50mm}s=2^{j-1}(n+1)-n+1,\dots,2^{j-1}(n+1)\,.
-\end{cases}
-\end{multline}
-
-
-Так же, как и~в~работах~\cite{Lepik1, Lepik2, Lepik3, Lepik4, Lepik}, для удобства  
-введем следующие обозначения:
-\begin{align*}
-&w_l(x)=\varphi_{0,l-n-1}\,,\enskip l=1,2,\dots,2n+1\,,\\
-&w_l(x)=\psi_{j,s}(x)\,,\enskip l=2^j(n+1)+n+s\,, \\
-&\hspace*{23mm} j=0,1,\dots\,, \ s=1,\dots,2^{j}(n+1)\,.
-\end{align*}
-На рис.~1 представлены графики некоторых функций~$w_l$ для случая $n\hm=5$.
-
-
-
-
-Пусть $J\geqslant 0$,  $\Pi_{J} : {L}^2[0;n+1]\hm\to V_{J}$~--- 
-проектор и~$M\hm=2^{J}(n+1)+n$. Обозначим ${H}_J\hm=
-\begin{pmatrix}w_1 & \cdots & w_M
-\end{pmatrix}$ и~введем в~рассмотрение матрицу скалярных 
-произведений $[({H}_J, {H}_J)]$. 
-В~лемме~2.3 представлены матрицы скалярных произведений 
-$[(\Phi_k, \Phi_k)]$ для всех $k\hm=0,1,\dots$ Замечая, что $\Psi_k \hm= 
-\Phi_{k+1}{Q}_{k+1}$ и~$[(\Psi_k,\Psi_k)]\hm={Q}_{k+1}^{\mathrm{T}}
-[( \Phi_{k+1}, \Phi_{k+1})]{Q}_{k+1}$,
-получаем матрицу:
-{\small \begin{multline*}
-\left[({H}_J, {H}_J)\right]={}\\
-\!{}=\!
-\begin{pmatrix}
-\left[(\Phi_0, \Phi_0)\right] & 0 & 0 & \cdots & 0\\
-0 & {Q}_{1}^{\mathrm{T}}\left[( \Phi_{1}, \Phi_{1})\right]{Q}_{1} & 0 & \cdots & 0 \\
-\vdots & \ddots & \ddots & \ddots & \vdots \\
-0 & 0 & 0 & \cdots & {Q}_{J}^{\mathrm{T}}\left[( \Phi_{J}, \Phi_{J})\right]{Q}_{J}
-\end{pmatrix}\!.\hspace*{-12.6139pt}
-\end{multline*}
-}
-
-\noindent
-Так как $V_{J}\hm=V_0\oplus W_0\oplus V_1\oplus\dots\oplus W_{J-1},$ то для 
-$f\hm\in {L}^2[0;n+1]$ имеем
-$\Pi_{J} f\hm=\sum\nolimits_{l=1}^{M} c_l w_l \hm= {H}_{J}{C}_{J}$,
-где ${C}_J\hm=
-\begin{pmatrix} c_1 & \cdots\ c_{M} \end{pmatrix}^{\mathrm{T}}$.
-Как и~в~работах~\cite{Lepik1, Lepik2, Lepik3, Lepik4, Lepik}, определим функции:
-\begin{equation}
-\label{U38}
-{\xi}_{1,l}(x)=\int\limits_0^x w_l (t)\,dt\,;
-\end{equation}
-
-%\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\label{U38-1}
-{\xi}_{\nu+1,l}(x)=\int\limits_0^x {\xi}_{\nu,l}(t)\,dt={}\\
-{}=
-\fr{1}{\nu !}\int\limits_0^x (x-t)^{\nu} w_l (t)\,dt\,,
-\enskip \nu = 1,2,\ldots
-\end{multline}
-Согласно определению функций~$w_l$ и~равенст\-вам~(\ref{U31})  
-функция ${\xi}_{\nu+1,l}(x)$ представляет собой линейную комбинацию функций
-$$
-\eta_{n,\nu}^{j,s}(x)=\int\limits_0^x (x-t)^{\nu} N_{n}(2^j t-s)\,dt\,.
-$$
-
-\vspace*{-1pt}
-
-\noindent
-\textbf{Лемма 3.1.}\ 
-\textit{Имеет место следующее рекуррентное соотношение}:
-
-\noindent
-\begin{multline}
-\label{U40}
-\eta_{n,\nu}^{j,s}(x)=\fr{x^{\nu+1}}{\nu+1}\, N_n(-s)+{}\\
-{}+
-\fr{2^j}{\nu+1}\left(\eta_{n-1,\nu+1}^{j,s}(x)-\eta_{n-1,\nu+1}^{j,s+1}(x)\right)\,,
-\end{multline}
-\textit{где}
-
-\noindent
-\begin{multline}
-\label{U41}
-\eta_{0,\nu}^{j,s}(x) = {}\\
-\!\!\!{}=
-\begin{cases}
-\fr{(x-a)^{\nu+1} - (x-b)^{\nu+1}}{\nu+1}, &\\[6pt]
-& \hspace*{-37mm}\mbox{если } [a;b]=[0;x]
-\cap\left[\fr{s}{2^j};\fr{s+1}{2^j}\right]\not= \varnothing\,;\\[9pt] 
-0, & \hspace*{-37mm}\mbox{если } [a;b]=[0;x]\cap\left[\fr{s}{2^j};\fr{s+1}{2^j}\right]= \varnothing\,.
-\end{cases}
-\end{multline}
-
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\,.\ \
-По свойству В-сплай\-нов~\cite{Chui}  имеет место равенство:
-\begin{equation*}
-%\label{BSPL}
-N_n'(x)=N_{n-1}(x)-N_{n-1}(x-1)\,.
-\end{equation*}
-Следовательно, по формуле интегрирования по час\-тям  получаем:
-
-\noindent
-\begin{multline*}
-\eta_{0,\nu}^{j,s}(x)=\left.- \fr{(x-t)^{\nu+1}}{\nu+1} 
-N_n(2^j t-s)\right|_0^x+{}\\
-{}+2^j \int\limits_0^x \fr{(x-t)^{\nu+1}}{\nu+1} \left(N_{n-1}(2^jt-s)-{}\right.\\
-\left.{}-
-N_{n-1}(2^jt-s-1)\right)\,dt=
-\fr{x^{\nu+1}}{\nu+1}\, N_n(-s)+{}\\
-{}+\fr{2^j}{\nu+1}\left(\eta_{n-1,\nu+1}^{j,s}(x)-
-\eta_{n-1,\nu+1}^{j,s+1}(x)\right).
-\end{multline*}
-Равенство~(\ref{U41}) очевидно.~\hfill$\square$
-
-\vspace*{2pt}
-
-Формулы (\ref{U40}) и~(\ref{U41}) позволяют находить значение 
-функции $\eta_{n,\nu}^{j,s}(x)$ в~любой точке без интегрирования. Итак, 
-для $l\hm=1,2,\dots, 2n+1$ получаем:
-
-\columnbreak
-
-\noindent
-$$
-{\xi}_{\nu+1,l}(x)=\fr{1}{\nu !}\, \eta_{n,\nu}^{0,l-n-1}(x)\,,\enskip
-l=1,2,\dots, 2n+1\,.
-$$
-Для $l=2^j(n+1)\hm+n\hm+s$, $j\hm=0,1,\dots$, $s\hm=1,\ldots$\linebreak$\ldots,2^{j}(n\hm+1)$ получаем:
-\begin{multline*}
-{\xi}_{\nu+1,l}(x)={}\\
-{}=
-\begin{cases}
-\fr{2^{({j+1})/{2}}}{\nu !}\sum\limits_{i=s}^{2s+2n}
-h_{i,s}^{j+1}\eta_{n,\nu}^{j+1,-n+i-1}(x)\,, &\\
-& \hspace*{-17mm}s=1,\ldots,n; \\
-\fr{2^{({j+1})/{2}}}{\nu !}\sum\limits_{i=2s-n-1}^{2s+2n}
-\!\! h_{i,s}^{j+1}\eta_{n,\nu}^{j+1,-n+i-1}(x)\,, &\\
-& \hspace*{-40mm}s=n+1,\ldots,2^{j}(n+1)-n;\\
-\fr{2^{({j+1})/{2}}}{\nu !}\sum\limits_{i=2s-n-1}^{2^{j}(n+1)+n+s}\!\!\!\!
-h_{i,s}^{j+1}\eta_{n,\nu}^{j+1,-n+i-1}(x)\,, &\\
-& \hspace*{-54mm}s=2^{j}(n+1)-n+1,\ldots,2^{j}(n+1).
-\end{cases}
-\end{multline*}
-Полученные равенства справедливы при всех $\nu \hm= 0,1,\dots$
-
-\section{Применение сплайн-вейвлетов к~решению 
-линейных интегральных и~дифференциальных уравнений}
-
-В проекционных методах решения линейных уравнений рассматриваются два 
-уравнения~\cite{Akilov}: 
-первое~--- в~полном нормированном пространстве~$X$:
-\begin{equation}
-\label{Ur1}
-Kx\equiv x-\lambda Hx=f\,;
-\end{equation}
-второе~--- в~его полном подпространстве~$V_j$:
-\begin{equation}
-\label{Ur2}
-K_j x_j\equiv x_j-\lambda H_j x_j=\Pi_j f\,,
-\end{equation}
-где $H$~--- непрерывный линейный оператор в~$X$; $H_j$~--- 
-непрерывный линейный оператор в~$V_j$. Уравнение~(\ref{Ur1}) называется точным, 
-а~уравнение~(\ref{Ur2})~--- приближенным. При этом предполагается, что 
-выполнены следующие условия.
-
-\noindent \textbf{1. Условие близости операторов $H$ и~$H_j$.} 
-Для любого $x_j\hm\in V_j$ выполняется $\|\Pi_j H x_j \hm- H_j x_j\|
-\hm\leqslant \rho_j \|x_j\|$.
-
-\noindent \textbf{2. Условие хорошей аппроксимации элементов 
-вида~$Hx$ элементами из~$V_j$.} Для любого $x\hm\in X$ существует $x_j\hm\in V_j$ 
-такой, что $\|Hx-x_j\|\hm\leqslant \rho_{1,j} \|x\|$.
-
-\noindent \textbf{3. Условие хорошей аппроксимации свободного члена 
-точного уравнения.} Существует элемент $f_j \hm\in V_j$ такой, что $\|f-f_j\|
-\hm\leqslant \rho_{2,j}\|f\|$. В~отличие от предыду\-щих условий $\rho_{2,j}$ 
-здесь, вообще говоря, зависит от~$f$.
-
-Как показано в~\cite{Akilov}, если оператор~$K$ 
-имеет непрерывный обратный, уравнение~(\ref{Ur1}) имеет решение 
-и~$\lim\limits_{j\to +\infty} \rho_j \hm= 0$,  $\lim\limits_{j\to +\infty} \rho_{1,j} \hm= 
-0$,  $\lim\limits_{j\to +\infty} \rho_{2,j} \hm= 0$, то  
-$\lim\limits_{j\to +\infty} \|x-x_j\|\hm = 0$, где $x_j$~--- 
-решение уравнения~(\ref{Ur2}).
-
-Рассмотрим сначала линейное интегральное уравнение Фредгольма 2-го рода. 
-С~помощью замены переменной такое уравнение можно свести к~следующему:
-\begin{equation*}
-%\label{U313}
-u(x)-\lambda\int\limits_{0}^{n+1}U(x,t)u(t)\,dt =f(x)\,,\enskip x,t\in [0;n+1]\,.
-\end{equation*}
-
-Пусть $\varphi(x)=N_n(x)$, $V_{0} \subset V_{1} \subset\cdots$~--- 
-соответствующая последовательность конечномерных подпространств пространства
- ${L}^{2} \left[0;n+1\right]$. Пусть $X\hm={L}^2[0;n+1]$. 
- Операторы $K:X\hm\to X$, $H:X\hm\to X$ и~$H_j : V_j\hm\to V_j$ определим равенствами:
-\begin{align*}
-Ku(\cdot)&=u(\cdot)-\lambda\int\limits_0^{n+1} U(\cdot,t)u(t)\,dt\,;\\
-Hu(\cdot)&=\int\limits_0^{n+1} U(\cdot,t)u(t)\,dt\,;\\
-H_j&=\Pi_j\circ H\,,
-\end{align*}
-где $U\in {L}^2([0;n+1]^2)$. Условие близости операторов~$H$ и~$H_j$ 
-выполняется с~$\rho_j\hm=0$. Пусть  $u\hm\in X$ и~$u_j(\cdot)\hm=\int\nolimits_0^{n+1} 
-\Pi^{(2)}U(\cdot,t)u(t)\,dt\hm\in V_j$. То\-гда $\rho_{1,j}\hm=
-\|U-\Pi_j^{(2)}U\|_{{L}^2([0;n+1]^2)}$ 
-и~$\lim\nolimits_{j\to +\infty} \rho_{1,j}\hm=0$. Следовательно, 
-условие хорошей аппроксимации элементов вида~$Hu$ элементами из~$V_j$ 
-также выполняется. Наконец, для произвольного $f\hm\in X$, $f\hm\ne 0$, 
-возьмем $f_j\hm=\Pi_j f$, 
-а~$\rho_{2,j}\hm={\|f-\Pi_j f\|_{{L}^2([0;n+1])}}/{\|f\|_{{L}^2([0;n+1])}}$. Тогда $\lim\limits_{j\to +\infty} \rho_{2,j}=0$. 
-
-Решение приближенного уравнения
-\begin{equation}
-\label{Ur3}
-u_J-\lambda\Pi_j\circ H u_J=\Pi_J f
-\end{equation}
-будем искать в~виде $u_J\hm=\sum\nolimits_{l=1}^{M} c_l w_l 
-\hm= {H}_J{C}_J $, где $M\hm=2^{J}(n+1)+n$. 
-Тогда уравнение~(\ref{Ur3}) можно переписать в~виде
-системы линейных уравнений для определения коэффициентов~$c_l$:
-\begin{multline*}
-%\label{U315}
-\sum\limits_{l=1}^{M} c_l (w_l,w_s)-{}\\
-{}-\lambda
-\sum\limits_{l=1}^{M} c_l \int\limits_{0}^{n+1}dx
-\int\limits_{0}^{n+1}U(x,t)w_l(t)w_s(x)\,dt = (f,w_s)\,,\\
-s=1,2,\dots,M\,.
-\end{multline*}
-Это и~есть система метода Галеркина. Перепишем ее в~матричном виде:
-\begin{equation}
-\label{U315}
-{C}_J\left([({H}_J,{H}_J)]-
-\lambda{G}_J\right)={F}_J\,,
-\end{equation}
-где 
-\begin{align*}
-{C}_J&=\begin{pmatrix}
-c_1&\cdots &c_M\end{pmatrix}\,;\\ 
-{F}_J&=\begin{pmatrix}(f,w_1)&\cdots &(f,w_M)\end{pmatrix}^{\mathrm{T}}\,;\\
-{G}_J&=\left(g_{l,s}\right)_{l,s=1}^M\,,
-\\ 
-&\hspace*{10mm}g_{l,s}= \int\limits_{0}^{n+1}dx\int\limits_{0}^{n+1}U(x,t)w_l(t)w_s(x)\,dt.
-\end{align*}
-
-Аналогично рассматривается линейное интегральное уравнение Вольтерра 2-го рода
-$$
-u(x)-\lambda\int\limits_{0}^{x}U(x,t)u(t)\,dt =f(x)\,,\enskip 
-x,t\in [0;n+1]\,.
-$$
-Операторы $K:X\hm\to X$, $H:X\hm\to X$ и~$H_j : V_j\hm\to V_j$ определим равенствами:
-\begin{align*}
-Ku(x)&=u(x)-\lambda\int\limits_0^{x} U(x,t)u(t)\,dt\,;\\
-Hu(x)&=\int\limits_0^{x} U(x,t)u(t)\,dt\,;\\
-H_j&=\Pi_j\circ H\,.
-\end{align*}
-Величины $\rho_j$, $\rho_{1,j}$ и~$\rho_{2,j}$ остаются теми же, что и~для 
-уравнения Фредгольма.  Таким образом,
-система Галеркина для данного уравнения имеет вид:
-\begin{multline}
-\label{U316}
-\sum\limits_{l=1}^{M} c_l (w_l,w_s)-{}\\
-{}-
-\lambda\sum\limits_{l=1}^{M} 
-c_l \int\limits_{0}^{n+1}dx\int\limits_{0}^{x}U(x,t)w_l(t)w_s(x)\,dt ={}\\
-{}=(f,w_s)\,,\enskip
-s=1,2,\dots,M\,.
-\end{multline}
-Матричный вид системы~(\ref{U316}) совпадает с~(\ref{U315}), где
-$$
-{G}_J=(g_{s,l})_{s,l=1}^M,\ \ g_{s,l}= 
-\int\limits_{0}^{n+1}\!dx\int\limits_{0}^{x}\!U(x,t)w_l(t)w_s(x)\,dt.
-$$
-
-Рассмотрим теперь линейное дифференциальное уравнение
-\begin{equation}\label{DU1}
-y^{(k)}+a_1(x)y^{(k-1)}+\dots +a_k(x)y=f(x)
-\end{equation}
-с непрерывными коэффициентами $a_i(x)$, $i\hm=1,2,\dots,k$ и~начальными условиями
-\begin{equation}
-\label{NDU1}
-y(0)=y_0\,,\enskip y'(0)=y_1,\ \dots,\ y^{(k-1)}=y_{k-1}\,.
-\end{equation}
-Если обозначить $y^{(k)}(x)=u(x)$, то задача~(\ref{DU1})--(\ref{NDU1}) сводится 
-к~интегральному уравнению Вольтерра \mbox{2-го} рода. Следовательно, 
-приближенное решение задачи~(\ref{DU1})--(\ref{NDU1}) можно искать в~виде:
-\begin{multline*}
-y_J(x)=\sum\limits_{s=1}^M c_s {\xi}_{k,s}(x) +y_{k-1}\fr{x^{k-1}}{(k-1)!}+{}\\
-{}+y_{k-2}\fr{x^{k-2}}{(k-2)!}+\dots+y_0\,,
-\end{multline*}
-где функции ${\xi}_{k,s}(x)$ определены равенствами~(\ref{U38})
-и~(\ref{U38-1}), а~коэффициенты~$c_s$ 
-определяются из системы линейных уравнений:
-\begin{multline*}
-\sum\limits_{s=1}^M c_s ({\xi}_{k,s}+a_1 {\xi}_{k-1,s}+\dots +a_k w_s,w_l)={}\\
-{}=\left(f,w_l\right),\enskip l=1,\dots,M\,.
-\end{multline*}
-При этом $\lim\nolimits_{J\to +\infty} \|y_J\hm-y\|_{C^{k-1}[0;n+1]}\hm=0$, 
-где $y(x)$~--- точное решение задачи~(\ref{DU1})--(\ref{NDU1}).
-
-
-
-\noindent
-\textbf{Пример 4.1.}\
-Рассмотрим нестационарную систему автоматического управления, 
-поведение которой описывается дифференциальным уравнением:
-$$
-\sum\limits_{k=0}^5 a_k(t)x^{(k)}(t)=g(t),
-$$
-где коэффициенты~$a_k(t)$ определяются из сле\-ду\-юще\-го выражения:
-{\small
-\begin{multline*}
-\begin{pmatrix}
-a_0(t)\\a_1(t)\\a_2(t)\\a_3(t)\\a_4(t)\\a_5(t)\end{pmatrix}={}\\
-\!\!{}=\!
-\begin{pmatrix}0{,}5596&1{,}8918&2{,}5825&1{,}7855&0{,}6277&\!\!0{,}0909\\
-0{,}7113&2{,}3843&3{,}222\hphantom{9}&2{,}1975&0{,}7588&\!\!0{,}1065\\
-0{,}3717&1{,}2333&1{,}6449&1{,}1038&0{,}3728&\!\!0{,}0507\\
-0{,}1002&0{,}3278&0{,}43\hphantom{99}&0{,}2827&0{,}093\hphantom{9}&\!\!0{,}0122\\
-0{,}014\hphantom{9}&0{,}0449&0{,}0576&0{,}0369&0{,}0118&\!\!0{,}0015\\
-0{,}0008&0{,}0025&0{,}0031&0{,}0019&0{,}006\hphantom{9}&\!\!\hphantom{9}0{,}00007
-\end{pmatrix}\!\!
-\begin{pmatrix}1\\t\\t^2\\t^3\\t^4\\t^5\end{pmatrix}\!.\hspace*{-2.77pt}
-\end{multline*}
-}
-
-\noindent
-Найти реакцию системы на входное воздействие:
-\begin{multline*}
-g(t)=\left(85{,}7661+338{,}5984t+497{,}0437t^2+{}\right.\\
-{}+406{,}9496t^3+186{,}9354t^4+46{,}7809t^5+{}\\
-\left.{}+4{,}8258t^6\right)e^{-4t}.
-\end{multline*}
-Начальные условия нулевые. Интервал исследования~--- $[0;5]$~c.
-
-\columnbreak
-
-
-
-
-\smallskip
-
-\noindent
-Р\,е\,ш\,е\,н\,и\,е\,.
-Так как начальные условия нулевые, приближенное решение данной задачи будем  
-искать в~виде
-$$
-x_J(t)=\sum\limits_{s=1}^M c_s {\xi}_{5,s}(t)\,,
-$$
-где коэффициенты $c_1,\dots, c_M$ определяются из системы линейных уравнений:
-\begin{multline*}
-\sum\limits_{s=1}^{2^J(n+1)+n} c_s \left(
-a_5w_{s}+\sum\limits_{k=0}^4 a_k\xi_{5-k,s},w_l\right)={}\\
-{}=
-(g,w_l)\,,\enskip 
-l=1,\dots,2^J(n+1)+n\,.
-\end{multline*}
-На рис.~2 показаны графики третьего и~пятого приближений~$x_2(t)$ 
-(\textit{1}), $x_4(t)$~(\textit{2}) и~график 
-сеточной функции $\{(t_i,\tilde{x}_i)\}$~(\textit{3}), 
-полученной методом Рун\-ге--Кутта.\hfill $\square$
-
- { \begin{center}  %fig2
- \vspace*{9pt}
- \mbox{%
- \epsfxsize=79.639mm 
- \epsfbox{bit-2.eps}
- }
-
-
-\end{center}
-
-
-\noindent
-{{\figurename~2}\ \ \small{Графики приближений $x_2(t)$ 
-(\textit{1}), $x_4(t)$~(\textit{2}) 
-и~график сеточной функции $\{(t_i,\tilde{x}_i)\}$~(\textit{3}), 
-полученной методом Рун\-ге--Кутта}}
-}
-
-\vspace*{6pt}
-
-\addtocounter{figure}{1}
-
-%\vspace*{-36pt}
-
-\begin{figure*} %fig3
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=164.758mm 
- \epsfbox{bit-3.eps}
- }
-  \end{center}
-\vspace*{-9pt}
-\begin{minipage}[t]{79mm}
-\Caption{Графики приближений $x_0(t)$ (\textit{1}), $x_2(t)$ 
-(\textit{2}) и~график сеточной функции $\{(t_i,\tilde{x}_i)\}$  \label{sx}
-(\textit{3}), полученной методом Рун\-ге--Кутта}
-%\end{figure*}
-%\begin{figure*} %fig4
-\end{minipage}
-\hfill
-\vspace*{-9pt}
-\begin{minipage}[t]{79mm}
-\Caption{Графики приближений $y_0(t)$ (\textit{1}), $y_2(t)$~(\textit{2}) 
-и~график сеточной функции $\{(t_i,\tilde{y}_i)\}$~(\textit{3}), полученной методом 
-Рун\-ге--Кутта}
-\label{sy}
-\end{minipage}
-\vspace*{12pt}
-\end{figure*}
-
-
-\smallskip
-
-\noindent
-\textbf{Пример 4.2.}\
-Поведение линейной нестационарной системы описывается следующей
- системой дифференциальных уравнений:
-$$
-\begin{pmatrix}
-{\dot x}(t) \\ {\dot y}(t)\end{pmatrix} = 
-\begin{pmatrix} t^2 & 1-t \\ 1+t & t-t^2 \end{pmatrix}
- \begin{pmatrix} {x}(t) \\ {y}(t)\end{pmatrix}
- +  
- \begin{pmatrix} t^2 & 0 \\ 1 & t \end{pmatrix} 
- \begin{pmatrix} {g}_1(t) \\ {g}_2(t)\end{pmatrix}\,.
-$$
-Найти реакцию системы на входное воздействие:
-\begin{multline*}
-g_1(t) = 0{,}23315158 t^9-3{,}89665 t^8+26{,}4309725 t^7{}-\\
-{}-93{,}4794 t^6+183{,}95 t^5 -200{,}83 t^4+{}\\
-{}+122{,}255277 t^3-50{,}135386 t^2+13{,}095959 t-2{,}8237;
-\end{multline*}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
-g_2(t) = -0{,}071962459 t^{13}+1{,}3465024 t^{12}-{}\\
-{}-10{,}98105044 t^{11} + 51{,}1908385 t^{10} - 150{,}5098287 t^9+{}\\
-{}+291{,}295256 t^8-378{,}61242 t^7+336{,}683591 t^6-{}
-\end{multline*}
-
-\noindent
-\begin{multline*}
-{}-213{,}9681871 t^5 + 106{,}48891 t^4-47{,}3676 t^3+{}\\
-{}+19{,}56997 t^2-3{,}863587 t-0{,}0004283
-\end{multline*}
-
-%\pagebreak
-
-\noindent
-для начальных условий $x(0)\hm=-1$ и~$y(0)\hm=2$ на вре\-мен\-н$\acute{\mbox{о}}$м интервале $[0;2]$~c.
-
-\smallskip
-
-
-
-\noindent
-Р\,е\,ш\,е\,н\,и\,е\,.\ \ 
-Приближенное решение будем искать в~виде: 
-\begin{align*}
-x_{J}(t)&=-1+\sum\limits_{s=1}^M 
-c_{s} {\xi}_{1,s}(t)\,;\\
-y_{J}(t)&=2+\sum\limits_{s=1}^M c_{M+s} {\xi}_{1,s}(t)\,, 
-\end{align*}
-где $M\hm=2^J(n+1)+n$, а~коэффициенты $c_s$, $s\hm=1,2,\ldots, 2M$, определяются 
-из системы линейных уравнений:
-\begin{multline*}
-\sum\limits_{s=1}^M c_s\left((w_s,w_l)-
-\int\limits_{0}^{n+1}\!t^2{\xi}_{1,s}(t)w_l(t)\,dt\right)-{}\\
-{}-\sum\limits_{s=1}^M c_{M+s}\int\limits_0^{n+1}(1-t){\xi}_{1,s}(t)w_l(t)\,dt={}\\
-{}=\!\int\limits_0^{n+1}\!\left(t^2g_1(t)-t^2+2(1-t)\right)w_l(t)\,dt\,,\\
- l=1,2,\dots,M\,;
-\end{multline*}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline*}
-\sum\limits_{s=1}^M c_s\int\limits_{0}^{n+1}(1+t){\xi}_{1,s}(t)w_l(t)\,dt+{}\\
-{}+
-\sum\limits_{s=1}^M \!c_{M+s}\left(\int\limits_0^{n+1}\!(t-t^2){\xi}_{1,s}(t)w_l(t)\,dt-
-\left(w_s,w_l\right)\right)={}\hspace*{-6.37675pt}
-\end{multline*}
-
-
-\noindent
-\begin{multline*}
-{}=\int\limits_0^{n+1}(2t^2-t+1-g_1(t)-tg_2(t))w_l(t)\,dt\,, 
-\\
- l=1,2,\dots,M\,.
-\end{multline*}
-
-
-На рис.~\ref{sx} и~\ref{sy} показаны графики первого и~треть\-его приближений 
-$x_0(t),~y_0(t)$ (\textit{1}), $x_2(t),~y_2(t)$~(\textit{2}) 
-и~графики сеточных функций $\{(t_i,\tilde{x}_i)\}$, $\{(t_i,\tilde{y}_i)\}$~(\textit{3}), 
-полученные методом Рун\-ге--Кутта.~\hfill$\square$
-
-\vspace*{-6pt}
-
-\section{Заключение}
-
-\vspace*{-2pt}
-
-В данной статье были обобщены известные методы применения вейвлетов 
-Хаара к~приближенному решению линейных интегральных и~дифференциальных уравнений. 
-Эти методы получаются из представленных здесь при $n\hm=0$, что и~соответствует 
-вейвлетам Хаара. В~отличие от вейвлетов Хаара, где приближения решения интегрального 
-уравнения получаются ку\-соч\-но-по\-сто\-ян\-ны\-ми, а~приближения решения 
-дифференциального уравнения принадлежат классу глад\-кости~$C^{k-1}$, где $k$~--- 
-порядок уравнения, использование сплайн-вейв\-лет дает возможность 
-строить приближения любого класса гладкости~$C^n$.
-
-\vspace*{-6pt}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
- 
- \vspace*{-2pt}
- 
-\bibitem{Lepik3} 
-\Au{Lepik\,{\!\!\ptb{\"{U}}}}. 
-Application of the Haar wavelet transform to solving integral and 
-differential equations~// Proc. Est. Acad. Sci. Ph.,  2007. 
-Vol.~56. P.~28--46.
-\bibitem{Blatov} %2
-\Au{Блатов И.\,А., Рогова~Н.\,В.} Полуортогональные сплайновые вейвлеты и~метод 
-Галеркина численного моде-\linebreak\vspace*{-11pt}
-
-\pagebreak
-
-\noindent
-лирования тонкопроволочных антен~// 
-Вычисл. матем. и~матем. физ., 2013. Т.~53. №\,5. C.~727--736.
-
-\bibitem{Lepik4}   %3
-\Au{Lepik\,{\!\!\ptb{\"{U}}}}. 
-Numerical solution of differential equations using Haar wavelets~//  
-Math. Comput. Simulat., 2005. Vol.~68. P.~127--143.
-\bibitem{Lepik1}  %4
-\Au{Lepik\,{\!\!\ptb{\"{U}}}}. Numerical solution of evolution 
-equations by the Haar wavelet method~//  Appl. Math. Comput., 2007.  Vol.~185. 
-P.~695--704.
-\bibitem{Lepik2} %5
-\Au{Lepik\,{\!\!\ptb{\"{U}}}}. Haar wavelet method for solving higher order
- differential equations~// Int. J.~Math. Comput., 2008. Vol.~1. No.\,8. P.~84--94.
-
-\bibitem{Lepik}  %6
-\Au{Lepik\,{\!\!\ptb{\"{U}}}., Hein~H}.  Haar wavelets with applications.~---  
-Berlin: Springer, 2014. 207~p.
-\bibitem{ArticleFinkelstein}  
-\Au{Finkelstein A., Salesin~D.\,H.} Multiresolution curves~// SIGGRAPH Proceedings.~--- 
-New York, NY, USA: ACM, 1994. P.~261--268.
-\bibitem{Frazer} 
-\Au{Frazier M.\,W}. An introduction to wavelets through linear algebra.~--- 
-New York, NY, USA: Springer,  1999.  503~p.
-\bibitem{Chui}  
-\Au{Chui Ch.\,К}.  An introduction to wavelets.~--- Boston, MA, USA: Academic Press, 1991. 412~p.
-\bibitem{Yurgu} 
-\Au{Bityukov Yu.\,I.,  Akmaeva~V.\,N. }  
-The use of wavelets in the mathematical and computer modelling of manufacture 
-of the complex-shaped shells made of composite materials~//  Bull. 
-South Ural State University. Ser. Mathematical Modelling, 
-Programming and Computer Software, 2016. Vol.~9. No.\,3. P.~5--16.
-
-\bibitem{Novikov}   %11
-\Au{Новиков И.\,Я.,  Протасов~В.\,Ю.,  Скопина~М.\,А.} Теория всплесков.~--- 
-М.: Физматлит, 2005.  612~c.
-\bibitem{Akilov}  %12
-\Au{Канторович Л.\,В.,  Акилов~Г.\,П.} Функциональный анализ.~--- 
-М.: Наука, 1977. 744~с.
-
-%\bibitem{BookSmolencev} 
-%\Au{Смоленцев Н.\,К}. Основы теории вейвлетов. Вейвлеты в~MatLab.~--- 
-%М.: ДМК Пресс,  2005. 303~c.
-%\bibitem{Pupkov} Пупков, К.А., Н.Д. Егупов. Методы классической и~современной теории автоматического управления. Математические модели, динамические характеристики и~анализ систем автоматического управления. М.: Издательство МГТУ им. Н.Э. Баумана. 2004. 656 с.
- \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 21.03.17}}
-
-\vspace*{8pt}
-
-%\newpage
-
-%\vspace*{-24pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{8pt}
-
-
-\def\tit{THE USE OF WAVELETS FOR~THE~CALCULATION OF~LINEAR CONTROL SYSTEMS 
-WITH~LUMPED PARAMETERS}
-
-\def\titkol{The use of wavelets for~the~calculation of~linear control systems 
-with~lumped parameters}
-
-\def\aut{Yu.\,I.~Bityukov and~E.\,N.~Platonov}
-
-\def\autkol{Yu.\,I.~Bityukov and~E.\,N.~Platonov}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-
-\noindent
-Moscow Aviation Institute (National 
-Research University), 4~Volokolamskoye Highway, Moscow 125993, Russian Federation
-
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 4}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2017\ \ \ volume~11\ \ \ issue\ 4
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}
-
-
-
-\Abste{In many disciplines, problems appear which can be formulated with 
-the aid of differential or integral equations.  In simpler cases, such equations 
-can be solved analytically, but for more complicated cases, numerical 
-procedures are needed. In recent times, the wavelet-based methods 
-have gained great popularity, where different wavelet families such as 
-Daubechies, Coiflet, etc.\ wavelets are applied. A~shortcoming of these wavelets 
-is that they do not have an analytic expression. For this reason, differentiation 
-and integration of these wavelets are very complicated. The paper presents 
-algorithms for the numerical solution of linear integral and differential 
-equations based on spline wavelets on the interval. The algorithms generalize 
-the well-known methods based on Haar wavelets, which are a~particular case 
-of spline wavelets. The results presented can be applied for 
-the analysis of linear systems with lumped parameters.}
-
-\KWE{spline wavelet; differential equation; integral equation}
-
-
-
-\DOI{10.14357/19922264170412} 
-
-\vspace*{-6pt}
-
-\Ack
-\noindent
-This work is a part of Project No.\,2.2461.2017 
-supported by the Russian Ministry of Education and Science.
-
-
-
-\vspace*{3pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-
-\bibitem{1-bit-1}
-\Aue{Lepik,  $\ddot{\mbox{U}}$}. 2007. Application of the
- Haar wavelet transform to solving integral and differential equations. 
- \textit{Proc. Est. Acad. Sci. Ph.} 56:28-46.
-\bibitem{2-bit-1}
-\Aue{Blatov,  I.\,A., and  N.\,V.~Rogova.} 
-2013.  Application of semi-orthogonal spline wavelets and Galerkin
-method to the numerical simulation of thin wire antennas. 
-\textit{Comp. Math. Math. Phys.} 53(5):564--572.
-\bibitem{5-bit-1} %3
-\Aue{Lepik,  $\ddot{\mbox{U}}$.} 2005. Numerical solution of differential 
-equations using Haar wavelets. \textit{Math. Comput. Simulat.} 68:127--143.
-\bibitem{3-bit-1} %4
-\Aue{Lepik, $\ddot{\mbox{U}}$.}
-2007. Numerical solution of evolution equations by the 
-Haar wavelet method. \textit{Appl. Math. Comput.} 185:695--704.
-\bibitem{4-bit-1} %5
-\Aue{Lepik,  $\ddot{\mbox{U}}$.} 
-2008. Haar wavelet method for solving higher order differential equations. 
-\textit{Int. J.~Math. Comput.} 1(8):84--94.
-
-\bibitem{6-bit-1}
-\Aue{Lepik,  $\ddot{\mbox{U}}$, and H.~Hein.} 2014. \textit{Haar wavelets 
-with applications.}  Berlin: Springer. 207~p.
-\bibitem{7-bit-1}
-\Aue{Finkelstein, A., and D.\,H.~Salesin}. 1994. 
-{Multiresolution curves}. \textit{SIGGRAPH Proceedings}.  New York, NY: ACM. 261--268.
-%\item Demko, S., W.F. Moss and P.W. Smith. Decay rates for inverses of band matrices. 1984. Math. Comp. V. 43, \textnumero{167}. 491--499.
-\bibitem{8-bit-1}
-\Aue{Frazier, M.\,W.} 1999. \textit{An introduction to wavelets through linear algebra.} 
-New York, NY: Springer. 503~p.
-\bibitem{9-bit-1}
-\Aue{Chui,  Ch.\,К.} 1991. \textit{An introduction to wavelets.} Boston, MA: 
-Academic Press. 412~p.
-\bibitem{10-bit-1}
-\Aue{Bityukov, Yu.\,I., and  V.\,N.~Akmaeva.} 2016. 
-The use of wavelets in the mathematical and computer modelling of manufacture 
-of the complex-shaped shells made of composite materials.   
-\textit{Bull. South Ural State University. Ser. Mathematical Modelling, 
-Programming and Computer Software} 9(3):5--16.
-
-\bibitem{12-bit-1}
-\Aue{Novikov, I.\,Ya.,  V.\,Yu.~Protasov, and M.\,A.~Skopina.}
-2005. \textit{Teoriya vspleskov} [{The theory of wavelets}]. Moscow: Fizmatlit.  612~p.
-
-\bibitem{11-bit-1}
-\Aue{Kantorovich, L.\,V., and G.\,P.~Akilov.} 1977. \textit{Funktsional'nyy analiz} 
-[{Functional analysis}]. Moscow: Nauka. 744~p.
-%\bibitem{13-bit-1}
-%\Aue{Smolentsev, N.\,K.} 2005. \textit{Osnovy teorii veyvletov. Veyvlety v~MatLab} 
-%[{Fundamentals of the theory of wavelets. Wavelets in MatLab}].  Moscow: 
-%DMK Press. 303~p.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received March 21, 2017}}
-
-%\vspace*{-10pt}
-
-\Contr
-
-\noindent
-\textbf{Bityukov Yuri I.} (b.\ 1972)~--- 
-Doctor of Science in technology, associate professor, 
-Moscow Aviation Institute (National Research University), 
-4~Volokolamskoye Highway, Moscow 125993, Russian Federation; 
-\mbox{yib72@mail.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Platonov Evgeny N.} (b.\ 1976)~--- Candidate of Science (PhD) in physics 
-and mathematics, associate professor, Moscow Aviation Institute (National 
-Research University), 4~Volokolamskoye Highway, Moscow 125993, Russian Federation;
-\mbox{en.platonov@gmail.com}
-\label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература} 

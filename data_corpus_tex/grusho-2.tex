@@ -1,650 +1,0 @@
-\def\stat{grusho-2}
-
-\def\tit{АРХИТЕКТУРНЫЕ УЯЗВИМОСТИ РАСПРЕДЕЛЕННЫХ 
-ИНФОРМАЦИОННО-ВЫЧИСЛИТЕЛЬНЫХ СИСТЕМ$^*$}
-
-\def\titkol{Архитектурные уязвимости распределенных 
-информационно-вычислительных систем}
-
-
-\def\aut{А.\,А. Грушо$^1$, Н.\,А. Грушо$^2$, Е.\,Е.~Тимонина$^3$, С.\,Я.~Шоргин$^4$}
-
-\def\autkol{А.\,А. Грушо, Н.\,А. Грушо, Е.\,Е.~Тимонина, С.\,Я.~Шоргин}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Грушо А.\,А.}
-\index{Грушо Н.\,А.}
-\index{Тимонина Е.\,Е.}
-\index{Шоргин С.\,Я.}
-\index{Grusho A.\,A.}
-\index{Grusho N.\,A.}
-\index{Timonina E.\,E.}
-\index{Shorgin S.\,Ya.}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа поддержана РФФИ (проект 15-07-02053).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского
-  центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{grusho@yandex.ru}}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского
-  центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{info@itake.ru}}
-\footnotetext[3]{Институт проблем информатики Федерального исследовательского
-  центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{eltimon@yandex.ru}}
-\footnotetext[4]{Институт проблем информатики Федерального исследовательского
-  центра <<Информатика и~управление>> Российской академии наук, 
-\mbox{sshorgin@ipiran.ru}}
-
-
-\label{st\stat}
-
-                  \thispagestyle{headings}
-                  
-
-                  \vspace*{-9pt}
-
-
-  \Abst{Работа посвящена анализу архитектурных уязвимостей (АУ) распределенных 
-информационно-вычислительных систем (РИВС). Архитектурной уязвимостью в~РИВС
- называется уязвимость, которая не может быть 
-закрыта существующим набором механизмов информационной безопасности (ИБ) или для 
-которой неизвестны способы ее закрытия. Примеры АУ 
-показывают, что обычно эти уязвимости связаны с~недопустимыми 
-или упущенными из внимания взаимодействиями в~РИВС. 
-  Для закрытия или частичного закрытия АУ осуществляется 
-построение специальной архитектуры, не допускающей непосредственно запрещенные 
-взаимодействия. С~этой целью можно использовать методы ограничения влияния 
-компонентов РИВС друг на друга.}
-  
-\KW{уязвимости распределенных информационно-вы\-чис\-ли\-тель\-ных систем; архитектурные 
-уязвимости; методы анализа архитектурных уязвимостей}
-
-\DOI{10.14357/08696527160305} 
-
-
-\vskip 8pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-      
-                        \vspace*{-16pt}
-     
-\section{Введение}
-
-\vspace*{-4pt}
-
-  Задача поиска уязвимостей в~РИВС имеет длинную историю. 
-Наиболее значимым событием в~этой истории стало появление американского 
-стандарта TCSEC (Trusted Computer System Evaluation Criteria) (<<Оранжевая 
-книга>>)~[1] и~других книг <<Радужной серии>>. Современные технологии 
-значительно расширили спектр направлений поиска уязвимостей в~РИВС (см., 
-например,~[2]). 
-  
-  В настоящее время основные исследования по поиску уязвимостей ведутся 
-в~сетях, программных системах и~микропроцессорах~[3].
-
-
-  
-  Основное внимание в~статье уделено проблемам ИБ, 
-  порожденным архитектурой РИВС. Сформулируем кратко 
-одну из  проблем в~этой области. Информационные взаимодействия в~РИВС 
-определяются биз\-нес-про\-цес\-са\-ми (БП),
-\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
- а~реализация этих взаимодействий 
-происходит между хостами сети или между программами внутри 
-компьютерной системы. В~сетях механизмы ИБ взаимодействий 
-сосредоточены на уровне хостов, а~политики безопасности (ПБ) формируются 
-на уровне БП. Отсюда возникают так называемые архитектурные уязвимости. 
-Архитектурной уязвимостью в~РИВС называется уязвимость, которая не может быть закрыта 
-существующим набором механизмов ИБ или для которой неизвестны способы 
-ее закрытия. Термин <<архитектурный>> используется в~связи с~тем, что эти 
-уязвимости порождаются недопустимыми взаимодействиями, которые 
-исследуются в~тематике безопасных архитектур~[4, 5].
-{\looseness=-1
-
-}
-  
-  Закрытие АУ, как правило, требует формирования специальной архитектуры 
-РИВС. Например, существует нормативное требование гальванической 
-развязки секретных и~несекретных локальных сетей. 
-  
-  Трудности борьбы с~АУ подтверждает тот факт, что эксплойты, основанные 
-на АУ, являются наиболее долгоживущими эксплойтами. 
-  
-  По-видимому, нельзя говорить о полноте выявленных АУ в~РИВС, поэтому 
-в~статье приводятся примеры, отражающие глубину анализа АУ и~защиты 
-от~АУ. 
-
-  
-\section{Примеры архитектурных уязвимостей распределенных информационно-вычислительных систем}
-
-\subsection{Архитектурные уязвимости в~реализациях многоуровневых политик безопасности}
- 
-  Пусть РИВС состоит из аналитического центра High и~подсистемы поиска 
-в~Интернете исходной для анализа информации и~последующей ее передачи 
-в~High. Эту подсистему будем называть Low. Информация в~High является 
-конфиденциальной, т.\,е.\ она должна быть защищена от попадания 
-в~подсистему Low и~Интернет. Реально используется классическая 
-многоуровневая политика (MLS~--- multilevel security)~[6]. Согласно этой ПБ допустимы любые 
-информационные потоки от Low к~High и~запрещены информационные потоки 
-от High к~Low. В High решаются конкретные аналитические задачи, основанные 
-на данных из баз данных High и~данных, полученных от Low из Интернета. 
-  
-  Для сбора данных в~Интернете необходимо создать задание (нельзя собирать 
-все). Согласно этому заданию (даже безопасно переданному от High к~Low) 
-можно определить задачи, интересные для High. Например, защищенный 
-аналитический центр силового ведомства начал сбор информации 
-о~деятельности фирмы~$X$. Тогда получившие эту информацию брокеры на 
-рынке ценных бумаг (их можно отнести к~уровню Low) начнут сбрасывать 
-акции фирмы~$X$. Цены акций фирмы~$X$ упадут, и~фирме будет нанесен 
-материальный ущерб. 
-  
-  Рассмотрим, как информация об интересе к~фирме~$X$ силового ведомства 
-попадает к~брокерам. Здесь существует много путей, например присутствие 
-про\-грам\-мно-ап\-па\-рат\-ных агентов на сайтах, содержащих собираемую 
-информацию, попадает к~брокерам через посредников~--- владельцев таких 
-агентов. Контроль сетевого оборудования позволяет дублировать определенные 
-виды трафика и~продавать информацию об интересах силового ведомства. 
-В~конце концов, на уровне Low осуществляется взаимодействие с~Интернетом 
-и~возможны атаки на про\-граммно-ап\-па\-рат\-ную систему Low.
-  
-  Рассмотренный пример показывает, что MLS не может обеспечить 
-без\-опас\-ность конфиденциальной информации на уровне High в~силу 
-заложенной в~эту схему АУ. Даже если предположить, что High и~Low создают 
-для сбора информации свою ботнет, обоснование защищенности такой системы 
-остается проблематичным.
-
-%\vspace*{-4pt}
-
-  
-\subsection{SIEM и~другие центры интеллектуального анализа информационной безопасности} 
-  
-  В последние годы для анализа ИБ и~событий безопасности привлекаются 
-сис\-те\-мы интеллектуальной обработки данных, например SIEM (Secure 
-Information and Event Management)~[7]. 
-  
-  В построении большинства подобных систем можно увидеть АУ. Дело в~том, 
-что для обеспечения безопасности интеллектуальной обработки данных 
-создается изолированная информационная система (ИС), которая связана 
-с~исходной ИС каналами связи. По этим каналам передается информация 
-о~событиях без\-опас\-ности, происходящих в~ИС, и~обратно в~ИС передаются 
-управляющие воздействия на механизмы безопасности. Архитектурные уязвимости 
-такой сис\-те\-мы 
-связаны с~тем, что вредоносный код находится в~ИС и~потенциально может 
-воздействовать на передачу информации от сенсоров событий безопасности. 
-Криптография здесь не может повысить безопасность, так как вредоносный код 
-может контролировать криптографические алгоритмы либо входные данные 
-для этих алгоритмов. Управление механизмами безопасности также может быть 
-скорректировано вредоносным кодом, находящимся в~системе. 
-  
-  Если в~систему интеллектуального анализа данных включить саму ИС (т.\,е.\ 
-не изолировать систему интеллектуального анализа), то вредоносный код 
-может захватить интеллектуальную систему и~скомпрометировать ее 
-функционирование.
-{\looseness=-1
-
-}
-
-
-  
-  Таким образом, можно усложнить работу вредоносного кода, но исключить 
-эту АУ в~рамках данной архитектуры невозможно.
-
-%\vspace*{-4pt}
-  
-\subsection{Архитектурные уязвимости, основанные на наблюдении редких 
-событий}
- 
-  Как отмечается в~работе~[8], во многих облачных системах, которые 
-используют свободные вычислительные ресурсы независимых владельцев, 
-выявлено, что очистка ресурсов производится некачественно, т.\,е.\ в~памяти 
-остаются фрагменты информационной деятельности предыдущих 
-пользователей. Среди этих фрагментов может присутствовать ценная 
-информация. Если злоумышленник на регулярной основе обращается за 
-предоставлением ресурсов и~каждый раз сканирует остаточные следы 
-информации в~предоставленных ресурсах, то он может получить ценную 
-информацию. 
-  
-  Пусть вероятность того, что на данном шаге злоумышленник получит доступ 
-к~фрагменту ценной информации, равняется~$p$. Естественно, $p$ является 
-малой величиной, однако вероятность того, что в~течение~$n$~шагов 
-злоумышленник может получить доступ к~этой ценной информации, равна 
-$1\hm- (1\hm-p)^n$. Тогда если число шагов имеет порядок~$1/p$, то 
-вероятность успеха такой атаки становится уже значимой: $1\hm-e^{-
-1}\hm\approx 2/3$. 
-  
-  К сожалению, данный пример является не единственным примером АУ, 
-порожденной с~помощью редких событий в~РИВС. При интенсивной 
-эксплуатации БП малые вероятности нарушения ИБ часто 
-становятся большими вероятностями, если противник имеет возможность 
-постоянного наблюдения за целью его атаки.
-
-\vspace*{-2pt}
-  
-\subsection{Архитектурные уязвимости, возникающие при 
-переконфигурации настроек программно-аппаратных систем}
-
-\vspace*{-2pt}
- 
-  В работе~[9] приведен пример, когда нарушение последовательности 
-действий при переконфигурации связного оборудования РИВС приводит 
-к~изменениям реально действующей в~системе ПБ. Вместе с~тем команды 
-переконфигурации передаются по той же сети, по которой передаются данные 
-других процессов, выполняемых в~РИВС. Известно, что при этом возможны 
-следующие ошибки в~порядке передачи данных:
-  \begin{itemize}
-\item задержка пакетов;\\[-14pt]
-\item изменение порядка следования пакетов;\\[-14pt]
-\item потеря пакетов;\\[-14pt]
-\item <<маскарад>>.
-\end{itemize}
-
-  Таким образом, изменение порядка команд переконфигурации является 
-весьма вероятным при управлении переконфигурацией через сеть. 
-  
-  Данная уязвимость является архитектурной, так как правильность 
-переконфигурации РИВС определяется работой независимой от управления 
-переконфигурацией сетевой подсистемы. 
-  
-  Эта АУ особенно актуальна для РИВС, которая управляется с~помощью SDN 
-(Software-Defined Network), так как в~работе~\cite{10-g2} показано, что 
-нарушение хотя бы одного правила ПБ может приводить к~серьезной 
-переконфигурации всей сети.
-
-\vspace*{-2pt}
-  
-\subsection{Скрытые каналы }
-
-\vspace*{-2pt}
-
-  В работе~[11] канал назывался скрытым, если он не проектировался, не 
-предполагался для передачи информации в~электронной системе обработки 
-данных. 
-  
-  Доказано~[12], что скрытые каналы могут быть абсолютно <<невидимыми>>, 
-преодолевать межсетевые экраны и~прок\-си-сер\-ве\-ры, преодолевать 
-криптографи-\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
-ческие средства защиты, обладают большой пропускной 
-способностью и~возможно построение транзитных путей при организации 
-скрытой передачи данных по скрытым каналам в~РИВС. 
-  
-  В работе~\cite{3-g2} показано, что с~использованием стандарта IEEE~1149 на 
-кремнии микропроцессоров многих производителей формируются агенты, 
-которые могут нарушать ИБ при использовании этих микропроцессоров. 
-Однако эффективность таких агентов определяется наличием взаимосвязей 
-между ними с~помощью скрытых каналов. Гарантий защищенности от скрытых 
-каналов в~литературе не выявлено, поэтому этот класс уязвимостей также 
-является классом~АУ.
-
-\vspace*{-4pt}
-  
-\subsection{Обращение к~общим ресурсам }
-
-\vspace*{-2pt}
-
-  Можно сказать, что рассинхронизация данных при обращении к~общим 
-ресурсам~--- это классическая АУ. Она состоит в~том, что два пользователя 
-обращаются к~общим ресурсам по очереди, причем один производит изменение 
-данных в~этом ресурсе. Тогда второй получает этот ресурс и,~используя его 
-в~вычислительном процессе, опирается на два различных значения этого 
-ресурса. При этом возможно искажение результата вычислительного процесса. 
-Несмотря на то что предложено много механизмов предотвращения таких 
-искажений, исключить основную схему рассинхронизации полностью не 
-удается. 
-
-\vspace*{-4pt}
-  
-\section{Методы анализа архитектурных уязвимостей}
-
-\vspace*{-2pt}
-
-  Как видно из представленных примеров АУ, в~описаниях этих уязвимостей 
-всегда возникают недопустимые или неправильно организованные 
-информационные потоки. Поэтому в~качестве исходных данных анализа АУ 
-необходимо создать максимально полный перечень информационных потоков 
-или взаимодействий в~РИВС. При этом надо рассматривать все взаимодействия 
-компонентов в~РИВС и~порождаемых ими информационных потоков. Как было 
-предложено в~работе~[4], на следующем шаге необходимо провести 
-классификацию допустимых и~недопустимых взаимодействий с~точки 
-зрения~ИБ. 
-  
-  Часто в~интересах бизнес-логики допускается присутствие недопустимых 
-взаимодействий компонентов в~РИВС, т.\,е.\ требования биз\-нес-ло\-ги\-ки 
-могут порождать~АУ. 
-  
-  В работах~\cite{4-g2, 5-g2, 13-g2} для закрытия или частичного закрытия АУ 
-осуществляется построение специальной архитектуры, не допускающей 
-непосредственно запрещенные взаимодействия. С~этой целью можно 
-использовать методы ограничения влияний компонентов РИВС друг на 
-друга~[14].
-
-\vspace*{-4pt}
-  
-\section{Заключение}
-
-\vspace*{-2pt}
-
-  При построении ИБ РИВС часто говорят о принятии рисков. Риски 
-принимаются, когда потери от инцидентов безопасности невелики, или 
-построение защиты требует больших материальных затрат, или когда 
-непонятно, как за-\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
-крывать имеющиеся уязвимости. Введенное в~статье понятие 
-АУ относится к~последним двум ситуациям. 
-  
-  Примеры АУ, приведенные в~статье, показывают, что обычно эти уязвимости 
-связаны с~недопустимыми или упущенными из внимания взаимодействиями 
-в~РИВС. Структура взаимосвязей компонентов в~РИВС достаточно сложна. 
-Хотя передача информации осуществляется через ограниченный набор сетевых 
-устройств или внутри компьютерных интерфейсов, построение на их основе 
-взаимодействий сложных компонентов предполагает анализ цепочек простых 
-взаимодействий и~учет наличия других процессов. 
-  
-  С учетом вышесказанного возникает вопрос о том, что такое защищенность 
-в~РИВС и~как ее оценивать с~учетом реализаций различных вычислительных 
-процессов на одних физических системах. Этот вопрос требует отдельного 
-исследования.
-
-%\vspace*{-4pt}
-  
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-     \bibitem{1-g2}
-     Department of Defense Trusted Computer System Evaluation Criteria.~--- U.S.\ National 
-Institute of Standards and Technology, Department of Defense, 1985. {\sf 
-http://csrc.nist.gov/publications/history/dod85.pdf}.
-     \bibitem{2-g2}
-     Detection of intrusions and malware, and vulnerability assessment~/
-      Eds. K.~Rieck, 
-P.~Stewin, J.-P.~Seifert.~--- Lecture notes in computer science
-ser.~--- Springer, 2013. Vol.~7967. 219~p.
-     \bibitem{3-g2}
-     \Au{Skorobogatov S., Woods C.} Breakthrough silicon scanning discovers backdoor in 
-military chip~/\!\!/ Cryptographic hardware and embedded systems~/
-Eds.\ E.~Prouff, P.~Schaumont.~--- Lecture
-notes in computer science ser.~--- Heidelberg: 
-Springer, 2012. Vol.~7428. P.~23--40.
-     \bibitem{4-g2}
-     \Au{Грушо А., Грушо Н., Тимонина~Е., Шоргин~С.} Безопасные архитектуры 
-распределенных систем~/\!\!/ Системы и~средства информатики, 2014. Т.~24. №\,3. С.~18--31.
-     \bibitem{5-g2}
-     \Au{Грушо А., Грушо Н., Тимонина~Е., Шоргин~С.} Возможности построения 
-без\-опас\-ной архитектуры для динамически изменяющейся информационной системы~/\!\!/ 
-Системы и~средства информатики, 2015. Т.~25. №\,3. С.~78--93.
-     \bibitem{6-g2}
-     \Au{Грушо А., Применко~Э., Тимонина~Е.} Теоретические основы компьютерной 
-без\-опас\-ности.~--- М.: Академия, 2009. 272~c.
-     \bibitem{7-g2}
-     CS: Prelude SIEM (July 2012). {\sf http://www.prelude-technologies.com}.
-     \bibitem{8-g2}
-     \Au{Nappa A., Rafuque M.\,Z., Caballero J}. Driving in the cloud: An analysis of drive-by 
-download operations and abuse reporting~/\!\!/ Detection of intrusions and malware, and vulnerability assessment~/
-Eds. K.~Rieck, 
-P.~Stewin, J.-P.~Seifert.~--- Lecture notes in computer science
-ser.~--- Springer,  2013. Vol.~7967. P.~1--20.
-     \bibitem{9-g2}
-     \Au{Majumdar R., Tetali S.\,D., Wang Z}. Kuai: A~model checker for software-defined 
-networks~/\!\!/ 2014 Formal Methods in Computer-Aided Design (FMCAD 2014) Proceedings.~---
-Lausanne, Switzerland: IEEE, 2014. P.~163--170.
-     \bibitem{10-g2}
-     \Au{Luo Sh., Wu J., Li J., Guo~L.} Context-aware traffic forwarding service for application in 
-SDN~/\!\!/ 2015 IEEE Conference (International) on Sustainable Computing and Communications 
-(SustainCom 2015) Proceedings.~--- Chendu, China: IEEE, 2015. P.~557--561.
-     \bibitem{11-g2}
-     \Au{Lampson B.\,W.} A~note of the confinement problem~/\!\!/ Commun. ACM, 
-1973. Vol.~16. No.\,10. P.~613--615.
-     \bibitem{12-g2}
-     \Au{Грушо А., Грушо Н., Тимонина~Е.} Анализ меток в~скрытых каналах~/\!\!/ 
-Информатика и~её применения, 2014. Т.~8. Вып.~4. С.~12--16.
-     \bibitem{13-g2}
-     \Au{Грушо А., Смирнов Д.} Защита бизнес-логики от атак нулевого дня~/\!\!/ Системы 
-и~средства информатики, 2016. Т.~26. №\,3. С.~\pageref{stgrusho}--\pageref{endgrusho}. 
-     \bibitem{14-g2}
-     \Au{Грушо А., Грушо Н., Забежайло~М., Тимонина~Е.} Интеграция статистических 
-и~детерминистских методов анализа информационной безопасности~/\!\!/ Информатика и~её 
-применения, 2016. Т.~10. Вып.~3. С.~19--25.
-     \end{thebibliography}
-} }
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 15.08.16}}
-
-
-
-
-\vspace*{6pt}
-
-\hrule
-
-%\newpage
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{9pt}
-
-
-
-\def\tit{ARCHITECTURAL VULNERABILITIES  
-OF~DISTRIBUTED~INFORMATION~SYSTEMS}
-
-\def\titkol{Architectural vulnerabilities  
-of~distributed information systems}
-
-
-\def\aut{A.\,A.~Grusho, N.\,A.~Grusho, E.\,E.~Timonina, and S.\,Ya.~Shorgin}
-\def\autkol{A.\,A.~Grusho, N.\,A.~Grusho, E.\,E.~Timonina, and S.\,Ya.~Shorgin}
-
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-
-\noindent
-Institute of Informatics Problems, Federal Research Center 
-``Computer Science
-and Control'' of the Russian Academy of Sciences, 
-44-2~Vavilova Str., Moscow 
-119333, Russian Federation
-
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2016 vol~26 no\,3}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2016   vol~26   no\,3
-\hfill \textbf{\thepage}}} 
-    
-    
-  \Abste{The paper is devoted to the analysis of architectural vulnerabilities of the distributed 
-information systems.  
-Such vulnerability, which cannot be closed by the existing set of mechanisms of 
-information security  or for which ways of its closing are unknown,
-is called an architectural vulnerability in the distributed information systems. 
-The examples of architectural vulnerabilities 
-show that usually, these vulnerabilities are connected with the inadmissible or missed from 
-attention interactions in distributed information systems. 
-  For closing or partial closing of architectural vulnerabilities, 
-  a~special architecture 
-which does not allow directly forbidden interactions was created. For this purpose,
- it is possible to 
-use methods of restriction of influences of some components of 
-distributed information systems on other components.}
-  
-  \KWE{vulnerabilities of distributed information systems; 
-  architectural vulnerabilities; 
-methods of architectural vulnerabilities analysis}
-  
-\DOI{10.14357/08696527160305} 
-
-\vspace*{-9pt}
-
-
-\Ack
-
-\vspace*{-2pt}
-
-\noindent
-The paper was supported by the Russian Foundation 
-for Basic Research (project 15-07-02053).
-
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-\vspace*{-6pt}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99} 
-    \bibitem{1-g2-1}
-    Department of Defense Trusted Computer System Evaluation Criteria. 1985. 
-DoD. Available at: {\sf http://csrc.nist.gov/publications/history/dod85.pdf} (accessed  
-September~19, 2016).
-    \bibitem{2-g2-1} 
-  Rieck, K., P.~Stewin, 
-and J.-P.~Seifert, eds.  2013.
-\textit{Detection of intrusions and malware, and vulnerability assessment}. Lecture notes in computer
-science ser. Springer.  Vol.~7967. 219~p. Available at: {\sf 
-http://link.springer.com/book/10.1007\%2F978-3-642-39235-1} (accessed September~19, 
-2016). 
-    \bibitem{3-g2-1}
-    \Aue{Skorobogatov, S., and C.~Woods}. 2012. Breakthrough silicon scanning 
-discovers backdoor in military chip. \textit{Cryptographic hardware and embedded 
-systems}. Eds. E.~Prouff and P.~Schaumont. Lecture notes in computer
-science ser.  Heidelberg: Springer. Vol.~7428. 23--40. Available at: {\sf 
-http://www.cl.cam.ac.uk/$\sim$sps32/\linebreak Silicon\_scan\_draft.pdf} (accessed September~19, 
-2016).
-    \bibitem{4-g2-1}
-    \Aue{Grusho, A., N. Grusho, E.~Timonina, and S.~Shorgin}. 2014. Bezopasnye 
-arkhitektury raspredelennykh sistem [Secure architecture of the distributed systems]. 
-\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 
-24(3):18--31.
-    \bibitem{5-g2-1}
-    \Aue{Grusho, A., N. Grusho, E.~Timonina, and S.~Shorgin}. 2015. 
-Vozmozhnosti postroeniya bezopasnoy arkhitektury dlya dinamicheski 
-izmenyayushcheysya informatsionnoy sistemy [Possibilities of secure architecture 
-creation for dynamically changing information systems]. \textit{Sistemy i~Sredstva 
-Informatiki~--- Systems and Means of Informatics} 25(3):78--93.
-    \bibitem{6-g2-1}
-    \Aue{Grusho, A., Ed. Primenko, and E. Timonina}. 2009. \textit{Teoreticheskie 
-osnovy komp'yuternoy bezopasnosti} 
-[Theoretical bases of computer security].  Moscow: Academy. 272~p.
-    \bibitem{7-g2-1}
-    CS: Prelude SIEM. 2012. Available at: {\sf http://www.prelude-technologies.co} 
-(accessed September~19, 2016).
-    \bibitem{8-g2-1}
-    \Aue{Nappa, A., M.\,Z. Rafuque, and J.~Caballero}. 2013. Driving in the cloud: 
-An analysis of drive-by download operations and abuse reporting. 
-\textit{Detection of intrusions and malware, and vulnerability assessment}. 
-Eds. K.~Rieck, P.~Stewin, and \mbox{J.-P.}~Seifert.
-Lecture notes in computer
-science ser. Springer.  7967:1--20. Available at: 
-{\sf http://software.imdea.org/$\sim$juanca/papers/cloud\_dimva13.pdf} (accessed  
-September~19, 2016).
-    \bibitem{9-g2-1}
-    \Aue{Majumdar, R., S.\,D. Tetali, and Z.~Wang}. 2014. Kuai: A~model 
-checker for software-defined networks. \textit{2014 Formal Methods in  
-Computer-Aided Design (FMCAD 2014) Proceedings}. Lausanne, Switzerland: IEEE. 
-163--170. Available at: {\sf 
-http:// www.cs.utexas.edu/users/hunt/FMCAD/FMCAD14/proceedings/27\_majumdar.pdf}  
-(accessed September~19, 2016).
-    \bibitem{10-g2-1}
-    \Aue{Luo, Sh., J. Wu, J. Li, and L. Guo}. 2015. Context-aware traffic 
-forwarding service for application in SDN. \textit{2015 IEEE Conference 
-(International) on Sustainable Computing and Communications (SustainCom 2015) 
-Proceedings}. 2015. Chendu, China: IEEE. 557--561.
-    \bibitem{11-g2-1}
-    \Aue{Lampson, B.\,W.} 1973. A~note of the confinement problem. 
-\textit{Commun. ACM} 16(10):613--615.
-    \bibitem{12-g2-1}
-    \Aue{Grusho, A., N. Grusho, and E. Timonina}. 2014. Analiz metok v~skrytykh 
-kanalakh [The analysis of tags in the covert channels]. \textit{Informatika i~ee 
-Primeneniya~--- Inform. Appl.} 8(4):12--16.
-    \bibitem{13-g2-1}
-    \Aue{Grusho, A., and D. Smirnov}. 2016. Zashchita biznes-logiki ot atak 
-nulevogo dnya [Protection of business logic against zero day attacks]. \textit{Sistemy 
-i~Sredstva Informatiki~--- Systems and Means of Informatics} 
-26(3):\pageref{stgrusho}--\pageref{endgrusho}. 
-
-\pagebreak
-
-
-    \bibitem{14-g2-1}
-    \Aue{Grusho,~A., N. Grusho, M. Zabezhailo, and E.~Timonina}. 2016. 
-Integratsiya sta\-ti\-sti\-che\-skikh i~deterministskikh metodov analiza informatsionnoy 
-bezopasnosti [Integration of statistical and deterministic methods of information 
-security analysis]. \textit{Informatika i~ee Primeneniya~--- Inform. Appl.}  
-10(3):19--25.
-\end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Received August 15, 2016}}
-
-    
-    \Contr
-    
-    \noindent
-    \textbf{Grusho Alexander A.} (b.\ 1946)~--- Doctor of Science in physics and mathematics, 
-professor, Head of Laboratory, Institute of Informatics Problems, Federal Research Center 
-``Computer Sciences and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 
-119333, Russian Federation; \mbox{grusho@yandex.ru}   
-     
-     \vspace*{3pt}
-     
-     \noindent
-     \textbf{Grusho Nick A.} (b. 1982)~--- Candidate of Science (PhD) in physics and mathematics, 
-senior scientist, Institute of Informatics Problems, Federal Research Center ``Computer Sciences 
-and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian 
-Federation; \mbox{info@itake.ru}
-       
-     \vspace*{3pt}
-     
-     \noindent
-\textbf{Timonina Elena E.} (b.\ 1952)~--- Doctor of Science in technology, professor, leading 
-scientist, Institute of Informatics Problems, Federal Research Center ``Computer Sciences and 
-Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian 
-Federation; \mbox{eltimon@yandex.ru} 
-
-     \vspace*{3pt}
-     
-     \noindent
-\textbf{Shorgin Sergey Ya.} (b.\ 1952)~--- Doctor of Science in physics and mathematics, 
-professor, Deputy Director, Federal Research Center``Computer 
-Sciences and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, 
-Russian Federation; \mbox{sshorgin@ipiran.ru} 
-    
-    
-\label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}

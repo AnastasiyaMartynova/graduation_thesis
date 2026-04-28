@@ -1,937 +1,0 @@
-\def\stat{bitbos}
-
-\def\tit{О ПОИСКЕ ОПТИМАЛЬНОЙ СХЕМЫ 3D-ПЕЧАТИ КОНСТРУКЦИЙ 
-ИЗ~КОМПОЗИЦИОННЫХ МАТЕРИАЛОВ}
-
-\def\titkol{О поиске оптимальной схемы 3D-печати конструкций 
-из~композиционных материалов}
-
-\def\aut{А.\,В.~Босов$^1$, Ю.\,И.~Битюков$^2$, Г.\,Ю.~Денискина$^3$}
-
-\def\autkol{А.\,В.~Босов, Ю.\,И.~Битюков, Г.\,Ю.~Денискина}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Босов А.\,В.}
-\index{Битюков Ю.\,И.}
-\index{Денискина Г.\,Ю.}
-\index{Bosov A.\,V.}
-\index{Bityukov Yu.\,I.}
-\index{Deniskina G.\,Yu.}
-
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-%{Работа выполнена при поддержке Министерства науки и~высшего образования Российской Федерации (проект 
-%075-15-2020-799).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук; 
-Московский авиационный институт, \mbox{avbosov@ipiran.ru}}
-\footnotetext[2]{Московский авиационный институт, \mbox{yib72@mail.ru}}
-\footnotetext[3]{Московский авиационный институт, \mbox{dega17@yandex.ru}}
-
-%\vspace*{-6pt}
-
-
-
-
-
-\Abst{Статья посвящена задаче поиска оптимальных траекторий укладки волокон при 
-изготовлении конструкций, армированных непрерывными волокнами, методом 3D-пе\-ча\-ти. 
-Предложена оптимизационная постановка, в которой целевой функцией выступает один из 
-критериев разрушения композита. Схемы укладки волокон при печати моделируются  
-с~по\-мощью аналитических функций, которые находятся из задачи Неймана для уравнения 
-Лапласа. Краевые условия определяются на основе задания углов между волокнами и~границей  
-об\-ласти. Задача Неймана решается посредством конформного преобразования области печати 
-на круг. Таким образом, критерий разрушения композита становится функцией от углов, 
-которые волокна образуют с~границей области. Для минимизации целевой функции 
-используется генетический алгоритм поиска глобального минимума функции нескольких 
-переменных.}
-
-\KW{композиционные материалы; вейвлеты; 3D-пе\-чать; аналитическая функция}
-
-\DOI{10.14357/19922264220102}
-  
-%\vspace*{-4pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-
-  Композиционные материалы (КМ) широко применяются в~разных отраслях 
-про\-мыш\-лен\-ности,\linebreak например авиационной, автомобильной. Композиционные материалы состоят из 
-ар\-ми\-ру\-юще\-го и~свя\-зу\-юще\-го материалов; в~качестве ар\-ми\-ру\-юще\-го широко 
-применяются углеродные волокна, \mbox{об\-ла\-да\-ющие} большой удельной проч\-ностью. 
-Механические свойства изделий из КМ зависят от на\-прав\-ле\-ния этого волокна. 
-Перспективным на\-прав\-ле\-нием, поз\-во\-ля\-ющим создавать конструкции\linebreak слож\-ной 
-формы последовательной укладкой композиционного материала, стала технология  
-3D-пе\-ча\-ти (см.\ пример такого решения в~[1]). Применение 3D-пе\-ча\-ти 
-и КМ позволяет получать \mbox{конструкции} с~пространственным армированием по 
-заданным траекториям. Пол\-ный контроль над расположением волокон во время 
-печати позволяет укладывать их именно так, как того требуют условия 
-эксплуатации: чтобы~100\% волокон шли в~нужном направлении. Для 
-практической реализации, для разработки автоматизированной сис\-те\-мы 
-проектирования (CAD/CAE-сис\-те\-мы) и~моделирования процесса 3D-пе\-ча\-ти 
-актуальна задача поиска оптимальной схемы печати, дик\-ту\-емой условиями 
-эксплуатации изделия.
-  
-  Как известно~[2], схема укладки волокна заложена в~самих уравнениях 
-механики КМ в~виде некоторой (неизвестной) локальной ортогональной сис\-те\-мы 
-координат, т.\,е.\ найти эту схему можно только из решений уравнений 
-с~разными локальными системами координат. Для задания локальной сис\-те\-мы 
-координат в~статье использованы аналитические функции, которые строятся на 
-основе известных формул Дини и~Чизотти~[3] всего лишь заданием направления 
-укладки волокна на границе изделия. В~качестве критерия оптимизации для 
-выбора траекторий уклад\-ки волокон можно взять любой из критериев разрушения 
-КМ~[2].
-  
-\section{Моделирование траекторий укладки волокон  
-при~3D-печати}
-
-  Пусть $X\subset \mathbf{R}^2$~---  об\-ласть печати. Касательные векторы 
-к~кривым, по которым укладываются волокна при 3D-пе\-ча\-ти, образуют 
-векторное поле в~$X$, которое будем характеризовать комплексным чис\-лом 
-$r\hm= r_1\hm+ ir_2$, где $r_1\hm= r_1(x_1, x_2)$; $r_2\hm= r_2(x_1, x_2)$. Это 
-поле предполагается гармоническим, т.\,е.\ соленоидальным и~потенциальным~[3], 
-такое поле не имеет источников и~вих\-рей. Будем считать, что $X$~--- 
-подмножество односвязной области~$\tilde{X}$: $X\hm\subset \tilde{X}$. Значит, 
-выражение $-r_2dx_1\hm+ r_1dx_2$ есть полный дифференциал некоторой 
-функции $v_2\hm= v_2(x_1, x_2)$, определенной на~$\tilde{X}$. Эта функция 
-называется функцией тока~[3]. Кроме того, выражение $r_1dx_2\hm+ r_2dx_2$ 
-также есть полный дифференциал некоторой функции $v_1\hm= v_1(x_1, x_2)$, 
-которая называется потенциалом поля~[3]. Функция тока $v_2(x_1, x_2)$  
-и~потенциал поля $v_1(x_1, x_2)$ являются сопряженными гармоническими 
-функциями~[3]. Линии тока и~линии равного потенциала образуют ортогональное 
-семейство. Аналитическая функция $v_1(x_1, x_2)\hm+ iv_2(x_1,x_2)$, $x_1\hm+ 
-ix_2\hm\in \tilde{X}$, называется комплексным потенциалом поля~[3]. Таким 
-образом, любая аналитическая функция в~об\-ласти~$\tilde{X}$ дает и~схему 
-уклад\-ки волокон, и~локальную криволинейную систему координат в~$X\hm\subset 
-\tilde{X}$. Будем далее точ\-ки $x\hm= (x_1, x_2)$ изображать на одной 
-комплексной плос\-кости, а~точ\-ки $v\hm= (v_1, v_2)$~--- на другой. Тогда 
-преобразование $v_1\hm=v_1(x_2, x_2)$, $v_2\hm= v_2(x_1, x_2)$ и~его обратное 
-$x_1\hm= x_1(v_1, v_2)$, $x_2\hm= x_2(v_1, v_2)$ будет пред\-став\-лять собой 
-преобразование множества~$\tilde{X}$ на плоскости~$x$ в~множество~$\Omega$ 
-на плоскости~$v$. Сеть линий уров\-ня $v_1(x_1, x_2)\hm=const$, $v_2(x_1, 
-x_2)\hm= const$ называется изотермической сетью~[3]. Кривые, по которым 
-укладываются волокна, определяются па\-ра\-мет\-ри\-че\-ски\-ми пред\-став\-ле\-ни\-ями
-  \begin{align*}
-  \gamma_{\alpha,1}:\,& r_{\alpha,1} (v_1) 
-=x_1(v_1,\alpha)+ix_2(v_1,\alpha)\,,\enskip v_1\in T_{\alpha,1}\,;\\
-  \gamma_{\beta,2}:\, & r_{\beta,2} (v_2) =x_1(\beta, v_2)+ix_2(\beta, v_2)\,,\enskip 
-v_2\in T_{\beta,2}\,,
-  \end{align*}
-где $T_{\alpha,1}$ и~$T_{\beta,2}$~--- некоторые промежутки; $\alpha, \beta \hm\in 
-\mathbf{R}$; $T_{\alpha,1} \times \{\alpha\}, \{\beta\}\times 
-T_{\beta,2}\hm\subset\Omega$.
-  
-  Поскольку функция $v_1(x_1, x_2)$ является гармонической в~односвязной  
-об\-ласти~$\tilde{X}$, то она удовле\-тво\-ря\-ет уравнению Лапласа. 
-Пусть~$\theta(x)$~--- угол между внеш\-ней единичной нормалью 
-$$
-n(x)=n_1(x)+ in_2(x)
-$$ 
-к~границе об\-ласти~$\tilde{X}$ и~волокном. В~рамках 
-рас\-смат\-ри\-ва\-емой модели 3D-пе\-ча\-ти на\-прав\-ле\-ние волокна в~точке $x\hm\in 
-\partial \tilde{X}$ задается вектором 
-$$
-  t(x)= \left.\fr{\partial x_1}{\partial v_1} \right\vert_{v(x)} +
-  \left. i \fr{\partial x_2}{\partial v_1} 
-  \right\vert_{v(x)}\,.
-$$
- Учитывая, что $x_1\equiv x_1(v_1(x_1,x_2), v_2(x_1,x_2))$ 
-и~$x_2\hm\equiv x_2(v_1(x_1x_2), v_2(x_1,x_2))$, а~также соотношения  
-Ко\-ши--Ри\-ма\-на, получаем 
-  $$
-  t(x)= \fr{1}{\vert \nabla v_1(x)\vert} \left( \fr{\partial v_1(x)}{\partial x_1} 
-+i\fr{\partial v_1(x)}{\partial x_2}\right)\,.
-  $$
-   Таким образом, на границе об\-ласти должно выполняться 
-  $$
-  \fr{1}{\vert \nabla v_1(x)\vert} \left( \fr{\partial v_1(x)}{\partial x_1}\,n_1(x)+ 
-\fr{\partial v_1(x)}{\partial x_2}\,n_2(x)\right)= \cos\theta(x),
-  $$ 
-  что можно переписать в~виде 
-  $$
-  \fr{\partial v_1(x)}{\partial n}= q(x)\cos\theta(x),
-  $$
-   где 
-$q(x)\hm= \vert \nabla v_1(x)\vert$. Известно~[3], что долж\-но выполняться условие
-  $$
-  \int\limits_{\partial\tilde{X}} \fr{\partial v_1(x)}{\partial n}\,ds 
-=\int\limits_{\partial\tilde{X}} \fr{\partial v_2(x)}{\partial s}\,ds 
-=\int\limits_{\partial\tilde{X}}dv_2=0\,,
-  $$
-  где $\partial v_2(x)/\partial s$~--- производная по на\-прав\-ле\-нию касательной 
-  к~границе об\-ласти. Поэтому $q(x)$ не может быть произвольной. Итак, функцию 
-$v_1(x_1, x_2)$ на~$\tilde{X}$ будем искать из задачи Неймана:
-  \begin{equation}
-  \left.
-  \begin{array}{c}
-  \fr{\partial^2 v_1}{\partial x_1^2}+ \fr{\partial^2 v_1}{\partial x_2^2}=0\,;\\[6pt]
-  \fr{\partial v_1(x)}{\partial n} =\eta(x)\,,\enskip x=\left( x_1, x_2\right) \in 
-\partial\tilde{X}\,,
-  \end{array}
-  \right\}
-  \label{e1-bos}
-  \end{equation}
-где $\eta(x)\hm= q(x)\cos\theta(x)$. Функция~$q(x)$ в~пред\-став\-лен\-ных ниже 
-примерах выбиралась сле\-ду\-ющим образом:
-\begin{multline*}
-q(x)={}\\
-{}= \begin{cases}\!
-\left(\,\displaystyle\int\limits_{\cos\theta(x)>0}\!\!\cos\theta(x)\,ds\right)^{-1}\!\!, &\!\! \mbox{если } 
-\cos\theta(x)>0;\\[3pt]
--\left(\,\displaystyle\int\limits_{\cos\theta(x)<0}\!\! \cos\theta (x)\,ds\right)^{-1}\!\!, &\!\! \mbox{если 
-}\cos\theta(x)<0.
-\end{cases}\hspace*{-9pt}
-%\label{e2-bos}
-\end{multline*}
-  
-  Пусть $\Gamma_\rho \hm= \{w=w_1\hm+ iw_2: w_1^2\hm+ w_2^2\hm<\rho\}$ 
-  и~$x\hm= f(w)\hm= f_1(w_1, w_2)\hm+ if_2(w_1, w_2)$~--- конформное 
-преобразование круга~$\Gamma_1$ на некоторую односвязную область~$D$, 
-содержащую множество~$X$ (рис.~1). Для $\rho \hm\in (0;1)$  обозначим 
-$\tilde{X}_\rho \hm= f(\Gamma_\rho)$. Причем~$\rho$ выбрано так, что 
-$X\hm\subset \tilde{X}_\rho$. Если обозначить через~$v(t)$ угол наклона 
-касательной к~границе области~$D$ в~точке~$x$, соответствующей точке $w\hm= 
-w_1\hm+ iw_2\hm\in \partial \Gamma_1$ при конформном отоб\-ра\-же\-нии $x\hm= 
-f(w)$, то конформное преобразование единичного круга на об\-ласть~$D$ может 
-быть найдено по формуле Чизотти~[3]:
-  \begin{align*}
-  x&=f_1(w_1,w_2) +if_2(w_1,w_2)={}\\
- & \hspace*{10mm}{}=i\int\limits_{w_{1,0}+iw_{2,0}}^{w_1+iw_2} 
-\fr{e^{i\xi(y)}}{(1-y)^2}\,dy +x_0\,;\\
-  \xi(y)&=\fr{1}{2\pi} \int\limits_0^{2\pi} v(t) \fr{e^{it}+y}{e^{it}-y}\,dt+i\xi_0\,,
-  \end{align*}
-где $\xi_0$~--- некоторая действительная по\-сто\-ян\-ная; $x_0\hm\in D$ 
-и~$w_{0,1}\hm+ i w_{0,2}\hm\in \Gamma_1$~--- заданные точки. Пусть теперь 
-функция~$v_1(x)$ является решением задачи~(1), где $\tilde{X}\hm= 
-\tilde{X}_\rho$. Из соотношений Ко\-ши--Ри\-ма\-на и~гармоничности функций 
-$f_1(w_1, w_2)$ и~$f_2(w_1, w_2)$ следует, что функция $z(w)\hm= v_1(f(w))$\linebreak\vspace*{-12pt}
-
-{ \begin{center}  %fig1
- \vspace*{-6pt}
-    \mbox{%
-\epsfxsize=79mm
-\epsfbox{bos-1.eps}
-}
-
-\end{center}
-
-\vspace*{-3pt}
-
-\noindent
-{{\figurename~1}\ \ \small{
-Конформное преобразование единичного круга на многоугольник и~его ограничения 
-на круги $\Gamma_{0{,}95}$ и~$\Gamma_{0{,}75}$ 
-}}}
-
-\vspace*{18pt}
-
-\setcounter{figure}{1}
-
-
-\noindent 
-удовле\-тво\-ря\-ет уравнению $\partial^2 z/\partial w_1^2\hm+ \partial^2 z/\partial 
-w_2^2\hm=0$.
- Определим краевое условие. Пусть $w\hm= w_1\hm+ iw_2\hm\in 
-\partial \Gamma_\rho$  и~$m$~--- единичная нормаль к~границе 
-круга~$\Gamma_\rho$. Тогда $m\hm= w_1/\rho \hm+ iw_2/\rho$. Следовательно,
-\begin{multline*}
-\fr{\partial z(w)}{\partial m}=\fr{\partial z(w)}{\partial w_1}\,\fr{w_1}{\rho} 
-+\fr{\partial z(w)}{\partial w_2}\fr{w_2}{\rho}={}\\[6pt]
-{}=\fr{\partial v_1(f(w))}{\partial x_1}\,\fr{\partial f_1(w)}{\partial m}+\fr{\partial 
-v_1(f(w))}{\partial x_2}\,\fr{\partial f_2(w)} {\partial m}\,.
-\end{multline*}
-  
-  Рассмотрим кривую $\partial \Gamma_\rho$  и~кривую с~параметрическим 
-представлением~$\gamma_w$: $r_w(t)\hm= w_1\tau\hm+ iw_2\tau$, $\tau\hm\in 
-[0;1]$. Они перпендикулярны в~точке $\tau\hm=1$, а~их образы при конформном 
-преобразовании $x\hm= f(w)$ пред\-став\-ля\-ют собой кривую 
-$\partial \tilde{X}_\rho$ и~кривую $\gamma_{f(w)}$: $r_{f(w)}(\tau)\hm= f_1(w_1\tau, w_2\tau)\hm+ 
-if_2(w_1\tau, w_2\tau)$, $\tau\hm\in [0;1]$. Поскольку конформное преобразование 
-сохраняет углы между кривыми, то вектор нормали к~границе~$\partial 
-\tilde{X}_\rho$ коллинеарен касательному век\-то\-ру кривой $\gamma_{f(w)}$ 
-в~точке, со\-от\-вет\-ст\-ву\-ющей $\tau\hm=1$. С~учетом того, что
- \begin{multline*}
- \left\vert r^\prime_{f(w)}(1)\right\vert ={}\\
-  {}=\rho \vert \nabla f_1(w)\vert =\rho \sqrt{\left( 
-\fr{\partial f_1(w)}{\partial w_1}\right)^2 +\left( \fr{\partial f_1(w)}{\partial 
-w_2}\right)^2}\,,
-\end{multline*}
-получаем
-$$
-n=\fr{r^\prime_{f(w)} (1)}{\vert r^\prime_{f(w)} (1)\vert }=\fr{\partial f_1(w)/\partial 
-m+ i \partial f_2(w)/\partial m} {\left\vert \nabla f_1(w)\right\vert}\,.
-$$
-  
-  Следовательно, функция~$z$ является решением задачи Неймана для 
-круга~$\Gamma_\rho$: $\partial^2 z/ \partial w_1^2 \hm+ \partial^2 z/ \partial 
-w_2^2\hm=0$, $\partial z(w)/\partial m \hm= \eta(f(w))\vert \nabla f_1(w)\vert$, 
-$w\hm\in \Gamma_\rho$. Как известно~[3], решение такой задачи может быть 
-найдено по формуле Дини:
-  \begin{multline}
-  z(w_1,w_2)=z_0-{}\\
-  {}-\fr{\rho}{2\pi} \int\limits_0^{2\pi} \eta (f(\rho\cos\tau, \rho\sin\tau)) \vert \nabla 
-f_1(\rho\cos\tau, \rho\sin\tau)\vert \times{}\\
-{}\times \ln \fr{(w_1-\rho\cos\tau)^2+(w_2-
-\rho\sin\tau)^2}{\rho^2}\,d\tau\,,
-  \label{e3-bos}
-  \end{multline}
-где $z_0\in \mathrm{C}$~--- произвольная константа.
-  
-  Итак, из~(\ref{e3-bos}) можно найти $z(w)$, $w\hm\in \Gamma_\rho$. Зная 
-преобразование $x\hm= f(w)$, из соотношения $z(w)\hm= v_1(f(w))$ можно найти 
-$v_1(x)\hm= z(f^{-1}(x))$, $x\hm\in \tilde{X}_\rho$. Функция $v_2(x)$ может быть 
-найдена аналогично, но для решения уравнений механики КМ она не нужна, 
-достаточно $v_1(x)$ и~соотношений Ко\-ши--Ри\-ма\-на. На рис.~1 показано 
-конформное преобразование единичного круга на многоугольник и~его 
-ограничения на круги~$\Gamma_{0{,}95}$ и~$\Gamma_{0{,}75}$. На рис.~2 
-показано векторное поле, образованное касательными к~кривым $v_1(x_1, 
-x_2)\hm=const$~(рис.~2,\,\textit{а}) и~$v_2(x_1,x_2)\hm= const$~(рис.~2,\,\textit{б}). 
-
-\setcounter{figure}{1}
-\begin{figure*} %fig2
-\vspace*{1pt}
-  \begin{center}  
-    \mbox{%
-\epsfxsize=163mm
-\epsfbox{bos-2.eps}
-}
-
-\end{center}
-\vspace*{-9pt}
-\Caption{Касательные векторы к~кривым  $v_1(x_1, x_2)\hm=const$~(\textit{а}) и~$v_2(x_1, 
-x_2)\hm=const$~(\textit{б})}
-\end{figure*}
-\begin{figure*}[b] %fig3
-\vspace*{1pt}
-  \begin{center}  
-    \mbox{%
-\epsfxsize=161.879mm
-\epsfbox{bos-3.eps}
-}
-
-\end{center}
-\vspace*{-9pt}
-\Caption{Оптимальные траектории уклад\-ки волокон при 3D-пе\-ча\-ти}
-\end{figure*}
-
-\section{Построение оптимальной схемы 3D-печати}
-
-  Используем теперь описанную модель для поиска оптимальных траекторий 
-уклад\-ки волокон при 3D-пе\-ча\-ти. Пусть $\sigma_1^{\pm}$ и~$\sigma_2^{\pm}$~--- 
-пределы проч\-ности при растяжении и~сжатии вдоль и~поперек волокон, 
-а~$\hat{\tau}_{12}$~--- предел проч\-ности при сдвиге в~плос\-кости слоя~[2]. 
-В~качестве целевой функции используем критерии максимальных на\-пря\-же\-ний 
-$$
-R\left(\sigma_1, \sigma_2, \tau_{12}\right)= \max\left( \fr{\sigma_1}{m_1(\sigma_1)}, 
-\fr{\sigma_2}{m_2(\sigma_2)}, \fr{\tau_{12}}{\hat{\tau}_{12}}\right),
-$$ 
-где
-  $$
-  m_1(\sigma_1) =\begin{cases}
-  \sigma_1^+\,, &\mbox{если }\sigma_1>0\,;\\
-  \sigma_1^-\,, &\mbox{если }\sigma_1<0\,;
-  \end{cases}
-  $$
-  $$
-  m_2(\sigma_2) =\begin{cases}
-  \sigma_2^+\,, &\mbox{если }\sigma_2>0\,;\\
-  \sigma_2^-\,, &\mbox{если }\sigma_2<0\,.
-  \end{cases}
-  $$
-  
-  Значения $\sigma_1$, $\sigma_2$ и~$\tau_{12}$ могут быть найдены при\-бли\-жен\-но 
-из уравнений механики композиционных материалов~[2], если задать 
-преобразование $v(x)\hm= (v_1(x), v_2(x))$. Краевые условия к~этим уравнениям 
-определяются углами $\theta(x)$, $x\hm\in \partial X$, которые волокна образуют 
-с~внеш\-ней нормалью к~границе множества~$X$. Следовательно, целевая функция 
-является функцией этих углов:
- \begin{multline*}
-  R: \theta\vert_{\partial X} \mapsto v(x)=\left( v_1(x), v_2(x)\right)\mapsto \left( 
-\sigma_1, \sigma_2, \tau_{12}\right) \mapsto {}\hspace*{-1.3625pt}\\
-{}\mapsto \max \left( 
-\fr{\sigma_1}{m_1(\sigma_1)}, \fr{\sigma_2}{m_2(\sigma_2)}, 
-\fr{\tau_{12}}{\hat{\tau}_{12}}\right).
-\end{multline*}
-  
-  Соответствие $(v_1(x), v_2(x)) \hm\mapsto (\sigma_1, \sigma_2, \tau_{12})$ дает 
-приближенное решение уравнений механики,\linebreak полученное далее методом 
-приближенного решения уравнений в~част\-ных производных с~по\-мощью\linebreak 
-вейв\-ле\-тов, построенных на основе схем подразделений~[4] и~подъема~[5]. 
-Преимущество вейвлетов перед другими базисными функциями состоит\linebreak в~том, что 
-вейв\-лет-ко\-эф\-фи\-ци\-ен\-ты убывают быст\-ро, поэтому достаточно небольшого 
-числа сла\-га\-емых в~разложениях. Дополнительное преимущество вейвлетов, 
-использующих схемы \mbox{подразделений} и~подъема, со\-сто\-ит в~воз\-мож\-ности 
-управ\-лять формой базисных функций, например обнулять их на выбранной 
-об\-ласти, что еще уменьшает чис\-ло сла\-га\-емых. Эти преимущества оказываются 
-важ\-ны, так как при минимизации целевой функции требуется многократно решать 
-сис\-те\-му урав\-не\-ний в~част\-ных производных, опи\-сы\-ва\-ющую 
-на\-пря\-жен\-но-де\-фор\-ми\-ру\-емое со\-сто\-яние конструкции.
-  
-  Минимизировать функцию~$R$ предлагается с~по\-мощью метода, 
-пред\-став\-лен\-но\-го в~[6] и~реализованного в~биб\-лио\-те\-ке scipy для языка 
-программирования Python. Поскольку не требуется искать глобальный минимум, 
-а~достаточно обеспечить выполнение условия $R\hm<1$, можно закончить 
-итерационный процесс при его выполнении. На рис.~3 пред\-став\-ле\-ны траектории 
-уклад\-ки волокон для 3D-пе\-ча\-ти прямоугольной плас\-ти\-ны с~отверстием
-
-\vspace*{-6pt}
-
-\noindent
-\begin{multline*}
-  X=\left\{ \left( x_1,x_2\right): \left( x_1-x_{1,0}\right)^2 +\left( x_2-
-x_{2,0}\right)^2 \leq r^2\,,\right.\\ 
-\left.x_2\in [0;a]\,,\ x_2\in [0;b]\right\}
-\end{multline*}
-после двух итераций генетического алгоритма.
-
-\vspace*{-6pt}
-
-\section{Применение вейвлетов к~приближенному решению задач 
-теории упругости}
-
-\vspace*{-2pt}
-
-  В статье~\cite{7-bos} проанализирован общий подход к~по\-стро\-ению 
-би\-ор\-то\-го\-наль\-ных вейв\-лет-сис\-тем на основе схем подъема~\cite{5-bos}, в~том 
-чис\-ле показано, что эти схемы тесно связаны со схемами  
-подразделений~\cite{4-bos} и~поз\-во\-ля\-ют строить вейвлеты с~заданными 
-свойствами. На основе таких вейв\-лет-сис\-тем далее представлен алгоритм 
-при\-бли\-жен\-но\-го решения уравнений тео\-рии упругости.
-  
-  Пусть $X\subset \mathbf{R}^n$. Будем рассматривать действительное 
-пространство~$L_2(X)$.
-
-
-\smallskip
-
-\noindent
-\textbf{Определение~1}~\cite{5-bos}. Кратномасштабный анализ на~$X$ 
-определяется как последовательность подпространств $V_j\hm\subset L_2(X)$, 
-$j\hm= 0,1,\ldots$, такая, что $V_j\hm\subset V_{j+1}$; $\cup_j V_j$ плотно 
-в~$L_2(X)$ и~для каж\-до\-го~$j$ существуют масштабирующие функции 
-$\varphi_{j,k}$, $k\hm\in K_j$, такие что множество $\{\varphi_{j,k}\}_{k\in K_j}$ 
-пред\-став\-ля\-ет собой базис Рисса~\cite{8-bos} в~$V_j$, при этом $K_j\hm\subset 
-K_{j+1}$.
-
-
-\smallskip
-
-\noindent
-\textbf{Определение~2}~\cite{8-bos}. Пусть $\{V_j\}_{j\geq 0}$ 
-и~$\{\tilde{V}_j\}_{j\geq0}$~--- два кратномасштабных анализа на~$X$ 
-с~масштабирующими функциями $\varphi_{j,k}$ 
-и~$\tilde{\varphi}_{j,k}$, $k\hm\in K_j$, соответственно. Кроме того, пусть 
-$V_{j+1}\hm= V_j\hm+ W_j$, $\tilde{V}_{j+1} \hm= \tilde{V}_j\hm+ \tilde{W}_j$ 
-и~$\{\psi_{j,k}, k\hm\in M_j\}$, $\{ \tilde{\psi}_{j,k}, k\hm\in M_j\}$~--- базисы Рисса 
-в~$W_j$ и~$\tilde{W}_j$ соответственно. Если 
-$(\varphi_{j,k},\tilde{\varphi}_{j,k^\prime})\hm= \delta_{k,k^\prime}$, 
-$(\tilde{\psi}_{j,m}, \varphi_{j,k})\hm= 0$, $( \tilde{\varphi}_{j,k}, \psi_{j,m})\hm=0$, 
-$(\psi_{j,m}, \tilde{\psi}_{j,m^\prime})\hm=\delta_{m,m^\prime} \forall\,j$, $\forall\,m, 
-m^\prime\hm\in M_j$, $\forall\,k, k^\prime\hm\in K_j$, то семейства функций 
-$\{\psi_{j,k}\}_{j\geq0,\ k\in M_j}$ и~$\{ \tilde{\psi}_{j,k}\}_{j\geq0, k\in M_j}$ 
-называются би\-ор\-то\-го\-наль\-ны\-ми вейв\-лет-сис\-те\-мами.
-  
-  Из определения~2 следует~\cite{5-bos}, что существуют последовательности $\{ 
-h_{j,k,l}\}$ и~$\{\tilde{h}_{j,k,l}\}$ такие, что $\varphi_{j,k}\hm= \sum\nolimits_{l\in 
-K_{j+1}} h_{j,k,l}\varphi_{j+1,l}$ и~$\tilde{\varphi}_{j,k}\hm= \sum\nolimits_{l\in 
-K_{j+1}} \tilde{h}_{j,k,l} \tilde{\varphi}_{j+1,l}$. Поскольку $W_j\hm\subset 
-V_{j+1}$ и~$\tilde{W}_j\hm\subset \tilde{V}_{j+1}$, то $\psi_{j,m}\hm= 
-\sum\nolimits_{l\in K_{j+1}} g_{j,m,l}\varphi_{j+1,l}$ и~$\tilde{\psi}_{j,m}\hm= 
-\sum\nolimits_{l\in K_{j+1}} \tilde{g}_{j,m,l} \tilde{\varphi}_{j+1,l}$. 
-Последовательности $h_{j,k,l}$, $\tilde{h}_{j,k,l}$, $g_{j,k,l}$ и~$\tilde{g}_{j,k,l}$ 
-называются фильтрами. В~случае би\-ор\-то\-го\-наль\-ных  
-вейв\-лет-сис\-тем для $f\hm\in L_2(X)$ имеет мес\-то равенство~\cite{5-bos, 8-bos}:
-  $$
-  f=\sum\limits_{k\in K_{j_0}} v_{j_0,k}\varphi_{j_0,k}+ \sum\limits_{j\geq j_0} 
-\sum\limits_{m\in M_j} \gamma_{j,m}\psi_{j,m}\,,
-  $$ 
-  где $v_{j,k} = (f,\tilde{\varphi}_{j,k})$; $\gamma_{j,m} \hm= 
-(\tilde{\psi}_{j,m},f)$. 
-  
-  Схема подъема (lifting scheme) позволяет строить би\-ор\-то\-го\-наль\-ные  
-вейв\-лет-сис\-те\-мы с~заданными\linebreak свойствами, используя некоторые начальные 
-би\-ор\-то\-го\-наль\-ные вейв\-лет-сис\-те\-мы с~фильт\-ра\-ми $h^0_{j,k,l}$, 
-$\tilde{h}^0_{j,k,l}$, $g^0_{j,k,l}$ и~$\tilde{g}^0_{j,k,l}$. По схеме подъема новое 
-семейство фильт\-ров $h_{j,k,l}$, $\tilde{h}_{j,k,l}$, $g_{j,k,l}$ и~$\tilde{g}_{j,k,l}$, 
-опре\-де\-ля\-ющих биортогональные вейв\-лет-сис\-те\-мы, находится по 
-формулам~\cite{5-bos}:
-  \begin{gather*}
-  h_{j,k,l} =h^0_{j,k,l}\,;\quad
-  \tilde{h}_{j,k,l} =\tilde{h}^0_{j,k,l} 
-+\sum\limits_{m\in M_j} s_{j,k,m}\tilde{g}^0_{j,m,l}\,;\\
-  g_{j,m,l}= g^0_{j,m,l} -\sum\limits_{k\in K_j} s_{j,k,m} 
-h^0_{j,k,l}\,;\quad
-  \tilde{g}_{j,m,l}=\tilde{g}^0_{j,m,l} 
-  \end{gather*}
-при любом выборе последовательности $\{ s_{j,k,m}\}_{k\in K_j, \ m\in M_j}$. 
-Следует заметить, что мас\-шта\-би\-ру\-ющие функции~$\varphi_{j,k}$ одинаковы 
-в~исходном и~поднятом крат\-но\-мас\-штаб\-ном анализах. Кроме того, можно не 
-менять функцию~$\tilde{\varphi}_{j,k}$, а~поднимать~$\varphi_{j,k}$. Механизм 
-этот точ\-но такой же и~называется двойственной схемой подъема. Он позволяет 
-улучшить свойства вейв\-ле\-та~$\tilde{\psi}_{j,m}$.
-  
-  Пусть последовательности $d^i: \mathbf{Z}\hm\to \mathbf{R}$, $i\hm= 0,1,2$, 
-и~$a: \mathbf{Z}\hm\to \mathbf{R}$ имеют носитель $\{-1, 0, 1\}$ и~на нем могут 
-быть записаны в~виде:
-\begin{alignat*}{2}
-d^0&\!=\!\begin{pmatrix}
-\fr{1}{6} & \fr{4}{6} & \fr{1}{6}\end{pmatrix};&\ 
-d^1&\!=\! 2^{j+p-1}(-1\ 0\ 1); \\
-d^2&\!=\!
-2^{2(j+p)}(1\ -2\ 1);&\ 
-a&\!=\! \begin{pmatrix}\!
--\fr{1}{6} & \fr{8}{6} & -\fr{1}{6}\!\end{pmatrix}\!,\ p\!=\!1,2,\ldots
-\end{alignat*}
- Для краткости введем обозначение для 
-част\-ной производной
-  $$
-  \partial^{(\alpha_1, \ldots, \alpha_k)} \! f(x_1, \ldots, x_k)\!=\! 
-  \fr{\partial^{\alpha_1+\cdots+\alpha_k} f(x_1,\ldots , x_k)}{\partial 
-x_1^{\alpha_1}\cdots \partial x_k^{\alpha_k}}
-  $$
-  порядка $\alpha_1+\cdots + \alpha_k$. На основании результатов, 
-пред\-став\-лен\-ных в~\cite{7-bos, 9-bos}, можно сформулировать сле\-ду\-ющую 
-тео\-ре\-му, которая пред\-став\-ля\-ет собой алгоритм на\-хож\-де\-ния значений 
-масштабирующих функций и~вейвлетов на~$\mathbf{R}^n$, полученных 
-с~по\-мощью схемы подъема.
-
-\begin{figure*}[b] %fig4
-\vspace*{1pt}
-  \begin{center}  
-    \mbox{%
-\epsfxsize=159.507mm
-\epsfbox{bos-4.eps}
-}
-
-\end{center}
-\vspace*{-9pt}
-\Caption{Графики масштабирующих функций}
-\end{figure*}
-
-\smallskip
-
-\noindent
-\textbf{Теорема.} \textit{Пусть $\Lambda^n$~--- совокупность всех ненулевых 
-векторов $e\hm\in \mathbf{Z}^n$, координаты которых равны~$0$ или~$1$. 
-Обозначим $K_j\hm= 2^{-j} Z^n$, $M_j\hm= 2^{-j} Z^n\hm+ 2^{-j-1} \Lambda^n$. 
-Предположим, что по\-сле\-до\-ва\-тель\-ность $A\hm= \{A_i\}_{i\in Z}$ определяет 
-функцию из~$C^2(\mathbf{R})$ с~компактным носителем}~\cite{4-bos}. \textit{Определим 
-последовательность $b\hm= \{b_t\}_{t\in \mathbf{Z}^n}$ равенством $b_t\hm= 
-\prod\nolimits^n_{i=1} A_{t_i}$, $t\hm= (t_1\cdots t_s)^{\mathrm{T}} \hm\in \mathbf{Z}^n$. Пусть 
-оператор~$U$ функции $v: K_j\hm\to \mathbf{R}$ ставит в~соответствие 
-функцию $Uv: K_{j+1}\hm\to \mathbf{R}$, определенную равенством $(Uv)_k\hm= 
-v_k$, $\forall\,k\hm\in K_j$, и~$(Uv)_m\hm=0$, $\forall\,m\hm\in M_j$. Тогда если 
-по\-сле\-до\-ва\-тель\-ность~$v_{j+p}$ получается по схеме подразделений 
-\begin{align*}
-v_{j+p}&= b* (Uv_{j+p-1}),\enskip p= 1,2,\ldots;
-\\
-v_{j,\beta} &= \delta_{\alpha,\beta} =
-\begin{cases}
-1\,, & \alpha=\beta\,;\\
-0\,, & \alpha\not= \beta\,,
-\end{cases}
-\end{align*}
-где $*$ обозначает свертку, то значения мас\-шта\-би\-ру\-ющих функций и~их 
-част\-ных производных мож\-но найти из при\-бли\-жен\-ных равенств}:
-
-\noindent
-\begin{multline*}
-\!\varphi_{j,\alpha}\left( 2^{-j-p}\beta\right) \approx v_{j+p,\beta};\enskip \partial^{(l_1,\ldots 
-,l_n)} \varphi_{j,\alpha} \left( 2^{-j-p}\beta\right)\approx{}\\[3pt]
-{}\approx
-\left( \left( d^{l_1}\otimes \cdots \otimes d^{l_n}\right) * \left( \left( a\otimes \cdots 
-\otimes a\right) * v_{j+p}\right)\right)_\beta\,,\\[3pt]
-l_1,\ldots , l_n=0,1,2\,,\enskip l_1+\cdots+ l_n\leq 2\,.
-\end{multline*}
-
-\textit{Вейвлеты могут быть найдены по формуле
-$$
-\psi_{j,m}= \varphi_{j+1,m}- \sum\limits_{k\in K_j} s_{j,k,m} \varphi_{j,k},
-$$
-где 
-по\-сле\-до\-ва\-тель\-ность~$s_{j,k,m}$ мож\-но выбрать произвольным образом.}
-
-\smallskip
-
-  Выбором последовательностей~$A$ и~$s$ мож\-но задавать свойства 
-мас\-шта\-би\-ру\-ющих функций и~вейв\-ле\-тов. Например, можно обнулить их значения 
-в~заданной об\-ласти и~на ее границе. На рис.~4 представлен пример, где 
-мас\-шта\-би\-ру\-ющие функции, соответствующие узлам $k\hm\in K_j$, 
-принадлежащим заданной об\-ласти, обнуляются за пределами этой об\-ласти.
-
-   \begin{figure*}[b] %fig5
-\vspace*{6pt}
-  \begin{center}  
-    \mbox{%
-\epsfxsize=143.174mm
-\epsfbox{bos-5.eps}
-}
-
-\end{center}
-\vspace*{-9pt}
-\Caption{Триангулируемое пространство $(T,G,X)$~(\textit{а} и~\textit{б}), 
-подразделения~$X$~(\textit{в} и~\textit{г}), графики точ\-но\-го решения~$\sigma_1$~(\textit{д}) 
-и~его приближения~$\sigma_{1,J}$~(\textit{е})}
-\end{figure*}
-
-  Пусть $(T,G,X)$~--- триангулируемое про\-стран\-ст\-во с~конечным множеством 
-симплексов. Здесь~$T\hm= \cup^N_{l=1} I_l^n \hm\subset I_0^n\hm\subset 
-\mathbf{R}^n$~--- объединение замкнутых $n$-мер\-ных кубов вида $I_l^n\hm= 
-\prod^n_{i=1} [ b_{i,l}; b_{i,l}\hm+1]$, где $b_{i,l}\hm\in \mathbf{Z}$, 
-$I_0^s$~--- $n$-мер\-ный куб; $G: T\hm\to X\hm\subset \mathbf{R}^n$~--- 
-гомеоморфизм, $G: \mathrm{Int}\,(T) \hm \to \mathrm{Int}\,(X)$~--- диффеоморфизм класса~$C^2$, где 
-$\mathrm{Int}(X)$~--- внут\-рен\-ность множества~$X$. Пусть $\{\varphi_{j,k}\}_{k\in K_j}$ 
-и~$\{\psi_{j,m}\}_{m\in M_j}$~--- масштабирующие функции и~вейвлеты на~$T$. 
-Определим мас\-шта\-би\-ру\-ющие функции и~вейвлеты на~$X$ сле\-ду\-ющи\-ми 
-равенствами: 
-$$
-\varphi^X_{j,k} = \varphi_{j,k}\circ G^{-1};\quad
-\psi^X_{j,m}=\psi_{j,m}\circ G^{-1},
-$$
-
-\columnbreak
-
-\noindent
- где~$\circ$ обозначает композицию функций, т.\,е.\ 
-$\varphi_{j,k}\circ G^{-1}(x)\hm= \varphi_{j,k}(G^{-1}(x))$. Тогда если $f: X\hm\to 
-\mathbf{R}$ и~$f\circ G\hm\in L_2(T)$, то
-$$
-f= \sum\limits_{k\in K_{j_0}} 
-v_{j_0,k} \varphi^X_{j_0,k}+\sum\limits_{j\geq j_0} \sum\limits_{m\in M_j} 
-\gamma_{j,m} \psi^X_{j,m}
-$$ 
-в~том смыс\-ле, что
-
-\vspace*{-6pt}
-
-\noindent
-  \begin{multline*}
-  \lim\limits_{J\to +\infty} \int\limits_T \left[ \left(
-  \vphantom{\sum\limits^J_{j=j_0}}
-   f- \sum\limits_{k\in K_{j_0}} 
-v_{j_0,k} \varphi^X_{j_0,k} - \right.\right.\\
-{}-\left.\left.\sum\limits^J_{j=j_0} \sum\limits_{m\in M_j} 
-\gamma_{j,m} \psi^X_{j,m}\right) \circ G(u)\right]^2 du=0\,.
-  \end{multline*}
-  
- 
-\pagebreak
-  
-  На практике отображение $G$ выписать слож\-но, поэтому используется его 
-аппроксимация по точечным соответствиям. Методика по\-стро\-ения этой 
-аппроксимации с~по\-мощью ло\-каль\-но-ап\-прок\-си\-ма\-ци\-он\-ных сплайнов 
-пред\-став\-ле\-на в~\cite{7-bos}.
-  
-  Из методов приближенного решения краевых задач математической физики 
-в~ре\-ша\-емой задаче наиболее удобен метод наименьших  
-квад\-ра\-тов~\cite{10-bos}. Рассмотрим дифференциальное уравнение и~краевые 
-условия $Lw\hm= f$ на~$X$ и~$L_i w\hm= f_i$ на $\partial X$, $i\hm=1,2,\ldots , q$, 
-в~гильбертовом пространстве~$L_2(X)$, где $L$~--- линейный 
-дифференциальный оператор. Пусть $\{V_j\}_{j\geq 0}$~---  
-крат\-но\-мас\-штаб\-ный анализ на~$X$. При\-бли\-жен\-ные решения~$w_j$ данной 
-кра\-евой задачи будем искать в~виде:
-  \begin{multline}
-  w_j={}\\
-  \!{}= \!\!\sum\limits_{k\in K_0} \!v_{0,k} \varphi^X_{0,k} +\sum\limits_{j=0}^{J-1} 
-\sum\limits_{m\in M_j} \!\gamma_{j,m} \psi^X_{j,m} = \!\sum\limits_{k=1}^{M(J)}\! c_k 
-\omega_k,\!\!
-  \label{e4-bos}
-  \end{multline}
-где $M(J)$~--- число базисных функций в~$V_J$ и~для удобства базисные 
-функции пронумерованы одним индексом и~обозначены~$\omega_k$, 
-а~коэффициенты~$v_{0,n}$ и~$\gamma_{j,m}$ обозначены~$c_k$ и~находятся 
-методом наименьших квад\-ра\-тов из решения вариационной задач 
-$$
-w_J=\argmin\limits_{w\in V_J} F_J(w).
-$$
- Функционал~$F_J(w)$ определяется 
-равенством 
-$$
-F_J(w)= \| Lw - f\|^2 + \sum\limits^q_{i=1} a_i \| Lw-  f_i\|^2,
-$$
-где $a_i$~--- положительные весовые коэффициенты. С~учетом того, что при 
-построении вейвлетов есть воз\-мож\-ность обнулить часть базисных функций 
-в~заданной об\-ласти, мож\-но часть коэффициентов разложения~(\ref{e4-bos}) найти 
-из граничных условий. В~этом случае 
-$$
-w_j= \sum\limits_{k\in \mathrm{Int}\,X} c_k \omega_k + \sum\limits_{t\in \partial X} c_t \omega_t,
-$$
- а остальные 
-коэффициенты уже находятся из задачи минимизации 
-$$
-\left\| \sum\limits_{k\in \mathrm{Int}\,X} 
-c_k L\omega_k- \left(f- \sum\limits_{t\in \partial X} c_t \omega_t\right)\right\|^2\hm\to 
-\min\limits_{c_k}.
-$$
-  
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Пример.} Рассмотрим плас\-ти\-ну 
-  $$
-  X= \left\{ (x_1, x_2): a^2\leq  x_1^2+ x_2^2\leq b^2\right\}
-$$ 
-в~условиях рас\-тя\-же\-ния/сжа\-тия. Пусть 
-модуль Юнга $E\hm= 2{,}1$~МПа; коэффициент Пуассона $\mu\hm= 0{,}3$. 
-Размеры пластины: $a\hm= 20$~м; $b\hm=60$~м. Ин\-тен\-сив\-ность нормальной 
-к~границе плас\-ти\-ны нагрузки имеет вид: 
-$$
-F_n= 2\left(1+ \fr{1}{a^2}\right)n;\enskip F_n=2\left(1+ \fr{1}{b^2}\right)n.
-$$
- С~использованием биортогональных вейв\-ле\-тов были 
-рассчитаны компоненты на\-пря\-же\-ний. Сравним их с~точными: 
-\begin{gather*}
-\sigma_1=2+ \fr{2}{r^2}\cos(2\theta);\enskip \sigma_2= 2- \fr{2}{r^2}\cos(2\theta);\\ 
-\tau_{12}= \fr{2}{r^2}\sin(2\theta).
-\end{gather*}
-  
-  Множества $T$ и~$X$ показаны на рис.~5,\,\textit{а} и~5,\,\textit{б}, 
-подразделения~$X$~--- на рис.~5,\,\textit{в} и~5,\,\textit{г}. Погрешности 
-$\max_{x_i}\vert \sigma_1(x_i) \hm- \sigma_{1,J}(x_i)\vert$, $\max_{x_i}\vert 
-\sigma_2(x_i)\hm- \sigma_{2,J}(x_i)\vert$ и~$\max_{x_i}\vert \tau_{12}(x_i)\hm- 
-\tau_{12,J} (x_i)\vert$ не превышают соответственно 0,0009, 0,000955 
-и~0,00025~МПа. На рис.~5,\,\textit{д} и~5,\,\textit{е} пред\-став\-ле\-ны графики точ\-но\-го 
-решения~$\sigma_1$  и~его при\-бли\-же\-ния~$\sigma_{1,J}$.
-  
-
-
-  
-  В заключение отметим, что предложенные методики реализованы  
-в~CAD/CAE-сис\-те\-ме по\-стро\-ения таких конструкций, написанной 
-с~использованием языка программирования Python.
-  
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- %\addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-\bibitem{1-bos}
-Matsuzaki Laboratory. {\sf http://www.rs.tus.ac.jp/\linebreak rmatsuza}.
-\bibitem{2-bos}
-\Au{Васильев В.\,В.} Механика конструкций из композиционных материалов.~--- 
-М.: Машиностроение, 1988. 272~с.
-\bibitem{3-bos}
-\Au{Лаврентьев М.\,А., Шабат~Б.\,В.} Методы тео\-рии функций комплексного 
-переменного.~--- М.: Наука, 1973. 736~с.
-\bibitem{4-bos}
-\Au{Cavaretta A.\,S., Dahmen~W., Micchelli~C.\,A.} Stationary subdivision 
-schemes~// Mem. Am. Math. Soc., 1991. Vol.~93. No.\,453. P.~1--186.
-\bibitem{5-bos}
-\Au{Schroder P., Sweldens~W.} Spherical wavelets: Efficiently representing functions 
-on the sphere~// 22nd Annual Conference on Computer Graphics and Interactive 
-Techniques Proceedings~/ Eds. S.\,G.~Mair, R.~Cook.~---
-New York, NY, USA: Association for Computing Machinery, 1995. P.~161--172.
-\bibitem{6-bos}
-\Au{Storn R., Price~K.} Differential evolution~--- a~simple and efficient heuristic for 
-global optimization over continuous spaces~// J.~Global Optim., 1997. No.\,11. 
-P.~341--359.
-\bibitem{7-bos}
-\Au{Deniskina G.\,Y., Deniskin~Y.\,I., Bityukov~Y.\,I.} About biortogonal wavelets, 
-created on the basis of scheme of increasing of lazy wavelets~// Adv.  Automation~II: 
-Rus. Auto Conf. 2020.~--- Lecture notes in electrical engineering ser.~--- Cham: 
-Springer, 2021.Vol.~729. P.~173--181. doi: 10.1007/978-3-030-71119-1\_18.
-\bibitem{8-bos}
-\Au{Новиков~И.\,Я., Протасов~В.\,Ю., Скопина~М.\,А.} Тео\-рия всплес\-ков.~--- М.: 
-Физматлит, 2005. 612~c.
-\bibitem{9-bos}
-\Au{Deniskina G.\,Y., Deniskin~Y.\,I., Bityukov~Y.\,I.} About some computational 
-algorithms for locally approximation splines, based on the wavelet transformation and 
-convolution~// Advances in automation~II~/
-Eds. A.\,A.~Radionov, V.\,R.~Gasiyarov.~--- Lecture notes in 
-electrical engineering ser.~--- Cham, Switzerland: Springer, 2021. Vol.~729. P.~182--191. doi: 
-10.1007/978-3-030-71119-1\_19.
-\bibitem{10-bos}
-\Au{Марчук Г.\,И., Акилов~Г.\,П.} Методы вы\-чис\-ли\-тель\-ной математики.~--- М.: Наука, 1989. 744~с.
-
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 27.09.21}}
-
-\vspace*{8pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{ABOUT SEARCHING FOR~THE~OPTIMAL 3D~PRINTING SCHEME OF~STRUCTURES 
-FROM~COMPOSITE MATERIALS}
-
-
-\def\titkol{About searching for~the~optimal 3D~printing scheme of~structures 
-from~composite materials}
-
-
-\def\aut{A.\,V.~Bosov$^{1,2}$, Yu.\,I.~Bityukov$^2$, and~G.\,Yu.~Deniskina$^2$}
-
-\def\autkol{A.\,V.~Bosov, Yu.\,I.~Bityukov, and~G.\,Yu.~Deniskina}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-
-\noindent
-$^1$Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences,  
-44-2~Vavilov\linebreak
-$\hphantom{^1}$Str., Moscow 119333, Russian Federation
-
-\noindent
-$^2$Moscow State Aviation Institute (National Research University), 4~Volokolamskoe Shosse, 
-Moscow 125933,\linebreak
-$\hphantom{^1}$Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2022\ \ \ volume~16\ \ \ issue\ 1}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2022\ \ \ volume~16\ \ \ issue\ 1
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt} 
-
-
-
-\Abste{The article is devoted to finding optimal fiber laying trajectories in the manufacture of 
-structures reinforced with continuous fibers by 3D printing. As the objective function of this 
-optimization problem, one of the criteria for the destruction of the composite is selected. Fiber laying 
-schemes during printing are modeled using analytical functions that are found from the Neumann 
-problem for the Laplace equation. The boundary conditions for this problem are constructed on the 
-basis of specifying the angles between the fibers and the boundary of the region. The Neumann 
-problem is solved by a~conformal transformation of the print area into a circle. Thus, the criterion for 
-the destruction of the composite becomes a~function of the angles that the fibers form with the 
-boundary of the region. Minimization is carried out using a~genetic algorithm for searching for the 
-global minimum of a~function of several variables.}
-
-\KWE{composite materials; wavelets; 3D printing; analytical function}
-
-\DOI{10.14357/19922264220102}
-
-%\vspace*{-16pt}
-
-%\Ack
-%\noindent
-
-
-
-
-%\vspace*{6pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-\bibitem{1-bos-1}
- Matsuzaki Laboratory. Available at: {\sf http://www.rs.tus. ac.jp/rmatsuza/} (accessed December~20, 
-2021).
-\bibitem{2-bos-1}
-\Aue{Vasiliev, V.\,V.} 1988. \textit{Mekhanika konstruktsiy iz kom\-po\-zi\-tsi\-on\-nykh materialov} 
-[Mechanics of structures made of composite materials]. Moscow: Mashinostroenie. 272~p.
-\bibitem{3-bos-1}
-\Aue{Lavrent'ev, M.\,A., and B.\,V.~Shabat.} 1973. \textit{Metody teorii funktsii kompleksnogo 
-peremennogo} [Methods of the theory of functions of a~complex variable]. Moscow: Nauka. 736~p.
-\bibitem{4-bos-1}
-\Aue{Cavaretta,~A.\,S., W.~Dahmen, and C.\,A.~Micchelli.} 1991. Stationary subdivision schemes. 
-\textit{Mem. Amer. Math. Soc.} 93(453):1--186.
-\bibitem{5-bos-1}
-\Aue{Schroder, P., and W.~Sweldens.} 1995. Spherical wavelets: Efficiently representing functions on 
-the sphere. \textit{22nd Annual Conference on Computer Graphics and Interactive Techniques 
-Proceedings}. Eds. S.\,G.~Mair and R.~Cook. New York, NY: Association for Computing Machinery. 161--172.
-\bibitem{6-bos-1}
-\Aue{Storn, R., and K.~Price.} 1997. Differential evolution~--- a~simple and efficient heuristic for 
-global optimization over continuous spaces. \textit{J.~Global Optim.} 11:341--359.
-\bibitem{7-bos-1}
-\Aue{Deniskina, G.\,Y., Y.\,I.~Deniskin, and Y.\,I.~Bityukov.} 2021. About biortogonal wavelets, 
-created on the basis of scheme of increasing of lazy wavelets. \textit{Advances in Automation~II.} 
-Lecture notes in electrical engineering ser. Cham: Springer. 729:173--181. 
-\bibitem{8-bos-1}
-\Aue{Novikov, I.\,Ya., V.\,Yu.~Protasov, and M.\,A.~Skopina.} 2005. \textit{Teoriya vspleskov} [The 
-theory of wavelets]. Moscow: Fizmatlit. 612~p.
-\bibitem{9-bos-1}
-\Aue{Deniskina, G.\,Y., Y.\,I.~Deniskin, and Y.\,I.~Bityukov.} 2021. About some computational 
-algorithms for locally approximation splines, based on the wavelet transformation and convolution. 
-\textit{Advances in automation~II.}
-Eds. A.\,A.~Radionov and V.\,R.~Gasiyarov. Lecture notes in electrical engineering ser. Cham,
-Switzerland: Springer. 
-729:182--191.  doi: 
-10.1007/978-3-030-71119-1\_19.
-\bibitem{10-bos-1}
-\Aue{Marchuk, G.\,I., and G.\,P.~Akilov.} 1989. \textit{Metody vychislitel'noy matematiki} [Methods 
-of computational mathematics]. Moscow: Nauka. 744~p.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received September 27, 2021}}
-
-%\pagebreak
-
-%\vspace*{-18pt}
-
-\Contr
-
-
-\noindent
-\textbf{Bosov Alexey V.} (b.\ 1969)~--- Doctor of Science in technology, principal scientist, Institute 
-of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the Russian 
-Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; professor, Moscow 
-State Aviation Institute (National Research University), 4~Volokolamskoe Shosse, Moscow 125933, 
-Russian Federation; \mbox{AVBosov@ipiran.ru}
-
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Bityukov Yuri I.} (b.\ 1972)~--- Doctor of Science in technology, professor, Moscow Aviation 
-Institute (National Research University), 4~Volokolamskoe Shosse, Moscow 125933, Russian 
-Federation; \mbox{yib72@mail.ru}
-
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Deniskina Galina Yu.} (b.\ 1993)~--- PhD student, Faculty of Information Technologies and 
-Applied Mathematics, Moscow Aviation Institute (National Research University), 4~Volokolamskoe 
-Shosse, Moscow 125933, Russian Federation; \mbox{dega17@yandex.ru}
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 

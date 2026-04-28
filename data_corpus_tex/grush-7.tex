@@ -1,737 +1,0 @@
-\def\stat{grusho+7}
-
-\def\tit{ОБ АНАЛИЗЕ ОШИБОЧНЫХ СОСТОЯНИЙ В~РАСПРЕДЕЛЕННЫХ ВЫЧИСЛИТЕЛЬНЫХ СИСТЕМАХ$^*$}
-
-\def\titkol{Об анализе ошибочных состояний 
-в~распределенных вычислительных системах}
-
-
-\def\aut{А.\,А.~Грушо$^1$, М.\,И.~Забежайло$^2$, А.\,А.~Зацаринный$^3$, 
-А.\,В.~Николаев$^4$, В.\,О.~Писковский$^5$, В.\,В.~Сенчило$^6$, 
-И.\,В.~Судариков$^7$, Е.\,Е.~Тимонина$^8$}
-
-\def\autkol{А.\,А.~Грушо, М.\,И.~Забежайло, А.\,А.~Зацаринный и др.} 
-%А.\,В.~Николаев,
-%$^4$, В.\,О.~Писковский$^5$, В.\,В.~Сенчило$^6$,  И.\,В.~Судариков$^7$, Е.\,Е.~Тимонина$^8$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Грушо А.\,А.}
-\index{Забежайло М.\,И.}
-\index{Зацаринный А.\,А.}
-\index{Николаев А.\,В.}
-\index{Писковский В.\,О.}
-\index{Сенчило В.\,В.}
-\index{Судариков И.\,В.}
-\index{Тимонина Е.\,Е.}
-\index{Grusho A.\,A.}
-\index{Zabezhailo M.\,I.}
-\index{Zatsarinnyy A.\,A.}
-\index{Nikolaev A.\,V.}
-\index{Piskovski V.\,O.}
-\index{Senchilo V.\,V.}
-\index{Sudarikov I.\,V.}
-\index{Timonina E.\,E.}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа выполнена при частичной поддержке РФФИ (проект 15-29-07981~офи-м).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук, 
-\mbox{grusho@yandex.ru}}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук,   
-\mbox{m.zabezhailo@yandex.ru}}
-\footnotetext[3]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук, 
-\mbox{AZatsarinny@ipiran.ru}}
-\footnotetext[4]{Институт химической физики им.\ 
-Н.\,Н.~Семёнова Российской академии наук,\newline \mbox{gentoorion@mail.ru}}
-\footnotetext[5]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук,
-\mbox{vpvp80@yandex.ru}}
-\footnotetext[6]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук,
-\mbox{volodias@mail.ru}}
-\footnotetext[7]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук,
-\mbox{4seev3@gmail.com}}
-\footnotetext[8]{Институт проблем информатики Федерального исследовательского центра 
-<<Информатика и~управ\-ле\-ние>> Российской академии наук,
-\mbox{eltimon@yandex.ru}}
-
-
- \label{st\stat}
-
-                  \thispagestyle{headings}
-                  
-  \vspace*{-12pt}
-  
-  
- 
-  \Abst{Приведен анализ ошибочных состояний распределенных вычислительных систем на 
-примере OpenStack, вызванных отсутствием синхронизации между компонентами облачной 
-вычислительной среды (ОВС), а~также рассмотрены вероятные источники возникновения 
-рассинхронизации. Пред\-став\-лен разбор журнальных записей при анализе одного из 
-перечисленных ошибочных со\-сто\-яний программной платформы OpenStack. Показан метод 
-анализа подобных ситуаций. Предложено построение и~поддержание в~актуальном со\-сто\-янии 
-информационной модели управ\-ля\-емой ОВС. Обоснована 
-не\-об\-хо\-ди\-мость использования такой модели для выполнения требований надежного управ\-ле\-ния 
-ОВС, предоставления качественных облачных услуг типа сервис, 
-платформа, инфраструктура, сетевые функции, цепочки сетевых функций.}
-  
-  \KW{распределенные вычислительные системы; облачные вы\-чис\-ли\-тель\-ные среды; 
-OpenStack; RabbitMQ; Nova; Neutron; анализ ошибочных со\-сто\-яний; информационные облачные 
-сетевые инфраструктуры}
-
-\DOI{10.14357\!/\!08696527180108}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-      
-      \vspace*{-18pt} 
-
-\section{Введение}
-
-\vspace*{-6pt}
-
-Некоторые свойства инфраструктуры распределенных 
-ОВС порождают встречающиеся при их эксплуатации ошибочные 
-состояния~[1]. 
-
-  В~[1] обосновано, что одним из факторов, инициирующих сетевые сбои 
-и~ошибки, является неизбежная рассинхронизация компонентов сети. 
-Рас\-смот\-рим, как влияет физическое удаление инфраструктурных компонентов 
-друг от друга на теоретическую возможность существования уязвимости 
-в~инфраструктуре, вызванную естественной разницей системных часов, 
-принадлежащих разным сетевым компонентам. Для простоты будем считать 
-тактовую частоту обобщенного устройства равной~3~ГГц, что соответствует для 
-оптоволокна характерному расстоянию $l\hm = 7$~см (показатель преломления 
-принят равным~1,5). Для уверенной синхронизации взаимодействующие 
-устройства должны находиться друг от друга на расстояниях, сравнимых с~$l$. 
-В~противном случае при реконфигурации сети необходимо предусматривать 
-дополнительные средства, обеспечивающие целостность и~непротиворечивость 
-работы сети. Например, можно использовать методы, описанные в~работе~[1]. 
-
-Возможно использование результатов работы~[2] и~деление сети на так 
-называемые слои виртуальных подсетей. В~подсетях возможно независимое, 
-полное и~непротиворечивое конфигурирование и~функционирование виртуальных 
-машин (ВМ) и~сетевых компонентов, принадлежащих слою. Отметим, что пока удается 
-найти только достаточные условия непротиворечивости работы сети. 
-{\looseness=1
-
-}
-  
-  Противоречия конфигураций приводят к~появлению уязвимостей в~течение 
-временн$\acute{\mbox{о}}$го промежутка, который определяется временн$\acute{\mbox{ы}}$ми интервалами 
-прохождения пакета между сетевыми компонентами. Можно ввести понятие 
-поверхности атаки как отношение времени рассинхронизации двух серверов ко 
-времени прохождения IP-па\-ке\-та между ними. Чем больше поверхность атаки, 
-тем выше вероятность потенциального нарушителя внедрить свой код 
-в~атакуемый узел сети. Отметим, что возможности такой атаки возрастают, если 
-атакующее программное обеспечение (ПО) находится физически ближе к~цели, чем контролирующий 
-конфигурацию сети сервер (по аналогии с~компьютерными играми и~задержкой 
-реакции игры на воздействие игрока). 
-  
-  Для контролируемой защищенной работы инфраструктуры необходимо, чтобы 
-корректирующее воздействие на узлы и~компоненты проходило быстрее 
-воздействия атакующей стороны на те же компоненты. А~это значит, что 
-управление распределенной ОВС, включая принятые меры противодействия 
-вирусам, должно физически находиться как можно ближе к~критическим 
-компонентам инфраструктуры. 
-
-\section{Ошибки синхронизации в~распределенных облачных вычислитедьных
-средах на~примере 
-OpenStack}
-
-  Рассмотрим помимо описанного ранее <<нештатного>> поведения компонент 
-OpenStack из-за нехватки ресурсов RabbitMQ~[3] другие подобные ошибки 
-в~комплексе ПО OpenStack, которые представлены в~таблице.
-  
-  \begin{table}\small
-  \begin{center}
-  
-  \begin{tabular}{|p{30mm}|p{91mm}|}
-  \multicolumn{2}{c}{Ошибки в~комплексе ПО OpenStack}\\
-  \multicolumn{2}{c}{\ }\\[-6pt]
-  \hline
-\multicolumn{1}{|c|}{Ошибка}&\multicolumn{1}{c|}{Описание}\\
-\hline
-1.~Нехватка ресурсов RabbitMQ приводит к~потере сетевого соединения, распад облачной 
-структуры на <<подоблака>>~\cite{3-g7}&Нехватка числа файловых дескрипторов 
-и~последующей перезагрузки системы доставки сообщений RabbitMQ\\
-\hline
-2.~Обрыв соединения со службой RabbitMQ во время миграции ВМ приводит 
-к~сбою в~машине состояний Nova~\cite{4-g7}&Обрыв соединения с~упомянутой службой 
-RabbitMQ во время миграции ВМ приводит к~сбою в~машине состояний 
-Nova. При этом статусом в~БД Nova остается <<миграция>> и~указание на узел, 
-с~которого мигрировали ВМ, хотя ВМ работают на целевом узле. Эта ошибка, скорее всего, имеет 
-своими корнями некорректную обработку сложного дерева состояний Nova, возникающего при 
-обрыве связи со службой доставки сообщений. Скорее всего, вместо корректной обработки всех 
-возможных состояний в~коде Nova используется просто набор тайм-аутов, не обновляя и~не 
-синхронизируя актуальные состояния\\
-\hline
-3.~При перезапуске ВМ сетевое подключение не формируется заново и~ВМ остается без 
-доступа к~сети~\cite{5-g7}&Если первая попытка запуска ВМ по каким-то причинам не 
-увенчалась успехом, но при этом сетевое подключение на запущенной ВМ не было уничтожено, 
-то при перезапуске ВМ сетевое подключение не формируется заново и~ВМ остается без доступа к~сети. Данная ошибка, скорее всего, обусловлена некорректной обработкой сбоя при создании 
-ВМ в~сетевой компоненте Neutron. При этом если у ВМ имеются два сетевых интерфейса, то из 
-альтернативной сети успешный запуск возможен \\
-\hline
-4.~Команда безусловного уничтожения ВМ, отданная на этапе создания блочного устройства, 
-приводит к~сбою~\cite{6-g7}&В распределенных сис\-те\-мах, компоненты которых 
-разрабатываются без жестко зафиксированного единого проекта, фактически невозможно 
-полностью корректно обработать (и~даже выписать) все возможные промежуточные 
-со\-сто\-яния, в~которых может оказаться рассматриваемая промежуточная сис\-те\-ма. В данной ошибке команда 
-безусловного уничтожения ВМ, отданная на этапе создания блочного устройства, приводит 
-к~сбою\\
-\hline
-5.~Ошибка при удалении текущего IP-ад\-ре\-са~\cite{7-g7}&Ошибка может возникнуть при 
-нарушении целостности актуальной информации об объектах тенанта при конкурентном 
-выполнении команд <<удалить ВМ>> и~<<удалить текущий IP-ад\-рес>> \\
-\hline
-6.~Ошибка миграции при наличии у~ВМ дополнительного диска~\cite{8-g7}&Происходит при 
-<<живой>> миграции ВМ под управлением Nova (libvirt), име\-ющей присоединенное блочное 
-устройство на cinder на основе Ceph. Вероятнее всего, данная ошибка возникает из-за 
-несогласованности API Nova с~поддержкой libvirt операций с~Ceph remote block device (rbd)\\
-\hline
-\multicolumn{2}{r}{\textit{Окончание таблицы на с.}~\pageref{e1}}
-\end{tabular}
-\end{center}
-\end{table}
-
-  
-  
- \pagebreak
- 
-  Указанные выше уязвимости имеют несколько общих черт: 
-  \begin{itemize}
-\item не завершена разработка и~не соблюдается протокол взаимодействия 
-компонентов;
-\item не стабилизирована работа программных интерфейсов и~не 
-соблюдаются требования к~их использованию.
-\end{itemize}
-
-\begin{table}\small
-  \begin{center}
-  \label{e1}
-  
-  \begin{tabular}{|p{30mm}|p{91mm}|}
-  \multicolumn{2}{c}{Ошибки в~комплексе ПО OpenStack (\textit{окончание})}\\
-  \multicolumn{2}{c}{\ }\\[-6pt]
-  \hline
-\multicolumn{1}{|c|}{Ошибка}&\multicolumn{1}{c|}{Описание}\\
-\hline
-7.~Удаленные пользователи OpenStack могут обходить защиту от подмены IP, вклиниваясь 
-в~процедуру запуска ВМ тенанта~\cite{9-g7}&Уязвимость CVE-2015-5240 (Race 
-Conditions vulnerability in Openstack Neutron) обусловлена тем, что число состояний алгоритмов, 
-использующих распределенные компоненты, очень велико и~корректная обработка 
-разнообразных нештатных ситуаций в~промежуточных состояниях является скорее 
-исключением, чем правилом\\
-\hline
-8.~Обращение в~БД к~записи, которая еще не завершена~\cite{10-g7} (Аномалия~2. P1.Dirty 
-Read)
-&Имеет место при первом запуске ВМ на сервисе Nova, когда в~БД планировщика 
-еще нет полной информации о~дисковых ресурсах этого сервиса. По-видимому, это связано 
-с~рассогласованностью формата БД планировщика и~инсталляционных 
-и~инициализационных процедур сервиса Nova: планировщик пытается прочитать в~БД запись, 
-которая еще полностью не завершена \\
-\hline
-9.~Задержки при работе с~БД~\cite{11-g7}&В некоторых таблицах, используемых 
-компонентом Nova, продублированы индексы, что приводит к~неоправданным задержкам при 
-работе с~такими таблицами \\
-\hline
-10.~Попытка присоединить дополнительный том для хранения данных к~экземпляру ВМ 
-игнорируется~\cite{12-g7}&Невозможно присоединить и~использовать дополнительный заново 
-созданный том для хранения данных, причем этот том отображается как доступный для работы. 
-Причина, по-ви\-ди\-мо\-му, в~неполноте информации, доступной для работы Nova, которая,
- в~свою 
-очередь, не может выполнить команду QEMU по причине дублирования\\
-\hline
-11.~Невозможно удалить образ ВМ, с~которой запущен экземпляр ВМ~\cite{13-g7}&В БД 
-хранится свойство образа, которое указывает на факт работающей ВМ, созданной из образа. 
-При попытке удаления образа информация об этом указателе не сбрасывается и~не дает удалить 
-образ вопреки заявленной функциональности\\
-\hline
-  \end{tabular}
-  \end{center}
-  \end{table}
-
-  При работе компонентов не соблюдаются принятые нормы и~правила при 
-обработке исключений и~ошибок. Возможно, это недостатки проектирования. 
-  
-  Традиционно обнаружение подобных ошибок осуществляется во время 
-эксплуатации. Как правило, при обнаружении какой-либо аномалии 
-в~функционировании системы осуществляется детальное изучение журналов 
-событий и~сопоставление ошибок и~предупреждений. Фактически первичный 
-анализ сводится к~установлению корреляций между сообщениями в~журналах 
-различных подсистем. Затем осуществляется поиск подобных ошибок 
-в~Интернете и~при нахождении таковых проводится анализ причин их 
-возникновения. При возможности, осуществляется <<увязка>> по схеме  
-<<при\-чи\-на--след\-ст\-вие>> пар сообщений об ошибках. Далее формируется 
-первичная <<модель>> последовательности событий, которая проверяется на 
-тестовых примерах. Тестовые примеры затем используются как <<шаги 
-воспроизведения>> в~описании уже новой ошибки в~базе данных (БД) системы 
-контроля ошибок и~управления циклом жизни~ПО. 
-{ %\looseness=1
-
-}
-  
-  В то же время, например, ошибка~3 (см.\ таблицу)~\cite{5-g7}, связанная с~неправильным 
-сетевым подключением перезапущенной ВМ в~относительно современном 
-окружении OpenStack release Mitaka, не может быть проанализирована 
-стандартными средствами. Суть ошибки заключается в~том, что ВМ пересоздается 
-на Nova, отличной от первоначальной, а~сетевой порт остается на агенте 
-компонента Neutron на том же хосте, что и~первоначальная Nova. При этом 
-стандартные средства Neutron позволяют обнаружить <<привязку>> порта 
-к~физическому хосту только по идентификатору ВМ и~хосту ее расположения, 
-который после перезапуска ВМ уже изменился. Соответственно, чтобы просто 
-увязать факты, что агент поддерживает старый сбойной порт с~присутствием на 
-хосте, на котором он реализован, надо анализировать либо журналы Nova 
-и~Neutron, собранные со всех Nova-хостов облака, либо конфигурационные базы 
-OpenStack вручную. Процесс это не быстрый, а~в~интенсивно загруженной среде 
-и~без централизованного упорядоченного журнала событий, возможно, еще 
-и~дающий неоднозначный результат. 
-  
-  Далее, обнаружив хост локализации сбойного порта, придется увязать записи из 
-журнала агента Neutron с~журналом утилиты, которая проводила развертывание 
-ВМ и~виртуальной сети, например Heat. Убедившись в~соответствии временн$\acute{\mbox{ы}}$х 
-меток и~идентификаторов запросов, порта, ВМ и~анализируемой подсети, можно 
-будет приступить к~попытке моделировать подобную ситуацию. Например, можно 
-выделить отдельную зону с~неправильно сконфигурированной Nova, которая 
-будет неспособна развернуть ВМ и~пытаться воспроизвести ситуацию 
-с~перезапуском ВМ на другой Nova. 
-  
-  Очевидно, что стандартными средствами такую задачу также решить 
-невозможно и~придется прибегать к~некоторым ухищрениям, тщательно следя за 
-тем, чтобы сами эти приемы не внесли своего вклада в~особенности генерируемой 
-ошибки. В~описании данной ошибки для ее воспроизведения предлагается 
-модифицировать код Nova на тестовом узле, что сложно признать хорошим 
-методом тестирования по любым канонам. 
-   
-   Разберем детально журнальные записи для ситуации, при которой возникает 
-ошибка~5 при удалении текущего IP-ад\-ре\-са (см.\ таблицу)~\cite{7-g7}. В~описании указано, что 
-при манипуляции с~ВМ и~созданием, остановкой и~удалением 
-возникает необходимость удаления ассоциированного с~ВМ IP-ад\-ре\-са, которое 
-иногда приводит к~возникновению ошибки, связанной с~тем, что собственно 
-<<текущий IP-ад\-рес>> к~моменту исполнения команды может уже не 
-существовать в~результате выполнения конкурентно запущенной команды по 
-удалению ВМ. Ошибка относится к~так называемому <<мерцающему>> типу, 
-когда факт ее возникновения зависит от массы характеристик слабо 
-контролируемого окружения. Такой тип ошибок является, пожалуй, одним из 
-самых сложных и~неприятных из всех возможных для разработчика. Чтобы 
-определить, что же послужило причиной ошибки, час\-то приходится проводить 
-массу экспериментов, обрабатывать огромный объем генерируемых журнальных 
-записей и~данных.
-   
-   Ручной разбор журнальных записей достаточно трудоемкий в~силу того, что 
-приходится кроме упорядочивания событий по времени восстанавливать скрытые 
-взаимосвязи и~ассоциации между объектами. Отсутствие актуальной модели ОВС, 
-объединяющей описание как отдельных объектов инфраструктуры, так и~связей 
-между ними, неизбежно приводит не только к~нарушению це\-лост\-ности 
-конфигурации, но и~к~появлению ошибок управления ОВС, в~том чис\-ле 
-<<мер\-ца\-ющих>>. Методологическая причина этого кроется в~нарушении порядка 
-и~синхронизации процессов управления~\cite{1-g7, 3-g7}. 
-
-Выход из ситуации 
-видится в~решении задачи создания и~поддержания в~актуальном состоянии 
-информационной модели ап\-па\-рат\-но-про\-грам\-мно\-го комплекса, включая 
-конфигурацию виртуальной среды ОВС. В~традиционном варианте реализации  
-ап\-па\-рат\-но-про\-грам\-мных комплексов эта задача успешно решается 
-средствами класса IBM Rational\,/\,Telelogic Tau~\cite{14-g7, 15-g7}. 
-В~традиционном подходе применение инструментов подобного класса (IBM 
-Rational\,/\,Telelogic DOORS/Tau/Synergy/TauTester/DocExpress) позволяет 
-значительно оптимизировать выполнения ряда ITIL
-(Information Technology Infrastructure Library) про\-цес\-сов, в~частности 
-Change и~Release Management. В~случае же ОВС, когда характерные времена 
-уменьшаются до секунд, наличие подобного отлаженного инструментария 
-является одним из необходимых условий проведения успешной реконфигурации 
-и~защиты от нежелательных вторжений. 
-   
-   Применение подобных средств даст возможность:
-   \begin{itemize}
-\item упорядочить процессы управления ОВС, сохраняя целостность 
-конфигурации ОВС в~практически любой момент времени; 
-\item определять временн$\acute{\mbox{ы}}$е периоды и~управлять ими, когда ОВС не 
-находится в~состоянии, отвечающем требованиям SLA (Service
-Level Agreement) и~политик 
-безопасности, и~поэтому уязвима и~ограниченно работо\-спо\-собна;
-{\looseness=1
-
-}
-
-\item декомпозировать ОВС на составляющие компоненты, тем самым 
-понижая размерность и~сложность как каждого компонента, так и~ОВС 
-в~целом, а значит, переводя задачу верификации процессов реконфигурации 
-ОВС в~разряд разрешимых. 
-\end{itemize}
-
-\section{Выводы}
- 
-   Подводя итог приведенных выше рассуждений, можно заключить, что для 
-стабилизации работы продукта необходимо: 
-
-\pagebreak
-
-\noindent
-   \begin{itemize}
-\item предусмотреть центр регистрации ошибок и~мониторинга;
-\item конфигурацию ОВС проводить в~условиях обеспечения 
-мультивариантности, процесс реконфигурации должен быть 
-двухфазным~\cite{1-g7}; 
-\item план реконфигурации должен быть по возможности правильным 
-и~непротиворечивым.
-\end{itemize}
-
-   С этой целью граф модели ОВС должен состоять из подмножеств 
-плоскостей~\cite{2-g7}, оптимально обеспечивающих правильность, 
-непротиворечивость и~упорядоченность плана реконфигурации~\cite{1-g7}. 
-Конфигурации должны регистрироваться в~БД с~поддержкой транзакций и~двухфазного коммита. Уровень изоляции транзакций зависит от необходимого 
-уровня обслуживания и~кри\-тич\-ности работы компонентов. Регистрация событий 
-долж\-на вестись в~централизованном иерархическом порядке в~соответствии 
-с~планом реконфигурации ресурса. Для регистрации и~ситуационного анализа 
-работы ОВС, а~также для возможности определить время, узел, характер и~вектор 
-атаки вредоносного ПО, если таковая будет иметь место. Помимо смысловых 
-меняющихся полей необходимо регистрировать: 
-   \begin{itemize}
-\item отметки времени узлов, занятых в~транзакциях, включая БД и~серверы 
-регистрации событий (журналирование). В~случае иерархии таких серверов, 
-при анализе данных необходимы отметки времени серверов, участвующих 
-в~регистрации; 
-\item идентификатор версии конфигурации; 
-\item если ОВС выполнена с~использованием SDN (Software-Defined Networking), 
-идентификатор 
-<<плоскости>>, slice, в~которой проводилась реконфигурация; 
-\item идентификаторы проекта, тенанта, объекта конфигурации и~их 
-взаимосвязи.
-\end{itemize}
-
-Под объектом конфигурации здесь понимается сущность, влияющая на 
-работу инфраструктуры, как-то: узел (физический и~виртуальный), IP-ад\-рес, 
-порт, протокол, приложение, сервис, сетевая функция, сформированные 
-цепочки сетевых функций, учетная запись, права доступа и~т.\,д.
-   
-   К сожалению, на настоящий момент не существует ни теоретически 
-обоснованных подходов к~построению целостных непротиворечивых 
-конфигураций в~распределенных ОВС, ни целостных методов автоматической 
-проверки, способных адекватно тестировать все состояния распределенных 
-систем. Соответственно, ошибки в~них выявляются по большей части на этапе 
-эксплуатации. Естественно ожидать, что даже после длительного цикла 
-эксплуатации и~исправления ошибок все равно в~системе будут оставаться 
-проблемы, способные привести к~ошибочным состояниям при маловероятных 
-стечениях обстоятельств. Наличие поддерживаемой в~актуальном состоянии 
-информационной модели ап\-па\-рат\-но-про\-грам\-мно\-го комплекса ОВС позволит 
-существенно сократить путь к~решению задачи управления и~поддержки 
-целостных непротиворечивых конфигураций в~распределенных ОВС.
-   
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-\bibitem{1-g7}
-\Au{Грушо А.\,А., Забежайло М.\,И., Зацаринный~А.\,А., Писковский~В.\,О.} Безопасная 
-автоматическая реконфигурация облачных вычислительных сред~/\!\!/ Системы и~средства 
-информатики, 2016. Т.~26. №\,3. С.~83--92.
-\bibitem{2-g7}
-\Au{McGeer R.} Declarative verifiable SDI specifications~/\!\!/ 37th IEEE Symposium on Security 
-and Privacy Proceedings.~--- IEEE, 2016. P.~198--203. {\sf http:// spw16.langsec.org/papers/mcgeer-
-verifiable-sdi-specs.pdf}.
-
-\bibitem{3-g7}
-\Aue{Грушо А.\,А., Забежайло М.\,И., Зацаринный~А.\,А., Николаев~А.\,В., Писковский~В.\,О., 
-Тимонина~Е.\,Е.} Классификация ошибочных состояний в~распределенных вычислительных 
-системах и~источники их возникновения~/\!\!/ Системы и~средства информатики, 2017. Т.~27. 
-№\,2. С.~29--40. 
-\bibitem{4-g7}
-OpenStack Compute (nova): Inconsistent state when connection to conductor is lost during live 
-migration, 2016. {\sf https://bugs.launchpad.net/nova/+bug/1536589}.
-\bibitem{5-g7}
-OpenStack Compute (nova): Network not always cleaned up when spawning VMs, 2016. {\sf 
-https://bugs.launchpad.net/nova/+bug/1597596}. 
-\bibitem{6-g7}
-OpenStack Compute (nova): Nova force-delete can't delete instance in vm\_state 
-block\_device\_mapping, 2017. {\sf https://bugs.launchpad.net/nova/+bug/1704945}. 
-\bibitem{7-g7}
-OpenStack Compute (nova): Race conditions between compute and schedule disk report. {\sf 
-https://bugs.launchpad.net/nova/+bug/1704975}.
-\bibitem{8-g7}
-OpenStack Compute (nova): Live migration fails with an attached non-bootable Cinder volume (Pike),
-2017. 
-{\sf https://bugs.launchpad.net/nova/+bug/1715569}. 
-\bibitem{9-g7}
-Neutron: Race Conditions vulnerability in Openstack Neutron, 2015. {\sf  
-https:// cyber.vumetric.com/vulns/CVE-2015-5240/race-conditions-vulnerability-openstack-neutron}.
-\bibitem{10-g7}
-OpenStack Compute (nova): Race conditions between compute and schedule disk report,
-2016. {\sf 
-https://bugs.launchpad.net/nova/+bug/1610679}.
-\bibitem{11-g7}
-OpenStack Compute (nova): Duplicate indexes in nova-db, 2016. {\sf 
-https:// bugs.launchpad.net/nova/+bug/1641185}.
-\bibitem{12-g7}
-OpenStack Compute (nova): Can't attach volume to volume-backed instance, 2017. {\sf 
-https://bugs.launchpad.net/nova/+bug/1678694}, 2017.
-\bibitem{13-g7}
-OpenStack Compute (nova): Can not delete the image has been launched instance when use rbd. {\sf 
-https://bugs.launchpad.net/nova/+bug/1697391}.
-\bibitem{14-g7}
-\Au{De Wet N., Kritzinger~P.} Towards model-based communication protocol performability analysis 
-with UML~2.0~/\!\!/ Southern African Telecommunication Networks and Applications Conference 
-(SATNAC) Proceedings.~--- Spier Wine Estate, 2004. 6~р. {\sf 
-http://www.satnac.org.za/proceedings/2004/Software/No\%20105\%20-\%20de\%20Wet.pdf}.
-\bibitem{15-g7}
-Standards-based, model-driven development solution for complex systems, 2016. {\sf  
-https://www-03.ibm.com/software/products/en/ratitau}.
-
-        \end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 04.02.18}}
-
-
-
-
-%\vspace*{8pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-\newpage
-
-\vspace*{-28pt}
-
-%\hrule
-
-%\vspace*{9pt}
-
-
-
-\def\tit{ABOUT THE~ANALYSIS OF~ERRATIC STATUSES 
-IN~THE~DISTRIBUTED COMPUTING SYSTEMS}
-
-\def\titkol{About the~analysis of~erratic statuses 
-in~the~distributed computing systems}
-
-
-\def\aut{A.\,A.~Grusho$^1$, M.\,I.~Zabezhailo$^1$, A.\,A.~Zatsarinny$^1$, 
-A.\,V.~Nikolaev$^2$, V.\,O.~Piskovski$^1$, V.\,V.~Senchilo$^1$, 
-I.\,V.~Sudarikov$^1$, and~E.\,E.~Timonina$^1$}
-\def\autkol{A.\,A.~Grusho, M.\,I.~Zabezhailo, A.\,A.~Zatsarinnyy, et al.}
-%A.\,V.~Nikolaev, 
-%V.\,O.~Piskovski$^1$, V.\,V.~Senchilo$^1$,  I.\,V.~Sudarikov$^1$, and~E.\,E.~Timonina$^1$}
-
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-
- \noindent
-   $^1$Institute of Informatics Problems, Federal Research Center ``Computer 
-Sciences\linebreak
-$\hphantom{^1}$and Control'' of the Russian Academy of Sciences; 44-2~Vavilov Str., Moscow\linebreak 
-$\hphantom{^1}$119133, Russian Federation
-   
-   \noindent
-   $^2$N.\,N.~Semenov Institute of Chemical Physics, Russian Academy of Sciences;\linebreak
-   $\hphantom{^1}$4-1~Kosygina Str.,  Moscow 119991, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2018 vol~28 no\,1}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2018   vol~28   no\,1
-\hfill \textbf{\thepage}}}
-    
-    
-    
-   
-   
-   \Abste{The analysis of erratic statuses of the distributed computing systems on the example of 
-OpenStack, caused by the absence of synchronization
-between components of a cloudy computing 
-environment and, also, probable sources of their origin are considered. 
-Detail analysis of 
-journal records is provided in the analysis of one of the listed erratic statuses of software platform of 
-OpenStack. The method of the analysis of similar situations is shown. Creation and maintenance in 
-current state of an information model of a managed cloudy computing environment is 
-suggested. The necessity to use 
-such model for execution of requirements of positive control of a cloudy computing 
-environment and provision of high-quality cloudy services 
-of such types as service, platform, 
-infrastructure, network functions, chains of network functions is substantiated.} 
-
-   \KWE{distributed computing systems; cloudy computing environments; OpenStack; 
-RabbitMQ; Nova; Neutron; analysis of erratic statuses; information cloudy network infrastructures}
-   
-
-   
-\DOI{10.14357\!/\!08696527180108}
-
-%\vspace*{-24pt}
-
-   \Ack
-   \noindent
-   The paper was partially supported by the
-   Russian Foundation for Basic Research (project 15-29-07981~ofi-m).
-
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-\bibitem{1-g7-1}
-\Aue{Grusho, A.\,A., M.\,I.~Zabezhailo, A.\,A.~Zatsarinnyy, and V.\,O.~Piskovski}. 2016. 
-Bez\-opas\-naya avtomaticheskaya rekonfiguratsiya oblachnykh vychislitel'nykh sred [Secure automatic 
-reconfiguration of cloudy computing]. \textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of 
-Informatics} 26(3):83--92.
-\bibitem{2-g7-1}
-\Aue{McGeer, R.} 2016. Declarative verifiable SDI specifications. \textit{37th IEEE 
-Symposium on 
-Security and Privacy Proceedings}. IEEE. 198--203. Available at: {\sf 
-http:// spw16.langsec.org/papers/mcgeer-verifiable-sdi-specs.pdf} (accessed February~3, 2018).
-\bibitem{3-g7-1}
-\Aue{Grusho, A.\,A., M.\,I.~Zabezhailo, A.\,A.~Zatsarinnyy, A.\,V.~Nikolaev,  
-V.\,O.~Piskovski, and E.\,E.~Timonina.} 2017. Klassifikatsiya oshibochnykh sostoyaniy 
-v~raspredelennykh vychislitel'nykh sistemakh i~istochniki ikh vozniknoveniya [Erroneous states 
-classification in distributed computing systems and sources of their occurrences]. \textit{Sistemy 
-i~Sredstva Informatiki~--- Systems and Means of Informatics} 27(2):29--40. 
-\bibitem{4-g7-1}
-OpenStack Compute (nova): Inconsistent state when connection to conductor is lost during live 
-migration.  2016. Available at: {\sf https://bugs.launchpad.net/nova/ +bug/1536589} (accessed Febrary~3, 
-2018).
-\bibitem{5-g7-1}
-OpenStack Compute (nova): Network not always cleaned up when spawning VMs. 2016. Available at: 
-{\sf https://bugs.launchpad.net/nova/+bug/1597596} (accessed February~3, 2018). 
-\bibitem{6-g7-1}
-OpenStack Compute (nova): Nova force-delete can't delete instance in vm\_state 
-block\_device\_mapping. 2017. Available at: {\sf https://bugs.launchpad.net/nova/+bug/ 1704945} 
-(accessed February~3, 2018). 
-\bibitem{7-g7-1}
-OpenStack Compute (nova): Race conditions between compute and schedule disk report. Available at: 
-{\sf https://bugs.launchpad.net/nova/+bug/1704975. 2017}  (accessed February~3, 2018).
-\bibitem{8-g7-1}
-OpenStack Compute (nova): Live migration fails with an attached non-bootable Cinder volume (Pike). 
-2017. Available at: {\sf https://bugs.launchpad.net/nova/+bug/1715569} (accessed February~3, 2018). 
-\bibitem{9-g7-1}
-Neutron: Race Conditions vulnerability in Openstack Neutron. 2015. Available at: {\sf 
-https://cyber.vumetric.com/vulns/CVE-2015-5240/race-conditions-vulnerability-openstack-neutron/} (accessed 
-February~3, 2018).
-\bibitem{10-g7-1}
-OpenStack Compute (nova): Race conditions between compute and schedule disk report. 2016. 
-Available at: {\sf https://bugs.launchpad.net/nova/+bug/1610679} (accessed February~3, 2018).
-\bibitem{11-g7-1}
-OpenStack Compute (nova): Duplicate indexes in nova-db. 2016. Available at: {\sf 
-https:// bugs.launchpad.net/nova/+bug/1641185} (accessed February~3, 2018).
-\bibitem{12-g7-1}
-OpenStack Compute (nova): Can't attach volume to volume-backed instance. 2017. Available at: {\sf 
-https://bugs.launchpad.net/nova/+bug/1678694} (accessed February~3, 2018).
-\bibitem{13-g7-1}
-OpenStack Compute (nova): Can not delete the image has been launched instance when use rbd. 2017. 
-Available at: {\sf https://bugs.launchpad.net/nova/+bug/1697391} (accessed February~3, 2018).
-\bibitem{14-g7-1}
-\Aue{De Wet, N. and P.~Kritzinger.} 2004. Towards model-based communication protocol 
-performability analysis with UML~2.0. \textit{Southern African Telecommunication Networks and 
-Applications Conference (SATNAC) Proceedings}. Spier Wine Estate. 6~р. Available at: {\sf 
-http://www.satnac.org.za/proceedings/2004/Software/No\%20105\%20-\%20de\%20Wet.pdf} (accessed 
-Febrary~3, 2018).
-\bibitem{15-g7-1}
-Standards-based, model-driven development solution for complex systems. 2015. Available at: {\sf 
-https://www-03.ibm.com/software/products/en/ratitau} (accessed February~3, 2018).
-
-\end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Received February 4, 2018}}   
-
-\Contr
-
-\noindent
-\textbf{Grusho Alexander A.} (b.\ 1946)~--- Doctor of Science in physics and 
-mathematics, professor, Head of Laboratory, Institute of Informatics Problems, 
-Federal Research Center ``Computer Sciences and Control'' of the Russian Academy 
-of Sciences; 44-2~Vavilov Str., Moscow 119133, Russian Federation;  
-\mbox{grusho@yandex.ru} 
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Zabezhailo Michael I.} (b.\ 1956)~--- Doctor of Science in physics and 
-mathematics, Head of Laboratory, Institute of Informatics Problems, Federal 
-Research Center ``Computer Sciences and Control'' of the Russian Academy of 
-Sciences; 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
-\mbox{m.zabezhailo@yandex.ru} 
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Zatsarinny Alexander A.} (b.\ 1951)~--- Doctor of Science in technology, 
-professor, Deputy Director, Federal Research Center ``Computer Sciences and 
-Control'' of the Russian Academy of Sciences; 44-2~Vavilov Str., Moscow 119133, 
-Russian Federation; \mbox{AZatsarinny@ipiran.ru} 
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Nikolaev Andrei V.} (b.\ 1973)~--- Candidate of Science (PhD) in physics 
-and mathematics, senior scientist, N.\,N.~Semenov Institute of Chemical Physics,  
-Russian Academy of Sciences; 4-1~Kosygina Str., Moscow 119991, Russian 
-Federation; \mbox{gentoorion@mail.ru} 
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Piskovski Viktor O.} (b.\ 1963)~--- Candidate of Science (PhD) in physics 
-and mathematics, senior scientist, Institute of Informatics Problems, Federal 
-Research Center ``Computer Sciences and Control'' of the Russian Academy of 
-Sciences; 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
-\mbox{vpvp80@yandex.ru}
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Senchilo Vladimir V.} (b.\ 1963)~--- scientist, Institute of Informatics 
-Problems, Federal Research Center ``Computer Sciences and Control'' of the Russian 
-Academy of Sciences; 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
-\mbox{volodias@mail.ru} 
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Sudarikov Igor V.} (b.\ 1989)~--- scientist, Institute of Informatics 
-Problems, Federal Research Center ``Computer Sciences and Control'' of the Russian 
-Academy of Sciences; 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
-\mbox{4seev3@gmail.com} 
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Timonina Elena E.} (b.\ 1952)~---
-Doctor of Science in technology, professor, leading scientist, Institute of Informatics 
-Problems, Federal Research Center ``Computer Sciences and Control'' of the Russian 
-Academy of Sciences; 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
-\mbox{eltimon@yandex.ru} 
-
-\label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}

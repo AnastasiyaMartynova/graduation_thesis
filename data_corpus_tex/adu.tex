@@ -1,1376 +1,0 @@
-\def\stat{adu}
-
-\def\tit{АНАЛИЗ СХЕМЫ ДОСТУПА С~ПРЕРЫВАНИЕМ ПРИ НАРЕЗКЕ 
-РАДИОРЕСУРСОВ СЕТИ ПЯТОГО ПОКОЛЕНИЯ$^*$}
-
-\def\titkol{Анализ схемы доступа с~прерыванием при нарезке 
-радиоресурсов сети пятого поколения}
-
-\def\aut{К.\,И.\,Б.~Аду$^1$, Е.\,В.~Маркова$^2$, Ю.\,В.~Гайдамака$^3$, С.\,Я.~Шоргин$^4$}
-
-\def\autkol{К.\,И.\,Б.~Аду, Е.\,В.~Маркова, Ю.\,В.~Гайдамака, С.\,Я.~Шоргин}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Аду К.\,И.\,Б.}
-\index{Маркова Е.\,В.}
-\index{Гайдамака Ю.\,В.}
-\index{Шоргин С.\,Я.}
-\index{Adou K.\,Y.\,B.}
-\index{Markova E.\,V.}
-\index{Gaidamaka Yu.\,V.}
-\index{Shorgin S.\,Ya.}
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Исследование выполнено за счет гранта Российского научного 
-фонда №\,22-79-10053, {\sf https://rscf.ru/project/22-79-10053/}.}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Российский университет дружбы народов, \mbox{adu-k@rudn.ru}}
-\footnotetext[2]{Российский университет дружбы народов, markova-ev@rudn.ru}
-\footnotetext[3]{Российский университет дружбы народов; Федеральный 
-исследовательский центр <<Информатика и~управление>> Российской академии наук, 
-\mbox{gaydamaka-yuv@rudn.ru}}
-\footnotetext[4]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
-\mbox{sshorgin@ipiran.ru}}
-
-\vspace*{-2pt}
- 
- 
-
-\Abst{Активно исследуемая в~последние годы технология <<нарезки радиоресурсов сети>> 
-(NS~--- Network Slicing), основанная на представлении общей сетевой инфраструктуры 
-в~виде различных настраиваемых логических сетей, называемых слайсами, предполагает 
-разделение операторов мобильной сети на две группы~--- провайдеры физической 
-сетевой инфраструктуры InPs (Infrastructure Providers) и~операторы мобильной 
-виртуальной сети (MVNOs~--- Mobile Virtual Network Operators). Последние арендуют 
-физические ресурсы InPs для создания собственных слайсов с~целью предоставления 
-своим пользователям услуг с~различными требованиями к~качеству обслуживания. 
-В~статье для сети с~технологией NS предложена схема доступа к~радиоресурсам сети, 
-предоставляющей пользователям услуги с~гарантированной скоростью передачи данных 
-(GBR~--- Guaranteed Bit Rate) и~приоритетным управлением, основанным на реализации 
-механизма прерывания обслуживания пользователей. Для оценки эффективности 
-предлагаемой схемы проведен сравнительный анализ ее характеристик 
-с~характеристиками схемы доступа, основанной на механизме резервирования ресурсов.}
-
-\KW{5G; нарезка сети; качество обслуживания; ключевые 
-показатели эффективности; приоритетное управление; прерывание обслуживания; 
-итерационный метод}
-
-\DOI{10.14357/19922264230113} 
-  
-\vspace*{2pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-
-Ввиду ограниченности спектра частотного диапазона мобильных сетей для 
-предоставления пользователям услуг с~требуемым качеством обслуживания необходимо 
-внедрение новых технологий. В~последние годы активно исследуется технология 
-<<нарезки радиоресурсов сети>> NS, основанная на представлении 
-общей сетевой инфраструктуры в~виде различных настраиваемых логических сетей, 
-называемых слайсами. Одной из \mbox{важнейших} проб\-лем реализации технологии NS 
-является проб\-ле\-ма эффективного распределения радиоресурсов~--- полосы 
-пропускания или физических ресурсных\linebreak блоков PRB (Physical Resource Block). 
-Радиоре\-сурсы должны быть распределены между несколькими слайсами в~соответствии 
-с~динамически\linebreak меняющимися требованиями пользователей~--- операторов 
-мобильной виртуальной сети MVNOs (Mobile Virtual Network Operators), при этом 
-долж\-ны быть выполнены ключевые требования к~изоляции слайсов~\cite{3gpp.21.916, 3gpp.22.864}, 
-в~част\-ности трафик, об\-слу\-жи\-ва\-емый в~рамках одного слайса, не должен оказывать негативного влияния на трафик, 
-об\-слу\-жи\-ва\-емый в~других слайсах. Например, в~работах~\cite{3gpp.28.554, Yarkina2022} для реализации межслайсовой изоляции 
-предложены подходы, основанные на резервировании ресурсов.
-
-В данной работе рассмотрена модель схемы распределения ресурсов базовой 
-станции (БС) соты сети между несколькими слайсами, пользователям которых 
-предоставляются услуги реального времени с~GBR, например видео- и~голосовая 
-телефония.
-Особенность предложенной модели заключается в~управлении доступом RAC 
-(Radio Admission\linebreak Control), основанном на реализации совместного доступа к~части 
-имеющихся ресурсов и~введении приоритетного обслуживания. Для реализации 
-межслайсовой изоляции приоритетное\linebreak управление использует механизм прерывания 
-обслуживания пользователей, при этом в~\mbox{статье} раз\-работан итерационный метод 
-расчета числа прерванных запросов. Чтобы оценить эффективность предлагаемой 
-схемы доступа с~прерыванием обслуживания пользователей (далее~--- ПС,  схема 
-с~прерыванием), проведен сравнительный анализ ее основных ключевых показателей 
-эффективности (КПЭ) с~КПЭ схемы доступа, основанной на реализации механизма 
-резервирования ресурсов (далее~--- РС, схема с~резервированием)~\cite{Luu2022,Rehman2022}.
-
-\begin{table*}[b]\small %tabl1
-\vspace*{-16pt}
-\begin{center}
-\Caption{Основные символы системы}
-\label{tab:Notations}
-\vspace*{2ex}
-
-\begin{tabular}{|c|l|c|}
-\hline
-Обозначение & \multicolumn{1}{c}{Описание} & \tabcolsep=0pt\begin{tabular}{c}Единица \\ измерения\end{tabular}\\ 
-\hline
-$\mathcal{S}$ & Множество слайсов в~сис\-те\-ме, 
-$\mathcal{S}\subset\mathbb{N}\setminus\{0\}, \mathbb{N}=\{0,1,2,\ldots\}$ & --- \\
-\hline
-$C$        & Общая емкость системы & ед.\ емкости \\
-\hline
-$C_s$      & Максимальная емкость слайса $s$, $s\hm\in\mathcal{S}$, 
-$\sum\nolimits_{s\in\mathcal{S}} C_s \hm\geq C$ & ед.\ емкости \\[2pt]
-\hline
-&&\\[-10pt]
-$Q_s$      & Гарантированная емкость слайса $s$, $s\hm\in\mathcal{S}$, $Q_s \hm\leq C_s$ и~$\sum\nolimits_{s\in\mathcal{S}} Q_s\hm \leq C$ & ед.\ емкости \\[2pt]
-\hline
-&&\\[-10pt]
-$\lambda_s$ & Интенсивность поступления запросов в~слайс~$s$, $s\hm\in\mathcal{S}$, 
-$\boldsymbol\lambda = 
-\left(\lambda_1,\ldots,\lambda_{\lvert\mathcal{S}\rvert}\right)$ & запросов/ед.\ вр. \\[2pt]
-\hline
-$\mu_s^{-1}$ & \tabcolsep=0pt\begin{tabular}{l}Среднее время обслуживания одного запроса в~слайсе 
-$s$, $s\hm\in\mathcal{S}$, $\boldsymbol\mu \hm= {}$\\
-${}=
-\left(\mu_1,\ldots,\mu_{\lvert\mathcal{S}\rvert}\right)$\end{tabular} & ед.\ вр. \\
-\multicolumn{1}{|c|}{\ }&&\multicolumn{1}{c|}{\ }\\[-10pt]
-\hline
-$\rho_s\hm=\lambda_s/\mu_s$ & Предложенная нагрузка, создаваемая 
-запросами в~слайсе~$s$, $s\hm\in\mathcal{S}$ & --- \\
-\hline
-$b_s$      & \tabcolsep=0pt\begin{tabular}{l}Требование к~ресурсам, необходимым для обслуживания одного запроса\\
- в~слайсе $s$, $s\hm\in\mathcal{S}$, $b_s \leq Q_s$, $\mathbf{b}\hm= 
-\left(b_1,\ldots,b_{\lvert\mathcal{S}\rvert}\right)$ \end{tabular}& ед.\ емкости \\
-\multicolumn{1}{|c|}{\ }&&\multicolumn{1}{c|}{\ }\\[-10pt]
-\hline
-&&\\[-10pt]
-$\left\lfloor C_s/b_s \right\rfloor$ & \tabcolsep=0pt\begin{tabular}{l}Максимальное число запросов в~слайсе 
-$s,s\in\mathcal{S}$, $\mathbf{N}^{\max} \hm= \left(\left\lfloor C_1/b_1 
-\right\rfloor,\ldots\right.$\\ 
-$\left.\ldots,\left\lfloor 
-C_{\lvert\mathcal{S}\rvert}/b_{\lvert\mathcal{S}\rvert} \right\rfloor \right)$ \end{tabular}& 
---- \\
-\multicolumn{1}{|c|}{\ }&&\multicolumn{1}{c|}{\ }\\[-10pt]
-\hline
-$\left\lfloor Q_s/b_s \right\rfloor$ &\tabcolsep=0pt\begin{tabular}{l} Максимальное число запросов, которое 
-может быть обслужено с~ис\-поль\-зо-\\ ва\-ни\-ем гарантированной емкости слайса 
-$s$, $s\hm\in\mathcal{S}$, $\mathbf{N}^{{g}}\hm = \left(\left\lfloor Q_1/b_1 
-\right\rfloor,\ldots \right.$\\
-$\left.\ldots ,\left\lfloor Q_{\lvert\mathcal{S}\rvert}/b_{\lvert\mathcal{S}\rvert} \right\rfloor \right)$\end{tabular} & 
---- \\
-\multicolumn{1}{|c|}{\ }&&\multicolumn{1}{c|}{\ }\\[-10pt]
-\hline
-$n_s$      & \tabcolsep=0pt\begin{tabular}{l}Число запросов в~слайсе $s$, $s\hm\in\mathcal{S}$, когда система 
-находится в~состоянии\\
- $\mathbf{n} \hm= \left(n_1,\ldots,n_{\lvert\mathcal{S}\rvert}\right)$\end{tabular} & --- \\
- \multicolumn{1}{|c|}{\ }&&\multicolumn{1}{c|}{\ }\\[-10pt]
-\hline
-$\mathbf{e}_s$ & Строка $s$, $s\hm\in\mathcal{S}$, единичной матрицы 
-$\lvert\mathcal{S}\rvert \times  \lvert\mathcal{S}\rvert$ & --- \\
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
-
-
-\section{Описание модели}
-%\label{sec:sysModel}
-
-Рассмотрим работу БС соты сети, принадлежащей одному провайдеру InP и~имеющей 
-емкость~$C$. Емкость БС используется несколькими мобильными операторами MVNOs, 
-\mbox{предоставляющими} услуги своим пользователям, при этом под каждую услугу 
-оператору MVNO выделяется так называемый <<слайс>>~--- часть от общей 
-ем\-кости~$C$. Обозначим множество слайсов через $\mathcal{S}$, 
-$\mathcal{S}\hm\subset\mathbb{N}\setminus\{0\}, \mathbb{N} \hm= \{0,1,2,\ldots\}$. Для 
-каждого слайса $s$ определена максимальная емкость~$C_s$, причем $C_s\hm \leq C$ 
-и~$\sum\nolimits_{s\in\mathcal{S}} C_s \hm\geq C$. Емкость~$C_s$ слайса $s$ включает в~себя 
-гарантированную часть емкостью~$Q_s$ и~общедоступную часть $C_s \hm- Q_s$, при этом 
-$Q_s \hm\leq C_s$ и~$\sum\nolimits_{s\in\mathcal{S}} Q_s \hm\leq C$. Поток запросов 
-пользователей на предоставление услуги $s$ моделируется с~по\-мощью пуассоновского 
-потока запросов типа~$s$ с~интенсивностью~$\lambda_s$, $s\hm\in\mathcal{S}$.
-
-Основные обозначения представлены в~табл.~\ref{tab:Notations}. Указанные параметры 
-позволяют реализовать схе-\linebreak му ПС управления доступом с~механизмом прерывания 
-обслуживания пользователей.
-Отличие предлагаемой схемы ПС управления доступом с~механизмом прерывания от 
-классической неполнодоступной схемы с~потолками в~общей части ресурса (Sharing 
-with Maximum Queue Length and Minimum Allocation)~\cite{Basharin1982,kermani1977analysis,Kamoun1980} заключается в~отсутствии 
-индивидуальной зоны для запросов типа~$s$, $s\hm\in\mathcal{S}$, в~которую не 
-допускаются запросы других типов. Отметим, что в~гарантированной части 
-незагруженного слайса~$s$, $s\hm\in\mathcal{S}$, может начать обслуживаться принятый в~сис\-те\-му запрос произвольного типа 
-$\hat{s}$, $\hat{s}\hm\in\mathcal{S}\setminus\{s\}$, при этом с~точки зрения 
-слайса~$s$ запрос типа~$\hat{s}$ становится так на\-зы\-ва\-емым <<нарушителем>>. Если 
-при по\-сле\-ду\-ющем поступлении запроса типа~$s$ чис\-ло об\-слу\-жи\-ва\-емых в~этом слайсе 
-запросов окажется меньше гарантированного значения $\left\lfloor Q_s/b_s 
-\right\rfloor$, а~объем доступного ресурса БС меньше требуемого~$b_s$, то запрос 
-будет принят на обслуживание за счет прерывания обслуживания одного или 
-нескольких за\-про\-сов-<<на\-ру\-ши\-те\-лей>> типа 
-$\hat{s}$, $\hat{s}\hm\in\mathcal{S}\setminus\{s\}$. Для реализации механизма 
-прерывания каждому слайсу присвоен приоритет в~обслуживании, что также отличает 
-предложенную схему ПС от классической неполнодоступной схемы с~потолками в~общей 
-час\-ти ресурса. В~предположении о~различающихся приоритетах у слайсов 
-перенумеруем слайсы в~порядке убывания приоритета, т.\,е.\ высший приоритет 
-в~обслуживании получат запросы, находящиеся в~слайсе с~номером~<<$1$>>, низший~--- 
-в~слайсе с~номером <<$\lvert\mathcal{S}\rvert$>>. Введем век\-тор-функ\-цию 
-пре\-ры\-вания
-\begin{equation*}
-\mathbf{z}\left(s,\mathbf{n}\right) = \left( 
-z_{\hat{s}}\left(s,\mathbf{n}\right) \right) = \left( 
-z_1\left(s,\mathbf{n}\right), \ldots, 
-z_{\lvert\mathcal{S}\rvert}\left(s,\mathbf{n}\right) \right),\!
-\end{equation*} 
-
-\vspace*{-3pt}
-
-\noindent
-определяющую число об\-слу\-жи\-ва\-емых запросов слайса 
-$\hat{s}$, $\hat{s}\hm\in\mathcal{S}$, которое необходимо прервать для приема одного 
-запроса в~слайс~$s$, $s\hm\in\mathcal{S}$.
-
-\begin{figure*} %fig1
-\vspace*{1pt}
-\begin{center}
-   \mbox{%
-\epsfxsize=161.239mm
-\epsfbox{adu-1.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\Caption{Блок-схема для иллюстрации правил управления доступом к~радиоресурсам сис\-те\-мы}
-\label{fig:generalRACScheme}
-\end{figure*}
-
-Таким образом, при поступлении в~слайс~$s$, $s\hm\in\mathcal{S}$, запроса на 
-предоставление услуги возможны три случая:\\[-14pt]
-\begin{enumerate}[(1)]
-\item запрос немедленно будет принят на обслуживание, если число об\-слу\-жи\-ва\-емых 
-запросов в~данном слайсе меньше $\left\lfloor C_s/b_s \right\rfloor$, а~объем 
-доступного ресурса БС больше или равен~$b_s$, т.\,е. 
-$\left(\mathbf{n}\hm+\mathbf{e}_s\hm-\mathbf{N}^{\max}\right) \cdot \mathbf{e}_s \hm\leq 
-0 \land \left(\mathbf{n}\hm + \mathbf{e}_s\right) \cdot \mathbf{b} \hm\leq C$;
-\item запрос будет принят на обслуживание за счет прерывания обслуживания 
-за\-про\-сов-<<на\-ру\-ши\-те\-лей>> из других слайсов 
-$\hat{s}$, $\hat{s}\hm\in\mathcal{S}\setminus\{s\}$, число которых 
-определяется с~по\-мощью век\-тор-функ\-ции прерывания 
-$\mathbf{z}\left(s,\mathbf{n}\right)$, если число об\-слу\-жи\-ва\-емых запросов в~слайсе~$s$ 
-меньше $\left\lfloor Q_s/b_s \right\rfloor$, а~объем доступных 
-ресурсов БС меньше~$b_s$, т.\,е.\ $\left(\mathbf{n}\hm+\mathbf{e}_s \hm-
-\mathbf{N}^{g}\right) \cdot \mathbf{e}_s\hm \leq 0 \hm\land \left(\mathbf{n} \hm+ 
-\mathbf{e}_s \hm- \mathbf{z}\left(s,\mathbf{n}\right)\right) \cdot \mathbf{b} \hm\leq 
-C$;
-\item запрос будет заблокирован, если число об\-слу\-жи\-ва\-емых запросов в~слайсе~$s$ 
-больше или рав\-но $\left\lfloor Q_s/b_s \right\rfloor$, а~объем доступного 
-ресурса БС меньше~$b_s$, т.\,е.\ $\left( \mathbf{n}\hm + \mathbf{e}_s \hm-
-\mathbf{N}^{g} \right) \cdot \mathbf{e}_s \hm> 0 \land \left( \mathbf{n} \hm+ 
-\mathbf{e}_s \right) \cdot \mathbf{b} \hm> C$.
-\end{enumerate}
-
-Отметим, что, в~отличие от классических схем\linebreak управ\-ле\-ния доступом 
-с~приоритизацией, предлагаемая схема ПС для приема запроса в~гарантированную часть 
-соответствующего слайса \mbox{предусмат\-ри\-ва\-ет} необходимость прервать обслуживание 
-за\-про\-са-<<на\-ру\-ши\-те\-ля>> (т.\,е.\ запроса, об\-слу\-жи\-ва\-емо\-го вне гарантированной час\-ти 
-своего слайса) не только более низкого приоритета, но и~более высокого 
-приоритета.
-
-
-%\smallskip
-
-\noindent
-\textbf{Утверждение 1.}
-При начальном условии $\mathbf{z}\left(s,\mathbf{n}\right)=\mathbf{0}$, числа 
-$z_{\hat{s}}\left(s,\mathbf{n}\right)$, $\hat{s}\hm\in\mathcal{S}$, запросов, 
-обслуживание которых необходимо будет прервать, можно вычислить с~по\-мощью 
-рекуррентного соотношения
-
-\vspace*{-6pt}
-
-\noindent
-\begin{multline}
-\label{eq:capabilityFunc}
-z_{\hat{s}}\left(s,\mathbf{n}\right) = \min
-\biggl\{
-R \left(\left(\mathbf{n}-\mathbf{N}^{g}\right) \cdot 
-\mathbf{e}_{\hat{s}}\right), \\[-3pt]
-R \left(\left\lceil \frac{\left(\mathbf{n}+\mathbf{e}_s - 
-\mathbf{z}\left(s,\mathbf{n}\right) \right)\cdot\mathbf{b} - 
-C}{\mathbf{e}_{\hat{s}}\cdot\mathbf{b}} \right\rceil\right)\!\!
-\biggl\},\\[-3pt]
-\hat{s} = \lvert\mathcal{S}\rvert,\ldots,1,
-\end{multline}
-
-\columnbreak
-
-\noindent
-где $R\left(x\right)=xH\left(x\right)$~--- функция 
-Рампы\footnote{{\sf https://mathworld.wolfram.com/RampFunction.html.}}, 
-а~$H\left(x\right)$~--- функция 
-Хевисайда\footnote{{\sf https://mathworld.wolfram.com/HeavisideStepFunction.html.}}.
-
-\smallskip
-
-Отметим, что число~$z_s\left(s,\mathbf{n}\right), 
-s\in\mathcal{S}$, всегда равно нулю, так как запрос не может быть принят на 
-обслуживание за счет прерывания об\-слу\-жи\-ва\-емо\-\mbox{го(-ых)} за\-про\-са(-ов) в~этом же 
-слайсе.
-
-Для наглядности схему управ\-ле\-ния до\-сту\-пом можно описать с~по\-мощью блок-схе\-мы, 
-пред\-став\-лен\-ной на рис.~\ref{fig:generalRACScheme}.
-
-\vspace*{-14pt}
-
-
-\section{Построение математической модели}\label{sec:mathModel}
-
-\vspace*{-4pt}
-
-В соответствии с~описанной в~разд.~2 схемой 
-управ\-ле\-ния доступом к~радиоресурсам сети поведение системы описывает 
-$\lvert\mathcal{S}\rvert$-мер\-ный случайный процесс (СП) 
-$\mathbf{X}\left(t\right) \hm= \left( X_1\left(t\right),\ldots, 
-X_{\lvert\mathcal{S}\rvert}\left(t\right), t\hm>0 \right)$, где 
-$X_s\left(t\right)$, $s\hm\in\mathcal{S}$,~--- чис\-ло об\-слу\-жи\-ва\-емых запросов в~слайсе~$s$ 
-в~момент времени~$t$ над пространством со\-сто\-яний
-
-\noindent
-\begin{equation*}
-%\label{eq:StateSpace}
-\Omega =
-\left\{
-\mathbf{n} \in \mathbb{N}^{\lvert\mathcal{S}\rvert} :
-\left( \mathbf{n} - \mathbf{N}^{\max} \right) \cdot \mathbf{j} \leq 0
-\land
-\mathbf{n} \cdot \mathbf{b} \leq C
-\right\},
-\end{equation*}
-
-\vspace*{-4pt}
-
-\noindent
-где $\mathbb{N}^{\lvert\mathcal{S}\rvert}$~--- множество всевозможных 
-$\lvert\mathcal{S}\rvert$-мер\-ных век\-то\-ров-строк с~натуральными элементами, 
-а~$\mathbf{j}$~--- единичная матрица размера $1\times \lvert\mathcal{S}\rvert$.
-
-Схема соответствующей мультисервисной сис\-те\-мы массового 
-обслуживания (СМО)~\cite{Basharin2013} изображена на~рис.~2. 
-
-
-
-
-
-Для дальнейшего анализа модели введем следующие подмножества пространства 
-состояний~$\Omega$ системы:
-\begin{enumerate}[(1)]
-\item $\Omega_s^{\mathrm{dad}},s\in\mathcal{S}$,~--- множество состояний системы, в~которых поступающий в~слайс~$s$ запрос немедленно будет принят на 
-обслуживание:
-\end{enumerate}
-
-{ \begin{center}  %fig2
- \vspace*{-3pt}
-    \mbox{%
-\epsfxsize=77.767mm
-\epsfbox{adu-2.eps}
-}
-
-
-\vspace*{3pt}
-
-
-\noindent
-{{\figurename~2}\ \ \small{Схема СМО
-}}
-\end{center}
-}
-
-\vspace*{-12pt}
-
-\addtocounter{figure}{1}
-
-\begin{enumerate}[(1)]
-\setcounter{enumi}{1}
-\item[\,]
-
-\noindent
-\begin{multline}
-\label{eq:SetAdmission}
-\Omega_s^{\mathrm{dad}} =
-\left\{
-\mathbf{n} \in \Omega: \right.\\ \left.
-\left(\mathbf{n}-\mathbf{N}^{\max}\right) \cdot \mathbf{e}_s < 0
-\land
-\left(\mathbf{n} + \mathbf{e}_s \right) \cdot \mathbf{b} \leq C
-\right\};
-\end{multline}
-\item $\Omega_s^{\mathrm{vpad}}$, $s\hm\in\mathcal{S}$,~--- множество состояний 
-системы, в~которых поступающий в~слайс~$s$ запрос будет принят на обслуживание 
-за счет прерывания об\-слу\-жи\-ва\-емо\-го(-ых) за\-про\-са(-ов) в~слайсах 
-$\hat{s}$, $\hat{s}\hm\in\mathcal{S}\setminus\{s\}$:
-\begin{multline}
-\label{eq:SetPreemptionCapability}
-\Omega_s^{\mathrm{vpad}} =
-\left\{
-\mathbf{n} \in \Omega: \right.\\ \left.
-\left(\mathbf{n}-\mathbf{N}^{{g}}\right) \cdot \mathbf{e}_s < 0
-\land
-\left(\mathbf{n} + \mathbf{e}_s \right) \cdot \mathbf{b} > C
-\right\};
-\end{multline}
-\item $\Omega_s^{\mathrm{block}}$, $s\hm\in\mathcal{S}$,~--- множество состояний 
-системы, в~которых поступающий в~слайс~$s$ запрос будет заблокирован:
-\begin{subequations}
-\label{eq:SetBlocking}
-\begin{multline}
-\Omega_s^{\mathrm{block}} =
-\left\{
-\mathbf{n} \in \Omega: \right.\\ \left.
-\left(\mathbf{n}-\mathbf{N}^{{g}}\right) \cdot \mathbf{e}_s \geq 0
-\land
-\left(\mathbf{n} + \mathbf{e}_s \right) \cdot \mathbf{b} > C
-\right\};
-\end{multline}
-или
-\begin{equation}
-\Omega_s^{\mathrm{block}} = \Omega \setminus \left( \Omega_s^{\mathrm{dad}} \cup 
-\Omega_s^{\mathrm{vpad} }\right),
-\end{equation}
-где $\Omega_s^{\mathrm{dad}} \cup \Omega_s^{\mathrm{vpad}}$~--- множество состояний 
-системы, в~которых поступающий в~слайс~$s$ запрос будет принят на обслуживание.
-\end{subequations}
-\end{enumerate}
-
-
-
-Пример для иллюстрации данных подмножеств для $\mathcal{S} = 
-\{1,2\}$ пред\-став\-лен в~разд.~4.1 (см.\ рис.~4).
-
-Подмножества~(\ref{eq:SetAdmission})--(\ref{eq:SetBlocking}) позволяют разделить все состояния 
-$\mathbf{n},\mathbf{n}\hm\in\Omega$, системы на шесть групп:
-\begin{enumerate}[(1)]
-\item $\bigcap\nolimits_{s\in\mathcal{S}}\Omega_s^{\mathrm{dad}}$~--- множество 
-состояний сис\-те\-мы, в~которых любой поступающий в~систему запрос 
-немедленно будет принят на обслуживание;
-\item $\Omega_s^{\mathrm{dad}}\setminus 
-\bigcup\nolimits_{\hat{s}\hm\in\mathcal{S}\setminus\{s\}} 
-\Omega_{\hat{s}}^{\mathrm{dad}}$, $s\hm\in\mathcal{S}$,~--- множество состояний 
-сис\-те\-мы, в~которых только по\-сту\-па-\linebreak\vspace*{-16pt}
-\end{enumerate}
-
-\columnbreak
-
-\begin{enumerate}[(1)]
-\setcounter{enumi}{2}
-\item[\,] ющий в~слайс~$s$ запрос немедленно будет 
-принят на обслуживание;
-\item $\Omega_s^{\mathrm{vpad}} \cap 
-\bigcup\nolimits_{\hat{s}\hm\in\mathcal{S}\setminus\{s\}} 
-\Omega_{\hat{s}}^{\mathrm{vpad}}$, $s\hm\in\mathcal{S}$,~--- множество состояний 
-системы, в~которых поступающие в~слайсы~$s$ и~$\hat{s}$,
-$\hat{s}\hm\in\mathcal{S}\setminus\{s\}$, запросы будут приняты на 
-обслуживание за счет прерывания об\-слу\-жи\-ва\-емо\-го(-ых) за\-про\-са(-ов) в~слайсах~$\tilde{s}$,
-$\tilde{s}\hm\in\mathcal{S}\setminus\{s,\hat{s}\}$;
-\item $\Omega_s^{\mathrm{vpad}} \setminus 
-\bigcup\nolimits_{\hat{s}\hm\in\mathcal{S}\setminus\{s\}} 
-\Omega_{\hat{s}}^{\mathrm{vpad}}$, $s\hm\in\mathcal{S}$,~--- множество состояний 
-системы, в~которых только поступающий в~слайс~$s$ запрос будет принят на 
-обслуживание за счет прерывания одного или нескольких об\-слу\-жи\-ва\-емых запросов 
-в~слайсе~$\hat{s}$, $\hat{s}\hm\in\mathcal{S}\setminus\{s\}$;
-\item $\bigcap\nolimits_{s\in\mathcal{S}}\Omega_s^{\mathrm{block}}$~--- множество 
-состояний системы, в~которых любой поступающий в~систему запрос будет 
-заблокирован;
-\item $\Omega_s^{\mathrm{block}}\setminus 
-\bigcup\nolimits_{\hat{s}\hm\in\mathcal{S}\setminus\{s\}} 
-\Omega_{\hat{s}}^{\mathrm{block}}$, $s\hm\in\mathcal{S}$,~--- множество состояний 
-системы, в~которых только поступающий в~слайс~$s$ запрос будет 
-заблокирован.
-\end{enumerate}
-
-
-Диаграмма интенсивностей переходов для состояния системы 
-$\mathbf{n},\mathbf{n}\hm\in\Omega$, имеет вид, представленный 
-на рис.~3.
-
-
-
-
-Функция управления доступом к~ресурсам сис\-те\-мы определяется следующим образом:
-\begin{multline*}
-f_s\left(\mathbf{n}\right) =
-\begin{cases}
-1,  &\ \mbox{если}\ 
-\mathbf{n}\in\left(\Omega_s^{\mathrm{dad}}\cup\Omega_s^{\mathrm{vpad}}\right);\\
-0           &\ \mbox{в\ противном\ случае},\ 
-\mathbf{n}\in\Omega_s^{\mathrm{block}}.
-\end{cases}\\
-s\in\mathcal{S}.
-\end{multline*}
-
-Согласно диаграмме интенсивностей переходов рис.~3, 
-рассматриваемый СП описывается сле\-ду\-ющей сис\-те\-мой урав\-не\-ний рав\-но\-ве\-сия:
-
-{ \begin{center}  %fig3
- \vspace*{6pt}
-    \mbox{%
-\epsfxsize=76.958mm
-\epsfbox{adu-3.eps}
-}
-
-\end{center}
-
-
-
-\noindent
-{{\figurename~3}\ \ \small{Диаграмма интенсивностей переходов для состояния 
-системы~$\mathbf{n}$, $\mathbf{n}\hm\in\Omega$
-}}}
-
-%\vspace*{6pt}
-
-\addtocounter{figure}{1}
-
-\noindent
-\begin{multline*}
-%\label{eq:EquilibriumEquationsSystem}
-\!\!\!\! P\left(\mathbf{n}\right)\! \left( \boldsymbol\lambda \cdot 
-\sum_{s\in\mathcal{S}}{\left( I_{\Omega_s^{\mathrm{dad}}}\left(\mathbf{n}\right) + 
-I_{\Omega_s^{\mathrm{vpad}}}\left(\mathbf{n}\right) \right) \mathbf{e}_s + 
-\mathbf{n}\cdot\boldsymbol\mu} \right) = {}\hspace*{-2.69116pt}\\
-{}= \boldsymbol\lambda \cdot \sum_{s\in\mathcal{S}}
-\biggl(
-P\left(\mathbf{n}-\mathbf{e}_s\right)\, 
-I_{\Omega_s^{\mathrm{dad}}}\left(\mathbf{n}-\mathbf{e}_s\right) + {}\hspace*{-2.69116pt}\\
-{}+ P\left(\mathbf{n}-\mathbf{e}_s+\mathbf{z}\left(s,\mathbf{n}\right)\right)\, 
-I_{\Omega_s^{\mathrm{vpad}}}\left(\mathbf{n}-
-\mathbf{e}_s+\mathbf{z}\left(s,\mathbf{n}\right)\right)\!\!
-\biggl)
-\mathbf{e}_s +{}\hspace*{-2.69116pt}\\
-{}+ \boldsymbol\mu \cdot 
-\sum_{s\in\mathcal{S}}{\left(P\left(\mathbf{n}+\mathbf{e}_s\right)\, 
-I_{\Omega_s^{\mathrm{dad}}}\left(\mathbf{n}\right)\, 
-\left(\mathbf{n}+\mathbf{e}_s\right)\cdot\mathbf{e}_s\right)\mathbf{e}_s},
-\end{multline*}
-где $P\left(\mathbf{n}\in\Omega\right)$~--- стационарная вероятность того, что 
-система находится в~состоянии $\mathbf{n}$, а $I_{\circ}\left(\ast\right)$~--- 
-функ\-ция-ин\-ди\-ка\-тор\footnote{{\sf https://mathworld.wolfram.com/CharacteristicFunction.html.}}.
-
-В связи с~реализацией механизма прерывания обслуживания запросов СП 
-$\mathbf{X}\left(t\right)_{t>0}$, опи\-сы\-ва\-ющий рас\-смат\-ри\-ва\-емую сис\-те\-му, не 
-является обратимым марковским процессом. В~этом случае для вы\-чис\-ле\-ния 
-стационарного распределения вероятностей со\-сто\-яний сис\-те\-мы 
-$\mathbf{P}\hm=\left(P\left(\mathbf{n}\right)\right)_{\mathbf{n}\hm\in\Omega}$~--- 
-век\-то\-ра-столб\-ца размера $\lvert\Omega\rvert$~--- может быть применен один из 
-численных методов, например итерационный метод~\cite{Zhou2022,Stepanov}:
-\begin{equation*}
-%\label{eq:InfinitesimalGeneratorMarkov}
-\mathbf{A}^\top\, \mathbf{P} = \mathbf{0}\,,\quad \mathbf{P}\cdot \mathbf{j} = 1\,,
-\end{equation*}
-где $\mathbf{A}$~--- инфинитезимальная матрица размера $\lvert\Omega\rvert^2$, 
-элементы $A\left(\mathbf{n},\hat{\mathbf{n}}\right)$, $\mathbf{n}\hm\in\Omega$, 
-$\hat{\mathbf{n}}\hm\in\Omega$, которой определяются следующим образом:
-
-\noindent
-\begin{subequations}
-%\label{eq:SolutionEquilibrium}
-при $\mathbf{n}\neq\hat{\mathbf{n}}$
-\begin{multline*}
-A\left(\mathbf{n},\hat{\mathbf{n}}\right) = \\
-\begin{cases}
-\boldsymbol\lambda \cdot \mathbf{e}_s,  &\!\!\!\!\!\!\!\!  \mbox{если}\ 
-\hat{\mathbf{n}}=\mathbf{n}+\mathbf{e}_s,\, 
-\mathbf{n}\in\Omega_s^{\mathrm{dad}},\\
-&\!\!\!\!\!\!\!\! \mbox{или}\ \hat{\mathbf{n}}=\mathbf{n}+\mathbf{e}_s-
-\mathbf{z}\left(s,\mathbf{n}\right),\, \mathbf{n}\in\Omega_s^{\mathrm{vpad}};\\
-\left(\mathbf{n}\odot\boldsymbol\mu\right)\cdot\mathbf{e}_s,    &\!\!\! \mbox{если}\ 
-\hat{\mathbf{n}}=\mathbf{n}-\mathbf{e}_s,\, 
-\hat{\mathbf{n}}\in\Omega_s^{\mathrm{dad}};\\
-0           & \!\!\!\!\!\!\!\! \mbox{в противном случае},\, 
-\hat{\mathbf{n}}\in\Omega\setminus\{\mathbf{n}\},
-\end{cases}\\
-s=1,\ldots,\lvert\mathcal{S}\rvert;
-\end{multline*}
-при $\mathbf{n}=\hat{\mathbf{n}}$
-\begin{equation*}
-A\left(\mathbf{n},\mathbf{n}\right) = -
-\sum_{\hat{\mathbf{n}}\in\Omega\setminus\{\mathbf{n}\}}{A\left(\mathbf{n},\hat{\mathbf{n}}\right)}.
-\end{equation*}
-\end{subequations}
-
-Рассчитав стационарное распределение вероятностей состояний системы, можно 
-вычислить следующие КПЭ системы:
-\begin{itemize}
-\item среднее число запросов, об\-слу\-жи\-ва\-емых в~сис\-те\-ме
-\setcounter{equation}{4}
-\begin{equation}
-\label{eq:meanN}
-N = \sum\limits_{\mathbf{n}\in\Omega} P\left(\mathbf{n}\right)\: \mathbf{n} \cdot 
-\mathbf{j}\,;
-\end{equation}
-\item вероятность блокировки запроса, поступающего в~систему
-\begin{equation}
-\label{eq:Pblock}
-P^{\mathrm{block}} = \sum\limits_{\mathbf{n}\in \mathcal{B}}P(\mathbf{n}); \quad 
-\mathcal{B} = \bigcap_{s=1}^{\lvert\mathcal{S}\rvert}\Omega_s^{\mathrm{block}}\,;
-\end{equation}
-\item средний занятый ресурс,
-\begin{equation}\label{eq:meanK}
-K = \sum\limits_{\mathbf{n}\in\Omega} P\left(\mathbf{n}\right)\: \mathbf{n} \cdot 
-\mathbf{b}\,.
-\end{equation}
-\end{itemize}
-
-\vspace*{-24pt}
-
-
-\section{Примеры расчета вектор-функции прерывания 
-обслуживания}
-%\label{sec:exampleModels}
-
-\vspace*{-12pt}
-
-Проиллюстрируем работу итерационного метода расчета числа и~типа запросов-<<на\-ру\-ши\-те\-лей>>, 
-которые должны быть прерваны для приема запроса, поступающего 
-в~гарантированную часть своего слайса, на примере моделей с~двумя и~тремя 
-слайсами, для которых вычислим век\-тор-функ\-цию прерывания 
-обслуживания~\eqref{eq:capabilityFunc} запросов.
-
-\vspace*{-12pt}
-
-
-\subsection{Модель сети с~двумя слайсами}
-%\label{subsec:2Dmodel}
-
-\vspace*{-12pt}
-
-Для случая $\mathcal{S}\hm=\{1,2\}$ с~учетом основных подмножеств системы~\eqref{eq:SetAdmission}--\eqref{eq:SetBlocking} 
-пространство состояний модели 
-имеет вид, изображенный на рис.~4.
-
-Приведем пример расчета век\-тор-функ\-ции прерывания 
-обслуживания~\eqref{eq:capabilityFunc} для приема запроса\linebreak\vspace*{-12pt}
-
-\begin{table*}\small %tabl2 
-%\vspace*{-12pt}
-\begin{center}
-\Caption{Исходные данные для сравнительного анализа~\cite{schoolar2019}}
-\label{tab:SlicesAndCharacteristics}
-\vspace*{2ex}
-
-\tabcolsep=4pt
-\begin{tabular}{|c|c|c|c|c|c|c|}
-\hline
-  & \multicolumn{3}{c|}{СХЕМА С РЕЗЕРВИРОВАНИЕМ (РС)} & 
-\multicolumn{3}{c|}{СХЕМА С ПРЕРЫВАНИЕМ (ПС)}\\
-\cline{2-7}
-\multicolumn{1}{|c|}{\raisebox{6pt}[0pt][0pt]{СЛАЙС/УСЛУГА }}& Параметр  & Значение &  \tabcolsep=0pt\begin{tabular}{c}Единица\\ измерения\end{tabular}  & Параметр  & Значение & \tabcolsep=0pt\begin{tabular}{c}Единица\\ измерения\end{tabular} \\ 
-\hline
-\multicolumn{1}{|c|}{\raisebox{-18pt}[0pt][0pt]{1/3K Cloud VR (Game)}} & $C_1$ & 1,0 & Гбит/с & $C_1$ & 1,25 & Гбит/с \\
-                       & $Q_1$ & 1,0 & Гбит/с & $Q_1$ & 1,0  & Гбит/с \\
-                       & $b_1$ & 0,1 & Гбит/с & $b_1$ & 0,1  & Гбит/с \\
-                       & $\mu_1^{-1}$ & 3600 & с~& $\mu_1^{-1}$ & 3600  & с~\\
-\hline
-\multicolumn{1}{|c|}{\raisebox{-18pt}[0pt][0pt]{2/4K Live News Pushing (30~fps)}} & $C_2$ & 0,5 & Гбит/с & $C_2$ & 0,65 & Гбит/с 
-\\
-                                 & $Q_2$ & 0,5 & Гбит/с & $Q_2$ & 0,5  & Гбит/с 
-\\
-                                 & $b_2$ & 0,04 & Гбит/с & $b_2$ & 0,04  &  Гбит/с \\
-                                 & $\mu_2^{-1}$ & 1200 & с~& $\mu_2^{-1}$ & 1200  
-& с~\\
-\hline
-\multicolumn{1}{|c|}{\raisebox{-18pt}[0pt][0pt]{3/4K On-Demand Video}} & $C_3$ & 0,5 & Гбит/с & $C_3$ & 0,65 & Гбит/с \\
-                       & $Q_3$ & 0,5 & Гбит/с & $Q_3$ & 0,5  & Гбит/с \\
-                       & $b_3$ & 0,03 & Гбит/с & $b_3$ & 0,03  & Гбит/с \\
-                       & $\mu_3^{-1}$ & 1800 & с~& $\mu_3^{-1}$ & 1800  & с~\\
-\hline
-\multicolumn{1}{|c|}{\raisebox{-18pt}[0pt][0pt]{4/4K Live Broadcast Pushing (50fps)}} & $C_4$ & 0,5 & Гбит/с & $C_4$ & 0,65 & Гбит/с \\
-                                      & $Q_4$ & 0,5 & Гбит/с & $Q_4$ & 0,5  & 
-Гбит/с \\
-                                      & $b_4$ & 0,063 & Гбит/с & $b_4$ & 0,063  
-& Гбит/с \\
-                                      & $\mu_4^{-1}$ & 5400 & с~& $\mu_4^{-1}$ & 
-5400  & с\\
-\hline
-\end{tabular}
-\end{center}
-\vspace*{5pt}
-
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
-%\hline
-\hline
-  &  & \multicolumn{2}{c|}{СЦЕН.\ 1} & \multicolumn{2}{c|}{СЦЕН.\ 2} & 
-\multicolumn{2}{c|}{СЦЕН.\ 3} \\ 
-\cline{3-8}
-\multicolumn{1}{|c|}{\raisebox{6pt}[0pt][0pt]{$\rho$}} &
-\multicolumn{1}{c|}{\raisebox{6pt}[0pt][0pt]{ $\lambda_s$}} & СЛАЙСЫ & $C$ & СЛАЙСЫ  & $C$ & СЛАЙСЫ  & $C$ \\ 
-\hline
-от 1 до 25 & $\rho\mu_s$ запросов/с & 1 и~2 & 1,5 Гбит/с & 1, 2 и~3 & 2,0 Гбит/с & 1, 2, 3 и~4 & 2,5 Гбит/с \\
-\hline
-\end{tabular}
-\end{center}
-%\vspace*{-12pt}
-\end{table*}
-
-
-
-
-
-
-
-
-
-{ \begin{center}  %fig4
- \vspace*{6pt}
-   \mbox{%
-\epsfxsize=76.222mm
-\epsfbox{adu-4.eps}
-}
-
-
-\vspace*{12pt}
-
-{\small \begin{tabular}{|c|c|c|c|}
-\hline
-(a) & $\Omega_1^{\mathrm{dad}}\cap \Omega_2^{\mathrm{dad}}$ & (d) & $\Omega_1^{\mathrm{vpad}}$\\
-(b) & $\Omega_1^{\mathrm{dad}}\backslash \Omega_2^{\mathrm{dad}}$ & (e) & $\Omega_2^{\mathrm{vpad}}$\\
-(c) & $\Omega_2^{\mathrm{dad}}\backslash \Omega_1^{\mathrm{dad}}$ & (f) & $\Omega_1^{\mathrm{block}}\cap \Omega_2^{\mathrm{block}}$\\
-\hline
-\end{tabular}}
-\end{center}
-
-%\vspace*{6pt}
-
-\noindent
-{{\figurename~4}\ \ \small{Пространство состояний модели с~двумя слайсами с~учетом основных подмножеств системы
-}}}
-
-\vspace*{9pt}
-
-\addtocounter{figure}{1}
-
-\pagebreak
-
-
-
-
-\noindent
- в~первый слайс
-$\mathbf{z}\left(1,\mathbf{n}\right)\hm=\left(z_1\left(1,\mathbf{n}\right), 
-z_2\left(1,\mathbf{n}\right)\right)$.
-Рас\-смот\-рим со\-сто\-яние сис\-те\-мы
-$$
-\mathbf{n} = \left(\left\lfloor \left\lfloor C/b_1 \right\rfloor \left(1-
-\fr{\left\lfloor C_2/b_2 \right\rfloor}{\left\lfloor C/b_2 \right\rfloor} 
-\right) \right\rfloor, \left\lfloor C_2/b_2 \right\rfloor \right),
-$$
-%\linebreak\vspace*{-12pt}
-которое согласно диаграмме на рис.~4 принадлежит множеству 
-$\Omega_1^{\mathrm{vpad}}$, т.\,е.\ множеству со\-сто\-яний сис\-те\-мы, в~которых 
-поступающий в~первый слайс запрос
- будет принят на обслуживание за счет 
-прерывания об\-слу\-жи\-ва\-емо\-го(-ых) за\-про\-са(-ов) во втором \mbox{слайсе}.
-
-Для исходных данных <<СЦЕН.~1>>, пред\-став\-лен\-ных 
-в~табл.~2, получим $\mathbf{n}\hm = \left(8,16\right)$, 
-$\mathbf{n}\hm\in\Omega_1^{\mathrm{vpad}}$.
-
-
-Рассчитаем число $z_2\left(1,\mathbf{n}\right)$ об\-слу\-жи\-ва\-емых запросов 
-второго слайса, которое необходимо прервать для приема одного запроса в~первый 
-слайс. Воспользуемся начальным условием 
-$\mathbf{z}\left(1,\mathbf{n}\right)\hm=\left(0,0\right)$, получим
-
-\noindent
-\begin{multline*}
-z_2\left(1,\mathbf{n}\right) = \min
-\biggl\{
-R \left(\left(\mathbf{n}-\mathbf{N}^{{g}}\right) \cdot \mathbf{e}_2\right), 
-\\
-R \left(\left\lceil \fr{\left(\mathbf{n}+\mathbf{e}_1 \right)\cdot\mathbf{b} - 
-C}{\mathbf{e}_2\cdot\mathbf{b}} \right\rceil\right)
-\biggl\} =
-\min \left\{ R \left(4\right),R \left(1\right) \right\} = {}\\
-{}= \min \left\{4,1\right\} = 1.
-\end{multline*}
-
-Перейдем к~расчету числа $z_1\left(1,\mathbf{n}\right)$ об\-слу\-жи\-ва\-емых 
-запросов первого слайса, которое необходимо прервать для приема одного запроса в~первый слайс. Очевидно, что число $z_1\left(1,\mathbf{n}\right)$ должно 
-быть равно~$0$, так как запрос не может быть принят в~слайс на обслуживание за 
-счет прерывания об\-слу\-жи\-ва\-емо\-\mbox{го(-ых)} за\-про\-са(-ов) в~этом же слайсе. 
-Воспользуемся текущим значением 
-$\mathbf{z}\left(1,\mathbf{n}\right)\hm=\left(0,z_2\left(1,\mathbf{n}\right)\right)
-=\left(0,1\right)$, получим
-
-\vspace*{-6pt}
-
-\noindent
-\begin{multline*}
-z_1\left(1,\mathbf{n}\right) =
-\min
-\biggl\{
-R \left(\left(\mathbf{n}-\mathbf{N}^{{g}}\right) \cdot \mathbf{e}_1\right), 
-\\
-R \left(\left\lceil \frac{\left(\mathbf{n}+\mathbf{e}_1 - 
-\mathbf{z}\left(1,\mathbf{n}\right) \right)\cdot\mathbf{b} - 
-C}{\mathbf{e}_1\cdot\mathbf{b}} \right\rceil\right)
-\biggl\} = {}\\
-{}= \min \left\{R \left(-2\right),R \left(0\right) \right\} = \min 
-\left\{0,0\right\} = 0\,.
-\end{multline*}
-
-\vspace*{-4pt}
-
-Таким образом, в~состоянии системы $\mathbf{n}\hm=\left(8,16\right)$, 
-$\mathbf{n}\hm\in\Omega_1^{\mathrm{vpad}}$, век\-тор-функ\-ция прерывания 
-$\mathbf{z}\left(1,\mathbf{n}\right)\hm=\left(z_1\left(1,\mathbf{n}\right),z_2\left
-(1,\mathbf{n}\right)\right)\hm=\left(0,1\right)$,
-т.\,е.\ поступающий в~первый слайс запрос будет принят на обслуживание за счет 
-прерывания одного запроса, об\-слу\-жи\-ва\-емо\-го во втором слайсе.
-
-
-\subsection{Модель сети с~тремя слайсами}
-
-Перейдем к~трехмерному случаю $\mathcal{S}=\{1,2,3\}$. Рассмотрим пример расчета 
-век\-тор-функ\-ции прерывания обслуживания~\eqref{eq:capabilityFunc} для приема 
-запроса во второй слайс 
-$\mathbf{z}\left(2,\mathbf{n}\right)\hm=\left(z_1\left(2,\mathbf{n}\right), 
-z_2\left(2,\mathbf{n}\right), z_3\left(2,\mathbf{n}\right)\right)$, 
-$\mathbf{n}\hm\in\Omega_2^{\mathrm{vpad}}$.
-
-Сведем исходные данные для примера в~табл.~3.
-
-\pagebreak
-
-%\begin{table*}\small %tabl3
-\noindent
-{{\tablename~3}\ \ \small{Исходные данные для примера с~тремя слайсами
-}}
-%\label{tab:NumExampleParams3D}
-
-\vspace*{3pt}
-
-\begin{center}
-{\small 
-\tabcolsep=11pt
-\begin{tabular}{|c|c|c|c|}
-\hline
-$C$, Мбит/с & $\mathbf{b}$, Мбит/с& $\mathbf{n}$ & $\mathbf{N}^g$\\
-\hline
-13& (1,3,1) & (6,1,4)& (2,2,2)\\
-\hline
-\end{tabular}
-}
-\end{center}
-%\end{table*}
-
-\vspace*{6pt}
-
-\addtocounter{table}{1}
-
-
-Рассчитаем число $z_3\left(2,\mathbf{n}\right)$ об\-слу\-жи\-ва\-емых запросов третьего 
-слайса~--- слайса с~низшим приоритетом, которое необходимо прервать для приема 
-одного запроса во второй слайс. Воспользуемся начальным условием 
-$\mathbf{z}\left(2,\mathbf{n}\right)\hm=\left(0,0,0\right)$, получим
-\begin{multline*}
-z_3\left(2,\mathbf{n}\right) = \min
-\biggl\{
-R \left(\left(\mathbf{n}-\mathbf{N}^{{g}}\right) \cdot \mathbf{e}_3\right), 
-\\
-R \left(\left\lceil \fr{\left(\mathbf{n}+\mathbf{e}_2 \right)\cdot\mathbf{b} - 
-C}{\mathbf{e}_3\cdot\mathbf{b}} \right\rceil\right)
-\biggl\} =
-\min \left\{ R \left(2\right),R \left(3\right) \right\} ={} \\
-{}= \min \left\{2,3\right\} = 2.
-\end{multline*}
-
-Покажем, что число $z_2\left(2,\mathbf{n}\right)$ об\-слу\-жи\-ва\-емых запросов второго 
-слайса, которое необходимо прервать для приема одного запроса во второй слайс, 
-равно~$0$. Воспользуемся текущим значением функции 
-$\mathbf{z}\left(2,\mathbf{n}\right)\hm=\left(0,0,z_3\left(2,\mathbf{n}\right)\right)=\left(0,0,2\right)$, получим
-\begin{multline*}
-z_2\left(2,\mathbf{n}\right) = \min
-\biggl\{
-R \left(\left(\mathbf{n}-\mathbf{N}^{{g}}\right) \cdot \mathbf{e}_2\right), 
-\\
-R \left(\left\lceil \fr{\left(\mathbf{n}+\mathbf{e}_2 - 
-\mathbf{z}\left(2,\mathbf{n}\right) \right)\cdot\mathbf{b} - 
-C}{\mathbf{e}_2\cdot\mathbf{b}} \right\rceil\right)
-\biggl\} ={} \\
-{}= \min \left\{R \left(-1\right),R \left(1\right) \right\} = \min 
-\left\{0,1\right\} = 0.
-\end{multline*}
-
-Согласно схеме управления доступом ПС при исчерпании возможности освободить 
-ресурс за счет прерывания запросов-<<нарушителей>> более низкого приоритета для 
-приема запроса в~гарантированную часть второго слайса должно быть прервано 
-обслуживание за\-про\-сов-<<на\-ру\-ши\-те\-лей>> более высокого приоритета. Так как число 
-об\-слу\-жи\-ва\-емых запросов первого слайса превышает гарантированное значение, для 
-приема одного запроса во второй слайс должно быть прервано обслуживание 
-$z_1\left(2,\mathbf{n}\right)$ запросов первого слайса. С~учетом текущего 
-значения век\-тор-функ\-ции прерывания 
-$$
-\mathbf{z}\left(2,\mathbf{n}\right)=\left(0, 
-z_2\left(2,\mathbf{n}\right), 
-z_3\left(2,\mathbf{n}\right)\right)\hm=\left(0,0,2\right)
-$$ 
-получим
-\begin{multline*}
-z_1\left(2,\mathbf{n}\right) = \min
-\biggl\{
-R \left(\left(\mathbf{n}-\mathbf{N}^{{g}}\right) \cdot \mathbf{e}_1\right), 
-\\
-R \left(\left\lceil \fr{\left(\mathbf{n}+\mathbf{e}_2 - 
-\mathbf{z}\left(2,\mathbf{n}\right) \right)\cdot\mathbf{b} - 
-C}{\mathbf{e}_1\cdot\mathbf{b}} \right\rceil\right)
-\biggl\} ={} \\
-{}= \min \left\{R \left(4\right),R \left(1\right) \right\} = \min 
-\left\{4,1\right\} = 1.
-\end{multline*}
-Таким образом, в~состоянии системы $\mathbf{n}\hm=\left(6,1,4\right)$, 
-$\mathbf{n}\hm\in\Omega_2^{\mathrm{vpad}}$, век\-тор-функ\-ция прерывания обслуживания 
-запросов имеет вид 
-$$
-\mathbf{z}\left(2,\mathbf{n}\right)=\left(z_1\left(2,\mathbf{n}\right), 
-z_2\left(2,\mathbf{n}\right), 
-z_2\left(2,\mathbf{n}\right)\right)=\left(1,0,2\right),
-$$
- т.\,е.\ поступающий во 
-второй слайс запрос будет принят на обслуживание за счет прерывания двух 
-запросов, об\-слу\-жи\-ва\-емых в~третьем слайсе, и~одного~--- в~первом.
-
-Далее перейдем к~анализу основных КПЭ сис\-те\-мы, описанных в~разд.~3.
-
-
-
-\section{Численный анализ}
-%\label{sec:numericalanalysis}
-
-Для анализа эффективности предложенной в~работе схемы доступа ПС к~радиоресурсам сети, основанной на реализации механизма прерывания обслуживания 
-пользователей, проведем \mbox{сравнительный} анализ ее основных КПЭ с~КПЭ известной 
-схемы доступа РС, основанной на реализации механизма резервирования ресурсов. 
-Сведем исходные данные для численного анализа 
-в~табл.~\ref{tab:SlicesAndCharacteristics}.
-Рас\-смот\-рим зависимость среднего числа запросов,\linebreak об\-слу\-жи\-ва\-емых в~сис\-те\-ме,~\eqref{eq:meanN}, вероятности блокировки запроса любого типа, 
-поступающего в~сис\-те\-му,~\eqref{eq:Pblock} (вероятности блокировки сис\-те\-мы) и~среднего чис\-ла занятых ресурсов в~сис\-те\-ме~\eqref{eq:meanK} от \mbox{интенсивности} 
-предложенной нагрузки~$\rho$, созда\-ва\-емой в~каж\-дом слайсе. Положим $\rho_s=\rho, 
-s\in\mathcal{S}$. Результаты сравнительного анализа схем ПС и~РС представлены 
-на~рис.~5 и~6.
-
-
-
-
-На рис.~5,\,\textit{а} проиллюстрировано поведение среднего числа запросов~$N$, 
-об\-слу\-жи\-ва\-емых в~сис\-те\-ме, в~за\-ви\-си\-мости от интенсивности предложенной нагрузки~$\rho$ для трех сценариев~--- с~двумя, тремя и~четырьмя слайсами. По графику 
-видно, что чем больше слайсов в~сети, тем выше сред\-нее чис\-ло об\-слу\-жи\-ва\-емых 
-запросов и~тем эф\-фек\-тив\-нее схема ПС, в~част\-ности (см.\ рис.~6,\,\textit{а}) 
-для <<СЦЕН.~1>> эф\-фек\-тив\-ность схемы ПС может превышать эф\-фек\-тив\-ность схемы РС в~1,06~раза, а~для <<СЦЕН.~3>>~--- в~1,12 раза.
-
-
-
-С ростом интенсивности предложенной нагрузки~$\rho$ вероятность блокировки 
-системы~$P^{\mathrm{block}}$ увеличивается для всех рассматриваемых сценариев 
-(см.\ рис.~5,\,\textit{б}), причем она минимальна для сценария с~наибольшем числом 
-слайсов (<<СЦЕН.~3>>). Однако на рис.~5,\,\textit{б} и~6,\,\textit{б} 
-видно, что схема ПС эффективнее схемы РС только в~диапазоне небольших нагрузок 
-на сис\-те\-му, в~част\-ности (см.\ рис.~6,\,\textit{б}) для <<СЦЕН.~2>> 
-и~<<СЦЕН.~3>>~--- диапазон от~1 до~4,43.
-
-
-
-Анализ  рис.~5,\,\textit{в} и~6,\,\textit{в} показывает, что сис\-те\-ма более 
-эффективно использует ресурсы при применении схемы ПС. В~част\-ности 
-(см.\ рис.~6,\,\textit{в}), сред\-нее чис\-ло ресурсов, занятых в~сис\-те\-ме, при 
-использовании схемы ПС для <<СЦЕН.~1>> может быть в~1,05~раза выше, чем при 
-использовании схемы РС, а~для <<СЦЕН.~3>>~--- в~1,12~раза.
-
-\end{multicols}
-
-\begin{figure*} %fig5
-\vspace*{1pt}
-\begin{minipage}[t]{80mm}
-\begin{center}
-   \mbox{%
-\epsfxsize=79mm
-\epsfbox{adu-5.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\Caption{Графики зависимостей среднего числа запросов, 
-об\-слу\-жи\-ва\-емых в~сис\-те\-ме~(\textit{а}), вероятности блокировки 
-системы~(\textit{б}) и~среднего занятого ресурса~(\textit{в})
-от интенсивности предложенной нагрузки:
-\textit{1}~--- СЦЕН.~1; \textit{2}~--- СЦЕН.~2;
-\textit{3}~--- СЦЕН.~3;
-сплошные кривые~--- ПС; штриховые кривые~--- РС} 
-\label{fig:meanN}
-\end{minipage}
-%\end{figure*}
-\hfill
-%\begin{figure*} %fig6
-\vspace*{1pt}
-\begin{minipage}[t]{80mm}
-\begin{center}
-   \mbox{%
-\epsfxsize=79.102mm
-\epsfbox{adu-6.eps}
-}
-\end{center}
-\vspace*{-9pt}
-\Caption{Графики зависимостей соотношений средних чисел 
-об\-слу\-жи\-ва\-емых в~сис\-те\-ме запросов~(\textit{а}),
-вероятности блокировки 
-системы~(\textit{б}) и~среднего занятого ресурса~(\textit{в})
-  для двух схем от интенсивности предложенной 
-нагрузки: \textit{1}~--- СЦЕН.~1; \textit{2}~--- СЦЕН.~2;
-\textit{3}~--- СЦЕН.~3}
- \label{fig:meanNRatio}
- \end{minipage}
-\end{figure*}
-
-
-\begin{multicols}{2}
-
-
-
-\section{Заключение}
-%\label{sec:conclusion}
-
-В работе предложена схема доступа запросов пользователей к~ресурсам беспроводной 
-сети, основанная на реализации механизма прерывания обслуживания пользователей в~рамках технологии нарезки радиоресурсов сети Network Slicing. 
-
-Проведен 
-сравнительный анализ, по\-ка\-зы\-ва\-ющий эффективность предложенной схемы по сравнению с~известной схемой доступа, основанной на механизме резервирования ресурсов.  
-Результаты численного эксперимента показали, что в~диапазоне небольших нагрузок 
-на сис\-те\-му предложенная схема эффективнее схемы доступа с~реализацией механизма 
-резервирования.
-Результаты численного эксперимента выделяют сле\-ду\-ющие особенности применения 
-предложенной схемы до\-сту\-па по сравнению со схемой на основе реализации механизма 
-резервирования:
-\begin{enumerate}[(1)]
-\item 
-эффективность в~диапазоне небольших нагрузок в~использовании физических 
-ресурсов БС и~емкостей слайсов;
-\item 
-значимое повышение эффективности при поддержке предоставления услуг для 
-большего числа слайсов.
-\end{enumerate}
-
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- %\addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-
-
-\bibitem{3gpp.22.864} %1
-\Au{Sultan A., Pope~M.} Feasibility study on new 
-services and markets technology enablers for network operation; Stage~1 (3GPP). 
-Ver. 15.0.0, 2016. 
-{\sf https://portal.3gpp. org/desktopmodules/Specifications/SpecificationDetail s.aspx?specificationId=3016}.
-
-\bibitem{3gpp.21.916} %2
-\Au{Meredith J., Firmin~F., Pope~M.} Release 16 
-Description; Summary of Rel-16 Work Items (3GPP). Ver. 16.2.0, 2022. 
-{\sf https://portal.3gpp.org/desktopmodules/Specifications /SpecificationDetails.aspx?specificationId=3493}.
-%Pravila tsitirovaniya istochnikov [Rules for the 
-%citing of sources]. Available at: http://www.scribd.com/doc/1034528/ (accessed 
-%February 7, 2011).
-
-\bibitem{3gpp.28.554} %3
-\Au{Meredith J., Soveri~M., Pope~M.} Management and 
-orchestration; 5G end to end Key Performance Indicators (KPI) (3GPP). Ver. 
-18.0.0, 2022. 
-{\sf https://portal.3gpp. org/desktopmodules/Specifications/SpecificationDetail s.aspx?specificationId=3415}.
-
-\bibitem{Yarkina2022} %4
-\Au{Yarkina N., Correia~L., Moltchanov~D., Gaidamaka~Y., Samouylov~K.} Multi-tenant resource sharing with equitable-priority-based 
-performance isolation of slices for 5G cellular systems~// Comput. Commun., 
-2022. Vol.~188. P.~39--51. doi: 10.1016/j.comcom.2022.02.019.
-
-
-
-\bibitem{Luu2022} %5
-\Au{Luu Q., Kerboeuf~S., Kieffer~M.} Admission control and 
-resource reservation for prioritized slice requests with guaranteed SLA under 
-uncertainties~// IEEE T. Netw. Serv. Man., 2022. Vol.~19. P.~3136--3153. 
-doi: 10.1109/ tnsm.2022.3160352.
-
-\bibitem{Rehman2022} %6
-\Au{Rehman A., Mahmood~I., Kamran~M., Sanaullah~M., Ijaz~A., Ali~J., Ali~M.} 
-Enhancement in quality-of-services using 5G cellular network 
-using resource reservation protocol~// Phys. Commun.~--- Amst., 2022. Art.~101907. 10~p. doi: 
-10.1016/j.phycom.2022.101907.
-
-
-
-
-
-
-
-\bibitem{kermani1977analysis} %7
-\Au{Kermani P., Kleinrock~L.} Analysis of 
-buffer allocation schemes in a~multiplexing node~// Int. Conf. 
-Comm., 1977. Vol.~2. P.~30--34.
-
-\bibitem{Kamoun1980} %8
-\Au{Kamoun F., Kleinrock~L.} Analysis of shared finite 
-storage in a~computer network node environment under general traffic conditions~// 
-IEEE T. Commun., 1980. Vol.~28. P.~992--1003. doi: 
-10.1109/tcom.1980.1094756.
-
-\bibitem{Basharin1982} %9
-\Au{Башарин Г.\,П., Самуйлов~К.\,Е.} Об оптимальной 
-структуре БП в~сетях передачи данных с~коммутацией пакетов.~--- М.: ВИНИТИ, 
-1982. 70~с.
-
-
-\bibitem{Basharin2013} %10
-\Au{Basharin G., Gaidamaka~Y., Samouylov~K.} 
-Mathematical theory of teletraffic and its application to the analysis of 
-multiservice communication of next generation networks~// Autom. Control Comp.~S., 2013. Vol.~47. P.~62--69. doi: 10.3103/s0146411613020028.
-
-
-
-
-
-\bibitem{Stepanov} %11
-\Au{Степанов С.\,Н.} Теория телетрафика: концепции, модели, 
-приложения.~--- М.: Горячая лин\-ия-Телеком, 2015. 868~с.
-
-\bibitem{Zhou2022} %12
-\Au{Zhou D., Chen~Z., Pan~E., Zhang~Y.} Dynamic 
-statistical responses of gear drive based on improved stochastic iteration 
-method~// Appl. Math. Model., 2022. Vol.~108. P.~46--65. doi: 
-10.1016/j.apm.2022.03.020.
-
-\bibitem{schoolar2019} %13
-\Au{Schoolar~D., Lambert~P., Nanbin~W., Liang~Z.} 5G 
-service experience-based network planning criteria (Ovum Consulting)~// 
-Partnership with Huawei, 2019. 
-{\sf https://carrier. huawei.com/$\sim$/media/CNBGV2/download/products/\linebreak servies/5G-Planning-Criteria-White-Paper.pdf}.
-
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 15.01.23}}
-
-\vspace*{8pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{PREEMPTION-BASED PRIORITIZATION SCHEME\\ FOR~NETWORK RESOURCES SLICING IN~5G~SYSTEMS}
-
-
-\def\titkol{Preemption-based prioritization scheme for~network resources slicing in~5G~systems}
-
-
-\def\aut{K.\,Y.\,B.~Adou$^1$, E.\,V.~Markova$^1$, Yu.\,V.~Gaidamaka$^{1,2}$, and~S.\,Ya.~Shorgin$^2$}
-
-\def\autkol{K.\,Y.\,B.~Adou, E.\,V.~Markova, Yu.\,V.~Gaidamaka, and~S.\,Ya.~Shorgin}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-8pt}
-
-
-\noindent
-$^1$Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian\linebreak
-$\hphantom{^1}$Federation
-
-\noindent
-$^2$Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences; 
-44-2~Vavilov\linebreak
-$\hphantom{^1}$Str., Moscow 119133, Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 1}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 1
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt} 
-
-
-
-\Abste{The network slicing (NS) technology, which has been actively studied in recent years, is based on the representation of 
-a~common network infrastructure in the form of various customizable logical networks called slices and involves the division of mobile 
-network operators into two groups~--- physical network infrastructure providers (InPs) and mobile virtual network operators (MVNOs). 
-The MVNOs lease the physical resources of InPs\linebreak\vspace*{-12pt}}
-
-\Abstend{to create their own slices to provide services to their users with different quality of service 
-requirements. In the present paper, for a~network with NS technology, a~scheme for accessing its radio resources is proposed that
- provides users with services with a~guaranteed bit rate (GBR) and priority control based on the implementation of the user service interruption mechanism. 
- The authors propose a~scheme for accessing radio resources of a~network under NS technology that provides users with services with GBR
-  and priority control based on the implementation of the user service interruption mechanism. 
- To evaluate the effectiveness of the proposed scheme, a~comparative analysis of its characteristics with the characteristics of the
-  access scheme based on the resource reservation mechanism was carried out.}
-
-\KWE{5G; network slicing; quality of service; key performance indicators; priority management; service interruption; iterative method}
-
-
-
- \DOI{10.14357/19922264230113} 
-
-\vspace*{-16pt}
-
-
-\Ack
-
-%\vspace*{-4pt}
-
-
-\noindent
-The research was supported by the Russian Science Foundation grant No.\,22-79-10053, {\sf https://rscf.ru/en/\linebreak project/22-79-10053/}.
-% (Conceptualization, Y.\,A., E.\,M. and Y.\,G.; Data curation, Y.\,A.; Formal analysis, Y.\,A.; Funding acquisition, E.\,M.; 
- %Investigation, Y.\,A.; Methodology, Y.\,A., E.\,M., and Y.\,G.; Project administration, 
-% E.\,M. and Y.\,G.; Resources, Y.\,A.; Software, Y.\,A.; Supervision, E.\,M. and Y.\,G.; Validation, 
-% Y.\,A.; Visualization, Y.\,A. and E.\,M.; Writing~--- original draft, Y.\,A.; Writing~--- review and editing, Y.\,A., E.\,M., and Y.\,G.). 
-
-  
-
-%\vspace*{4pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99} 
-
-\bibitem{2-adu} %1
-\Aue{Sultan, A., and M.~Pope.}
-%3GPP TR 22.864. v. 15.0.0. 
-2016. Feasibility study on new services and markets technology enablers for network operation; Stage~1 (3GPP). Ver. 15.0.0. Available at: 
-{\sf https://\linebreak portal.3gpp.org/desktopmodules/Specifications/Specifi cationDetails.aspx?specificationId=3016} (accessed January~30, 2023).
-
-\bibitem{1-adu} %2
-\Aue{Meredith, J., F.~Firmin, and M.~Pope.}
-%3GPP TR 21.916. v. 16.2.0. 
-2022. Release 16~description; Summary of Rel-16 work items (3GPP).  Ver. 16.2.0. Available at: 
-{\sf https://portal.3gpp.org/desktop\linebreak  modules/Specifications/SpecificationDetails.aspx?speci\linebreak ficationId=3493} (accessed January~30, 2023).
-\bibitem{3-adu} %3
-\Aue{Meredith, J., M.~Soveri, and M.~Pope.}
-%3GPP TR 28.554. v. 18.0.0. 
-2022. Management and orchestration; 5G end to end Key Performance Indicators (KPI) (3GPP). Ver. 18.0.0. Available at:
-{\sf  https://\linebreak portal.3gpp.org/desktopmodules/Specifications/Specifi\linebreak cationDetails.aspx?specificatio nId=3415} (accessed January~30, 2023).
-\bibitem{4-adu}
-\Aue{Yarkina, N., L.\,M.~Correia, D.~Moltchanov, Y.~Gaidamaka, and K.~Samouylov.}
- 2022. Multi-tenant resource sharing with equitable-priority-based performance isolation of slices for 5G cellular systems. 
- \textit{Comput. Commun.} 188:39--51. doi: 10.1016/j.comcom.2022.02.019.
-\bibitem{5-adu}
-\Aue{Luu, Q., S.~Kerboeuf, and M.~Kieffer.} 
-2022. Admission control and resource reservation for prioritized slice requests with guaranteed SLA under uncertainties. 
-\textit{IEEE T. Netw. Serv. Man.} 19:3136--3153. doi: 10.1109/ tnsm.2022.3160352.
-\bibitem{6-adu}
-\Aue{Rehman, A., I.~Mahmood, M.~Kamran, M.~Sanaullah, A.~Ijaz, J.~Ali, and M.~Ali.}
- 2022. Enhancement in quality-of-services using 5G cellular network using resource reservation protocol. \textit{Phys. Commun.~--- Amst.}
-  55:101907. 10~p. doi: 10.1016/j.phycom.2022.101907. 
-
-\bibitem{8-adu} %7
-\Aue{Kermani, P., and L.~Kleinrock.}
- 1977. Analysis of buffer allocation schemes in a~multiplexing node. \textit{Int. Conf. Comm.} 2:30--34.
-\bibitem{9-adu} %8
-\Aue{Kamoun, F, and L.~Kleinrock.}
- 1980. Analysis of shared finite storage in a~computer networks node environment under general traffic conditions. 
- \textit{IEEE T. Commun.} 28(7):992--1003. doi: 10.1109/tcom.1980.1094756.
- 
- \bibitem{7-adu} %9
-\Aue{Basharin, G.\,P., and K.\,E.~Samouylov.}
- 1982. \textit{Ob op\-ti\-mal'\-noy struk\-tu\-re bu\-fer\-noy pa\-mya\-ti v~se\-tyakh pe\-re\-da\-chi dan\-nykh 
- s~kom\-mu\-ta\-tsi\-ey pa\-ke\-tov} [On the optimal structure of BP in data transmission networks with packet commutation]. Moscow: VINITI. 70~p.
- 
-\bibitem{10-adu}
-\Aue{Basharin, G.\,P., Yu.\,V.~Gaidamaka, and K.\,E.~Samouylov}.
- 2013. Mathematical theory of teletraffic and its application to the analysis of multiservice communication of next generation networks. 
- \textit{Autom. Control Comp.~S.} 47(2):62--69. doi: 10.3103/s0146411613020028.
-
-\bibitem{12-adu} %11
-\Aue{Stepanov, S.\,N.} 2015. \textit{Teo\-riya te\-le\-tra\-fi\-ka: Kon\-tsep\-tsii, mo\-de\-li, pri\-lo\-zhe\-niya} 
-[Theory of teletraffic: Concepts, models, and applications]. Moscow: Goryachaya liniya-Telekom. 868~p.
-
-\bibitem{11-adu} %12
-\Aue{Zhou, D., Z.~Chen, E.~Pan, and Y.~Zhang.} 
-2022. Dynamic statistical responses of gear drive based on improved stochastic iteration method. \textit{Appl. Math. Model.} 108:46--65.
-doi: 10.1016/j.apm.2022.03.020.
-\bibitem{13-adu}
-\Aue{Schoolar, D., P.~Lambert, W.~Nanbin, and Z.~Liang.} 2019. 
-5G service experience-based network planning criteria  (Ovum Consulting). Partnership with Huawei. Available at: 
-{\sf https://carrier.huawei.com/$\sim$/media/\linebreak CNBGV2/download/products/servies/5G-Planning-Criteria-White-Paper.pdf} (accessed January~30, 2023).
-  \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received January 15, 2023}}
-
-\vspace*{-14pt}
-
-\Contr
-
-\vspace*{-3pt}
-
-\noindent
-\textbf{Adou Kpangny Y.\,B.} (b.\ 1993)~--- 
-PhD student, research assistant, Department of Applied Probability and Informatics, Peoples' Friendship University of Russia (RUDN University), 
-6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; \mbox{adu-k@rudn.ru}
-
-\pagebreak
-
-\noindent
-\textbf{Markova Ekaterina V.} (b.\ 1987)~--- 
-Candidate of Science (PhD) in physics and mathematics, assistant professor, Department of Applied Probability and Informatics, 
-Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
-\mbox{markova-ev@rudn.ru}
-
-\vspace*{6pt}
-
-\noindent
-\textbf{Gaidamaka Yuliya V.} (b.\ 1971)~--- 
-Doctor of Science in physics and mathematics, professor, Department of Applied Probability and Informatics, Peoples' 
-Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
-senior scientist, Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' 
-of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{gaydamaka-yuv@rudn.ru}
-
-\vspace*{6pt}
-
-\noindent
-\textbf{Shorgin Sergey Ya.} (b.\ 1952)~--- 
-Doctor of Science in physics and mathematics, professor, principal scientist, Institute of Informatics Problems, Federal Research Center 
-``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119133, Russian Federation; 
-\mbox{sshorgin@ipiran.ru}
-
-
-
-   
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 
-   

@@ -1,830 +1,0 @@
-%\DeclareMathOperator{\mathrm{tr}\,}{tr}
-\def\stat{lipatyev}
-
-\def\tit{НЕАСИМПТОТИЧЕСКИЙ АНАЛИЗ СТАТИСТИКИ БАРТЛЕТТА--НАНДА--ПИЛАЯ 
-ДЛЯ~ДАННЫХ\\ БОЛЬШОЙ РАЗМЕРНОСТИ}
-
-\def\titkol{Неасимптотический анализ статистики Бартлетта--Нанда--Пилая 
-для~данных большой размерности}
-
-\def\aut{А.\,А.~Липатьев$^1$}
-
-\def\autkol{А.\,А.~Липатьев}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Липатьев А.\,А.}
-\index{Lipatiev A.\,A.}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-%{Работа выполнена при частичной финансовой поддержке РФФИ
-%(проекты 18-07-00692, 19-07-00739 и~20-07-00804).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Московский государственный университет имени М.\,В.~Ломоносова, 
-факультет вычислительной математики и~кибернетики,
-кафедра математической статистики, \mbox{allipatev@cs.msu.ru}}
-
-
-\vspace*{-10pt}
-
-
-\Abst{Представлены вычислимые оценки скорости сходимости нормированной статистики Барт\-лет\-та--Нан\-да--Пи\-лая 
-к~стандартному нормальному распределению при условии, что размерность данных возрастает 
-пропорционально объему выборки. Приведенный результат позволяет корректно вычислять 
-p-зна\-че\-ния в~прикладных задачах многомерного анализа данных. Задачи в~постановке, когда 
-число анализируемых признаков сравнимо с~объемом выборки, все чаще возникают в~об\-ласти 
-обработки сигналов. Доказательство базируется существенным образом на нормальности распределения 
-элементов рассматриваемых матриц с~распределением Уишарта. Для случайных величин, представляющих 
-собой матричные следы произведения и~квадратов мат\-риц с~нормированным распределением Уишарта, 
-находятся удобные оценки сверху для $1-F$, где $F$~--- функция распределения соответствующего 
-следа мат\-ри\-цы. Применяя свойства обратных мат\-риц и~неотрицательно определенных мат\-риц, статистика 
-Барт\-лет\-та--Нан\-да--Пи\-лая ограничивается сверху комбинацией из упомянутых выше следов матриц.}
-
-\KW{точность приближений; многомерный дисперсионный анализ; вычислимые оценки; 
-статистика Барт\-лет\-та--Нан\-да--Пи\-лая; данные большой размерности}
-
-\DOI{10.14357/19922264210110}
-
-
-\vspace*{-2pt}
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-
-
-
-\section{Введение}
-\label{sec:intro}
-
-В большом числе прикладных задач исследователи анализируют многомерные данные, 
-в~которых количество~$p$ признаков сравнимо с~числом~$n$\linebreak наблюдений. Для анализа 
-данных фиксированной размерности существует множество статистических процедур, 
-уже ставших классическими.\linebreak
-Однако час\-то нет возможности использовать традиционную статистическую процедуру, 
-лишь устремив в~ней чис\-ло признаков к~бесконечности,
-так как при этом изменяется предельное распределение статистики критерия  (см.~[1,  
-разд.~6.3.4]).
-
-Цель данной работы~--- нахождение вычислимых оценок точности аппроксимации 
-статистики Барт\-лет\-та--Нан\-да--Пи\-лая (Bartlett--Nanda--Pillai test) нормальным 
-распределением в~модели многомерного дисперсионного анализа (MANOVA~--- multivariate analysis of variance) 
-для данных 
-большой размерности,
-когда отношение числа \mbox{признаков} к~чис\-лу  наблюдений~$p/n$ стремится к~некоторой 
-константе из интервала $(0, 1)$.
-
-Результаты, касающиеся распределений статистик, возникающих в~модели MANOVA при 
-условии, что нулевая гипотеза верна, оказываются полезны в~области обработки 
-сигналов. \mbox{Например}, в~\cite{lit:Johnstone_RoyStat} показано, каким образом 
-результаты из MANOVA и~обработки сигналов могут сводиться к~спектру определенной 
-матрицы~$E^{-1}H$. В~\mbox{статье}~\cite{lit:Akbari_AppliedLH} приводится пример 
-применения статистики Лоу\-ли--Хо\-тел\-лин\-га, родственной статистике 
-Барт\-лет\-та--Нан\-да--Пи\-лая, в~контексте обработки данных радаров с~синтезированной апертурой.
-
-В разд.~\ref{sec:results} сформулирован основной результат работы~--- 
-теорема~1.
-Теорема~2 является   вспомогательной, но при этом 
-представляет самостоятельный интерес.
-В~разд.~\ref{sec:proofs} даны доказательства основных теорем, которые 
-опираются на леммы из разд.~\ref{sec:lemmas}.
-
-%%%%%%%%%%%%%%%%%
-\section{Постановка задачи и~основной результат}
-\label{sec:results}
-
-
-В рамках многомерного дисперсионного анализа исследуется следующая многомерная 
-линейная модель:
-$
-X\hm=Q\mathbb{B}\hm+\mathcal{E},
-$
-где $X$~--- случайная матрица наблюдений размера $N \times p$; $Q$~--- неслучайная 
-матрица плана эксперимента размера $N \times k$;
-$\mathbb{B}$~---  неслучайная матрица $k \times p$ регрессионных коэффициентов;
-$\mathcal{E}$~--- матрица ошибок  $N \times p$ с~распределением $N_{N\times 
-p}\left(O,I_{N}\otimes\Sigma\right)$.
-
-Рассмотрим следующую линейную гипотезу:
-$
-H_{0} : C\mathbb{B}\hm=O,
-$
-где $C$~--- известная матрица размера $q \times k$ ранга~$q$.  Статистики 
-критериев, инвариантные относительно некоторой группы аффинных преобразований, 
-оказываются функциями от ненулевых собственных значений матрицы $S_{h}S_{e}^{-1}$, где
-\begin{equation}
-\left.
-\begin{array}{rl}
-S_{h}&=\hat{\mathbb{B}}^{\mathrm{T}}C^{\mathrm{T}}\left(C\left(Q^{\mathrm{T}}Q\right) ^{-1}C^{\mathrm{T}}\right)^{-
-1}C\hat{\mathbb{B}} \,;\\[6pt]
- S_{e}&=\left(X-Q\hat{\mathbb{B}}\right)^{\mathrm{T}}\left(X-
-Q\hat{\mathbb{B}}\right)
-\end{array}
-\right\}
-\label{S_h_and_S_e}
-\end{equation}
-при $\hat{\mathbb{B}}=\left(Q^{\mathrm{T}}Q\right)^{-1}Q^{\mathrm{T}}X$ (см.~[4, гл.~8]). 
-Одной из наиболее известных инвариантных статистик является 
-статистика Барт\-лет\-та--Нан\-да--Пи\-лая:
-$
-V_{\mathrm{BNP}}\hm=\left(n\hm+q\right)\mathrm{tr}\, S_{h}\left(S_{h}\hm+S_{e}\right)^{-1}.
-$
-В~дальнейшем предполагаем, что гипотеза~$H_0$ верна.
-
-В~\cite{lit:MuirLargeSamp} рассмотрен случай большого объема выборки, т.\,е.\ 
-выполнено \textit{условие}~\textbf{А1}:
-$$
-{\bf A1}: p\mbox{ и~}q\mbox{ фиксированы},\ n\rightarrow\infty ,
-$$
-и получены неасимптотические  оценки точности аппроксимации функции 
-распределения статистики Барт\-лет\-та--Нан\-да--Пи\-лая:
-\begin{multline*}
-    \mathbf{P}\{V_{\mathrm{BNP}}<x\}=G_{a}\left(x\right)+\fr{3a}{4n}\{G_{a}\left(x\right)-{}\\
-{}-2G_{a+2}\left(x\right)+G_{a+4}\left(x\right)\}+O\left(n^{-2}\right),
-\end{multline*}
-где $a=pq$; $G_{a}$~--- функция $\chi^{2}$-рас\-пре\-де\-ле\-ния
-с~$a$~степенями свободы. В~\cite{lit:LU01} для остаточного члена найде\-на 
-оценка сверху.
-
-В~\cite{lit:WFU} рассмотрен случай большой размерности данных, т.\,е.\ выполнено 
-\textit{условие} \textbf{А2}:
-\begin{multline*}
-{\bf A2}: q\mbox{ фиксировано},\enskip p\rightarrow\infty,\enskip n\rightarrow\infty,\\ 
-\fr{p}{n}\rightarrow c\in\left(0;1\right),
-\end{multline*}
-и получено следующее приближение:
-\begin{multline*}
-\mathbf{P}\left(\fr{1}{\sigma}T_{\mathrm{BNP}}<z\right)={}\\
-{}=\Phi(z)-
-\phi(z)\left[\fr{1}{\sqrt{p}}\left\{\fr{1}{\sigma}b_{1}+\fr{1}{\sigma^{3}}
-b_{3}\,H_{2}\left(z\right)\right\} + \right.\\
-\left.{}+\fr{1}{p}\left\{\fr{1}{\sigma^{2}}b_{2}\,H_{1}\left(z\right) + 
-\fr{1}{\sigma^{4}}b_{4}\,H_{3}\left(z\right) + 
-\fr{1}{\sigma^{6}}b_{6}\,H_{5}\left(z\right)\right\}\right]
-+{}\\
-{}+O\left(\fr{1}{p\sqrt{p}}\right),
-\end{multline*}
-где   
-$T_{\mathrm{BNP}}=\sqrt{p}\left(1+m^{-1}p\right)\left\{p^{-1}V_{\mathrm{BNP}}-q\right\}$;
-$\Phi (z)$ и~$\phi (z)$~--- соответственно функция распределения 
-и~плотность распределения стандартного нормального закона;
-$m\hm=n\hm-p\hm+q$; $r \hm= p/m$;
-$\sigma\hm=\sqrt{2q(1+r)}$; $b_{i}\hm=b_{i}(r,q)$ суть некоторые функции от~$r$ 
-и~$q$;
-$H_{i}(z)$~--- полиномы Эрмита.
-При этом результат имел именно асимптотический вид, верхние оценки остаточного 
-члена не находились.
-
-Основной результат данной работы~--- две тео\-ре\-мы,
-дающие оценку точности аппроксимации распределения статистики Барт\-лет\-та--Нан\-да--Пи\-лая
-нормальным распределением для данных большой размерности, т.\,е.\ при выполнении 
-условия~\textbf{A2}:
-
-
-\smallskip
-
-\noindent
-\textbf{Теорема~1.}
-\textit{При всех $m\hm>M\hm=M\left(r,q\right)$ справедливо неравенство}
-    $$
-     \sup\limits_{z}{\left|\mathbf{P}\left(\fr{T_{\mathrm{BNP}}}{\sqrt{2q\left(1+r\right)}}<z\right)-
-\Phi\left(z\!\right)\right|}\leqslant
-\fr{K_{2}\left(r, q\right)\ln m}{\sqrt{m}}\,,
-    $$
-   \textit{где $K_{2}\left(r, q\right)$~--- вычислимая функция от~$r$ и~$q$}.
-
-\smallskip
-
-Отметим, что результат теоремы~1 на логарифмический 
-множитель уступает результату из~\cite{lit:WFU}, но превосходит последний в~том, 
-что для ошибки погрешности дается вычислимая оценка сверху. При этом само 
-доказательство является новым.
-
-\smallskip
-
-\noindent
-\textbf{Теорема~2.}
-\textit{Пусть матрицы $U$ и~$V$ суть нормированные варианты матриц~$B$ и~$W$}:
-    \begin{equation}
-    \label{U and V}
-    U=  \fr{B-pI_{q}}{\sqrt{p}}\,;\quad V= \fr{W-mI_{q}}{\sqrt{m}}\,,
-    \end{equation}
-     \textit{где $B$ и~$W$ независимы и~имеют распределения Уишарта $W_{q}\left(p, 
-I_{q}\right)$ и~$W_{q}\left(m, I_{q}\right)$ с~$m\hm=n\hm-p\hm +q$ соответственно.
-    Если $\mathrm{tr}{\left(\sqrt{r}\,U\hm+V\right)^{2}}\hm<\left(r\hm+1\right)m$, то выполнено 
-следующее неравенство}:
-
-\noindent
-    \begin{multline}
-    \label{Theor2}
-     \left|\sqrt{m}\left(r+1\right)\left(\left(r+1\right)\mathrm{tr}\,{B\left(B+W\right)^{-1}}-
-     rq\right)-{}\right.\\
-\left.     {}-\left(\sqrt{r}\,\mathrm{tr}\,{U}-r\mathrm{tr}\,{V}\right)
-\vphantom{\sqrt{}W^{-1}}
-\right|\leqslant{}\\
-{}\leqslant
-\fr{ \left(r+1\right)\sqrt{r}\left(\left| \mathrm{tr}\,{UV}\right|+
-\sqrt{r}\,\mathrm{tr}\,U^{2}\right)}
-{ \left(r+1\right)\sqrt{m}-
-{\mathrm{tr}{\left(\sqrt{r}\,U+V\right)^{2}}}/{\sqrt{m}}}+{}\\
-{}+
-     \left(   rq\left(r+1\right)+\fr{\left(\sqrt{r}\,\mathrm{tr}\,{U}-r\mathrm{tr}\,{V}\right)}
-     {\sqrt{m}}\right)\times{}\\
-     {}\times 
-     \fr{\mathrm{tr}{\left(\sqrt{r}\,U+V\right)^{2}}}
-     { \left(r+1\right)\sqrt{m}-
-{\mathrm{tr}{\left(\sqrt{r}\,U+V\right)^{2}}}/{\sqrt{m}}}.
-    \end{multline}
-
-
-
-Заметим, что   вероятность события, противоположного событию 
-$\mathrm{tr}{\left(\sqrt{r}\,U\hm+V\right)^{2}}\hm<\left(r\hm+1\right)m$, фигурирующему 
-в~теореме~2, имеет порядок $O\left( {1}/{\sqrt{m}}\right)$, 
-как это станет ясно из результатов разд.~\ref{sec:lemmas}.
-
-\section{Вспомогательные утверждения}
-\label{sec:lemmas}
-
-
-В этой части приведены вспомогательные утверж\-де\-ния, используемые 
-в~доказательствах тео\-рем~1 и~2.
-
-Введем дополнительные случайные величины:
-\begin{equation}
-\left.
-\begin{array}{rlrl}
-Z_1 &= \mathrm{tr}\,{UV};&\hspace{1cm} Z_3 &= \mathrm{tr}\,{U}-\sqrt{r}\,\mathrm{tr}\,{V};\\[6pt]
-Z_2 &= \mathrm{tr}\,{V^{2}}; &\hspace{1cm} Z_4 &= \mathrm{tr}\,{U^{2}},
-\end{array}
-\right\}
-\label{Z_i}
-\end{equation}
-где случайные матрицы~$U$ и~$V$ определены в~\eqref{U and V}.
-
-\pagebreak
-
-
-Положим
-\begin{equation*}
-%\label{def_B}
-    B = B(q, r, m) = 4\,\left(q^2 + \sqrt{r}\right)\left(\sqrt{\ln m} + \sqrt{\ln p}\right)^2.
-\end{equation*}
-
-Определим также для $i \hm= 1, 2, 3, 4$ и~натуральных~$m$ случайные события $A_{i, m}$ 
-как 
-$$
-A_{i, m} = \left\{\omega : |Z_i(\omega)|\leqslant B \right\}.
-$$
-
-Положим
-\begin{multline*}
-%\label{Z}
-Z =
-   %\left( 
-   \vphantom{\fr{\left|\mathrm{tr}\,{U}-\sqrt{r}\,\mathrm{tr}\,{V}\right|}{\sqrt{m}}}
-  \fr{\left(r+1\right)\sqrt{r}\left(\left|\mathrm{tr}\,{UV}\right|+\sqrt{r}\,\mathrm{tr}\,{U^{2}}\right)}
-  {\left(r+1\right)\sqrt{m}-{S_{Z}}/{\sqrt{m}}}+{}\\
-  {}+
-\fr{
-          rq\left(r+1\right)+\sqrt{r/m}\,{\left|\mathrm{tr}\,{U}-\sqrt{r}\,\mathrm{tr}\,{V}\right|}
-}{\left(r+1\right)\sqrt{m}-{S_{Z}}/{\sqrt{m}}}\,
-S_{Z}\,,
-\end{multline*}
-где $S_{Z}=\left(r\mathrm{tr}\,{U^{2}}+2\sqrt{r}\left|\mathrm{tr}\,{UV}\right|+\mathrm{tr}\,{V^{2}}\right).$
-
-Ясно, что существует натуральное $M_1 \hm= M_1(r, q, c)$ такое, что при всех $m\hm\geq 
-M_1$ и~$\omega \hm\in \mathop{\cap}\nolimits_{i=1}^4 A_{i, m}$ выполняется
-\begin{multline}
-\label{ineq_Z}
-Z(\omega) \leqslant
-\left(
-(r+1)\sqrt{r}\left(1+\sqrt{r}\right)B+
-    \left(
-    \vphantom{\fr{B}{\sqrt{m}}}
-    rq(r+1)+{}\right.\right.\\
-\left.\left.    {}+\sqrt{r}\,\fr{B}{\sqrt{m}}\right)B\left(1+\sqrt{r}\right)^{2}\right)\Bigg/
-\left( 
-\vphantom{\fr{B\left(1+\sqrt{r}\right)^{2}}{\sqrt{m}}}
-(r+1)\sqrt{m}-{}\right.\\
-\left.{}-\fr{B\left(1+\sqrt{r}\right)^{2}}{\sqrt{m}}\right)
-\leqslant{}\\
-{}\leqslant 
-16\,\fr{\left(1+\sqrt{r}\right)^{2}\,\left(2\sqrt{r}+r\,(rq+q+1)\right)
-\left(q^2+\sqrt{r}\right)}{r+1}\times{}\\
-{}\times \fr{\left(\ln m + \ln\sqrt{r}\right)}{\sqrt{m}}\,.
-\end{multline}
-
-Оценим вероятности $\mathbf{P}(A_{i, m}^c)$ для $i \hm= 1, 2, 3, 4$. Согласно 
-леммам~1 и~2 из~\cite{lit:LU02} справедливо сле\-ду\-ющее неравенство:
-\begin{multline}
-    \label{L-1, f-la}
-\mathbf{P}\left(|Z_1| > B\right) + \mathbf{P}\left(Z_2 > B\right) +
- \mathbf{P}\left(|Z_3| > B\right) + {}\\
- {}+
-\mathbf{P}\left(Z_4 > B\right) \leqslant 25{,}8\,q^2\,\fr{1+1/\sqrt{r}}{\sqrt{m}}\,.
-\end{multline}
-
-\noindent
-\textbf{Лемма~1.}
-\textit{Пусть случайные величины $T$, $Y$ и~$Z$ определены на одном вероятностном 
-пространстве $\left(\Omega,\mathbf{A},\mathbf{P}\right)$,
-при этом распределение~$Y$ является абсолютно непрерывным с~ограниченной 
-плотностью $f_{Y}\left(z\right)$.
-Предположим, что для некоторого события $A\hm\in \mathbf{A}$ при всех $\omega\hm\in A$ 
-выполнено следующее соотношение}:
-$$
-\left|T(\omega)-Y(\omega)\right|\leqslant Z(\omega) \leqslant a
-$$
-\textit{с некоторой положительной постоянной~$a$.
-Тогда
-справедливо неравенство}:
-\begin{multline}
-\label{uniform}
-\sup\limits_{x}\left|\mathbf{P}(T<x)-\mathbf{P}(Y<x)\right| \leqslant{}\\
-{}\leqslant \mathbf{P}(A^c) + 
-a\sup\limits_{x}{f_{Y}\left(x\right)}.
-\end{multline}  
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ \ леммы~1. См.\ лемму~3 в~\cite{lit:LU02}.~\hfill $\Box$
-
-В следующих двух леммах приводятся два известных результата о скорости 
-сходимости в~центральной предельной теореме для независимых одинаково 
-распределенных случайных величин.
-Первый из результатов относится к~случайным величинам без ограничений на тип 
-распределения.
-Второй результат относится к~случайной величине с~распределением $\chi^{2}$, 
-рассматриваемой как сумма независимых одинаково распределенных 
-случайных величин с~известным распределением. Согласно~\cite{lit:Shevtsova1}, справедлива 
-следующая лемма.
-
-\noindent
-\textbf{Лемма~2.}
-\textit{Пусть случайные величины $\xi_{1},\,\xi_{2},\ldots$ независимы и~одинаково 
-распределены, выполнено $\mathbf{D}\xi_{1}\hm=\sigma^{2}\hm>0$ и~cуществует 
-$\mathbf{E}\left|\xi_{1}\right|^{3}\hm<\infty$. Тогда  для нормированной суммы}
-$
-T_{n}\hm=
-{(S_{n}-\mathbf{E}{S_{N}})}/{\sqrt{\mathbf{D}\,{S_{N}}}}
-$
-\textit{выполнено неравенство}:
-$$
-\sup\limits_{x}{\left|F_{T_{n}}\left(x\right)-\Phi\left(x\right)\right|}\leqslant 
-0{,}4748\fr{\mathbf{E}\left|\xi_{1}-
-\mathbf{E}\xi_{1}\right|^{3}}{\sigma^{3}\sqrt{n}}\,.
-$$
-
-
-Случайная величина с~функцией распределения $G_{p}(x)$, имеющая   $\chi^{2}$-рас\-пре\-де\-ле\-ние 
-с~$p$~степенями свободы, может быть представлена в~виде суммы~$p$~независимых 
-одинаково распределенных случайных величин с~$\chi^{2}$-рас\-пре\-де\-ле\-ни\-ем с~одной степенью свободы.
-Этот факт позволяет дать более точные оценки точ\-ности аппроксимации нормальным 
-распределением, чем те, которые можно получить в~общем случае с~помощью
-неравенства Бер\-ри--Ес\-се\-ена, а~именно: имеет место следующий результат (см.\ лемму~2 
-в~\cite{lit:Kavaguchi} при $\lambda\hm=0{,}5$).
-
-\smallskip
-
-\noindent
-\textbf{Лемма~3.}
-\textit{Для всех $\lambda\hm\in\left(0; \sqrt{3}-1\right)$ и~целых $p\hm>1$ выполнено}
-    $$
-    \sup\limits_{x}{\left|G_{p}\left(p+x\sqrt{2p}\right)-
-\Phi\left(x\right)\right|}\leqslant \fr{6{,}22}{\sqrt{p}}\,.
-    $$
-
-\smallskip
-
-\noindent
-\textbf{Лемма~4.}
-\textit{Для любых случайных величин $X$ и~$Y$ и~любого действительного числа $a > 
-0$ справедливы неравенства}:
-    \begin{equation*}
-    %\label{split_formula_1}
-    \mathbf{P}(|X+Y|\geq 2a) \leqslant \mathbf{P}(|X|\geq a)  + 
-\mathbf{P}(|Y|\geq a)\,;
-    \end{equation*}
-          \begin{equation*}
-  %  \label{split_formula_2}
-    \mathbf{P}(|X\cdot Y|\geq a^2) \leqslant \mathbf{P}(|X|\geq a)  + 
-\mathbf{P}(|Y|\geq a).
-    \end{equation*}
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ \ леммы~4 очевидным образом вытекает из рассуждений 
-от противного.~\hfill $\Box$
-
-\smallskip
-
-\noindent
-\textbf{Лемма~5.}
-\textit{Если случайные величины~$X_1, \dots , X_k$ независимы и~таковы, что   $|\mathbf{P}(X_j 
-\hm\leqslant x) \hm- \Phi (x)| \hm\leqslant D_j$ при всех~$x$ и~$j \hm= 1, \dots , k$
- с~некоторыми постоянными   $D_1, \dots , D_k$, то}
-  \begin{equation*}
-  \left| \mathbf{P}\left(\sum\limits_{j=1}^{k}c_j\,X_j \leqslant x\right) - \Phi (x)\right| \leqslant 
-\sum\limits_{j=1}^{k} D_j,
-  \end{equation*}
-\textit{где $c_1,\dots , c_k $ суть произвольные постоянные, для которых}   $c_1^2 + 
-\dots + c_k^2 \hm= 1$.
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ \ леммы~5 см., например, в~теореме~3.1 
-в~~\cite{lit:Letters_2006}. \hfill $\Box$
-
-
-
-\section{Доказательства теорем~1 и~2}
-\label{sec:proofs}
-
-
-Начнем с~доказательства теоремы~2, поскольку неравенство~\eqref{Theor2} 
-является ключевым в~доказательстве 
-теоремы~1.
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ \ теоремы~2.
-Воспользовавшись матричным равенством
-\begin{equation*}
-%\label{Matr Geom}
-\left(I+A\right)^{-1}-\left(I-A\right)=A^{2}\left(I+A\right)^{-1},
-\end{equation*}
-из определения \eqref{U and V} получаем
-\begin{multline*}
-\left(B+W\right)^{-1}=\left(\sqrt{p}\,U+pI_{q}+\sqrt{m}\,V+mI_{q}\right)^{-1}={}\\
-{}=\fr{1}{p+m}\left(
-\vphantom{\fr{\left(\sqrt{p}\,U+\sqrt{m}\,V\right)^{2}}
-{p+m}}
-I_{q}-
-\fr{1}{p+m}\left(\sqrt{p}\,U+\sqrt{m}\,V\right)+{}\right.\\
-\left.{}+\fr{\left(\sqrt{p}\,U+\sqrt{m}\,V\right)^{2}}
-{p+m}\left(B+W\right)^{-1}\right),
-\end{multline*}
-далее
-\begin{multline*}
-%\label{T2_1}
-\sqrt{m}\left(r+1\right)\left(\left(r+1\right)B\left(B+W\right)^{-1}-
-rI_{q}\right)-{}\\
-{}-\left(\sqrt{r}\,U-rV\right)=\fr{\sqrt{r}}{\sqrt{m}}U\left(\sqrt{r}\,U+V\right)+{}\\
-{}+
-        \fr{1}{\sqrt{m}}\,B\left(\sqrt{r}\,U+V\right)^{2}\left(B+W\right)^{-1}.
-\end{multline*}
-Отсюда для следов этих матриц имеем следующее неравенство:
-\begin{multline}
-\label{trBW}
-\left|\sqrt{m}\left(r+1\right)\left(\left(r+1\right)\mathrm{tr}\,{B\left(B+W\right)^{-1}}-
-rq\right)-{}\right.\\
-\left.{}-\left(\sqrt{r}\,\mathrm{tr}\,{U}-r\mathrm{tr}\,{V}\right)
-\vphantom{\left(W\right)^{-1}}
-\right|
-\leqslant{}\\
-{}\leqslant \fr{1}{\sqrt{m}}\sqrt{r}\left(\left|\mathrm{tr}\,{UV}\right|+\sqrt{r}\,\mathrm{tr}\,{U^{2}}\right)+{}\\
-{}+
-\fr{1}{\sqrt{m}}\left|\mathrm{tr}\,{\left[B\left(\sqrt{r}\,U+V\right)^{2}\left(B+W\right)^{-1}\right]}
-\right|\leqslant{}\\
-{}\leqslant
-\fr{1}{\sqrt{m}}\sqrt{r}\left(\left|\mathrm{tr}\,{UV}\right|+\sqrt{r}\,\mathrm{tr}\,{U^{2}}\right)+{}\\
-{}+
-\fr{1}{\sqrt{m}}\,\mathrm{tr}\,{\left(\sqrt{r}\,U+V\right)^{2}}\mathrm{tr}\,{B\left(B+W\right)^{-1}}.
-\end{multline}
-Для получения предпоследнего неравенства использованы симметричность 
-и~неотрицательная определенность обеих случайных матриц 
-$\left(\sqrt{r}\,U+V\right)^{2}$ и~$B\left(B+W\right)^{-1}$, поскольку для 
-сим\-мет\-рич\-ных неотрицательно определенных матриц~$X$ и~$Y$ выполнено   
-соотношение (см.~\cite{lit:TraceIneq})
-$\mathrm{tr}\,{XY}\hm\leqslant\mathrm{tr}\,{X}\mathrm{tr}\,{Y}.$
-
-Видно, что случайная величина $\mathrm{tr}\,{B\left(B+W\right)^{-1}}$ фигурирует в~крайней 
-левой и~крайней правой час\-тях неравенства~\eqref{trBW}.
-Преобразуя полученное неравенство, получаем, что при 
-$\mathrm{tr}\,{\left(\sqrt{r}\,U+\hm V\right)^{2}}\hm<\left(r\hm+1\right)m$ выполнено~\eqref{Theor2}. 
-Тем самым доказательство теоремы~2 завершено.
-\hfill $\Box$
-
-\smallskip
-
-Переходим к~доказательству теоремы~1.
-
-\smallskip
-
-\noindent
-Д\,о\,к\,а\,з\,а\,т\,е\,л\,ь\,с\,т\,в\,о\ \ теоремы~1.
-Используя лемму~1 из~\cite{lit:WFU}, перейдем к~представлению статистики 
-Барт\-лет\-та--Нан\-да--Пи\-лая
-\begin{multline*}
-T_{\mathrm{BNP}}={}\\
-{}=\sqrt{p}\left(\!1+\fr{p}{m}\!\right)\!\left\{\!\left(1+\fr{m}{p}\right)\mathrm{tr}\!\left[S_{h}
-\left(S_{h}+S_{e}\right)^{-1}\right]-q\right\}\hspace*{-4.9pt}
-\end{multline*}
-в терминах матриц~$B$ и~$W$ размера $q \times q$ вместо матриц~$S_{h}$ и~$S_{e}$ 
-размера $p \times p$, где $S_{h}$ и~$S_{e}$ определены в~\eqref{S_h_and_S_e}, 
-а~матрицы~$B$ и~$W$ независимы и~имеют распределения Уишарта $W_{q}\left(p, 
-I_{q}\right)$ и~$W_{q}\left(m, I_{q}\right)$ с~$m\hm=n\hm-p\hm+q$ соответственно.
-При этом будем пользоваться сле\-ду\-ющим соотношением (см.~\cite{lit:WFU}):
-$$
-\mathrm{tr}\,{S_{h}\left(S_{h}+S_{e}\right)^{-1}}=
-\mathrm{tr}\,{B\left(B+W\right)^{-1}}.
-$$
-
-Согласно~\eqref{Theor2} для $Z_1$, $Z_2$, $Z_3$ и~$Z_4$ (см.\ определение 
-в~\eqref{Z_i}) при $rZ_{4}\hm+2\sqrt{r}\left|Z_{1}\right|\hm+Z_{2} \hm< m$ 
-имеем:
-\begin{multline*}
-%\label{proof_T-1-1}
-|\sqrt{r}\,T_{\mathrm{BNP}} - \left(\sqrt{r}\,\mathrm{tr}\,{U}-r\mathrm{tr}\,{V}\right)|={}\\
-{}= \left|\sqrt{m}\left(r+1\right)\left(\left(r+1\right)\mathrm{tr}\,{B\left(B+W\right)^{-1}}
--rq\right)-{}\right.\\
-\left.{}-\left(\sqrt{r}\,\mathrm{tr}\,{U}-r\mathrm{tr}\,{V}\right)
-\vphantom{\left(W\right)^{-1}}
-\right|\leqslant{}\\
-{}\leqslant
-  \left( 
-   \vphantom{\fr{\sqrt{r}}{\sqrt{v}}}
-   \left(r+1\right)\sqrt{r}\left(\left|Z_{1}\right|+\sqrt{r}\,Z_{4}\right)+{}\right.
- \\
- {}+     \left(
-\vphantom{\fr{\sqrt{r}\left|Z_{3}\right|}{\sqrt{m}}}
-    rq\left(r+1\right)+\fr{\sqrt{r}\left|Z_{3}\right|}{\sqrt{m}}\right)\left(rZ_{4}+
-2\sqrt{r}\left|Z_{1}\right|+{}\right.\\
-\left.\left.{}+Z_{2}\right)
-\vphantom{\fr{\sqrt{r}}{\sqrt{v}}}
-\right)\Bigg/
-    \left( \left(r+1\right)\sqrt{m}-
-\fr{rZ_{4}+2\sqrt{r}\left|Z_{1}\right|+Z_{2}}{\sqrt{m}}\right).\hspace*{-6.32483pt}
-\end{multline*}
-Следовательно, в~силу~\eqref{ineq_Z} и~\eqref{uniform} при всех $m\hm\geq M_1$ 
-получаем
-\begin{multline}
-\label{interm}
-\mathop{\sup}\limits_{z}\left|\mathbf{P}\left (\fr{T_{\mathrm{BNP}}}
-{\sqrt{2q\left(1+r\right)}}<z\right)-{}\right.\\
-\left.{}-
-\mathbf{P}\left(\fr{\mathrm{tr}\,{U}-\sqrt{r}\,\mathrm{tr}\,{V}}{\sqrt{2q\left(1+r\right)}} < z 
-\right)\right| \leqslant{}\\
-{}\leqslant \sum\limits_{i=1}^{4} \mathbf{P}\left(|Z_i|> B\right) +  K_{4}(r, q)\,
-\fr{\ln m}{\sqrt{m}}\, \sup\limits_{x}{f(x)},
-\end{multline}
-где $f(x)$ есть плотность случайной величины ${(\mathrm{tr}\,{U}\hm-
-\sqrt{r}\,\mathrm{tr}\,{V})}/{\sqrt{2q\left(1\hm+r\right)}}$;
-$K_{4}\left(r, q\right)$~--- 
-некоторая вычислимая функция от~$r$ и~$q$.
-
-Отметим, что, поскольку матрицы~$B$ и~$W$ независимы, матрицы $U$ и~$V$ также 
-независимы между собой. Известно (см., например, гл.~2 в~\cite{lit:FUS01}), что 
-$\mathrm{tr}\, B$ и~$\mathrm{tr}\, W$ имеют $\chi^{2}$-рас\-пре\-де\-ле\-ния с~$pq$ и~$mq$ степенями свободы 
-соответственно. Известно также, что плотность $\chi^{2}$-распределения с~$k\hm\geq 3$ степенями свободы ограничена сверху величиной
-$1/(2\sqrt{\pi\left(k-2\right)}).$
-Поэтому для плотности $f(x)$ справедлива равномерная оценка
-\begin{multline}
-\label{density}
-f(x) \leqslant{}\\
-\hspace*{-1.5mm}{}\leqslant \min{\left( \fr{\sqrt{p}}{ \sqrt{ \left(pq-
-2\right)}},\,\fr{\sqrt{m}}{\sqrt{r\left(mq-2\right)}}\right)} 
-\fr{\sqrt{q(1+r)}}{\sqrt{2\pi}}\,.\!\!\!
-\end{multline}
-Объединяя утверждения лемм~3 и~5 и~соотношения~\eqref{U and V}, \eqref{L-1, f-la}, \eqref{interm} 
-и~\eqref{density}, получаем утверждение теоремы~1.\hfill $\Box$%\\[2ex]
-
-
-%\vspace*{-8pt}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-%\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-%\vspace*{-2pt}
-\bibitem{lit:FUS01}
-\Au{Fujikoshi Y., Ulyanov~V.\,V., Shimizu~R.}  Multivariate statistics: High-dimensional 
-and large-sample approximations.~--- Hoboken, NJ, USA: John Wiley \& Sons, 2010. 512~p.
-
-\bibitem{lit:Johnstone_RoyStat}
-\Au{Johnstone I.\,M., Nadler~B.} Roy's largest root test under rank-one 
-alternatives~// Biometrika, 2017. Vol.~104. No.\,1. P.~181--193.
-
-\bibitem{lit:Akbari_AppliedLH}
-\Au{Akbari V., Anfinsen S.\,N., Doulgeris~A.\,P., Eltoft~T., Moser~G., Serpico~S.\,B.} 
-Polarimetric SAR change detection with the complex Hotelling--Lawley 
-trace statistic~// IEEE T.~Geosci. Remote,  2016. Vol.~54. Iss.~7. 
-P.~3953--3966.
-
-\bibitem{lit:And}
-\Au{Anderson T.\,W.}  An introduction to multivariate analysis.~--- 3rd ed.~--- Hoboken, NJ,
-USA: John Wiley \& Sons,  2003. 742~p.
-
-\bibitem{lit:MuirLargeSamp}
-\Au{Muirhead R.\,J.}  Asymptotic distributions of some multivariate tests~// 
-Ann. Math. Stat., 1970. Vol.~41. No.\,3. P.~1002--1010.
-
-\bibitem{lit:LU01}
-\Au{Липатьев А.\,А., Улья\-нов~В.\,В.} Вы\-чис\-ли\-мые оценки точ\-ности при\-бли\-же\-ний 
-для статистики Барт\-лет\-та--Нан\-да--Пил\-лай~//
-Математические труды, 2016. Т.~19. №\,2. С.~109--118.
-
-\bibitem{lit:WFU}
-\Au{Wakaki~H., Fujikoshi~Y., Ulyanov~V.\,V.}  Asymptotic expansions of the 
-distributions of
-MANOVA test statistics when the dimension is large~// Hiroshima Math.~J., 2014. 
-Vol.~44. No.\,3. P.~247--259.
-
-\bibitem{lit:LU02}
-\Au{Липатьев А.\,А., Ульянов~В.\,В.} Неасимптотический анализ статистики 
-Лоу\-ли--Хо\-тел\-лин\-га для данных большой раз\-мер\-ности~//
-Записки научных семинаров \mbox{ПОМИ}, 2019. Т.~486. С.~178--189.
-
-\bibitem{lit:Shevtsova1}
-\Au{Shevtsova I.\,G.}  On the absolute constants in the Berry--Esseen type 
-inequalities for identically distributed summands~//
-arXiv.org, 2011. arXiv:1111.6554 [math.PR]. 7~p.
-
-\bibitem{lit:Kavaguchi}
-\Au{Кавагучи Ю., Ульянов~В.\,В., Фуджикоши~Я.}  Приближения для статистик,
-описывающих геометрические свойства данных большой размерности, с~оценками 
-ошибок~//
-Информатика и~её применения, 2010. Т.~4. Вып.~1. С.~22--27.
-
-\bibitem{lit:Letters_2006}
-\Au{Ulyanov V.\,V., Wakaki~H., Fujikoshi~Y.}  Berry--Esseen bound for high 
-dimensional asymptotic approximation of Wilks' Lambda distribution~//
-Stat. Probabil. Lett., 2006. Vol.~76. No.\,12. P.~1191--1200.
-
-\bibitem{lit:TraceIneq}
-\Au{Coope I.\,D.}  On matrix trace inequalities and related topics for 
-products of Hermitian matrices~//
-J.~Math. Anal. Appl., 1949. Vol.~188. No.\,3. P.~999--1001.
-\end{thebibliography}
-
-}
-}
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 07.01.2020}}
-
-\vspace*{8pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{NONASYMPTOTIC ANALYSIS OF~BARTLETT--NANDA--PILLAI STATISTIC FOR~HIGH-DIMENSIONAL DATA}
-
-\def\titkol{Nonasymptotic analysis of~Bartlett--Nanda--Pillai statistic for~high-dimensional data}
-
-\def\aut{A.\,A.~Lipatiev}
-
-\def\autkol{A.\,A.~Lipatiev}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-
-\noindent
-Department of Mathematical Statistics, Faculty of Computational 
-Mathematics and Cybernetics, M.\,V.~Lomonosov Moscow State University, 
-1-52~Leninskiye Gory, GSP-1, Moscow 119991, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 1}
-}%
-\def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 1
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}
-
-
-
-
-\Abste{The author gets the computable error bounds for normal 
-approximation of Bartlett--Nanda--Pillai statistic when dimensionality grows proportionally
- to the sample size. This result enables one to get more precise calculations of the p-values 
- in applications of multivariate analysis. In practice, more and more often, analysts encounter 
- situations when the number of factors is large and comparable with the sample size. 
- The examples include signal processing. The proof is essentially based on the normality 
- of the distribution of the elements of the matrices under consideration with the Wishart 
- distribution. For random variables that are the matrix traces of the product and squares 
- of matrices with the normalized Wishart distribution, convenient upper bounds for $1-F$ are 
- found\linebreak\vspace*{-12pt}}
- 
- \Abstend{where $F$ is the distribution function of the corresponding matrix trace. Applying 
- the properties of inverse matrices and positive semidefinite matrices, the Bartlett--Nanda--Pillai 
-statistic is bounded from above by a combination of the above-mentioned matrix traces.}
-
-\KWE{computable estimates; accuracy of approximation; MANOVA; computable error bounds; 
-Bartlett--Nanda--Pillai statistic; high-dimensional data}
-
-\DOI{10.14357/19922264210110}
-
-%\vspace*{-15pt}
-
-%\Ack
-%\noindent
-
-
-\vspace*{12pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-\bibitem{1-lip-1}
-\Aue{Fujikoshi, Y., V.\,V.~Ulyanov, and R.~Shimizu.} 2010. 
-\textit{Multivariate statistics: High-dimensional and large-sample approximations}.
- Hoboken, NJ: John Wiley \& Sons. 512~p.
-\bibitem{2-lip-1}
-\Aue{Johnstone, I.\,M., and B.~Nadler.} 2017. Roy's largest root test under rank-one 
-alternatives. \textit{Biometrika} 104(1):181--193.
-\bibitem{3-lip-1}
-\Aue{Akbari, V., S.\,N.~Anfinsen, A.\,P.~Doulgeris, T.~Eltoft, G.~Moser, and S.\,B.~Serpico.}
- 2016. Polarimetric SAR change detection with the complex Hotelling--Lawley trace statistic. 
- \textit{IEEE~T. Geosci. Remote} 54(7):3953--3966.
-\bibitem{4-lip-1}
-\Aue{Anderson, T.\,W.} 2003. \textit{An introduction to multivariate analysis}. 
-3rd ed. Hoboken, NJ: John Wiley \& Sons. 742~p.
-\bibitem{5-lip-1}
-\Aue{Muirhead, R.\,J.} 1970. Asymptotic distributions of some multivariate tests. 
-\textit{Ann. Math. Stat.} 41(3):1002--1010.
-\bibitem{6-lip-1}
-\Aue{Lipatiev, A.\,A., and V.\,V.~Ulyanov.} 2017. On computable estimates for accuracy of approximation
- for the Bartlett--Nanda--Pillai statistic. \textit{Siberian Adv. Math.} 27(3):153--159.
-\bibitem{7-lip-1}
-\Aue{Wakaki, H., Y.~Fujikoshi, and V.\,V.~Ulyanov.} 2014. Asymptotic expansions of the distributions 
-of MANOVA test statistics when the dimension is large. \textit{Hiroshima Math.~J.} 44(3):247--259.
-\bibitem{8-lip-1}
-\Aue{Lipatiev, A.\,A., and V.\,V.~Ulyanov.}
- 2019. Neasimptoticheskiy analiz statistiki Louli--Khotellinga dlya dannykh bol'shoy razmernosti 
- [Nonasymptotic analysis of Lawley--Hotelling statistic for high dimensional data]. 
- \textit{Zapiski nauchnykh seminarov POMI} [POMI Notes of Scientific Seminars] 486:178--189.
-\bibitem{9-lip-1}
-\Aue{Shevtsova, I.\,G.} 2011. On the absolute constants in the Berry--Esseen type inequalities 
-for identically distributed summands. arXiv:1111.6554 [math.PR]. Available at: 
-{\sf https://arxiv.org/pdf/1111.6554} (accessed December~16, 2020).
-\bibitem{10-lip-1}
-\Aue{Kawaguchi, Yu., V.\,V.~Ulyanov, and Ya.~Fujikoshi.}
- 2010. Priblizheniya dlya statistik, opisyvayushchikh geo\-met\-ri\-che\-skie svoystva dannykh 
- bol'shoy razmernosti, s~otsenkami oshibok [Asymptotic distributions of basic statistics in 
- geometric representation for high-dimensional data and their error bounds]. 
- \textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 4(1):22--27.
-\bibitem{11-lip-1}
-\Aue{Ulyanov, V.\,V., H.~Wakaki, and Y.~Fujikoshi.} 2006. 
-Berry--Esseen bound for high dimensional asymptotic approximation of Wilks' Lambda distribution. 
-\textit{Stat. Probabil. Lett.} 76(12):1191--1200.
-\bibitem{12-lip-1}
-\Aue{Coope, I.\,D.} 1949. On matrix trace inequalities and related topics for products of Hermitian matrices. 
-\textit{J.~Math. Anal. Appl.} 188(3):999--1001.
- \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-  \hfill{\small\textit{Received January~7, 2020}}
-
-
-%\pagebreak
-
-%\vspace*{-8pt}
-
-\Contrl
-
-\noindent
-\textbf{Lipatiev Alexander A.} (b.\ 1988)~--- 
-PhD student,  Faculty of Computational Mathematics and Cybernetics,
- M.\,V.~Lomonosov Moscow State University, 1-52~Leninskiye Gory, GSP-1, Moscow 119991, 
- Russian Federation; \mbox{allipatev@cs.msu.ru}
-
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}

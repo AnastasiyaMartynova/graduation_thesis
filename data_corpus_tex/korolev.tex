@@ -1,733 +1,0 @@
-\def\stat{kor+sor}
-
-\def\tit{СЕРВИС-ОРИЕНТИРОВАННЫЙ ИНТЕРФЕЙС ДЛЯ~ДОСТУПА 
-К~НАУЧНЫМ ДАННЫМ В~ОБЛАСТИ ИССЛЕДОВАНИЯ 
-И~ОПЕРАТИВНОГО МОНИТОРИНГА СОСТОЯНИЯ ВУЛКАНОВ 
-КАМЧАТКИ И~СЕВЕРНЫХ КУРИЛ$^*$}
-
-\def\titkol{Сервис-ориентированный интерфейс для~доступа 
-к~научным данным} % в~области исследования  и~оперативного мониторинга состояния вулканов  Камчатки и~Северных Курил}
-
-
-\def\aut{С.\,П.~Королёв$^1$, И.\,М.~Романова$^2$, С.\,И.~Мальковский$^3$, 
-А.\,А.~Сорокин$^4$}
-
-\def\autkol{С.\,П.~Королёв, И.\,М.~Романова, С.\,И.~Мальковский, 
-А.\,А.~Сорокин}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Королёв С.\,П.}
-\index{Романова И.\,М.}
-\index{Мальковский С.\,И.}
-\index{Сорокин А.\,А.}
-\index{Korolev S.\,P.}
-\index{Romanova I.\,M.}
-\index{Malkovsky S.\,I.} 
-\index{Sorokin A.\,A.}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа выполнена при поддержке гранта РФФИ №\,16-37-00026~мол\_а 
-и~Комплексной программы 
-фундаментальных научных исследований ДВО РАН <<Дальний Восток>> (проект 18-5-091).
- Для обеспечения 
-функционирования научных информационных сервисов были использованы ресурсы 
-ЦКП <<Центр данных  ДВО РАН>>.}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Вычислительный центр Дальневосточного отделения Российской академии наук, 
-\mbox{serejk@febras.net}}
-\footnotetext[2]{Институт вулканологии и~сейсмологии Дальневосточного 
-отделения Российской академии наук,  \mbox{roman@kscnet.ru}}
-\footnotetext[3]{Вычислительный центр Дальневосточного отделения Российской академии наук, 
-\mbox{sergey.malkovsky@gmail.com}}
-\footnotetext[4]{Вычислительный центр Дальневосточного отделения Российской академии наук, 
-\mbox{alsor@febras.net}}
-
-
- \label{st\stat}
-
-                  \thispagestyle{headings}
-                  
-  \vspace*{-8pt}
-     
-
-\Abst{На территории Дальнего Востока России располагаются десятки активных вулканов, 
-требующих непрерывного внимания ученых для анализа и~контроля их состояния. 
-В~качестве вспомогательных средств в~этой работе выступают информационные системы
-(ИС), 
-обеспечивающие решение различных научных задач. Однако разрозненность 
-ИС и~ограниченный доступ к~информации существенно ограничивают 
-возможность проведения комплексных исследований, что чревато в~итоге 
-катастрофическими последствиями для населения и~народного хозяйства.
-      Представлено описание разработанного сер\-вис-ори\-ен\-ти\-ро\-ван\-но\-го 
-программного интерфейса, реализующего взаимодействие между основными 
-существующими ИС для взаимного использования накопленных 
-наборов научных данных и~средств их обработки при проведении исследований 
-и~оперативного мониторинга со\-сто\-яния вулканов Камчатки и~Северных Курил.}
-
-\KW{вулканы Камчатки; мониторинг вулканов; веб-сервисы; REST-сервис; интеграция 
-данных; базы данных}
-
-\DOI{10.14357\!/\!08696527180207}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-      
-      \vspace*{-10pt} 
-
-\section{Введение}
-
-     В настоящее время исследование окружающей среды является одним из 
-тех направлений на\-уч\-но-тех\-ни\-че\-ской деятельности, которые формируют 
-объективные потребности в~создании новых методов работы с~научными 
-данными и~разработки на их основе современных информационных технологий 
-и~систем. В~первую очередь, это связано с~активным развитием средств 
-инструментальных наблюдений (наземных сетей наблюдения, систем 
-дистанционного зондирования Земли и~т.\,п.)\ и~непрерывным 
-совершенствованием измерительной аппаратуры. Разнообразие 
-фундаментальных и~прикладных научных задач порождает создание 
-разрозненных, отличных по масштабу и~функциональным возможностям 
-специализированных ИС. В~то же время проведение 
-междисциплинарных исследований требует совместного анализа всех 
-доступных массивов неоднородной информации, сформированных 
-с~применением различных программных средств и~технологий. Возникает 
-потребность в~обмене данными и~организации доступа к~ресурсам внешних 
-гетерогенных источников тематической информации.
-
-Перечисленные выше утверждения справедливы для Дальнего Востока России, 
-где расположено~70~действующих вулканов, требующих ежедневного 
-мониторинга со стороны ученых: 30~на Камчатке и~40~на Курилах~[1]. Для их 
-исследования и~систематизации накопленных данных созданы 
-ИС, решающие широкий круг научных задач. Однако 
-разрозненность справочной и~инструментальной информации, ограниченный 
-доступ к~результатам работ существенно ограничивают возможность 
-проведения комплексных исследований, а также увеличивают время на анализ 
-возникающих природных событий и, как следствие, увеличивают время 
-реакции на них, что чревато катастрофическими последствиями для населения 
-и~народного хозяйства.
-     
-     В~статье представлено описание разработанного  
-сер\-вис-ори\-ен\-ти\-ро\-ван\-но\-го программного интерфейса, реализующего 
-взаимодействие между основными существующими 
-ИС для взаимного использования накопленных наборов научных 
-данных и~средств их обработки при проведении исследований и~оперативного 
-мониторинга состояния вулканов Камчатки и~Северных Курил.
-
-\section{Постановка задачи }
-
-     Для проведения ретроспективных исследований и~оперативного 
-мониторинга вулканической активности на Дальнем Востоке России в~разное 
-время были созданы различные специализированные ИС. 
-Если в~начале 2000-х~гг.\ они представляли собой ин\-тер\-нет-сай\-ты со 
-справочными материалами и~результатами различных экспедиций 
-и~исследований, то с~развитием научной телекоммуникационной~[2] 
-и~инструментальной (наземной, спутниковой) инфраструктуры наблюдений 
-стали появляться интерактивные сервисы для сбора, обработки и~анализа 
-различной измерительной информации. Среди них можно выделить несколько 
-ИС, обладающих уникальным набором данных и~средств 
-их обработки (табл.~1). 
-     
-
-
-
-Информационные системы VOKKIA и~KVERT являются источниками базовой метаинформации по 
-исследуемым объектам и~возникающим событиям, а~ИС <<Сигнал>> 
-и~VolSatView агрегируют на своей платформе архивы различных 
-инструментальных данных, а также средства для их обработки. 
-
-
-
-     Перечисленные ИС по своим функциональным возможностям 
-и~назначению дополняют друга, одновременно с~этим возникает задача обмена 
-результатами исследований и~доступа к~первичной справочной информации.
-\begin{table}\small %tabl1
-\begin{center}
-\Caption{Информационные системы  для исследования и~оперативного мониторинга 
-вулканов Камчатки и~Северных Курил}
-\vspace*{2ex}
-
-
-\begin{tabular}{|p{40mm}|p{82mm}|}
-\hline
-\multicolumn{1}{|c|}{Название ИС}&\multicolumn{1}{c|}{Основное назначение}\\
-\hline
-1. VOKKIA (Volcanoes of  
-Kurile-Kamchatka Island Arc~--- Вулканы 
-Ку\-ри\-ло-Кам\-чат\-ской островной дуги)~\cite{3-kor} 
-&Интеграция гетерогенных научных (описательных, количественных, пространственных) 
-данных по вулканам Ку\-ри\-ло-Кам\-чат\-ской островной дуги и~их историческим 
-извержениям\\
-\hline
-2. KVERT (Kam\-chat\-kan\linebreak Volcanic Eruption Response Team~--- Камчатская группа реагирования 
-на вулканические  
-извержения)~\cite{4-kor} &Автоматизация процесса подготовки сообщений KVERT 
-о~текущей активности вулканов, в~том числе оперативных сообщений VONA (Volcano 
-Observatory Notice for Aviation) о~пепловых шлейфах и~изменении АЦК, 
-обеспечение хранения данных и~возможности их статистического анализа\\
-\hline
-3. <<Сигнал>>~\cite{5-kor, 6-kor} &Автоматизация операций, связанных с~работой сетей 
-инструментальных наблюдений ДВО РАН, в~том чис\-ле системы видеонаблюдения за 
-вулканами Камчатки и~системы компьютерного моделирования распространения пепловых 
-облаков\\
-\hline
-4. VolSatView (Дистанционный мониторинг активности вулканов Камчатки и~Курил)~\cite{7-
-kor} &Оперативный мониторинг вулканической активности на основе данных 
-дистанционного зондирования Земли\\
-\hline
-\end{tabular}
-\end{center}
-%\vspace*{-12pt}
-\end{table} 
-Требуется организовать взаимодействие между системами, на базе которых уже 
-развиты необходимые научные компетенции, сформированы архивы данных 
-и~вы\-стро\-ена соответствующая вспомогательная про\-грам\-мно-ап\-па\-рат\-ная 
-инфраструктура. Современным и~эффективным подходом к~решению 
-указанной задачи, используемым сегодня в~ведущих мировых научных центрах 
-данных (IRIS Data Management Center\footnote{{\sf http://service.iris.edu.}}, NASA 
-Coordinated Data Analysis System\footnote{{\sf 
-https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST.}}, UCAR Research Data 
-Archive\footnote{{\sf https://rda.ucar.edu/\#!apps\_api\_desc.}}), является создание  
-веб-сер\-ви\-сов~\cite{8-kor, 9-kor, 10-kor}. 
-
-Использование универсальных 
-стандартов и~протокола HTTP(s) позволяет с~минимальными временн$\acute{\mbox{ы}}$ми 
-затратами без внесения существенных изменений в~программный код систем 
-сформировать новые виды информационных продуктов, повысить 
-оперативность и~достоверность проводимых исследований.
-{\looseness=1
-
-} 
-     
-     На основе этих принципов и~с учетом особенностей рассматриваемых 
-прикладных ИС была предложена архитектура работы 
-сервиса и~разработан набор вспомогательных программных средств. 
-
-\vspace*{-2pt}
-
-\section{Архитектура и~принципы работы сервиса}
-
-\vspace*{-2pt}
-
-     Программной основой для реализации веб-сер\-ви\-са выступает ИС 
-<<Сигнал>>. Из баз данных (БД) ИС VOKKIA и~KVERT в~нее поступает справочная 
-информация об активных вулканах и~оперативные данные об их состоянии. 
-К~оперативной информации относятся Авиационные цветовые коды (АЦК)~--- 
-коды опасности вулканов для авиации, а также данные о пепловых выбросах, 
-содержащиеся в~оперативных VONA-со\-об\-ще\-ни\-ях~\cite{1-kor}. Передача 
-указанных данных организована посредством statement-based репликации 
-соответствующих таблиц БД, где система управления БД (СУБД) ИС VOKKIA и~KVERT 
-(MariaDB) является master-сер\-ве\-ром, а СУБД ИС <<Сигнал>> (MySQL)~--- 
-slave-сер\-ве\-ром (рис.~1).
-
-\begin{figure}[b] %fig1
-     \vspace*{-5pt}
- \begin{center}
- \mbox{%
- \epsfxsize=126.76mm 
- \epsfbox{kor-1.eps}
- }
-\end{center}
- \vspace*{-11pt}
-\Caption{Общая схема работы сервиса}
-\end{figure}
-
- Такой подход обладает следующими преимуществами:
-\begin{itemize}
-\item данные доступны сразу в~момент их публикации, не требуется 
-периодически проверять наличие новой информации;
-\item схема информационного взаимодействия серверов устойчива 
-к~перерывам в~работе каналов связи благодаря заложенным в~основу 
-MySQL-репликации алгоритмам;
-\item программная реализация не требует больших временн$\acute{\mbox{ы}}$х затрат 
-и~перерыва в~работе ИС.
-\end{itemize}
-
-     На slave-сервере ИС <<Сигнал>> исходные данные синхронизируются 
-с~промежуточной БД Kvert, содержащей таблицы volcanoes и~ash. 
-С~по\-мощью триггеров данные из нее передаются в~основную БД
-сервиса Signal, на основе которой осуществляется обработка поступающей 
-информации: изменение интервала фотосъемки вулкана в~зависимости от его 
-АЦК и~постановка задания на расчет траектории распространения пеплового 
-облака при извержении вулкана (рис.~2).
-
-\begin{figure} %fig2
- \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=125mm 
- \epsfbox{kor-2.eps}
- }
-\end{center}
- \vspace*{-11pt}
-\Caption{Схема данных для slave-сервера ИС <<Сигнал>>}
-\end{figure}
- 
-     При обновлении АЦК в~таблицy Signal.volcano\_codes добавляется 
-соответствующая запись. Идентификатор вулкана и~его АЦК передаются 
-триггером в~хранимую процедуру, выполняющую следующую 
-последовательность действий (рис.~3):
-     \begin{enumerate}[(1)]
-\item производится поиск всех видеокамер, осуществляющих наблюдение за 
-данным вулканом;
-\item для каждой видеокамеры по таблице volcano\_camera\_intervals 
-определяется интервал съемки, соответствующий данному АЦК;
-\item найденное значение интервала устанавливается в~качестве текущего 
-для данной камеры.
-\end{enumerate}
-
-
-
-     Связи между видеокамерами и~вулканами, за которыми ведется 
-наблюдение, определяются по таблице volcano\_history. Интервалы фотосъемки 
-изображений с~каждой камеры могут настраиваться как независимо для каждой 
-камеры (в~этом случае в~таблице volcano\_camera\_intervals поле code\_id 
-принимает значение~0), так и~глобально для каждого АЦК (в~этом случае 
-в~таблице volcano\_camera\_intervals поле object\_id принимает значение~0). 
-Значение интервала, установленное для камеры, имеет высший приоритет по 
-отношении к~глобальному значению, установленному для АЦК. 
-
-\begin{figure} %fig3
- \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=128mm 
- \epsfbox{kor-3.eps}
- }
-\end{center}
- \vspace*{-11pt}
-\Caption{Процедура БД Signal, управляющая расписанием сбора фотоснимков вулканов}
-\vspace*{-6pt}
-\end{figure}
-     
-Данные из сообщений VONA, содержащие основные характеристики каждого 
-извержения (дата и~время, длительность, высота пеплового облака и~т.\,п.), 
-передаются в~таблицу Kvert.ash, где на их основе для каждого события 
-формируются задания на моделирование траектории движения пеплового 
-облака. Задания представляют собой JSON-объ\-ек\-ты
-(JavaScript Object Notation), которые с~помощью UDF-рас\-ши\-ре\-ния для СУБД 
-MySQL\footnote{{\sf https://launchpad.net/gearman-mysql-udf.}} передаются на сервер очередей 
-Gearman\footnote{{\sf http://gearman.org.}}, где далее обрабатываются подсистемой моделирования ИС 
-<<Сигнал>>~\cite{8-kor}. Полученные результаты пуб\-ли\-ку\-ют\-ся в~сводных каталогах совместно со справочной, 
-оперативной и~инструментальной информацией, доступной через пользовательский интерфейс ИС <<Сигнал>>.
-     
-\section{Интерфейс для доступа к~данным }
-
-     Важной задачей веб-сервиса является организация удаленного доступа 
-к~консолидированному набору данных по вулканам и~результатам работы 
-специализированных подсистем ИС <<Сигнал>> для внешних пользователей, 
-в~роли которых выступают сторонние ИС. Интерфейс 
-взаимодействия с~ресурсами веб-сер\-ви\-са реализован в~соответствии 
-с~концепцией REST~\cite{9-kor} на основе фреймворка Yii2~\cite{10-kor}. 
-Работа с~ним осуществляется путем обращения по протоколу HTTP(S) к~адресу 
-{\sf http://api.signal.febras.net/$\langle$url$\rangle$}, где {\sf 
-$\langle$url$\rangle$}~--- относительный адрес, обозначающий вид 
-запрашиваемого набора данных. На данный момент в~таком формате доступна 
-информация, представленная в~табл.~2.
-     
-\begin{table}[b]\small %tabl2
-\vspace*{-12pt}
-\begin{center}
-\Caption{Виды наборов данных, предоставляемых веб-сервисом}
-\vspace*{2ex}
-
-\begin{tabular}{|l|l|}
-\hline
-\multicolumn{1}{|c|}{URL}&\multicolumn{1}{c|}{Набор данных}\\
-\hline
-/volcanoes&Общий список вулканов\\
-/volcanoes/\#id&Информация по вулкану с~идентификатором \#id\\
-/cameras&Общий список видеокамер\\
-/cameras/\#id&Информация по видеокамере с~идентификатором \#id\\
-/photos&Поиск фотоснимков вулканов\\
-/tasks&Каталог результатов моделирования\\
-/tasks/\#id&Информация о задаче с~идентификатором \#id\\
-\hline
-\end{tabular}
-\end{center}
-%\end{table}
-%\begin{table}\small %tabl3
-\begin{center}
-\Caption{Параметры запроса для поиска в~архиве фотоснимков}
-\vspace*{2ex}
-
-\begin{tabular}{|l|l|}
-\hline
-\multicolumn{1}{|c|}{Параметр}&\multicolumn{1}{c|}{Назначение}\\
-\hline
-volcano\_id&Список идентификаторов вулканов, разделенных запятыми\\
-\hline
-camera\_id&Список идентификаторов видеокамер, разделенных запятыми\\
-\hline
-time&\tabcolsep=0pt\begin{tabular}{l}
-Дата и~время, для которых ведется поиск,\\ задается в~формате YYYYMMDDHHIISS, 
-где\\
- YYYY~--- 4~цифры года,\\ MM~--- номер
- месяца с~ведущим нулем,\\ DD~--- день месяца 
-с~ведущим нулем,\\
- HH~--- часы с~ведущим нулем,\\ II~--- минуты с~ведущим нулем,\\
-  SS~---  секунды с~ведущим нулем\end{tabular}\\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-     При поиске фотоснимков также указываются параметры GET-запроса 
-(табл.~3).
-     
-
-
-     Поиск фотоснимков в~архиве ведется по заданным вулканам 
-и~видеокамерам для временного периода $[\mbox{time}\hm - 1{,}5~\mbox{ч}; 
-\mbox{time}\hm + 1{,}5~\mbox{ч}]$.
-     
-При успешном выполнении запроса результат возвращается в~формате JSON. 
-Он является текстовым, имеет простую (по сравнению, например, с~XML) 
-разметку, поддерживается большим числом языков программирования 
-и~программных библиотек. На рис.~4 представлены примеры взаимодействия 
-с~сервисом.
-
-
-
-     С применением разработанных интерфейсов реализовано взаимодействие 
-между ИС VolSatView и~<<Сигнал>>. Все доступные структурированные 
-наборы научных данных и~результаты работы специализированных подсистем 
-ИС <<Сигнал>> (см.\ табл.~2) передаются в~ИС VolSatView, где представляются 
-уже в~составе собственных пользовательских интерфейсов и~программных 
-решений. Это позволяет, в~част\-ности, проводить совместный анализ данных 
-результатов компьютерного моделирования траекторий распространения 
-пепловых облаков и~фактических данных наблюдений, полученных средствами 
-дистанционного зондирования Земли~\cite{7-kor, 8-kor}. 
-
-\begin{figure} %fig4
- \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=125mm 
- \epsfbox{kor-4.eps}
- }
-\end{center}
- \vspace*{-11pt}
-\Caption{Пример взаимодействия с~веб-сер\-ви\-сом для получения информации: 
-(\textit{а})~по объектам наблюдения; (\textit{б})~по сети наблюдений; 
-(\textit{в})~из архива 
-изображений}
-\vspace*{-6pt}
-\end{figure}
-
-\vspace*{-4pt}
-
-\section{Заключение}
-
-\vspace*{-2pt}
-
-     Разработанный RESTful веб-сервис позволил сформировать 
-универсальный инструмент для централизованного доступа к~разнородным 
-научным данным в~области исследования и~оперативного мониторинга 
-состояния вулканов Камчатки и~Северных Курил. В~рамках исследования были 
-реализованы про\-грам\-мные средства для обмена данными и~работы с~ресурсами 
-ведущих специализированных ИС. Это позволило 
-расширить качественные и~количественные возможности прикладных систем, 
-создать новые средства для совместного анализа результатов обработки 
-различных видов оперативных наблюдений и~справочной информации.
-     
-     Дальнейшее развитие веб-сервиса связано с~подключением новых 
-источников данных, содержащих информацию о результатах исследований 
-вулканов Камчатки и~Северных Курил, а также с~внедрением новых средств 
-обработки и~представления инструментальных данных. 
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-\bibitem{1-kor}
-\Au{Гордеев Е.\,И., Гирина О.\,А.}
-Вулканы и их опасность для авиации~/\!\!/
-Вестник РАН, 2014. Т.~84. №\,2. С.~134.
- doi: 10.7868\!/\!S0869587314020121.
- 
-
-\bibitem{2-kor}
-\Au{Сорокин~А.\,А., Макогонов~С.\,В., Королев~С.\,П.}
-Информационная инфраструктура для коллективной работы ученых Дальнего 
-Востока России~/\!\!/
-Научно-тех\-ни\-че\-ская информация. Сер.~1: 
-Организация и методика информационной работы, 2017.
- №\,12. С.~14--16.
- 
-
-\bibitem{3-kor}
-\Au{Романова И.\,М., Гирина О.\,А., Максимов~А.\,П., Мелекесцев~И.\,В.} Создание 
-комплексной информационной веб-сис\-те\-мы <<Вулканы Ку\-ри\-ло-Кам\-чат\-ской 
-островной дуги>> (VOKKIA)~/\!\!/ Информатика и~системы управления, 2012. №\,3(33). 
-С.~179--187.
-\bibitem{4-kor}
-\Au{Гирина О.\,А., Гордеев~Е.\,И.} Проект KVERT~--- снижение вулканической опас\-ности 
-для авиации при эксплозивных извержениях вулканов Камчатки и~Северных Курил~/\!\!/ 
-Вестник ДВО РАН, 2007. №\,2. С.~100--109.
-\bibitem{5-kor}
-\Au{Королёв С.\,П., Сорокин~А.\,А., Верхотуров~А.\,Л., 
-Коновалов~А.\,В., Шестаков~Н.\,В.}
-Автоматизированная информационная система для работы с инструментальными
- данными региональной сети сейсмологических наблюдений ДВО РАН~/\!\!/   
-Сейсмические приборы, 2014.
-Т.~50. №\,3. С.~30--41.
- 
-
-\bibitem{6-kor}
-\Au{Sorokin A.\,A., Korolev~S.\,P., Romanova~I.\,M., Girina~O.\,A., Urmanov~I.\,P.} The 
-Kamchatka volcano video monitoring system~/\!\!/ 6th Workshop (International) on Computer 
-Science and Engineering.~--- Tokyo, Japan, 2016. P.~734--737.
-\bibitem{7-kor}
-\Au{Гордеев Е.\,И., Гирина~О.\,А., Лупян~Е.\,А., Сорокин~А.\,А., 
-Крамарева~Л.\,С., Ефремов~В.\,Ю., Кашницкий~А.\,В., Уваров~И.\,А., 
-Бурцев~М.\,А., Романова~И.\,М., Мельников~Д.\,В., Маневич~А.\,Г., 
-Королев~С.\,П., Верхотуров~А.\,Л.}
-Информационная система VOLSATVIEW для решения 
-задач мониторинга вулканической активности Камчатки и~Курил~/\!\!/
- Вулканология и сейсмология, 2016.
-№\,6. С.~62--77.
- doi: 10.7868\!/\!S0203030616060043.
- 
-\bibitem{9-kor}
-\Au{Richardson L., Amundsen~M., Ruby~S.} RESTful web APIs.~--- O'Reilly Media, 2013. 408~p.
-
-\bibitem{10-kor}
-\Au{Safronov M., Winesett~J.} Web application development with Yii2 and PHP.~--- Packt 
-Publishing, 2014. 406~p.
-
-
-
-\bibitem{8-kor}
-\Au{Сорокин А.\,А., Королев~С.\,П., Гирина~О.\,А., Балашов~И.\,В., Ефремов~В.\,Ю., 
-Романова~И.\,М., Мальковский~С.\,И.} Интегрированная программная платформа для 
-комплексного анализа распространения пепловых шлейфов при эксплозивных извержениях 
-вулканов Камчатки~/\!\!/ Современные проблемы дистанционного зондирования Земли из 
-космоса, 2016. Т.~13. №\,4. С.~9--19. doi:  
-10.21046\!/\!2070-7401-2016-13-12-9-19.
-
-        \end{thebibliography}
-} }
-
-
-\vspace*{-9pt}
-
-\hfill{\small\textit{Поступила в~редакцию 10.03.18}}
-
-
-
-
-%\vspace*{8pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-\newpage
-
-\vspace*{-28pt}
-
-%\hrule
-
-\vspace*{-3pt}
-
-
-
-\def\tit{SERVICE-ORIENTED INTERFACE TO~ACCESS SCIENTIFIC DATA 
-FOR~STUDY AND~STATE OPERATIONAL MONITORING 
-OF~VOLCANOES OF~KAMCHATKA AND~NORTHERN KURILES\\[-5pt]}
-
-\def\titkol{Service-oriented interface to~access scientific data 
-for study and~state % operational 
-monitoring} 
-%of~volcanoes of~Kamchatka and~Northern Kuriles}
-
-
-\def\aut{S.\,P.~Korolev$^1$, I.\,M.~Romanova$^2$, S.\,I.~Malkovsky$^1$, 
-and~A.\,A.~Sorokin$^1$\\[-5pt]}
-\def\autkol{S.\,P.~Korolev, I.\,M.~Romanova, S.\,I.~Malkovsky, 
-and~A.\,A.~Sorokin}
-
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-14pt}
-
-
-\noindent
-     $^1$Computing Center, Far Eastern Branch of the Russian Academy of Sciences,\linebreak 
-$\hphantom{^1}$65~Kim~U~Chen Str., Khabarovsk 680000, Russian Federation
-     
-     \noindent
-     $^2$Institute of Volcanology and Seismology, Far Eastern Branch of the Russian\linebreak 
-$\hphantom{^1}$Academy of Sciences, 9~Piip Blvd, Petropavlovsk-Kamchatsky 683006, 
-Russian\linebreak 
-$\hphantom{^1}$Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2018 vol~28 no\,2}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2018   vol~28   no\,2
-\hfill \textbf{\thepage}}}
-
- %\vspace*{-1pt}     
- 
-
-\Abste{On the territory of the Russian Far East, there are dozens of active volcanoes, 
-requiring continuous attention of scientists for analysis and control of their condition. 
-To provide solutions of various scientific problems, different information systems 
-were implemented. However, disunity of information systems and limited data 
-exchange between them limit the possibility of carrying out complex studies. This 
-may result in disastrous consequences for the population and different fields of 
-people's activities. The article describes the developed service-oriented software 
-interface that implements interaction between the main existing information systems. 
-The mutual use of accumulated sets of scientific data and processing instruments 
-improves research and operational monitoring of the state of volcanoes in Kamchatka 
-and Northern Kuriles.}
-
-
-\KWE{volcanoes of Kamchatka; volcano monitoring; Web services;  
-REST-service; data integration; databases}
-
-\DOI{10.14357\!/\!08696527180207}
-
-\vspace*{-16pt}
-
-\Ack
-
-\vspace*{-8pt}
-
-\noindent
-The work was supported by the Russian Foundation for
-Basic Research (grant No.\,16-37-00026~mol\_a) 
-and the Comprehensive Program of Basic Scientific Research 
-of the Far Eastern Branch of the Russian Academy of Sciences ``Far East'' 
-(project 18-5-091). To ensure the functioning of scientific information services, 
-the resources of the Datacenter of the Far Eastern Branch of the Russian 
-Academy of Sciences have been used.
-
- 
-\vspace*{-7pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-\vspace*{-2pt}
-
-\bibitem{1-kor-1}
-\Aue{Gordeev, E.\,I., and O.\,A.~Girina.} 2014. Volcanoes and their hazard to 
-aviation. \textit{Her. Rus. Acad. Sci.} 84(1):1--8. doi: 
-10.1134\!/\!S1019331614010079.
-\bibitem{2-kor-1}
-\Aue{Sorokin, A.\,A., S.\,I.~Makogonov, and S.\,P.~Korolev.} 2017. The 
-information infrastructure for collective scientific work in the Far East of Russia. 
-\textit{Scientific Technical Information Processing} 44(4):302--304. doi: 
-10.3103\!/\!S0147688217040153.
-\bibitem{3-kor-1}
-\Aue{Romanova, I.\,M., O.\,A.~Girina, A.\,P.~Maksimov, and I.\,V.~Melekestsev}. 
-2012. So\-zda\-nie kompleksnoy informatsionnoy veb-sistemy ``Vulkany 
-Kurilo-Kamchatskoy ost\-rov\-noy dugi'' (VOKKIA) [Creation of complex infomation 
-Web system ``Volcanoes of the Kurile-Kamchatka island arc'' (VOKKIA)]. 
-\textit{Informatika i~sistemy upravleniya} [Information Science and Control 
-Systems] 3(33):179--187.
-\bibitem{4-kor-1}
-\Aue{Girina, O.\,A., and E.\,I.~Gordeev.} 2007. Proekt KVERT~--- snizhenie 
-vulkanicheskoy opasnosti dlya aviatsii pri eksplozivnykh izverzheniyakh vulkanov 
-Kamchatki i~Severnykh Kuril [KVERT project: Reduction of volcanic hazards for 
-aviation from explosive eruptions of Kamchatka and Northern Kuriles volcanoes]. 
-\textit{Vestnik of the Far East Branch of the Russian Academy of Sciences} 2:100--109.
-\bibitem{5-kor-1}
-\Aue{Korolev, S.\,P., A.\,A.~Sorokin, A.\,L.~Verkhoturov, A.\,V.~Konovalov, and 
-N.\,V.~Shestakov.} 2015. Automated information system for instrument data 
-processing of the regional seismic observation network of FEB RAS. \textit{Seism. 
-Instr.} 51(3):209--218. doi: 10.3103\!/\!S0747923915030068.
-\bibitem{6-kor-1}
-\Aue{Sorokin, A.\,A., S.\,P.~Korolev, I.\,M.~Romanova, O.\,A.~Girina, and 
-I.\,P.~Urmanov.} 2016. The Kamchatka volcano video monitoring system. \textit{6th 
-Workshop (International) on Computer Science and Engineering}. Tokyo, Japan. 
-734--737.
-\bibitem{7-kor-1}
-\Aue{Gordeev, E.\,I., O.\,A.~Girina, E.\,A.~Lupyan, A.\,A.~Sorokin, 
-L.\,S.~Kramareva, V.\,Yu.~Efremov, A.\,V.~Kashnitskii, I.\,A.~Uvarov, 
-M.~Burtsev, I.\,M.~Romanova, D.\,V.~Mel'nikov, A.\,G.~Manevich, 
-S.\,P.~Korolev, and A.\,L.~Verkhoturov.} 2016. The VolSatView information 
-system for monitoring the volcanic activity in Kamchatka and on the Kuril 
-Islands. \textit{J.~Volcanol. Seismol.} 10(6):382--394. doi: 
-10.1134\!/ S074204631606004X.
-
-\bibitem{9-kor-1}
-\Aue{Richardson, L., M.~Amundsen, and S.~Ruby}. 2013. \textit{RESTful web 
-APIs}. O'Reilly Media. 408~p.
-\bibitem{10-kor-1}
-\Aue{Safronov, M., and J.~Winesett.} 2014. \textit{Web application development 
-with Yii2 and PHP}. Packt Publishing. 406~p.
-
-\bibitem{8-kor-1} %10
-\Aue{Sorokin, A.\,A., S.\,P.~Korolev, O.\,A.~Girina, I.\,V.~Balashov, 
-V.\,Yu.~Efremov, I.\,M.~Ro\-ma\-no\-va, and S.\,I.~Malkovsky.} 2016. Integrirovannaya 
-programmnaya platforma dlya kompleksnogo analiza rasprostraneniya peplovykh 
-shleyfov pri eksplozivnykh izverzheniyakh vulkanov Kamchatki [The integrated 
-software platform for a comprehensive analysis of ash plume propagation from 
-explosive eruptions of Kamchatka volcanoes]. \textit{Sovremennye problemy 
-distantsionnogo zondirovaniya Zemli iz kosmosa} [Current Problems in Remote 
-Sensing of the Earth from Space] 13(4):9--19. doi:  
-10.21046\!/\!2070-7401-2016-13-12-9-19.
-\end{thebibliography}
-} }
-
-
-\vspace*{-9pt}
-
-\hfill{\small\textit{Received March 10, 2018}}    
-
-\vspace*{-10pt}
-
-\Contr
-
-\vspace*{-4pt}
-
-\noindent
-\textbf{Korolev Sergey P.} (b.\ 1985)~--- scientist, Computing Center, Far Eastern 
-Branch of the Russian Academy of Sciences, 65~Kim~U~Chen Str., Khabarovsk 
-680000, Russian Federation; \mbox{serejk@febras.net}
-
-\vspace*{1pt}
-
-\noindent
-\textbf{Romanova Iraida M.} (b.\ 1961)~--- leading programmer, Institute of 
-Volcanology and Seismology, Far Eastern Branch of the Russian Academy of Sciences, 
-9~Piip Blvd, Petropavlovsk-Kamchatsky 683006, Russian Federation; 
-\mbox{roman@kscnet.ru}
-
-\vspace*{1pt}
-
-\noindent
-\textbf{Malkovsky Sergei I.} (b.\ 1983)~--- scientist, Computing Center, Far Eastern 
-Branch of the Russian Academy of Sciences, 65~Kim~U~Chen Str., Khabarovsk 
-680000, Russian Federation; \mbox{sergey.malkovsky@gmail.com}
-
-
-\vspace*{1pt}
-
-\noindent
-\textbf{Sorokin Aleksei A.} (b.\ 1980)~--- leading scientist, Computing Center, Far 
-Eastern Branch of the Russian Academy of Sciences, 65~Kim~U~Chen Str., Khabarovsk 
-680000, Russian Federation; \mbox{alsor@febras.net}
-
-
-\label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}

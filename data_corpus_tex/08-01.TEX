@@ -1,729 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-]{amsart}
-
-% {,}
-
-\newcommand{\SP}{\operatorname{Sp}}
-\newcommand{\Div}{\operatorname{div}}
-\newcommand{\tri}{| @!@!@!@!@! | @!@!@!@!@! |}
-\newcommand{\norme}[1]{\tri #1 \tri}
-\newcommand{\norm}[1]{\| #1 \|}
-\newcommand{\abs}[1]{| #1 |}
-\newcommand{\tts}[1]{}
-\renewcommand{\baselinestretch}{0.96}
-
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{64}
-\god{2005}
-\nomer{1~(512)} %                        Remove in Eng.
-%\nomer{Vol.\,49, No.\,1}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{519.635:539.319}
-
-\author{\it А.В.\,Музалевский, С.И.\,Репин}
-% NB:   ^^ remove in Eng.
-\title{Об оценках погрешности приближенных
-решений в задачах линейной теории термоупругости}
-\thanks{Работа выполнена при финансовой поддержке гранта Министерства
-образования и науки
-Российской Федерации (код проекта \No\,Е02-1.0-55).}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-
-
-
-\section{Введение}
-
-Многие реальные проблемы, возникающие в приложениях, приводят к
-сложным системам, которые могут включать дифференциальные,
-интегральные и алгебраические уравнения. Проблема контроля
-точности приближенных решений таких систем весьма сложна,
-поскольку каждая из входящих в систему переменных заключает в себе
-некоторую погрешность и тем самым индуцирует дополнительные ошибки
-в определении всех остальных переменных задачи. В данной
-статье рассмотрена одна из типичных задач такого класса, которая
-возникает при совместном анализе термических и силовых полей,
-образующихся в упругих телах при нагревании. Здесь температурные напряжения,
-определяющие дополнительные деформации и напряжения определяются из решения
-задачи теплопроводности, присоединенной к уравнениям теории
-упругости.
-
-Контроль точности приближенных решений является одной из важнейших задач
-вычислительной математики. Эту задачу можно решать как с помощью априорного,
-так и апостериорного подхода. Априорные оценки, как правило, требуют 
-дополнительной регулярности точного решения и имеют асимптотический 
-характер, т.\,е. показывают скорость убывания погрешности при уменьшении 
-характерного параметра сетки. Апостериорные оценки возникли несколько 
-позднее априорных в связи с необходимостью индикации распределения
-погрешности приближенного решения, построенного на конкретной сетке.
-Апостериорные индикаторы погрешности широко используются в современных 
-вычислительных программах основанных на принципе последовательной 
-адаптации сеток. Полное решение задачи апостериорного контроля требует 
-не только получения индикатора распределения погрешности, но и построения 
-гарантированной верхней границы ошибки аппроксимации в
-естественной (энергетической) норме.
-
-Апостериорные оценки ошибки для приближенных решений, полученных методом 
-конечных элементов, рассматривались многими авторами. Первым был предложен
-так называемый метод ``невязок'' (см., напр., \cite{AiOd}--\cite{Ve}), 
-который в дальнейшем получил широкое распространение.
-С математической точки зрения этот метод сводится к вычислению нормы 
-невязки соответствующего дифференциального уравнения в пространстве 
-распределений. Этот метод пригоден только для гал\"еркинских аппроксимаций. 
-Позднее для индикации распределения ошибок конечноэлементных решений
-был предложен метод осреднения градиента (см., напр.,
-\cite{Wa}, \cite{ZiZh1}). Этот метод также применим только для 
-гал\"еркинских аппроксимаций и требует повышенной регулярности точного
-решения задачи.
-
-Мажоранты энергетической нормы отклонения от точного решения, которые пригодны 
-для любых функций из энергетического класса, были получены в
-\cite{Re1}--\cite{Re3}. Эти мажоранты получены из общих методов 
-функционального анализа и теории двойственности для вариационного исчисления,
-поэтому их можно называть апостериорными оценками функционального типа. 
-Для задач линейной
-теории упругости они ранее изучались в работах \cite{MuRe}, \cite{Re3}.
-
-В данной работе этот подход используется для получения мажоранты 
-функционального типа для задач линейной теории термоупругости и проверяется
-его эффективность на серии тестовых примеров.
-
-
-\section{Вариационные постановки}
-
-Пусть $\Omega$ --- ограниченная связная область в ${\Bbb R}^n$ c
-липшицевой границей $\partial \Omega$, причем $\partial \Omega$
-состоит из двух непересекающихся частей $\partial_1 \Omega$ и
-$\partial_2 \Omega$.
-Классическая постановка краевой задачи теории термоупругости
-состоит в определении тензор-функции $\sigma$ и вектор-функции
-$u$, удовлетворяющих следующей системе уравнений:
-\begin{gather}
-\Div \sigma + f + f_T =0 \quad \text{в} \quad \Omega,
-\label{el1}\\
-%
-\sigma = {\Bbb L} \varepsilon (u) \quad \text{в} \quad \Omega,
-\label{oe1}\\
-%
-\varepsilon (u) = \frac{1}{2} (\nabla u + (\nabla u)^T), \\
-%
-u=u_0  \quad \text{на} \quad \partial_1\Omega, \\
-%
-\sigma\nu =F+F_T \quad \text{на} \quad \partial_2\Omega,
-\label{oe5}
-\end{gather}
-где $F$, $u_0$ --- заданные функции, определяющие краевые условия
-задачи упругости, $\varepsilon(u)$ обозначает тензор малых
-деформаций, $f$ --- заданная функция, определяющая объемные силы,
-$\nu$ --- внешняя нормаль к границе области,
-${\Bbb L}=\{{\Bbb L}_{ijkl}\}$ --- тензор упругих
-модулей, который должен удовлетворять условию
-\begin{equation*}
-c_1\abs{\varkappa}^2 \le {\Bbb L}\varkappa : \varkappa \le c_2\abs{\varkappa}^2
-\quad \forall \varkappa\in {\Bbb M}^{n\times n}_s
-%% \label{ineq:bfl}
-\end{equation*}
-и условиям симметричности
-$$
-{\Bbb L}_{ijkl}={\Bbb L}_{jikl}={\Bbb L}_{klij}\quad
-\forall i,j,k,l=1,\dotsc,n,
-$$
-а $f_T$, $F_T$ ---
-функции, связанные с тензором температурных деформаций
-$$
-\varepsilon_T =
-\begin{pmatrix}
-\alpha_{11} & 0  & 0 \\
-0 & \alpha_{22} & 0 \\
-0 & 0  & \alpha_{33}
-\end{pmatrix} (T-T_0)
-$$
-соотношениями (см., напр., \cite{TiGu}, с.\,458)
-$f_T=-\Div({\Bbb L}\varepsilon_T)$,
-$F_T={\Bbb L}\varepsilon_T$.
-Здесь $\alpha_{11}$, $\alpha_{22}$, $\alpha_{33}$ --- 
-коэффициенты температурного
-расширения по соответствующим координатным осям, $T_0$ --- отсчетная
-температура (т.\,е. температура, при которой отсутствуют температурные
-напряжения), а скалярная функция $T$ является решением задачи теплопроводности
-\begin{equation}\label{th1}
--\Delta T = q
-\end{equation}
-с граничными условиями
-\begin{equation}
-\label{th2}
-T=\theta_0\ \ \text{на}\ \ \partial_3\Omega, \quad
-\frac{\partial T}{\partial \nu} = Q \ \ \text{на} \ \ \partial_4\Omega.
-\end{equation}
-Здесь $q$ --- функция, определяющая тепловые источники в области $\Omega$,
-$\partial_3 \Omega$ и $\partial_4 \Omega$ --- две
-непересекающиеся части границы $\partial \Omega$, которые, вообще
-говоря, могут не совпадать с $\partial_1 \Omega$ и
-$\partial_2\Omega$, $\theta_0$, $Q$ --- заданные функции, определяющие
-соответственно заданную температуру на границе $\partial_3 \Omega$
-и тепловой поток через $\partial_4 \Omega$.
-
-Нетрудно видеть, что погрешности аппроксимации, возникающие в задаче
-(\ref{th1}), (\ref{th2}) вносят дополнительные погрешности в численное 
-решение основной задачи (\ref{el1})--(\ref{oe5}).
-Для того чтобы учесть суммарный эффект такого наложения ошибок, мы используем
-подход, отличный от того, что обычно используется для гал\"еркинских 
-аппроксимаций (см., напр., \cite{AiOd}--\cite{Ve}). Наш подход основан 
-на использовании апостериорных оценок функционального типа
-(см. \cite{Re3}, \cite{Re4}).
-
-Введем следующие обозначения:
-\begin{gather*}
-V_0=\{ u\in W_2^1(\Omega,{\Bbb R}^n) \mid u=0
-\ \text{на} \ \partial_1\Omega\},\\
-%
-U_0=\{ u\in W_2^1(\Omega) \mid u=0 \ \text{на} \ \partial_3\Omega\},\\
-%
-\norme{\varepsilon(u)}^2 =\int_{\Omega}
-{\Bbb L} \varepsilon (u) : \varepsilon(u) dx,
-\quad (\varepsilon, \tau) =\int_{\Omega}
-\varepsilon  : \tau\, dx,\\
-%
-V_0+u_0=\{ u\in W_2^1(\Omega,{\Bbb R}^n) \mid u=u_0 \ \text{на}\
-\partial_1\Omega\},\\
-%
-Y^*=L_2(\Omega,{\Bbb M}^{n\times n}_s).
-\end{gather*}
-Данная задача может быть сформулирована в виде двух вариационных проблем,
-которые будем называть задачами $\cal P$ и $\cal Q$.
-\medskip
-
-{\it Задача $\cal P$.} Найти элемент $u \in V_0+u_0$ такой, что
-$$
-J(u)= \inf_{v\in V_0+u_0} J(v),
-$$
-где
-$$
-J(v)=\frac{1}{2} \norme{\varepsilon(v)}^2-\int_{\Omega} (f+f_T)\cdot v \,dx
--\int_{\partial_2\Omega} (F+F_T) \cdot v \, d\Gamma.
-$$
-
-{\it Задача $\cal Q$.} Найти элемент $T \in U_0+\theta_0$ такой, что
-$$
-I(T)= \inf_{\theta\in U_0+\theta_0} I(\theta),
-$$
-где
-$$
-I(\theta)=\frac{1}{2} \norm{\nabla\theta}^2-\int_{\Omega} q \theta \,dx
--\int_{\partial_4\Omega} Q  \theta \, d\Gamma.
-$$
-Пусть $v\in V_0+u_0$ и $\theta \in U_0+\theta_0$ являются приближенными 
-решениями задачи термоупругости. Нашей задачей является получение 
-апостериорной оценки для $u-v$.
-
-Методика получения апостериорных оценок в энергетических нормах для широкого
-класса эллиптических краевых задач предложена в \cite{Re3}, \cite{Re4}. 
-Для задач линейной упругости эти оценки изучались в \cite{MuRe}, где 
-было продемонстрировано
-их эффективное использование в практических вычислениях.
-
-Если положить $F_T\equiv 0$ и $f_T\equiv 0$, то оценка
-для получившейся задачи теории упругости может быть
-записана в следующем виде:
-\begin{multline}
-\frac{1}{2}\norme{\varepsilon(v-u)}^2 \le
-{\cal M}^{(1)}_\oplus(v,\beta,\tau) =
-\frac{1+\beta}{2}
-\big(\varepsilon(v) -{\Bbb L}^{-1}\tau, {\Bbb
-L}\varepsilon(v) - \tau\big) +\\
-%
-+\frac{1}{2}\bigg(1+\frac{1}{\beta} \bigg) C_{1\Omega}^2
-(\norm{\Div \tau + f}^2_{\Omega} +
-\norm{F-\tau\nu}^2_{\partial_2\Omega}).
-\label{mpluse}
-\end{multline}
-Здесь $\tau \in Y^*$ и $\beta>0$ --- произвольные параметры, а
-$C_{1\Omega}$ --- константа, определяемая неравенством
-\begin{equation}
-\label{ineq:c1}
-\norm{w}^2_{\Omega}  + \norm{w}^2_{\partial_2\Omega}
-\le C_{1\Omega}^2 \norme{\varepsilon(w)}^2 \quad \forall w\in V_0.
-\end{equation}
-
-В свою очередь оценка для задачи теплопроводности выглядит
-следующим образом:
-\begin{multline}
-\frac{1}{2}\norm{\nabla(\theta-T)}^2_{\Omega} \le
-{\cal M}^{(2)}_\oplus(\theta,\beta,y) =
-\frac{1+\beta}{2} (\nabla \theta - y,
-\nabla \theta - y ) +\\
-%
-+\frac{1}{2} \bigg(1+\frac{1}{\beta} \bigg)
-C_{2\Omega}^2 \bigg(\norm{\Div y + q}^2_{\Omega} +
-\norm{\frac{\partial y}{\partial \nu} - Q}^2_{\partial_4\Omega} \bigg),
-\label{mplust}
-\end{multline}
-где $y\in L_2(\Omega,{\Bbb R}^n)$ и $\beta>0$ --- произвольные
-параметры, а $C_{2\Omega}$ --- константа, определяемая аналогичным
-(\ref{ineq:c1}) неравенством
-\begin{equation*}
-%% \label{ineq:c2}
-\norm{w}^2_{\Omega}  + \norm{w}^2_{\partial_4\Omega}
-\le C_{2\Omega}^2 \norm{\nabla w}^2_{\Omega} \quad \forall w\in U_0.
-\end{equation*}
-
-Заметим, что если $\partial_4\Omega=\emptyset$, то константа $C_{2\Omega}$
-является константой в неравенстве Фридрихса. В этом случае ее можно
-оценить аналитически как
-$$
-C_{2\Omega}\le \frac{l}{\sqrt{2}\pi},
-$$
-где $l$ --- сторона квадрата, охватывающего область $\Omega$.
-
-
-В \cite{Re3} было показано, что, во-первых, последовательность этих оценок,
-полученная путем решения только конечномерных задач, будет
-сходиться к точной оценке с увеличением размерности
-соответствующих конечномерных пространств, и, во-вторых,
-выбором свободных переменных $\beta$ и $\tau$ (или
-соответственно $\beta$ и $y$) можно получить
-равенство оценки точной величине отклонения.
-
-В следующем параграфе данные оценки используются для построения апостериорной
-оценки в термоупругой задаче.
-
-
-\section{Оценки отклонения от точного решения в энергетической норме}
-
-Применив оценку (\ref{mpluse}), приходим к неравенству
-\begin{multline}
-\frac{1}{2}\norme{\varepsilon(v-u)}^2 \le \frac{1+\beta_1}{2}
-\big(\varepsilon(v) -{\Bbb L}^{-1}\tau, {\Bbb
-L}\varepsilon(v) - \tau\big) +\\
-%
-+\frac{1}{2}\bigg(1+\frac{1}{\beta_1} \bigg) C_{1\Omega}^2
-(\norm{\Div \tau + f + f_T}^2_{\Omega} +
-\norm{F+F_T-\tau\nu}^2_{\partial_2\Omega}),
-\label{mplus1}
-\end{multline}
-которое справедливо для любых $\tau \in Y^*$ и $\beta_1>0$.
-Заметим, что в правую часть (\ref{mplus1}) входят неизвестные
-величины $f_T$, $F_T$, которые зависят от точного решения задачи
-теплопроводности. Слагаемые, включающие в себя неизвестные величины,
-можно оценить через неравенства
-\begin{gather*}
-\norm{\Div \tau + f + f_T}^2_{\Omega}\le 
-(1+\beta_2) \norm{\Div \tau + f + f_{\theta}}^2_{\Omega}
-+\bigg(1+\frac{1}{\beta_2}\bigg)
-\norm{f_T-f_\theta}^2_\Omega,\\
-%
-\norm{F+F_T-\tau\nu}^2_{\partial_2\Omega} \le 
-(1+\beta_3) \norm{F+F_\theta-\tau\nu}^2_{\partial_2\Omega}
-+\bigg(1+\frac{1}{\beta_3}\bigg)
-\norm{F_T-F_\theta}^2_{\partial_2\Omega},
-\end{gather*}
-верные для любых положительных $\beta_2$ и $\beta_3$.
-
-Теперь необходимо оценить величины $\norm{f_T-f_\theta}^2_\Omega$ и
-$\norm{F_T-F_\theta}^2_{\partial_2\Omega}$, где
-$$
-f_\theta = -\Div \left(\Bbb L
-\begin{pmatrix}
-\alpha_{11} & 0  & 0 \\
-0 & \alpha_{22} & 0 \\
-0 & 0  & \alpha_{33}
-\end{pmatrix} (\theta-T_0)\right),\quad
-F_\theta = \Bbb L
-\begin{pmatrix}
-\alpha_{11} & 0  & 0 \\
-0 & \alpha_{22} & 0 \\
-0 & 0  & \alpha_{33}
-\end{pmatrix} (\theta-T_0).
-$$
-Заметим, что ошибки в силовых добавках удобно будет оценить
-через $\norm{\nabla(\theta-T)}_\Omega$, поскольку оценка этой
-ошибки уже известна как ошибка задачи теплопроводности (\ref{mplust}).
-Рассмотрим неравенства
-$$
-\norm{f_T-f_\theta}_\Omega \le
-C_{3\Omega} \norm{\nabla(\theta-T)}_\Omega, \quad
-\norm{F_T-F_\theta}_{\partial_2\Omega} \le
-C_{4\Omega} \norm{\nabla(\theta-T)}_\Omega.
-$$
-Здесь $C_{3\Omega}$ --- константа, зависящая от термоупругих свойств
-среды, которая может быть получена просто из выражения для $f_\theta$.
-Действительно, обозначив
-$$
-\xi=
-\begin{pmatrix}
-\alpha_{11} & 0  & 0 \\
-0 & \alpha_{22} & 0 \\
-0 & 0  & \alpha_{33}
-\end{pmatrix},
-$$
-получим
-$f_\theta = -\Div (\Bbb L \xi)(\theta-T_0)- (\Bbb L \xi) \nabla\theta$.
-Откуда
-$$
-\norm{f_T-f_\theta}_\Omega \le\sup\limits_\Omega
-\abs{\Div(\Bbb L \xi)}\,\norm{\theta-T}+
-\sup\limits_\Omega\abs{\Bbb L \xi}\,\norm{\nabla(\theta-T)}
-\ \ \text{и} \ \
-C_{3\Omega}=C_\Omega\sup\limits_\Omega
-\abs{\Div(\Bbb L \xi)}+\sup\limits_\Omega\abs{\Bbb L \xi},
-$$
-где $C_\Omega$ --- константа в неравенстве Фридрихса.
-Очевидно, в случае изотропной модели среды, константа $C_{3\Omega}$
-не зависит от $\Omega$. С другой стороны,
-$$
-C_{4\Omega}=\widehat C_{4\Omega} \sup_\Omega\abs{\Bbb L \xi},
-$$
-где $\widehat C_{4\Omega}$ является нормой оператора следа на
-$\partial_2\Omega$,
-$$
-\norm{\varphi}_{\partial_2\Omega} \le
-\widehat C_{4\Omega} \norm{\nabla\varphi}_\Omega \quad
-\forall \varphi\in W_1^2(\Omega).
-$$
-
-Собирая все оценки вместе, получим неравенство
-\begin{multline*}
-\frac{1}{2}\norme{\varepsilon(v-u)}^2 \le
-{\cal M}^{(3)}_\oplus(v,\theta,\tau,y,\beta_1,\beta_2,\beta_3,\beta_4)=\\
-%
-=\frac{1}{2}(1+\beta_1) \big(\varepsilon(v) -{\Bbb
-L}^{-1}\tau, {\Bbb L}\varepsilon(v) - \tau\big)+\\
-%
-+\frac{1}{2}\left(1+\frac{1}{\beta_1}\right) C_{1\Omega}^2 \Bigg[
-(1+\beta_2)\norm{\Div \tau + f + f_\theta}^2_{\Omega}+
-(1+\beta_3)\norm{F+F_\theta-\tau\nu}^2_{\partial_2\Omega} +\\
-%
-+\bigg(C_{3\Omega}^2\bigg(1+\frac{1}{\beta_2}\bigg)
-+C_{4\Omega}^2\bigg(1+\frac{1}{\beta_3}\bigg)\bigg) \bigg[
-(1+\beta_4) \norm{\nabla \theta - y}^2 +\\
-%
-+\bigg(1+\frac{1}{\beta_4} \bigg) C_{2\Omega}^2
-\bigg(\norm{\Div y + q}^2_{\Omega} + \bigg\|\frac{\partial
-y}{\partial \nu} - Q\bigg\|^2_{\partial_4\Omega} \bigg)\bigg]\Bigg],
-\end{multline*}
-которое верно для любых $\tau\in Y^*$, $y\in L_2(\Omega,{\Bbb R}^n)$
-и любых положительных $\beta_1$, $\beta_2$, $\beta_3$, $\beta_4$.
-
-Если задача термоупругости ставится при
-$\partial \Omega_2 =\emptyset$, $\partial\Omega_4=\emptyset$, то
-выражение для мажоранты упрощается, т.\,к. пропадают слагаемые, отвечающие за
-ошибки на границе. В этом случае соответствующая оценка имеет вид
-\begin{gather*}
-\frac{1}{2}\norme{\varepsilon(v-u)}^2 \le
-{\cal M}^{(4)}_\oplus(v,\theta,\tau,y,\beta_1,\beta_2,\beta_3)=
-\frac{1}{2}(1+\beta_1)
-\big(\varepsilon(v) -{\Bbb L}^{-1}\tau,
-{\Bbb L}\varepsilon(v) - \tau\big)+\\
-%
-+\frac{1}{2}\bigg(1+\frac{1}{\beta_1}\bigg) C_{1\Omega}^2 \Bigg[
-(1+\beta_2)\norm{\Div \tau + f + f_\theta}^2_{\Omega}+ \\
-%
-+C_{3\Omega}^2 \bigg(1+\frac{1}{\beta_2}\bigg)
-\bigg[ (1+\beta_3) \norm{\nabla \theta - y}^2
-+ \bigg(1+\frac{1}{\beta_3} \bigg)
-C_{2\Omega}^2 (\norm{\Div y + q}^2_{\Omega}
-)\bigg]\Bigg].
-\end{gather*}
-
-
-\section{Оценки для изотропной модели}
-
-Для трехмерной изотропной модели линейной теории упругости
-тензор упругих постоянных ${\Bbb L}$ определяется двумя постоянными
-$K_0$ и $\mu$, которые называются соответственно модулями
-объемного сжатия и сдвига. В этом случае
-определяющие соотношения (\ref{oe1}) имеют вид
-\begin{equation*}
-\varepsilon (u)=\frac{1}{9 K_0}\SP\sigma {\bold 1}
-+ \frac{1}{2\mu} \sigma^D
-\end{equation*}
-или
-$$
-\varepsilon (u)=\frac{1-2\nu}{3E} \SP\sigma {\bold 1}
-+ \frac{1+\nu}{E} \sigma^D,
-$$
-где $\bold 1$ --- единичный тензор, $\SP\sigma := {\bold 1} : \sigma$
---- след тензора, $\sigma^D=\sigma-\frac{1}{3} {\bold 1} \SP\sigma$
---- девиатор тензора $\sigma$,
-а $E$, $\nu$ --- часто используемые в прикладных задачах параметры,
-определяющие упругие свойства среды (модуль Юнга и
-коэффициент Пуассона). Они связаны с $K_0$ и $\mu$ соотношениями
-$$
-K_0=\frac{E}{3(1-2\nu)}, \quad \mu = \frac{E}{2(1+\nu)}.
-$$
-Для изотропного тела $\alpha_{ii}=\alpha$, $i=1,2,3$,
-$$
-f_T=-\frac{\alpha E}{1-2\nu} \nabla T, \quad
-F_T=\frac{\alpha E}{1-2\nu} (T-T_0).
-$$
-Введем обозначение $\beta=\frac{\alpha E}{1-2\nu}$,
-тогда, принимая во внимание определяющие соотношения
-$$
-{\Bbb L}\varepsilon=K_0 \SP\varepsilon {\bold 1}+ 2\mu \varepsilon^D,
-$$
-получим $C_{3\Omega}=\sup\limits_\Omega\abs{{\Bbb L}\xi}=\beta$,
-$C_{4\Omega}=\widehat C_{4\Omega} \beta$.
-Oценку (\ref{mplus1}) можно записать в виде
-\begin{gather*}
-\frac{1}{2}\norme{\varepsilon(v-u)}^2 \le
-{\cal M}_\oplus(v,\theta,\tau,y,\beta_1,\beta_2,\beta_3,\beta_4)= 
-\frac{1}{2}(1+\beta_1)
-\big(\varepsilon(v) -{\Bbb L}^{-1}\tau,
-{\Bbb L}\varepsilon(v) - \tau\big)+ \\
-%
-+\frac{1}{2}\bigg(1+\frac{1}{\beta_1}\bigg) C_{1\Omega}^2 \Bigg[
-(1+\beta_2)\norm{\Div \tau + f - \beta\nabla\theta}^2_{\Omega}+ 
-(1+\beta_3)\norm{F+\beta(\theta-T_0)-\tau\nu}^2_{\partial_2\Omega} + \\
-%
-+\beta^2\bigg(\bigg(1\!+\!\frac{1}{\beta_2}\bigg)
-+\widehat C_{4\Omega}^2 \bigg(1\!+\!\frac{1}{\beta_3}\bigg)\bigg)
-\bigg[ (1\!+\!\beta_4) \norm{\nabla t\! -\! y}^2\!+\!
-%%%%%%%% pay attn to \! and extra line
-\bigg(1\!+\!\frac{1}{\beta_4} \bigg)
-C_{2\Omega}^2 \bigg(\norm{\Div y\!+\!q}^2_{\Omega}\!+\!
-\bigg\|\frac{\partial y}{\partial \nu}\!-\!Q\bigg\|^2_{\partial_4\Omega}
-\bigg)\bigg]\Bigg].
-\end{gather*}
-Здесь $\tau\in Y^*$ --- произвольная тензор-функция,
-$y\in L_2(\Omega,{\Bbb R}^n)$ --- произвольная вектор-функция,
-$\beta_1$, $\beta_2$, $\beta_3$, $\beta_4$ --- положительные константы.
-Заметим, что эта оценка обращается в нуль только тогда, когда
-$v=u$ и $\theta=T$, т.\,е. для точного решения задачи теплопроводности.
-Также обратим внимание, что оценку легко разбить на слагаемые, каждое
-из которых отвечает за ошибки в разных уравнениях классической постановки,
-т.\,е. первое слагаемое отвечает за ошибку в определяющих соотношениях,
-второе и третье --- за ошибки в силовых условиях, четвертое, пятое и шестое
---- за ошибки в задаче теплопроводности.
-
-Для первой краевой задачи термоупругости, которая получается при
-$\partial \Omega_2 =\emptyset$ и $\partial\Omega_4=\emptyset$,
-выражение для мажоранты упрощается. В этом случае
-\begin{gather*}
-\frac{1}{2}\norme{\varepsilon(v-u)}^2 \le
-{\cal M}_\oplus(v,\theta,\tau,y,\beta_1,\beta_2,\beta_3)=
-\frac{1}{2}(1+\beta_1)
-\big(\varepsilon(v) -{\Bbb L}^{-1}\tau,
-{\Bbb L}\varepsilon(v) - \tau\big)+ \\
-%
-+\frac{1}{2}\bigg(1+\frac{1}{\beta_1}\bigg) C_{1\Omega}^2 \Bigg[
-(1+\beta_2)\norm{\Div \tau + f - \beta \nabla \theta}^2_{\Omega}+\\
-%
-+\beta^2 \bigg(1+\frac{1}{\beta_2}\bigg)
-\bigg[ (1+\beta_3) \norm{\nabla \theta - y}^2
-+ \bigg(1+\frac{1}{\beta_3} \bigg)
-C_{2\Omega}^2 (\norm{\Div y + q}^2_{\Omega}
-)\bigg]\Bigg].
-\end{gather*}
-
-
-\section{Численные эксперименты}
-
-Полученные выше оценки были использованы для анализа качества приближенных 
-решений ряда задач термоупругости. Ниже мы приводим
-некоторые из полученных результатов, в которых расчеты
-производились для модели плоского напряженного состояния
-с постоянными $E=4$, $\nu=0{,}3$ и $\alpha=1$.
-
-Качество получаемых оценок принято
-оценивать при помощи так называемого индекса эффективности
-$I_{\text{eff}}$, который определяется следующим образом:
-$$
-I_{\text{eff}}^2=\frac{2 {\cal M}_\oplus(v,\theta,\tau,y,\beta_1,\beta_2,
-\beta_3)}{\norme{\varepsilon(v-u)}^2}.
-$$
-Ясно, что чем ближе $I_{\text{eff}}$ к единице, тем выше качество
-полученной оценки.
-
-
-Для последующей адаптации сетки важно
-знать не только интегральное значение мажоранты, но и величину
-вклада в него на каждом элементе разбиения. Так как мажоранта
-${\cal M}_\oplus (v,\beta,\tau)$ представляет собой
-интеграл, то возникает вопрос о том, насколько хорошо соответствующие
-подинтегральные выражения воспроизводят локальное распределение
-ошибок по области $\Omega$. Этот вопрос также исследовался в
-приведенных ниже экспериментах.
-
-
-\begin{exam}
-Рассматривается задача в квадрате $(0,1)\times (0,1)$.
-
-В табл.~1 приведены соответствующие результаты. Здесь
-$N_{\text{elm}}$ обозначает число
-элементов в триангуляции,
-$M_\oplus$ --- значение мажоранты, полученной в результате численного
-эксперимента, $M^{(1)}$, $M^{(2)}$, $M^{(3)}$ --- вклады в мажоранту
-ошибки в определяющих соотношениях, ошибки в уравнениях равновесия и ошибки
-задачи теплопроводности соответственно,
-$I_{\text{eff}}$ --- индекс эффективности.
-На рис.\,1 приведены трехмерные гистограммы точной ошибки и
-мажоранты ($N_{\text{elm}}=312$).
-\smallskip
-
-\begin{center}
-Таблица 1. Результаты для примера 1
-\smallskip
-
-\begin{tabular}{|c|c|c|c|c|c|c|}
-\hline
-$N_{\text{elm}}$ & $M^{(1)}$ & $M^{(2)}$
-& $M^{(3)}$ & $M_\oplus$ & $\frac{1}{2}\norme{\varepsilon(v-u)}^2$
-& $I_{\text{eff}}$ \\ \hline
-84 & 0,003110 & 0,001457 & 0,001447 & 0,006015 & 0,001274 & 2,17 \\ \hline
-312 & 0,000911 & 0,000542 & 0,000443 & 0,001896 & 0,000369 & 2,26 \\ \hline
-1372 & 0,000187 & 0,000110 & 0,000087 & 0,000384 & 0,000084 & 2,13 \\ \hline
-5458 & 0,000047 & 0,000029 & 0,000021 & 0,000097 & 0,000021 & 2,14 \\ \hline
-\end{tabular}
-\end{center}
-
-\begin{center}
-\unitlength=1mm
-\begin{picture}(170,166) %% width, heigth, added 5 mm for signature
-\put(27,166){\special {em:graph mz-pic1.bmp}} %% left X, upper Y, -, /2, +toX
-\put(80,0){\mbox Рис.\,1}
-\end{picture}
-\end{center}
-\end{exam}
-
-\begin{exam}
-Пусть $\Omega$ представляет собой область
-$(-1,1)\times (-1,1)$, в которой сделаны боковые
-треугольные вырезы. Численное моделирование производилось для
-одной четвертой этой области.
-
-Соответствующие результаты приведены в табл.~2. На рис.\;2
-приведены трехмерные гистограммы точной ошибки и
-мажоранты ($N_{\text{elm}}=286$) для задачи термоупругости.
-\smallskip
-
-\begin{center}
-Таблица 2. Результаты для примера 2
-\smallskip
-
-\begin{tabular}{|c|c|c|c|}
-\hline
-$N_{\text{elm}}$ & $M_\oplus$ &
-$\frac{1}{2}\norme{\varepsilon(v-u)}^2$ & $I_{\text{eff}}$ \\ \hline
-82  & 0,00348 & 0,00154 & 1,50 \\ \hline
-286  & 0,00130 & 0,00042 & 1,76 \\ \hline
-1131 & 0,00050 & 0,00012 & 2,03 \\ \hline
-\end{tabular}
-\end{center}
-
-\begin{center}
-\unitlength=1mm
-\begin{picture}(170,170) %% width, heigth, added 5 mm for signature
-\put(29,170){\special {em:graph mz-pic2.bmp}} %% left X, upper Y, -, /2, +toX
-\put(80,0){\mbox Рис.\,2}
-\end{picture}
-\end{center}
-
-%\begin{center}
-%\unitlength=1mm
-%\begin{picture}(170,116) %% width, heigth, added 5 mm for signature
-% \put(2,116){\special {em:graph fig4.bmp}} %% left X, upper Y, -, /2, +toX
-%\put(80,0){\mbox Рис.\,2}
-%\end{picture}
-%\end{center}
-
-Из этих результатов видно, что функционал $M_\oplus$ дает
-хорошие оценки величины погрешности,
-а интегранд мажоранты достаточно точно воспроизводит распределение
-ошибки по области.
-\end{exam}
-
-
-\begin{thebibliography}{393}
-
-\bibitem{AiOd} %1
-Ainsworth M., Oden J.T. {\em A posteriori error estimation in finite element 
-analysis}. -- John Wiley \& Sons, Inc., 2000. -- 264 p.
-
-\bibitem{BaSt} %2
-Babu\v ska I., Strouboulis T. {\em The finite element method and its
-reliability}. --
-Oxford University Press Inc., New York, 2001. -- 736 p.
-
-\bibitem{Ve} %3
-Verf\"urth R. {\em A review of a posteriori error estimation and adaptive
-mesh-refinement techniques}. -- Wiley--Teubner, 1996. -- 127 p. %% (+vi)
-
-\bibitem{Wa} %4
-Wahlbin L.B. {\em Superconvergence in Galerkin finite element methods} //
-Lect. Notes Math., Springer-Verlag. -- 1995. -- V.\,1605.
-
-\bibitem{ZiZh1} %5
-Zienkeiewicz O.C., Zhu J.Z. {\em A simple error estimator and adaptive 
-procedure for practical engineering analysis} //
-Internat. J. Numer. Methods Engrg. -- 1987. -- Т.\,24. -- С.\,337--357.
-
-\bibitem{Re1} %6
-Repin S. {\em A posteriori error estimation for nonlinear variational
-problems by duality theory} // Zapiski Nauchnych Seminarov
-V.A.\,Steklov Math. Inst. in
-St.-Petersburg. -- 1997. -- Т.\,243. -- С.\,201--214.
-
-\bibitem{Re2} %7
-Repin S. {\em A posteriori error estimation for variational problems
-with uniformly convex functionals} // Math. Comput. -- 2000. --
-Т.\,69. -- С.\,481--500.
-
-\bibitem{Re3} %8
-Репин С.И. {\em Двусторонние оценки отклонения от точного
-решения для равномерно эллиптических уравнений} //
-Тр. Санкт-Петерб. матем. о-ва. -- 2001. -- Т.\,9. -- С.\,148--179.
-
-\bibitem{MuRe} %9
-Muzalevsky A.V., Repin S.I. {\em On two-sided error estimates
-for approximate solutions of problems in the linear theory
-of elasticity} // Russ. J. Numer. Anal. Math. Modelling. --
-2003. -- Т.\,18. -- С.\,65--85.
-
-\bibitem{TiGu} %10
-Тимошенко С.П., Гудьер Дж. {\em Теория упругости}. -- М.: Наука, 1979.
--- 576 с.
-
-\bibitem{Re4} %11
-Repin S. {\em A unified approach to a posteriori error estimation based 
-on duality error majorants} // Math. Comput. Simul. -- 1999. --
-Т.\,50. -- С.\,305--321.
-
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Санкт-Петербургский государственный}{\it Поступила}
-\post{\it технический университет}{17.09.2004}
-\smallskip
-\post{\it Санкт-Петербургское отделение}{}
-\post{\it математического института им. В.А.\,Стеклова}{}
-\post{\it Российской Академии наук}{}
-
-\label{end}
-\end{document}
-
-
-195251, С.-Петербург, Политехническая 29}
-%\email{ alxmuz@mail.ru, muz@amd.stu.neva.ru}
-% phone  (812) 552-85-92
-
-191011, С.-Петербург, Фонтанка, 27}
-%\email{repin@pdmi.ras.ru}
-% phone  (812) 535-34-47
-
-
-

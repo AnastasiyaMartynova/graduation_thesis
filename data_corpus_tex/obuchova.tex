@@ -1,1050 +1,0 @@
-\def\stat{obuh}
-
-\def\tit{ТЕХНОЛОГИЯ ПРЕДОТВРАЩЕНИЯ ДУБЛИРОВАНИЯ БИБЛИОГРАФИЧЕСКИХ
-ОПИСАНИЙ В~БАЗЕ ДАННЫХ НАУЧНЫХ ПУБЛИКАЦИЙ БИАС ИПИ РАН}
-
-\def\titkol{Технология предотвращения дублирования БО %библиографических описаний
-в~БД %базе данных  научных публикаций
-БИАС ИПИ РАН}
-
-\def\autkol{М.\,Ю.~Заикин, В.\,С.~Долгополов, О.\,Л.~Обухова,
-И.\,В.~Соловьев}
-
-\def\aut{М.\,Ю.~Заикин$^1$, В.\,С.~Долгополов$^2$, О.\,Л.~Обухова$^3$,
-И.\,В.~Соловьев$^4$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-%\footnotetext[1]
-%{Статья рекомендована к~публикации в~журнале Программным комитетом конференции <<Tools \& Methods
-%of Program Analysis>> (<<Инструменты и~методы анализа программ>>, TMPA-2014),
-%г.~Кострома,  14--15~ноября 2014~г.}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского центра <<Информатика
-и~управление>> Российской академии наук, maxim@amsd.com}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управление>> Российской академии наук,
-slava@amsd.com}
-\footnotetext[3]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управление>> Российской академии наук,
-obuhova@amsd.com}
-\footnotetext[4]{Институт проблем информатики Федерального исследовательского центра <<Информатика и~управление>> Российской академии
-наук,  soloviev@amsd.com}
-
-\vspace*{-6pt}
-
-
-\label{st\stat}
-
-                  \thispagestyle{headings}
-
-
-  \Abst{Представлена технология предотвращения дублирования
-биб\-лио\-графических описаний (БО), разработанная для научной базы данных (БД)
-библиографической информационно-ана\-ли\-ти\-че\-ской системы (БИАС)
-ИПИ РАН (с~февраля 2015~г.~--- в~составе ФИЦ ИУ РАН). Приведен
-анализ причин, порождающих дублирование записей. Разработанная
-технология опирается на применение программных модулей
-\textit{определения схожести}, использующих методы нечеткого поиска
-по алгоритму Оливера, и~средств визуализации полученных результатов,
-которые встроены в~систему на уровне формирования контента БД.
-Введено понятие \textit{индекса схожести}, ис\-поль\-зу\-емое в~алгоритмах
-поиска дублирующих БО.
-Представлена формальная модель данных, заложенная в~основу
-построения БД, базирующаяся на принципах фасетной навигации,
-разработанной авторами. Исследование формальной модели позволило
-разработать алгоритмы, на которых строилась технология
-предотвращения дублирования БО.
-Применение разработанных программных средств дало возможность
-обнаружить и~удалить дублирующие БО в~БД
-научных публикаций БИАС ИПИ РАН.}
-
-  \KW{программные модули определения схожести; индекс
-схожести; метод нечеткого поиска по алгоритму Оливера;
-фасетная навигация}
-
-\DOI{10.14357\!/\!08696527150111}
-
-\vspace*{-8pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-
-\section{Введение}
-
-\vspace*{-2pt}
-
-  Основной целью создания БИАС ИПИ РАН [1] (с~февраля 2015~г.\ ИПИ
-  РАН~--- в~составе Федерального исследовательского центра <<Информатика
-и~управление>> РАН) была разработка программного комплекса для сбора,
-хранения и~анализа библиографической информации о научных публикациях
-сотрудников. Для заполнения БД БИАС используются реферативные
-базы на-\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
-учного цитирования Web of Science (WoS), Scopus, Российского индекса
-научного цитирования (РИНЦ) на платформе eLibrary, тематические
-  ин\-тер\-нет-ре\-сур\-сы, находящиеся в~открытом доступе, а~также
-документально подтвержденные сведения от авторов. Каждая научная
-статья в~БИАС представлена в~виде БО~[2].
-
-  \begin{figure}[b] %fig1
-%  \vspace*{-6pt}
-  \begin{center}
-  {\small
-  \tabcolsep=3pt
-  \begin{tabular}{|c|c|c|c|}
-  \hline
-  Издание: &
-  \multicolumn{1}{c|}{\raisebox{-18pt}[0pt][0pt]{Theory of Probability \& }}& &
-  \multicolumn{1}{c|}{\raisebox{-12pt}[0pt][0pt]{Теория}}\\
-английское &
-\multicolumn{1}{c|}{\raisebox{-18pt}[0pt][0pt]{Its Applications}} &&
-\multicolumn{1}{c|}{\raisebox{-12pt}[0pt][0pt]{вероятностей}}\\
-название/ &&&\multicolumn{1}{c|}{\raisebox{-12pt}[0pt][0pt]{ и~её применения}}\\
-русское &&&\\
-название&&&\\
-\hline
-  \tabcolsep0pt\begin{tabular}{c}Адрес\\ журнала в\\ Интернете\end{tabular} &
-  {\sf http://epubs.siam.org/loi/tprbau}& &
-  \tabcolsep0pt\begin{tabular}{c}{\sf
-http://www.mathnet.ru/php/}\\
-{\sf archive.phtml?jrnid=tvp\&}\\
-{\sf wshow=contents\&option\_lang=rus}\end{tabular}\\
-  \hline
-  \tabcolsep0pt\begin{tabular}{c}Адрес\\ статьи\\ в~БИАС\end{tabular} &
-  \tabcolsep0pt\begin{tabular}{c}{\sf
-http://bias.ipiran.ru/database/}\\
-{\sf article/view/id/193.html}\end{tabular}&$\Leftrightarrow$&
-\tabcolsep0pt\begin{tabular}{c}{\sf
-http://bias.ipiran.ru/database/}\\ {\sf article/view/id/198.html}\end{tabular}\\
-  \hline
-  \multicolumn{4}{c}{\ }\\[-4pt]
-  \multicolumn{4}{c}{(\textit{а})}
-  \end{tabular}
-  }
-  \end{center}
-  \begin{center}
-  {\small
-  \tabcolsep=5pt
-  \begin{tabular}{|c|c|c|c|}
-  \hline
-  Издание: &
-    \multicolumn{1}{c|}{\raisebox{-18pt}[0pt][0pt]{Automation and remote}} & &
-      \multicolumn{1}{c|}{\raisebox{-18pt}[0pt][0pt]{Автоматика}}\\
-   английское &
-     \multicolumn{1}{c|}{\raisebox{-18pt}[0pt][0pt]{control}} &&
-       \multicolumn{1}{c|}{\raisebox{-18pt}[0pt][0pt]{и телемеханика}}\\
-   название/ &&&\\
-   русское &&&\\
-    название &&&\\
-    \hline
-    \tabcolsep0pt\begin{tabular}{c}
-    Адрес \\ журнала в\\ Интернете\end{tabular}
-    &\tabcolsep0pt\begin{tabular}{c}{\sf
-http://link.springer.com/}\\ {\sf journal/10513}\end{tabular}&
-&\tabcolsep0pt\begin{tabular}{c}{\sf
-http://www.mathnet.ru/php/}\\ {\sf archive.phtml?jrnid=at\&wshow=}\\
-{\sf contents\&option\_lang=rus}\end{tabular}\\
-  \hline
-\tabcolsep0pt\begin{tabular}{c}  Адрес\\ статьи в\\ БИАС\end{tabular}&
-\tabcolsep0pt\begin{tabular}{c} {\sf
-http://bias.ipiran.ru/database/}\\ {\sf article/view/id/2602.html}
-\end{tabular}&$\Leftrightarrow$&
-\tabcolsep0pt\begin{tabular}{c}{\sf
-http://bias.ipiran.ru/database/}\\ {\sf article/view/id/1868.html}\end{tabular}\\
-\hline
-  \multicolumn{4}{c}{\ }\\[-4pt]
-  \multicolumn{4}{c}{(\textit{б})}
-  \end{tabular}}
-  \end{center}
-  \vspace*{-11pt}
-  \Caption{Примеры объединения БО в~переводных изданиях}
-  \end{figure}
-
-  В задачи БИАС входит предоставление пользователям
-  по\-иско\-во-спра\-воч\-ных сервисов. Реализован поиск публикаций по
-совокупности параметров в~произвольных сочетаниях. Также в~системе
-поддерживаются механизмы связывания описаний цитирующей и~цитируемой
-публикаций, что позволяет создавать карты связи публикаций, определяя тем
-самым неформальные научные коллективы, работающие над определенной
-тематикой. К~удобным возможностям относится объединение посредством
-взаимных ссылок описания статьи и~ее переводной версии в~иностранном
-издании. Примеры БО русскоязычных статей и~их
-переводов, объединенных соответствующими ссылками вида
-<<\textit{публикация}\,--\,\textit{переводная версия}>>, представлены на рис.~1.
-
-
-
-  Одна из важных целей создания БИАС ИПИ РАН~--- анализ
-публикационной активности авторов. Библиографический анализ цитирования
-позволяет определить уровень востребованности и~значимости научной работы.
-Вычисляемые библиографические показатели служат количественной
-характеристикой продуктивности ученого. Для выполнения этой задачи в~БД
-БИАС ведутся списки цитирований публикаций авторов института.
-Учитываются цитирования, проиндексированные в~WoS и~РИНЦ на
-платформе eLibrary. На рис.~\ref{f2-o} представлен пример фрагмента перечня
-публикаций автора с~указанием количества цитирований каждой статьи по
-версии WoS и~РИНЦ. Количество цитирований является ссылкой на описания
-цитирующих статей.
-
-  \begin{figure} %fig2
-        \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=120mm
- \epsfbox{obu-1.eps}
- }
- \end{center}
- \vspace*{-9pt}
-  \Caption{Фрагмент перечня публикаций автора с~указанием числа цитирований каждой
-статьи по версиям WoS и~РИНЦ
-  \label{f2-o}}
-%    \vspace*{-6pt}
-  \end{figure}
-
-  К целям создания БИАС относится подготовка статистических отчетов
-  о~пуб\-ли\-ка\-ци\-он\-ной деятельности ИПИ РАН для различных систем учета.
-Требования  отчетности Президиума РАН, Федерального агентства научных
-организаций, Министерства образования и~науки различаются сочетанием
-параметров, отображающих публикационную активность института.
-К~примеру, в~одних случаях необходимым показателем является количество
-публикаций сотрудников ИПИ РАН за 2008--2013~гг., которые цитируются в~научных работах, в~других~--- количество цитирующих статей,
-опубликованных в~2008--2013~гг. Для автоматизации подготовки отчетов
-используются соответствующие программные модули БИАС ИПИ РАН.
-
-\vspace*{-4pt}
-
-\section{Исследование причин множественности
-библиографических описаний публикаций}
-
-\vspace*{-2pt}
-
-  В БД БИАС каждая публикация представлена
-БО, состоящим из (основных) полей: <<Название публикации>>,
-<<Издание>>, <<Год>> и~<<Авторы>>. На первоначальном этапе заполнения
-БД разработчики исходили из того, что БО взаимно однозначно определяет
-публикацию. Но вскоре была обнаружена проблема, связанная с~тем, что
-БО одной и~той же публикации в~разных ресурсах
-могут отличаться значениями в~одном или нескольких полях. Как следствие,
-занесение библиографической информации из различных источников~--- без
-применения специальных средств контроля~--- приводило к тому, что
-\textit{разные} БО в~БД определяли одну и~ту же публикацию. Для
-корректного формирования трудов сотрудников ИПИ РАН
-необходимо было решить проблему,
-связанную с~дублированием представления публикаций в~форме БО в~БД
-научных публикаций.
-
-  Причинами появления \textit{разных} БО одной и~той же статьи являются
-следующие обстоятельства:
-  \begin{enumerate}[(1)]
-\item базы индексации научных статей трансформируют формулы,
-используемые в~названиях публикаций, в~свои внутренние стандарты,
-которые, в~общем случае, отличаются от первоначального представления;\\[-14pt]
-\item при цитировании публикаций в~переводных изданиях авторы
-используют разные версии переводов;\\[-14pt]
-\item к весьма распространенным ситуациям относятся неточности и~искажения в~описаниях цитируемых публикаций.
-\end{enumerate}
-
-  Рассмотрим несколько примеров порождения дублирующих (т.\,е.\
-опреде\-ля\-ющих одну и~ту же статью) БО, занесенных
-в БД научных публикаций из разных источников.
-
-\vspace*{-4pt}
-
-\subsection{Использование формул в~названиях публикаций}
-
-\vspace*{-2pt}
-
-  В случае если авторы выносят в~\textit{название} публикации формулы
-  с~использованием верхних или нижних индексов, разные БД научного
-цитирования индексируют эти статьи в~своем внутреннем стандарте.
-
-  К примеру, статья, опубликованная в~журнале <<Automation and Remote
-Control>>, 2011, том~72, №\,1, авторы: \Au{Печинкин~А.\,В., Шоргин~С.\,Я.\
-и~др.}, под названием: <<Geo$_m/G/1/n$ system with LIFO discipline without
-interrupts and constrained total amount of customers>>, проиндексирована в~различных системах следующим образом:
-  \begin{itemize}
-\item в~WoS под названием <<$\mathrm{Geo}(m)/G/1/n$ system with LIFO discipline
-without interrupts and constrained total amount of customers>>;\\[-14pt]
-\item в~eLibrary под названием <<GEOM$/G/1/N$ system with LIFO discipline
-without interrupts and constrained total amount of customers>>.
-  \end{itemize}
-
-    \begin{figure}[b] %fig3
-        \vspace*{-9pt}
- \begin{center}
- \mbox{%
- \epsfxsize=102.711mm
- \epsfbox{obu-2.eps}
- }
- \end{center}
- \vspace*{-11pt}
-\Caption{Пример использования в~ссылках разных версий переводных изданий}
-\label{e3-o}
-\end{figure}
-
-  Формально в~данном примере представлены разные
-БО, что приводит к~дуб\-ли\-рованию представления одной и~той же статьи
-в~БД.
-
-\vspace*{-4pt}
-
-\subsection{Использование переводных версий научных журналов}
-
-\vspace*{-2pt}
-
-  Особую сложность представляют публикации, БО
-которых формируется из пристатейных списков используемой литературы. Для
-достижения полноты наполнения БД БИАС используются списки
-цитирований, являющиеся обязательной частью любой статьи, доступные в~таких ресурсах, как Web of Science, Springer Link~\cite{3-o}, eLibrary. Но
-извлечение библиографической информации из списков цитируемых
-источников может привести к~множественности представления одной
-публикации в~БД БИАС. Использование в~ссылках разных версий переводных
-изданий приводит к~образованию двух и~более БО одной и~той же статьи.
-Учитывая, что переводные версии российских научных журналов выполняют
-разные переводчики, возникновение таких коллизий~--- распространенный
-случай.
-
-
-  Проиллюстрируем это на примере, приведенном на рис.~\ref{e3-o}.
-
-\vspace*{-4pt}
-
-\subsection{Неточности и~искажения в~цитированиях публикаций }
-
-\vspace*{-2pt}
-
-  Для получения информации о~БО публикаций
-сотрудников ИПИ РАН из БД РИНЦ (на платформе eLibrary) использовался
-программный интерфейс для доступа к данным. В~eLibrary поддерживается
-возможность включения в~перечень научных статей автора публикаций из
-списков цитирования. Но формальной обработки на достоверность данное
-включение не проходит. Весьма распространенной является ситуация
-ошибочного цитирования: искажаются названия статей, допускаются ошибки в~указании выходных данных издания. Это служит источником появления
-некорректных вариантов публикаций.
-
-  К примеру, статья Синицына~И.\,Н., опубликованная в~журнале <<Doklady
-Physics>>, 2002, том~47, выпуск~7, оказалась в~БД в~трех вариантах:
-  \begin{itemize}
-\item <<Stochastic Model of Motion of the Pole of Deformable Earth>>;
-\item <<Stochastic Model of the Pole's Motion for Deformable Earth>>;
-\item <<A Stochastic Model of the Motion of the Deformable-Earth Pole>>.
-\end{itemize}
-
-\vspace*{-4pt}
-
-\section{Технология обнаружения дублирующих
-библиографических описаний}
-
-\vspace*{-2pt}
-
-  Выявление причин дублирования БО создало предпосылки для решения
-следующих задач:
-  \begin{enumerate}[(1)]
-\item выявление и~удаление из БД дублирующих БО;
-\item разработка технологии предотвращения появления в~БД дублирующих
-БО.
-\end{enumerate}
-
-  Под термином \textit{технология} подразумевается применение комплекса
-про\-граммных модулей, решающих поставленную задачу в~соединении со
-средствами визуализации полученных результатов. Поскольку основная
-причина появления дублирующих БО связана с~искажениями в~названиях публикаций, то на первом этапе объектом
-исследования стало поле <<Название публикации>> (как части БО).
-
-\vspace*{-4pt}
-
-\subsection{Применение методов нечеткого поиска для обнаружения
-искажений в~названиях публикаций}
-
-\vspace*{-2pt}
-
-  Для анализа искажений в~поле названия публикации использовался поиск по
-сходству (fuzzy string search) по алгоритму Оливера, описанному в~работе~\cite{4-o}. В~рамках данной статьи не рассматриваются причины
-предпочтения метода нахождения наибольшей общей подпоследовательности
-(LCS~--- longest common subsequence) другим распространенным методам, к примеру, реализующим алгоритм
-Левенштейна~\cite{5-o}. Вопросы преимущества выбранного метода станут
-темой следующей статьи.
-
-  Применение алгоритма Оливера позволяет находить в~двух строках
-совпадающие фрагменты и~вычислять в~процентах отношение их длины к
-суммарной длине сравниваемых строк. Алгоритм Оливера реализован в~виде
-стандартной PHP-функ\-ции \verb"similar_text". Приведем реализацию этого
-алгоритма на C\#:
-
-\vspace*{-6pt}
-
- {\small \begin{verbatim}
-float similar_text (String first, String second)
- {
-  int sim = similar(first.ToLower(), second.ToLower());
-  return (float)(sim * 200) / (first.Length + second.Length);
- }
-   int similar(String first, String second)
- {
-  int p, q, l, sum;
-  int pos1 = 0, pos1 = 0, max = 0;
-  char[] arr1 = first.ToCharArray();
-  char[] arr2 = second.ToCharArray();
-  int firstLength = arr1.Length;
-  int secondLength = arr2.Length;
-  for (p = 0; p < firstLength; p++)
-  {
-   for (q = 0; q < secondLength; q++)
-   {
-    for (l = 0; (p + l < firstLength) && (q + l < secondLength)
-     && (arr1[p + l] == arr2[q + l]); l++) ;
-    if (l > max)
-    {
-      max = l;
-      pos1 = p;
-      pos2 = q;
-    }
-   }
-  }
-  sum = max;
-  if (sum > 0)
-  {
-   if (pos1 > 0 && pos2 > 0)
-   {
-    sum += similar(first.Substring(0, pos1 >
-     firstLength ? firstLength : pos1), second.Substring(0,
-pos2 > secondLength ? secondLength : pos2));
-   }
-   if ((pos1 + max < firstLength) && (pos2 + max < secondLength))
-   {
-    sum += similar(first.Substring(pos1 + max),
-     second.Substring(pos2 + max));
-   }
-  }
-  return sum;
- }
-\end{verbatim}
-  }
-
-  \smallskip
-
-  \noindent
-  \textbf{Определение.} Введем обозначение \textit{индекса схожести} двух
-строк \verb"Ind_Sim", являющегося результатом выполнения функции
-\verb"similar_text". Диапазон значений:
-0\%\;$\leq$\;\verb"Ind_Sim"\;$\leq$\;100\%.
-  \smallskip
-
-
-  Проиллюстрируем работу функции \verb"similar_text" на примере описанного
-выше случая, когда для исходной публикации <<A~Stochastic Model of the
-Motion of the Deformable-Earth Pole>> в~БД были занесены искаженные
-варианты названия публикации.
-
-  \medskip
-
-  \noindent
-  {\textbf{Протокол 1.}
-
-\noindent
-  \begin{verbatim}
-String first = a stochastic model of the motion
- of the deformable-earth pole
-String second = stochastic model of motion
- of the pole of deformable earth
-
-  similar(61,58)
-  f=(a stochastic model of the motion
-   of the deformable-earth pole)
-  s=(stochastic model of motion of the pole of deformable earth)
-  max=20, pos1=2, pos2=0
-  similar(39,38)
-  f=(the motion of the deformable-earth pole)
-  s=(motion of the pole of deformable earth)
-  max=14, pos1=4, pos2=0
-  similar(21,24)
-  f=(deformable-earth pole)
-  s=(pole of deformable earth)
-  max=10, pos1=0, pos2=8
-  similar(11,6)
-  f=(-earth pole)
-  s=( earth)
-  max=5, pos1=1, pos2=1
-  similar(1,1)
-  f=(-)
-  s=( )
-  max=0, pos1=0, pos2=0
-\end{verbatim}
-
- \verb"Ind_Sim"\;=\;82,35\%.
-
-  \medskip
-
-\noindent
- \textbf{Протокол 2.}
-
- \noindent
-  {\small
-  \begin{verbatim}
-String first = a stochastic model of the motion
- of the deformable-earth pole
-String second = stochastic model of the pole's motion
- for deformable earth
-
-  similar(61,58)
-  f=(a stochastic model of the motion of the deformable-earth pole)
-  s=(stochastic model of the pole's motion for deformable earth)
-  max=24, pos1=2, pos2=0
-  similar(35,34)
-  f=(motion of the deformable-earth pole)
-  s=(pole's motion for deformable earth)
-  max=11, pos1=13, pos2=17
-  similar(13,17)
-  f=(motion of the)
-  s=(pole's motion for)
-  max=7, pos1=0, pos2=7
-  similar(6,3)
-  f=(of the)
-  s=(for)
-  max=1, pos1=0, pos2=1
-  similar(5,1)
-  f=(f the)
-  s=(r)
-  max=0, pos1=0, pos2=0
-  similar(11,6)
-  f=(-earth pole)
-  s=( earth)
-  max=5, pos1=1, pos2=1
-  similar(1,1)
-  f=(-)
-  s=( )
-  max=0, pos1=0, pos2=0
-\end{verbatim}
-   }
-
-     \verb"Ind_Sim"\;=\;80,67\%.
-
-     \smallskip
-
-  Заметим, что значение \textit{индекса схожести} исходной статьи и~ее
-модификаций в~рассматриваемом примере не меньше 80,67\%.
-
-\vspace*{-4pt}
-
-\subsection{ Этапы проверки базы данных}
-
-\vspace*{-2pt}
-
-  Выбранная методика и~разработанные программные средства позволили
-провести ревизию БД для выявления дублирующих
-БО. Протоколы работы программ \textit{определения схожести},
-вычисляющих \verb"Ind_Sim" названий статей, предоставлялись модераторам
-системы, которые принимали решение о достоверности той или иной
-информации. Для удобства работы использовались средства визуализации
-результатов работы функции \verb"similar_text":
-  \begin{itemize}
-\item для второй строки красным цветом подсвечиваются удаленные
-слова или символы;
-\item зеленым цветом~--- добавленные слова или символы;
-\item для обеих строк указываются ссылки на соответствующее
-БО в~БД БИАС.
-\end{itemize}
-
-  Фрагменты протоколов работы программ представлены на рис.~\ref{f4-o}.
-
-  \textbf{Этап 1.} Диапазон 95\%\;$\leq$\;\verb"Ind_Sim"\;$\leq$\;100\%.
-
-\begin{figure} %fig4
-        \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=130mm
- \epsfbox{obu-3.eps}
- }
- \end{center}
- \vspace*{-9pt}
-\Caption{Фрагменты протоколов работы программ определения схожести для
-95\%\;$\leq$\protect\linebreak $\leq$\;{\sf Ind\_Sim}\;$\leq$\;100\%~(\textit{а})
-и~75\%\;$\leq$\;{\sf Ind\_Sim}\;$\leq$\;95\%~(\textit{б})}
-\label{f4-o}
-\end{figure}
-
-  На этом этапе были выявлены случаи, которые можно отнести к ошибкам
-правописания.
-
-  \textbf{Этап 2.} Диапазон 75\%\;$\leq$\;\verb"Ind_Sim"\;$\leq$\;95\%.
-
-
-     На этом этапе объектом внимания были БО публикаций, названия
-которых различались на некоторое количество терминов. Надо заметить, что в~этот диапазон попадают и~все публикации, соотносящиеся с~одной тематикой.
-Как правило, в~этом случае авторы дают название публикаций путем
-комбинации одних и~тех же терминов.
-
-  Проиллюстрируем это на примере двух статей Шевцовой~И.\,Г.,
-опубликованных в~журнале <<Доклады Академии наук>>, 2012, том~443,
-выпуск~6:  <<О~точности нормальной аппроксимации для сумм независимых
-случайных величин>> и~<<О~точности нормальной аппроксимации для сумм
-независимых симметричных случайных величин>>.
-
-  Для этих статей \verb"Ind_Sim"\;=\;91,92\%.
-
-  Анализ протоколов работы программ определения схожести позволил
-получить два результата:
-  \begin{enumerate}[(1)]
-\item из БД было удалено $\sim 6\%$ БО;
-\item было установлено, что значение \textit{индекса схожести} $< 75\%$
-может не рас\-смат\-ри\-вать\-ся при поиске дублирования БО. В~большинстве
-случаев значение \verb"Ind_Sim" менее 75\% означает замену двух или более
-терминов в~названиях пуб\-ли\-ка\-ций. Учитывая специфику БД БИАС, в~которой
-названия пуб\-ли\-ка\-ций состоят в~среднем из 9~слов (на данный момент
-максимальная длина названия со\-став\-ля\-ет 46~слов), замена двух--трех терминов
-приводит к~изменению смыслового значения.
-\end{enumerate}
-
-\section{Технология предотвращения дублирования библиографических описаний}
-
-  Алгоритм работы программной реализации технологии представим на языке
-описания формальной модели данных, которая заложена в~структуру БД БИАС
-ИПИ РАН.
-
-\subsection{Формальная модель данных}
-
-  Концептуальная модель данных подробно описана в~\cite{6-o}. Формальное
-представление БО научных публикаций базируется
-на принципах адаптивной фасетной навигации, разработанной
-авторами~\cite{7-o}, в~которой используется описание объекта как множество
-совокупностей: \{фасетный признак: список значений\}~\cite{8-o}.
-
-  Фасетный признак определяется компонентом
-БО, к примеру: $F_{\mathrm{title}}$~--- название публикации; $F_{\mathrm{journal}}$~---
-название издания; $F_{\mathrm{year}}$~--- год издания;
-$F_{\mathrm{authors}}$~--- автор.
-В~рамках данной статьи опускается множество других фасетных признаков как
-не актуальных для данного исследования. Поэтому представляющий интерес
-фрагмент БО можно представить в~виде следующей
-\textit{формулы определения БО}:
-
-$\Phi$\;=\;\{$F_{\mathrm{title}}$\;=\;значение
-
-+\;$F_{\mathrm{journal}}$\;=\;идентификатор$_{\mathrm{journal}}$
-
-+\;$F_{\mathrm{volum}}$\;=\;значение
-
-+\;$F_{\mathrm{number}}$\;=\;значение
-
-+\;$F_{\mathrm{year}}$\;=\;значение
-
-+\;$F_{\mathrm{authors}}$\;=\;ссылка на список объектов типа <<автор>>\}.
-
-\subsection{Алгоритм работы программного модуля предотвращения
-дублирования библиографических описаний}
-
-  Целью работы программного модуля предотвращения дублирования БО
-является выявление тех случаев, которые могут привести к коллизиям и~требуют вмешательства модераторов системы. Модераторам системы доступны
-первоисточники научных журналов, по которым можно установить истинное
-БО публикации.
-
-  Используем обозначения:
-  \begin{itemize}
-  \item $\Phi^{\mathrm{new}}$~---  новое БО;
-  \item $\Phi^{\exists}$~--- существующее на текущий момент в~базе данных
-БО.
-  \end{itemize}
-
-
-
-  На рис.~5 представлен алгоритм работы модуля предотвращения дублирования БО.
-Здесь \verb"Ind_Sim"~--- индекс схожести
-$F^{\mathrm{new}}_{\mathrm{title}}$ и~ $F^{\exists}_{\mathrm{title}}$, а~ID~--- уникальный идентификатор,
-который присваивается каждому из возможных значений определенного
-признака на этапе программной реализации.
-
-\subsection{Программная реализация}
-
-
-  Центральной частью разработанной технологии является использование
-программного модуля определения схожести, обращение к которому
-происходит при занесении новой библиографической записи посредством
-вызова функции <<\textit{Проверить название публикации на похожие}>>.
-  \begin{figure} %fig5
-   \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=69.266mm
- \epsfbox{obu-5.eps}
- }
- \end{center}
- \vspace*{-9pt}
- \Caption{Алгоритм работы модуля предотвращения дублирования БО}
-  \end{figure}
-Результатом ее работы является список БО публикаций, названия которых
-удовлетворяют условию 75\%\;$\leq$\;\verb"Ind_Sim"\;$\leq$\;100\%.
-
-  \begin{figure} %fig6
-   \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=130mm
- \epsfbox{obu-6.eps}
- }
- \end{center}
- \vspace*{-34pt}
-  \Caption{Результат работы программного модуля определения схожести}
-  \label{f6-o}
-  \end{figure}
-      \begin{figure} %fig7
-   \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=130mm
- \epsfbox{obu-7.eps}
- }
- \end{center}
- \vspace*{-34pt}
-  \Caption{Результат работы программного модуля определения схожести
-  }
-  \label{f7-o}
-%  \end{figure}
-%  \begin{figure} %fig8
-   \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=130mm
- \epsfbox{obu-8.eps}
- }
- \end{center}
- \vspace*{-24pt}
-  \Caption{Результат работы программного модуля определения схожести}
-  \label{f8-o}
-%  \end{figure}
-  %\begin{figure} %fig9
-   \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=130mm
- \epsfbox{obu-9.eps}
- }
- \end{center}
- \vspace*{-9pt}
-  \Caption{Результат работы программного модуля определения схожести}
-  \label{f9-o}
-  \end{figure}
-
-
-  Список формируется с~использованием элементов визуализации работы
-программных модулей. При разработке технологии предотвращения
-дублирования большое внимание было уделено средствам визуализации
-протоколов работы программного модуля определения схожести. Это связано с~тем, что результаты работы этих модулей необходимы модераторам системы
-для принятия решения, какое из следующих возможных действий надо
-выполнить:
-  \begin{enumerate}[1.]
-\item Занести новую запись.
-\item Проигнорировать новую запись как ошибочную.
-\item Ошибочной является существующая запись, ее необходимо
-заменить новой.
-\end{enumerate}
-
-
-
-  Чтобы определить, какое действие необходимо выполнить, модераторы
-должны исследовать первоисточники, а~именно: каталоги журналов, в~которых
-опуб\-ли\-ко\-ва\-на анализируемая статья.
-%
-  Поэтому остановимся на применяемых средствах визуализации. Для
-иллюстрации действующих механизмов приведем несколько примеров,
-используя описанный выше случай множественности БО публикации
-И.\,Н.~Синицына.
-\begin{enumerate}[1.]
-\item Название новой публикации <<A stochastic model of the motion of the
-deformable-Earth pole>>. Список БО представлен на рис.~\ref{f6-o}.
-
-
-
-  \verb"Ind_Sim" с~существующим БО реальной публикации равен 100\%.
-
-  Красным цветом подсвечиваются удаленные символы по отношению к
-оригиналу, зеленым~--- новые символы. Левый столбец определяет
-идентификатор публикации в~БД, который служит ссылкой для перехода к
-описанию данной публикации.
-
-
-\item Название новой публикации (искаженное) <<Stochastic Model of the Pole's
-Motion for Deformable Earth>>. Список БО представлен на рис.~\ref{f7-o}.
-
-{\sf Ind\_Sim} с~существующим БО реальной публикации равен 79,3\%.
-
-
-\item Название новой публикации (искаженное) <<Stochastic Model of Motion of
-the Pole of Deformable Earth>>. Список БО представлен на рис.~\ref{f8-o}.
-
-
-
-  \verb"Ind_Sim" с~существующим БО реальной публикации равен 82,3\%.
-
-
-
-  Любопытно, что для данного примера более высокий \verb"Ind_Sim"~--- с~публикацией №\,6315 <<Stochastic correlation models for the motion of the pole of
-the deformable earth>>, опубликованной в~2004~г. Но так как с~этой
-публикацией у искомой различаются  $F_{\mathrm{journal}}\hm =
-\mathrm{ID}_{\mathrm{journal}}$ и~$F_{\mathrm{year}}\hm= \mathrm{ID}_{\mathrm{year}}$,
-то искомой является публикация №\,951.
-
-\end{enumerate}
-
-
-
-  Надо заметить, что значение индекса схожести правильной статьи и~ее
-модификаций лежит в~пределах 79,3\%\;$\leq$\;\verb"Ind_Sim"\;$\leq$\;100\%,
-что можно увидеть на рис.~\ref{f9-o}.
-
-
-
-\section{Заключение}
-
-  Помимо БД научного цитирования Web of Science, Scopus, РИНЦ
-существенным источником информации для заполнения БД БИАС являются
-БО цитируемых публикаций, указанные в~пристатейных списках используемой литературы. Эти источники информации
-представляют особый интерес в~связи с~тем, что вышеперечисленные системы
-индексируют только журнальные публикации и,~не в~полном объеме, труды
-конференций. Для формирования полного перечня научных трудов
-сотрудников института, включающего книги, монографии, доклады на
-конференциях, производится анализ цитируемых источников с~целью
-получения информации обо всех публикациях авторов ИПИ РАН. Но ошибки
-и~специфические особенности оформления БО
-цитируемых источников создают множество коллизий, порожденных
-появлением в~БД нескольких ошибочных БО одной и~той же публикации.
-
-  Для достижения достоверности наполнения БД научных
-публикаций БИАС ИПИ РАН была разработана технология предотвращения
-дуб\-ли\-ро\-ва\-ния БО, опирающаяся на использование
-двух компонентов: программных модулей \textit{определения схожести} по
-алгоритму Оливера и~средств визуализации полученных результатов.
-Сложность алгоритма Оливера составляет $O(N^3$), где $N$~--- длина более
-длинной из двух строк. Сравнение эталона необходимо выполнить для каждой
-уникальной статьи. Поэтому в~разработанной технологии сложность алгоритма
-определяется как $K\cdot O(N^3)$, где $K$~--- число уникальных статей в~БД. При конфигурации
-сервера:
-  \begin{itemize}
-\item процессор Intel Xeon E5420 2,5 ГГц,
-\item память 8 ГБайт,
-\item MS SQL 2005
-\end{itemize}
-и количестве записей в~БД\;=\;10\,000 среднее время вычисления индекса
-схожести при занесении новой записи\;=\;130~мс, максимальное
-время\;=\;466~мс.
-
-  Визуализация протоколов работы программных систем позволяет
-модераторам БИАС ИПИ РАН получать полную информацию в~форме,
-удобной как для принятия решений, так и~для работ по дальнейшему
-устранению возникших коллизий в~БД. Предопределенные поля визуализации
-протоколов позволяют перейти на БО пуб\-ли\-ка\-ции в~режиме редактирования. Использование этой технологии гарантирует то, что
-информация в~БД БИАС ИПИ РАН будет полной и~достоверной, что
-соответствует основным требованием к БД.
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{9}
-\bibitem{1-o}
-Библиографическая информационно-аналитическая система ИПИ РАН. {\sf
-http://bias. ipiran.ru}.
-\bibitem{2-o}
-ГОСТ 7.1-2003 Библиографическая запись. Библиографическое описание.
-{\sf http:// diss.rsl.ru/datadocs/doc\_291wu.pdf}.
-\bibitem{3-o}
-База данных SpringerLink. {http://link.springer.com}.
-\bibitem{4-o}
-\Au{Oliver I.} Programming classics: Implementing the World's best algorithms.~---
-Prentice Hall PTR, 1994. 386~р.
-\bibitem{5-o}
-\Au{Левенштейн В.\,И.} Двоичные коды с~исправлением выпадений, вставок
-и замещений символов~/\!\!/ Докл. Акад. наук СССР, 1965. Т.~163. Вып.~4.
-С.~845--853.
-\bibitem{6-o}
-\Au{Заикин М.\,Ю., Обухова О.\,Л., Соловьев И.\,В.} Библиографическая
-ин\-фор\-ма\-ци\-он\-но-аналитическая система ИПИ РАН~/\!\!/ Системы и~средства
-информатики, 2014. Т.~24. Вып.~1. С.~244--259.
-\bibitem{7-o}
-\Au{Обухова О.\,Л., Бирюкова Т.\,К., Гершкович~М.\,М., Соловьев~И.\,В.}
-Модель адап\-тив\-ной фасетной навигации в~открытых электронных
-коллекциях~/\!\!/ Системы и~средства информатики, 2008. Т.~18. Вып.~1.
-С.~171--185.
-\bibitem{8-o}
-\Au{Обухова О.\,Л., Бирюкова Т.\,К., Гершкович~М.\,М., Соловьев~И.\,В.}
-Модель фасетного информационного поиска в~коллекции научных
-материалов~/\!\!/ Системы и~средства информатики, 2009. Т.~19. Вып.~2.
-С.~163--174.
-\end{thebibliography}
-} }
-
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 16.12.14}}
-
-
-
-
-\vspace*{9pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{9pt}
-
-
-\def\tit{TECHNOLOGY FOR PREVENTION OF~DUPLICATION OF~BIBLIOGRAPHIC
-DESCRIPTIONS IN~THE~SCIENTIFIC DATABASE BIAS~IPI~RAS}
-
-\def\titkol{Technology for prevention of~duplication of~bibliographic
-descriptions in
-%~the~scientific database
-BIAS~IPI~RAS}
-
-
-\def\aut{M.\,Yu.~Zaikin, V.\,S.~Dolgopolov, O.\,L.~Obuhova, and I.\,V.~Soloviev}
-\def\autkol{M.\,Yu.~Zaikin, V.\,S.~Dolgopolov, O.\,L.~Obuhova, and I.\,V.~Soloviev}
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-6pt}
-
-\noindent
-Institute of Informatics Problems, Federal Research Center ``Computer Science and Control,''
-Russian Academy of Sciences, 44-2 Vavilov
-Str., Moscow 119333, Russian Federation
-
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2015 vol~25 no\,1}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2015   vol~25   no\,1
-\hfill \textbf{\thepage}}}
-
-\Abste{The paper considers the developed technology aimed at
-avoiding duplication of bibliographic descriptions in the scientific
-database Bibliographic Information-Analytical System (BIAS) of IPI
-RAS.  The analysis of the reasons of duplications is given. The constituent
-parts of the developed software are the
-modules of \textit{definition of
-similarity} using the methods of fuzzy search based on the Oliver
-algorithm and the modules of visualization of the results which are\linebreak\vspace*{-12pt}}
-
-\Abstend{built
-into the system at the level of formation of the database content.
-Program modules of visualization allow moderators of BIAS IPI RAS
-to receive full information about the conflicts. They will be able to
-decide on further action using additional information. The concept of
-\textit{similarity index} used in the software modules of
-\textit{definition of similarity} is introduced. The paper considers the
-formal data model underlying construction of the database, built on
-the principles of facet navigation. Application of the developed
-software made it possible to detect and remove duplicate bibliographic
-descriptions in the scientific database.}
-
-\KWE{similarity index; software modules of definition of similarity;
-method of fuzzy search on the Oliver algorithm; facet navigation}
-
-\DOI{10.14357\!/\!08696527150111}
-
-%\vspace*{-24pt}
-
-%\Ack
-%\noindent
-
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{9}
-\bibitem{1-o-1}
-Scientific database  Bibliographic Information-Analytical System (BIAS) of  IPI
-RAS. Available at: {\sf http://bias.ipiran.ru} (accessed April~7, 2015).
-\bibitem{2-o-1}
-GOST 7.1-2003.    Bibliograficheskaya zapis'. Bibliograficheskoe opi\-sa\-nie
-[Bibliographic record. Bibliographic description].  Available at: {\sf
-http://diss.rsl.ru/datadocs/\linebreak doc\_291wu.pdf} (accessed April~7, 2015).
-\bibitem{3-o-1}
-Database  SpringerLink.  Available at:  {\sf http://link.springer.com/}
-(accessed April~7, 2015).
-\bibitem{4-0-1}
-\Aue{Oliver, I.} 1994. \textit{Programming classics: Implementing the World's
-best algorithms}. Prentice Hall PTR. 386~р.
-\bibitem{5-o-1}
-\Aue{Levenshteyn, V.\,I.} 1965. Dvoichnye kody s~ispravleniem vypadeniy,
-vstavok i~za\-me\-shche\-niy simvolov [Binary codes with correction for deletions,
-insertions, and substitutions of symbols]. \textit{Dokl. Akad. Nauk SSSR}
-163(4):845--833.
-\bibitem{6-o-1}
-\Aue{Zaikin, M.\,Yu., O.\,L. Obuhova, and I.\,V.~Soloviev}. 2014.
-Bibliograficheskaya informatsionno-analiticheskaya sistema IPI RAN
-[Bibliographic information-analytical system (BIAS) of  IPI RAS]. \textit{Sistemy
-i~Sredstva Informatiki}~--- \textit{Systems and Means of Informatics}
-24(1):244--258.
-\bibitem{7-o-1}
-\Aue{Chochia, A.\,P., I.\,V. Soloviev,  O.\,L.~Obuhova, T.\,K.~Biryukova, and
-M.\,M.~Gershkovich}. 2008. Model' adaptivnoy fasetnoy navigatsii v~otkrytykh
-elektronnykh kollektsiyakh [The model for adaptive facet navigation in open
-digital collections]. \textit{Sistemy i~Sredstva Informatiki}~--- \textit{Systems
-and Means of Informatics} 18(1):171--185.
-\bibitem{8-o-1}
-\Aue{Obuhova, O.,  I. Soloviev,  T.~Biryukova , M.~Gershkovich, and
-A.~Chochia}. 2009. Model' fasetnogo informatsionnogo poiska v~kollektsii
-nauchnykh materialov [A model of facet information retrieval within the
-collection of scientific materials]. \textit{Sistemy i~Sredstva Informatiki}~---
-\textit{Systems and Means of Informatics} 19(2):163--174.
-\end{thebibliography}
-} }
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received December 16, 2014}}
-
-  \Contr
-
-\noindent
-\textbf{Zaikin Maxim Yu.} (b.\ 1973)~--- scientist, Institute of Informatics Problems, Federal
-Research Center ``Computer Science and Control,'' Russian Academy of Sciences, 44-2 Vavilov
-Str., Moscow 119333, Russian Federation; maxim@amsd.com
-
-\vspace{3pt}
-
-\noindent
-\textbf{Dolgopolov Vyacheslav S.} (b.\ 1962)~--- scientist, Institute of Informatics Problems,
-Federal Research Center ``Computer Science and Control,'' Russian Academy of Sciences, 44-2
-Vavilov Str., Moscow 119333, Russian Federation;\linebreak slava@amsd.com
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Obuhova Olga L.} (b.\ 1952)~--- scientist, Institute of Informatics Problems, Federal
-Research Center ``Computer Science and Control,'' Russian Academy of Sciences, 44-2 Vavilov
-Str., Moscow 119333, Russian Federation; obuhova@amsd.com
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Soloviev Ivan V.} (b.\ 1976)~--- programmer~I, Institute of Informatics Problems,
-Federal Research Center ``Computer Science and Control,'' Russian Academy of Sciences, 44-2
-Vavilov Str., Moscow 119333, Russian Federation; soloviev@amsd.com
- \label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}
-
-
-
-

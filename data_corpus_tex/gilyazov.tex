@@ -1,1066 +1,0 @@
-\def\stat{giy}
-
-\def\tit{ПРОБЛЕМЫ ВЗАИМОДЕЙСТВИЯ ВРЕДОНОСНОГО КОДА И~ПРОГРАММ 
-ЗАЩИТЫ В~АРХИТЕКТУРЕ СОВРЕМЕННЫХ ОПЕРАЦИОННЫХ  СИСТЕМ$^*$}
-
-\def\titkol{Проблемы взаимодействия вредоносного кода и~программ 
-защиты в~архитектуре ОС} %современных операционных систем}
-
-\def\autkol{Р.\,Р.~Гилязов, А.\,А.~Грушо}
-
-
-\def\aut{Р.\,Р.~Гилязов$^1$, А.\,А.~Грушо$^2$}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\footnotetext[1]
-{Работа выполнена при частичной финансовой поддержке РФФИ (проект 15-07-02053).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Московский государственный университет им.\ М.\,В. Ломоносова, irusrubin@gmail.com}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского
-центра <<Информатика и~управление>> Российской академии наук, grusho@yandex.ru}
-
-\label{st\stat}
-
-                  \thispagestyle{headings}
-
-  \Abst{Рассмотрены проблемы взаимодействия вредоносного кода и~защитного 
-программного обеспечения (ЗПО) в~средах современных операционных систем (ОС). В~част\-ности, 
-рассмотрен ряд аспектов, связанных с~программными модулями, предоставляющими 
-нарушителю возможности для устойчивого и~неопределяемого присутствия в~компьютерных 
-системах. Сформирован ряд утверждений, говорящих о взаимотношении технологий, 
-используемых в~ЗПО, и~обеспечении <<невидимости>> 
-исполняемого кода. На практике для модельного руткита (РТ) продемонстрирована возможность 
-неопределяемого присутствия для современного ЗПО. На 
-основе анализа механизма системных вызовов и~драйверной подсистемы Windows NT 
-выработаны необходимые требования по разработке ЗПО. 
-Построена модель случайного ограничения возможностей вредоносного программного 
-обеспечения (ВПО) для практической реализации ЗПО без нарушения алгоритмов 
-распределения процессорного времени.}
-   
-\KW{информационная безопасность; защитное программное обеспечение; вредоносное 
-программное обеспечение; руткит; антивирус; технологии сокрытия исполняемого кода}
-
-\DOI{10.14357\!/\!08696527150306}
-
-                     %\vspace*{-12pt}
-
-
-
-\vskip 12pt plus 9pt minus 6pt
-
-
-      \thispagestyle{headings}
-
-\section{Введение}
-
-  Компьютерные системы, работающие под управлением ОС, 
-предоставляют ресурсы для выполнения задач по обработке информации, 
-являющейся ценной. Злоумышленник, используя различные методы, имеет 
-возможность реализовать специальное программное обеспечение для захвата 
-вычислительных ресурсов и~получения несанкционированного доступа к 
-ценной информации. Отметим, что нарушитель заинтересован в~постоянном, 
-устойчивом и~неопределяемом присутствии своих компонентов. Существует 
-класс технологий, позволяющих реализовать данное 
-ВПО и~сделать его <<невидимым>> для защитных средств.
-  
-  Статья посвящена проблеме противодействия защитного программного 
-обеспечения ВПО. Для выявления вредоносного кода ЗПО должно 
-решать задачи мониторинга, позволяющие выявить ВПО, т.\,е.\ ЗПО должно 
-<<увидеть>> ВПО или его следы. Решение этих задач основано на наличии 
-двух базовых компонентов в~ЗПО. 
-  
-  \textbf{Компонент А.} Защитное программное обеспечение должно распознавать следы 
-  ВПО, т.\,е.\ должен 
-быть язык, на котором выражены те свойства ВПО или следов его 
-функционирования, которые система мониторинга способна прочитать, чтобы 
-получить информацию о~вредоносном коде. Например, сигнатуры вирусов или 
-вредоносного кода являются словами такого языка и~сенсоры ЗПО способны 
-идентифицировать эти сигнатуры в~рассматриваемом объекте так, что 
-подсистема анализа ЗПО по этой информации способна вывести заключение 
-о~наличии вредоносного кода. Если система мониторинга не способна прочитать 
-информацию о~том, что данный код является вредоносным, то ЗПО не может 
-сделать вывод о~наличии вредоносного кода. В~этом случае обфускация ВПО 
-позволяет сделать его <<невидимым>> при статическом анализе. 
-  
-  \textbf{Компонент В.} Если есть язык, описывающий свойства ВПО и~следов 
-его функционирования, то для выявления вредоносного кода должно 
-существовать взаимодействие сенсоров ЗПО со статическими или 
-динамическими фрагментами ВПО. В~самом деле, любые сенсоры 
-регистрируют требуемые параметры по результатам взаимодействия с~объектом 
-наблюдения. 
-  
-  В определенных условиях ВПО может реализовать действия, исключающие 
-взаимодействие с~ЗПО. В~этом случае можно также говорить 
-о~<<невидимости>> ВПО. Перечислим действия ВПО, позволяющие исключить 
-его взаимодействие с~ЗПО. 
-  \begin{enumerate}[1.]
-\item Использование ограниченности области мониторинга ЗПО. В~этом 
-случае ВПО переносит себя в~домен, не доступный для ЗПО. 
-\item Вредоносное программное обеспечение использует ограниченность 
-времени для обнаружения себя 
-в~некоторой среде. Сюда можно отнести возможности ВПО по усложнению 
-задачи анализа взаимодействия (например, добавление <<шума>> в~среду 
-функционирования ЗПО). 
-\item Использование возможности приоритета работы ВПО для действий по 
-своей маскировке перед началом функционирования ЗПО путем 
-модификации данных ОС, используемых для выявления ВПО. 
-\item Использование информации о~последовательности действий ЗПО для 
-обхода его защитных функций. 
-\item Модификация информации о взаимодействии сенсоров ЗПО с~ВПО. 
-Например, перехват IRP-па\-ке\-тов  (I/O request packets) и~их фильтрация.
-  \end{enumerate}
-  
-  В данной статье рассматриваются технологии обеспечения <<невидимости>> 
-исполняемого кода в~средах различных ОС. Реализация 
-подобных технологий в~программном коде имеет устоявшееся название~--- 
-руткит (см., например,~[1]). Актуальными являются вопросы взаимоотношения 
-ЗПО и~РТ, связанные с~возможностью его обнаружения. 
-
-\section{Взаимоотношение технологий, используемых в~защитном программном
-обеспечении и~руткитах}
-  
-  Условно РТ можно классифицировать следующим образом~[2]:
-  \begin{itemize}
-\item стеганографические РТ;
-\item РТ, функционирующие в~ОС;
-\item РТ, функционирующие вне ОС.
-  \end{itemize}
-  
-  Стеганографические РТ в~данной работе не рассматриваются.
-  
-  На основе анализа программно-аппаратной архитектуры современных 
-ОС в~работе делается следующий вывод. В~случае если ЗПО 
-получило процессорные ресурсы раньше РТ и~находится на уровне ниже или 
-таком же, как и~РТ, то ЗПО может детектировать~РТ.
-  
-  Если РТ загрузился раньше ЗПО, он может использовать перечисленные 
-выше действия и~либо блокировать загрузку ЗПО, либо создать эмуляцию 
-отсутствия РТ относительно ЗПО. Задача идентификации РТ ЗПО идентична 
-задаче идентификации ЗПО РТ и~ЗПО ВПО в~целом. Кроме того, на практике 
-задача идентификации ЗПО проще ввиду его общедоступности и~известным 
-алгоритмам поведения.
-  
-  На примере ОС двухуровневой архитектуры (Windows NT, Linux, Mac~OS 
-и~т.\,п.) рассмотрены модификации источников данных ОС с~целью 
-воспрепятствования детектированию РТ ЗПО, функционирующих в~кольце~0. 
-Отметим, что создание полной эмуляции в~данной архитектуре ОС в~кольце~0 
-для ЗПО невозможно (как минимум для аппаратной архитектуры x86, x86-64) 
-по причине того, что в~случае получения ЗПО процессорного времени ЗПО 
-получит доступ к процессору и~сможет проанализировать оперативную память, 
-что не может быть эмулировано РТ ввиду невозможности виртуализации 
-таблицы векторов прерываний (Interrupt Descriptor Table~--- IDT).
-  
-  Таким образом, для ОС двухуровневой архитектуры можно отметить, что 
-ЗПО, работающее в~кольце~0, при условии, что не нарушена его целостность 
-и~оно первым получает процессорное время, может обнаружить РТ, в~случае 
-если РТ в~момент получения процессорного времени ЗПО присутствует 
-в~системе.
-  
-  Обоснование этого утверждения является крайне важным для подобных 
-архитектур, ввиду того что оно опровергает распространенную гипотезу~[3--5], 
-утверждающую, что возможно существование РТ, не обнаружимых для ЗПО, 
-в~случае более ранней загрузки РТ.
-  
-  Кроме того, если не используется обфускация, то РТ, хранящийся и/или 
-хранящий информацию на жестком диске, детектируется путем сканирования 
-жесткого диска средствами ОС и~низкоуровневыми командами с~последующим 
-сравнением результатов двух способов. 
-  
-  В настоящее время используется РТ вне ОС, например возможно 
-существование РТ, работающего на уровне гипервизора, работающего под ОС, 
-который не может быть обнаружен ЗПО, работающим в~ОС.
-  
-  Отметим, что необходимы тематические исследования оборудования, 
-в~частности процессора, с~целью обнаружения следов функционирования 
-программного кода. На текущий момент известен более низкий уровень ВПО 
-для процессора по сравнению с~уровнем гипервизора~--- SMM (system management mode)~[6, 7]. Также 
-известно, что микрокод процессора можно обновлять~[8] с~целью выявления 
-возможных мест хранения РТ (на текущий момент известны техники, 
-эксплуатирующие видеоадаптеры, контроллеры жестких дисков~[9], что 
-выходит за рамки данной работы, но полученные результаты будут верны и~для 
-результатов данных тематических исследований).
-
-\vspace*{-4pt}
-  
-\section{Построение модельного руткита}
-
-\vspace*{-2pt}
-
-  На примере Windows NT рассмотрим, насколько эффективно ЗПО для данной 
-ОС детектирует РТ в~кольце~0. С~этой целью построим модельный РТ, 
-использующий указанные выше возможности преодоления ЗПО. 
-  
-  В Windows NT взаимодействие уровня пользователя и~уровня ядра 
-происходит при помощи диспетчера системных вызовов. Для вызова функций 
-ядра используется специальная инструкция процессора {\sf sysenter} либо 
-прерывание {\sf int~2E}, после чего диспетчер системных вызовов находит 
-необходимую функцию по номеру в~одном из двух дескрипторов системных 
-сервисов:\linebreak {\sf KeServiceDescriptorTable} и~{\sf KeServiceDescriptorTableShadow}. Каждый 
-из них содержит~4~таблицы, из которых в~{\sf KeServiceDescriptorTable} 
-используется первая из них, а~в~{\sf KeServiceDescriptorTableShadow} используются 
-первая и~вторая. Формат структуры, описывающий каждую таблицу, представлен в листинге~1. 
-  
-  \renewcommand{\tablename}{\protect\bf Листинг}
-  \begin{table}[b]\small %tabl1
-  \vspace*{-6pt}
-  \begin{center}
-  
-  
-  %\vspace*{2ex}
-  
-  \begin{tabular}{|l|}
-  \hline
-  \\[-7pt]
-{\sf typedef struct SERVICE\_DESCRIPTOR\_ENTRY}\\
-\{\\
-{\sf PVOID *Base};\\
-{\sf PULONG Count};\\
-{\sf ULONG Limit};\\
-{\sf PUCHAR Number};\\
-\} {\sf SERVICE\_DESCRIPTOR\_ENTRY},\\
-{\sf *PSERVICE\_DESCRIPTOR\_ENTRY}\\
-\hline
-\end{tabular}
-
-\vspace*{-3pt}
-
-\parbox{206pt}{\Caption{Описание структуры\protect\linebreak {\sf KeServiceDescriptorTable}}
-  }
-\end{center}
-\end{table}
-
-  
-  Поле {\sf Base} содержит указатель на таблицу адресов функций, которые 
-вызываются при обработке системного вызова.
-  
-  При создании потока поле {\sf ServiceTable} структуры {\sf ETHREAD.Tcb} 
-заполняется адресом {\sf KeServiceDescriptorTable} (см.\ листинг~2).
-  \begin{table}\small %tabl2
-  \begin{center}
-    
-  \begin{tabular}{|l|}
-  \hline
-  \\[-9pt]
-{\sf nt!KeInitThread+0x65}\\
-{\sf 82d3e103 c786bc000000007bb882 mov dword ptr [esi+0BCh]}, \\
-    \hspace*{5mm}{\sf offset nt!KeServiceDescriptorTable (82b87b00)}\\
-\hline
-\end{tabular}
-
-\vspace*{-3pt}
-
-
-\parbox{274pt}{\Caption{Заполнение поля {\sf ServiceTable} в~функции 
-инициализации потока ОС}
-}
-
-\end{center}
-\vspace*{-3pt}
-\end{table}
-
-  \begin{table}[h]\small %tabl3
-  \begin{center}
-
-%  \vspace*{2ex}
-  
-  \begin{tabular}{|l|}
-  \hline
-  \\[-9pt]
-{\sf nt!PsConvertToGuiThread+0x4e}\\
-{\sf 82c96165\ c786bc000000407bb882\ mov dword ptr [esi+0BCh]},\\
-\hspace*{5mm}{\sf offset\ nt!KeServiceDescriptorTable (82b87b40)}\\
-\hline
-\end{tabular}
-
-\vspace*{-3pt}
-
-\parbox{276pt}{\Caption{Модификация поля {\sf ServiceTable} потока в~функции {\sf PsConvertToGuiThread}}
-}
-\end{center}
-\vspace*{-9pt}
-\end{table}
-\begin{table}[b]\small %tabl4
-\vspace*{-6pt}
-\begin{center}
-
-%\vspace*{2ex}
-
-\tabcolsep=9pt
-\begin{tabular}{|l|}
-\hline
-\\[-9pt]
-{\sf dps nt!KeServiceDescriptorTable}\\
-{\sf 82bb1b00  82ac643c nt!KiServiceTable}\\
-{\sf 82bb1b04  00000000}\\
-{\sf 82bb1b08  00000191}\\
-{\sf 82bb1b0c  82ac6a84 nt!KiArgumentTable}\\
-{\sf dps 82ac643c L 10a}\\
-{\sf 82ac643c  82cc1fcf nt!NtAcceptConnectPort}\\
-{\sf 82ac6440  82b09855 nt!NtAccessChec}\\
-$\ldots$\\
-{\sf 82ac6848  82d4cc53 nt!NtQuerySystemEnvironmentValue}\\
-{\sf 82ac684c  82d4d247 nt!NtQuerySystemEnvironmentValueEx}\\
-{\sf 82ac6850  9dd0c2b0 drv!new\_ZwQuerySystemInformation}\\
-{\sf 82ac6854  82cb2174 nt!NtQuerySystemInformationEx}\\
-{\sf 82ac6858  82cbfe9e nt!NtQuerySystemTime}\\
-{\sf 82ac685c  82d5354e nt!NtQueryTimer}\\
-\hline
-\end{tabular}
-
-
-\vspace*{-3pt}
-
-\parbox{274pt}{\Caption{Перечень функций для обработки системных вызовов расположенных 
-в~{\sf KeServiceDescriptorTable.Base}}
-}
-\end{center}
-\end{table}
-  
-  
-  В случае если поток использует графическую подсистему, то при первом 
-вызове системного вызова подсистемы Win32 происходит вызов функции 
-\mbox{{\sf PsConvertToGuiThread}}, которая заменяет значение поля {\sf ServiceTable} на 
-\mbox{{\sf KeServiceDescriptorTableShadow}} (см.\ листинг~3).
-
-  
-  Реализуем модельный РТ, который модифицирует в~таблице диспетчеризации 
-системных служб указатель на функцию {\sf ZwQuerySystemInformation} с~целью 
-сокрытия всех процессов в~ОС.
-  
-  В качестве ЗПО выберем TrendMicro Rootkit Buster~v5.0.0 build~1180, 
-последней доступной на момент написания данной работы версии. 
-  
-  В случае непосредственной модификации соответствующего указателя на 
-{\sf ZwQuerySystemInformation} в~{\sf KeServiceDescriptorTable.Base} (см.\ листинг~4)
-ЗПО сообщает о~22~угрозах (рис.~1).
-
-
-
-  
-  \begin{figure} %fig1
-      \vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=125mm
- \epsfbox{gil-1.eps}
- }
-\end{center}
- \vspace*{-11pt}
-\Caption{Реакция ЗПО на сокрытие всех процессов в~системе}
-\end{figure}
-  \begin{table}[b]\small %tabl5
-\begin{center}
-
-%\vspace*{2ex}
-
-\tabcolsep=9pt
-\begin{tabular}{|l|}
-\hline
-\\[-9pt]
-{\sf NTSTATUS} \\
-{\sf PsSetCreateThreadNotifyRoutine}(\\
-\hspace*{5mm}{\sf IN PCREATE\_THREAD\_NOTIFY\_ROUTINE NotifyRoutine}\\
-);\\
-\hline
-\end{tabular}
-
-\vspace*{-3pt}
-
-\parbox{286pt}{\Caption{Прототип нотификатора, предоставляемого ОС 
-для события создания и~удаления  потока}
-}
-\end{center}
-\vspace*{3pt}
-%\end{table}
-%\begin{table}\small %tabl6
-  \begin{center}
-
-%\vspace*{2ex}
-
-\tabcolsep=26pt
-\begin{tabular}{|l|}
-  \hline 
-  \\[-9pt]
-*({\sf PVOID}*)(({\sf PUCHAR}){\sf Ethread}\;+\;{\sf ServieTableOffset})\;=\;\\
-{\sf NewKeServiceDescriptorTable};\\
-\hline
-\end{tabular}
-
-\vspace*{-3pt}
-
-  \parbox{286pt}{\Caption{Пример кода для модификация поля 
-  {\sf ServiceTable} структуры {\sf KTHREAD} потока}
-}
-\end{center}
-\end{table}
-
-  Модифицируем технику сокрытия. С~учетом изложенного выше подменим 
-указатель значения указателя {\sf ServiceTable} структуры {\sf ETHREAD.Tcb} каждого 
-потока, за исключением потоков ЗПО. Для этого зарегистрируем нотификатор на 
-создание потока (листинг~5).
-
-  
-  Таким образом, при создании каждого потока получаем адрес {\sf ETHREAD} 
-и~заменяем поле {\sf ServiceTable} (листинг~6).
-
-\begin{table}\small %tabl7
-\begin{center}
-
-%\vspace*{2ex}
-
-\tabcolsep=18pt
-\begin{tabular}{|lll|}
-\hline
-\\[-9pt]
-\multicolumn{3}{|l|}{{\sf nt!KiBBTUnexpectedRange:}}\\
-{\sf 82a85572 83f910}&{\sf  cmp }    &{\sf ecx,10h}\\
-{\sf 82a85575 753d}   &   {\sf jne}&\\
-\multicolumn{3}{|l|}{{\sf nt!KiBBTUnexpectedRange+0x42 (82a855b4)}}\\
-{\sf 82a85577 52} &       {\sf push}    &   {\sf edx}\\
-{\sf 82a85578 53} &     {\sf   push}    &   {\sf ebx}\\
-{\sf 82a85579\ e80262da1c}    &{\sf call}&\\
-\multicolumn{3}{|l|}{{\sf drv!NewPsConvertToGuiThread (9f82b780)}}\\
-{\sf 82a8557e 0bc0}   & {\sf   or}  &   {\sf eax,eax}\\
-{\sf 82a85580 58}     &   {\sf pop} & {\sf eax}\\
-{\sf 82a85581 5a} &   {\sf pop}&  {\sf       edx}\\
-\hline
-\end{tabular}
-
-\vspace*{-3pt}
-
-\parbox{256pt}{\Caption{Модификация 
-{\sf PsConvertToGuiThread} в~функции {\sf KiBBTUnexpectedRange}}
-
-}
-\end{center}
-%\end{table}
-%\begin{figure} %fig2
-%\renewcommand{\figurename}{\protect\bf Рис.}
-\setcounter{table}{1}
-\renewcommand{\tablename}{\protect\bf Рис.}
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=112.667mm
- \epsfbox{gil-2.eps}
- }
-\end{center}
- \vspace*{-11pt}
-\Caption{Модифицированная техника сокрытия}
-\end{table}
-
-\renewcommand{\figurename}{\protect\bf Рис.}
-\renewcommand{\tablename}{\protect\bf Листинг}
-
-\addtocounter{figure}{1}
-\setcounter{table}{7}
-  
-  
-  Для Win32-потоков необходимо найти и~подменить {\sf PsConvertToGuiThread} (см.\ листинг~7).
-
-
-  В данной функции необходимо выставлять значение {\sf ServiceTable} потока на 
-{\sf KeServiceDescriptorTableShadow} (рис.~2).
-
-
-
-  На примере диспетчера задач посмотрим, как изменилось значение 
-\mbox{{\sf ServiceTable}} в~его потоках (см.\ листинг~8).
-  \begin{table}\small  %tabl8
-  \begin{center}
-
-%\vspace*{2ex}
-  
-  \begin{tabular}{|l|}
-  \hline
-  \\[-9pt]
-{\sf !process 0 2 taskmgr.exe}\\
-{\sf PROCESS 86668730  SessionId: 1  Cid: 0fb8    Peb:}\\
-{\sf 7ffd7000  ParentCid: 01e0}\\
-    \hspace*{5mm}{\sf DirBase: 3f021440  ObjectTable: 949e1750}\\
-{\sf HandleCount: 112.}\\
-    \hspace*{5mm}{\sf Image: taskmgr.exe x}\\
-\\
-        \hspace*{10mm}{\sf THREAD 86fa1d48  Cid 0fb8.0fbc  Teb: 7ffdf000}\\
-{\sf Win32Thread: fe5a6550 WAIT: (WrUserRequest) UserMode Non-Alertable}\\
-    \hspace*{15mm}{\sf 85760030  SynchronizationEvent}\\
-    \hspace*{10mm}{\sf THREAD 86d4bd48  Cid 0fb8.0fd8  Teb: 7ffd9000}\\
-{\sf Win32Thread: 00000000 WAIT: (WrQueue) UserMode Alertable}\\
-    \hspace*{15mm}{\sf 86792200  QueueObject}\\
-              \\
-{\sf dps 86fa1d48+0xbc}\\
-{\sf 86fa1e04  86dc65a0}\\
-\\
-{\sf dps 86dc65a0}\\
-{\sf 86dc65a0  867419b8}\\
-{\sf 86dc65a4  00000000}\\
-{\sf 86dc65a8  00000191}\\
-{\sf 86dc65ac  82ac6a84 nt!KiArgumentTable}\\
-{\sf 86dc65b0  92e6c000 win32k!W32pServiceTable}\\
-{\sf 86dc65b4  00000000}\\
-{\sf 86dc65b8  00000339}\\
-{\sf 86dc65bc  92e6d02c win32k!W32pArgumentTable}\\
-{\sf dps 867419b8 L 10a}\\
-{\sf 867419b8  82cc1fcf nt!NtAcceptConnectPort}\\
-$\ldots$\\
-{\sf 86741dcc  9f82a2b0 drv!new\_ZwQuerySystemInformation} \\
-$\ldots$\\
-{\sf 86741ddc  82c35874  nt!NtQueryTimerResolution}\\
-\hline
-\end{tabular}
-
-\vspace*{-3pt}
-
-\parbox{330pt}{\Caption{Модификация поля {\sf ServiceTable} структуры {\sf KTHREAD} потоков 
-процесса {\sf taskmgr.exe} с~целью сокрытия процессов}
-}
-\end{center}
-\vspace*{-12pt}
-\end{table}
-
-  Таким образом, модификация успешно произошла. 
-  
-  При применении данной техники реакция ЗПО отсутствует (рис.~3).
-
-
-  Построим ЗПО, детектирующее РТ кольца~0. Рассмотрим механизм 
-сис\-тем\-ных вызовов и~организацию стека драйверов Windows NT для 
-определения перечня параметров~\cite{10-g}, которые необходимо проверять 
-ЗПО для обнаружения~РТ.
-
-\begin{figure} %fig3
-\vspace*{1pt}
- \begin{center}
- \mbox{%
- \epsfxsize=125mm
- \epsfbox{gil-3.eps}
- }
-\end{center}
- \vspace*{-11pt}
-\Caption{Отсутствие реакции ЗПО на сокрытие всех процессов в~ОС}
-\end{figure}
-
-
-
-  
-  Как было рассмотрено выше, переход на уровень ядра происходит путем 
-вызова либо специальной инструкции процессора {\sf sysenter}, либо специально 
-зарегистрированного прерывания {\sf int~2Eh}. 
-В~современных ОС на базе Windows NT используется только {\sf sysenter}, обработчик 
-прерывания {\sf int~2Eh} сохранен для обеспечения обратной совместимости
-(см.\ листинг~9).
-\begin{table}\small %tabl9
-\vspace*{3pt}
-\begin{center}
-
-%\vspace*{2ex}
-
-%\tabcolsep=10pt
-\begin{tabular}{|lll|}
-\hline
-&&\\[-9pt]
-\multicolumn{3}{|l|}{{\sf ntdll!NtQuerySystemInformation:}}\\
-{\sf 77901e20 b89a000000}&{\sf     mov}&    {\sf eax,9Ah}\\
-{\sf 77901e25 e803000000}&    {\sf call}&\\
-\multicolumn{3}{|l|}{{\sf ntdll!NtQuerySystemInformation+0xd (77901e2d)}}\\
-{\sf 77901e2a c21000} &  {\sf  ret} &{\sf 10h}\\
-{\sf 77901e2d 8bd4  } &  {\sf  mov}&  {\sf   edx,esp}\\
-{\sf 77901e2f 0f34  }     &   {\sf sysenter}&\\
-\hline
-\end{tabular}
-
-\vspace*{-3pt}
-
-\parbox{224pt}{\Caption{Вызов в~{\sf sysenter} функции\protect\linebreak 
-{\sf NtQuerySystemInformation} из библиотеки {\sf ntdll}}
-}
-\end{center}
-\vspace*{-3pt}
-\end{table}
-
-
-
-     Инструкция {\sf sysenter} использует три {\sf msr}-ре\-гист\-ра процессора~\cite{11-g}:
-     \begin{enumerate}[(1)]
-\item {\sf IA32\_SYSENTER\_CS}~--- номер {\sf 174h}, устанавливает {\sf cs};
-\item {\sf IA32\_SYSENTER\_ESP}~--- номер {\sf 175h}, устанавливает {\sf esp};
-\item {\sf IA32\_SYSENTER\_EIP}~--- номер {\sf 176h}, устанавливает {\sf eip}.
-\end{enumerate}
-
-
-
-\begin{table}\small %tabl10
-\begin{minipage}[b]{60mm}%\vspace*{3pt}
-\begin{center}
-%\vspace*{2ex}
-\begin{tabular}{|l|}
-\hline
-\\[-9pt]
-{\sf !idt 2e}\\[-6pt]
-\\
-{\sf Dumping IDT:\ 80427400}\\[-6pt]
-\\
-{\sf dd0c68c00000002e:\ 8133c965}\\
-{\sf nt!KiSystemService} \\
-\hline
-\end{tabular}
-%\parbox{220pt}
-\Caption{Содержание таблицы {\sf IDT} по номеру {\sf 0x2Eh}}
-%}
-\end{center}
-%\vspace*{-3pt}
-%\end{table}
-\end{minipage}
-\hfill
-%\begin{table}[h]\small %tabl11
-\begin{minipage}[b]{60mm}
-  \begin{center}
- %  \vspace*{2ex}
- % \tabcolsep=42pt
-  \begin{tabular}{|l|}
-  \hline
-  \\[-9pt]
-{\sf rdmsr\ 176}\\
-{\sf msr[176]\;=\;00000000`8133ca50}\\
-{\sf u\ 8133ca50}\\
-{\sf nt!KiFastCallEntry}\\
-\hline
-\end{tabular}
- %\parbox{220pt}
- \Caption{Содержание {\sf msr}-регистра с~номером~176}
- \end{center}
- \end{minipage}
- \vspace*{-6pt}
-\end{table}
-
-%\renewcommand{\figurename}{\protect\bf Рис.}
-%\renewcommand{\tablename}{\protect\bf Листинг}
-%\setcounter{table}{11}
-
-  Таким образом, необходимо контролировать корректность обработчика 
-прерывания по номеру {\sf 0x2Eh} в~таблице {\sf IDT} (см.\ листинг~10), а~также значение 
-{\sf msr}-ре\-гист\-ра с~номером~{\sf 176h}, поскольку при системном вызове регистр {\sf eip} 
-устанавливает значение данного регистра (см.\ листинг~11).
-  
-
-  Получаем, что {\sf nt!KiFastCallEntry} и~{\sf nt!KiSystemService} являются точками 
-входа диспетчера системных вызовов. Диспетчер системных вызовов находит 
-необходимую для вызова функцию в~специальных таблицах по 
-соответствующим номерам. Данный механизм подробно описан выше. Отсюда 
-понятно, что необходимо контролировать значение указателей на функции 
-{\sf nt!KiServiceTable} для функций ядра и~{\sf win32k!W32pServiceTable} для 
-графической подсистемы.
-  
-  Проанализировав точку входа в~диспетчер системных вызовов, можно 
-заметить, что значение дескриптора системного сервиса берется из структуры 
-{\sf ETHREAD.Tcb} текущего потока, которое, в~свою очередь, устанавливается при 
-создании потока в~функции {\sf KeInitThread} (см.\ листинг~12).
-
-  \begin{table}[h]\small %tabl12
-  \vspace*{3pt}
-  \begin{center}
-
-%  \vspace*{2ex}
-  
-  \begin{tabular}{|lll|}
-  \hline
-  &&\\[-9pt]
-\multicolumn{3}{|l|}{{\sf u nt!KiFastCallEntry\;+\;0xA5 L A}}\\
-\multicolumn{3}{|l|}{{\sf nt!KiFastCallEntry+0xa5:}}\\
-{\sf 8133caf5 fb }&    {\sf    sti}&\\
-{\sf 8133caf6 8bf8   }    &   {\sf mov}&{\sf     edi,eax}\\
-{\sf 8133caf8 c1ef08} &   {\sf shr}&   {\sf  edi,8}\\
-{\sf 8133cafb 83e710} &{\sf    and}&{\sf     edi,10h}\\
-{\sf 8133cafe 8bcf    }   &   {\sf mov}&   {\sf  ecx,edi}\\
-{\sf 8133cb00 037e3c }&  {\sf  add}& {\sf    edi,dword ptr [esi+3Ch]}\\
-{\sf 8133cb03 8bd8   }&   {\sf mov}&    {\sf ebx,eax}\\
-{\sf 8133cb05 25ff0f0000} &  {\sf  and}& {\sf    eax,0FFFh}\\
-{\sf 8133cb0a 3b4708 }&   {\sf cmp}&   {\sf  eax,dword ptr [edi+8]}\\
-{\sf 8133cb0d 0f83f1f9ffff}&{\sf   jae} &{\sf    nt!KiEndUnexpectedRange  
-(8133c504)}\\
-\multicolumn{3}{|l|}{{\sf nt!KeInitThread+0x5e:}}\\
-{\sf 818f3494 c7473cc0b28e81}&{\sf     mov} &{\sf    dword ptr} \\
-\multicolumn{3}{|l|}{{\sf [edi+3Ch],offset nt!KeServiceDescriptorTable (818eb2c0)}}\\
-\hline
-\end{tabular}
-  \parbox{320pt}{\Caption{Использование поля {\sf ServiceTable} 
-  структуры {\sf KTHREAD} потока при системном  вызове}}
-\end{center}
- \vspace*{-6pt}
-\end{table}
-
-  Отсюда получаем, что необходимо контролировать также значение указателя 
-{\sf ServiceTable} в~структуре {\sf ETHREAD.Tcb} всех потоков в~системе.
-  
-  Были рассмотрены возможные точки модификации потока исполнения 
-в~реализации системного вызова. Рассмотрим аспекты, связанные с~начальной 
-инициализацией данных ядра. Возможные следующие механизмы модификации:
-  \begin{itemize}
-\item сплайсинг~\cite{10-g} кода диспетчера системных вызовов 
-и~функ\-ций-обра\-бот\-чиков;\\[-15pt]
-\item модификация указателей на {\sf KeServiceDescriptorTable}\linebreak 
-и \mbox{\sf KeServiceDescriptorTableShadow} в~ядре.
-\end{itemize}
-
-   Отсюда имеем, что необходимо контролировать целостность ядра путем 
-сравнения с~внешним эталоном и~проверять корректность указателей в~ядре на 
-{\sf KeServiceDescriptorTable} и~{\sf KeServiceDescriptorTableShadow}.
-  
-  Итак, был рассмотрен поток исполнения системного вызова либо до ядерной 
-структуры, либо до драйвера устройства. Существуют техники 
-непосредственной модификации ядерных структур (технологии 
-DROM~--- data read only memory~\cite{12-g}), однако полное сокрытие в~данном случае недостижимо 
-ввиду необходимости работы с~ними непосредственно ОС. 
-Рассмотрим более подробно драйверную подсистему Windows NT.
-  
-  Драйверная подсистема Windows NT имеет стековую архитектуру. Драйверы 
-для устройства могут организовываться в~цепочку и~взаимодействовать друг 
-с~другом посредством специального протокола IRP под управлением подсистемы 
-ввода/вывода Windows~\cite{10-g}. В~каждом драйвере представлен ряд 
-функ\-ций-обработчиков IRP-па\-ке\-тов. Таким образом, получается, что 
-необходимо контролировать:
-  \begin{itemize}
-\item легальность устройств-фильт\-ров, присоединенных к целевому 
-устройству;
-\item корректность указателей на IRP-обра\-бот\-чи\-ки в~дескрипторе 
-драйверов;
-\item модификации IRP-обработчиков драйверов.
-\end{itemize}
-
-  Суммируя изложенное выше, при отсутствии недекларированных возможностей 
-  получаем, что для 
-детектирования РТ ЗПО необходимо контролировать следующие параметры:
-  \begin{itemize}
-\item значения указателей на функции в~{\sf KiServiceTable};
-\item значения {\sf msr}-регистров, относящихся к инструкции {\sf SYSENTER};
-\item корректность значений {\sf IDT};
-\item значение указателя {\sf ServiceTable} в~структуре {\sf ETHREAD.Tcb};
-\item корректность указателей на {\sf KeServiceDescriptorTable}\linebreak 
-и~\mbox{\sf KeServiceDescriptorTableShadow} в~{\sf KeInitThread} и~{\sf PsConvertToGuiThread};
-\item модификации кода диспетчера системных вызовов;
-\item модификации функций-обработчиков системного вызова;
-\item легальность устройств-фильт\-ров, присоединенных к целевому 
-устройству;
-\item корректность указателей на IRP-обра\-бот\-чи\-ки в~дескрипторе 
-драйверов;
-\item модификации IRP-обработчиков драйверов.
-\end{itemize}
-
-
-\section{Модель случайного ограничения возможностей вредоносного программного обеспечения}
-
-  Несмотря на то что теоретически контроль основных параметров ядра ОС 
-с~помощью ЗПО возможен, на практике могут возникать большие 
-вычислительные трудности. В~связи с~этим возможность полного контроля за 
-один квант машинного времени практически не достижима. Отметим, что, 
-несмотря на то что ВПО, обладающее достаточными привилегиями, имеет 
-воз\-мож\-ность воздействовать на механизм распределения процессорного 
-времени, с~практической точки зрения это нецелесообразно, ввиду того что 
-оказывает значительное влияние на производительность ОС.
-  
-  Рассмотрим возможность последовательного контроля основных параметров, 
-позволяющих идентифицировать наличие ВПО в~ядре ОС. Предположим, что 
-таких параметров~$N$, время дискретно и~на проверку одного параметра 
-затрачивается одно и~то же время~$\tau$. Тогда на последовательный просмотр 
-всех параметров требуется $N\tau$ времени. Пусть ЗПО способно 
-проанализировать корректность одного параметра за один квант машинного 
-времени. Если фиксировать порядок проверки, то РТ может со временем 
-определить этот порядок и~использовать эту информацию для <<обмана>> ЗПО. 
-Единственный способ не допустить воз\-мож\-ности такой атаки РТ на ЗПО~--- это 
-случайная генерация номеров контролируемого процесса. Однако построение 
-вероятностной модели, позволяющей обойти все контролируемые параметры по 
-одному разу в~случайном порядке, достаточно сложно. 
-  
-  Самой простой схемой является независимый и~равновероятный выбор 
-контролируемого параметра на каждом шагу контроля. Такой подход увеличит 
-время обхода всех контролируемых параметров, но значительно упростит 
-реализацию процесса выбора контролируемого параметра. В~качестве 
-генератора случайных чисел можно использовать ка\-кой-ли\-бо случайный 
-процесс в~компьютере или генератор псевдослучайных чисел, построенный на 
-однонаправленной функции. 
-{\looseness=1
-
-}
-  
-  В~этой модели можно использовать результаты классической задачи 
-о~размещениях~[13]. Согласно~[13], время~$v_N$ реализации контроля всех 
-необходимых параметров имеет следующие математическое ожидание 
-и~дисперсию: 
-  \begin{equation}
-  {\sf E} v_N = N\sum\limits_{i=1}^N \fr{1}{i}\,;\quad {\sf D}v_N= 
-N^2\sum\limits_{i=1}^N \fr{1}{i^2}-{\sf E}v_N\,.
-  \label{e1-g}
-  \end{equation}
-  
-  При $N\to\infty$ формулы~(\ref{e1-g}) принимают вид:
-  \begin{equation}
-  {\sf E}v_N= N\ln N +O(N)\,;\quad {\sf D}v_N=\fr{\pi^2}{6}\,N^2 -N\ln N+O(N)\,.
-  \label{e2-g}
-  \end{equation}
-  
-  Из приведенных результатов следует, что использование независимого 
-равновероятного выбора очередного параметра контроля приводит 
-к~незначительному увеличению времени обхода всех контролируемых 
-параметров. 
-  
-  Данный подход можно обобщить, если за один квант выделяемого 
-машинного времени система контроля может 
-просмотреть~$k$~контролируемых параметров. При независимом и~
-равновероятном выборе $k$ параметров контроля время контроля всех параметров 
-увеличивается (см.~(\ref{e2-g})), но возможности ВПО по обману ЗПО 
-значительно сокращаются.
-
-
-
-\section{Заключение}
-
-
-  В данной работе были проанализированы технологии взаимодействия 
-исполняемого вредоносного кода и~ЗПО. Для ОС двухуровневой архитектуры, 
-которые наиболее распространены на текущий момент, обоснован результат, 
-состоящий в~том, что если РТ целевым образом не воздействует на ЗПО, то ЗПО 
-не всегда может его обнаружить. Несмотря на теоретический характер этого 
-результата, практически контроль не достигается в~реализациях современного 
-ЗПО. Это демонстрируется в~данной работе путем конструирования модельного 
-РТ для одной общедоступной реализации ЗПО. Отсюда следует, что существует 
-потребность в~разработке практических правил построения ЗПО, 
-обеспечивающих практически необходимый контроль над ВПО. 
-
-
-  
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-
-  \bibitem{1-g}
-  \Au{Hoglund G., Butler J.} Rootkits: Subverting the windows kernel.~--- 
-Addison-Wesley Professional, 2007. 352~p. 
-  \bibitem{2-g}
-  \Au{Rutkowska J.} Introducing stealth malware taxonomy~/\!\!/ Help Net Security, 
-2006. {\sf http://www.net-security.org/dl/articles/malware-taxonomy.pdf}.
-\bibitem{3-g}
-\Au{Lau H.} Are MBR infections back in fashion?~/\!\!/ Symantec Corporation, 
-2011. {\sf 
-http://www.symantec.com/connect/blogs/are-mbr-infections-back-fashion}.
-  \bibitem{4-g}
-  \Au{Matrosov A., Rodionov E.} Modern Bootkit Trends: Bypassing kernel-mode 
-signing policy~/\!\!/ ESET, 2011. {\sf 
-  http://www.eset.com/us/resources/white-papers/Rodionov-Matrosov.pdf}.
-  \bibitem{5-g}
-  \Au{Голованов С., Русаков В.} Атаки до загрузки системы~/\!\!/ 
-SECURELIST, 2014. {\sf 
-  https://securelist.ru/blog/issledovaniya/20151/ataki-do-zagruzki-sistemy}.
-  \bibitem{6-g}
-  \Au{Collins R.\,R.} Intel's system management mode. 1997. {\sf 
-http://www.rcollins.org/ddj/ Jan97/Jan97.html}.
-  \bibitem{7-g}
-  \Au{Embleton S., Sparks S.} SMM rootkits. 2008. {\sf 
-http://www.hakim.ws/BHUSA08/ speakers/Embleton\_Sparks\_SMM\_Rookits/BH\_US\_08\_Embleton\_Sparks\_ SMM\_Rootkits\_WhitePaper.pdf}.
-  \bibitem{8-g}
-  Intel(R) 64 and IA-32 Architectures Software Developer's Manual. Vol.~3A: 
-System Programming Guide. Pt.~1. Ch.~9.11: Microcode update facilities.~--- 
-Intel(R), 2015. P.~432--463. 
-  \bibitem{9-g}
-  \Au{Menn J.} Russian researchers expose breakthrough U.S.\ spying program. 
-2015. {\sf 
-  http://www.reuters.com/article/2015/02/16/us-usa-cyberspying-idUSKBN0LK1QV20150216}. 
-  \bibitem{10-g}
-  \Au{Russinovich M., Solomon D.\,A., Ionescu~A.} Windows internals.~--- 6th 
-ed.~--- Microsoft Press Publ., 2012. 752~p.
-  \bibitem{11-g}
-  Intel(R) 64 and IA-32 Architectures Software Developer's Manual. Vol.~3C: 
-System Programming Guide. Pt.~3. Ch.~34.1.~--- Intel(R), 2015. P.~209--210.
-
-\pagebreak
-
-  \bibitem{12-g}
-  \Au{Blunden B.} The rootkit arsenal: Escape and evasion in the dark corners of 
-the system.~--- Jones\,\&\,Bartlett Learning Publ., 2009. 908~p.
-  \bibitem{13-g}
-  \Au{Колчин В.\,Ф., Севастьянов Б.\,А., Чистяков~В.\,П.} Случайные 
-размещения.~--- М.: Наука, 1976. 224~с.
-\end{thebibliography}
-} }
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 19.08.15}}
-
-
-
-
-\vspace*{9pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{9pt}
-
-
-
-
-\def\tit{PROBLEMS OF INTERACTION OF~THE~MALICIOUS CODE 
-AND~PROTECTION PROGRAMS IN~ARCHITECTURE OF~MODERN 
-OPERATING SYSTEMS}
-
-\def\titkol{Problems of interaction of~the~malicious code 
-and~protection programs} % in~architecture of~modern  operating systems}
-
-
-\def\aut{R.\,R.~Giliazov$^1$ and A.\,A.~Grusho$^2$}
-
-\def\autkol{R.\,R.~Giliazov and A.\,A.~Grusho}
-
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-\noindent
-$^1$M.\,V.~Lomonosov Moscow State University,
-1-52 Leninskiye Gory, GSP-1,\linebreak
-$\hphantom{^1}$Moscow 119991, Russian Federation
-
-\noindent
-$^2$Institute of Informatics Problems,  Federal Research Center ``Computer 
-Science\linebreak
-$\hphantom{^1}$and Control'' of the Russian Academy of Sciences, 44-2 Vavilov Str.,
-Moscow\linebreak
-$\hphantom{^1}$119333, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2015 vol~25 no\,3}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics   2015   vol~25   no\,3
-\hfill \textbf{\thepage}}}
-
-  \Abste{The paper considers the interaction between malware and 
-  security software environments of modern operating systems. In particular, 
-  a~number of aspects which are related to the software module that provides 
-  an opportunity for sustainable and undetectable presence of the offender in 
-  computer systems is considered. A~number of statements is made about relationships 
-  between the technologies used in security software and ensuring ``invisibility'' 
-  of the executable malicious code. The possibility of undetectable rootkit presence 
-  in modern security software is shown on practice. In addition, the mechanism 
-  of system calls and drivers subsystem of Windows NT is analyzed. Furthermore, 
-  necessary practical requirements for implementation of security software are 
-  developed. The model of random restriction of malicious software for security 
-  software is constructed.} 
-  
-  \KWE{information security; security software; malicious software; rootkit; 
-  antivirus; technologies of hiding execution code}
-
-    \DOI{10.14357\!/\!08696527150306}
-
-%\vspace*{-24pt}
-
-
-\Ack
-\noindent
-The paper was partly supported by the Russian Foundation for Basic Research  
-(project 15-07-02053).
-
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-   \bibitem{1-g-1}
-  \Aue{Hoglund, G., and J.~Butler}. 2007. \textit{Rootkits: Subverting the windows 
-kernel}. Addison-Wesley Professional Publ. 352~p. 
-  \bibitem{2-g-1}
-  \Aue{Rutkowska, J.} 2006. Introducing stealth malware taxonomy. Help net 
-security. Available at: {\sf 
-  http://www.net-security.org/dl/articles/malware-taxonomy.pdf} (accessed 
-August~17, 2015).
-  \bibitem{3-g-1}
-  \Aue{Lau, H.} 2011. Are MBR infections back in fashion? 
-\textit{Symantec Corporation}. Available at: {\sf 
-http://www.symantec.com/connect/blogs/are-mbr-infections-back-fashion} (accessed 
-August~17, 2015).
-  \bibitem{4-g-1}
-  \Aue{Matrosov, A., and~E.~Rodionov}. 2011. Modern Bootkit Trends: Bypassing 
-kernel-mode signing policy. \textit{ESET}. Available at: {\sf 
-http://www.eset.com/us/resources/white-papers/Rodionov-Matrosov.pdf} (accessed 
-August~17, 2015).
-  \bibitem{5-g-1}
-  \Aue{Golovanov, S., and V.~Rusakov}. 2014. Ataki do zagruzki sistemy 
-[Attacks before loading of system]. \textit{SECURELIST}. Available at: {\sf 
-https://securelist.ru/blog/ issledovaniya/20151/ataki-do-zagruzki-sistemy/} (accessed 
-August~17, 2015).
-  \bibitem{6-g-1}
-  \Aue{Collins, R.\,R.} 1997. Intel's system management mode. Available at: {\sf 
-http:// www.rcollins.org/ddj/Jan97/Jan97.html} (accessed August~17, 2015).
-  \bibitem{7-g-1}
-  \Aue{Embleton, S., and S.~Sparks}. 2008. SMM rootkits.  Available at: 
-{\sf 
-http:// www.hakim.ws/BHUSA08/speakers/Embleton\_Sparks\_SMM\_Rookits/BH\_US\_08\_ Embleton\_Sparks\_SMM\_Rootkits\_WhitePaper.pdf} (accessed 
-August~17, 2015).
-  \bibitem{8-g-1}
-  Intel(R). 2015. Intel(R) 64 and IA-32 Architectures Software Developer's Manual. Vol.~3A: 
-System Programming Guide. Pt.~1. Ch.~9.11: Microcode update facilities. 432--463. 
-  \bibitem{9-g-1}
-  \Aue{Menn, J.} 2015. Russian researchers expose breakthrough 
-U.S.\ spying program. Available at: {\sf 
-http://www.reuters.com/article/2015/02/16/us-usa-cyberspying-
-idUSKBN0LK1QV20150216} (accessed August~17, 2015). 
-  \bibitem{10-g-1}
-  \Aue{Russinovich, M., D.\,A.~Solomon, and A.~Ionescu}. 2012. \textit{Windows 
-internals}. 6th ed. Microsoft Press Publ. 752~p.
-  \bibitem{11-g-1}
-  Intel(R). 2015. Intel(R) 64 and IA-32 Architectures Software Developer's Manual. Vol.~3C: 
-System Programming Guide. Pt.~3. Ch.~34.1. 209--210.
- 
-  \bibitem{13-g-1}
-  \Aue{Blunden, B.} 2009. \textit{The rootkit arsenal: Escape and evasion in the 
-dark corners of the system}. Jones\,\&\,Bartlett Learning Publ. 908~p.
-  \bibitem{14-g-1}
-  \Aue{Kolchin, V.\,F., B.\,A.~Sevastyanov, and V.\,P.~Chistyakov}. 1976. 
-\textit{Sluchaynye razmeshcheniya} [Random placements].~--- M.: Nauka. 224~p.
-  \end{thebibliography}
-} }
-
-
-\vspace*{-1pt}
-
-\hfill{\small\textit{Received August 19, 2015}}  
-
-
-\Contr
-
-\noindent
-\textbf{Giliazov Ruslan R.} (b.\ 1989)~--- junior scientist, Faculty of Computational Mathematics 
-and Cybernetics, M.\,V.~Lomonosov Moscow State University, 1-52 Leninskiye Gory, GSP-1, 
-Moscow 119991, Russian Federation; irusrubin@gmail.com
-
-\vspace*{5pt}
-
-\noindent
-\textbf{Grusho Alexander A.} (b.\ 1946)~--- Doctor of Science in physics and mathematics, 
-professor, leading scientist, Institute of Informatics Problems,  Federal Research Center ``Computer 
-Science and Control'' of the Russian Academy of Sciences, 44-2 Vavilov Str.,
-Moscow 119333, Russian Federation; grusho@yandex.ru
-
-
- \label{end\stat}
-
-
-\renewcommand{\tablename}{\protect\bf Таблица}
-
-\renewcommand{\bibname}{\protect\rm Литература}

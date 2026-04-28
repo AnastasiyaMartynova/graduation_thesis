@@ -1,887 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru6%                 Set izven% in Eng.
-]{amsart}
-
-% remove the dot in STY-file
-
-\newcommand{\diam}{\operatorname{diam}}
-\newcommand{\dist}{\operatorname{dist}}
-\newcommand{\mes}{\operatorname{mes}}
-\newcommand{\card}{\operatorname{card}}
-\newcommand{\Int}{\operatorname{int}}
-\newcommand{\tts}[1]{}
-\renewcommand{\baselinestretch}{0.98}
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{76}
-\god{2000}
-\nomer{11~(462)} %                        Remove in Eng.
-%\nomer{Vol.\,44, No.\,11}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{519.652}
-
-\author{\it М.Р.\,Тимербаев}
-% NB:   ^^ remove in Eng.
-\title{Конечноэлементная аппроксимация\\
-в весовых пространствах Соболева}
-\thanks{Работа выполнена при финансовой поддержке 
-Российского фонда фундаментальных исследований 
-(код проекта 98-01-00260).}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-{\bf 1.} {\it  Введение.} Как известно, задача оценивания погрешности 
-схем метода конечных элементов, 
-применяемых для численного решения краевых 
-задач математической физики, сводится 
-к задаче теории аппроксимации об оценке расстояния 
-(в норме энергетического пространства) 
-между решением краевой задачи и пространством конечных 
-элементов. Эту оценку можно получить, 
-построив подходящий для анализа погрешности оператор 
-проектирования в пространство конечных элементов и 
-оценив норму разности между решением краевой задачи и его проекцией.
-Необходимым условием реализации такой схемы 
-является корректное определение проектора 
-на классе решений с запасом гладкости, определяемым 
-гладкостью входных данных. 
-Так, использование классического оператора интерполирования 
-в пространство конечных элементов требует включения 
-интерполируемой функции в класс $C^r$\; $r$ раз непрерывно 
-дифференцируемых функций, где $r$ --- максимальный порядок 
-производных, участвующих в определении конечного элемента 
-(\cite{Ciarlet}, с.\,62). Это условие даже при 
-использовании лагранжевых конечных элементов ($r=0$) 
-может стать ограничительным по причине недостаточной регулярности 
-аппроксимируемой функции, что имеет место 
-в задачах с сингулярными входными данными, например, 
-с вырождением коэффициентов 
-дифференциального оператора на границе или ее части 
-\cite{Smirnov}. Поэтому представляет интерес построение 
-процедур аппроксимации в условиях менее ограничительных, 
-чем для стандартного интерполирования, но по аппроксимативным 
-свойствам не уступающим ему. 
-
-Данная работа посвящена построению специального 
-оператора конечноэлементной 
-аппроксимации, определенного на пространстве Лебега $L_1$, 
-а также получению оценок
-погрешности этой аппроксимации для 
-функций весовых пространств Соболева. 
-Доказанные в работе оценки неулучшаемы, и в случае вложения 
-аппроксимируемого пространства в пространство 
-непрерывных функций, совпадают с оценками, установленными в работе 
-\cite{Izvuz-92} для лагранжевых $n$-симплексов с использованием 
-стандартного оператора интерполирования. 
-
-Процедура аппроксимации, 
-рассматриваемая в статье, строится с использованием средних 
-значений в общих узлах соседних элементов локальных проекций, 
-т.\,е. проекций на конечных элементах, и 
-позволяет сочетать различные методы локального проектирования 
-на разных элементах, удовлетворяющие основной 
-весовой оценке погрешности на конечном элементе (теорема~\ref{E-I_K}). 
-В частности, при использовании оператора ортогонального 
-проектирования в $L_2$ на элементе наш подход близок 
-к процедуре Клемана \cite{Cleman} (см. также \cite{Ciarlet}, c.\,147), 
-в которой используются ортогональные проекции на носителях 
-функций канонического базиса пространства конечных элементов. 
-\medskip
-
-{\bf 2.} {\it  Основные понятия и обозначения.} 
-Для простоты мы ограничимся изложением 
-результатов для лагранжевых $n$-симплексов. 
-Пусть $m$ --- натуральное число. Лагранжевым конечным элементом 
-типа $(m)$ в $R^n$, или лагранжевым $n$-симплексом типа $(m)$ 
-называется пара $(K,\omega_K)$, где $K$ есть невырожденный 
-$n$-симплекс в $R^n$ с вершинами $a_i$, $i=\overline{1,n+1}$, а 
-$\omega_K= \Big\{{\sum \limits_{i=1}^{n+1}\lambda_i a_i :
-\sum \limits_{i=1}^{n+1} \lambda_i=1, 
-\ \lambda_i=(k-1)/m, \ 1 \le i,k \le n+1} \Big\}$ --- множество 
-узлов конечного элемента \cite{Ciarlet}. Когда множество узлов $\omega_K$ 
-подразумевается, то будем говорить, что $K$ есть (лагранжевый) 
-элемент типа~$(m)$.
-
-Через $P_m(K)$ обозначается множество всех полиномов на $K$ 
-степени $m$ по совокупности переменных $x_1,x_2, \dotsc ,x_n$. 
-Если $K$ --- конечный элемент типа $(m)$, то всякий полином 
-$\varphi \in P_m(K)$ однозначно определяется своими значениями в 
-узлах $\omega_K$. В частности, соотношениями 
-$$
-\varphi_z (x)=\delta_{z,x} \quad \forall z,x \in \omega_K 
-$$
-($\delta_{s,t}$ --- символ Кронекера абстрактных индексов $s,t$) 
-определяется базис Лагранжа
-$\{ \varphi_z \in P_m(K){\;:\;} z \in \omega_K \}$.
-Оператором интерполяции на элементе $K$ называется линейный 
-оператор $\Pi_K : C(K) \rightarrow P_m(K)$, действующий по формуле 
-$$
-\Pi_K u (x) = \sum _{z\in \omega_K} u(z)\varphi_z(x). 
-$$
-Из определения базиса $\{\varphi_z\}$ следует, что $\Pi_K \varphi=\varphi$ 
-для $\varphi \in P_m(K)$. 
-
-Пусть $(\wh K, \wh \omega)$ --- фиксированный элемент типа $(m)$ 
-(исходный конечный элемент). 
-Любой конечный элемент $K$ типа $(m)$ 
-может быть получен из исходного невырожденным аффинным преобразованием 
-координат $F : t \in \wh K \rightarrow x =B t +b \in K$ ($b \in R^n$, 
-$B \in R^{n \times n}$,  $\det B \neq 0$) в том смысле, что 
-$K=F(\wh K)$, $F(\wh \omega)=\omega_K$. 
-Преобразование координат $F$ будем трактовать не только 
-как функцию точки, но и как линейный оператор 
-(оператор замены переменных), по соглашению обозначаемый 
-тем же символом, переводящий функции на 
-множестве $K$ в функции, определенные на $\wh K$, 
-по правилу $(Fu)(t) =u(Ft)$, $t \in \wh K$, или $Fu \equiv u \circ F$. 
-Заметим, что оператор замены переменных $F$ 
-будет линейным оператором. В этих обозначениях базисные функции 
-Лагранжа на элементах $K$ и $\wh K$ переходят друг в друга при 
-отображении $F$: $\wh \varphi_s=F\varphi_z$, где $z=Fs$, $s\in\wh\omega$. 
-Отюда вытекает связь между операторами локального интерполирования 
-$\Pi_K$ и $\wh \Pi$ на элементах $K$ и $\wh K$ соответственно: 
-$\Pi_K=F^{-1}\wh \Pi F$. 
-
-Всюду далее через 
-$\Omega$ обозначается полигональная область в $R^n$. 
-Пусть ${\cal T}_h$ --- триангуляция области $\Omega$ на лагранжевые 
-конечные элементы типа $(m)$, т.\,е. разбиение области на элементы 
-типа $(m)$, при котором всякая грань конечного элемента является 
-либо частью границы $\partial \Omega$, либо гранью другого элемента. 
-Множество узлов триангуляции обозначим через $\omega_h$, 
-$\omega_h=\bigcup \limits_{K \in {\cal T}_h} \omega_K$. Через $X_h$ обозначим 
-пространство конечных элементов, ассоциированное с триангуляцией 
-${\cal T}_h$ и определяемое как подмножество непрерывных в $\overline{\Omega}$ 
-функций таких, что сужение каждой из них на любой элемент $K \in {\cal T}_h$ 
-принадлежит пространству полиномов $P_m(K)$. Функции 
-из $X_h$ однозначно определяются своими значениями в узлах $\omega_h$ 
-\cite{Ciarlet}. В пространстве 
-$X_h$ имеется канонический базис
-$\{\varphi_z \in X_h:z \in \omega_h \}$, состоящий из функций 
-с локальными носителями и определяемый соотношениями 
-$\varphi_z(x)=\delta_{z,x}$ $\forall z,x \in \omega_h.$
-Каждая из функций $\varphi_z$ совпадает 
-с соответствующей локальной базисной функцией на элементе 
-$K \in {\cal T}_h$, $z \in K$, поэтому мы оставляем те же обозначения 
-для локальных (на элементе) и глобальных базисных функций. 
-Оператор $X_h$-интерполяции $\Pi_h:C(\overline{\Omega}) \rightarrow X_h$, 
-$$
-\Pi_h u (x) = \sum _{z\in \omega_h} u(z)\varphi_z(x),
-$$
-является оператором проектирования на пространство 
-$X_h$, т.\,е. $\Pi_h \varphi=\varphi$ для $\varphi \in X_h$, 
-поскольку по определению ${(\Pi_h u)|}_K=\Pi_K (u|_K)$.
-
-Для $K \in {\cal T}_h$ обозначим через $h_K=\diam K$
-диаметр элемента и через $d_K$ --- диаметр вписанного в $K$ шара, 
-так что $d_K < h_K$. 
-Рассматривая семейство триангуляций $({\cal T}_h)$ с параметром 
-$h=\max \limits_{K \in {\cal T}_h} h_K \rightarrow 0$, 
-будем предполагать выполненным условие регулярности 
-\begin{equation}
-h_K \le \sigma d_K
-\end{equation}
-с постоянной $\sigma >1$, не зависящей от шага 
-конечноэлементной сетки $h$. 
-Тогда в преобразовании $Ft=Bt+b$ 
-элемента $\wh K$ в $K$ для нормы матрицы $B$ 
-как оператора в евклидовом пространстве $R^n$ 
-имеют место оценки (\cite{Ciarlet}, c.\,124) 
-\begin{equation} \label{B}
-|B| \le \frac{h_K}{\wh d}, \quad |B^{-1}| \le \frac{\sigma \wh h}{h_K}
-\end{equation}
-($\wh d=d_{\wh K}$, $\wh h = \diam \wh K$),
-откуда вытекают оценки для 
-частных производных функций $u(x)$ и $\wh u (t)=Fu(t)$ 
-на элементах $K$ и $\wh K$ в точках $x=Ft$
-\begin{equation} \label{est:diff}
-|D^i_xu(x)| \le c h^{-|i|}_K \max \limits_{|j|=|i|} |D^j_t \wh u (t)|, \quad 
-|D^i_t \wh u(t)| \le c h^{|i|}_K \max \limits_{|j|=|i|} |D^j_x u (x)|,
-\end{equation}
-где постоянная $c$ зависит только от исходного элемента и 
-порядка дифференцирования.
-\medskip
-
-{\bf 3.} {\it Теоремы вложения весовых пространств функций.} 
-Для фиксированного замкнутого множества 
-$\Gamma_0 \subset R^n \setminus \Omega$ 
-обозначим $\rho(x)=\dist (\Gamma_0,x)=\min\{|x-y|: y \in \Gamma_0\}$. 
-Стандартную норму пространства Лебега $L_p(\Omega)$ ($1\le p \le \infty$) 
-функции $u(x)$ на $\Omega$ будем обозначать через ${|u|}_{p,\Omega}$. 
-Для вещественного $\alpha$ весовое пространство 
-Лебега $L_{p,\alpha}(\Omega)$ ---
-это пространство функций с конечной нормой ${|\rho^{-\alpha} u|}_{p,\Omega}$. 
-Таким образом, если $\alpha \le \beta$, то $L_{p,\beta}(\Omega)$ 
-непрерывно вложено в $L_{p,\alpha}(\Omega)$.
-Для целого $k \ge 0$ через $W^k_{p,\alpha}(\Omega)$ 
-обозначим весовое пространство Соболева 
-функций с конечной полунормой 
-$$
-{|\rho^{-\alpha}\nabla ^k u|}_{p,\Omega} = 
-{\bigg(\sum _{|i|=k} {\int _{\Omega}
-{|\rho(x)^{-\alpha} D^i u(x)|}^p } \bigg)}^{1/p}. 
-$$ 
-В качестве нормы этого пространства можно взять норму 
-$u \rightarrow {|\rho^{-\alpha}\nabla ^k u|}_{p,\Omega} + {|u|}_{q, C}$,
-где $C\subset\Omega$ --- любая подобласть, отделенная от $\Gamma_0$, 
-а $q \in [1,p]$ любое.
-Для $p \in (1,\infty)$ пространство $W^k_{p,\alpha}(\Omega)$ 
-рефлексивно. 
-
-Приведем некоторые теоремы вложения весовых пространств 
-(напр., \cite{Kufner}--\cite{Izvuz-91}), 
-которые понадобятся при исследовании 
-конечноэлементных аппроксимаций 
-(ниже обозначено 
-$\rho_\Omega=\max \{\rho(x): x \in \overline{\Omega} \}$,
-$\tau=\max(0,\beta-\alpha)$, 
-а постоянная $c$ не зависит от $\Gamma_0$),
-\begin{itemize}
-\item[1)] если $1 < p \le q < \infty$, $k <m$, $\gamma=m-n/p-k+n/q >0$, то 
-пространство $W^m_{p,\beta}(\Omega)$ компактно вложено в 
-$W^k_{q,\alpha}(\Omega)$ и 
-\begin{equation} \label{W-W}
-{|\rho^{-\alpha}\nabla ^k u|}_{q,\Omega} \le c 
-( {\rho}_\Omega^\tau {|\rho^{-\beta}\nabla ^m u|}_{p,\Omega} + 
-{|\rho^{-\alpha}|}_{q,\Omega}{|u|}_{1, C}),
-\end{equation}
-где $\alpha < \beta+\gamma$, 
-$1 \in L_{q,\alpha}(\Omega)
-\ (\Leftrightarrow \rho^{-\alpha} \in L_q(\Omega))$;
-\item[2)] если $S \subset \overline{\Omega}$ --- $n-1$-мерное многообразие, 
-$\mes_{n-1}(S \bigcap \Gamma_0)=0$ и $\gamma=m-1/p >0$, то 
-\begin{equation} \label{L_p(S)} 
-{|\rho^{-\alpha}u|}_{p,S} \le c ( {\rho}_\Omega^\tau 
-{|\rho^{-\beta}\nabla^m u|}_{p,\Omega}+{|\rho^{-\alpha}|}_{p,S}{|u|}_{1,C}),
-\end{equation} 
-где $\alpha \le \beta+\gamma$ и 
-$1 \in L_{p,\alpha}(S)$;
-\item[3)] (весовой аналог леммы Брэмбла-Гильберта) если $Z$ --- 
-нормированное пространство, $A:W^k_{p,\alpha}(\Omega) \rightarrow Z$ ---
-линейный непрерывный оператор такой, что $P_{k-1}(\Omega) \subset \ker A$, то 
-\begin{equation} \label{A:W-Z}
-{|Au|}_Z \le c |A|\,{|\rho^{-\beta}\nabla ^k u|}_{p,\Omega}. 
-\end{equation}
-\end{itemize}
-
-{\bf Замечание.} Если $\Gamma_0$ --- многообразие размерности 
-$d < n$, являющееся частью границы области 
-$\Omega$, то условие $1 \in L_{q,\alpha}(\Omega)$ 
-в (\ref{W-W}) равносильно неравенству $\alpha q < n-d$. 
-\medskip
-
-{\bf 4.} {\it Вспомогательные утверждения.} 
-
-\begin{lem} \label{card}
-Существует такая постоянная $N_0=N_0(\sigma)$, 
-что для любой точки $a \in R^n$ 
-$$
-\card \{K \in {\cal T}_h:a \in K\} \le N_0.
-$$
-\end{lem}
-
-\begin{lem} \label{loc.unif.}
-Любое регулярное семейство триангуляций локально равномерно, 
-т.\,е. существует такая постоянная $c_0=c_0(\sigma)$, что 
-для любых двух элементов $K,L \in {\cal T}_h$ с непустым пересечением 
-справедлива оценка $h_K \le c_0 h_L$.
-\end{lem}
-
-Доказательства этих утверждений можно найти, например, в \cite{Izvuz-92}. 
-
-Обозначим 
-$\rho_K=\max \limits_{x \in K} \rho(x)$
-и $r_K=\min \limits_{x \in K} \rho(x)$.
-
-\begin{lem} \label{r_K} 
-$1)$ Для всех $x,y \in R^n$\; $|\rho(x)-\rho(y)| \le |x-y|;$ 
-$2)$ $\rho_K \le r_K + h_K;$
-$3)$ $h_K \le 2\sigma \rho_K$.
-\end{lem}
-
-\begin{pf}
-1) Для всех $x,y \in R^n$ и произвольного $z\in \Gamma_0$ 
-$$
-\rho(x) \le |x-z| \le |y-z|+|x-y|,
-$$
-откуда в силу произвольности $z \in \Gamma_0$ вытекает неравенство 
-$\rho(x) \le \rho(y) + |x-y|$. Меняя в рассуждениях $x$ и $y$ местами, 
-получим $|\rho(x)-\rho(y)| \le |x-y|$.
-
-2) По предыдущему, для всех
-$x,y \in K$ $\rho(x) \le \rho(y) +|x-y| \le \rho(y) +h_K$, 
-откуда получаем $\rho_K \le r_K+h_K$.
- 
-3) Пусть $x_0$ --- центр вписанного в $K$ шара диаметра $d_K$. 
-Тогда
-$h_K \le \sigma d_K =2\sigma \dist(\partial K,x_0) \le 2\sigma \rho(x_0) 
-\le 2 \sigma \rho_K$. 
-\end{pf}
-
-Пусть $K \in {\cal T}_h$, 
-$Ft=Bt+b$ --- аффинное преобразование $\wh K$ в $K$. Положим 
-$\wh \Gamma_0=F^{-1}(\Gamma_0)$, $\wh \rho(t)=\dist(\wh \Gamma_0,t)$ 
-(т.\,к. $\Gamma_0 \subset R^n \setminus \Omega$, то 
-$\wh \Gamma_0 \subset R^n \setminus \Int(\wh K)$). 
-Будем рассматривать пространства функций на $\wh K$ 
-с весовой функцией $\wh \rho(t)$. Подчеркнем, что 
-множество $\wh \Gamma_0$ и функция $\wh \rho(t)$ 
-зависят от $K$, точнее, от преобразования $F$. 
-Для двух величин $\xi$, $\zeta$, зависящих от шага $h$ 
-будем писать $\xi \sim \zeta$, если одна величина 
-в этом соотношении может быть оценена через другую с множителем, 
-не зависящем от $h$.
-
-\begin{lem} \label{rho} Справедлива оценка 
-$h_K \wh \rho(t) \sim F\rho(t)$.
-\end{lem}
-
-{\bf Доказательство.} Фиксируем произвольную точку $t \in \wh K$. 
-Пусть $y \in \Gamma_0$ --- точка, на которой реализуется 
-$F\rho(t)$. Тогда в силу (\ref{B})
-$$
-\wh \rho(t) \le |t-F^{-1}(y)| \le |B^{-1}|\, |Ft-y|
-\le \frac{c}{h_K} F\rho(t).
-$$
-Аналогично доказывается обратная оценка. 
-
-\begin{lem} \label{seminorm}
-Для $u \in W^m_{p,\beta}(K)$ $(m \ge 0)$ 
-$$
-h_K^\gamma {|\rho^{-\beta}\nabla^mu|}_{p,K} 
-\sim {|\wh \rho^{-\beta}\nabla^mFu|}_{p,\wh K},
-$$
-где $\gamma=m+\beta-n/p$.
-\end{lem}
-
-{\bf Доказательство.} При замене переменных $x=Ft=Bt+b$ элементарные 
-объемы $dx$ и $dt$ связаны соотношением $dx=|\det B|dt=
-\mes K / \mes\wh K dt \sim h^n_K dt$. 
-Доказательство следует теперь из оценок 
-(\ref{est:diff}) и предыдущей леммы.
-\medskip
-
-{\bf 5.} {\it Оператор проектирования на элементе.}
-Всюду в этом пункте $K \in {\cal T}_h$. Для каждого 
-$z \in \omega_K$ существует единственная функция $\psi_{z,K} \in P_m(K)$, 
-удовлетворяющая тождеству 
-%\begin{equation} \label{psi}
-${(\psi_{z,K}, \varphi)}_K = \varphi(z)$ $\forall \varphi \in P_m(K)$,
-%\end{equation}
-где ${(u,v)}_K=\int \limits_{K} u(x)v(x)dx$ ---
-скалярное произведение в $L_2(K)$. Следовательно,
-${(\psi_{z,K}, \varphi_\xi)}_K=\delta_{z,\xi}$ $\forall z, \xi \in \omega_K$. 
-Определим оператор проектирования $I_K$ в пространство $P_m(K)$ формулой 
-%\begin{equation} \label{I_K}
-$I_K u(x) = \sum \limits_{z \in \omega_K} {(\psi_{z,K},u)}_K \varphi_z(x)$.
-%\end{equation}
-Функцию $\eta=I_Ku \in P_m(K)$ можно определить как решение вариационной 
-задачи: ${(u-\eta,\varphi)}_K=0$ $\forall \varphi \in P_m(K)$. 
-По определению
-$\Pi_K \varphi = I_K \varphi =\varphi$ $\forall \varphi \in P_m(K)$. Этого 
-тождества, как будет видно из дальнейшего, достаточно, чтобы 
-операторы $\Pi_K$ и $I_K$ обладали одинаковыми 
-аппроксимативными свойствами на гладких функциях. 
-Однако в отличие от оператора интерполяции $\Pi_K$, проектор 
-$I_K$ корректно определен на более широком классе $L_1(K)$. 
-
-Аналогично на исходном элементе $\wh K$ определим для 
-узлов $s \in \wh \omega$ функции $\wh \psi_s \in P_m(\wh K)$: 
-${(\wh \psi_s, \varphi)}_{\wh K} = \varphi(s)$
-$\forall \varphi \in P_m(\wh K)$ 
-и оператор проектирования 
-$$
-\wh I u(t) = \sum_{s\in\wh\omega}{(\wh \psi_s,u)}_{\wh K} \wh \varphi_s(t).
-$$
-Заметим, что оператор $\wh I$ непрерывен как оператор из $L_1(\wh K)$ в 
-$L_\infty(\wh K)$. 
-
-\begin{thm} \label{phipsi} Для узлов $s \in \wh \omega$ и 
-$z=Fs$ функции $\wh \psi_s$ и $\psi_{z,K}$ связаны соотношением 
-$\wh \psi_s=\mu(K)F \psi_{z,K}$, где 
-$\mu(K)=\mes K/ \mes\wh K$.
-\end{thm}
-
-\begin{pf}
-Для произвольных измеримых функций 
-$u(x)$, $v(x)$ на $K$ таких, что $uv \in L_1(K),$ имеем 
-${(u,v)}_K=\mu(K){(Fu,Fv)}_{\wh K}$.
-Тогда для любой $\wh \varphi=F\varphi \in P_m(\wh K)$ 
-$$
-{(\mu(K)F\psi_{z,K},\wh \varphi)}_{\wh K}=
-\mu(K){(F\psi_{z,K},F\varphi)}_{\wh K}
-={(\psi_{z,K},\varphi)}_K=\varphi(z)=\wh \varphi(s),
-$$ 
-следовательно, $\wh \psi_s=\mu(K)F \psi_{z,K}$.
-\end{pf}
-
-Из теоремы и первой из оценок (\ref{est:diff}), примененной к 
-функциям $\varphi_z(x)$ и $\psi_{z,K}(x),$ получаем 
-\medskip
-
-{\bf Следствие.}
-%\begin{corollary} \label{col:phipsi}
-Для функций $\varphi_z(x)$ и $\psi_{z,K}(x)$ 
-справедливы оценки производных 
-$$
-|D^i \varphi_z(x)| \le c h_K^{-|i|},
-\quad |D^i \psi_{z,K}(x)| \le c h_K^{-|i|-n},
-$$
-где постоянная $c$ зависит только от исходного элемента 
-и порядка дифференцирования. 
-%\end{corollary}
-
-\begin{thm} \label{FIF}
-Имеет место тождество $I_K=F^{-1} \wh I F$.
-\end{thm}
-
-\begin{pf}
-По теореме \ref{phipsi} для функции $\wh u=Fu \in L_1(\wh K)$ получим 
-$$
-\wh I Fu = \sum_{s \in \wh \omega} {(\wh \psi_s,Fu)}_{\wh K} \wh \varphi_s
-= \sum \limits_{z \in \omega} \mu(K){(F \psi_z,F u)}_{\wh K} F \varphi_z
-= \sum \limits_{z \in \omega} {(\psi_{z,K},u)}_K F \varphi_z = FI_Ku,
-$$
-или $I_K=F^{-1}\wh I F.$
-\end{pf}
-
-{\bf Следствие.}
-%\begin{corollary} \label{est:L_p(K)}
-Справедливо равенство 
-$$
-{|I_K|}_{L_p(K)\rightarrow L_p(K)} =
-{|\wh I|}_{L_p(\wh K)\rightarrow L_p(\wh K)},
-$$
-следовательно, норма оператора $I_K:L_p(K) \rightarrow L_p(K)$ 
-не зависит от $K$.
-%\end{corollary}
-
-\begin{pf} По теореме \ref{FIF} оценим 
-$$
-{|I_Ku|}_{p,K} = {|F^{-1}\wh I F|}_{p,K} \le
-\mu(K)^{1/p} {|\wh I Fu |}_{L_p(\wh K)} \le 
-{|\wh I|}_{L_p(\wh K) \rightarrow L_p(\wh K)} {|u|}_{p,K},
-$$
-откуда ${|I_K|}_{L_p(K)\rightarrow L_p(K)} \le
-{|\wh I|}_{L_p(\wh K)\rightarrow L_p(\wh K)}$. 
-Теми же рассуждениями для $\wh I=F I_K F^{-1}$ устанавливается неравенство 
-${|\wh I|}_{L_p(\wh K)\rightarrow L_p(\wh K)} \le
-{|I_K|}_{L_p(K)\rightarrow L_p(K)}$. 
-\end{pf}
-
-{\bf 6.} {\it Локальная оценка погрешности аппроксимации.}
-В этом пункте получим оценки разности $u - I_Ku$ в различных весовых нормах. 
-Пусть $1<p\le q<\infty$, $\gamma\equiv m+1-n/p-k+n/q >0$ (что обеспечивает 
-компактное вложение $W^{m+1}_p(\Omega)$ в $W^k_q(\Omega)$), 
-$\alpha < \beta+\gamma$ и $1 \in L_{q,\alpha}(\Omega)$. Выполнимость данных 
-условий влечет компактность вложения 
-$W^{m+1}_{p,\beta}(\Omega)$ в
-$W^k_{q,\alpha}(\Omega)$. Наконец, для корректного 
-определения оператора $I_K$ на классе $W^{m+1}_{p,\beta}(\Omega)$
-будем предполагать, 
-что $W^{m+1}_{p,\beta}(\Omega) \subset L_1(\Omega)$. 
-
-\begin{thm}\label{E-I_K}
-Существует такая постоянная $c > 0$, не зависящая от $K \in {\cal T}_h$, 
-что для всех $u \in W^{m+1}_{p,\beta}(\Omega)$ справедлива оценка 
-$$
-{|\rho^{-\alpha} \nabla ^k (u-I_Ku)|}_{q,K} \le c h_K^\gamma 
-\rho_K^{\beta-\alpha}{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K}, 
-$$ 
-где $\rho_K=\max\{\rho(x): x \in K \}.$ 
-\end{thm}
-
-\begin{pf}
-Для $r_K=\min\{\rho(x): x \in K\}$ возможны два случая: 
-$r_K >h _K$ и $r_K \le h_K$.
-
-1) Случай $r_K >h _K$. По теореме \ref{FIF}\; $I_K=F^{-1} \wh I F$. 
-Так как $\wh I \varphi = \varphi$ для $\varphi \in P_m(\wh K)$, то 
-имеет место невесовая оценка (\cite{Ciarlet}, c.\,125)
-$$
-{| \nabla ^k (u-I_Ku)|}_{q,K} \le c h_K^\gamma {|\nabla^{m+1}u|}_{p,K}.
-$$
-По лемме \ref{r_K}\; $\rho_K \le r_K+h_K$. 
-Поэтому $r_K \le \rho_K < 2 r_K$, т.\,е. $\rho_K \sim r_K \sim 
-\rho(x), \ x \in K$. Отсюда получаем 
-$$
-{|\rho^{-\alpha} \nabla ^k (u-I_Ku)|}_{q,K} \le c_1 \rho_K^{-\alpha} 
-{|\nabla ^k (u-I_Ku)|}_{q,K} \le \\ 
-c_2 h_K^\gamma \rho_K^{-\alpha} {|\nabla^{m+1}u|}_{p,K} 
-\le c_3 h_K^\gamma \rho_K^{\beta-\alpha}{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K}.
-$$
-
-2) Случай $r_K \le h_K$. По лемме \ref{r_K}\; $h_K \le 2\sigma \rho_K \le 
-2 \sigma (r_K+h_K) \le 4 \sigma h_K$, т.\,е. в этом случае $h_K \sim \rho_K$. 
-По лемме \ref{seminorm} 
-\begin{equation} \label{rho^alpha}
-{|\rho^{-\alpha} \nabla ^k (u-I_Ku)|}_{q,K} \le 
-c_1 h_K^{-\delta}{|\wh \rho^{\,-\alpha} \nabla ^k
-(\wh u-\wh I \wh u)|}_{q,\wh K}= 
-c_1 h_K^{-\delta}{|\wh \rho^{\,-\alpha} \nabla ^k E\wh u|}_{q,\wh K}, 
-\end{equation}
-где обозначено $\wh u = Fu$, $E \wh u=\wh u - \wh I \wh u$,
-$\delta=k+\alpha-n/q$.
-Так как $\ker E \supset P_m(\wh K)$, то из (\ref {A:W-Z}) следует 
-\begin{equation} \label{rho^beta}
-{|\wh \rho^{\,-\alpha} \nabla ^k E\wh u|}_{q,\wh K} \le 
-c_2 |E|{|\wh \rho^{\,-\beta}\nabla ^{m+1} \wh u|}_{p,\wh K} 
-\le c_3 |E|h_K^\epsilon {|\rho^{-\beta}\nabla ^{m+1} u|}_{p, K}, 
-\end{equation}
-где $\epsilon=m+1+\beta-n/p$ и $|E|$ обозначает норму оператора 
-$E:W_{p,\beta}^{m+1}(\wh K) \rightarrow W_{q,\alpha}^k(\wh K)$. 
-Из оценок (\ref{rho^alpha}) и (\ref{rho^beta}), а также из эквивалентности 
-$h_K \sim \rho_K$ следует теперь с учетом тождества $\epsilon-\delta=
-\gamma+\beta-\alpha$ оценка 
-$$
-{|\rho^{-\alpha} \nabla ^k (u-I_Ku)|}_{q,K} \le c_4 |E| h_K^\gamma 
-\rho_K^{\beta-\alpha}{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K}.
-$$
-
-Для завершения доказательства осталось установить, что $|E| \le c$.
-Поскольку $W^{m+1}_{p,\beta}(\Omega) \subset L_1(\Omega)$, то 
-в качестве нормировки пространства $W^{m+1}_{p,\beta}(\wh K)$ 
-можно взять норму 
-$\eta\to{|\wh\rho^{\,-\beta}\nabla^{m+1}\eta|}_{p,\wh K}+{|\eta|}_{1,\wh K}$. 
-Далее по лемме
-\ref{rho}\; $\max\{\wh \rho(t): t \in \wh K \} \sim \rho_K/h_K \sim 1$, 
-следовательно, по теореме вложения (\ref{W-W}) 
-$$
-{|\wh\rho^{\,-\alpha}\nabla^k\eta|}_{q,\wh K} 
-\le c_5 ({|\wh\rho^{\,-\beta}\nabla^{m+1}\eta|}_{p,\wh K}+{|\eta|}_{1,\wh K}).
-$$
-Очевидно,
-$$
-{|\wh\rho^{\,-\alpha}\nabla^k \wh I \eta|}_{q,\wh K}
-+{|\wh I \eta|}_{1,\wh K} \le 
-\sum \limits_{s \in \wh \omega}|{(\wh\psi_s,\eta)}_{\wh K}| 
-({|\wh\rho^{\,-\alpha}\nabla^k \wh \varphi_s|}_{q,\wh K}+
-{|\wh \varphi_s|}_{1,\wh K})
-\le c_6 ({|\wh\rho^{\,-\alpha}|}_{q,\wh K}+1){|\eta|}_{1, \wh K}
-\le c_7{|\eta|}_{1,\wh K}
-$$
-в предположении ограниченности интегралов ${|\wh \rho^{\,-\alpha}|}_{q,\wh K}$. 
-Из последних двух оценок окончательно получим 
-\begin{multline*}
-|E\eta|={|\wh\rho^{\,-\alpha}\nabla^k(\eta-\wh I \eta)|}_{q,\wh K}
-+ {|\eta-\wh I \eta|}_{1,\wh K}
-\le {|\wh\rho^{\,-\alpha}\nabla^k\eta|}_{q,\wh K}+ \\
-%
-+{|\wh\rho^{\,-\alpha}\nabla^k\wh I \eta|}_{q,\wh K}
-+{|\eta|}_{1,\wh K}+{|\wh I \eta|}_{1,\wh K} 
-\le c_8({|\wh\rho^{\,-\beta}\nabla^{m+1}\eta|}_{p,\wh K}+{|\eta|}_{1,\wh K}),
-\end{multline*}
-т.\,е. $|E| \le c_8$.
-\end{pf}
-
-{\bf Замечание.} При более сильном ограничении 
-$W^{m+1}_{p,\beta}(\Omega) \subset C(\overline{\Omega})$ в 
-\cite{Izvuz-92} была доказана аналогичная оценка 
-погрешности интерполяции
-$$
-{|\rho^{-\alpha} \nabla ^k (u-\Pi_Ku)|}_{q,K} \le c h_K^\gamma 
-\rho_K^{\beta-\alpha}{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K}. 
-$$ 
-
-\begin{thm}\label{E-I_K S}
-Пусть $S$ --- одна из граней элемента $K$.
-Существует такая постоянная $c > 0$, не зависящая от $K \in {\cal T}_h$, 
-что для всех $u \in W^{m+1}_{p,\beta}(\Omega)$ справедлива оценка 
-$$
-{|\rho^{|\beta|}(u-I_Ku)|}_{p,S} \le c h_K^{\gamma_0} 
-\rho_K^{\beta+|\beta|}{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K}, 
-$$ 
-где $\gamma_0=m+1-1/p.$ 
-\end{thm}
-
-Доказательство этой оценки проводится с использованием вложения
-(\ref{L_p(S)}) по той же схеме, что доказательство предыдущей теоремы.
-
-\begin{thm}\label{I_K-I_L}
-Пусть $S$ --- общая грань $(n-1$-мерная$)$ 
-смежных элементов $K$ и $L$. Существует такая постоянная
-$c > 0$, что для всех $u \in W^{m+1}_{p,\beta}(\Omega)$ 
-справедлива оценка 
-$$
-{|I_Ku-I_Lu|}_{\infty,S} \le c h_K^{\gamma_1} 
-\rho_K^\beta{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K \cup L}, 
-$$ 
-где $\gamma_1=m+1-n/p.$ 
-\end{thm}
-
-\begin{pf}
-По лемме \ref{loc.unif.}\; $h_K \sim h_L$. 
-Так как $S$ является общей гранью двух элементов, то по лемме \ref{r_K}\;
-$\rho_S \sim \rho_K \sim \rho_L$. Рассмотрим два случая: 
-1)~$r_S=\min\{\rho(x): x \in S\} \le \min(h_K,h_L)$
-и 2)~$r_S >\min(h_K,h_L)$. 
-
-1) $r_S \le \min(h_K,h_L)$.
-Тогда $\rho_S \sim h_K$. Поскольку $\eta =I_K u- I_L u \in P_m(S)$ 
-(в локальных координатах грани $S$), то в силу конечномерности $P_m(S)$ 
-$$
-{|\eta|}_{\infty,S} =
-{|F\eta|}_{\infty,\wh S}\sim {|\wh \rho^{|\beta|}F\eta|}_{p,\wh S}
-\sim h_K^{1/p-n/p} h_K^{-|\beta|}{|\rho^{|\beta|}\eta|}_{p,S}
-\sim h_K^{1/p-n/p} \rho_K^{-|\beta|}{|\rho^{|\beta|}\eta|}_{p,S}.
-$$
-
-2) $r_S > h_K$. Тогда $r_S \sim \rho_K$ и для $\eta \in P_m(S)$ имеем оценки 
-$$
-{|\eta|}_{\infty,S}\sim h_K^{1/p-n/p}{|\eta|}_{p,S}
-\sim h_K^{1/p-n/p}r_S^{-|\beta|}{|\rho^{|\beta|}\eta|}_{p,S}
-\sim h_K^{1/p-n/p}\rho_K^{-|\beta|}{|\rho^{|\beta|}\eta|}_{p,S}.
-$$
-
-Таким образом, для $\eta=I_Ku-I_Lu$ получим с использованием 
-теоремы \ref{E-I_K S} 
-\begin{multline*}
-{|\eta|}_{\infty,S} \le c_1 h_K^{1/p-n/p}
-\rho_K^{-|\beta|}{|\rho^{|\beta|}\eta|}_{p,S} 
-\le c_1 h_K^{1/p-n/p}\rho_K^{-|\beta|}
-({|\rho^{|\beta|}(u-I_Ku)|}_{p,S}+\\
-%
-+{|\rho^{|\beta|}(u-I_Lu)|}_{p,S}) \le c_2 h_K^{\gamma_1} 
-\rho_K^\beta{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K \cup L}, 
-\end{multline*}
-где $\gamma_1=m+1-n/p.$
-\end{pf}
-
-Пусть $\varkappa \ge 1$ --- некоторое число. Будем говорить, что семейство 
-триангуляций ${({\cal T}_h)}_h$ сгущается
-вблизи $\Gamma_0$ со степенью сгущения $\varkappa$,
-если $h_K \sim h\rho_K^{1-1/\varkappa}$,
-где $h=\max\{h_K:K \in {\cal T}_h\}$. 
-Эта оценка означает, что вблизи множества особых точек $\Gamma_0$ 
-линейные размеры конечных элементов должны быть существенно
-меньше шага сетки $h$. 
-Именно, для элементов $h_K \sim \rho_K$ будем иметь $h_K \sim h^\varkappa$. 
-В случае $\varkappa=1$ будем иметь квазиравномерное семейство триангуляций. 
-
-\begin{thm}\label{loc:dense} Если семейство 
-триангуляций $({\cal T}_h)$ сгущается вблизи $\Gamma_0$ со степенью 
-сгущения $\varkappa \ge 1$, то существует такая постоянная $c > 0$,
-не зависящая от $K \in {\cal T}_h$, 
-что для всех $u \in W^{m+1}_{p,\beta}(\Omega)$ справедлива оценка 
-$$
-{|\rho^{-\alpha} \nabla ^k (u-I_Ku)|}_{q,K} \le c h^\theta 
-{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K}, 
-$$ 
-где $\theta = \min(\gamma,\varkappa(\gamma+\beta-\alpha)).$ 
-\end{thm}
-
-\begin{pf}
-Если $r_K \le h_K$, то оценка немедленно следует из теоремы 
-\ref{E-I_K} и эквивалентности $h_K \sim \rho_K$. Пусть $r_K > h_K$. 
-Тогда $ h_K^\gamma \rho_K^{\beta-\alpha} \le c_1h^\gamma\rho_K^\tau$, где 
-$\tau=\gamma(1-1/\varkappa)+\beta-\alpha$. Если $\tau \ge 0$, то 
-$h^\gamma\rho_K^\tau \le h^\gamma\rho_\Omega^\tau$ и устанавливаемая оценка 
-имеет место. Если $\tau < 0$, то по лемме \ref{r_K}\;
-$h^\gamma\rho_K^\tau \le c_3 h^\gamma h^{\varkappa\tau}=
-c_3h^{\varkappa(\gamma+\beta-\alpha)}.$ 
-Итак, во всяком случае $h_K^\gamma \rho_K^{\beta-\alpha} \le c h^\theta$. 
-\end{pf}
-
-{\bf 7.} {\it Аппроксимация конечными элементами.} Для узла 
-конечноэлементной сетки $z \in \omega_h $ обозначим 
-${\cal T}_h(z)=\{K \in {\cal T}_h: z \in K\}$, $n_h(z)=\card{\cal T}_h(z)$
-и линейный функционал на $L_1(\Omega)$
-$$
-l_{h,z}(u)=\frac{1}{n_h(z)} 
-\sum _{K \in {\cal T}_h(z)} I_Ku(z).
-$$ 
-Определим оператор проектирования $I_h$ из $L_1(\Omega)$ 
-в $X_h$ формулой 
-$$
-I_h u(x) = \sum \limits_{z \in \omega_h} l_{h,z}(u) \varphi_z(x).
-$$
-Таким образом, значение функции $\varphi=I_hu$
-в каждом узле сетки $z \in \omega_h$ есть среднее арифметическое 
-значений $I_Ku(z)$ локальных проекций на элементах $K$, содержащих 
-узел $z$. Если $\varphi \in X_h$, то
-по свойству локальных операторов проектирования
-$I_K \varphi=\varphi$ на $K$;
-поэтому для $K \in {\cal T}_h(z)$\; $I_K \varphi(z)=\varphi(z)$. 
-Следовательно, $I_h \varphi=\Pi_h \varphi=\varphi$, и оператор $I_h$ 
-является проектором на пространство $X_h$. 
-
-\begin{lem}\label{l_hz}
-Для $K \in {\cal T}_h(z)$ справедлива оценка 
-$$
-|l_{h,z}(u)-I_Ku(z)| \le c h_K^{\gamma_1}
-\rho_K^\beta{|\rho^{-\beta}\nabla^{m+1}u|}_{p,R(z)}, 
-$$ 
-где $\gamma_1=m+1-n/p$, $R(z)=\bigcup \{L \in {\cal T}_h(z)\}$.
-\end{lem} 
-
-\begin{pf}
-Для смежных элементов $K, L \in {\cal T}_h(z)$ по теореме \ref{I_K-I_L} 
-$$
-|I_Ku(z)-I_Lu(z)| \le {|I_Ku-I_Lu|}_{\infty,K\cap L} \le c_1 h_K^{\gamma_1} 
-\rho_K^\beta{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K \cup L}. 
-$$ 
-Для произвольных $K, L \in {\cal T}_h(z)$ существует такая цепочка 
-конечных элементов $K=K_0, K_1, \dotsc\linebreak K_r=L$
-из ${\cal T}_h(z)$, что $K_i$ и $K_{i-1}$ смежны. Так что 
-$$
-|I_Ku(z)-I_Lu(z)|\le \sum_{i=1}^{r} |I_{K_{i-1}}u(z)-I_{K_i}u(z)| \le c_2 
-h_K^{\gamma_1} 
-\rho_K^\beta{|\rho^{-\beta}\nabla^{m+1}u|}_{p,R(z)}, 
-$$
-поскольку $n_h(z) \le c$.
-\end{pf}
-
-Далее относительно степени $\alpha$ весовой функции предполагается, что 
-$\alpha < \beta+\gamma$ для $\gamma=m+1-k$, 
-$1 \in L_{p,\alpha}(\Omega)$
-и ${|\rho^{-\alpha}|}_{p,K} \sim h_K^{n/p}\rho_K^{-\alpha}$. 
-Последняя оценка автоматически выполняется в каждом из следующих случаях: 
-1)~$\alpha \le 0$; 2)~для $K$ с $r_K \sim \rho_K$;
-3)~если $\Gamma_0$ многообразие размерности $d$ и $\alpha p < n-d$.
-
-\begin{thm}
-Имеет место оценка 
-$$
-{|\rho^{-\alpha}\nabla^k(u-I_hu)|}_{p,K} \le
-c h_K^\gamma \rho_K^{\beta-\alpha} 
-{|\rho^{-\beta}\nabla^{m+1}u|}_{p,R(K)},
-$$
-где $R(K)=\bigcup \{L \in {\cal T}_h: K \bigcap L \neq \emptyset \}$.
-\end{thm}
-
-{\bf Доказательство.} По теореме \ref{E-I_K} 
-\begin{multline*}
-{|\rho^{-\alpha} \nabla ^k (u-I_hu)|}_{p,K} \le 
-{|\rho^{-\alpha} \nabla ^k (u-I_Ku)|}_{p,K} +
-{|\rho^{-\alpha} \nabla ^k (I_hu-I_Ku)|}_{p,K} \le \\
-%
-\le c_1 h_K^\gamma 
-\rho_K^{\beta-\alpha}{|\rho^{-\beta}\nabla^{m+1}u|}_{p,K} +
-{|\rho^{-\alpha} \nabla ^k (I_hu-I_Ku)|}_{p,K}. 
-\end{multline*}
-Для оценки последнего слагаемого запишем в точках $x \in K$ 
-$$
-I_hu(x)-I_Ku(x)=\sum_{z \in \omega_K} (l_{h,z}(u)-I_Ku(z))\varphi_z(x),
-$$
-откуда из предыдущей леммы, а также из следствия теоремы \ref{phipsi} получим 
-$$
-{|\rho^{-\alpha} \nabla ^k (I_hu-I_Ku)|}_{p,K} \le c_2 h_K^{\gamma_1} 
-\rho_K^\beta{|\rho^{-\beta}\nabla^{m+1}u|}_{p,R(K)}
-h_K^{-k}{|\rho^{-\alpha}|}_{p,K} \le 
-c_3 h_K^\gamma \rho_K^{\beta-\alpha}
-{|\rho^{-\beta}\nabla^{m+1}u|}_{p,R(K)}.\quad\square
-$$
-
-Основной результат статьи содержится в следующей оценке. 
-
-\begin{thm}
-Для сгущающегося к $\Gamma_0$ 
-со степенью $\varkappa \ge 1$ семейства триангуляций 
-$({\cal T}_h)$ справедлива оценка погрешности аппроксимации 
-$$
-{|\rho^{-\alpha}\nabla^k(u-I_hu)|}_{p,\Omega} \le c h^\theta 
-{|\rho^{-\beta}\nabla^{m+1}u|}_{p,\Omega},
-$$
-где $\theta=\min(m+1-k,\varkappa(m+1-k+\beta-\alpha))$.
-\end{thm}
-
-\begin{pf}
-Из предыдущей теоремы теми же рассуждениями, что и при выводе 
-оценок теоремы \ref{loc:dense}, получим 
-\begin{equation} \label{est:loc}
-{|\rho^{-\alpha}\nabla^k(u-I_hu)|}_{p,K} \le c h^\theta 
-{|\rho^{-\beta}\nabla^{m+1}u|}_{p,R(K)}.
-\end{equation}
-Доказываемая оценка теперь вытекает суммированием по $K \in {\cal T}_h$
-оценок (\ref{est:loc}) с учетом того, что 
-(лемма \ref{card})
-$\card \{L \in {\cal T}_h: L \bigcap K \neq \emptyset \} \le c$. 
-\end{pf}
-
-{\bf 8.} {\it Заключительные замечания.} 
-
-1. Аппроксимационный оператор $I_h$ строится по локальным 
-проекциям $I_K$ на элементах. Из проведенного анализа погрешности 
-$u-I_hu$ следует, что в качестве локальных проекторов могут быть взяты любые 
-проекторы в пространство полиномов на элементе, удовлетворяющие 
-основной локальной оценке в теореме \ref{E-I_K}. 
-
-2. Аналогичные построения и анализ могут быть проведены для 
-конечных элементов со степенями свободы не только 
-лагранжевого типа, но и использующих, например, 
-производные по направлениям. 
-
-3. Результаты работы стандартной техникой 
-распространяются на случай конечных элементов, 
-получаемых из исходного преобразованиями координат 
-более общего вида, чем аффинные, с естественными требованиями 
-обратимости и гладкости прямого и обратного преобразований. 
-
-Автор благодарит профессора А.Д. Ляшко за внимание к работе. 
-
-
-\begin{thebibliography}{99}
-
-\bibitem{Ciarlet}
-Сьярле Ф. {\em Метод конечных элементов для 
-эллиптических задач}. -- М.: Мир, 1980. -- 512 с.
-
-\bibitem{Smirnov}
-Смирнов М.М. {\em Вырождающиеся эллиптические и гиперболические 
-уравнения}. -- М.: Наука, 1966. -- 292 с.
-
-\bibitem{Izvuz-92}
-Тимербаев М.Р. {\em Оценки погрешности $n$-мерной сплайн-интерполяции
-в весовых нормах} // Изв. вузов. Математика. -- 1992.
--- \No\,10. -- С.\,54--60.
-
-\bibitem{Cleman}
-Clement P. {\em Approximation by finite element functions using local
-regularization} // Rev. franc. automat. inform., rech. oper. R.,
-Ser. Rouge Anal. Numer. R-2. -- 1975. -- \No\,9. -- P.\,77--84. 
-
-\bibitem{Kufner}
-Kufner A. {\em Einige Eigenschaften der Sobolewschen Raume mit
-Belengsfunctionen} // 
-Czechosl. Math. J. -- 1965. -- P.\,597--620.
-
-\bibitem{Avan} 
-Avantaggiati A. {\em Spazi di Sobolev con peso ed alcune applicazioni}
-// Boll. U.M.I. -- 1976. -- V.\,13A. -- \No\,1. -- P.\,1--52.
-
-\bibitem{Nik}
-Никольский С.М. {\em Приближение функций многих переменных и 
-теоремы вложения}. -- 2-е изд. -- М.: Наука, 1977. -- 455 с.
-
-\bibitem{Tri}
-Трибель Х. {\em Теория интерполяции. Функциональные пространства. 
-Дифференциальные операторы}. -- М.: Мир, 1980. -- 664 с.
-
-\bibitem{Fokht}
-Фохт А.С. {\em Весовые теорeмы вложения и оценки решений уравнений 
-эллиптического типа}.~I // Дифференц. уравнения.
--- 1982. -- Т.\,18. -- \No\,8. -- С.\,1440--1449. 
-
-\bibitem{Izvuz-91}
-Тимербаев М.Р. {\em Теоремы вложения весовых пространств Соболева}
-// Изв. вузов. Математика. -- 1991. -- \No\,9. -- С.\,56--60. 
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Казанский государственный университет}{\it Поступила}
-\post{}{03.03.2000}
-
-\label{end}
-\end{document}

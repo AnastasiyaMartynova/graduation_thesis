@@ -1,717 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-]{amsart}
-
-% 
-
-\newcommand{\p}{\partial}
-%\newcommand{\R}{{\rm I\!R}}
-\newcommand{\R}{\Bbb R}
-\newcommand{\argmin}{\operatornamewithlimits{arg\;min}}
-\newcommand{\g}{\gamma}
-\newcommand{\gl}{\lambda}
-\newcommand{\ga}{\alpha}
-\newcommand{\gb}{\beta}
-\newcommand{\gom}{\omega}
-\newcommand{\gd}{\delta}
-\newcommand{\Gom}{\Omega}
-\newcommand{\Gl}{\Lambda}
-\newcommand{\e}{\varepsilon}
-\newcommand{\G}{\Gamma}
-\newcommand{\rar}{\rightarrow}
-\newcommand{\la}{\langle}
-\newcommand{\ra}{\rangle}
-\newcommand{\tts}[1]{}
-\renewcommand{\baselinestretch}{0.98}
-
-\theoremstyle{plain}
-\theorembodyfont{\it}
-\newtheorem{thms}{\hskip\parindent Теорема}[section]
-
-\theoremstyle{definition}
-\theorembodyfont{\rm}
-\newtheorem{assmp}{\hskip\parindent Предположение}
-
-\theoremstyle{definition}
-\theorembodyfont{\rm}
-\newtheorem{cond}{\hskip\parindent Условие}
-
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{3}
-\god{2004}
-\nomer{1~(500)} %                        Remove in Eng.
-%\nomer{Vol.\,48, No.\,1}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{517.929}
-
-\author{\it М.Ю.\,Андрамонов}
-% NB:   ^^ remove in Eng.
-\title{Метод доверительных окрестностей 
-для минимизации кодифференцируемых функций}
-\thanks{Работа выполнена при финансовой поддержке Российского фонда
-фундаментальных исследований, грант \No\,01-01-00070.}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-
-\section*{Введение}
-
-В данной работе предлагается алгоритм нахождения локального 
-минимума негладких невыпуклых функций. Предполагается, что
-целевая функция кодифференцируема \cite{demrub}, \cite{demrub2}.
-Такая задача имеет многочисленные приложения, но известно
-мало алгоритмов для ее решения.
-
-Алгоритм принадлежит к классу методов доверительных окрестностей
-\cite{more}, \cite{powell}, которые были
-впервые разработаны в \cite{lev} и 
-\cite{marq} для минимизации суммы квадратов. Одно из
-преимуществ методов доверительных окрестностей --- их глобальная
-сходимость. Известно, что использование доверительных окрестностей
-в ряде случаев лучше минимизации функции по направлению.
-
-Идея таких методов проста. Строится функция, аппроксимирующая целевую,
-и минимизируется с ограничениями на шаг, при которых 
-следующая итерационная точка должна принадлежать доверительной
-окрестности. Если получается достаточное убывание целевой функции,
-доверительная окрестность расширяется, и производится переход к
-новой итерационной точке. В противном случае итерационная точка
-остается прежней, и доверительная окрестность сокращается.
-Вспомогательная задача минимизации аппроксимации целевой функции
-может решаться приближенно с помощью двойственных оценок.
-
-\section{Постановка задачи}
-
-В статье решается задача безусловной минимизации
-$$
-\min\{f(x)\mid x \in \R^n\}.
-$$
-Предполагается, что целевая функция
-$f(x)$ ограничена снизу. Пусть функция $m(s)$
-аппроксимирует $f(x+s) - f(x)$ локально в окрестности $x$, где $s$
---- вектор малой нормы. Будем называть эту функцию моделью.
-
-В дифференцируемом случае берут
-$$
-m(s) = \la f^{\prime} (x), s\ra.
-$$
-Для дважды дифференцируемых функций можно использовать
-квадратичную модель \cite{more}
-$$
-m(s) = \la f^{\prime} (x), s\ra  + \la f^{\prime \prime} (x) s, s\ra.
-$$
-
-
-\section{Метод доверительных окрестностей}
-
-Полагаем $k:=0$. Выбираются начальный радиус $\Delta_0$ и
-начальная точка $x_0$. Выбираются параметры $0 < \mu < \eta < 1$
-и $0 < \ga_1 < 1 < \ga_2$.
-Пусть найдена точка $x_k$ и выбран радиус $\Delta_k$, $k\ge0$.
-
-В точке $x_k$ решается задача
-$$
-\min \{m(s)\mid \|s\| \leq \Delta_k\},
-$$
-пусть $s_k$ --- ее решение. Вычисляется $l_k=\frac{f(x_k+s_k)-f(x_k)}{m(s_k)}$.
-
-Если $l_k \geq \mu$,
-то
-$x_{k+1}=x_k+s_k$; иначе $x_{k+1}=x_k$.
-
-Если при этом $l_k\geq \eta$,
-то выбираем
-$\Delta_{k+1} \in [\Delta_k; \ga_2 \Delta_k]$.
-
-Если $\eta >l_k\geq \mu$,
-то выбираем
-$\Delta_{k+1} \in [\ga_1 \Delta_k; \Delta_k]$.
-
-Если $l_k< \mu$,
-то выбираем $\Delta_{k+1} \in (0; \ga_1 \Delta_k]$.
-Вычисления повторяются при замене $k$ на $k+1$.
-
-Имеется много результатов сходимости для линейной или
-квадратичной модели (\cite{more}, \cite{powell}, \cite{sore}).
-Если целевая функция недифференцируема, нами предлагается использовать 
-негладкую модель.
-
-Предположим, что целевая функция $f(x)$ дважды кодифференцируема
-на $\R^n$, т.\,е.
-$$
-f(x+s) = f(x) + \max_{(A,b,c) \in
-\underline{d}^2 (x)} ( \la As,s\ra + \la b,s\ra + c) + \min_{(P,q,r) \in
-\overline{d}{}^2 (x)} (\la Ps,s\ra+ \la q,s\ra + r) + o(\|s\|^2),
-$$
-где $A$, $P$ --- матрицы размерности
-$n \times n$; $b,q \in \R^n$; $c,r \in \R$. Пара
-$[ \underline{d}^2 (x); \overline{d}{}^2 (x)]$ называется
-вторым кодифференциалом функции $f$ в точке $x$
-(\cite{demrub}, \cite{demrub2}).
-
-Предлагается использовать в методе доверительных окрестностей
-модель вида
-$$
-z_x (s) = \max_{(A,b,c) \in \underline{d}^2 (x)}
-( \la As,s\ra + \la b,s\ra + c) + \min_{(P,q,r) \in
-\overline{d}{}^2 (x)} (\la Ps,s\ra+ \la q,s\ra + r).
-$$
-В описанном методе доверительных окрестностей модель $m(s)$ заменяется
-на $z_x(s)$, но для доказательства сходимости
-нужна другая методика.
-
-
-\section{Сходимость алгоритма}
-
-Назовем 
-$\Omega= \{x: \min_{\|s\| \leq \beta} z_x (s) \geq 0 \}$
-множеством стационарных точек второго порядка. Здесь $\beta>0$
---- малый положительный параметр.
-Пусть $\Omega_{\e}$ --- $\e$-окрестность множества $\Omega$.
-
-Обозначим также
-$L_0 = \{x : f(x) \leq f(x_0) \}$,
-$\ov{\Omega_{\e}}= L_0 \setminus \Omega_{\e}$.
-Пусть $L_0$ ограничено и выполнены три предположения.
-
-\begin{assmp}
-Для каждого $y \in \ov{\Omega_{\e}} \cap L_0$ и каждого $\e>0$
-существуют такие $\ov{\Delta}>0$ и убывающая на $(0; \ov{\Delta}]$
-функция $c(\Delta)$, не зависящие от $y$, что
-$$
-c(\Delta) <0, \ \  \Delta \in (0,\ov{\Delta}], \ \
-\min_{s \in U_{\Delta}} z_y (s) \leq c(\Delta),
-\ \ \Delta \in (0;\ov{\Delta}],
-\ \ \text{где $U_{\Delta} = \{ s \in \R^n: \|s\| \leq \Delta \}$}.
-$$
-\end{assmp}
-
-\begin{assmp}
-Для каждого $x \in \ov{\Omega_{\e}} \cap L_0$
-и каждых $\e>0$, $0<\ga<1$
-существует такое $\wt{\Delta}$, не зависящее от $x$, что
-$$
-|f(x+s) - f(x) - z_x (s)| \leq \ga \|s\|^2,
-\;\;\; \|s\| \in (0;\wt{\Delta}].
-$$
-\end{assmp}
-
-\begin{assmp}
-$\lim\limits_{\|s\| \rar 0}
-\displaystyle{\frac{\|s\|^2}{c(\|s\|)}}=C > -\infty$.
-\end{assmp}
-
-\begin{thms} \label{tt1} При предположениях $1$, $2$, $3$ для каждого $\e>0$
-среди точек последовательности, строящейся по методу доверительных 
-окрестностей, найдется $x_k \in \Omega_{\e}$.
-\end{thms}
-
-\begin{pf}
-Пусть $\ga$ настолько мало, что
-$$
-1 + \frac{\ga \|s\|^2}{c(\|s\|)}
-\geq \eta, \;\;\; \|s\| \in (0,\wt{\Delta}].
-$$
-Предположим, что
-$\Delta_k \in (0, \min (\ov{\Delta}, \wt{\Delta}))$.
-Имеем
-$$
-\frac{f(x_k+s_k) -
-f(x_k)}{z_{x_{k}} (s_k)} \geq 1 + \frac{\ga \|s_k\|^2}{c(\|s_k\|)}
-\geq \eta,
-$$
-поскольку $\|s_k\| \leq \wt{\Delta}$. Тогда $f(x_k+s_k) -
-f(x_k) \leq \eta c(\|s_k\|)$, и итерационная точка пересчитывается.
-Выполнено неравенство
-$f(x_k+s_k) - f(x_k) \leq \eta c(\Delta_k)$, т.\,к. $z_{x_{k}}
-(s_k) \leq c(\Delta_k)$ по предположению~1. 
-Поэтому имеем убывание функции $f(x)$ на константу.
-
-Если $\Delta_k$ остается больше, чем $\min (\ov{\Delta}, \wt{\Delta})$,
-то на некоторых итерациях радиус доверительной окрестности
-растет, и целевая функция убывает по крайней мере
-на $\eta \min (\ov{\Delta}, \wt{\Delta})$. Тогда после некоторого
-числа итераций также получим убывание функции $f(x)$
-на константу. Поскольку $f$ ограничена
-снизу, итерационный процесс остановится, и найдется точка из $\Omega_{\e}$.
-\end{pf}
-
-Пусть $\ov{s}$ --- направление наискорейшего спуска в произвольной
-точке $y \notin \ov{\Omega_{\e}}$. Предположим, что для
-некоторого $\ov{\Delta}>0$ выполнено
-$$
-f(y + \Delta \ov{s}) <
-f(y), \ \ \Delta \in (0;\ov{\Delta}], \ \ f(y + \ov{\Delta}
-\ov{s}) < \nu (\e) <0.
-$$
-Тогда можно взять
-$$
-c(\Delta) =
-\max_{(A,b,c) \in \underline{d}^2 (x)} ( \la A \Delta \ov{s}, \Delta
-\ov{s}\ra + \la b,\Delta \ov{s}\ra + c) + \min_{(P,q,r) \in
-\overline{d}{}^2 (x)} (\la P \Delta \ov{s},\Delta \ov{s}\ra+ \la q, \Delta
-\ov{s}\ra + r).
-$$
-Предположим, что максимум и минимум берутся по
-конечному числу индексов. Тогда для выполнения условий теоремы
-сходимости достаточно условия
-$$
-\lim_{\Delta \rar 0}
-\frac{\Delta^2}{ \Delta^2 \la(A_j+P_i) \ov{s}, \ov{s}\ra + \Delta
-(\la(b_j+q_i), \ov{s}\ra + (c_j+r_i))} = C > -\infty.
-$$
-Это условие
-означает, что $c_j+r_i$, или $\la b_j+q_i, \ov{s}\ra$, или
-$\la(A_j+P_i) \ov{s},\ov{s}\ra$ не равны нулю для всех индексов $j$, $i$
-и всех точек $y \notin \Omega_{\e}$.
-
-Назовем 
-$$
-Z = \{x: \min_{\|s\| \leq \beta} (\max_{(a,b)
-\in \underline{d} (x)} ( \la a,s\ra + b) + \min_{(q,r) \in \overline{d}
-(x)} (\la q,s\ra + r))  \geq 0 \}
-$$
-множеством стационарных точек
-первого порядка. Здесь пара $[\underline{d}(x);\overline{d} (x)]$ ---
-кодифференциал функции $f$ в $x$ (см. \cite{demrub}), $\beta>0$ --- 
-малый параметр.  Пусть $Z_{\e}$ --- $\e$-окрестность множества $Z$.
-Обозначим $\ov{Z_{\e}}= L_0 \setminus Z_{\e}$.
-
-Вместо модели второго порядка можно использовать модель
-первого порядка, предполагая, что целевая функция только кодифференцируема.
-В этом случае модель имеет вид
-$$
-z_x (s) = \max_{(a,b) \in \underline{d}
-(x)} ( \la a,s\ra + b) + \min_{(q,r) \in \overline{d} (x)} (\la q,s\ra+r).
-$$
-
-Введем три условия.
-
-\begin{cond}
-Для каждого $x \in \ov{Z}_\e \cap L_0$ и каждого $\e>0$
-существуют такие $\ov{\Delta}>0$ и убывающая на $(0; \ov{\Delta}]$
-функция $c(\Delta)$, не зависящие от $x$, что
-$$
-c(\Delta) <0, \ \ \Delta \in (0,\ov{\Delta}],
-\ \ \min_{s \in U_{\Delta}}
-z_x (s) \leq c(\Delta), \ \ \Delta \in (0;\ov{\Delta}],
-$$
-где $U_{\Delta} = \{ s \in \R^n: \|s\| \leq \Delta \}$.
-\end{cond}
-
-\begin{cond}
-Для каждого $x \in \ov{Z}_\e \cap L_0$ и каждых $\e>0$, $0<\ga<1$
-найдется такое $\wt{\Delta}$, не зависящее от $x$, что
-$$
-|f(x+s) - f(x) - z_x (s)| \leq \ga \|s\|, \;\;\; \|s\| \in
-(0;\wt{\Delta}].
-$$
-\end{cond}
-
-\begin{cond}
-$\lim\limits_{\|s\| \rar 0} \displaystyle{\frac{\|s\|}{c(\|s\|)}}=C >
--\infty$.
-\end{cond}
-
-\begin{thms} При выполнении условий $1$, $2$, $3$ для каждого $\e>0$
-найдется $x_k \in Z_\e$.
-\end{thms}
-
-{\bf Доказательство} проводится дословным повторением доказательства
-теоремы \ref{tt1} с заменой ссылки на предположение 1 ссылкой
-на условие 1.$\quad\square$
-\medskip
-
-Сходимость в этом случае медленнее, но легче решать
-вспомогательную задачу минимизации модели.
-
-Пусть $\ov{s}$ --- направление наискорейшего спуска
-в произвольной точке $y \notin Z_\e$. Предположим, что
-для некоторого $\ov{\Delta}>0$
-выполняется
-$$
-f(y + \Delta \ov{s}) <  f(y), \ \ \Delta \in
-(0;\ov{\Delta}], \ \ f(y + \ov{\Delta} \ov{s}) < \omega (\e) <0.
-$$
-Тогда можно взять
-$$
-c(\Delta) = \max_{(a,b) \in \underline{d}^2
-(x)} ( \la a , \Delta \ov{s}\ra + b) + \min_{(q,r) \in \overline{d}{}^2
-(x)} (\la q,\Delta \ov{s}\ra + r).
-$$
-Предположим, что максимум и минимум берутся по
-конечному числу индексов. Тогда для выполнения условий теоремы
-сходимости достаточно, чтобы
-$$
-\lim_{\Delta \rar 0}
-\frac{\Delta}{ \Delta \la (a_j+q_i) , \ov{s}\ra + (b_j+r_i)} = C >
--\infty.
-$$
-Это условие означает, что $b_j+r_i$
-или $\la (a_j+q_i), \ov{s}\ra$ не рaвны нулю для всех индексов $j$, $i$. 
-
-Для минимизации модели можно использовать методы
-имитации замораживания (simulated annealing, см. \cite{handbook}), 
-т.\,к. число локальных минимумов в малой окрестности обычно невелико.
-
-
-\section{Решение задачи минимизации модели}
-
-В следующих случаях задачу минимизации модели решить легко.
-\begin{itemize}
-\item[1)] $z_x (s) = \min\limits_{ i \in I} (\la Ps,s\ra+ \la q,s\ra + r)$,
-где $I$ --- конечное число индексов, $P_i$ --- произвольные матрицы.
-В этом случае требуется решить ряд задач минимизации квадратичной
-функции с ограничением по норме
-(их можно решать методами из \cite{more}, \cite{sore}).
-\end{itemize}
-
-Такие методы базируются на следующих теоремах из \cite{sore}.
-
-\begin{thms}
-Если $x$ --- решение задачи
-\begin{equation}
-\label{s1} 
-\min\{f + \la g^T,w\ra + \tfrac{1}{2} w^T B w,
-\ \|w\| \leq \Delta\},
-\end{equation}
-где $B$ --- матрица размерности $n \times n$, $g$ --- вектор, то $x$ ---
-решение уравнения $(B+\gl I) x = -g$,
-где $\gl>0$, $\gl (w^T w - \Delta^2)=0$, $B+\gl I$ --- положительно
-определенная, а $I$ --- единичная матрицы.
-\end{thms}
-
-\begin{thms}
-Пусть $\gl \in \R, x \in \R^n$ удовлетворяют условию
-$(B + \gl I) x = -g$
-и $B + \gl I$ положительно полуопределена. В случаях, когда 
-$\lambda=0$, $\|x\|\le\Delta$ и $\lambda\ge0$, $\|x\|=\Delta$,
-$x$ --- решение задачи $(\ref{s1})$.
-Если же $\lambda=0$, $\|x\|=\Delta$, то $x$ --- решение задачи
-$$
-\min\{f+\la g^T,\omega\ra+\tfrac{1}{2}\omega^T B\omega,
-\ \|\omega\|=\Delta\}.
-$$
-Если матрица $B + \gl I$ положительно определена, то решение $x$
-единственно в каждом случае.
-\end{thms}
-
-\begin{itemize}
-\item[2)]
-$z_x (s)=\max\limits_{i \in I}(\la A_i s,s\ra+\la b_i,s\ra+c_i)+
-\min\limits_{j \in J} (\la P_j s,s\ra+ \la q_j ,s\ra + r_j)$,
-где матрицы $A_i + P_j$ положительно определены. Тогда нужно применять
-много раз методы минимизации выпуклых недифференцируемых функций.
-\item[3)] Для достаточно малого $\Delta$ функция $z_x (s)$
-имеет единственную точку глобального минимума в окрестности нуля для
-каждого $x \in \Omega_{\e}$.
-\end{itemize}
-
-Если модель имеет много локальных минимумов, следует модифицировать
-алгоритм. Вычисляются направление наискорейшего спуска
-$v_k$, $\|v_k\|=1$, в $x_k$
-и локальный минимум $s_k$ функции $z_{x_{k}} (s)$. Делается сравнение
-$$
-(f(x_k + s_k) - f(x_k))/ z_{x_{k}} (s_k) \geq \mu,
-$$
-и вычисляется точка
-$$
-x_k + \gamma_k v_k = \argmin_{\Delta \in (0;\Delta_k]} f(x_k + \Delta
-v_k).
-$$
-Тогда полагается $x_{k+1}=\argmin( f(x_k+s_k), f(x_k + \gamma_k v_k))$.
-В этом случае можно увеличивать и уменьшать $\Delta_k$,
-но оно должно быть ограничено снизу.
-
-Задача
-$$
-\min \max_{j \in J}\{ ([A_j s,s] +[b_j,s] + c_j),
-\ \|s\| \leq \Delta_k\}
-$$
-эквивалентна последовательности задач
-\begin{gather*}
-\min K_m(s) = [A_m s,s] + [b_m,s] + c_m, \\
-%
-K_i (s) = [A_i s,s] + [b_i,s] + c_i - [A_m s,s] -
-[b_m,s] - c_m \leq 0, \ \ i \neq m, \\
-%
-K_0(s) = \|s\| \leq \Delta_k,
-\end{gather*}
-у которых  целевая функция и ограничения квадратичны.
-Такие задачи могут решаться методами из \cite{handbook}.
-Если решение ищется в подпространстве, то задачи имеют меньшую
-размерность и могут быть решены эффективно.
-
-Такие задачи могут решаться методами ветвей и границ
-с двойственными оценками из \cite{shor22}, которые строятся
-следующим образом.
-Пусть $N=|J|$ и $\gl \in \R^N_+$.
-Пусть 
-$$
-L(s,\gl) = K_m (s) + \sum_{i \neq m} K_i (s)
-$$
---- функция Лагранжа, определенная на $\R^n \times \R^N_+$.
-Пусть $T$ --- множество допустимых решений задачи.
-Если $\ov{s} \in T$, $\ov{\gl} \in \R^N_+$, то $\ov{\gl} K_i(\ov{s}) \leq 0$
-для $i \neq m$ и $L(\ov{s},\ov{\gl}) \leq K_m(\ov{s})$.
-Поэтому
-$$
-\varphi(\ov{\gl}) = \inf_{s \in \R^n}L(s,\ov{\gl})
-\leq \inf_{s \in T}L(s,\ov{\gl})
-\leq \inf_{s \in T} K_m  (s) = K^*,
-$$
-где $K^*$ --- оптимальное решение задачи для всех $\ov{\gl} \in \R^N_+$.
-Тогда $\psi (\gl) = \inf_{s \in \R^n} L(x,\gl)$
-и $\psi^* = \sup_{\gl \in \R^N} \psi (\gl)$
---- нижние оценки для $K^*$ при $\gl \in \R^N_+$.
-Функцию Лагранжа можно представить как
-$$
-L(s,\gl) = [A(\gl) s,s] + [b(\gl),s] + c(\gl),
-$$
-где
-$$
-A(\gl) = A_m + \sum_{i \neq m} \gl_i (A_i-A_m),\ \ 
-b(\gl) = b_m + \sum_{i \neq m} \gl_i (b_i-b_m),\ \ 
-c(\gl) = c_m + \sum_{i \neq m} \gl_i (c_i-c_m).
-$$
-Пусть $D$ и $\ov{D}$ --- подмножества $\R^N$, на которых $A(\gl)$
-положительно определена или положительно полуопределена
-соответственно. Функция $\psi(\gl)$ конечна и вогнута на
-$D$ (\cite{shor22}).
-Если $\gl \in D$, то задача вычисления
-$\psi(\gl)$ --- задача выпуклого квадратичного программирования.
-В противном случае она многоэкстремальна и сложна.
-
-Ввиду этого вместо $\psi^*$ рассмотрим оценку
-$\ov{\psi}{}^* = \sup\limits_{\gl \in \ov{D} \cap \R^N_+} \psi(\gl)$.
-Для $\gl \in D$ (\cite{shor2})
-$\psi(\gl) = -\frac{1}{4} [A^{-1} (\gl) b(\gl), b(\gl)] + c(\gl)$.
-Функция $\psi(\gl)$ непрерывно дифференцируема на $D \cap \R^N_+$.
-Для ее максимизации можно применить метод эллипсоидов, штрафные функции
-или метод обобщенного градиентного спуска. Если точная верхняя грань
-на $\ov{D} \cap \R^N_+$ достигается на $D$, то $\ov{\psi}{}^* = K^*$
-и оценка точная.
-
-При использовании модели первого порядка решать вспомогательную
-задачу легко (можно использовать $\|\cdot\|_{\infty}$). Тогда для конечных
-множеств индексов получаем задачу
-$$
-\min \,( \min_{i \in I} ([a_i,s] +
-b_i) + \max_{j \in J} ([p_j,s] + r_j),
-\ \ \|s\|_{\infty} \leq \Delta_k),
-$$
-или
-$$
-\min_{i \in I} \max_{j \in J} ([a_i,s] + b_i +[p_j,s] + r_j),
-\ \ \|s\|_{\infty} \leq \Delta_k.
-$$
-Достаточно решить для каждого $i$ задачу
-$$
-\min \, \max_{j \in J} ([a_i,s] + b_i + [p_j,s] + r_j),
-\ \ \|s\|_{\infty} \leq \Delta_k,
-$$
-которая сводится к задаче линейного программирования.
-
-
-\section{Метод доверительных окрестностей с масштабированием}
-
-В данном параграфе методы доверительных окрестностей
-обобщаются введением масштабирования.
-В них подзадача имеет вид
-$$
-\min\{z_{x_{k}} (s), \ \|D_k s \| \leq \gamma_k\},
-$$
-где $D_k$ --- матрицы масштаба.
-Легко доказать сходимость, если матрицы $D_k$ диагональны и
-неотрицательны.
-
-Полагается $k:=0$. Выбираются начальный радиус $\gamma_0$
-и начальная матрица масштаба $D_0$. Выбирается начальная точка $x_0$.
-Задаются параметры $0 < \mu < \eta < 1$ и $0 < \ga_1 < 1 < \ga_2$.
-
-Для каждого $k=0,1,\dotsc$ решается задача
-$$
-\min\{ m(s), \ \|D_k s\| \leq \gamma_k\}.
-$$
-Пусть $s_k$ --- ее решение. Вычисляется $l_k=\frac{f(x_k+s_k)-f(x_k)}{m(s_k)}$.
-
-Если $l_k \geq \mu$, то $x_{k+1}=x_k+s_k$; иначе $x_{k+1}=x_k$.
-
-Если $l_k \geq \eta$, то выбирается
-$\gamma_{k+1} \in [\gamma_k; \ga_2 \gamma_k]$.
-
-Если $\eta >l_k\geq \mu$, то выбирается
-$\gamma_{k+1} \in [\ga_1 \gamma_k; \gamma_k]$.
-
-Если $l_k< \mu$, то выбирается
-$\gamma_{k+1} \in (0; \ga_1 \gamma_k]$. Пересчитывается матрица масштаба
-и вычисляется $D_{k+1}$.
-
-Приведем теорему сходимости для модели второго порядка.
-
-\begin{thms}
-Пусть выполняются шесть следующих предположений.
-\begin{itemize}
-\item[1)] Для каждого $y \in \ov{\Omega_{\e}} \cap L_0$ и каждого $\e>0$
-найдутся такие $\ov{\Delta}>0$ и убывающая на
-$(0; \ov{\Delta}]$ функция $c(\Delta)$,
-не зависящие от $y$, что
-$$
-c(\Delta) <0, \ \ \Delta \in (0,\ov{\Delta}],
-\ \ \min_{s \in U_{\Delta}} z_y (s) \leq c(\Delta),
-\ \ \Delta \in (0;\ov{\Delta}],
-$$
-где $U_{\Delta} = \{ s \in \R^n: \|s\| \leq \Delta \}$.
-\item[2)] Для каждого $x \in \ov{\Omega_{\e}} \cap L_0$
-и каждых $\e>0, 0<\ga<1$
-найдется такое $\wt{\Delta}$, не зависящее от $x$, что
-$$
-|f(x+s) - f(x) - z_x (s)| \leq \ga \|s\|^2,
-\ \ \|s\| \in (0;\wt{\Delta}].
-$$
-\item[3)] Для каждого $k$ и каждого $\Delta>0$ найдется $\gamma>0$
-такое, что
-$$
-\|D_k s\| \leq \gamma \Rightarrow \|s\| \leq \Delta.
-$$
-\item[4)] Множество $\|D_k s\| \leq \gamma$ для всех $k$ включает шар
-$\|s\| \leq c_1 \gamma$, где $c_1>0$.
-\item[5)]
-$$
-\lim_{\Delta \rar 0} \frac{\Delta^2}{c(\gl \Delta)} = C(\gl) >
--\infty \ \ \forall \gl>0.
-$$
-\item[6)] $\gamma_k$ и $\ga$ такие, что
-$\|s\| \leq \wh{\Delta} (\ga) \leq \min \{\ov{\Delta},\wt{\Delta}\}$.
-\end{itemize}
-
-\noindent{}Тогда $\gamma_k\geq\gb \wh{\Delta} (\ga)$ для некоторого $\gb>0$ 
-и всех $k$.
-\end{thms}
-
-\begin{pf}
-Выполняется
-$$
-\frac{f(x_k+s_k)-f(x_k)}{m(s_k)} - 1 \geq \frac{\ga
-\|s_k\|^2}{c(c_1 \gamma_k)} 
-\geq \frac{\wh{\Delta}^2
-(\ga)}{c(c_1 \gamma_k)} \geq 
-\frac{\wh{\Delta}^2
-(\ga)}{c(c_1 \gb \wh{\Delta} (\ga))} \geq \eta - 1
-$$
-для достаточно малого $\ga$ по нашим предположениям.
-\end{pf}
-
-Можно решать следующую
-вспомогательную задачу, требуя, чтобы направление $s$
-принадлежало подпространству $S$ малой размерности:
-$$
-\min \{z_{x_{k}} (s), \ \|s\| \leq \Delta_k, \ s \in S\}.
-$$
-Например, можно взять
-$S = \{ x = \ga s_N + \gb v \}$,
-где $v$ --- направление наискорейшего спуска, $s_N$ ---
-направление, найденное методом Ньютона для дважды кодифференцируемых
-функций~(\cite{demrub}).
-
-Пусть выполняются следующие предположения.
-\begin{itemize}
-\item[a)] Для каждого $y \in \ov{\Omega_{\e}} \cap L_0$ и каждого $\e>0$
-найдутся такие $\ov{\Delta}>0$ и убывающая на $(0; \ov{\Delta}]$ функция
-$c(\Delta)$, не зависящие от $y$, что
-$$
-c(\Delta) <0, \ \ \Delta \in (0,\ov{\Delta}],
-\ \ \min_{s \in U_{\Delta}, s \in S} z_y (s) \leq c(\Delta),
-\ \ \Delta \in (0;\ov{\Delta}],
-$$
-где $U_{\Delta} = \{ s \in \R^n: \|s\| \leq \Delta \}$.
-\item[b)] Для каждого $x \in \ov{\Omega_{\e}} \cap L_0$ и каждых
-$\e>0$, $0<\ga<1$ найдется такое $\wt{\Delta}$, не зависящее от $x$, что
-$$
-|f(x+s) - f(x) - z_x (s)| \leq \ga \|s\|^2,
-\;\;\; \|s\| \in (0;\wt{\Delta}].
-$$
-\item[c)]
-$\lim\limits_{\|s\| \rar 0}
-\displaystyle{\frac{\|s\|^2}{c(\|s\|)}}=C > -\infty$.
-\end{itemize}
-
-\begin{thms} При предположениях {\em a), b), c)} для каждого $\e>0$
-найдется $x_k \in \Omega_{\e}$.
-\end{thms}
-
-Доказательство аналогично доказательству теоремы~5.1.
-
-Автор выражает благодарность В.Ф.\,Демьянову и Я.И.\,Заботину за ряд
-ценных советов и замечаний.
-
-\begin{thebibliography}{99}
-
-\bibitem{demrub}
-Демьянов В.Ф., Рубинов А.М. {\em Основы негладкого  
-анализа и квазидифференциальное исчисление}. -- М.: Наука, 1990. -- 431\,с.
-
-\bibitem{demrub2}
-Demyanov V.F., Rubinov A.M.  {\em Constructive non-smooth analysis}.
--- Frankfurt: Peter Lang, 1995. -- 590\,p.
-
-\bibitem{more}
-Mor\'e J.J. {\em Recent developments in algorithms and software
-for trust region methods} // Math. Progr.:
-State of the Art. -- 1982. -- P.\,259--287.
-
-\bibitem{powell}
-Powell M.J.D.  {\em Convergence properties of a class of minimization
-algorithms} // Non. Progr. 2.
-%%% O.L.\,Mangasarian, R.R.\,Meyer and S.M.\,Robinson, eds.
--- Academ. Press, 1975. -- P.\,1--27.
-
-\bibitem{lev}
-Levenberg K. {\em A method for the solution of certain nonlinear problems
-in least squares} // Quart. of Appl. Math.
--- 1944. --  V.\,2. -- P.\,164--168.
-
-\bibitem{marq}
-Marquardt D.W.  {\em An algorithm for least squares estimation of
-nonlinear parameters} // SIAM J. on Appl. Math.
--- 1963. -- V.\,11. -- P.\,431--441.
-
-\bibitem{sore}
-Sorensen D.C. {\em Newton's method with a model trust region modification} //
-SIAM J. on Num. Anal. -- 1982. -- V.\,19. -- P.\,409--426.
-
-\bibitem{handbook}
-Horst R., Pardalos P. (Eds.)
-{\em Handbook on Global Optimization}.
--- Dordrecht: Kluwer Academ. Publ., 1996. -- 900\,p.
-
-\bibitem{shor22}
-Shor N.Z., Stetsenko S.I. {\em Quadratic Extremal Problems
-and Nondifferentiable Optimization}. -- Kiev, Nauk. Dumka, 1989. -- 220\,с.
-
-\bibitem{shor2}
-Shor N.Z.  {\em Dual estimates in multiextremal problems} // J. of
-Global Optim. -- 1995. -- V.\,7. -- P.\,75--91.
-
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Казанский государственный}{\it Поступила}
-\post{\it университет}{03.09.2002}
-
-\label{end}
-\end{document}
-

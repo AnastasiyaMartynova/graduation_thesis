@@ -1,1052 +1,0 @@
-\def\stat{bosov}
-
-\def\tit{УПРАВЛЕНИЕ ЛИНЕЙНЫМ ВЫХОДОМ МАРКОВСКОЙ ЦЕПИ 
-ПО~КВАДРАТИЧНОМУ КРИТЕРИЮ$^*$}
-
-\def\titkol{Управление линейным выходом марковской цепи 
-по~квадратичному критерию}
-
-\def\aut{А.\,В.~Босов$^1$}
-
-\def\autkol{А.\,В.~Босов}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Босов А.\,В.}
-\index{Bosov A.\,V.}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Работа выполнена при частичной поддержке РФФИ (проект 19-07-00187-A).}}
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского центра <<Информатика 
-и~управ\-ле\-ние>> Российской академии наук, \mbox{ABosov@frccsc.ru}}
-
-
-%\vspace*{-8pt}
-
-
-
-\Abst{Решена задача оптимального управления выходом стохастической системы 
-наблюдения, в~которой состояние определяет ненаблюдаемый марковский 
-скачкообразный процесс, а линейные наблюдения задаются системой 
-дифференциальных уравнений Ито с~винеровским процессом. В~наблюдения 
-аддитивно входит управление, так что формируется управляемый выход системы. 
-Цель оптимизации задается квадратичным критерием общего вида. Для решения 
-задачи управления сформулирована теорема разделения, использующая решение 
-задачи оптимальной фильтрации, обеспечиваемое фильтром Вонэма. 
-В~результате разделения формируется эквивалентная задача управления выходом 
-диффузионного процесса частного вида, а~именно: с~линейным сносом 
-и~нелинейной диффузией. Решение этой задачи обеспечивается 
-непосредственным применением метода динамического программирования.}
-
-\KW{марковский скачкообразный процесс; стохастическая дифференциальная 
-система Ито; оптимальное управление; квадратичный критерий; стохастическая 
-фильтрация; фильтр Вонэма}
-
-\DOI{10.14357/19922264210201}
-
-%\vspace*{-2pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-
-\section{Введение}
-
-     В теории управления есть результаты, обладающие особой 
-выразительностью, определяющие не частные решения, а принципы 
-и~концепции. К~ним, безусловно, относится LQG-за\-да\-ча
-(LQG~--- linear-quadratic-Gaussian)~--- управление  
-ли\-ней\-но-гаус\-сов\-ской стохастической сис\-те\-мой по квадратичному 
-критерию~[1]. Для целей данной статьи особо важен результат  
-LQG-управ\-ле\-ния в~постановке с~неполной информацией, известный как 
-теорема разделения задач управления и~фильт\-ра\-ции со\-сто\-яния~[2]. Этот 
-результат породил, по-ви\-ди\-мо\-му, наиболее действенный подход 
-к~синтезу управлений в~нелинейных системах наблюдения, который 
-называют принципом разделения.
-     
-     Считается, что классическими методами, равно как и~основанными на 
-них приближенными методами поиска оптимальных управлений~[3--5], 
-хорошо решаются задачи с~полной информацией о~со\-сто\-янии. Но более 
-востребованными для практики представляются именно задачи с~неполной 
-информацией, постановки для систем наблюдения, прежде всего 
-стохастических. Общая теория для таких систем и~соответствующих задач 
-основана на уравнении Дун\-ка\-на--Мор\-тен\-се\-на--За\-каи, описывающего 
-эволюцию апостериорной плот\-ности вероятности и~уравнение 
-динамического программирования в~вариационных производных~[6], 
-развивался этот подход в~[7--9]. Но получить оптимальные решения удается 
-крайне редко. Один из примеров дает результат, полученный в~[10] для 
-модели управляемой марковской цепи, там же можно оценить 
-сопровождающие такие решения технические трудности.
-     
-     Ясно, что в~задачах с~неполной информацией ключевую роль играют 
-методы стохастической фильтрации, поскольку результатами фильтрации 
-заменяют значения фазовых координат в~синтезированных по полной 
-информации управлениях. Такая замена и~есть принцип разделения, но если 
-в~LQG-за\-да\-че его реализация обеспечивается формальной теоремой 
-разделения и~приводит к~оптимальному решению, то в~общем случае 
-объединение решений задач управления и~фильтрации носит интуитивный 
-характер, а~вопрос о~потерях качества при постулировании разделения 
-остается открытым. Такие задачи, как в~[10], единичны, и~это обстоятельство 
-делает ценными любые результаты в~задачах оптимизации нелинейных 
-стохастических систем по неполной информации о~со\-сто\-янии. Примеру 
-такой задачи посвящена настоящая ра\-бота.
-
-\vspace*{-8pt}
-     
-\section{Постановка задачи управления выходом цепи}
-
-\vspace*{-2pt}
-
-     На каноническом вероятностном пространстве $(\Omega, 
-\mathcal{F},\mathcal{P}, \mathcal{F}_t)$, $t\hm\in [0,T]$, рассмотрим 
-стохастическую систему наблюдения с~вектором состояния~$y_t$ 
-и~связанным с~ним линейно управляемым выходом~$z_t^{(0)}$ (верхний 
-индекс здесь и~в~других обозначениях введен для удобства дальнейших 
-обозначений):
-
-\vspace*{-2pt}
-
-\noindent
-     \begin{align}
-     dy_t&= \Lambda_t^{\mathrm{T}} y_t\, dt+d\Lambda_t^y\,,\enskip y_0=Y\,;  
-\label{e1-bos} \\
-     dz_t^{(0)} &= a_t^{(0)} y_t\,dt+b_t^{(0)} z_t^{(0)}dt+c_t^{(0)}dt 
-+\sigma_t^{(0)}dw_t\,,\notag\\
-&\hspace*{46mm}z_0^{(0)}=Z^{(0)}\,.
-     \label{e2-bos}
-     \end{align}
-     
-     \vspace*{-2pt}
-     
-     Уравнение~(\ref{e1-bos}) определяет марковский скачкообразный 
-процесс~--- цепь с~конечным числом состояний и~значениями в~множестве 
-     $\{ e_1, \ldots , e_{n_y}\}$, состоящем из единичных координатных 
-векторов в~евклидовом пространстве~$\mathbb{R}^{n_y}$. Предполагается, 
-что начальное состояние~$Y$ имеет известное распределение~$\pi$, 
-$\Lambda_t$~--- матрица интенсивностей переходов и~$\Lambda_t^y$~---  
-$\mathcal{F}_t$-со\-гла\-со\-ван\-ный мартингал с~квадратичной 
-характеристикой [11]
-
-\vspace*{-4pt}
-
-\noindent
-    \begin{multline*}
-     \langle \Lambda^y, \Lambda^y\rangle_t ={}\\
-     {}=\!\int\limits_0^t \!\left(\mathrm{diag}\left( 
-\Lambda_s^{\mathrm{T}} y_s\right) -\Lambda_s^{\mathrm{T}} \mathrm{diag} \left( y_s\right) -\mathrm{diag}\left( y_s\right) 
-\Lambda_s \right) ds.\hspace*{-2.25598pt}
-   \end{multline*}
-   
-   \vspace*{-2pt}
-     
-     Уравнение~(\ref{e2-bos}) представляют косвенные наблюдения 
-     $z_t^{(0)}\hm\in \mathbb{R}^{n_z}$ за состоянием цепи~$y_t$ 
-и~одновременно линейный управляемый выход системы. Порождаемую 
-наблюдениями $\sigma$-ал\-геб\-ру будем 
-обозначать~$\mathcal{F}_t^{z^{(0)}}$ и~предполагать, что 
-$\mathcal{F}_t^{z^{(0)}} \hm\subseteq \mathcal{F}_t\hm\subseteq 
-\mathcal{F}$. Далее, здесь $w_t\hm\in \mathbb{R}^{n_w}$~--- не зависящий 
-от~$\Lambda_t^y$, $Y$ и~$Z^{(0)}$ стандартный векторный винеровский 
-процесс; $Z^{(0)}\hm\in \mathbb{R}^{n_z}$~--- гауссовская случайная 
-величина с~известными моментами, не зависящая от $\Lambda_t^y$ и~$Y$; 
-$u_t\hm\in \mathbb{R}^{n_u}$, $u_t\hm= U_t(z_t^{(0)})$, $U_t\hm= U_t(z)$, 
-$z\hm\in \mathbb{R}^{n_z}$,~--- допустимое управление с~обратной 
-связью~\cite{5-bos}. Для использования выхода~$z_t^{(0)}$ в~качестве 
-наблюдений будем предполагать невырожденность ошибок наблюдений, 
-т.\,е.\ $\sigma_t^{(0)}(\sigma_t^{(0)})^{\mathrm{T}}\hm>0$.
-     
-     Качество управления $U_0^{\mathrm{T}}\hm= \{ U_t(z), 0\leq t\hm\leq T\}$ 
-определяется целевым функционалом следующего вида:
-
-\vspace*{-4pt}
-
-\noindent
-     \begin{multline}
-     J\left(U_0^{\mathrm{T}}\right)=\mathbb{E}\left\{ 
-     \int\limits_0^{\mathrm{T}} \left\| P_t y_t+Q_t^{(0)} 
-z_t^{(0)} +R_t u_t\right\|^2_{S_t}dt+{}\right.\\
-     \left.{}+\left\| \! P_T y_T +Q_T^{(0)} z_T^{(0)}\!\right\|^2_{S_T}\!
-     \vphantom{\int\limits_0^{\mathrm{T}}}
-     \right\}\,,
-     \label{e3-bos}
-     \end{multline}
-     
-     \vspace*{-2pt}
-     
-\noindent     
-где $u_t=U_t(z_t^{(0)})$; $P_t\hm\in \mathbb{R}^{n_J\times n_y}$; 
-$Q_t^{(0)}\hm\in \mathbb{R}^{n_J\times n_z}$; $R_t\hm\in 
-\mathbb{R}^{n_J\times n_u}$; $S_t\hm\in \mathbb{R}^{n_J\times n_J}$, 
-$S_t\hm\geq 0$, $S_t\hm= S_t^{\mathrm{T}}$, $0\hm\leq t\hm\leq T$,~--- заданные 
-ограниченные матричные функции. Весовая функция $\|x\|_S^2 \hm= 
-x^{\mathrm{T}} Sx$ для симметричной неотрицательно определенной 
-мат\-ри\-цы~$S$, единичной матрице $S\hm=\mathbf{1}$ соответствует 
-евклидова норма $\| x\|^2_1\hm= \vert x\vert^2$ Для исключения 
-возможности отсутствия штрафа для отдельных компонентов вектора 
-управления~$u_t$, которая делает целевой функционал~(\ref{e3-bos}) 
-физически некорректным, предполагается выполненным обычное условие 
-невырожденности, в~данных обозначениях принимающее вид $R_t^{\mathrm{T}} S_t 
-R_t\hm>0$.
-     
-     Функционал~(\ref{e3-bos}) отражает одну из традиционных задач 
-автоматического управления~--- регулирование выхода или управление по 
-выходу. В~\cite{12-bos} в~качестве практического приложения такой 
-постановки рассматривается задача <<доведения выхода до нуля>>. 
-В~других практических целях функционал~(\ref{e3-bos}) можно 
-использовать, например, для формализации задачи отслеживания выходом 
-состояния $\vert y_t\hm- z_t^{(0)}\vert^2$ или управлением~--- выхода $\vert 
-z_t^{(0)}\hm- u_t\vert^2$, учитывая при этом расходы на управляющее 
-воздействие~$\vert u_t\vert^2$ и/или значение выходной переменной~$\vert 
-z_t^{(0)}\vert^2$.
-     
-     Матричные функции $a_t^{(0)}\hm\in \mathbb{R}^{n_z\times n_y}$, 
-$b_t^{(0)}\hm\in \mathbb{R}^{n_z\times n_z}$, $c_t^{(0)}\hm\in 
-\mathbb{R}^{n_z\times n_u}$ и~$\sigma_t^{(0)}\hm\in \mathbb{R}^{n_z\times 
-n_w}$ предполагаются ограниченными: 
-$$
-\left\vert a_t^{(0)}\right\vert + 
-\left\vert b_t^{(0)}\right\vert + \left\vert c_t^{(0)}\right\vert + \left\vert 
-\sigma_t^{(0)}\right\vert \hm\leq C
-$$ 
-для всех $0\hm\leq t\hm\leq T$. Таким 
-образом обеспечивается существование решения уравнения~(\ref{e2-bos}) 
-для любого допустимого управления~$u_t$. Более того, будем предполагать, 
-что все используемые функции времени $\Lambda_t$, $a_t^{(0)}$, $b_t^{(0)}$, 
-$c_t^{(0)}$, $\sigma_t^{(0)}$, $P_t$, $Q_t^{(0)}$, $R_t$ и~$S_t$  
-     ку\-соч\-но-не\-пре\-рыв\-ны, чтобы обеспечить выполнение типовых 
-условий существования решений обыкновенных дифференциальных 
-уравнений, получаемых далее.
-     
-     Задачу составляет поиск~$u_t^*$~--- допустимого управ\-ле\-ния, 
-доставляющего минимум квадратичному функционалу~$J(U_0^{\mathrm{T}})$: 
-     \begin{equation*}
-     \left( U^*\right)_0^{\mathrm{T}}=\left\{ U_t^*(z), 0\leq t\leq T\right\} \in 
-\mathrm{argmin}\,J(U_0^{\mathrm{T}})\,,
-     \end{equation*}
-в предположении существования этого минимума.
-
-\section{Разделение задач управления и~фильтрации}
-
-     Для решения поставленной задачи потребуется выполнить некоторые 
-преобразования, которые позволят показать наличие в~рассматриваемой 
-задаче двух важных свойств, необходимых для успешного решения. Заметим, 
-что для системы наблюдения~(\ref{e1-bos}), (\ref{e2-bos}) известно решение 
-задачи фильтрации, а~именно: уравнение для условного математического 
-ожидания $\mathbb{E}\{y_t\vert \mathcal{F}_t^{z^{(0)}}\}$, описываемое 
-фильтром Вонэма~\cite{11-bos}. Однако записать этот фильтр здесь 
-требуется так, чтобы показать отсутствие в~задаче управления дуального 
-эффекта, т.\,е.\ влияния выбора оценки состояния на качество 
-управления~[13]. Возможно, точнее эту первую промежуточную цель 
-выполняемых преобразований выразит предложение показать независимость 
-качества оптимальной фильтрации от реализуемого закона управления. 
-Вторая цель~--- преобразовать целевой  
-функционал~(\ref{e3-bos}) так, чтобы были выделены независимые 
-слагаемые, определяющие по отдельности качество управления и~качество 
-оценивания.
-     
-     Вначале предлагается выполнить замену переменных в~(\ref{e2-bos}), 
-избавляясь от слагаемых~$b_t^{(0)} z_t^{(0)}dt$ и~$c_t^{(0)} u_t \,dt$. Для 
-такой замены обозначим через $B_t\hm\in \mathbb{R}^{n_z\times n_z}$ 
-решение уравнения $dB_t\hm= -B_t b_t^{(0)} dt$, т.\,е.\ матричную экспоненту 
-$B_t\hm= \exp \{ -\int\nolimits_0^t b_s^{(0)}ds\}$, и~через $z_t^{(1)}\hm\in 
-\mathbb{R}^{n_z}$ линейное преобразование выхода $z_t^{(1)}\hm= B_t 
-z_t^{(0)} \hm- \int\nolimits_0^t B_s c_s^{(0)} u_s\, ds$. Далее, дифференцируя,  
-получаем: 
-     \begin{multline*}
-     dz_t^{(1)} = -B_t b_t^{(0)} z_t^{(0)} dt +{}\\
-     {}+ B_t \left( a_t^{(0)} y_t \,dt +b_t^{(0)} z_t^{(0)}dt +c_t^{(0)} u_t\,dt 
-+\sigma_t^{(0)}dw_t\right)-{}\\
-     {}- B_t c_t^{(0)} u_t \,dt = B_t a_t^{(0)} y_t \,dt +B_t \sigma_t^{(0)} dw_t\,,
-     \end{multline*}
-      или 
-     \begin{equation}
-     dz_t^{(1)} =a_t^{(1)}y_t \,dt +\sigma_t^{(1)}dw_t
-     \label{e5-bos}
-     \end{equation}
-с дополнительными обозначениями $a_t^{(1)} \hm= B_t a_t^{(0)}$, 
-$\sigma_t^{(1)}\hm= B_t \sigma_t^{(0)}$. Выполненные преобразования при 
-этом не влияют на решение задачи фильтрации в~том смысле, что 
-$\mathbb{E}\{ y_t\vert \mathcal{F}_t^{z^{(0)}}\} \hm= \mathbb{E} \{ y_t\vert 
-\mathcal{F}_t^{z^{(1)}}\}$, поскольку использованная для получения~$z_t^{(1)}$ 
-замена является линейным невырожденным преобразованием $z_t^{(0)}$. 
-Таким образом, оценка оптимального фильтра не зависит от~$u_t$, 
-и~в~качестве наблюдений можно использовать~$z_t^{(1)}$, получая одну 
-и~ту же оценку состояния для любого допустимого управ\-ле\-ния. 
-Соответственно, вместо задачи оценивания состояния по наблюдениям 
-$z_t^{(0)}$, зависящим от реализуемого закона управ\-ле\-ния, можно 
-рас\-смат\-ри\-вать эквивалентную задачу оценивания~$y_t$ по 
-наблюдениям~$z_t^{(1)}$, опи\-сы\-ва\-емым урав\-не\-ни\-ем~(\ref{e5-bos}) и~не 
-зависящим от~$u_t$.
-
-     Обозначив оптимальную оценку $Y_t\hm= \mathbb{E} \{y_t \vert 
-\mathcal{F}_t^{z^{(1)}}\}$, запишем уравнение для нее, т.\,е.\ фильтр 
-Вонэма~[11]:
-         \begin{multline*}
-     dY_t= \Lambda_t^{\mathrm{T}} Y_t\,dt +\left( \mathrm{diag} \left(Y_t\right)-Y_t Y_t^{\mathrm{T}}\right) 
-\left( a_t^{(1)}\right)^{\mathrm{T}} \times{}\\
-{}\times \left( \sigma_t^{(1)} \left( 
-\sigma_t^{(1)}\right)^{\mathrm{T}}\right)^{-1/2} \times{}
-\end{multline*}
-
-\noindent
-     \begin{multline}
-     {}\times 
-     \left( \sigma_t^{(1)} \left( \sigma_t^{(1)}\right)^{\mathrm{T}}\right)^{-1/2} \left( 
-dz_t^{(1)} -a_t^{(1)} Y_t \,dt\right) \,, \\ 
-Y_0=\mathbb{E}\{Y\}\,.
-     \label{e6-bos}
-     \end{multline}
-      Сделать это позволяет предположение о не\-вы\-рож\-ден\-ности  $\sigma_t^{(1)}(\sigma_t^{(1)})^{\mathrm{T}}\hm>0$. 
-     
-     Однако использовать уравнение~(\ref{e6-bos}) в~качестве уравнения состояния 
-пока нельзя, так как требуется вторая замена, нужная для преобразования 
-целевого функционала~(\ref{e3-bos}). Эта замена состоит во введении 
-дополнительной переменной в~вектор наблюдений, а~именно: через 
-$z_t^{(2)} \hm\in \mathbb{R}^{n_z}$ обозначим $\int\nolimits_0^t B_s c_s u_s 
-\,ds$, т.\,е.\ дополним модель наблюдений уравнением
-     $$
-     dz_t^{(2)}=B_t c_t u_t \,dt\,,\quad z_0^{(2)}=0\,.
-     $$
-     
-     Новый вектор наблюдений обозначим 
-     $$
-     Z_t= \begin{pmatrix} 
-z_t^{(1)}\\ z_t^{(2)}\end{pmatrix} \in \mathbb{R}^{n_Z},\enskip n_Z=2n_z\,.
-$$ 
-Ясно, что такая замена ничего не изменит в~отношении оценки оптимального 
-фильтра, т.\,е.\ 
-$$
-\mathbb{E}\left\{y_t\vert \mathcal{F}_t^{z^{(0)}}\right\}=\mathbb{E}
-\left\{y_t\left\vert \mathcal{F}_t^{z^{(1)}}\right.\right\}=
-\mathbb{E}\left\{y_t\vert 
-\mathcal{F}_t^{z^{(1)},z^{(2)}}\right\}\,.
-$$
- Уравнение для~$Z_t$ имеет вид:
-     \begin{equation}
-     dZ_t=\begin{pmatrix}
-     a_t^{(1)}\\ \mathbf{0}
-     \end{pmatrix} y_t \,dt +
-     \begin{pmatrix}\mathbf{0}\\ B_t c_t
-     \end{pmatrix} u_t \,dt+
-      \begin{pmatrix}
-     \sigma_t^{(1)}\\ \mathbf{0}
-     \end{pmatrix} dw_t\,.
-     \label{e7-bos}
-     \end{equation}
-     
-     Обозначая блочные матрицы
-     $$
-     a_t= \begin{pmatrix} a_t^{(1)}\\ 
-\mathbf{0}\end{pmatrix};\ \ \ 
-c_t= \begin{pmatrix} \mathbf{0}\\ B_t 
-c_t\end{pmatrix};\ \ \ \sigma_t^{(2)}\hm= \begin{pmatrix} \sigma_t^{(1)}\\ 
-\mathbf{0}\end{pmatrix},
-$$
- где $\mathbf{0}$~--- нулевая матрица подходящей 
-размерности, перепишем уравнение~(\ref{e7-bos}):
-     \begin{equation}
-     dZ_t=a_t y_t \,dt +c_t u_t \,dt +\sigma_t^{(2)} dw_t\,,
-     \label{e8-bos}
-\end{equation}
-причем заметим, что 
-\begin{multline}
-z_t^{(0)} =B_t^{-1}\left( z_t^{(1)} +\int\limits_0^t B_s c_s^{(0)} u_s\, ds\right) 
-={}\\
-{}=B_t^{-1} \left( z_t^{(1)} +z_t^{(2)}\right) =B_t^{-1}(\mathbf{1}\ \mathbf{1}) 
-Z_t\,,
-\label{e9-bos}
-\end{multline}
-где использовано обозначение $(\mathbf{1}\ \mathbf{1})$ для блочной\linebreak 
-матрицы, составленной из двух единичных $\mathbf{1}\hm\in 
-\mathbb{R}^{n_z\times n_z}$. Здесь использован тот факт, что мат\-рич\-ная 
-экспонента~$B_t$ невырожденная~\cite{14-bos}, что\linebreak позволяет применять 
-обратную мат\-ри\-цу~$B_t^{-1}$. Полученное равенство~(\ref{e9-bos}) далее 
-используется для замены переменных в~целевом функционале~(\ref{e3-bos}).
-
-     Теперь можно получить уравнение для оптимальной оценки $Y_t\hm= 
-\mathbb{E}\{ y_t\vert \mathcal{F}_t^Z\}$, используя уравнения~(\ref{e6-bos}) 
-и~(\ref{e8-bos}). Записать фильтр Вонэма непосредственно для 
-наблюдений~$Z_t$ нельзя, поскольку $\sigma_t^{(2)} 
-\left(\sigma_t^{(2)}\right)^{\mathrm{T}}$ вырождена, но вопрос легко решается, 
-поскольку запись~(\ref{e8-bos}) носит технический характер, а~фактически 
-нужно использовать наблюдения~(\ref{e5-bos}), которые легко получить 
-из~(\ref{e8-bos}) с~помощью блочной матрицы $I\hm= (\mathbf{1}\ 
-\mathbf{0})$, составленной из единичной и~нулевой матриц $\mathbf{1}, 
-\mathbf{0}\hm\in \mathbb{R}^{n_z\times n_z}$. С~учетом $\sigma_t^{(0)} 
-\left( \sigma_t^{(0)}\right)^{\mathrm{T}}\hm>0$ и~$\sigma_t^{(1)}\hm= I\sigma_t^{(2)} 
-\hm= B_t\sigma_t^{(0)}$ для~$Y_t$ имеем:
-     \begin{multline*}
-     dY_t=\Lambda_t^{\mathrm{T}} Y_t\,dt +\left( \mathrm{diag} \left(Y_t\right)-Y_t Y_t^{\mathrm{T}}\right) 
-\left(Ia_t\right)^{\mathrm{T}}\times{}\\
-{}\times \left( I\sigma_t^{(2)} \left(I\sigma_t^{(2)}\right)^{\mathrm{T}}  
-\right)^{-1/2}\times{}\\
-     {}\times \left( I\sigma_t^{(2)} \left( I\sigma_t^{(2)}\right)^{\mathrm{T}}\right)^{-1/2} 
-I\left( dZ_t-a_tY_t\,dt\right)\,,\\
- Y_0=\mathbb{E}\{Y\}\,,
-     \end{multline*}
-где $dW_t\hm= (I\sigma_t^{(2)} (I\sigma_t^{(2)})^{\mathrm{T}})^{-1/2} I(dZ_t\hm- a_t Y_t\, 
-dt)$ определяет $\mathcal{F}_t^Z$-со\-гла\-со\-ван\-ный стандартный 
-векторный винеровский процесс~$W_t$~[11]. Это обстоятельство позволяет 
-переписать уравнение наблюдений~(\ref{e8-bos}) в~виде:
-$$
-IdZ_t=Ia_t Y_t\,dt+\left( I\sigma_t^{(2)} \left( 
-I\sigma_t^{(2)} \right)^{\mathrm{T}} \right)^{1/2} dW_t\,.
-$$
-Здесь было учтено, что 
-$$
-I\left(dZ_t \hm-a_t Y_t \,dt \hm- c_t u_t\, dt\right)= 
-I\left(dZ_t\hm- a_t Y_t \,dt\right).
-$$
-     
-     Окончательно, обозначив 
-     \begin{align*}
-          \sigma_t&= I^{\mathrm{T}}\left( I\sigma_t^{(2)} \left( 
-I\sigma_t^{(2)}\right)^{\mathrm{T}}\right)^{1/2};\\
-\Sigma_t&= \Sigma_t(Y_t) ={}\\
-&\hspace*{-7mm} {}=
-\left( \mathrm{diag}\left(Y_t\right) \hm-Y_tY_t^{\mathrm{T}}\right)\! \left(I a_t\right)^{\mathrm{T}} \left( 
-I\sigma_t^{(2)}\left( I\sigma_t^{(2)}\right)^{\mathrm{T}}\right)^{-1/2}\!,
-\end{align*}
- получаем систему 
-управления с~полной информацией следующего вида:
-     \begin{equation}
-     \left.
-     \begin{array}{l}
-     dY_t=\Lambda_t^{\mathrm{T}} Y_t\,dt+\Sigma_t(Y_t)\,dW_t\,,\quad 
-Y_0=\mathbb{E}\{Y\}\,;\\[6pt]
-     dZ_t= a_tY_t \,dt+c_t u_t \,dt+ \sigma_t \,dW_t\,,\\ 
-\hspace*{37mm}Z_0=Z=\begin{pmatrix}
-     Z^{(0)}\\ \mathbf{0}
-     \end{pmatrix}\,.
-     \end{array}
-     \right\}
-     \label{e10-bos}
-     \end{equation}
-     
-     Для окончательного формирования эквивалентной исходной задачи 
-управления остается запи-\linebreak\vspace*{-12pt}
-
-\columnbreak
-
-\noindent
-сать в~выбранных переменных имеющийся целевой 
-функционал~(\ref{e3-bos}). Обеспечивает это формула полного 
-математического ожидания~\cite{15-bos} и~замена переменной~$z_t^{(0)}$, 
-заданная в~(\ref{e9-bos}):
-     \begin{multline}
-     J(U_0^{\mathrm{T}}) =\mathbb{E}\left\{ \int\limits_0^{\mathrm{T}}
-     \left\|
-     \vphantom{B_t^{-1}Q_t^{(0)}}
-      P_t\left(y_t -Y_t +Y_t\right) 
-+{}\right.\right.\\[2pt]
-\left.{}+Q_t^{(0)} B_t^{-1} (\mathbf{1}\ \mathbf{1})Z_t +R_t u_t \right\|^2_{S_t}dt+{}\\[2pt]
-\left.{}+
-     \left\| P_T\left(y_T -Y_T+Y_T\right) + Q_T^{(0)} B_T^{-1} (\mathbf{1}\ 
-\mathbf{1})Z_T\right\|^2_{S_T}
-\vphantom{\int\limits_0^t}
-\right\}= {}\\[2pt]
-     {}=
-     \mathbb{E} \left\{ \int\limits_0^{\mathrm{T}} \left\|  P_t Y_t +Q_t Z_t +R_t 
-u_t \right\|^2_{S_t} +{}\right.\\[2pt]
-{}+\left\| P_T Y_T +Q_T Z_T \right\|^2_{S_T} + 
-\int\limits_0^{\mathrm{T}} \left\| P_t \left(y_t-Y_t\right)\right\|^2_{S_t}\!dt+{}\\[2pt]
-\left.{}+\left\| P_T(y_t-
-Y_t)\right\|^2_{S_T}
-\vphantom{\int\limits_0^t}
-\right\}\,,
-\label{e11a-bos}
-     \end{multline}
-где учтено, что $Y_t\hm= \mathbb{E}\{ y_t\vert \mathcal{F}_t^Z\}$ 
-и~дополнительно обозначено $Q_t\hm= Q_t^{(0)} B_t^{-1}(\mathbf{1}\  
-\mathbf{1})$. Поскольку последнее слагаемое в~выражении~(\ref{e11a-bos})  
-не зависит от~$U_0^{\mathrm{T}}$, а~характеризует только точ\-ность оптимальной 
-оценки фильтрации~$Y_t$, то его можно из целевого функционала 
-исключить. Таким образом, новый целевой функционал имеет вид:
-\begin{multline}
-J\left(U_0^{\mathrm{T}}\right)=\mathbb{E}\left\{ \int\limits_0^{\mathrm{T}} \left\| P_t Y_t +Q_t Z_t 
-+R_tu_t\right\|^2_{S_t}\!dt +{}\right.\\[2pt]
-\left.{}+\left\| \!P_T 
-Y_T+Q_TZ_T\right\|^2_{S_T}
-\vphantom{\int\limits_0^t}
-\right\}\,.
-\label{e11-bos}
-\end{multline}
-     
-     Формулировка окончательного утверждения такова.
-     
-     \smallskip
-     
-     \noindent
-     \textbf{Утверждение~1} (\textit{теорема разделения}). \textit{Решение 
-задачи оптимального управления с~полной информацией  
-($\mathcal{F}_t^{Y,Z}$-из\-ме\-ри\-мо\-го) системой}~(\ref{e10-bos}) 
-\textit{с~целевым функционалом}~(\ref{e11-bos}) \textit{является 
-оптимальным решением задачи управления системой}~(\ref{e1-bos}), 
-(\ref{e2-bos}) \textit{с~косвенными наблюдениями 
-($\mathcal{F}_t^{z^{(0)}}$-из\-ме\-ри\-мо\-го) с~целевым 
-функ\-цио\-на\-лом}~(\ref{e3-bos}).
-
-     
-     \smallskip
-     
-     Заметим, что управление $(U^*)_0^{\mathrm{T}}$, ми\-ни\-ми\-зи\-ру\-ющее 
-функционал~(\ref{e11-bos}), минимизирует и~(\ref{e3-bos}), поэтому для 
-целевой функции не имеет смысла вводить новое обозначение.
-     
-\section{Решение задачи управления выходом}
-
-     Полученное далее решение основано на подходе, представленном 
-в~[16] в~задаче управления вы\-ходом системой с~состоянием, описываемым 
-урав\-нением Ито, и~работе~[17], где проанализирован\linebreak частный случай этой же 
-задачи в~случае коррелированных возмущений. Найти решение, как и~в~[16, 
-17], сформулированной выше задачи управления выходом~$Z_t$ 
-формируемым состоянием~$Y_t$, с~квадратичной функцией цены 
-$J(U_0^{\mathrm{T}})$ удается классическим методом динамического  
-программирования~\cite{4-bos, 5-bos}. Обозначив функцию Беллмана через 
-$V_t\hm= V_t(y,z)$, $y\hm\in \mathbb{R}^{n_y}$, $z\hm\in 
-\mathbb{R}^{n_z}$, $\Sigma_t\hm= \Sigma_t(y)$, получим уравнение 
-динамического программирования
-     \begin{multline}
-     \fr{\partial V_t}{\partial t} +{}\\
-     {}+\fr{1}{2}\,\mathrm{tr}\left\{ \Sigma_t^{\mathrm{T}} 
-\fr{\partial^2 V_t}{\partial y^2}\,\Sigma_t +\sigma_t^{\mathrm{T}} \fr{\partial^2V_t}{\partial 
-z^2}\,\sigma_t +2\Sigma_t^{\mathrm{T}}\fr{\partial^2 V_t}{\partial 
-y\partial x}\,\sigma_t\right\}+{}\\
-     {}+\min\limits_u \left\{ y^{\mathrm{T}} \Lambda_t \fr{\partial V_t}{\partial y} +\left( 
-a_t y +c_t u\right)^{\mathrm{T}}\fr{\partial V_t}{\partial z} +{}\right.\\
-\left.{}+\left\| P_t y+Q_tz +R_t 
-u\right\|^2_{S_t}\!
-\vphantom{\fr{\partial V_t}{\partial y}}
-\right\}=0\,,\\ 
-     V_T=\left\| P_T y +Q_T z\right\|^2_{S_T}\,.
-          \label{e12-bos}
-\end{multline}
-     
-     Существование решения уравнения~(\ref{e12-bos}) является 
-достаточным условием оптимальности, оптимальное управление при 
-этом~--- точка минимума соответствующего слагаемого. Нетрудно видеть,\linebreak 
-что при сделанном выше предположении $R_t^{\mathrm{T}} S_t R_t\hm>0$ этот 
-минимум доставляет оптимальное управ\-ле\-ние (в~предположении 
-существования решения~(\ref{e12-bos})):
-
-\vspace*{-2pt}
-
-\noindent
-     \begin{multline}
-     u_t^*= u_t^*(y,z)=-\fr{1}{2}\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} \left( c_t^{\mathrm{T}} 
-\fr{\partial V_t}{\partial z} +{}\right.\\[-1pt]
-\left.{}+2R_t^{\mathrm{T}} S_t\left( P_t y+Q_t z\right)
-\vphantom{\fr{\partial V_t}{\partial z}}
-\right)\,.
-     \label{e13-bos}
-     \end{multline} 
-     
-     \vspace*{-2pt}
-
-     Подставляя $u_t^*$ в~(\ref{e12-bos}) и~перегруппировывая слагаемые, 
-получаем:
-
-\vspace*{-6pt}
-
-     \begin{multline}
-     \fr{\partial V_t}{\partial t} +\fr{1}{2}\,\mathrm{tr} \left\{ \Sigma_t^{\mathrm{T}} 
-\fr{\partial^2 V_t}{\partial y^2}\,\Sigma_t +\sigma_t^{\mathrm{T}}\fr{\partial^2 V_t}{\partial 
-z^2}\,\sigma_t +{}\right.\\
-\left.{}+2\Sigma_t^{\mathrm{T}} \fr{\partial^2 V_t}{\partial y\partial 
-z}\,\sigma_t\right\} +y^{\mathrm{T}} \Lambda_t\fr{\partial V_t}{\partial y}+ 
-\left(
-\vphantom{\left( R_t^{\mathrm{T}} S_t\left( P_t y+Q_tz\right)\right)^{\mathrm{T}}}
- y^{\mathrm{T}} a_t^{\mathrm{T}} -{}\right.\\
-\!\left.{}-\left( R_t^{\mathrm{T}} S_t\left( P_t y+Q_tz\right)\right)^{\mathrm{T}}\! \left( 
-R_t^{\mathrm{T}} S_t R_t\right)^{-1}\! c_t^{\mathrm{T}}\right) \!\fr{\partial V_t}{\partial z}+
- \left( P_t y+{}\right.\hspace*{-3.5019pt}\\
-\left. {}+Q_t z\right)^{\mathrm{T}} \left( S_t -S_t R_t\left( R_t^{\mathrm{T}} S_t 
-R_t\right)^{-1} R_t^{\mathrm{T}} S_t\right) \left( P_t y+{}\right.\\
-\!\!\!\left.{}+Q_t z\right)-\fr{1}{4}\left(\fr{\partial V_t}{\partial z}\right)^{\mathrm{T}} c_t 
-     \left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} c_t^{\mathrm{T}} \fr{\partial V_t}{\partial z}=0.\!\!\!
-     \label{e14-bos}
-     \end{multline}
-     
-     Рассматривая полученное уравнение, заметим, что линейное вхождение 
-$Z_t$ в~уравнение наблюдений~(\ref{e10-bos}) и~квадратичное в~целевой 
-функционал~(\ref{e11-bos}) позволяет предположить, что решение 
-уравнения~(\ref{e14-bos}) может быть представлено в~виде (векторная форма 
-представления, предложенного в~\cite{16-bos}):
-     \begin{equation}
-     V_t=V_t(y,z)=z^{\mathrm{T}} \alpha_t z+z^{\mathrm{T}}\beta_t(y)+\gamma_t(y)\,,
-     \label{e15-bos}
-     \end{equation}
-что сводит поиск оптимального решения к~поиску уравнений относительно 
-симметричной матричной функции~$\alpha_t$, векторной функции 
-$\beta_t(y)$ и~скалярной функции $\gamma_t(y)$, причем явный вид функции 
-$\gamma_t(y)$ для реализации оптимального управления не требуется, нужна 
-только производная 
-$$
-\fr{\partial V_t}{\partial z}= 2\alpha_t z+ \beta_t(y).
-$$ 
-     
-     Представление функции Беллмана~(\ref{e15-bos}) можно упростить 
-дальше, используя то, что сла\-га\-емое с~производной $\partial V_t/\partial y$ 
-в~(\ref{e14-bos}) содержит только множитель $y^{\mathrm{T}}\Lambda_t$. Это позволяет 
-предположить, что $\beta_t(y)$ является аффинным преобразованием~$y$ 
-(адаптированная к~рассматриваемой задаче форма, предложенная  
-в~\cite{17-bos}):
-     \begin{equation}
-     \beta_t(y)=\beta_t^{MN} y\,,
-     \label{e16-bos}
-      \end{equation}
-где матрица $\beta_t^{MN}\hm\in \mathbb{R}^{n_z\times n_y}$. Выбранное 
-здесь обозначение~$\beta_t^{MN}$ будет ясно из дальнейшего (см.\ 
-далее~(\ref{e22-bos}), где уравнение для~$\beta_t^{MN}$ определяется 
-мат\-ри\-ца\-ми~$M_t^\beta$ и~$N_t^\beta$). Граничное условие при этом 
-принимает вид: 
-\begin{multline*}
-V_T=\left\| P_T y+Q_T z\right\|^2_{S_T} = z^{\mathrm{T}} Q_T^{\mathrm{T}} S_T Q_T z+{}\\
-{}+ 2z^{\mathrm{T}} 
-Q_T^{\mathrm{T}} S_T P_T y+ y^{\mathrm{T}} P_T^{\mathrm{T}} S_T P_T y\,,
-\end{multline*}
- т.\,е.
-\begin{equation}
-\left.
-\begin{array}{rl}
-\alpha_T&= Q_T^{\mathrm{T}} S_T Q_T\,;\\[6pt]
-\beta_T^{MN}&=2Q_T^{\mathrm{T}} S_T P_T\,;\\[6pt] 
-\gamma_T(y)&=y^{\mathrm{T}} P_T^{\mathrm{T}} S_T P_T y\,,
-\end{array}
-\right\}
-\label{e17-bos}
-\end{equation}
-а оптимальное управление~(\ref{e13-bos}) окончательно:
-\begin{multline*}
-u_t^* =u_t^*(y,z) ={}\\
-{}=-\fr{1}{2}\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} \left(
-\vphantom{R_t^T}
- c_t^{\mathrm{T}} \left( 
-2\alpha_t z+\beta_t^M y\right) +{}\right.\\
-\left.{}+
-2R_t^{\mathrm{T}} S_t\left( P_t y+Q_t z\right)\right)\,.
-%\label{e18-bos}
-\end{multline*}
-     
-     Таким образом, $u_t^*$ содержит два слагаемых: первый терм, 
-линейный по~$z$, т.\,е.\ по наблюдениям, точнее по переменной выхода; 
-второй терм, линейный по~$y$, т.\,е.\ по состоянию, точнее по оценке 
-состояния, заданной фильтром Вонэма. Чтобы сказанное было верно, нужно 
-получить уравнения для $\alpha_t$, $\beta_t^{MN}$ и~$\gamma_t(y)$, 
-показав, что сделанное предположение относительно функции~$V_t$ 
-с~учетом аффинности~$\beta_t(y)$ позволяет решить  
-уравнение~(\ref{e14-bos}). Для этого подставляем~(\ref{e15-bos}) 
-в~уравнение~(\ref{e14-bos}) и~учитываем, что производные~$\beta_t(y)$ 
-согласно~(\ref{e16-bos}) равны 
-$$
-\fr{\partial^2 \beta_t(y)}{\partial y^2}=0\,;\quad 
-\fr{\partial \beta_t(y)}{\partial y}= \left(\beta_t^{MN}\right)^{\mathrm{T}},
-$$
- а~также что
-     \begin{align*}
-     y^{\mathrm{T}} \Lambda_t \fr{\partial V_t}{\partial y}&=\left(\! \fr{\partial V_t}{\partial 
-y}\!\right)^{\mathrm{T}}\! \Lambda_t^{\mathrm{T}} y= z^{\mathrm{T}} \beta_t^{MN} \Lambda_t^{\mathrm{T}} y+ y^{\mathrm{T}} \Lambda_t 
-\fr{\partial \gamma_t}{\partial y};
-   \\
-     \fr{\partial^2 V_t}{\partial y\partial z} &=\left( \beta_t^{MN}\right)^{\mathrm{T}}\,.
-    \end{align*}
-     
-     После этой подстановки и~незначительных преобразований получаются 
-уравнения для $\alpha_t$~--- коэффициента при~$z^{\mathrm{T}}$ и~$z$, $\beta_t(y)\hm= 
-\beta_t^{MN} y$~--- коэффициента при~$z^{\mathrm{T}}$ и~$y$, а также для 
-$\gamma_t\hm= \gamma_t(y)$~--- оставшихся слагаемых~--- функций~$y$:
-     \begin{multline}
-     \fr{d\alpha_t}{dt}-\left( M_t^\alpha \alpha_t +\alpha_t^{\mathrm{T}} 
-(M_t^\alpha)^{\mathrm{T}}\right) +N_t^\alpha -{}\\
-{}-\alpha_t^{\mathrm{T}} c_t \left(R_t^{\mathrm{T}} S_t R_t\right)^{-1} 
-c_t^{\mathrm{T}} \alpha_t =0\,;\label{e19-bos}
-\end{multline}
-
-\noindent
-\begin{equation}
-     \fr{d\beta_t^{MN}}{dt}\,y +\beta_t^{MN}\Lambda_t^{\mathrm{T}} y+M_t^\beta y- 
-N_t^\beta \beta_t^{MN} y=0\,;\label{e20-bos}
-\end{equation}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-     \fr{\partial \gamma_t}{\partial t} +
-     \fr{1}{2}\mathrm{tr}\left\{ \Sigma_t^{\mathrm{T}} \fr{\partial^2 
-\gamma_t}{\partial y^2}\,\Sigma_t\right\} +{}\\
-{}+\mathrm{tr}\left\{ 
-\sigma_t^{\mathrm{T}}\alpha_t\sigma_t+\Sigma_t^{\mathrm{T}} \left(\beta_t^{MN}\right)^{\mathrm{T}} 
-\sigma_t\right\}+{}\\
-{}+
-     y^{\mathrm{T}}\Lambda_t\fr{\partial \gamma_t}{\partial y}+M_t^\gamma=0\,,
-     \label{e21-bos}
-     \end{multline}
-где обозначено
-\begin{align*}
-M_t^\alpha&= Q_t^{\mathrm{T}} S_t R_t\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} c_t^{\mathrm{T}}\,;\\
-N_t^\alpha &=Q_t^{\mathrm{T}}\left( S_t -S_t R_t\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} 
-R_t^{\mathrm{T}}S_t\right)Q_t\,;\\
-M_t^\beta&=2\left(\left( a_t^{\mathrm{T}} -P_t^{\mathrm{T}} S_t R_t\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1}
-c_t^{\mathrm{T}}\right)\alpha_t+{}\right.\\
-&\left.\hspace{2mm}{}+P_t^{\mathrm{T}}\left( S_t-S_tR_t\left( R_t^{\mathrm{T}}S_tR_t\right)^{-1}R_t^{\mathrm{T}} 
-S_t\right)Q_t\right)\,;\\
-N_t^\beta &= Q_t^{\mathrm{T}} S_t R_t\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} c_t^{\mathrm{T}} +{}\\
-&\hspace*{30mm}{}+\alpha_t c_t 
-\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} c_t^{\mathrm{T}}\,;\\
-M_t^\gamma&= M_t^\gamma(y)=\beta_t^{\mathrm{T}} \! \left( \!a_t -c_t\left(R_t^{\mathrm{T}} S_t R_t\!\right)^{-1}\!
- R_t^{\mathrm{T}} S_t P_t\right) y +{}\\
-&{}+y^{\mathrm{T}} P_t^{\mathrm{T}} \left( S_t-S_tR_t\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} R_t^{\mathrm{T}} S_t\right) 
-P_t y -{}\\
-&\hspace*{24mm}{}-\fr{1}{4}\,\beta_t^{\mathrm{T}} c_t\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} c_t^{\mathrm{T}} \beta_t\,.
-\end{align*}
-   
-        Наконец, из~(\ref{e20-bos}) получаются уравнения 
-для~$\beta_t^{MN}$:
-     \begin{equation}
-     \fr{d\beta_t^{MN}}{dt}+\beta_t^{MN} \Lambda_t^{\mathrm{T}} +M_t^\beta -
-N_t^\beta \beta_t^{MN} =0\,.
-     \label{e22-bos}
-\end{equation}
-
-     Решаются полученные уравнения с~граничными  
-условиями~(\ref{e17-bos}). При этом уравнение~(\ref{e19-bos})~--- это 
-матричное уравнением Риккати для квадратной симметричной 
-матрицы~$\alpha_t$. Сделанных выше предположений в~отношении 
-кусочной непрерывности коэффициентов этого уравнения и~условия $R_t^{\mathrm{T}} 
-S_t R_t\hm>0$ достаточно для существования единственного 
-неотрицательного решения для всех $0\hm\leq t\hm\leq T$. Действительно, 
-такое уравнение имеется в~классической ли\-ней\-но-квад\-ра\-тич\-ной задаче 
-и,~как известно~[18], существует единственное оптимальное управление~--- 
-линейное с~обратной связью\linebreak по выходу~$Z_t$, с~коэффициентом усиления, 
-описываемым этим урав\-не\-ни\-ем Риккати. Соотноше\-ния~(\ref{e22-bos}) 
-представляют собой сис\-те\-му обыкновен\-ных линейных дифференциальных 
-урав\-не\-ний\linebreak относительно элементов матрицы~$\beta_t^{MN}$  
-с~ку\-соч-\linebreak но-не\-пре\-рыв\-ны\-ми коэффициентами, 
-так что\linebreak существование и~единственность решения обеспечиваются обычной для линейных 
-дифференциальных уравнений теоремой. Уравнение~(\ref{e21-bos}) 
-для~$\gamma_t(y)$ является линейным дифференциальным уравнением 
-в~частных производных параболического типа. Предполагается 
-существование решения у~этого уравнения, и~это предположение 
-интерпретируется как достаточное условие, такое же как использованное 
-уравнение Беллмана~(\ref{e12-bos}). Подводит итог рассуждениям раздела 
-следующее утверждение.
-     
-     \smallskip
-     
-     \noindent
-     \textbf{Утверждение~2} (\textit{управление выходом для случая полной 
-информации}). \textit{Если существует решение уравнения динамического 
-программирования}~(\ref{e12-bos}), \textit{то это решение может быть 
-представлено в~виде}~(\ref{e15-bos}), (\ref{e16-bos}) \textit{так, что 
-коэффициенты~$\alpha_t$, $\beta_t(y)\hm= \beta_t^M y$ и~$\gamma_t(y)$ 
-определяются уравнениями}~(\ref{e19-bos}), (\ref{e22-bos}) и~(\ref{e21-bos}) 
-\textit{соответственно, а оптимальное управление}
-     \begin{multline}
-     u_t^*=u_t^*(Y_t, Z_t) =-{}\\
-     {}=\fr{1}{2}\left( R_t^{\mathrm{T}} S_t R_t\right)^{-1} \left( 
-c_t^{\mathrm{T}} \left( 2\alpha_t Z_t +\beta_t^{MN} Y_t\right) +{}\right.\\
-\left.{}+2R_t^{\mathrm{T}} S_t\left( P_t 
-Y_t+Q_t Z_t\right)\right)\,.
-     \label{e23-bos}
-\end{multline}
-
-\vspace*{-18pt}
-
-\section{Заключение}
-
-\vspace*{-2pt}
-     
-     Принципиальный результат статьи представляет, во-первых, найденная 
-явная форма~(\ref{e23-bos}) оптимального управления в~рассматриваемой 
-задаче, во-вторых, тот факт, что это оптимальное решение оформлено в~виде 
-управления с~обратной связью, в~котором ключевую роль играет решение 
-вспомогательной задачи оптимальной фильтрации~--- условное 
-математическое ожидание $Y_t\hm= \mathbb{E}\{ y_t\vert \mathcal{F}_t^Z\}$. 
-Это и~дало основание сформулировать основной\linebreak
- результат, назвав его 
-теоремой разделения. Принципиальное отличие полученного решения от 
-класси\-че\-ской LQG-за\-да\-чи состоит в~том, что измененная для разделения 
-задача не похожа на исходную, а~именно: мартингальное представление 
-марковской цепи~(\ref{e1-bos}) заменяется совсем иным объектом~--- 
-стохастическим уравнением Ито с~винеровским процессом~(\ref{e10-bos}). 
-Таким образом, ключом к~решению оказалось уникальное свойство фильтра 
-Вонэма, представившего оценку марковской цепи по косвенным, 
-зашумленным гауссовским шумом наблюдениям в~виде классического 
-уравнения Ито с~винеровским процессом.
-     
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-%\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-\bibitem{1-bos}
-\Au{Athans M.} The role and use of the stochastic linear-quadratic-Gaussian problem in control 
-system design~// IEEE T. Automat. Contr., 1971. Vol.~16. No.\,6. P.~529--552.
-\bibitem{2-bos}
-\Au{Wonham W.\,M.} On the separation theorem of stochastic control~// SIAM J.~Control, 1968. 
-Vol.~6. No.\,2. P.~312--326.
-
-\bibitem{5-bos} %3
-\Au{Флеминг~У., Ришел~Р.} Оптимальное управление детерминированными 
-и~стохастическими системами~/ Пер. с~англ.~--- М.: Мир, 1978. 316~с. 
-(\Au{Fleming~W.\,H., Rishel~R.\,W.} Deterministic and stochastic optimal control.~--- New 
-York, NY, USA: Springer-Verlag, 1975. 222~p.).
-
-\bibitem{3-bos} %4
-\Au{Kushner~H.\,J., Dupuis~P.\,G.} Numerical methods for stochastic control problems in 
-continuous time.~--- New York, NY, USA: Springer-Verlag, 2001. 476~p.
-\bibitem{4-bos} %5
-\Au{Bertsekas~D.\,P.} Dynamic programming and optimal control.~--- Cambridge: Athena 
-Scientific, 2017. 576~p.
-
-\bibitem{6-bos}
-\Au{Mortensen~R.\,E.} Stochastic optimal control with noisy observations~// Int. J.~Control, 
-1966. Vol.~4. No.\,5. P.~455--464.
-
-\bibitem{8-bos} %7
-\Au{Davis~M.\,H.\,A., Varaiya~P.\,P.} Dynamic programming conditions for partially 
-observable stochastic systems~// SIAM J.~Control, 1973. Vol.~11. No.\,2. P.~226--262.
-\bibitem{9-bos} %8
-\Au{Benes~V.\,E., Karatzas~I.} On the relation of Zakai's and Mortensen's equations~// SIAM 
-J.~Control Optim., 1983. Vol.~21. No.\,3. P.~472--489.
-\bibitem{7-bos} %9
-\Au{Bensoussan~A.} Stochastic control of partially observable systems.~--- Cambridge: 
-Cambridge University Press, 1992. 364~p.
-
-\bibitem{10-bos}
-\Au{Miller B.\,M., K.\,E.~Avrachenkov, K.\,V.~Stepanyan, G.\,B.~Mil\-ler.} The problem of optimal 
-stochastic data flow control based upon incomplete information~// Probl. Inf. 
-Transm., 2005. Vol.~41. No.\,2. P.~150--170.
-\bibitem{11-bos}
-\Au{Elliott~R.\,J., Aggoun~L., Moore~J.\,B.} Hidden Markov models: Estimation and  
-control.~--- New York, NY, USA: Springer-Verlag, 1995. 382~p.
-\bibitem{12-bos}
-\Au{Athans~M., Falb~P.\,L.} Optimal control: An introduction to the theory and its 
-applications.~--- New York, NY, USA: Dover Publications, 2007. 879~p.
-\bibitem{13-bos}
-\Au{Фельдбаум~А.\,А.} Основы теории оптимальных автоматических сис\-тем.~--- 2-е изд.~--- М.: Наука, 1966. 624~с.
-\bibitem{14-bos}
-\Au{Bhatia R.} Matrix analysis.~--- Graduate texts in mathematics ser.~--- 
-New York, NY, USA: Springer-Verlag,  1997. Vol.~169. 349~p.
-\bibitem{15-bos}
-\Au{Ширяев~А.\,Н.} Вероятность.~--- 2-е изд.~--- М.: Наука, 1989. 640~с.
-\bibitem{16-bos}
-\Au{Босов~А.\,В., Стефанович~А.\,И.} Управление выходом стохастической 
-дифференциальной системы по квад\-ра\-тич\-но\-му критерию. I.~Оптимальное решение 
-методом динамического программирования~// Информатика и~её применения, 2018. 
-Т.~12. Вып.~3. С.~99--106.
-\bibitem{17-bos}
-\Au{Босов А.\,В.} О~некоторых частных случаях в~задаче управления 
-выходом стохастической дифференциальной системы по квадратичному критерию~// 
-Информатика и~её применения, 2021. Т.~15. Вып.~1. С.~11--17.
-\bibitem{18-bos}
-\Au{Девис~М.\,Х.\,А.} Линейное оценивание и~стохастическое управление~/ Пер. 
-с~англ.~--- М.: Наука, 1984. 206~с. (\Au{Davis~M.\,H.\,A.} Linear estimation and stochastic 
-control.~--- London: Chapman and Hall, 1977. 224~p.)
-
- \end{thebibliography}
-
-}
-}
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 24.12.2020}}
-
-\vspace*{8pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{LINEAR OUTPUT CONTROL OF~MARKOV CHAINS BY~THE~QUADRATIC 
-CRITERION}
-
-\def\titkol{Linear output control of~Markov chains by~the~quadratic 
-criterion}
-
-\def\aut{A.\,V.~Bosov}
-
-\def\autkol{A.\,V.~Bosov}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-
-\noindent
-      Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of 
-the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
- 
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 2}
-}%
-\def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 2
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}   
-
-      
-      \Abste{The problem of optimal output control of a stochastic observation system, in which the 
-state determines an unobservable Markov jump process and linear observations are given by a~system of Ito 
-differential equations with a~Wiener process, is solved. Observations additively include control vector, so 
-that a~controlled output of the\linebreak\vspace*{-12pt}}
-
-\Abstend{system is formed. The optimization goal is set by a general quadratic 
-criterion. To solve the control problem, a~separation theorem is formulated that uses the solution to the 
-optimal filtering problem provided by the Wonham filter. As a~result of the separation, an equivalent 
-problem of output control of a~diffusion process of a~particular type, namely, with linear drift and 
-nonlinear diffusion, is formed. The solution of this problem is provided by direct application of the 
-dynamic programming method.}
-      
-      \KWE{Markov jump process; Ito stochastic differential system; optimal control; quadratic 
-criterion; stochastic filtering; Wonham filter}
-      
-      
-
-
-\DOI{10.14357/19922264210201}
-
-%\vspace*{-15pt}
-
- \Ack
-      \noindent
-      This work was partially supported by the Russian Foundation for Basic Research 
- (grant 19-07-00187-A).
-
-\vspace*{12pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-
-      \bibitem{1-bos-1}
-      \Aue{Athans, M.} 1971. The role and use of the stochastic linear-quadratic-gaussian problem in 
-control system design. \textit{IEEE T.~Automat. Contr.} 16(6):529--552.
-      \bibitem{2-bos-1}
-      \Aue{Wonham, W.\,M.} 1968. On the separation theorem of stochastic control. \textit{SIAM 
-J.~Control} 6(2):312--326.
-
-      \bibitem{5-bos-1} %3
-      \Aue{Fleming, W.\,H., and R.\,W.~Rishel.} 1975. \textit{Deterministic and stochastic optimal 
-control}. New York, NY: Springer-Verlag. 222~p.
-
-      \bibitem{3-bos-1} %4
-      \Aue{Kushner, H.\,J., and P.\,G.~Dupuis.} 2001. \textit{Numerical methods for stochastic control 
-problems in continuous time}. New York, NY: Springer-Verlag. 476~p.
-      \bibitem{4-bos-1} %5
-      \Aue{Bertsekas, D.\,P.} 2017. \textit{Dynamic programming and optimal control}. Cambridge: 
-Athena Scientific. 576~p.
-
-      \bibitem{6-bos-1}
-      \Aue{Mortensen, R.\,E.} 1966. Stochastic optimal control with noisy observations. \textit{Int. 
-J.~Control} 4(5):455--464.
-
-      
-      \bibitem{8-bos-1} %7
-      \Aue{Davis, M.\,H.\,A., and P.\,P.~Varaiya.} 1973. Dynamic programming conditions for 
-partially observable stochastic systems. \textit{SIAM J.~Control} 11(2):226--262.
-      \bibitem{9-bos-1} %8
-      \Aue{Benes, V.\,E., and I.~Karatzas.} 1983. On the relation of Zakai's and Mortensen's 
-equations. \textit{SIAM J.~Control Optim.} 21(3):472--489.
-
-\bibitem{7-bos-1} %9
-      \Aue{Bensoussan, A.} 1992. \textit{Stochastic control of partially observable systems}. 
-Cambridge: Cambridge University Press. 364~p.
-
-      \bibitem{10-bos-1}
-      \Aue{Miller, B.\,M., K.\,E.~Avrachenkov, K.\,V.~Stepanyan, and G.\,B.~Miller}. 2005. The 
-problem of optimal stochastic data flow control based upon incomplete information. \textit{Probl. 
-Inf. Transm.} 41(2):150--170.
-      \bibitem{11-bos-1}
-      \Aue{Elliott, R.\,J., L.~Aggoun, and J.\,B.~Moore.} 1995. \textit{Hidden Markov models: 
-Estimation and control}. New York, NY: Springer-Verlag. 382~p.
-      \bibitem{12-bos-1}
-      \Aue{Athans, M., and P.\,L.~Falb.} 2007. \textit{Optimal control: An introduction to the theory 
-and its applications}. New York, NY: Dover Publications. 879~p.
-      \bibitem{13-bos-1}
-      \Aue{Feldbaum, A.\,A.} 1966. \textit{Osnovy teorii optimal'nykh avtomaticheskikh system} 
-[Foundations of theory of optimal automatic systems]. Moscow: Nauka. 624~p.
-      \bibitem{14-bos-1}
-      \Aue{Bhatia, R.} 1997. \textit{Matrix analysis}. 
-      Graduate texts in mathematics ser. New York, NY: Springer-Verlag. Vol.~169. 349~p.
-      \bibitem{17-bos-1} %15
-      \Aue{Shiryaev, A.\,N.} 1996. Probability. New York, NY: Springer Verlag. 624~p.
-      
-      \bibitem{15-bos-1} %16
-      \Aue{Bosov, A.\,V., and A.\,I.~Stefanovich.} 2018. Upravlenie vykhodom stokhasticheskoy 
-differentsial'noy sistemy po kvadratichnomu kriteriyu. I.~Optimal'noe reshenie metodom 
-dinamicheskogo programmirovaniya [Stochastic differential system output control by the quadratic 
-criterion. I.~Dynamic programming optimal solution]. \textit{Informatika i~ee Primeneniya~--- Inform. 
-Appl.} 12(3):99--106.
-
-%\pagebreak
-
-      \bibitem{16-bos-1} %17
-      \Aue{Bosov, A.\,V.} 2021. O~nekotorykh chastnykh sluchayakh v~zadache upravleniya 
-vykhodom stokhasticheskoy differentsial'noy sistemy po kvadratichnomu kriteriyu [On some special 
-cases in the problem of stochastic differential system output control by the quadratic criterion]. 
-\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 15(1):11--17.
-
-      %\vspace*{-2pt}
-      
-      \bibitem{18-bos-1}
-      \Aue{Davis, M.\,H.\,A.} 1977. \textit{Linear estimation and stochastic control}. London: 
-Chapman and Hall. 224~p.
-      \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-  \hfill{\small\textit{Received December~24, 2020}}
-
-
-%\pagebreak
-
-%\vspace*{-8pt}     
-      
-      \Contrl
-      
-      \noindent
-      \textbf{Bosov Alexey V.} (b.\ 1969)~--- Doctor of Science in technology, principal scientist, 
-Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of the 
-Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{AVBosov@ipiran.ru}
-      
-      
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}

@@ -1,946 +1,0 @@
-\def\stat{rabinovich}
-
-\def\tit{ПРОЦЕДУРА ПОСТРОЕНИЯ МНОЖЕСТВА ПАРЕТО ДЛЯ~ДИФФЕРЕНЦИРУЕМЫХ 
-КРИТЕРИАЛЬНЫХ ФУНКЦИЙ}
-
-\def\titkol{Процедура построения множества Парето для~дифференцируемых 
-критериальных функций}
-
-\def\aut{Я.\,И.~Рабинович$^1$}
-
-\def\autkol{Я.\,И.~Рабинович}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Рабинович Я.\,И.}
-\index{Rabinovich Ya.\,I.}
-
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-%{Работа выполнялась с~использованием инфраструктуры Центра коллективного пользования <<Высокопроизводительные вы\-чис\-ле\-ния и~большие данные>> 
-%(ЦКП <<Информатика>>) ФИЦ ИУ РАН (г.~Москва).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук;
-\mbox{jacrabin@rambler.ru}}
-
-\vspace*{-12pt}
-
-
-
-\Abst{Универсальная вычислительная процедура многокритериальной 
-оптимизации позволяет аппроксимировать множество Парето при предъявлении 
-различных требований к~вектору частных критериев эффективности и~множеству 
-допустимых решений. В~настоящей работе предполагается, что частные критерии 
-эффективности псевдовогнуты в~открытой окрестности компактного выпуклого 
-множества допустимых решений, которое может быть задано дифференцируемыми 
-функциональными ограничениями. Для построения на основе универсальной 
-процедуры конкретных численных методов аппроксимации множества Парето 
-предлагается правило выбора начального приближения и~правило перехода от 
-текущего опорного решения к~последующему.}
-
-\KW{многокритериальная оптимизация; множество Парето; численные методы 
-аппроксимации; универсальная процедура}
-
-\DOI{10.14357/19922264230403}{NEZRGD}
-  
-\vspace*{-4pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-
-\vspace*{-3pt}
-
-  Задача построения множества эффективных векторных оценок (множества 
-Парето) чрезвычайно актуальна в~самых разнообразных отраслях 
-деятельности, таких как разработка сложных сис\-тем технического 
-назначения, перспективное планирование или социология. В~настоящей 
-работе в~предположении дифференцируемости критериальных функций на 
-основе универсальной процедуры~[1] предложен конкретный численный 
-метод аппроксимации множества Парето.
-
-\vspace*{-9pt}
-  
-\section{Постановка задачи}
-
-\vspace*{-3pt}
-
-  Пусть в~$s$-мерном евклидовом пространстве~$\mathbb{R}^s$ задана 
-  $m$-мер\-ная непрерывная век\-тор-функ\-ция
-  \begin{equation}
-  w(x)\in \mathbb{R}^m\,,
-  \label{e1-r}
-  \end{equation}
-образующая вектор частных критериев эффективности, принимающий на 
-непустом компактном множестве допустимых решений 
-\begin{equation}
-X\subset \mathbb{R}^s
-\label{e2-r}
-\end{equation}
-положительные значения $w(x)\hm>0$, удовлетворяя соотношениям:
-\begin{equation}
-\left.
-\begin{array}{c}
-w(x)\in w(X)\subset \mathrm{int}\, \mathbb{R}_+^m\,;\\[3pt]
-w(X)=\left\{ u\in \mathbb{R}^m\vert u=w(x),\ x\in X\right\}\,;\\[3pt]
-\mathbb{R}_+^m =\left\{ u\in \mathbb{R}^m\vert u\geq 0\right\}\,,
-\end{array}
-\right\}
-\label{e3-r}
-\end{equation}
-так что множество достижимых векторных оценок $w(X)$ из~(\ref{e3-r}) 
-принадлежит внутренности $\mathrm{int}\, \mathbb{R}_+^m$ не\-от\-ри\-ца\-тель\-но\-го 
-ортанта~$\mathbb{R}_+^m$. Каждый критерий набора
-%\begin{equation}
-$\left\{ w_k(x)\right\}_{k\in I}$, $I\hm=\left\{ k\vert 1\leq k\leq m\right\}$,
-%\label{e4-r}
-%\end{equation}
-желательно увеличивать на множестве допустимых решений~(2).
-% $X\hm\subset  \mathbb{R}^s$.
-
-\smallskip
-
-\noindent
-  \textbf{Определение~1.} Векторная оценка $w\hm\in w(X)$ 
-\textit{эффективна (слабо эффективна)}, если для всякой векторной оценки 
-$u\hm\in w(X)$ сис\-те\-ма неравенств $u\hm\geq w$ несовместна при 
-условии, что хотя бы одно неравенство строгое (все неравенства строгие).
-  
-  Векторная оценка $w\hm\in w(X)$ \textit{доминируема} или 
-\textit{определенно неэффективна}, если существует векторная оценка 
-$u\hm\in w(X)$, $u\hm> w$.
-  
-  Всякое допустимое решение $x\hm\in X$, доставляющее эффективное 
-(слабо эффективное, доминируемое) значение вектора~$w(x)$, называется 
-эффективным (слабо эффективным, доминируемым) \mbox{решением}.
-  
-  В согласии с~определением~1 множества эффективных 
-($X_{e}$), слабо эффективных ($X_0$) и~доминируемых 
-($X_{\mathrm{д}}$) решений из множества допустимых решений ($X$) 
-подчиняются соотношениям:
-  $$
-  X_{e}\subset X_0\subset X\,;\ X_0\cap 
-X_{\mathrm{д}}=\emptyset\,;\ X=X_0\cup X_{\mathrm{д}}\,,
-  $$
-где $\emptyset$~--- пустое множество; $\cup (\cap)$~--- символ объединения 
-(пересечения) множеств. Соответственно множества 
-  эффективных $w(X_{e}$), слабо 
-эффективных $w(X_0)$, доминируемых $w(X_{\mathrm{д}})$ и~достижимых  $w(X)$ векторных оценок 
-удовлетворяют соотношениям:
-
-\noindent
-\begin{multline*}
- w(X_{e}) \subset  w(X_{0}) \subset w(X);\
-w(X_0)\cap  w(X_{\mathrm{д}})=\emptyset\,;\\
-w(X)=w(X_0)\cup w (X_{\mathrm{д}}).
-\end{multline*}
-  
-  В настоящей работе рассматриваются методы аппроксимации множества 
-Парето на основе универсальной вычислительной процедуры~[1]. Введем
-  
-\pagebreak
-  
-  \noindent
-  \textbf{Определение~2.} Если $\| v\|$~--- норма вектора $v\hm\in 
-\mathbb{R}^m$, то величина
-  $$
-  D(W,U)=\sup\limits_{w\in W} \mathop{\mathrm{inf}}\limits_{u\in U} \| w-
-u\|,\enskip \emptyset \not= W,\ U\subset \mathbf{R}^m,
-  $$
-называется \textit{отклонением} множества~$W$ от множества~$U$, 
-а~величина
-\begin{multline*}
-\Delta (W,U) =\max\left\{ D(W,U), D(U,W)\right\}\,,\\
- \emptyset\not= W,\ U\subset \mathbb{R}^m\,,
-\end{multline*}
-называется \textit{расстоянием по Хаусдорфу} между множествами~$W$ и~$U$.
-
-\smallskip
-  
-  \noindent
-  \textbf{Определение~3.} Дифференцируемая на открытом множестве 
-$A\hm\subset \mathbb{R}^s$ функция~$f$ называется \textit{псевдовогнутой} 
-на $A\not= \emptyset$, если для любых~$x,y \hm\in A$ неравенство $\langle 
-\nabla f(x), y\hm- x\rangle \hm\leq 0$ влечет неравенство $f(x)\hm\geq f(y)$, где 
-$\nabla f$~--- градиент функции~$f$; $\langle \bullet,\bullet\rangle$~--- 
-скалярное произведение векторов.
-  
-  Функция~$f$ называется \textit{псевдовыпуклой}, если функция $-f$ 
-псевдовогнута.
-  \smallskip
-  
-  \noindent
-  \textbf{Следствие~1.} 
-  \begin{enumerate}[1.]
-  \item  Функция $\sum\nolimits_{k=1}^m f_k$ псевдовогнута, если ее 
-слагаемые псевдовогнуты.
-  \item  Точка локального максимума псевдовогнутой на выпуклом 
-множестве $A\hm\subset \mathbb{R}^s$ функции~$f$ является точкой ее 
-глобального максимума.
-  \item Пусть функция~$f$ псевдовогнута на выпуклом множестве 
-$A\hm\subset \mathbb{R}^s$ и~положительно определена на~$A$, так что 
-$f(x)\hm>0$, $x\hm\in A$. Тогда
-  \begin{itemize}
-  \item[(а)] функция~$f^n$ псевдовогнута на~$A$, если целая степень 
-$n\hm\geq 1$;
-  \item[(б)] функция~$f^n$ псевдовыпукла на~$A$, если целая степень 
-$n\hm\leq -1$.
-  \end{itemize}
-  \end{enumerate}
-  
-  \noindent
-  \textbf{Определение~4.} Если непустое множество $X\hm\subset 
-\mathbb{R}^s$ задано функциональными ограничениями
-\begin{multline*}
-%\begin{equation*}
-  X=\left\{ x\in \mathbb{R}^s\vert v_k(x)\geq 0,\ k\in K\right\},\\
-  K=\{ k\vert 1\leq k\leq n\},
-%\end{equation*}
-\end{multline*}
-левые части которых дифференцируемы, то в~точке $x\hm\in X$ множество
-$$
-H(x)=\left\{ h\in \mathbb{R}^s\vert \langle \nabla v_k(x),h\rangle>0, \ k\in 
-K(x)\right\},
-$$
-называется \textit{конусом внутренних направлений}, где $K(x)\hm= \{k\hm\in K\vert 
-v_k(x)\hm=0\}$~--- множество индексов <<активных>> в~точке $x\hm\in X$ 
-функциональных ограничений.
-
-\smallskip
-
-\noindent
-\textbf{Следствие~2.} Если $X\hm\subset \mathbb{R}^s$~--- непустой 
-выпуклый компакт, то выполняется включение $X\hm\subset \{x\}\hm+ 
-\overline{H}(x)$, где многогранный конус~$\overline{H}(x)$~--- замыкание 
-конуса внутренних направлений; $A\hm+B$~--- векторная сумма множеств.
-
-  Укажем также известное полезное свойство псевдовогнутых функций~[2].
-  
-  \smallskip
-  \noindent
-  \textbf{Лемма~1.}\ \textit{Псевдовогнутая на выпуклом многограннике 
-$A\hm= \mathrm{conv} \{a^q\}^r_{q=1}$ функция~$f$ достигает минимума в~крайней 
-точке}:
-$$
-\min\limits_{x\in A} f(x)\hm= \min\limits_{1\leq q\leq r} f(a^q).
-$$
-
-\vspace*{-14pt}
-   
-\section{Универсальная процедура}
-
-\vspace*{-3pt}
-
-  Дадим в~согласии с~[1] строгое описание универсальной процедуры 
-аппроксимация множества Парето.
-  
-  На непустом компактном множестве допустимых решений $X\hm\subset 
-\mathbb{R}^s$ строится последовательность множеств 
-$\{X_t\}^\infty_{t=1}\hm\subset X$. Если $X_1\hm\subset X$~--- произвольное 
-начальное приближение и~известно множество~$X_t$, $t\hm\geq 1$, то 
-следующее за ним множество~$X_{t+1}$ подчиняется соотношениям:
-  \begin{multline}
-  X_{t+1} =\bigcup\limits_{x\in X_t} X_{t+1}(x)\,,\\
-  X_{t+1}(x)=\{x\} +\bigcup\limits_{J\in M_t(x)} \{ h(x,J)\} \subset X\,.
-   \label{e6-r}
-  \end{multline}
-  
-  В согласии с~(\ref{e6-r}) всякая опорная точка $x\hm\in X_t$ порождает на 
-следующем ($t\hm+1$)-м уровне не\-пус\-тую векторную сумму множеств 
-$X_{t+1}(x)$, причем на\-прав\-ле\-ние $h(x,J)$ перехода из опорной точки 
-$x\hm\in X_t$ в~следующую точку $y\hm= x\hm+ h(x,J)\hm\in X_{t+1}(x)$, 
-$J\hm\in M_t(x)$, удовлетворяет условиям:
-  \begin{multline}
-  h(x,\emptyset) =0\,,\enskip h(x,J)\not= 0\,,\\
-   \emptyset\not= J\subset I 
-=\{k\vert 1\leq k\leq m\},
-  \label{e7-r}
-  \end{multline}
-где ненулевые направления $h(x,J)\not= 0$ подчиняются соотношениям
-\begin{equation}
-\left.
-\begin{array}{c}
-\!\!\!y=x+h(x,J)\in X\cap Y_J(x,\varepsilon) \cap Y(x,\varepsilon)\,,\\[3pt]
-\emptyset \not= J\subset I= \{k\vert 1\leq k\leq m\}\,,\\[3pt]
-\!\!\!Y_J(x,\varepsilon) =\left\{ y\in \mathbb{R}^s \left\vert \fr{w_k(y)}{w_k(x)} \right. 
-\geq 1+\sigma\varepsilon^2\,,\right.\\[3pt]
-\!\!\!\left.k\in J\,,\ \fr{w_k(y)}{w_k(x)}\geq 1-\sigma\varepsilon,\ k\in I\backslash 
-J\right\}\,;\\[3pt]
-\!\!\!Y(x,\varepsilon) =\left\{ y\in \mathbb{R}^s\left\vert \displaystyle\sum\limits_{k\in I} \right. 
-\fr{w_k(y)^2}{w_k(x)^2}\leq (1+\sigma\varepsilon)^2\right\},\\[4pt]
-\!\!\!\varepsilon=\varepsilon_t(x)\in (0,1),\\[3pt]
-\!\!\! \!\!\!\sigma \!=\!\left[ 2\max\limits_{z\in X} 
-\sum\limits_{k\in I} w_k(z)\right]^{-1}  \!\!\!\!\min\limits_{z\in X} \min\limits_{k\in I} 
-w_k(z)\in \left(\! 0, \fr{1}{2}\right].
-\end{array}\!
-\right\}\!\!
-\label{e8-r}
-\end{equation}
-  
-  Последовательность множеств~(\ref{e6-r}) в~каждой опорной точке 
-$x\hm\in X_t$ ветвится, причем степень ее ветвления $\vert 
-\mathbf{M}_t(x)\vert$ определяет множество не вложенных друг в~друга 
-подмножеств $\mathbf{M}_t(x)\hm\subset 2^I$, заданное соотношениями:
-\begin{equation}
-\left.
-\begin{array}{rl}
-\!\!\!\!\!\mathbf{M}_t(x) &=\begin{cases}
-\mathbf{N}_t(x), &\mbox{если } \mathbf{N}_t(x)\not=\emptyset\,;\\[3pt]
-\{\emptyset\}, &\mbox{если } \mathbf{N}_t(x)=\emptyset\,;
-\end{cases}\\[12pt]
-\!\!\!\!\!\mathbf{N}_t(x) &= {}\\
-&\hspace*{-10mm}{}=\left\{
-J\subset I\left\vert\begin{array}{l}
-X\cap Y_J(x,\varepsilon) \cap Y(x,\varepsilon) \not= \emptyset\,;\\[3pt]
- X\cap Y_M(x,\varepsilon) \cap Y(x,\varepsilon) 
-\not= \emptyset,\\[3pt]
- \hspace*{15mm}M\not= J\subset M\subset I.
- \end{array}
- \right.
- \right\}
-\end{array}
-\right\}
-\label{e9-r}
-\end{equation}
-  
-  Наибольшая степень ветвления последовательности~(\ref{e6-r}) совпадает 
-с~наибольшим числом не вложенных друг в~друга подмножеств множества 
-\mbox{номеров} частных критериев эффективности $I\hm= \{ k\vert 1\hm\leq k\hm\leq 
-m\}$, так что
-$$
-\vert \mathbf{M}_t(x)\vert \leq \fr{m!}{\lfloor m/2\rfloor! \left(m-\lfloor m/2\rfloor\right)!} \,,
-$$
-где $\vert A\vert$~--- число элементов в~конечном множестве~$A$; $\lfloor 
-z\rfloor$~--- целая часть чис\-ла~$z$.
-  Соотношения~(\ref{e8-r}) и~(\ref{e9-r}) включают величину $\varepsilon\hm= 
-\varepsilon_t(x)\hm\in (0,1)$~--- параметр возмущения, который в~начальной 
-точке~$x^1$ и~в~любых последующих точках~$x^t\hm\in X_t$, 
-$x^{t+1}\hm\in X_{t+1}(x^t)$ последовательности~(\ref{e6-r}) таких, что
-  \begin{equation}
-  x^{t+1}=x^t+h(x^t, J_t),\enskip J_t\in M_t(x)\,,
-  \label{e10-r}
-  \end{equation}
-  
-  \vspace*{-4pt}
-  
-  \noindent
-удовлетворяет условиям:
-
-\vspace*{-4pt}
-
-\noindent
-\begin{multline}
-\varepsilon_1\left(x^1\right) =\kappa\in (0,1),\\
-\varepsilon_{t+1}\left(x^{t+1}\right) =\begin{cases}
-\kappa \varepsilon_t(x^t), &\mbox{если } Q_t=\emptyset\,;\\
-\varepsilon_t(x^t), &\mbox{если } Q_t\not= \emptyset\,,
-\end{cases}\\
-Q_t=\bigcap\limits_{q\leq t},\ \varepsilon_q(x^q)=\varepsilon_t(x^t)J_q\,,
-\label{e11-r}
-\end{multline}
-
-\vspace*{-4pt}
-
-\noindent
-где величина~$\kappa$ определяет степень дробления параметра 
-возмущения. Эта величина может быть выбрана любой на интервале $(0,1)$, 
-но остается фиксированной на протяжении всей вычислительной процедуры.
-
-\smallskip
-
-\noindent
-\textbf{Замечание~1.} Комментируя процедуру~(\ref{e6-r})--(\ref{e11-r}), 
-следует подчеркнуть:
-\begin{itemize}
-\item включение $y\hm\in Y_J(x,\varepsilon)$ доставляет относительное 
-(порядка~$\varepsilon^2$) \textit{увеличение} значений критериев из 
-множества $\{ w_k\}_{k\in J}$ за счет возможного относительного 
-\textit{уменьшения} (на величину порядка~$\varepsilon$) остальных 
-критериев;
-\item включение $y\hm\in Y(x,\varepsilon)$ препятствует слишком резкому 
-росту значений частных критериев, что на поздних этапах вычислительной 
-процедуры не позволяет переходить от одной эффективной векторной оценки 
-к~другой и~возвращаться обратно через все множество достижимых 
-векторных оценок;
-\item пересечение $X\cap Y_J (x,\varepsilon)$~--- выпуклый компакт, 
-поскольку~$X$~--- выпуклый компакт, $ Y_J(x,\varepsilon)$~--- замкнуто 
-и~выпукло в~согласии с~(\ref{e8-r}) и~следствием~1;
-\item пересечение множеств $X\cap Y(x,\varepsilon)$ компактно, но не 
-выпукло, поскольку согласно~(\ref{e8-r}) множество $ Y(x,\varepsilon)$ 
-выпукло лишь в~некоторых частных случаях (например, если псевдовогнуты 
-компоненты век\-тор-функ\-ций $\pm w(x)$).
-\end{itemize}
-  
-  В согласии с~доказательством, предложенным в~работе~[1], заданная 
-соотношениями~(\ref{e6-r})--(\ref{e11-r}) последовательность множеств $\{ 
-w(X_t)\}^\infty_{t=1}$ аппроксимирует множество Парето в~следующем 
-смысле.
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Теорема~1.} \textit{Пусть в}~(\ref{e1-r}) \textit{компоненты  
-век\-тор-функ\-ции $w\hm\in \mathbb{R}^m$ положительно определены 
-и~псевдовогнуты в~открытой окрестности непустого выпуклого 
-компакта~$X$. Тогда отклонение множества Парето $w(X_{e})$ 
-от аппроксимирующего множества~$w(X_t)$ и~отклонение 
-аппроксимирующего множества~$w(X_t)$ от множества 
-Слейтера~$w(X_0)$ стремятся к~нулю с~рос\-том номера 
-аппроксимации}~$t$:
-\begin{multline*}
-  \lim\limits_{t\to\infty} D\left( w(X_{\mathrm{е}}), 
-w(X_t)\right)={}\\
-{}=\lim\limits_{t\to\infty} D\left( w(X_t), w(X_0)\right)=0\,.
-\end{multline*}
-
-\section{Численные методы на~основе~процедуры}
-
-  Пусть условия теоремы~1 выполняются. Универсальная  
-процедура~(\ref{e6-r})--(\ref{e11-r}) не содержит однозначного рецепта 
-построения последовательности $\{ w(X_t)^\infty_{t=1}$, 
-аппроксимирующей множество Парето, поскольку не дает прямого указания, 
-в~какую именно новую опорную точку $y\hm= x\hm+ h(x,J)\hm\in X\cap 
-Y_J(x,\varepsilon)\cap Y(x,\varepsilon)$ следует переходить из исходной 
-опорной точки $x\hm\in X_t$.
-  
-  Началу работы вычислительной процедуры предшествует процедура 
-выбора начального приближения. В~согласии с~утверж\-де\-ни\-ем  
-тео\-ре\-мы~1, сходимость процедуры~(\ref{e6-r})--(\ref{e11-r}) обеспечена 
-при старте из любых точек~$X$. Вмес\-те с~тем эффективность процедуры 
-существенным образом зависит от выбора начальной точки (либо состава 
-начального множества $X_1\hm\subset X$).
-  
-  Процедура~(\ref{e6-r})--(\ref{e11-r}) становится реальной вы\-чис\-ли\-тель\-ной 
-процедурой (численным методом), если она дополнена \textit{правилом 
-выбора}:
-  \begin{itemize}
-  \item[(а)] начальной точки $\{x^1\}\hm\subset X$ (множества начальных 
-точек $X_1\hm\subset X$, $\vert X_1\vert \hm>1$, если в~работе численного 
-метода предусмотрен мультистарт);
-  \item[(б)] каждой последующей опорной точки $y\hm \in X\hm\cap 
-Y_J(x,\varepsilon) \hm\cap Y(x,\varepsilon)$.
-  \end{itemize}
-  
-\section{Выбор начального приближения}
-
-  Согласно замечанию~1, для формирования начального 
-приближения~$X_1$ можно использовать упрощенный вариант 
-процедуры~(\ref{e6-r})--(\ref{e11-r}), где параметр возмущения 
-$\varepsilon\hm\in (0,1)$ фиксирован, ограничения сверху на приращения 
-частных критериев $\{w_k\}_{k\in I}$ отменяются~--- условие~(\ref{e8-r}) 
-заменятся требованием
-  \begin{equation}
-  \left.
-  \begin{array}{c}
- \!\! \!\!\!\! y=x+h(x,J) \in X \cap Y_J(x,\varepsilon),\\[3pt]
-  \!\! \!\!\!\! \emptyset \not= J\subset I= \{k\vert 1\leq k\leq m\}\,;\\[3pt]
-  \!\! \!\!\!\!Y_J(x,\varepsilon) =\left\{ y\in \mathbb{R}^s\left\vert 
-\fr{w_k(y)}{w_k(x)}\right. \geq 1+\sigma\varepsilon^2\,,\right.\\[3pt]
- \!\!  \!\!\!\!\left. k\in J\,,\ \fr{w_k(y)}{w_k(x)}\geq 1-\sigma\varepsilon,\ k\in I\backslash 
-J\right\}\!,\\[3pt]
- \!\!\!\!\!\! \sigma\!=\! \left[ 2\max\limits_{z\in X}\displaystyle \sum\limits_{k\in I}\! w_k(z)\right]^{-1}
-  \!\!\!\!\!\min\limits_{z\in X} \min\limits_{k\in I} w_k(z)\in \left(0, \fr{1}{2}\right]\!,
-  \end{array}\!\!
-  \right\}\!\!\!
-  \label{e12-r}
-  \end{equation}
-тогда как множество подмножеств в~(\ref{e9-r}) приобретает вид:
-\begin{equation}
-\mathbf{M}_t(x)=\left\{ J\subset I\vert \emptyset \not= J,\ X\cap 
-Y_J(x,\varepsilon)\not= \emptyset\right\}
-\label{e13-r}
-\end{equation}
-и содержит все такие подмножества $J\hm\subset I\hm= \{ k\vert 1\hm\leq 
-k\hm\leq m\}$, что каждый из критериев $\{ w_k\}_{k\in J}$ допускает 
-относительное (порядка~$\varepsilon^2$) увеличение.
-  
-  Сформулируем на основе упрощенной процедуры~(\ref{e6-r}), (\ref{e7-r}), 
-(\ref{e12-r}) и~(\ref{e13-r}) правило выбора начального приближения.
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Правило~А.} В~качестве решения $y^J\hm\in X\cap 
-Y_J(x,\varepsilon)$ принимается проекция внешней точки $x\hm\in X$, 
-$x\not\in Y_J(x,\varepsilon)$, на выпуклый компакт $X\cap Y_J(x,\varepsilon)$:
-  \begin{equation}
-  y^J=\argmin\limits_{y\in X\cap Y_J(x,\varepsilon)} \| x-y\|,\enskip J\in M_t(x),
-  \label{e14-r}
-  \end{equation}
-для чего следует решить задачу выпуклого программирования 
-(минимизировать квадратичную функцию $\| x\hm- y\|^2$ на выпуклом 
-компакте).
-
-  Если компактное выпуклое допустимое множество~$X$ задано 
-дифференцируемыми функциональными ограничениями, приближенное 
-решение задачи~(\ref{e14-r}) может быть получено следующим образом.
-  
-  Согласно определению~4 и~следствию~2, в~каж\-дой опорной точкой 
-$x\hm\in X$ задана прямоугольная мат\-ри\-ца~$V(x)$ такая, что замыкание 
-со\-от\-вет\-ст\-ву\-юще\-го конуса внут\-рен\-них на\-прав\-ле\-ний~$H(x)$ удовле\-тво\-ря\-ет 
-соотношениям:
-  \begin{multline}
-  \overline{H}(x)=\left\{ h\in \mathbb{R}^s\vert V(x)h\geq 0\right\}\,,\
-  X\subset \{x\} +\overline{H}(x),\\
-  X\backslash \left\{ \{x\} +\overline{H}(x)\right\}=\emptyset\,.
-  \label{e15-r}
-  \end{multline}
-  
-  Определим многогранный конус
-  \begin{equation}
-  H_J(x)=\left\{ h\in \mathbb{R}^s\vert W_J(x) h\geq 0\right\},
-  \label{e16-r}
-  \end{equation}
-где строками матрицы $W_J(x)$ служат векторы $\nabla w_k(x)$, $k\hm\in J$. 
-Согласно~(\ref{e15-r}), (\ref{e16-r}) мож\-но утверж\-дать, что
-\begin{equation}
-X\cap Y_J(x,\varepsilon) \subset \{x\} +\overline{H}(x)\cap H_J(x),
-\label{e17-r}
-\end{equation}
-поскольку для всякого вектора $y\hm= x\hm+ h \hm\in X$, удовле\-тво\-ря\-юще\-го 
-при некотором номере $k\hm\in J$ неравенству $\langle \nabla w_k(x),h\rangle 
-\hm<0$, выполняется, согласно определению~3, условие $w_k(x)\hm\geq 
-w_k(y)$, что ввиду~(\ref{e12-r}) влечет $y\not\in Y_J(x,\varepsilon)$.
-
-  Многогранный конус $\overline{H}(x)\cap H_J(x)$ можно представить 
-в~виде конической оболочки некоторого \textit{остова}~$B(x)$: 
-
-\vspace*{-6pt}
-
-\noindent
-  \begin{multline}
- \! \!\!\overline{H}(x)\cap H_J(x)\!=\!\left\{ h\in \mathbb{R}^s\vert V(x)h\geq 0,\ 
-W_J(x)h\geq 0\right\}\!={}\\
-  {}= \left\{ h\in \mathbb{R}^s\vert h=B(x)\lambda,\ \lambda\geq0\right\},
-  \label{e18-r}
-  \end{multline}
-  
-  \vspace*{-4pt}
-
-\noindent
-где для составленной из единичных век\-то\-ров-столб\-цов матрицы 
-
-\vspace*{-6pt}
-
-\noindent
-\begin{multline}
-B(x)=\left[ b^1(x),b^2(x),\ldots , b^r(x)\right],\\
-\| b^j(x)\|=1\,,\enskip 1\leq j\leq r\,,
-\label{e19-r}
-\end{multline}
-
-\vspace*{-4pt}
-
-\noindent
-существуют конструктивные методы по\-стро\-ения~\cite{3-r}.
-
-  Согласно включениям~(\ref{e15-r}), (\ref{e17-r}), пересечение 
-  $\{X \hm- \{x\}\}\cap H_J(x)$ можно аппроксимировать, выбрав из конуса 
-$\overline{H}(x)\cap H_J(x)$ конечный <<пучок>> лучей.
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Лемма~2.} \textit{Если для малого $\rho\hm>0$ выполняются 
-соотношения}
-
-\vspace*{-6pt}
-
-\noindent
-  \begin{multline}
-%  \left.
-%  \begin{array}{rl}
-  \Delta(\Lambda_r,\Lambda) =D(\Lambda_r,\Lambda)=\sup\limits_{\alpha\in 
-\Lambda_r} \mathop{\mathrm{inf}}\limits_{\beta\in \Lambda} \| \alpha-\beta\|\leq 
-\rho\,,\\
-  \Lambda_r=\left\{ \lambda\in \mathbb{R}^s \left\vert \sum\limits^r_{j=1} \right.
-\lambda_j=1\,,\ \lambda\geq 0\right\},\\
- \Lambda =\{ \lambda^q\}^Q_{q=1} \subset \Lambda_r\,,
-    \label{e20-r}
-  \end{multline}
-  
-  \vspace*{-4pt}
-
-\noindent
-\textit{где конечное множество~$\Lambda$ является $\rho$-ап\-прок\-си\-ма\-ци\-ей $(r\hm-1)$-мер\-но\-го стандартного симплекса~$\Lambda_r$, то 
-ввиду}~(\ref{e18-r})--(\ref{e20-r}) \textit{вложенный <<пучок>> лучей}
-
-\vspace*{-6pt}
-
-\noindent
-\begin{multline}
-L_q(x)=\left\{ q\in \mathbb{R}^s\left\vert  g=\gamma\sum\limits^r_{j=1} \lambda_j^q 
-b^j(x), \gamma\geq 0\right.\right\}\subset{}\\
-{}\subset \overline{H}(x)\cap H_J(x),\enskip 1\leq q\leq Q\,,
-\label{e21-r}
-\end{multline}
-
-\vspace*{-4pt}
-
-\noindent
-\textit{аппроксимирует выпуклый компакт $\{X\hm -\{x\}\} \hm\cap H_J(x)$ 
-в~следующем смысле}.
-
-\textit{Если можно указать величину $\delta\hm>0$ такую, что ненулевой 
-вектор $h\hm\in \mathbb{R}^s$ содержится в~множестве $\{ X\hm- \{x\} \} 
-\cap H_J(x)$ вместе с~шаром}
-$$
-U_\delta(h) =\left\{ q\in \mathbb{R}^s\vert \| h-g\| \leq\delta\right\}\subset \left\{ 
-X-\{x\}\right\} \cap H_J(x),
-$$
-\textit{то в}~(\ref{e21-r}) \textit{найдется луч, удовлетворяющий 
-соотношению $L_q(x)\cap U_\delta(h)\bot=\emptyset$ при условии $\rho r 
-d_X\hm\leq \delta$, где $d_X\hm= \max\nolimits_{x^1, x^2\in X} \| x^1\hm- 
-x^2\|$~--- диаметр компакта~$X$}.
-
-
-  Следовательно, если <<мишень>> $X\cap Y_J(x,\varepsilon)$ конечного 
-размера, то один из заданных соотношением~(\ref{e21-r}) лучей $\{x\} \hm+ 
-L_1(x)$ в~нее попадет. Строгое утверждение состоит в~следующем: при 
-условии $int \{ X\cap Y_J(x,\varepsilon)\}\not= \emptyset$ из 
-включения~(\ref{e17-r}) по лемме~2 следует, что в~конечном множестве 
-лучей~(\ref{e21-r}) всегда можно указать луч~$L_q(x)$ такой, что
-  \begin{equation}
-  \left\{ \{x\} +L_q(x)\right\} \cap X\cap Y_J(x,\varepsilon)\not= \emptyset\,,
-  \label{e22-r}
-  \end{equation}
-если конечное множество $\{\lambda^q\}^Q_{q=1}$ аппроксимирует 
-стандартный симплекс~$\Lambda_r$ с~тре\-бу\-емой точ\-ностью. Метод 
-равномерной аппроксимации стандартного симплекса конечным множеством 
-точек предложен в~работе~\cite{4-r}.
-
-  Но тогда хотя бы одна из проекций
-  \begin{equation}
-  p^q=\argmin\limits_{y\in \{ \{x\} +L_q(x)\} \cap Y_J(x,\varepsilon)} \| x-
-y\|\,,\enskip 1\leq q\leq Q\,,
- \label{e23-r}
-  \end{equation}
-внешней точки $x\hm\in X\backslash Y_J(x,\varepsilon)$ на пересечение $\{ \{ 
-x\} \hm+ L_q(x)\} \cap Y_J(x,\varepsilon)$ удовлетворяет включению 
-$p^q\hm\in X\cap Y_J(x,\varepsilon)$, поскольку включения $x\hm\in X$ 
-и~$p^q\hm\in Y_J(x,\varepsilon)$ выполняются, так что отрицание $p^q\not\in 
-X$ противоречит утверждению~(\ref{e22-r}) ввиду выпуклости 
-множества~$X$. Следовательно, по правилу~А выбор опорной точки 
-$y^J\hm= p^q\hm\in X\cap Y_J(x,\varepsilon)$ требует решения не более 
-чем~$Q$~задач одномерного квадратичного программирования~(\ref{e23-r}).
-
-  Если применение упрощенной процедуры на этом заканчивается, 
-множество $\{ y^J\}_{J\in \mathbf{M}_t(x)}$, составленное из векторов, 
-удовлетворяющих условиям~(\ref{e12-r}), (\ref{e13-r}), может быть принято в~качестве начального множества~$X_1$. Тем самым согласно правилу~А по 
-упрощенной процедуре через несколько шагов\linebreak (число которых определяется 
-спецификой ре\-ша\-емой задачи) будет построено начальное приближение 
-$X_1\hm\subset \mathbb{R}^s$, образ которого~--- множество 
-$w(X_1)\hm\subset \mathbb{R}^m$~--- может представлять собой грубую 
-\mbox{аппроксимацию} множества Парето по всему <<фронту>>.
-
-\vspace*{-6pt}
-
-  
-\section{Правило выбора шага универсальной процедуры}
-
-\vspace*{-3pt}
-
-
-  Если задано начальное множество~$X_1$, в~согласии с~результатом 
-теоремы~1 универсальная процедура~(\ref{e6-r})--(\ref{e11-r}) обеспечивает 
-построение последовательности множеств $\{ w(X_t)\}^\infty_{t=1}$, 
-аппроксимирующих множество Парето. Следует лишь принять правило 
-выбора шага процедуры, для чего в~соотношениях~(\ref{e8-r}), (\ref{e9-r}) 
-требуется установить конкретное правило перехода от опорного решения 
-$x\hm\in X_t$ к~новым опорным решениям
-  \begin{equation}
-  y^J\in X\cap Y_J(x,\varepsilon) \cap Y(x,\varepsilon),\ J\in M_t(x).
-  \label{e24-r}
-  \end{equation}
-  
-  Сформулируем конструктивный способ выбора опорного 
-решения~(\ref{e24-r}).
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Правило~Б.} Пусть множество допустимых решений~--- выпуклый 
-компакт~$X$~--- задано дифференцируемыми функциональными 
-ограничениями. Согласно определению~4 и~следствию~2, в~каждой опорной 
-точке $x\hm\in X$ известна прямоугольная мат\-ри\-ца~$V(x)$ такая, что 
-замыкание со\-от\-вет\-ст\-ву\-юще\-го конуса внутренних на\-прав\-ле\-ний~$H(x)$ 
-удовлетворяет условиям~(\ref{e15-r}), а~его пересечение с~многогранным 
-конусом~(\ref{e16-r}) удовле\-тво\-ря\-ет условиям~(\ref{e17-r}).
-  
-  Если в~правой части включения~(\ref{e24-r}) пересечение множеств имеет 
-внутренность $\mathrm{int}\, \{ X\hm\cap Y_J(x,\varepsilon) \hm\cap Y(x,\varepsilon)\not= 
-\emptyset$, из включения~(\ref{e17-r}) по лемме~2 следует, что в~конечном 
-множестве лучей~(\ref{e21-r}) можно указать луч~$L_q(x)$ такой, что луч 
-$\{x\}\hm+ L_q(x)$ содержит решение~(\ref{e24-r}):
-  \begin{equation}
-  \!Z_J\!=\! \left\{ \{x\} +L_q(x)\right\}\cap X\cap Y_J(x,\varepsilon) \cap 
-Y(x,\varepsilon) \not= \emptyset\,.
-  \label{e25-r}
-  \end{equation}
-  
-  Найти опорное решение~(\ref{e24-r}) на множестве~(\ref{e25-r}) помогает
-  
-  \smallskip
-  
-  \noindent
-  \textbf{Лемма~3.} \textit{Условие}~(\ref{e25-r}) \textit{в соответствии 
-с~леммой~$1$ влечет утверждение}
-
-\vspace*{-6pt}
-
-\noindent
-  \begin{multline*}
-  \left\{ p^q,g^q\right\}\cap X\cap Y_J(x,\varepsilon)\cap 
-Y(x,\varepsilon)\not=\emptyset\,,\\
-  p^q=\argmin\limits_{y\in \{\{x\}+L_q(x)\} \cap Y_J(x,\varepsilon)} \| x-
-y\|,\\
-  g^q=\argmax\limits_{y\in\{\{x\}+L_q(x)\}\cap X} \| x-y\|.
-%  \end{array}
- % \right\}
-%  \label{e26-r}
-  \end{multline*}
-  
-  \vspace*{-4pt}
-  
-  Тем самым по правилу~Б для определения опорной точки~(\ref{e24-r}) 
-достаточно проверить выполнение включения~(\ref{e24-r}) не более чем для 
-$2Q$ точек, выбранных на множестве, состоящем из~$Q$~лучей:
-
-\vspace*{-6pt}
-
-\noindent
-\begin{multline}
-%\left.
-%  \begin{array}{c}
-   p^q,g^q \in \{x\}+L_q(x),\ 1\leq q\leq Q\,,\\
-  p^q=\argmin\limits_{y\in \{\{x\}+L_q(x)\} \cap Y_J(x,\varepsilon)} \| x-
-y\|,\\
-  g^q=\argmax\limits_{y\in\{\{x\}+L_q(x)\}\cap X} \| x-y\|,
-%  \end{array}
-%  \right\}
-  \label{e27-r}
-  \end{multline}
-  
-  \vspace*{-4pt}
-  
-  \noindent
-где согласно соотношению~(\ref{e8-r}) точка~$p^q$ есть ближайшая 
-к~опорной точке~$x$ точка отрезка $\{x\}\hm+ L_q(x)\cap 
-Y_J(x,\varepsilon)$, тогда как~$q^q$~--- наиболее удаленная от~$x$ точка 
-отрезка $\{x\} \hm+ L_q(x)\cap X$.
-
-\vspace*{-9pt}
-
-\section{Заключение}
-
-\vspace*{-3pt}
-
-  Задача синтеза численных методов аппроксимации множества Парето 
-исследовалась на основе предложенной в~работе~[1] универсальной 
-вычисли-\linebreak\vspace*{-12pt}
-
-\pagebreak
-
-\noindent
-тельной процедуры при следующих предположениях: множество 
-допустимых решений~$X$~--- непустой выпуклый компакт (заданный, если 
-потребуется, дифференцируемыми функциональными ограничениями), 
-компонентами вектора частных критериев эффективности служат функции, 
-псевдовогнутые в~некоторой открытой окрестности~$X$.
-  
-  Разработанный численный метод аппроксимации множества Парето 
-определяется: правилом~А выбора начального приближения и~правилом~Б 
-выбора каждого последующего опорного решения.
-  
-  Построение каждой из точек начального приближения сводится по 
-правилу~А к~решению одномерной задачи квадратичного программирования 
-на каждом луче из конечного <<пучка>> лучей, аппроксимирующих 
-многогранный конус, вложенный в~конус возможных направлений. 
-  
-  По правилу~Б на каждом этапе вычислительной процедуры переход от 
-текущего опорного решения к~последующему предполагает аппроксимацию 
-(согласно включению~(\ref{e21-r})) многогранного конуса конечным 
-множеством лучей $L_q(x)$, $1\hm\leq q\hm\leq Q$, и~выбор опорного 
-решения среди конечного чис\-ла пар решений $\{ p^q, g^q\}\hm\subset \{x\} 
-\hm+ L_q(x)$ в~согласии с~соотношениями~(\ref{e27-r}).
-
-\vspace*{-6pt}
-
-{\small\frenchspacing
- {\baselineskip=10.6pt
- %\addcontentsline{toc}{section}{References}
- \begin{thebibliography}{9}
-\bibitem{1-r}
-\Au{Рабинович Я.\,И.} Универсальная процедура построения множества Парето~// 
-Ж.~вычисл. матем. матем. физ., 2017. Т.~57. №\,1. С.~28--47.
-\bibitem{2-r}
-\Au{Базара М., Шетти~К.} Нелинейное программирование. Теория и~алгоритмы~/ Пер. 
-с~англ.~--- М.: Мир, 1986. 583~с. (\Au{Bazaraa~M.\,S., Shetty~C.\,M.}  
-Nonlinear programming: Theory and algorithms.~--- New York, NY, USA: 
-Wiley, 1979. 872~p.)
-\bibitem{3-r}
-Линейные неравенства и~смежные вопросы~/ Под ред. Г.\,У.~Куна, 
-А.\,У.~Таккера; пер. с~англ.~--- Annals of mathematics studies ser.~--- М.: ИЛ, 1959. 470~с.
-(Linear inequalities and 
-related systems~/ Eds. H.\,W.~Kuhn, A.\,W.~Tucker.~--- Annals of mathematics studies ser.~---  Princeton, NJ, USA: Princeton University Press, 1956. 
-322~p.)
-\bibitem{4-r}
-\Au{Рабинович Я.\,И.} Численные методы оценивания приближенных решений в~задачах 
-многокритериальной оптимизации~// Докл.\ Акад.\ наук, 2015. Т.~462. №\,2. С.~151--153.
-
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-10pt}
-
-\hfill{\small\textit{Поступила в~редакцию 21.10.22}}
-
-\vspace*{6pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-
-
-\def\tit{PROCEDURE OF~CONSTRUCTING A~PARETO SET 
-FOR~DIFFERENTIABLE CRITERIA FUNCTIONS}
-
-
-\def\titkol{Procedure of~constructing a~Pareto set 
-for~differentiable criteria functions}
-
-
-\def\aut{Ya.\,I.~Rabinovich}
-
-\def\autkol{Ya.\,I.~Rabinovich}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-14pt}
-
-
-\noindent
-Federal Research Center ``Computer Science and Control'' of the Russian Academy 
-of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 4}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2023\ \ \ volume~17\ \ \ issue\ 4
-\hfill \textbf{\thepage}}}
-
-\vspace*{2pt}
-      
- 
-
-
-\Abste{A ubiquitous computational procedure for the multicriteria optimization 
-allows one to approximate the Pareto set under different requirements to the vector 
-of particular efficiency criteria and the set of feasible solutions. In the paper, it is 
-assumed that particular efficiency criteria are pseudoconcave in an open 
-neighborhood of a compact convex set of feasible solutions which can be given by 
-differentiable functional constraints. To build specific numerical methods for 
-approximating the Pareto set, a rule for choosing the initial approximation and 
-a~rule for moving from the current reference solution to the next one are 
-proposed.}
-
-
-\KWE{multicriteria optimization; Pareto set; numerical methods of 
-approximation; universal procedure}
-
-\DOI{10.14357/19922264230403}{NEZRGD}
-
-%\vspace*{-20pt}
-
-%\Ack
-%\vspace*{-3pt}
-%\noindent
-  
-
-\vspace*{-5pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{9} 
- 
- \vspace*{-1pt}
- 
-\bibitem{1-r-1}
-\Aue{Rabinovich, Ya.\,I.} 2017. Universal procedure for constructing a~Pareto set. 
-\textit{Comp. Math. Math. Phys.} 57(1):45--63. doi: 
-10.1134/S0965542517010122.
-\bibitem{2-r-1}
-\Aue{Bazaraa, M.\,S., and C.\,M.~Shetty.} 1979. \textit{Nonlinear programming: 
-Theory and algorithms}. New York, NY: Wiley. 872~p.
-\bibitem{3-r-1}
-Kuhn, H.\,W., and A.\,W.~Tucker, eds. 1956. \textit{Linear inequalities and 
-related systems}. Annals of mathematics studies ser.  Princeton, NJ: Princeton University Press. 
-322~p.
-\bibitem{4-r-1}
-\Aue{Rabinovich, Ya.\,I.} 2015. Numerical methods for estimating approximate 
-solutions of multicriteria optimization problems. \textit{Dokl. Math.} 
-91(3):384--386. doi: 10.1134/ S1064562415030114. EDN: UFAQXF.
-
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-8pt}
-
-\hfill{\small\textit{Received October 21, 2022}} 
-
-\vspace*{-18pt}
-
-\Contrl
-
-\vspace*{-4pt}
-
-\noindent
-\textbf{Rabinovich Yaacov I.} (b.\ 1947)~--- Candidate of Science (PhD) in 
-physics and mathematics, senior scientist, Federal Research Center ``Computer 
-Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., 
-Moscow 119333, Russian Federation; \mbox{jacrabin@rambler.ru}
-
-      
-
-
-
-
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 

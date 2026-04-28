@@ -1,1048 +1,0 @@
-\documentstyle[%
-righttag%
-,11pt%
-,amssymb%
-,russian%               remove in Eng.
-,izvru%                 Set izven% in Eng.
-]{amsart}
-
-%
-
-\newcommand{\Int}{\operatorname{int}}
-\newcommand{\bd}{\operatorname{bd}}
-\newcommand{\Argmin}{\operatorname{Argmin}}
-\newcommand{\Arginf}{\operatorname{Arginf}}
-\renewcommand{\o}{\overline}
-\renewcommand{\u}{\underline}
-\newcommand{\tts}[1]{}
-
-\theoremstyle{definition}
-\theorembodyfont{\rm}
-\newtheorem{cornonum}{\hskip\parindent Следствие}
-\newtheorem{defnnonum}{\hskip\parindent Определение}
-\newtheorem{notenonum}{\hskip\parindent Замечание}
-\newtheorem{alg}{\hskip\parindent Алгоритм}
-\renewcommand{\thecornonum}{}
-\renewcommand{\thedefnnonum}{}
-\renewcommand{\thenotenonum}{}
-
-%\hoffset=-15mm%                  For Eng.
-\setcounter{page}{36}
-\god{2004}
-\nomer{1~(500)} %                        Remove in Eng.
-%% remove ^^^^^^
-%\nomer{Vol.\,48, No.\,1}%               Set in Eng.
-%\str{\pageref{begin}--\pageref{end}}%  Set in Eng.
-\udk{519.68}
-
-\author{\it Я.И.\,Заботин, И.А.\,Фукин}
-% NB:   ^^ remove in Eng.
-\title{Алгоритмы в методе штрафов\\ с аппроксимацией допустимого множества}
-
-\date{}
-%\pagestyle{myheadings}%         Set in Eng.
-\pagestyle{plain} %              Remove in Eng.
-\begin{document}
-%\thispagestyle{plain}%          Set in Eng.
-\maketitle
-\label{begin}
-
-
-Для решения задачи математического программирования с
-заданной точностью в \cite{Zab} предлагалось минимизировать 
-целевую функцию на множестве, погруженном в допустимое.
-Погруженное множество для задач с неравенствами строилось путем сдвига границы
-допустимого множества, при котором любая итерационная точка, оказавшаяся в
-допустимом множестве, являлась приближенным с требуемой точностью решением
-исходной задачи. В отличие от известного метода модифицированных функций
-Лагранжа \cite{Gol} получение приближенного решения достигается только за счет
-роста штрафного параметра до заранее определенной величины, а погруженное
-множество остается неизменным до конца процесса оптимизации.
-
-В данной статье аппроксимация допустимого множества представляет собой лебегово
-множество функции штрафа. Она строится таким образом, чтобы любая точка
-минимума вспомогательной функции, принадлежащая разности допустимого множества
-и его аппроксимации, являлась решением с заданной точностью исходной задачи. На
-этом принципе построены два алгоритма с различными способами аппроксимации
-допустимого множества. Как и в \cite{Zab}, оценен штрафной коэффициент,
-заведомо обеспечивающий попадание итерационной точки в допустимое множество.
-При этом ослаблены условия, налагаемые на целевую функцию и ограничения.
-Предложены также алгоритмы, допускающие неполную минимизацию вспомогательной
-функции.
-
-
-\section{Постановка задачи. Условие $\rho$-аппроксимируемости}
-
-Пусть функции $f(x)$, $f_i(x)$ для $i\in I=\{1,2,\dotsc, m\}$ 
-определены, непрерывны и выпуклы в $n$-мерном
-евклидовом пространстве $R_n$. Для любого числа $\lambda$ определим множество
-$D(\lambda)=\linebreak \{x: x\in R_n$, $g(x)+\lambda \leq 0\}$,
-где $g(x)=\max\{f_i(x)$, $i\in I\}$.
-Считается, что минимум функции $f(x)$ на множестве $D(0)$ достигается. Положим
-\begin{equation}\label{Zad1}
-f^*=\min\{f(x),\ x\in D(0)\}.
-\end{equation}
-Требуется по заданному числу $\varepsilon>0$ найти
-точку $x'\in X^*_\varepsilon=\{x\in D(0): f(x)-f^*\leq\varepsilon\}$. 
-Точку $x'$ будем называть $\varepsilon$-решением 
-задачи отыскания (\ref{Zad1}). Всюду далее считается, что
-множество $D(0)$ удовлетворяет условию Слейтера, т.\,е.
-$\{x: x\in R$, $g(x)<0\}\ne\emptyset$.
-
-Для удобства изложения результатов сформулируем определение
-$(\rho,\beta,\lambda)$-аппроксимации функций на основе известного
-(\cite{STF}, c.\,245) понятия $\rho$-регулярности ограничений в задаче
-математического программирования. В этом определении и последующих леммах будем
-считать, что функция $\varphi(x)$ определена в $R_n$, число $\lambda$ таково,
-что
-$$
-M(\lambda)=\{x:x\in R_n,\ \varphi(x)\leq\lambda\}\ne\emptyset,
-$$
-$G$ --- заданное в $R_n$ множество,
-$M(\lambda)\cap G\ne\emptyset$ и, как обычно,
-$\rho(x, M(\lambda))=\inf\limits_{y\in M(\lambda)}\|x-y\|$.
-
-\begin{defnnonum}
-Функцию
-\begin{equation}\label{phi1}
-\psi(x)=\begin{cases}
-\varphi(x) & \forall x\in M(\lambda)\cap G;\\
-\beta\rho(x,M(\lambda))+\lambda & \forall x\in G\setminus M(\lambda),\ \beta>0,
-\end{cases}
-\end{equation}
-будем называть $(\rho,\beta,\lambda)$-аппроксимирующей снизу заданную функцию
-$\varphi(x)$, а функцию $\varphi(x)$ --- $(\rho,\beta,\lambda)$-аппроксимируемой
-снизу на множестве $G$, если
-\begin{equation}\label{psi1}
-\psi(x)\leq\varphi(x) \ \ \forall x\in G.
-\end{equation}
-\end{defnnonum}
-
-
-Укажем достаточные условия $(\rho,\beta,\lambda)$-аппроксимируемости 
-снизу для выпуклой функции $\varphi(x)$.
-
-\begin{lem}\label{ro1}
-Пусть функция $\varphi(x)$ определена, непрерывна и является
-выпуклой на выпуклом множестве $G\subset R_n$, для числа $\lambda$
-множество $G\cap M(\lambda)$ ограничено и существует точка $\o
-x\in G$ такая, что $\varphi(\o x)<\lambda$. Тогда найдется число
-$\beta=\beta(\lambda)>0$ такое, что для функции $\psi(x)$,
-определенной условием $(\ref{phi1})$, будет выполняться неравенство
-$(\ref{psi1})$.
-\end{lem}
-
-\begin{pf}
-В тривиальном случае $G\subset M(\lambda)$ существование 
-$(\rho,\beta,\lambda)$-ап\-прок\-си\-ми\-ру\-ю\-щей функции очевидно.
-Пусть $G\setminus M(\lambda)\ne\emptyset$ и $x$ --- произвольная точка 
-из $G\setminus M(\lambda)$. Поскольку
-$G$ --- выпуклое множество, то $\alpha x+(1-\alpha)\o x \in G$ для всех 
-$\alpha\in(0,1)$. Так как $\varphi(x)>\lambda$, то
-в силу непрерывности функции $\varphi(x)$ найдется такое $\o\alpha\in(0,1)$, 
-что в точке $y=\o\alpha x+(1-\o\alpha)\o x$, где
-$\o\alpha=\frac{\|y-\o x\|}{\|x-\o x\|}$, выполняется равенство
-\begin{equation}\label{vf1}
-\varphi(y)=\lambda,
-\end{equation}
-при этом из условия выпуклости функции $\varphi(x)$ 
-на множестве $G$ вытекает неравенство
-$\varphi(y)\leq\ov\alpha\varphi(x)+(1-\ov\alpha)\varphi(\o x)$. 
-Отсюда с учетом (\ref{vf1})
-$\varphi(x)\geq\frac{1-\o\alpha}{\o\alpha}(\lambda-\varphi(\o x))+\lambda$. 
-Так как $\frac{1-\o\alpha}{\o\alpha}=\frac{\|x-y\|}{\|y-\o x\|}$, то
-\begin{equation}\label{vf2}
-\varphi(x)\geq\frac{\lambda-\varphi(\o x)}{\|y-\o x\|}\|x-y\|+\lambda.
-\end{equation}
-Поскольку $y,\o x\in G\cap M(\lambda)$, то выполняется неравенство 
-$\|y-\o x\|\leq d$, где $d$ --- диаметр компакта $G\cap M(\lambda)$.
-Кроме того, $\|y-\o x\|\geq\rho(x,M(\lambda))$.
-Из (\ref{vf2}) следует неравенство (\ref{psi1})
-при функции $\psi(x)$, определенной условием (\ref{phi1})
-с $\beta=\frac{\lambda-\varphi(\o x)}{d}>0$.
-\end{pf}
-
-\begin{cornonum}
-Пусть для функции $\varphi(x)$, множества $G\subset R_n$ и числа
-$\lambda$ выполняются условия леммы \ref{ro1}. Тогда для любого
-$\lambda'>\lambda$ найдется число $\beta'=\beta(\lambda')>0$
-такое, что функция $\varphi(x)$ будет
-$(\rho,\beta',\lambda')$-аппроксимируемой снизу на $G$.
-\end{cornonum}
-
-\begin{pf}
-Действительно, т.\,к. в силу условий леммы \ref{ro1} существует 
-точка $\o x\in G$ такая,
-что $\varphi(\o x)<\lambda$, то $\varphi(\o x)<\lambda'$. В силу ограниченности
-множества $G\cap M(\lambda)$ и выпуклости функции $\varphi(x)$ для любого
-$\lambda'>\lambda$ множество $G\cap M(\lambda')$ ограничено. Тогда по лемме
-\ref{ro1} найдется число $\beta'=\beta(\lambda')>0$ такое, что
-$\varphi(x)\geq\beta'\rho(x,M(\lambda'))+\lambda'$ для $x\in G\setminus
-M(\lambda')$.
-\end{pf}
-
-\begin{notenonum}
-Здесь была использована схема доказательства
-известной леммы (\cite{STF}, c.\,246) об условиях
-$\rho$-регулярности ограничений в задаче выпуклого
-программирования. Но лемма \ref{ro1} может быть использована
-безотносительно к задаче программирования и множество $G$ может
-быть неограниченным. Например, $G$ может быть плоскостью любой
-размерности в $R_n$ или совпадать с $R_n$. В первом случае лемму
-\ref{ro1} возможно будет использовать при исследовании задач
-выпуклого программирования, когда среди ограничений есть линейные
-уравнения, а во втором лемма \ref{ro1} дает условия
-$(\rho,\beta,\lambda)$-аппроксимируемости снизу выпуклой в $R_n$
-функции на всем пространстве $R_n$.
-\end{notenonum}
-
-\begin{lem}\label{lem2}
-Пусть функция $\varphi(x)$ непрерывна и выпукла на $R_n$. 
-Если функция $\varphi(x)$ является
-$(\rho,\beta,\lambda)$-аппроксимируемой снизу на $G\subset R_n$, то функция 
-$\varkappa(x)=\tau\varphi(x)$, $0<\tau\leq 1$, будет
-$(\rho,\tau\beta,\lambda')$-аппроксимируемой снизу
-на $G$ при $\lambda'\geq\lambda$.
-\end{lem}
-
-\begin{pf}
-Пусть $\lambda'\geq\lambda$, $E(\lambda')=\{x:x\in R_n$,
-$\varkappa(x)\leq\lambda'\}$. Если $G\in M(\lambda')$, то
-существование $(\rho,\tau\beta,\lambda')$-аппроксимирующей функции
-очевидно. В противном случае произвольно выберем точку $x'\in
-G\setminus E(\lambda')$. Тогда
-\begin{equation}\label{M1}
-M(\lambda)\subset E(\lambda')
-\end{equation}
-и $x'\notin M(\lambda)$. Пусть $x_p$ --- проекция точки $x'$ на множество
-$M(\lambda)$. Тогда
-\begin{equation}\label{phi2}
-\varphi(x_p)=\lambda.
-\end{equation}
-Так как $x'\notin E(\lambda')$, то, учитывая (\ref{phi2}), имеем
-\begin{equation}\label{phi3}
-\varphi(x')>\frac{\lambda'}{\tau}\geq
-\frac{\lambda}{\tau}\geq\lambda=\varphi(x_p).
-\end{equation}
-При $\tau=1$, $\lambda'=\lambda$ функция $\varkappa(x)$ будет по условиям леммы
-$(\rho,\tau\beta,\lambda')$-аппроксимируемой снизу на $G$. В противном случае
-хотя бы одно из нестрогих неравенств в цепочке (\ref{phi3}) будет выполняться
-как строгое и $\varphi(x')>\frac{\lambda'}{\tau}>\varphi(x_p)$. Так как
-$\varphi(x)$ --- непрерывная функция, то внутри отрезка, соединяющего точки
-$x'$, $x_p$, найдется такая точка $y$, что
-\begin{equation}\label{phi5}
-\varphi(y)=\frac{\lambda'}{\tau}.
-\end{equation}
-Это значит, что найдется такое число $\alpha\in(0,1)$, для которого $y=\alpha
-x_p + (1-\alpha)x'$, где
-\begin{equation}\label{alpha1}
-\alpha=\frac{\|y-x'\|}{\|x_p-x'\|}=\frac{\|y-x'\|}{\rho(x',M(\lambda))}.
-\end{equation}
-Так как $\varphi(x)$ --- выпуклая на $R_n$ функция, то $\varphi(y)\leq\alpha
-\varphi(x_p) + (1-\alpha)\varphi(x')$. Отсюда, учитывая (\ref{phi2}),
-(\ref{phi5}) и (\ref{alpha1}), получим
-\begin{equation}\label{alpha2}
-\varphi(x')\geq\frac{\|y-x'\|}{\rho(x',M(\lambda))}
-(\varphi(x')-\lambda)+\frac{\lambda'}{\tau}.
-\end{equation}
-По условию леммы $\varphi(x)\geq\beta\rho(x,M(\lambda))+\lambda$ 
-для всех $x\in G\setminus M(\lambda)$, а в силу (\ref{M1})
-тем более это неравенство выполняется для всех
-$x\in G\setminus E(\lambda')$, т.\,е.
-\begin{equation}\label{phi6}
-\varphi(x)\geq\beta\rho(x,M(\lambda))+\lambda
-\ \ \forall x\in G\setminus E(\lambda').
-\end{equation}
-В частности, неравенство (\ref{phi6}) выполняется для $x=x'$. Тогда, 
-усиливая неравенство (\ref{alpha2}) подстановкой вместо
-$\varphi(x')$ в правой части числа $\beta\rho(x',M(\lambda))+\lambda$, получим
-\begin{equation}\label{phi7}
-\varphi(x')\geq\beta\|x'-y\|+\frac{\lambda'}{\tau}.
-\end{equation}
-В силу (\ref{phi5}) выполняется включение $y\in E(\lambda')$.
-Тогда $\|x'-y\|\geq\rho(x',E(\lambda'))$ и из
-(\ref{phi7}) следует неравенство
-$\tau\varphi(x')\geq\tau\beta\rho(x',E(\lambda'))+\lambda'$. Таким
-образом, в силу произвольности выбора $x'\in G\setminus
-E(\lambda')$ можно построить функцию $\phi(x)$, аппроксимирующую
-функцию $\varkappa(x)$ по правилам (\ref{phi1}), (\ref{psi1})
-с параметрами $\beta$, $\lambda'>\lambda$.
-\end{pf}
-
-Обратим внимание на частный случай $\tau=1$ в
-лемме \ref{lem2}. В этом случае $E(\lambda)=M(\lambda)$. В отличие
-от следствия к лемме \ref{ro1} в лемме \ref{lem2} не требуется
-выполнение условий леммы \ref{ro1}. Для справедливости утверждения
-леммы \ref{lem2} достаточно, чтобы существовала функция,
-$(\rho,\beta,\lambda)$-аппроксимирующая снизу функцию
-$\varphi(x)$, и неважно, как она была
-построена. Выполнение условия
-$\varphi(x)\geq\beta\rho(x,M(\lambda'))+\lambda'$ для всех $x\in
-G\setminus M(\lambda)$ при любом $\lambda'>\lambda$ и постоянном
-значении параметра $\beta$ не является противоречивым. При росте
-параметра $\lambda$ множество $M(\lambda)$ расширяется,
-вычисляется функция $\varphi(x)$ по правилу (\ref{phi1}), а при
-достаточно большом $\lambda$ окажется $G\setminus
-M(\lambda)=\emptyset$ и построение функции $\psi(x)$
-сводится к неинтересному с практической точки зрения
-случаю $\psi(x)=\varphi(x)$.
-
-
-\section{Алгоритмы на основе штрафной функции, \protect\\
-построенной по погруженному множеству}
-
-Пусть $y=(y_1,y_2,\dotsc,y_m)\in R_m$,
-$R_m^-=\{y: y_i\leq 0$ $\forall i=1,\dotsc,m\}$. 
-В $R_m$ определим выпуклую функцию $P(y)$ так, что
-\begin{equation}\label{ri}
-y\in R_m^-\Longrightarrow P(y)=0,\quad
-y\notin R_m^-\Longrightarrow P(y)>0.
-\end{equation}
-
-Обозначим $V(x)=P(f_1(x)+p,\dotsc,f_m(x)+p)$ и $A(\alpha)=\{x\in
-R_n: V(x)\leq \alpha$, $\alpha\geq 0\}$. Учитывая (\ref{ri}), легко
-заметить, что $V(x)=0$ при $x\in A(0)$ и $V(x)>0$ при $x\notin A(0)$.
-
-Так как $A(0)=D(p)$, то при $p>0$ множество $A(0)$ является погруженным в
-$D(0)$, причем $D(0)$ является окрестностью множества $A(0)$.
-
-Пусть число $\o p\in (0,\ -\inf\{g(x),\ x\in R_n\})$.
-
-\begin{lem}\label{slay1}
-Множество $D(p)$ удовлетворяет условию Слейтера при $p<-\o p$.
-\end{lem}
-
-\begin{pf}
-В силу непрерывности функции $g(x)$ найдется точка $y$ такая, что $g(y)=\o p$.
-Так как $\o p<-p$, то $y\in D(p)$ и $g(y)+p<0$.
-\end{pf}
-
-Всюду далее будем предполагать, что выполнены
-
-{\it условие} a) функция $f(x)$ удовлетворяет на 
-множестве $X^*_\varepsilon$ условию Липшица с константой~$L$;
-
-{\it условие} b) существуют числа $\lambda' \in (0, \o p)$ и $\o
-f>\min\limits_{x\in D(\lambda')}f(x)$, множество $D(\lambda')\cap
-Q(\o f)$ ограничено, где $Q(t)=\{x\in R_n: f(x)\leq t\}$.
-
-Обозначим через $\Int D(\lambda')$ внутренность множества
-$D(\lambda')$, а через $\bd D(\lambda')$ --- его границу.
-
-\begin{lem}\label{rho3}
-Для числа $\lambda'$ найдется $\beta=\beta(-\lambda')$ такое, что функция
-$g(x)$ будет $(\rho,\beta,-\lambda')$-аппроксимируемой снизу на множестве
-$Q(\o f)$.
-\end{lem}
-
-\begin{pf}
-Покажем, что существует точка $\o x\in \Int D(\lambda')$
-такая, что $f(\o x)\leq\o f$. Если это не так, то
-\begin{equation}\label{ff1}
-f(x)>\o f \ \ \forall x\in \Int D(\lambda').
-\end{equation}
-Выберем произвольную точку $x'\in \bd D(\lambda')$. Она является предельной 
-точкой некоторой последовательности
-$\{x_k\}_{k=0}^\infty$, где $x_k\in \Int D(\lambda')$. Тогда 
-по (\ref{ff1}) $f(x_k)>\o f$ для всех $k\geq 0$.
-Отсюда и из непрерывности $f(x)$ получим
-\begin{equation}\label{ff2}
-f(x')=\lim\limits_{k\to\infty}f(x_k)\geq\o f.
-\end{equation}
-Следовательно, в силу произвольного выбора точки $x'\in \bd D(\lambda')$ 
-из (\ref{ff1}) и (\ref{ff2}) неравенство
-$f(x)\geq\o f$ верно для всех $x\in D(\lambda')$. Тогда по определению 
-условного минимума $\o f=\min\{f(x)$, $x\in D(\lambda')\}$,
-что противоречит условию~b).
-Существование точки $\o x\in \Int D(\lambda')\cap Q(\o f)$ доказано.
-
-Пусть точка $\wt x$ такая, что $g(\wt x)=-\o p$. Тогда по
-условию~b) из неравенства $\lambda'<\o p$ следует $g(\wt
-x)+\lambda'<0$. Отсюда в силу выпуклости функции $g(x)$ получим
-$g(x)+\lambda'<0$ для всех $x\in \Int D(\lambda')$.
-
-Таким образом, существует точка $\o x\in Q(\o f)$
-такая, что $g(\o x)+\lambda'<0$.
-
-Тогда условия леммы \ref{ro1} выполняются для $\varphi(x)=g(x)$,
-$G=Q(\o f)$, $\lambda=-\lambda', M(\lambda)=D(\lambda')$, т.\,е.
-можно построить функцию
-$$
-%%\begin{equation}\label{phi1}
-d(x)=\begin{cases}
-g(x) & \forall x\in D(\lambda')\cap Q(\o f);\\
-\beta\rho(x,D(\lambda'))-\lambda'
-& \forall x\in Q(\o f)\setminus D(\lambda'),\ \beta>0,
-\end{cases}
-%%\end{equation}
-$$
-такую, что $d(x)\leq g(x)$ для всех $x\in Q(\o f)$.
-\end{pf}
-
-Введем вспомогательную функцию
-\begin{equation}
-F(x,C)=f(x)+C V(x), \ \ C>0, \label{F}
-\end{equation}
-и множество аргументов ее минимума
-\begin{equation}
-X(C)=\Argmin\{F(x,C),\ x\in R_n\}.\label{xC}
-\end{equation}
-Посредством $x(C)$ обозначим точки множества $X(C)$; точка $x^*\in\Argmin
-\{f(x),\ x\in D(0)\}$.
-
-Известно, что функция $x(C)$ непрерывна по $C>0$ (\cite{Dav},
-c.\,25), $f(x(C))$ не убывает, а $V(x(C))$ не возрастает по $C>0$
-(\cite{Fed}, c.\,38). Убедимся, что
-\begin{equation}\label{Prib}
-f(x(C))-f^*\leq C(V(x^*)-V(x(C))).
-\end{equation}
-Действительно, в силу (\ref{xC}) верно неравенство $F(x(C), C)\leq F(x^*, C)$.
-Отсюда $f(x(C))+\linebreak CV(x(C))\leq f^*+CV(x^*)$, что эквивалентно неравенству
-(\ref{Prib}).
-
-Обобщает результаты, полученные в \cite{fookin} для линейных задач,
-
-\begin{thm}\label{p}
-Пусть число $0\leq p\leq\min\{\frac{\varepsilon\beta}{L},\lambda'\}$. Тогда
-любая точка $x(C)\in D(0)$ является $\varepsilon$-решением задачи
-$(\ref{Zad1})$.
-\end{thm}
-
-{\bf Доказательство.}
-Множество $D(p)$ не пусто, т.\,к. $p\leq\lambda'<\o p$ и $D(p)\supset D(\o
-p)$. Пусть $x_p$ --- проекция точки $x^*$ на множество $D(p)$. Так как
-$f(x_p)\geq f^*$ и целевая функция удовлетворяет условию Липшица, то
-\begin{equation}\label{fxp1}
-0\leq f(x_p)-f^*\leq L\|x_p-x^*\|,
-\end{equation}
-где $L$ --- константа Липшица. Если $x^*\in D(p)$, то $\|x_p-x^*\|=0$ и
-\begin{equation}\label{fxp2}
-f(x_p)-f^*=0<\varepsilon.
-\end{equation}
-Иначе, учитывая $D(\lambda')\subset D(0)$ и 
-$f(x^*)\leq\min\{f(x),\ x\in D(\lambda')\}<\o f$,
-что справедливо в силу условия b),
-имеем включение $x^*\in Q(\o f)\setminus D(p)$.
-
-Так как по лемме \ref{rho3} функция $g(x)$ является 
-$(\rho,\beta,-\lambda')$-аппроксимируемой снизу на множестве $Q(\o f)$ и
-$-p\geq -\lambda'$, то по лемме \ref{lem2} функция $g(x)$ является 
-$(\rho,\beta,-p)$-аппроксимируемой снизу на множестве
-$Q(\o f)$, т.\,е. неравенство $g(x)+p\geq\beta\rho(x,D(p))$ 
-выполняется для всех $x\in Q(\o f)\setminus D(p)$. 
-В частности, оно выполняется и для $x^*$.
-Следовательно,
-\begin{equation}\label{gg1}
-g(x^*)+p\geq \beta\rho(x^*,D(p))=\beta\|x^*-x_p\|,
-\end{equation}
-т.\,к. $x_p$ --- проекция точки $x^*$ на $D(p)$.
-Тогда $\|x^*-x_p\|\leq\frac{g(x^*)+p}{\beta}$. В силу (\ref{fxp1}), 
-неравенства $g(x^*)\leq 0$ и условий леммы верны неравенства
-\begin{equation}\label{tsep}
-f(x_p)-f^*\leq L\frac{g(x^*)+p}{\beta} \leq\frac{Lp}{\beta}\leq
-\frac{L}{\beta}\frac{\varepsilon\beta}{L}=\varepsilon.
-\end{equation}
-Отсюда и из (\ref{fxp2}) получим, что $f(x_p)-f^*\leq\varepsilon$ независимо 
-от включения точки $x^*$ в множество $D(p)$.
-
-Как известно (\cite{Fiacco}, c.\,9), в методе внешних штрафов со
-вспомогательными функциями вида (\ref{F}) точки $x(C)$
-не принадлежат внутренности множества $D(p)$. Тогда из (\ref{tsep}) и 
-неубывания функции $f(x(C))$ по $C>0$ имеем
-цепочку неравенств
-$$
-f(x(C))-f^*\leq\min\limits_{x\in D(p)}f(x)-f^*\leq
-f(x_p)-f^*\leq\varepsilon.\quad\square
-$$
-
-Теорема \ref{p} дает легко проверяемый критерий остановки в методе штрафов. 
-Минимизация целевой функции
-на погруженном множестве $D(p)$ позволяет получить включение $x(C)\in D(0)$ 
-при конечном значении
-параметра $C$, даже если функция штрафа $V(x)$ не является точной.
-
-\begin{thm}\label{C}
-Пусть $0\leq p\leq\lambda'$. Тогда неравенство
-\begin{equation}\label{C1}
-C\leq\frac{Lp}{V(x(C))\beta}
-\end{equation}
-выполняется для всех $C>0$ таких, что $x(C)\in D(0)$.
-\end{thm}
-
-\begin{pf}
-Так как $p\leq\lambda'$, то $D(p)\supset D(\lambda')$ и 
-$\min\{f(x)$, $x\in D(p)\}\leq \min\{f(x)$, $x\in D(\lambda')\}$. Тогда
-из неубывания функции $f(x(C))$ по $C>0$ и условия~b)
-следует цепочка неравенств
-$$
-f(x(C))\leq\min\{f(x),\ x\in D(p)\}\leq \min\{f(x),\ x\in D(\lambda')\}<\o f,
-$$
-что означает включение $x(C)\in Q(\o f)$.
-
-Если $x(C)\in D(p)$, то $V(x(C))=0$ и неравенство (\ref{C1}) выполняется. 
-Иначе $x(C)\in Q(\o f)\setminus D(p)$.
-
-Пусть $x_0$ --- проекция точки $x(C)$ на множество $D(p)$. Так как
-$-p\geq-\lambda'$, то по лемме \ref{lem2} функция $g(x)$ является
-$(\rho,\beta,-p)$-аппроксимируемой снизу на множестве $Q(\o f)$. Тогда
-$$
-%%\begin{equation}\label{ro}
-g(x(C))+p\geq\beta\rho(x(C),D(p))=\beta q,\ \ q=\|x(C)-x_0\|.
-%%\end{equation}
-$$
-Так как $x(C)\in D(0)$, то $g(x(C))\leq 0$ и
-\begin{equation}\label{b2}
-p\geq\beta q.
-\end{equation}
-Отсюда $q\leq p/\beta$.
-В неравенстве (\ref{b2}) к обеим частям прибавим $V(x(C))-p$ 
-и, учитывая $V(x_0)=0$, получим
-\begin{equation}\label{b3}
-V(x(C))-V(x_0)\geq V(x(C))+\beta q-p.
-\end{equation}
-Так как $x(C)\notin D(p)$, то $q>0$.
-Разделим неравенство (\ref{b3}) на $q$:
-\begin{equation}\label{VxC1}
-\frac{V(x(C))-V(x_0)} {q} \geq \beta+ \frac{V(x(C))-p} 
-{q}\geq\beta+\frac{(V(x(C))-p)\beta} {p}
-\geq\beta+\frac{V(x(C))\beta}{p}-\beta=\frac{V(x(C))\beta}{p}.
-\end{equation}
-Пусть $x=x(C) + t(x(C) - x_0)$, $t\geq 0$.
-Отсюда $x(C)= \frac{t}{t+1} V(x_0)+\frac{1}{t+1} V(x)$.
-Так как $V(x)$ выпуклая, то $V(x(C))\leq
-\frac{t}{t+1}V(x_0)+\frac{1}{t+1}V(x)$
-и $\frac{V(x)-V(x(C))}{t}\geq V(x(C))-V(x_0)$.
-Тогда с учетом (\ref{VxC1}) получим 
-$\frac{V(x)-V(x(C))}{tq}\geq\frac{V(x(C))\beta}{p}$, т.\,е.
-$\frac{V(x(C)+t(x(C)-x_0))-V(x(C))}{tq}\geq\frac{V(x(C))\beta}{p}$ 
-при любых $t\geq 0$. Следовательно,
-$$
-\frac{\partial V(x(C))}{\partial\frac{x(C)-x_0}{q}}=
-\lim_{t\to+0}\frac{V(x(C)+t(x(C)-x_0))-V(x(C))}{tq}
-\geq\frac{V(x(C))\beta}{p}.
-$$
-Получили $\|V'(x(C))\|\geq\frac{\partial V(x(C))}
-{\partial\frac{x(C)-x_0}{q}} 
-\geq\frac{V(x(C))\beta}{p}$,
-где $|V'(x(C))|$ --- градиент функции $V(x)$ в точке $x(C)$.
-
-Из определения $x(C)$ следует,
-что градиент $F'(x(C),C)=f'(x(C))+CV'(x(C))=0$ и
-$C=\frac{\|f'(x(C))\|}{\|V'(x(C))\|}\leq\frac{Lp}{V(x(C))\beta}$.
-\end{pf}
-
-Зададим число $\o\alpha\equiv\max\{\alpha: A(\alpha)\subset
-D(0)\}$. Очевидно, границы множеств $A(\o\alpha)$ и $D(0)$ имеют
-некоторую общую точку $z$, в которой $g(z)=0$ и $V(z)=\o\alpha$.
-Так как найдется индекс $s\in I$ такой, что $f_s(z)=0$, то при
-$p>0$ вектор $(f_1(z)+p,\dotsc,f_m(z)+p)\notin R_m^-$. Из (\ref{ri})
-следует, что $P(f_1(z)+p,\dotsc,f_m(z)+p)>0$. Тогда по определению
-$\o\alpha=V(z)>0$.
-
-Пусть всюду далее число $\o C>0$ такое, 
-что $V(x(\o C))=\o\alpha$. Так как $\o\alpha>0$ и функция $V(x(C))$ 
-непрерывна по $C>0$, то число $\o C$ существует и конечно. По теореме
-\ref{C} при $p\leq \lambda'$ для числа $\o C$ выполняется неравенство 
-$\o C\leq\frac{Lp}{\o\alpha\beta}$. Из невозрастания 
-функции $V(x(C))$ по $C>0$ следует, 
-что $V(x(C))\leq\o\alpha$ для всех $C\geq\o C$.
-Это означает, что включение $x(C)\in A(\o\alpha)\subset D(0)$ 
-достигается при любом
-$C\geq\frac{Lp}{\o\alpha\beta}$. На этом факте основан
-
-\begin{alg}
-Задается требуемая точность решения
-$\varepsilon>0$, $x_0\in R_n$, натуральное число $N>0$. Выбирается
-$0<p\leq\min\{\frac{\beta\varepsilon}{L},\lambda'\}$, возрастающая
-функция $\varphi(t)$ такая, что $\varphi(1)\geq 0$,
-$\varphi(N)\geq\frac{Lp}{\overline\alpha\beta}$. Полагается $k=1$.
-\begin{itemize}
-\item[1.] Вычисляется $C_k=\varphi(k)$.
-\item[2.] Выбирается метод $A_k$ безусловной минимизации, обеспечивающий
-нахождение минимума функции $F(C_k,x)$.
-\item[3.] Методом $A_k$ отыскиваем $x(C_k)\in X(C_k)$.
-\item[4.] Если $x(C_k)\in D(0)$, то $x(C_k)$ 
-является допустимым $\varepsilon$-решением
-исходной задачи. Иначе следует переход к п.\,1 при $k$, замененном на $k+1$.
-\end{itemize}
-\end{alg}
-
-\begin{thm}
-Алгоритм $1$ находит допустимое $\varepsilon$-оптимальное 
-решение задачи $(\ref{Zad1})$ не более,
-чем через заданное количество $N$ итераций.
-\end{thm}
-
-\begin{pf}
-Так как $C_N=\varphi(N)\geq\frac{Lp}{\o\alpha\beta}$, то при $k=N$ включение 
-$x(C_k)\in D(0)$ гарантированно
-достигается. Тогда по теореме \ref{p} из условия 
-$p\leq\min\{\frac{\varepsilon\beta}{L},\lambda'\}$ следует
-$\varepsilon$-оптимальность точки $x(C_N)$.
-\end{pf}
-
-Если при подготовке вычислений по алгоритму 1 выбрать $N=1$, то
-$\varphi(N)=\varphi(1)\geq\frac{Lp}{\overline\alpha\beta}$,
-что гарантирует включение $x(C_1)\in D(0)$. Это означает, что
-решение с заданной точностью исходной задачи будет найдено за одну
-итерацию метода штрафов. Но, как известно и отмечалось в \cite{Zab},
-это приводит к плохой обусловленности матрицы вторых производных 
-функции $F(x,C_1)$ в области решения. С точки зрения общей трудоемкости
-решения исходной задачи при практической реализации 
-алгоритма лучшим оказывался выбор $N$ от 3 до 7 в зависимости от 
-типа задачи. Б\'ольшие значения для $N$ использовать нецелесообразно
-вследствие увеличения количества вычислимых процедур.
-Отметим также, что подобные рассуждения верны лишь в том случае, 
-если при отыскании $\min\{F(x,C_k), x\in R_n\}$ в качестве точки 
-начального приближения выбирать результат минимизации функции $F(x(C_{k-1}))$.
-
-В численных экспериментах полагалось $\varphi(t)=\frac{\o C}{\mu^{N-t}}$, 
-где $\mu >1$. Чаще выбиралось $\mu = 10$. Если в алгоритме требуется 
-явно задать начальный коэффициент штрафа,
-то достаточно положить $\mu=(\frac{\o C}{C_0})^{\frac{1}{t}}$.
-
-В следующем алгоритме осуществляется двустороннее приближение к множеству\linebreak
-$D(0)\setminus A(\gamma\o\alpha)$, где $\gamma$ --- произвольное 
-число из интервала $(0,1)$. Определенный выбор числа $p>0$ 
-гарантирует $\varepsilon$-оптимальность любой точки
-$x(C)\in D(0)\setminus A(\gamma\o\alpha)$.
-
-\begin{alg}
-Подготовительный шаг. Задается требуемая
-точность решения $\varepsilon$. Выбираются числа $0<\gamma<1$,
-$0<p\leq\min\{\frac{\varepsilon\beta\gamma\o\alpha}
-{L(V(x^*)-\gamma\o\alpha)},\lambda'\}$,
-$\o C_0\geq\frac{Lp}{\beta\gamma\o\alpha}$, $\u C_0=0$,
-$0<\u\lambda\leq\o\lambda<1$. Полагаем $k=0$.
-\begin{itemize}
-\item[1.] Находим $C_k=\lambda_k\o C_k+(1-\lambda_k)\u C_k$, где 
-$\u\lambda\leq\lambda_k\leq\o\lambda$.
-\item[2.] Выбирается метод $A_k$ безусловной минимизации, обеспечивающий
-нахождение минимума функции $F(C_k,x)$.
-\item[3.] Методом $A_k$ отыскиваем $x(C_k)\in X(C_k)$.
-\item[4.] Если $x(C_k)\in D(0)\setminus A(\gamma \o\alpha)$, то процесс 
-окончен и $x(C_k)$ является $\varepsilon$-решением задачи (\ref{Zad1}).
-\item[5.] Если $x(C_k)\in A(\gamma \o\alpha)$, 
-то полагаем $\o C_{k+1}=C_k, \u C_{k+1}=\u C_k$.
-Иначе $\o C_{k+1}=\o C_k$, $\u C_{k+1}=C_k$.
-\item[6.] Переходим к п.\,1 при $k$, замененном на $k+1$.
-\end{itemize}
-\end{alg}
-
-\begin{thm}
-Условие п.\,$4$ алгоритма $2$ выполняется через конечное
-число шагов $N$, при этом $x(C_N)\in D(0)$ и
-$$
-%%\begin{equation}
-f(x(C_N))-f^*\leq\varepsilon.
-%%\end{equation}
-$$
-\end{thm}
-
-\begin{pf}
-Предположим, что не существует номера $N$ такого, что точка 
-$x(C_N)\in D(0)\setminus A(\gamma \o\alpha)$. Тогда из невозрастания
-$V(x(C))$ по $C$ следует, что для любого $k=0,1,\dotsc$ 
-выполняются неравенства
-$V(x(\o C_k))\leq\gamma \o\alpha$ и $V(x(\u C_k))\geq \o\alpha$. 
-Вычтем первое неравенство из второго, получим
-\begin{equation}\label{raz}
-V(x(\u C_k))-V(x(\o C_k))\geq (1-\gamma)\o\alpha>0 \ \ \forall k=0,1,\dotsc
-\end{equation}
-
-Оценим разность штрафных коэффициентов, основываясь на п.\,1 алгоритма
-\begin{multline*}
-\o C_{k+1}-\u C_{k+1}\leq\max\{\o C_k-C_k, C_k-\u C_k\}= \\
-%
-=\max\{\o C_k-\lambda_k\u C_k-\o C_k+\u C_k,
-\lambda_k\u C_k+(1-\lambda_k)\o C_k-\u C_k\}=\\
-=\max\{\lambda_k(\o C_k-\u C_k),(1-\lambda_k)(\o C_k-\u C_k)\}=\\
-=\max\{\lambda_k,1-\lambda_k\}(\o C_k-\u C_k)\leq
-\max\{\o\lambda,1-\u\lambda\}(\o C_k-\u C_k).
-\end{multline*}
-Так как $0<\u\lambda\leq\o\lambda<1$, 
-то можно указать такое число $\wh\lambda$, что
-$\max\{\o\lambda,1-\u\lambda\}<\wh\lambda<1$. Тогда 
-$\o C_{k+1}-\u C_{k+1}<\wh\lambda(\o C_k-\u C_k)$ и
-$\lim\limits_{k\to\infty}(\o C_k-\u C_k)=0$.
-В силу непрерывности $V(x(C))$ по $C>0$ имеем
-$\lim\limits_{k\to\infty}(V(x(\o C_k))-V(x(\u C_k)))=0$,
-что противоречит неравенству (\ref{raz}).
-
-Пусть далее номер $N$ такой, что $x(C_N)\in D(0)\setminus A(\gamma
-\o\alpha)$, и число $C_\gamma$ такое, что $V(x(C_\gamma))=\gamma
-\o\alpha$. Тогда $V(x(C_N))\geq V(x(C_\gamma))$ и $C_N\leq
-C_\gamma$. Из неубывания функции $f(x(C))$ по $C>0$ следует
-неравенство $f(x(C_N))\leq f(x(C_\gamma))$. Отсюда, из
-(\ref{Prib}) и по теореме \ref{C} верна оценка $f(x(C_N))-f^*\leq
-f(x(C_\gamma))-f^*\leq\frac{Lp}{\beta
-V(x(C_\gamma))}(V(x^*)-V(x(C_\gamma)))= \frac{Lp}{\beta\gamma
-\o\alpha}(V(x^*)-\gamma \o\alpha)\leq\varepsilon$.
-\end{pf}
-
-Таким образом, решение с заданной точностью задачи (\ref{Zad1}) можно свести к
-нахождению такого числа $C'>0$, при котором верны неравенства
-\begin{equation}\label{double}
-\gamma\o\alpha\leq V(x(C'))\leq\o\alpha.
-\end{equation}
-Так как $V(x(C))$ непрерывна и монотонно не возрастает по $C>0$, то
-для нахождения значения $C'$, удовлетворяющего условию (\ref{double}),
-можно любым численным методом решить по $C$
-уравнение $V(x(C))=\frac{1+\gamma}{2}\o\alpha$ с точностью 
-$\frac{1-\gamma}{2}\o\alpha$ по функционалу.
-Приведем алгоритм, основанный на методе секущих.
-
-\begin{alg}
-Подготовительный шаг. Задается требуемая
-точность решения $\varepsilon$ задачи (\ref{Zad1}). Выбирается $0<
-p\leq\min\{\frac{\varepsilon\beta\gamma\o\alpha}
-{L(V(x^*)-\gamma\o\alpha)},\lambda'\}$,
-$0\leq C_0<\frac{Lp}{\beta\gamma\o\alpha}$,
-$C_1\geq\frac{Lp}{\beta\o\alpha} $. Любым методом безусловной
-минимизации отыскивается $x(C_0)$. Полагаем $k=1$.
-\begin{itemize}
-\item[1.] Выбирается метод $A_k$ безусловной минимизации, обеспечивающий
-нахождение минимума функции $F(C_k,x)$.
-\item[2.] Методом $A_k$ отыскиваем
-$x(C_k) \in \Arginf\{F(C_k,x),x\in R_n\}$.
-\item[3.] Если $x(C_k)\in D(0)\setminus A(\gamma \o\alpha)$, 
-то процесс окончен и $x(C_k)$ является $\varepsilon$-решением 
-задачи (\ref{Zad1}).
-\item[4.] Находим $C_{k+1}=\frac{\frac{\gamma+1}{2}\o\alpha-V(x(C_k))} 
-{V(x(C_{k-1}))-V(x(C_k))}(C_{k-1}-C_k)+C_k$.
-\item[5.] Переходим к п.\,1 при $k$, замененном на $k+1$.
-\end{itemize}
-\end{alg}
-
-
-\section{Алгоритмы на основе штрафной функции,\protect\\
-построенной по аппроксимации допустимого множества}
-
-
-Далее целевую функцию будем минимизировать при 
-ограничении $V(x)\leq\gamma \o\alpha$,
-$0<\gamma<1$, т.\,е. ставится задача
-\begin{equation}\label{new}
-\min\{f(x),\ x\in A(\gamma \o\alpha),\ 0<\gamma<1\}.
-\end{equation}
-
-Пусть $C_\gamma>0$ такое, что $V(x(C_\gamma))=\gamma \o\alpha$.
-Так как $x(C_\gamma)\in A(\gamma\o\alpha)$, то 
-$\min \{f(x)$, $x\in A(\gamma \o\alpha)$, $0<\gamma<1\}\leq f(x(C_\gamma))$.
-Тогда из (\ref{Prib}) при $p\leq\lambda'$
-по теореме \ref{C}
-$$
-\min\{f(x),\ x\in A(\gamma \o\alpha)\}-f^*\leq
-f(x(C_\gamma))-f^*\leq C_\gamma(V(x^*)-V(x(C_\gamma)))\leq
-\frac{Lp}{V(x(C_\gamma))\beta}(V(x^*)-V(x(C_\gamma))).
-$$
-Обозначим $\Delta V(x)=\frac{V(x^*)-V(x)}{V(x)}$. Если 
-$p\leq\frac{\varepsilon\beta}{\Delta V(x(C_\gamma))L}$,
-то решения задач (\ref{Zad1}) и (\ref{new}) отличаются 
-не более, чем на $\varepsilon$.
-
-Будем решать задачу (\ref{new}) при помощи вспомогательной функции
-\begin{equation}\label{Fi}
-F_\gamma(x,C)=f(x)+CV_\gamma(x),
-\end{equation}
-где $V_\gamma(x)=(V(x)-\gamma \o\alpha)_+^s$, $s\geq 1$, $t_+=\max\{0,t\}$.
-Функция штрафа выбрана конкретного вида, 
-т.\,к. допустимое множество задачи (\ref{new}) задается лишь одним 
-ограничением.
-
-Если принять $h(x)=V(x)-\o\alpha$, $p_\gamma=(1-\gamma)\o\alpha$, то
-$V_\gamma(x)=(h(x)+p_\gamma)_+^s$. 
-Таким образом, результаты теоремы \ref{C} легко переносятся на случай 
-решения с заданной точностью задачи $\min\{f(x): x\in A(\o\alpha)\}$
-путем погружения ее допустимого множества,
-задаваемого ограничением $h(x)\leq 0$, на
-величину $p_\gamma$.
-
-Всюду далее $X_\gamma(C)=\Argmin\{F_\gamma(x,C): x\in R_n\}$,
-точка $x_\gamma (C)\in X_\gamma(C)$.
-
-\begin{thm}\label{C2}
-Пусть $0< p\leq\lambda'$.Тогда включение $x_\gamma (C)\in
-A(\o\alpha)$ достигается при всех $C\geq\frac{Lp}{\beta
-s(1-\gamma)^{s-1}\o\alpha^s}$.
-\end{thm}
-
-\begin{pf}
-Пусть $\o {\o C}>0$ такое, что $V(x_\gamma(\o{\o C}))=\o\alpha$. 
-Тогда из невозрастания $V_\gamma(x_\gamma(C))$ по $C>0$ следует,
-что для всех $C\geq\o{\o C}$ выполняется
-$V_\gamma(x_\gamma(C))\leq V_\gamma(x_\gamma(\o{\o C}))$, т.\,е.
-\begin{equation}\label{gp}
-[V(x_\gamma(C))-\gamma \o\alpha]_+^s\leq
-[V(x_\gamma(\o{\o C}))-\gamma \o\alpha]_+^s.
-\end{equation}
-Как известно (\cite{Fiacco}, c.\,9), в методе внешних штрафов 
-итерационные точки не принадлежат внутренности допустимого
-множества, т.\,е. $x_\gamma(C)\notin \Int A(\gamma \o\alpha)$ и 
-$V(x_\gamma(C))-\gamma \o\alpha\geq 0$.
-Тогда из (\ref{gp}) имеем $V(x_\gamma(C))\leq V(x_\gamma(\o {\o C}))$.
-Отсюда $x_\gamma(C)\in A(V(x_\gamma(\o {\o C})))=A(\o\alpha)\subset D(0)$ 
-при любом $C\geq \o{\o C}$. В этом случае
-аналогично доказательству теоремы \ref{C} имеем
-$\|V'(x_\gamma (C))\| \geq\frac{V(x_\gamma (C))\beta}{p}$. 
-Отсюда легко получить подобную оценку для нормы градиента штрафной 
-функции $V_\gamma(x)$: $\|V'_\gamma(x_\gamma(C))\| =
-s(V(x_\gamma(C))-\gamma \o\alpha)_+^{s-1}\|V'(x_\gamma(C))\| \geq
-s(V(x_\gamma(C))-\gamma \o\alpha)_+^{s-1}\frac{V(x_\gamma(C))\beta}{p}$.
-Тогда $\|V'_\gamma(x_\gamma(\o{\o C}))\|\geq s(V(x_\gamma(\o{\o C}))-
-\gamma \o\alpha)_+^{s-1}\frac{V(x_\gamma(\o{\o C}))\beta}{p}=
-s(\o\alpha-\gamma \o\alpha)_+^{s-1}\frac{\o\alpha\beta}{p}=
-\frac{s(1-\gamma)^{s-1}\o\alpha^s\beta}{p}$. Отсюда
-$\o {\o C}=\frac{\|f'(x_\gamma(\o{\o C}))\|}
-{\|V'_\gamma(x_\gamma(\o {\o C}))\|}\leq
-\frac{Lp}{s(1-\gamma)^{s-1}\o\alpha^s\beta}$. Следовательно, при
-$C\geq\frac{Lp}{s(1-\gamma)^{s-1}\o\alpha^s\beta}$ имеем $C\geq\o{\o C}$ и
-$x_\gamma(C)\in A(\o\alpha)$.
-\end{pf}
-
-\begin{alg}
-Задается требуемая точность решения
-$\varepsilon>0$. Выбирается
-$0<p\leq\linebreak \min\{\frac{\varepsilon\beta}{\Delta
-V(x(C_\gamma))L},\lambda'\}$, натуральное число $N>0$. Задаем
-$x_0\in R_n$ и возрастающую функцию $\varphi(t)$ такую, что
-$\varphi(N)\geq\frac{Lp}{\beta s(1-\gamma)^{s-1}\o\alpha^s}$,
-$\varphi(1)\geq 0$. Полагаем $k=1$.
-\begin{itemize}
-\item[1.] Вычисляется $C_k=\varphi(k)$.
-\item[2.] Выбирается метод $A_k$ безусловной минимизации, обеспечивающий
-нахождение точной нижней грани функции $F_\gamma(x,C_k)$.
-\item[3.] Методом $A_k$ отыскиваем
-$x_\gamma(C_k)=\Argmin\{F_\gamma (x,C_k),\ x\in R_n\}$.
-\item[4.] Если $x_\gamma(C_k)\in D(0)$, 
-то процесс окончен и $x_\gamma(C_k)$ является допустимым
-$\varepsilon$-решением задачи (\ref{Zad1}).
-Иначе, заменяем $k$ на $k+1$ и переходим к п.\,1.
-\end{itemize}
-\end{alg}
-
-\begin{thm}
-Последовательность $\{x_k\}$, построенная по алгоритму $1$,
-сходится к $\varepsilon$-оп\-ти\-маль\-но\-му
-решению задачи $(\ref{Zad1})$ не более, чем за $N$ итераций алгоритма.
-\end{thm}
-
-\begin{pf}
-Если при $k<N$ условие на п.\,4 алгоритма не
-выполнится, то при $k=N$ штрафной коэффициент 
-$C_k\geq\frac{Lp}{\beta s(1-\gamma)^{s-1}\o\alpha^s}$
-и по теореме (\ref{C2}) $x_k\in A(\o\alpha)\subset D(0)$, 
-что означает остановку алгоритма при $k=k'\leq N$.
-При использовании вспомогательной функции (\ref{Fi}) итерационные точки
-$x_k\notin A(\gamma \o\alpha)$ для любого $k\geq 0$. 
-Тогда вследствие неубывания функции $f(x_\gamma(C))$ по $C>0$ 
-имеем $\min\{f(x): x\in A(\gamma\o\alpha)\}\geq f(x_{k'})\geq f^*$.
-Отсюда, вследствие
-$p\leq\frac{\varepsilon\beta}{\Delta V(x(C_\gamma))L}$, 
-выполняется $f(x_{k'})-f^*\leq\varepsilon$.
-\end{pf}
-
-Очевидно, оценка величины $\Delta V(x(C_\gamma))$ 
-зависит от конкретного вида штрафной
-функции. Приведем более содержательные оценки параметров штрафа и $p$ для
-известных функций штрафа
-\begin{alignat}{2}
-V_1(x)&=\sum_{i\in I}(\max\{f_i(x)+p,0\})^q, &\quad q&\geq 1, \label{stf1}\\
-V_2(x)&=(\max\{g(x)+p,0\})^q, &\quad q&\geq 1. \label{stf2}
-\end{alignat}
-
-\begin{lem}
-Верны следующие утверждения\/${:}$
-\begin{gather}
-\o\alpha =p^q,\notag \\
-V(x^*)\leq tp^q,\label{v*}
-\end{gather}
-где $t=m$ при $V(x)=V_1(x)$ и $t=1$ при $V(x)=V_2(x)$.
-\end{lem}
-
-\begin{pf}
-1) Пусть точка $x\in A(p^q)$, т.\,е. $\sum\limits_{i\in
-I}(\max\{f_i(x)+p,0\})^q\leq p^q$. Так как в левой части
-неравенства суммируются неотрицательные числа, то
-$(\max\{f_i(x)+p,0\})^q\leq p^q$ для любого индекса $i\in I$. Так
-как $q>1$ и $p>0$, то для всех $i\in I$ выполняется $f_i(x)+p\leq
-p$, что означает попадание точки $x$ в множество $D(0)$ и
-включение $A(p^q)\subset D(0)$. Покажем, что при любом $\tau>1$ в
-множестве $A(\tau p^q)$ найдется точка $x$ такая, что $x\not\in
-D(0)$. Действительно, выберем точку $x$ таким образом, чтобы для
-некоторого индекса $s\in I$ выполнялось $f_s(x)+p=\tau^{1/q}p$ и
-$f_i(x)+p\leq 0$ при всех $i\not =s$. Тогда $\sum\limits_{i\in
-I}(\max\{f_i(x)+p,0\})^q=\tau p^q$ и $x\in A(\tau p^q)$. Но
-$f_s(x)=(\tau^{1/q}-1)p>0$, т.\,е. $x\notin D(0)$. Таким образом,
-доказали, что $p^q=\max\{\alpha: A(\alpha)\subset D(0)\}$, откуда
-по определению $\o x$ имеем $V_1(\o x)=p^q$ .
-
-Далее $V(x^*)=\sum\limits_{i\in I}(\max\{f_i(x^*)+p,0\})^q \leq
-mp^q$, т.\,к. $f_i(x^*)\leq 0$ для всех $i\in I$.
-
-2) Выберем произвольно $x\in A(p^q)$. 
-При этом $V_2(x)=(\max\{g(x)+p,0\})^q\leq p^q$ или,
-что то же самое, $\max\limits_{i\in I}\{[\max(f_i(x)+p,0)]^q\}\leq p^q$. 
-Тогда $[(f_i(x)+p)_+]^q\leq p^q$ для любого $i\in I$. Так как $p>0$
-и $q>1$, то $f_i(x)+p\leq p$ при всех $i\in I$. Отсюда
-$x\in D(0)$, и в силу произвольности точки $A(p^q)\subset D(0)$.
-Верны и обратные рассуждения,
-из которых следует $D(0)\subset A(p^q)$. Тогда $A(p^q)=D$ и $V_2(\o x)=p^q$.
-
-Неравенство $V_2(x^*)\leq p^q$ следует из того, что $x^*\in D(0)=A(p^q)$.
-\end{pf}
-
-\begin{cornonum} Имеет место неравенство
-\begin{equation}\label{delt}
-\Delta V(x(C_\gamma))\leq\frac{t-\gamma}{\gamma},
-\end{equation}
-где $t=m$ при $V(x)=V_1(x)$ и $t=1$ при $V(x)=V_2(x)$.
-\end{cornonum}
-
-\begin{pf}
-По определению числа $C_\gamma$ имеем $V(x(C_\gamma))=\gamma
-V(x(\o C))=\gamma\o\alpha=\gamma p^q$. Тогда $\Delta
-V(x(C_\gamma))=\frac{V(x^*)-V(x(C_\gamma))}{V(x(C_\gamma))}=
-\frac{V(x^*)-\gamma V(x(\o C))}{\gamma V(x(\o
-C))}=\frac{V(x^*)-\gamma\o\alpha}{\gamma\o\alpha}$. Учитывая
-(\ref{v*}), сократим дробь на величину $\o\alpha>0$ и получим
-(\ref{delt}).
-\end{pf}
-
-\begin{notenonum}
-Если в алгоритмах 2, 3 и 4 выбирать $0<
-p\leq\min\{\frac{\varepsilon\beta\gamma}{L(t-\gamma)},\lambda'\}$,
-где $t=m$ при $V(x)=V_1(x)$ и $t=1$ при $V(x)=V_2(x)$, то в силу
-соотношений $\frac{\varepsilon\beta}{\Delta V(x(C_\gamma))L}
-\geq\frac{\varepsilon\beta\gamma}{(t-\gamma)L}>0$ будут выполняться
-неравенства $0<p\leq\min\{\frac{\varepsilon\beta}{\Delta
-V(x(C_\gamma))L},\lambda'\}$.
-\end{notenonum}
-
-
-\section{Алгоритмы c неполной минимизацией вспомогательных функций}
-
-Алгоритмы 1--4 являются принципиальными, т.\,к. в них необходимо 
-вспомогательные задачи решать точно. В общем случае это означает 
-бесконечный процесс минимизации вспомогательных функций.
-
-В данном параграфе приводятся два алгоритма, допускающих
-приближенное решение вспомогательных задач. Определенный выбор
-параметра $p$ в зависимости от заданной точности решения
-вспомогательных задач обеспечивает требуемую точность решения
-задачи (\ref{Zad1}).
-
-\begin{alg}
-Задается требуемая точность решения
-$\varepsilon>0$, $x_0\in R_n$, натуральное число $N>0$, число
-$\delta\in (0,\varepsilon)$. Выбирается $0<
-p\leq\min\{\frac{\beta}{2L}(\varepsilon-\delta),\lambda'\}$,
-возрастающая функция $\varphi(t)$ такая, что $\varphi(1)\geq 0$,
-$\varphi(N)=\frac{Lp}{\overline\alpha\beta}$. Полагается $k=1$.
-\begin{itemize}
-\item[1.] Вычисляется $C_k=\varphi(k)$.
-\item[2.] Если $k<N$, то находится приближенное решение
-задачи $\min\limits_{x\in R_n}F(x,C_k)$ . Переход к п.\,1
-при $k$, замененном на $k+1$.
-\item[3.] Если $k=N$, то находится точка $x_N\in A(\o\alpha)$, являющаяся 
-$\delta$-оптимальным по функционалу решением
-задачи $\min\limits_{x\in R_n}F(x,C_N)$. Точка $x_N$ принимается 
-в качестве $\varepsilon$-решения задачи (\ref{Zad1}).
-\end{itemize}
-\end{alg}
-
-\begin{thm}
-Точка $x_N$, построенная при помощи алгоритма $5$,
-является $\varepsilon$-решением исходной задачи.
-\end{thm}
-
-\begin{pf}
-Так как точка $x_N$ является $\delta$-оптимальным 
-решением вспомогательной задачи, то
-$F(x_N)-F(x(C_N))\leq\delta$. Поэтому по определению 
-функции $F(x)$ верно неравенство
-$f(x_N)-f(x(C_N))-C_N(V(x(C_N))-V(x_N))\leq\delta$.
-Так как $x_N\in A(\o\alpha)$ и $x(C_N)\in A(\o\alpha)$,
-то $V(x(C_N))-V(x_N)\leq\o\alpha$. Отсюда
-\begin{equation}\label{fC}
-f(x_N)-f(x(C_N))\leq C_N\o\alpha+\delta.
-\end{equation}
-Из доказательства теоремы \ref{p} видно, 
-что $f(x(C_N))-f^*\leq\frac{L}{\beta}p$. Тогда
-$f(x_N)-f^*-\frac{L}{\beta}p\leq f(x_N)-f(x(C_N))$. 
-Отсюда и из (\ref{fC}) получим неравенство
-$$
-f(x_N)-f^*\leq\frac{L}{\beta}p+C_N\o\alpha+\delta.
-$$
-Так как в алгоритме задается $C_N=\frac{Lp}{\o\alpha\beta}$, то
-$$f(x_N)-f^*\leq\frac{L}{\beta}p+\frac{L}{\beta}p+\delta =
-2\frac{Lp}{\beta}+\delta.
-$$
-Учитывая, что $p\leq\frac{\beta}{2L}(\varepsilon-\delta)$, получим
-$f(x_N)-f^*\leq\frac{2L\beta(\varepsilon-\delta)}{2L\beta}+\delta =
-\varepsilon$.
-\end{pf}
-
-\begin{alg}
-Задается требуемая точность решения
-$\varepsilon>0$, $x_0\in R_n$, число $\delta\in (0,\varepsilon)$,
-натуральное число $N>0$. Выбирается $0<
-p\leq\min\{\frac{\beta\gamma\overline\alpha}
-{(V(x^*)-\gamma^2\overline\alpha)L}(\varepsilon-\delta),\lambda'\}$,
-возрастающая функция $\varphi(t)$ такая, что $\varphi(1)\geq 0,
-\varphi(N)=\frac{Lp}{\beta s(1-\gamma)^{s-1}\overline\alpha^p}$.
-Полагается $k=1$.
-\begin{itemize}
-\item[1.] Вычисляется $C_k=\varphi(k)$.
-\item[2.] Если $k<N$, то находится приближенное решение
-задачи $\min\limits_{x\in R_n}F_\gamma(x,C_k)$.
-Переход к п.\,1 при $k$, замененном на $k+1$.
-\item[3.] Если $k=N$, то находится точка $x_N\in A(\o\alpha)$, 
-являющаяся $\delta$-оптимальным по функционалу решением
-задачи $\min\limits_{x\in R_n}F_\gamma(x,C_N)$. 
-Точка $x_N$ принимается в качестве $\varepsilon$-решения задачи (\ref{Zad1}).
-\end{itemize}
-\end{alg}
-
-Выполнение условий п.\,3 алгоритма 6 и $\varepsilon$-оптимальность 
-полученной точки $x_N$ доказываются аналогично
-предыдущей теореме. Если используется штрафная функция вида
-(\ref{stf1}) или (\ref{stf2}), то можно выбирать $0<
-p\leq\min\{\frac{\beta\gamma}{(t-\gamma^2)L}(\varepsilon-\delta),\lambda'\}$,
-где $t=m$ при $V(x)=V_1(x)$ и $t=1$ при $V(x)=V_2(x)$.
-
-
-\begin{thebibliography}{9}
-
-\bibitem{Zab}
-Заботин Я.И., Фукин И.А. {\it Об одной модификации метода сдвига штрафов для
-задач нелинейного программирования} // Изв. вузов. Математика.
--- 2000. -- \No\,12. -- С.\,49--54.
-\bibitem{Gol}
-Гольштейн Е.Г., Третьяков Н.В. {\it Модифицированные функции Лагранжа} //
-Экономика и матем. методы. -- 1974. -- Т.\,10. -- \No\,3. -- С.\,568--591.
-\bibitem{STF}
-Сухарев А.Г., Тимохов А.В., Федоров В.В. {\it Курс методов оптимизации}.
--- М.: Наука, 1986. -- 326~с.
-\bibitem{Dav}
-Давыдов Э.Г. {\it Исследование операций}. -- М.: Высш. школа, 1990. -- 383~с.
-\bibitem{Fed}
-Федоров В.В. {\it Численные методы максимина}. --М.: Наука, 1979. -- 280~с.
-\bibitem{fookin}
-Фукин И.А. {\it Решение задачи линейного программирования с 
-заданной точностью методом штрафов} // Тр. межд. семин., посвященного
-90-летию С.Н.\,Черникова. Алгебра и линейная 
-оптимизация. Екатеринбург: УрО РАН, 2002. -- С.\,309--313.
-\bibitem{Fiacco}
-Фиакко А., Мак-Кормик Г. {\it Нелинейное программирование на основе
-последовательной безусловной минимизации}. -- М.: Мир, 1972. -- 240~c.
-
-\end{thebibliography}
-
-\vskip 2cm
-
-\post{\it Казанский государственный}{\it Поступила}
-\post{\it университет}{28.10.2003}
-
-\label{end}
-\end{document}

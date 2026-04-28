@@ -1,752 +1,0 @@
-\def\stat{arkhipov}
-
-\def\tit{РАСПОЗНАВАНИЕ АНОМАЛИЙ НА~РАЗНОВРЕМЕННЫХ ПАНОРАМАХ С~ИСПОЛЬЗОВАНИЕМ 
-НЕЙРОСЕТЕВОГО МЕТОДА КОНСОЛИДАЦИИ МОДЕЛЕЙ}
-
-\def\titkol{Распознавание аномалий на~разновременных панорамах} %с~использованием нейросетевого метода консолидации моделей}
-
-\def\aut{П.\,О.~Архипов$^1$, С.\,Л.~Филиппских$^2$}
-
-\def\autkol{П.\,О.~Архипов, С.\,Л.~Филиппских}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Архипов П.\,О.}
-\index{Филиппских С.\,Л.}
-\index{Arkhipov P.\,O.}
-\index{Philippskih S.\,L.}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-%\footnotetext[1]
-%{Исследование выполнено с~использованием ЦКП <<Информатика>> ФИЦ ИУ РАН.}} 
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
-\mbox{arpaul@mail.ru}}
-\footnotetext[2]{Федеральный исследовательский центр <<Информатика и~управление>> Российской академии наук, 
-\mbox{philippsl@mail.ru}}
-
- \label{st\stat}
-
- \thispagestyle{headings}
- 
- \vspace*{-14pt}
-
-
-\Abst{Описывается методика классификации аномалий на разновременных панорамах 
-с~применением нейросетевого метода консолидации моделей. Основная идея данного 
-подхода заключается в~разбиении модели глубокого обучения на составные части. Затем 
-для каждой части подбираются и~адаптируются существующие шаблоны 
-проектирования. Для решения задачи классификации аномалий был разработан 
-составной шаблон и~спроектирована новая нейросетевая модель. Выполнено 
-усовершенствование шаблона проектирования нейронных сетей ConvNet, основанное 
-на технологии применения <<плотных сверточных блоков>>. Для классификации 
-аномалий разработан новый шаблон~--- SOTA-ConvNet, включающий готовую 
-архитектуру нейросетевой модели, подходящую для работы с~панорамными 
-изображениями. Нейросетевая модель, построенная на базе шаблона SOTA-ConvNet, 
-показала преимущества по сравнению с~нейросетью на базе ConvNet: повысилась 
-точность классификации изображений, на порядок уменьшилось число настраиваемых 
-параметров.}
-
-\KW{панорамное изображение; консолидация моделей; многоклассовая 
-классификация; шаблон проектирования; сверточная нейронная сеть; набор данных}
-
-\DOI{10.14357\!/\!08696527230202}  
-
-\vskip 10pt plus 9pt minus 6pt
-
- \thispagestyle{headings}
- 
- \vspace*{-18pt}
-
-
-\section{Введение}
-
-  Задача по обнаружению аномалий на сравниваемых разновременных 
-панорамах инспектируемой местности широко представлена в~работах~[1--6]. 
-Для решения этой задачи был разработан метод, реализующий поиск аномалий 
-за счет обнаружения особых областей с~высоким цветоразличием. Однако поиск 
-таких областей не подразумевал задачу их классификации. Для автоматической 
-идентификации обнаруженных объектов предлагается применить методы 
-машинного обучения, которые помогут решить новую задачу, связанную 
-с~классификацией найденных аномалий (или объектов интереса)~\cite{7-ar}.
-  
-  Классификация объектов, полученных с~панорамных изображений, снятых 
-с~беспилотных летательных аппаратов (БПЛА), представляет собой задачу 
-многоклассовой классификации. Каждое изображение должно быть отнесено 
-к~определенному, заранее заданному классу. Поэтому решение задачи 
-классификации объектов предполагает построение модели глубокого 
-обучения~\cite{8-ar}.
-  
-  На сегодняшний день изображения размером $224 \times 224$~пикселя стали 
-стандартными входными данными в~задаче классификации при использовании 
-глубокого обучения~\cite{9-ar}. Для таких данных созданы высокоэффективные 
-архитектуры нейронных сетей: DenseNet~\cite{10-ar}, Inception, Xception, 
-EfficientNet~\cite{9-ar} и~др.
-  
-  При классификации аномалий, полученных при сравнении разновременных 
-панорам, ширина и~высота большей части изображений не превышает 
-30~пикселей. По этой причине вышеперечисленные архитектуры нейронных 
-сетей не подходят для решения поставленной задачи. С~небольшими 
-изображениями умеют работать либо устаревшие нейросетевые архитектуры 
-(основанные на шаблоне ConvNet~--- AlexNet~\cite{8-ar}, VGG16, 
-VGG19~\cite{11-ar}), либо мобильные архитектуры (MobileNet~\cite{12-ar}, 
-ShuffleNet, SqueezeNet~\cite{9-ar}). Однако нейронные сети, спроектированные 
-на основе ConvNet, быстро переобучаются и~показывают низкие результаты при 
-работе с~малочисленными классами~\cite{13-ar}. Мобильные же архитектуры 
-оптимизированы для работы на устройствах с~низкой производительностью 
-и~ограниченной памятью. Такая оптимизация негативно сказывается на 
-точности классификации~\cite{9-ar}.
-  
-  Статья направлена на решение задачи классификации аномалий путем 
-разработки подходящего инструмента глубокого обучения, основанного на 
-современных архитектурах нейронных сетей, способного работать с~малыми 
-изображениями и~на несбалансированных выборках. В~основе данного 
-инструмента лежит метод консолидации моделей (model amalgamation), 
-заключающийся в~разбиении нейросетевой модели на составные части 
-и~адаптации под подходящий шаблон проектирования глубоких нейронных 
-сетей~\cite{9-ar}.
-
-\section{Шаблон проектирование SOTA-ConvNet}
-
-  На сегодняшний день шаблоны проектирования играют очень важную роль 
-при создании нейросетевых моделей. Их появление стало результатом 
-обобщения опыта, полученного при исследовании и~использовании нейронных 
-сетей~\cite{9-ar}.
-  
-  Перспективным в~контексте решения задачи классификации аномалий может 
-стать подход, основанный на применении нового шаблона проектирования 
-разработанной нейросетевой модели. Очевидно, что наиболее подходящий из 
-существующих шаблонов проектирования нейросетевой модели~--- это шаблон 
-ConvNet, предназначенный для работы с~небольшими изображениями. Для 
-использования шаблона ConvNet в~качестве базы для классификации 
-выбранных аномалий в~него необходимо было внести ряд изменений 
-в~соответствии с~методом консолидация моделей. Разработанный новый 
-шаблон проектирования получил название SOTA-ConvNet~\cite{14-ar}.
-  
-  В структуре сверточных нейронных сетей традиционно выделяют три 
-компонента: стержневой компонент, основная сверточная база 
-и~классификатор~\cite{9-ar}. Для шаблона проектирования SOTA-ConvNet 
-спроектирована трехкомпонентная макроархитектура, отражающая связи 
-основных блоков нейросетевой модели.
-  
-\section{Стержневой компонент SOTA-ConvNet}
-
-  Стержневой компонент принимает на вход изображения найденных 
-аномалий, выполняет начальное извлечение простых графических признаков 
-(вертикальные, горизонтальные, наклонные линии и~т.\,п.)\ и~передает 
-полученную информацию в~основную сверточную базу. Стержневой компонент 
-состоит из двух групп: предстержневой группы и~стержневой сверточной 
-группы. 
-  
-  Предстержневая группа выполняет препроцессинг изображений~--- 
-масштабирует размеры изображений и~нормализует значение каждого 
-пикселя~\cite{9-ar}.
-  
-  Стержневая сверточная группа выполняет первоначальное (довольно грубое) 
-выделение признаков и~минимизирует число параметров за счет уменьшения 
-размеров карт признаков.
-  
-  Оптимальное число карт признаков, которое необходимо предоставить на 
-вход основной сверточной базе, составляет~64. Это значение было получено 
-эмпирически в~результате проведения большого числа экспериментов 
-с~различными архитектурами нейронных сетей~\cite{9-ar}.
-  
-  В стержневой сверточной группе используется рецептивное поле $3\times 3$. 
-На сегодняшний день это общепринятое значение для задач компьютерного 
-зрения~\cite{9-ar}. В~первом слое большинства архитектур современных 
-нейронных сетей проводится свертка и~уменьшение размеров карт признаков. 
-Но шаблон SOTA-ConvNet предназначен для работы с~небольшими 
-изображениями, и~поэтому в~первом слое проводится только свертка.
-  
-  \section{Основная сверточная база и~классификатор SOTA-ConvNet}
-  Основная сверточная база~--- это главный компонент нейросетевой модели, 
-в~котором идет усвоение признаков, найденных при анализе 
-изображения~\cite{9-ar}.
-  
-  Основная сверточная база состоит из одной или нескольких сверточных 
-групп, и~каждая группа состоит из одного или нескольких сверточных блоков. 
-  
-  Для построения основного компонента шаблона SOTA-ConvNet необходимо 
-выбрать число и~архитектуру сверточных блоков и~групп. При работе 
-с~небольшими изображениями число групп напрямую зависит от размера 
-изображений в~конкретном наборе данных. Однако для упрощения 
-и~стандартизации шаблона все группы должны иметь одинаковую архитектуру, 
-отличающуюся только размером входных изображений и~числом фильтров.
-  
-  Проблема сетей, построенных на базе шаблона ConvNet, кроется в~разной 
-ско\-рости обуче\-ния слоев. Это означает, что слои, расположенные у~выхода 
-нейронной сети, обуча\-ют\-ся быст\-рее. В~результате с~увеличением глубины сети 
-обучать ранние слои становится невозможно (до них не доходит сигнал 
-ошибки)~\cite{13-ar}. По этой причине, несмотря на рост слож\-ности 
-вы\-чис\-ле\-ний, точ\-ность работы модели снижается.
-  
-  Для решения проблемы разной скорости обуче\-ния слоев нейронной сети 
-в~архитектуре ResNet был разработан новый шаблон остаточного сверточного 
-блока~\cite{15-ar}. Главной осо\-бен\-ностью этого блока стала прямая связь 
-между входом и~выходом блока в~обход сверточных слоев (рис.~1,\,\textit{а}). 
-  
-  
-  \begin{figure} %fig1
-    \vspace*{1pt}
-  \begin{center}
- \mbox{%
- \epsfxsize=121.758mm 
-\epsfbox{arh-1.eps}
- }
-\end{center}
-\vspace*{-11pt}
-  \Caption{Остаточный сверточный блок (residual convolutional block)~(\textit{а}) и~плотный 
-сверточный блок (dense convolutional block)~(\textit{б})}
-  \end{figure}
-  
-  Выход блока состоит из суммы обнаруженных в~сверточных слоях признаков 
-и~из входных данных. В~результате остаточный сверточный блок либо изуча\-ет 
-что-то полезное и~способствует снижению ошибок сети, либо выполняет 
-тождественное отображение~\cite{15-ar}.
-  
-  Дальнейшим развитием идеи остаточного сверточного блока стал плотный 
-сверточный блок, шаблон которого послужил основой для построения сети 
-DenseNet~\cite{10-ar}. Основная идея плот\-но\-го блока~--- это повторное 
-использование карт признаков. Для этого на выходе сумма заменена на 
-конкатенацию~--- до\-бав\-ле\-ние исходных карт признаков к~картам, полученным 
-из сверточных слоев (рис.~1,\,\textit{б}). Используя блоки из архитектуры 
-DenseNet, мож\-но получать сопоставимые результаты с~сетями ResNet, но обучая 
-при этом в~два раза меньше параметров~\cite{10-ar}. По этой причине 
-в~шаб\-ло\-не SOTA-ConvNet в~качестве сверточных блоков будут использоваться 
-<<плот\-ные блоки>>. 
-  
-  Главная задача основной сверточной базы~--- преобразовывать двумерные 
-данные на входе в~одномерный вектор, с~которым может работать 
-классификатор. Плот\-ный сверточный блок занимается извлечением признаков 
-из входных карт. Каж\-дый такой блок на выходе дает в~два раза больше карт 
-признаков, чем принял на вход~\cite{10-ar}. В~шаблоне ConvNet за уменьшение 
-карт признаков отвечает слой субдискретизации. Из-за плот\-ных блоков 
-в~SOTA-ConvNet необходимо не только уменьшать размеры выходных данных, 
-но и~сокращать чис\-ло карт перед передачей в~новый плот\-ный блок.
-  
-  Для уменьшения числа и~размеров карт признаков меж\-ду сверточными 
-блоками необходимо разместить плот\-ные переходные блоки (рис.~2).
-  
-  \begin{figure} %fig2
-     \vspace*{1pt}
-  \begin{center}
- \mbox{%
- \epsfxsize=128mm 
-\epsfbox{arh-2.eps}
- }
-\end{center}
-\vspace*{-11pt}
-  \Caption{Схема работы плотного переходного блока (dense transition block)}
-  \end{figure}
-  
-  Каждый плотный блок состоит из двух слоев:
-  \begin{enumerate}[(1)]
-  \item слой бутылочной свертки (bottleneck convolution), он уменьшает 
-в~$C$~раз чис\-ло карт признаков ($C$~--- коэффициент компрессии, 
-на\-стра\-и\-ва\-емый под конкретную задачу);
-  \item  слой субдискретизации (pooling), уменьшает площадь каж\-дой карты 
-признаков в~4~раза.
-  \end{enumerate}
-  
-  Последний компонент шаблона SOTA-ConvNet~--- это классификатор. 
-У~нейронных сетей на базе ConvNet классификаторы со\-сто\-яли из нескольких 
-полносвязных слоев. В~более позд\-них архитектурах чис\-ло слоев 
-в~классификаторе уменьшилось до одного~\cite{9-ar}. В~SOTA-ConvNet 
-классификатор состоит из одного плот\-но\-го слоя с~активационной функцией 
-softmax.
-  
-\section{Общая схема шаблона SOTA-ConvNet}
-
-  Шаблон SOTA-ConvNet~--- это глубокая узкая сверточная нейросетевая 
-модель, име\-ющая классическую трехкомпонентную макроархитектуру.
-  
-  Стержневой компонент состоит из слоев для препроцессинга изображений 
-и~двух сверточных слоев из~32 и~64~нейронов (рис.~3).
-  
-  \begin{figure} %fig3
-   \vspace*{1pt}
-  \begin{center}
- \mbox{%
- \epsfxsize=127.664mm 
-\epsfbox{arh-3.eps}
- }
-\end{center}
-\vspace*{-11pt}
-  \Caption{Общая схема шаблона SOTA-ConvNet}
-  \end{figure}
-  
-  Основная сверточная база состоит из нескольких плот\-ных групп. Чис\-ло таких 
-групп зависит от размеров входных изображений (чем больше изображения, тем 
-более глубокая сеть нужна для их обработки). В~каж\-дой группе находится один 
-плотный сверточный блок. Чис\-ло нейронов в~блоках подбирается под каждую 
-ре\-ша\-емую задачу. 
-  
-  Между плотными группами располагаются переходные блоки, которые 
-постепенно уменьшают размеры и~сокращают число карт признаков. Это 
-необходимо для уменьшения чис\-ла на\-стра\-ива\-емых па\-ра\-мет\-ров. После 
-последней плот\-ной группы не предусмотрен переходной блок, это сделано 
-в~целях более легкого переноса обуче\-ния. Слой последней субдискретизации 
-можно выбрать в~новом классификаторе, обучен\-ном под другую задачу. 
-Классификатор со\-сто\-ит из одного плот\-но\-го слоя с~активационной функцией 
-softmax.
-  
-\section{Описание набора данных}
-
-  Для экспериментов с~моделями машинного обучения, построенными на базе 
-шаблонов ConvNet и~SOTA-ConvNet, был выбран набор данных (датасет) 
-VisDrone2022~\cite{16-ar}. Для решения задачи многоклассовой классификации 
-были вырезаны все объекты с~каждого кадра датасета и~сформированы~6~классов для обуче\-ния нейросетевой модели.
-  
-  Весь набор данных разделен на три части: train (обучающее подмножество), 
-valid (валидационное подмножество) и~test (тестовое подмножество). На 
-обучающем подмножестве тренируется нейросетевая модель, на валидационном 
-подмножестве оценивается текущее качество обучения, на тестовом 
-подмножестве проводится окончательная оценка обуче\-ния.
-  
-  Из изображений сформирована следующая выборка:
-  \begin{description}
-  \item[\,] \textbf{класс 0} (bus): фотографии автобусов;
-  \item[\,] \textbf{класс 1} (car): фотографии легковых автомобилей;
-  \item[\,] \textbf{класс 2} (ignored\_regions): фотографии случайных участков больших 
-изображений~--- играют роль ложных срабатываний при поиске аномалий;
-  \item[\,] \textbf{класс 3} (motor): фотографии мотоциклов;
-  \item[\,] \textbf{класс 4} (pedestrian): фотографии пешеходов;
-  \item[\,] \textbf{класс 5} (truck): фотографии грузовиков.
-  \end{description}
-  
-  Для более точных оценок чис\-ло изображений в~подмножествах <<valid>> 
-и~<<test>> долж\-но быть одинаковым (табл.~1) и~иметь такое же разбиение по 
-классам, как и~<<train>>~\cite{13-ar} (табл.~2).
-  
-  \begin{table}\small %tabl1
-  \begin{center}
-  \parbox{200pt}{\Caption{Число фотографий в~подмножествах train, valid и~test}
-  }
-  
-  \vspace*{2ex}
-  
-  \tabcolsep=14pt
-  \begin{tabular}{|l|c|}
-  \hline
-  &\\[-9pt]
-  \multicolumn{1}{|c|}{Подмножество}&Число фотографий\\
-  \hline
-  \hspace*{8mm}train&290\,207\hphantom{9}\\
-  \hspace*{8mm}valid&36\,273\\
-  \hspace*{8mm}test&36\,282\\
-  \hline
-  \end{tabular}
-  \end{center}
-  \vspace*{-6pt}
-  \end{table}
-
-
-  \begin{table}\small %tabl2
-  \begin{center}
-\Caption{Число фотографий в~каждом классе}
-  \vspace*{2ex}
-
-\begin{tabular}{|l|c|c|c|}
-&&&\\[-9pt]
-\hline
-&&&\\[-9pt]
-  \multicolumn{1}{|c|}{Классы }&train, \%&valid, \%&test, \%\\
-  \hline
-  0 (bus)&\hphantom{9}2,51&\hphantom{9}2,51&\hphantom{9}2,51\\
-  1 (car)&51,13&51,13&51,12\\
-  2 (ignored\_regions)&\hphantom{9}3,36&\hphantom{9}3,36&\hphantom{9}3,36\\
-  3 (motor)&10,89&10,89&10,90\\
-  4 (pedestrian)&27,63&27,63&27,63\\
-  5 (truck)&\hphantom{9}4,48&\hphantom{9}4,48&\hphantom{9}4,48\\
-  \hline
-  \end{tabular}
-  \end{center}
-    \vspace*{-6pt}
-  \end{table}
-  
-  Сформированный датасет состоит из изображений небольшого размера: 
-ширина и~высота~75\%~изоб\-ра\-же\-ний не превышает 46~пикселей. 
-Медианное значение по всему набору данных~--- 26~пикселей.
-
-\section{Результаты обучения моделей}
-
-  На основе ConvNet и~SOTA-ConvNet были спроектированы две нейросетевые 
-модели: сеть ConvNN на базе шаблона ConvNet и~сеть SOTA-ConvNN на базе 
-шаб\-ло\-на SOTA-ConvNet. Был проведен ряд экспериментов и~выбраны лучшие 
-па\-ра\-мет\-ры. Расчеты проводились на графическом ускорителе (GPU) Nvidia 
-V100 в~облачной среде вы\-чис\-ле\-ний Yandex DataSphere. 
-  
-  Для нейронных сетей необходимо было выбрать размер входного слоя, 
-к~которому будут масштабироваться все изображения в~датасете. Для 
-уменьшения за\-шум\-ле\-ния изображений и~лучшей оптимизации при вы\-чис\-ле\-нии 
-на GPU был выбран размер $32 \times 32$~пикселя (ближайшая степень двойки 
-к~медианному значению в~26~пикселей).
-  
-  Для обучения нейронных сетей применялся распространенный алгоритм 
-Adam~--- метод стохастического градиентного спус\-ка, основанный на 
-адаптивной оценке моментов~\cite{17-ar}. В~качестве функции потерь 
-использовалась категориальная перекрестная энтропия~\cite{13-ar}. 
-  
-  Первая модель~--- сеть ConvNN. Сеть состоит из четырех сверточных слоев 
-(32, 64, 128, 256~нейронов), трех слоев MaxPooling и~двух полносвязных слоев 
-(256 и~6~нейронов). Последний полносвязный слой~--- с~активационной 
-функцией softmax. Чис\-ло нейронов соответствует степеням двойки для лучшей 
-оптимизации на GPU~\cite{13-ar}. В~нейросети 1\,438\,790~параметров, и~все 
-они настраиваемые.
-
-\begin{table}\small %tabl3
-  \begin{center}
-    \parbox{240pt}{\Caption{Точность классификации изображений нейросетевыми моделями ConvNN 
-и~SOTA-ConvNN}
-}
-
-  \vspace*{2ex}
-  
-  \begin{tabular}{|l|c|c|}
-  \hline
-  &&\\[-9pt]
-  \multicolumn{1}{|c|}{Класс}&ConvNN, \%&SOTA-ConvNN, \%\\
-  \hline
-  &&\\[-9pt]
-  0 (bus)&64,0&79,3\\
-  1 (car)&95,3&96,1\\
-  2 (ignored\_regions)&39,8&67,0\\
-  3 (motor)&66,3&88,1\\
-  4 (pedestrian)&94,0&94,4\\
-  5 (truck)&51,0&71,2\\
-  \hline
-  Общая точность&87,2&92,2\\
-  \hline
-  \end{tabular}
-  \end{center}
-  \end{table}
-  
-  Вторая модель~--- сеть SOTA-ConvNN. Число групп~--- 4, ширина сети~--- 
-64~нейрона, коэффициент компрессии~--- 0,8. В~сети 12~сверточных слоев. 
-Всего параметров~--- 801\,980, из них 797\,980~--- настраиваемые.
-
-\pagebreak
-
-\
-
-\vspace*{-12pt}
-
-
-
-\begin{floatingfigure}{65mm} %fig4
-     \vspace*{1pt}
-  \begin{center}
- \mbox{%
- \epsfxsize=62mm 
-\epsfbox{arh-4.eps}
- }
-\end{center}
-\vspace*{-11pt}
-  \Caption{Результаты работы сетей \mbox{ConvNN}~(\textit{1}) и~SOTA-\mbox{ConvNN}~(\textit{2})}
-  \end{floatingfigure}
-  
-  В табл.~3 приведены результаты работы нейросетевых моделей на 
-под\-мно\-же\-ст\-ве test (мет\-ри\-ка--точ\-ность).
-  
-  
-  
-   
-  
-  На рис.~4 представлены результаты работы нейросетей \mbox{ConvNN}  
-и~SOTA-\mbox{ConvNN} в~виде столб\-ча\-той диа\-граммы.
-  
-  
- 
-  
-  Общая точность сети SOTA-\mbox{ConvNN} выше, чем у~сети \mbox{ConvNN}. Этот 
-результат достигается за счет улучшения точности классификации 
-малочисленных классов на 15\%--27\% (точность выросла у классов: bus~--- 
-на~15,3\%, ignored regions~--- на~27,2\%, motor~--- на~21,8\% и~truck~--- на~20,2\%).
-
-\section{Заключение}
-
-  Нейросетевая модель, построенная на базе шаблона SOTA-ConvNet, показала 
-ряд преимуществ по сравнению с~нейросетью на базе ConvNet:
-  \begin{itemize}
-  \item  меньшее число настраиваемых параметров при большей глубине сети 
-(797\,980~параметров и~12~сверточных слоев в~SOTA-ConvNN, 
-1\,438\,790~параметров и~4~сверточных слоя в~ConvNN);
-  \item большая точность классификации изображений. Особенно это заметно 
-при обработке малочисленных классов;
-  \item для построения сети на базе шаблона SOTA-ConvNet требуется указать 
-всего три гиперпараметра: число групп, ширину нейросети и~коэффициент 
-компрессии. Всю остальную архитектуру автоматически достраивает шаблон;
-  \item повышение точности классификации малочисленных классов на  
-15\%--27\% (у~bus увеличилась на~15,3\%; ignored regions~--- на~27,2\%; motor~--- 
-на~21,8\% и~truck~--- на~20,2\%).
-  \end{itemize}
-  
-  Использование метода консолидации моделей существенно облегчает 
-применение нейронных сетей при решении задачи классификации 
-изображений. При таком подходе происходит унификация процесса 
-проектирования архитектуры модели, подбора параметров и~проведения 
-экспериментов~\cite{14-ar}. Дополнительный уровень абстракции позволяет 
-сосредоточиться на решаемой задаче, а не на реализации нейросетевой модели 
-с~по\-мощью конкретного стека технологий. 
-  
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-\addcontentsline{toc}{section}{Литература}
-\begin{thebibliography}{99}
-
-\bibitem{5-ar} %1
-\Au{Zhang M., Xie~J., Li~Y., Wu~D.} Color histogram correction for panoramic images~/\!\!/ 7th  
-Conference (International) on Virtual Systems and Multimedia Proceedings.~--- IEEE, 2001.  
-P.~328--331. doi: 10.1109\!/\!VSMM.2001.969687.
-\bibitem{6-ar} %2
-\Au{Mohammed A.\,B.\,E.\,A., Ming~F., Zhengwei~F.} Color balance for panoramic images~/\!\!/ 
-Modern Applied Science, 2015. Vol.~9. Iss.~13. P.~140--147. doi: 10.5539\!/ mas.v9n13p140.
-
-\bibitem{4-ar} %3
-\Au{Пахирка А.\,И., Зотин~А.\,Г., Буряченко~В.\,В.} Создание панорамных аэрофотоснимков 
-с~использованием квадрокоптера~/\!\!/ Программные продукты и~системы, 2018. Т.~31. №\,2. 
-С.~362--367.
-
-\bibitem{3-ar} %4
-\Au{Архипов П.\,О., Цуканов~М.\,В.} Информационная модель технологии коррекции яркости 
-и~цвета при создании панорамных изображений~/\!\!/ Системы высокой доступности, 2020. 
-Т.~16. №\,3. С.~46--51. doi: 10.18127\!/\!j20729472-202003-04.
-
-\bibitem{1-ar} %5
-\Au{Архипов П.\,О., Цуканов~М.\,В.} Алгоритмическая модель обнаружения аномалий на 
-разновременных панорамах~/\!\!/ Системы высокой доступности, 2021. Т.~17. №\,2. С.~5--10. 
-doi: 10.18127\!/\!j20729472-202102-01.
-\bibitem{2-ar} %6
-\Au{Архипов П.\,О., Трофименков~А.\,К., Цуканов~М.\,В., Носова~Н.\,Ю.} Исследование методов 
-детектирования ключевых точек при создании панорамных изображений~/\!\!/ Системы 
-и~средства информатики, 2022. Т.~32. №\,2. С.~92--104. doi: 10.14357\!/\!08696527220209.
-
-
-
-\bibitem{7-ar} %7
-\Au{Arkhipov P.\,O., Philippskih~S.\,L.} Building an ensemble of convolutional neural networks for 
-classifying panoramic images~/\!\!/ Pattern Recognition Image Analysis, 2022. Vol.~32. No.\,3.  
-P.~511--514. doi: 10.1134\!/\!S1054661822030051.
-\bibitem{8-ar}
-\Au{Krizhevsky A., Sutskever~I., Hinton~G.} ImageNet classification with deep convolutional neural 
-networks~/\!\!/ Commun. ACM, 2017. Vol.~60. Iss.~6. P.~84--90. doi: 10.1145\!/\!3065386.
-\bibitem{9-ar}
-\Au{Ferlitsch A.} Deep learning patterns and practices.~--- Manning Publications Co., 2021. 472~p.
-\bibitem{10-ar}
-\Au{Gao H., Liu~Zh., van der Maaten~L., Weinberger~K.\,Q.} Densely connected convolutional 
-networks~/\!\!/ Cornell University, 2016. 9~p. \mbox{arXiv}:1608.06993 [cs.CV].
-\bibitem{11-ar}
-\Au{Simonyan K., Zisserman~A.} Very deep convolutional networks for large-scale image 
-recognition~/\!\!/ Cornell University, 2014. 14~p. \mbox{arXiv}:1409.1556 [cs.CV].
-\bibitem{12-ar}
-\Au{Howard A., Zhu M., Chen Bo, \textit{et al.}} MobileNets: Efficient convolutional neural networks for mobile 
-vision applications~/\!\!/ Cornell University, 2017. 9~p. \mbox{arXiv}:1704.04861 [cs.CV].
-\bibitem{13-ar}
-\Au{Chollet F.} Deep learning with Python.~--- 2nd ed.~--- Shelter Island, NY, USA: Manning 
-Publications Co., 2021. 504~p.
-\bibitem{14-ar}
-\Au{Филиппских С.\,Л.} Классификация извлекаемых из панорам изображений 
-нейронной сетью с~модулем сдав\-ли\-ва\-ния-воз\-буж\-де\-ния~/\!\!/ Интеллектуализация 
-обработки информации: Тезисы докл. 14-й Междунар. конф.~--- М.: Российская академия 
-наук, 2022. С.~204--209.
-\bibitem{15-ar}
-\Au{He K., Zhang X., Ren~Sh., Sun~J.} Deep residual learning for image recognition~/\!\!/ Cornell 
-University, 2015. 12~p. arXiv:1512.03385 [cs.CV].
-\bibitem{16-ar}
-\Au{Zhu P., Wen~L., Du~D., \textit{et al.}} Detection and tracking meet drones challenge~/\!\!/ Cornell 
-University, 2020.  20~p. arXiv: 2001.06303 [cs.CV].
-\bibitem{17-ar}
-\Au{Kingma D., Adam~J.\,B.} A~method for stochastic optimization~/\!\!/ Cornell University,  2014.  15~p. arXiv:1412.6980 [cs.LG].
-
- \end{thebibliography}
-} }
-
-
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 17.01.23}}
-
-\vspace*{8pt}
-
-\hrule
-
-\vspace*{2pt}
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{8pt}
-
-\def\tit{RECOGNITION OF~ANOMALIES ON~MULTITIME PANORAMAS USING~THE~NEURAL 
-NETWORK METHOD OF~MODEL~AMALGAMATION}
-
-
-
-\def\titkol{Recognition of~anomalies on~multitime panoramas using~the~neural 
-network method} % of~model amalgamation}
-
-\def\aut{P.\,O.~Arkhipov and S.\,L.~Philippskih}
-
-\def\autkol{P.\,O.~Arkhipov and S.\,L.~Philippskih}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-8pt}
-
-\noindent
-Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-44-2~Vavilov Str., Moscow 119133, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill Sistemy i Sredstva Informatiki~---
-Systems and Means of Informatics 2023 vol~33 no\,2}
-}%
- \def\rightfootline{\small{Sistemy i Sredstva Informatiki~---
- Systems and Means of Informatics 2023 vol~33 no\,2
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}  
-
-
-
-\Abste{A method for classifying anomalies on multitime panoramas using the 
-neural network method of model amalgamation is described. The main idea of this method is to break the deep 
-learning model into its component parts. Then, existing design patterns are selected and adapted for 
-each part. To solve the problem of classifying anomalies, a~composite template was developed and 
-a~new neural network model was designed. An improvement of the design pattern of neural 
-networks ConvNet based on the technology of using ``dense convolutional blocks'' has been made. 
-To classify anomalies, a~new template has been developed~--- SOTA-ConvNet which includes 
-a~ready-made neural network model architecture suitable for working with panoramic images. The 
-neural network model built on the basis of the SOTA-ConvNet template showed advantages over 
-the neural network based on ConvNet: the accuracy of image classification increased and the 
-number of trainable parameters decreased by an order of magnitude.}
-
-\KWE{panoramic image; model amalgamation; multiclass classification; design pattern; 
-convolutional neural network; data set}
-
-\DOI{10.14357\!/\!08696527230202}  
-
-%\vspace*{-10pt}
-
-
-%\Ack
-%\noindent
-
-%\vspace*{-3pt}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
-{ %\baselineskip=12pt
-\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-\bibitem{5-ar-1} %1
-\Aue{Zhang, M., J. Xie, Y. Li, and D.~Wu.} 2001. Color histogram correction for panoramic images. 
-\textit{7th Conference (International) on Virtual Systems and Multimedia Proceedings.} IEEE. 328--331. 
-doi: 10.1109\!/\!VSMM.2001.969687.
-\bibitem{6-ar-1} %2
-\Aue{Mohammed, A.\,B.\,E.\,A., F.~Ming, and F.~Zhengwei.} 2015. Color balance for panoramic images. 
-\textit{Modern Applied Science} 9(13):140--147. doi: 10.5539\!/\!mas.v9n13p140.
-
-\bibitem{4-ar-1} %3
-\Aue{Pakhirka, A.\,I., A.\,G.~Zotin, and V.\,V.~Buryachenko.} 2018. Sozdanie panoramnykh 
-aerofotosnimkov s~ispol'zovaniem kvadrokoptera [Creating panoramic aerial images from 
-quadcopter]. \textit{Programmnye produkty i~sistemy} [Software Systems] 31(2):362--367. 
-doi: 10.15827\!/\!0236-235X.031.2.362-367.
-
-\bibitem{3-ar-1} %4
-\Aue{Arkhipov, P.\,O., and M.\,V.~Tsukanov.} 2020. Informatsionnaya model' tekhnologii 
-korrektsii yarkosti i~tsveta pri sozdanii panoramnykh izobrazheniy [Information model of 
-brightness and color correction technology for creating panoramic images]. \textit{Sistemy vysokoy 
-dostupnosti} [Highly Available Systems] 16(3):46--51. doi: 10.18127\!/ j20729472-202003-04.
-
-\bibitem{1-ar-1} %5
-\Aue{Arkhipov, P.\,O., and M.\,V.~Tsukanov.} 2021. Algoritmicheskaya model' obnaruzheniya 
-anomaliy na raznovremennykh panoramakh [Algorithmic model of anomaly detection on different 
-panoramas]. \textit{Sistemy vysokoy dostupnosti} [Highly Available Systems] 17(2):5--10. doi: 
-10.18127\!/\!j20729472-202102-01.
-\bibitem{2-ar-1} %6
-\Aue{Arkhipov, P.\,O., A.\,K.~Trofimenkov, M.\,V.~Tsukanov, and N.\,Yu.~Nosova.} 2022. 
-Issledovanie metodov detektirovaniya klyuchevykh tochek pri sozdanii panoramnykh 
-izob\-ra\-zhe\-niy [Study of methods for detecting key points when creating panoramic images]. 
-\textit{Sistemy i~Sredstva Informatiki~--- Systems and Means of Informatics} 32(2):92--104. doi: 
-10.14357\!/\!08696527220209.
-
-
-
-\bibitem{7-ar-1}
-\Aue{Arkhipov, P.\,O., and S.\,L.~Philippskih.} 2022. Building an ensemble of convolutional neural 
-networks for classifying panoramic images. \textit{Pattern Recognition Image Analysis} 32(3):511--514. doi: 
-10.1134\!/\!S1054661822030051.
-\bibitem{8-ar-1}
-\Aue{Krizhevsky, А., I.~Sutskever, and G.~Hinton.} 2017. ImageNet classification with deep 
-convolutional neural networks. \textit{Commun. ACM} 60:84--90.  doi:10.1145\!/\!3065386.
-\bibitem{9-ar-1}
-\Aue{Ferlitsch, A.} 2021. \textit{Deep learning patterns and practices}. Manning Publications Co. 
-472~p.
-\bibitem{10-ar-1}
-\Aue{Gao, H., Zh.~Liu, L. van der Maaten, and K.\,Q.~Weinberger.} 2016. Densely connected 
-convolutional networks. \textit{arXiv.org}. 9~p. Available at: {\sf https://arxiv.org/abs/ 1608.06993} 
-(accessed April~8, 2023).
-\bibitem{11-ar-1}
-\Aue{Simonyan, K., and A.~Zisserman.} 2014. Very deep convolutional networks for large-scale 
-image recognition. \textit{arXiv.org}. 14~p. Available at: {\sf https://arxiv.org/abs/1409.1556} 
-(accessed April~8, 2023).
-\bibitem{12-ar-1}
-\Aue{Howard, A., M.~Zhu,  Bo Chen, \textit{et al.}} 2017. MobileNets: Efficient convolutional neural 
-networks for mobile vision applications. \textit{arXiv.org}. 9~p. Available at: {\sf  
-https:// arxiv.org/abs/1704.04861} (accessed April~8, 2023).
-\bibitem{13-ar-1}
-\Aue{Chollet, F.} 2021. \textit{Deep learning with Python}. 2nd ed. Shelter Island, NY: Manning 
-Publications Co. 504~p.
-\bibitem{14-ar-1}
-\Aue{Philippskih, S.\,L.} 2022. Klassifikatsiya izvlekaemykh iz panoram izobrazheniy neyronnoy 
-set'yu s~modulem sdavlivaniya-vozbuzhdeniya [Classification of images extracted from panoramas 
-using a~neural network with a squeeze-excitation module]. \textit{Intellectualization of Information Processing: 
-14th  Conference (International) Abstracts}.  Moscow: Russian Academy of 
-Sciences. 204--209.
-\bibitem{15-ar-1}
-\Aue{He, K., X. Zhang, Sh.~Ren, and J.~Sun.} 2015. Deep residual learning for image recognition. 
-\textit{arXiv.org}. 12~p. Available at: {\sf https://arxiv.org/abs/1512.03385} (accessed April~8, 2023).
-\bibitem{16-ar-1}
-\Aue{Zhu, P., L.~Wen, D.~Du, \textit{et al.}} 2020. Detection and tracking meet drones challenge. 
-\textit{arXiv.org}. 20~p. Available at: {\sf https://arxiv.org/abs/2001.06303} (accessed April~8, 2023).
-\bibitem{17-ar-1}
-\Aue{Kingma, D., and J.\,B.~Adam.} 2014. A~method for stochastic optimization. 
-\textit{arXiv.org}. 15~p. Available at: {\sf https://arxiv.org/abs/1412.6980} (accessed April~8, 2023).
- \end{thebibliography}
-} }
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received January 17, 2023}} 
-
-\vspace*{-12pt} 
-
-
-\Contr
-
-\noindent
-\textbf{Arkhipov Pavel O.} (b.\ 1979)~--- Candidate of Science (PhD) in technology, director, Orel Branch of 
-the Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-137~Moskovskoe Shosse, Orel 302025, Russian Federation; arpaul@mail.ru
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Philippskih Sergey L.} (b.\ 1987)~--- junior scientist, Orel Branch of the Federal Research Center 
-``Computer Science and Control'' of the Russian Academy of Sciences, 137~Moskovskoe Shosse, 
-Orel 302025, Russian Federation; philippsl@mail.ru
-
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}    

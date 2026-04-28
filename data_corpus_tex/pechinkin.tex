@@ -1,945 +1,0 @@
-\def\stat{pech-raz}
-
-\def\tit{СОВМЕСТНОЕ СТАЦИОНАРНОЕ РАСПРЕДЕЛЕНИЕ
-ЧИСЛА ЗАЯВОК В~{\boldmath{$m$}}~ОЧЕРЕДЯХ В~{\boldmath{$N$}}-КАНАЛЬНОЙ СИСТЕМЕ
-ОБСЛУЖИВАНИЯ С~ПЕРЕУПОРЯДОЧЕНИЕМ ЗАЯВОК$^*$}
-
-\def\titkol{Совместное стационарное распределение
-числа заявок в~$m$ очередях в~$N$-канальной системе
-обслуживания} % с~переупорядочением заявок$^*$}
-
-\def\aut{\fbox{А.\,В.~Печинкин}, Р.\,В.~Разумчик$^1$}
-
-\def\autkol{А.\,В.~Печинкин, Р.\,В.~Разумчик}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Работа выполнена при поддержке РФФИ (проект 13-07-00223).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского
-центра <<Информатика и~управление>> Российской академии наук;
-Российский
-университет дружбы народов, rrazumchik@gmail.com}
-
-
-\Abst{Рассматривается функционирующая в~непрерывном
-времени $N$-канальная система обслуживания с~накопителем бесконечной
-емкости и~переупорядочением заявок. В систему поступает
-пуассоновский поток заявок, время обслуживания каждым прибором
-распределено по экспоненциальному закону с~одним и~тем же
-параметром. При поступлении в~систему всем заявкам  присваивается
-порядковый номер. На выходе из системы сохраняется порядок между
-заявками, установленный при входе в~нее. Заявки, завершившие
-обслуживание и~нарушившие установленный порядок, формируют в~бункере
-переупорядочения (БП) (неограниченной емкости) разные очереди. Если на
-приборах находится~$n$ ($n\hm=\overline{1,N}$) заявок, то заявкой 1-го
-уровня будем называть ту из них, которая в~систему поступила
-последней, 2-го уровня~--- предпоследней, $\ldots,$ $n$-го уровня~--- первой. 
-Находящиеся в~БП заявки,
-поступившие между заявками 2-го и~1-го уровней, будем называть
-заявками 1-й очереди, заявки, поступившие между заявками 3-го
-и~2-го уровней,~--- заявками 2-й очереди, $\ldots,$ заявки,
-поступившие между заявками $N$-го и~$(N-1)$-го уровней, --- заявками
-$(N-1)$-й очереди. Найдены математические соотношения в~терминах
-производящих функций (ПФ), позволяющие алгоритмически вычислять
-совместное стационарное распределение числа заявок в~накопителе и~на
-приборах, а~также в~1-й, 2-й, \ldots, $m$-й очередях в~БП ($m\hm=\overline{1,N-1}$).}
-
-
-\KW{многолинейная система массового обслуживания;
-переупорядочение; раздельные очереди; совместное стационарное распределение}
-
-\DOI{10.14357/19922264150303}
-
-
-
-\vskip 14pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-
-Производительность многосерверных систем с~возможностью параллельной
-обработки информации существенным образом может зависеть от
-необходимости сохранения порядка в~потоке передаваемых сообщений.
-Нарушение порядка может быть вызвано как внешними, так и~внутренними
-причинами, и~в~результате складывается ситуация, когда задержка
-сообщений, передаваемых через сис\-те\-му, увеличивается, поскольку
-прежде, чем покинуть систему, они должны ожидать друг друга для
-восстановления порядка следования (т.\,е.\ для переупорядочения). 
-
-К~настоящему времени для изучения влияния переупорядочения на
-характеристики производительности сис\-тем уже предложено много
-аналитических моделей. Некоторый обзор моделей и~тео\-ре\-ти\-че\-ских
-результатов, полученных до 1997~г., можно найти в~\cite{new7, new8}. 
-Один из подходов к~изуче\-нию сис\-тем с~переупорядочением,
-опирающийся на методы тео\-рии массового обслуживания, предполагает
-представление изучаемой сис\-те\-мы в~виде сис\-те\-мы/се\-ти массового
-обслуживания. На выходе из системы/сети имеется очередь (БП), 
-в~которой хранятся заявки, нарушившие порядок следования,
-установленный при входе. С~использованием данного подхода было
-получено много результатов, касающихся распределения числа заявок 
-в~системе и~БП
- при различных предположениях о входящем потоке 
- и~процессе обслуживания, распределения времен пребывания заявок
-в~системе и~БП и~др. Среди наиболее интересных работ можно 
-отметить~[3--8].
-
-Настоящее исследование является продолжением работ~\cite{p1, a8}, в~которых
-рассматривалась система массового обслуживания (СМО) 
-с~переупорядочением в~виде марковской многоканальной
-системы обслуживания неограниченной ем\-кости и~БП, также имеющим неограниченную
-емкость. В~этих работах была получена система уравнений равновесия для
-совместного стационарного распределения числа заявок в~системе
-и~(суммарного числа заявок) в~БП,
-допускающая рекуррентное решение, и~приведены некоторые результаты
-численных расчетов. В~недавней работе~\cite{pr2015} было замечено,
-что заявки, ожидающие в~БП в~рассматриваемой СМО,
- можно разделить на несколько групп в~зависимости от того, сколько
-$\langle$обслуживаний$\rangle$ осталось прождать заявке, прежде чем она
- сможет покинуть БП (т.\,е.\ систему). Поскольку максимальное число $\langle$обслуживаний$\rangle$,
- которое может прождать заявка в~БП, равно $(N\hm-1)$, а~минимальное
- равно~1, то очередь в~БП можно представить состоящей из нескольких
-отдельных очередей, общее число которых зависит от числа занятых приборов.
-Если занят только один прибор, то в~БП не может ожидать ни одна заявка;
-при двух занятых приборах в~БП может быть только одна очередь (из заявок,
-ожидающих окончания обслуживания на приборе, который был занят самым первым).
-Легко видеть, что при $N$ занятых приборах в~БП имеется $(N-1)$ очередь.
-Общее число заявок в~БП есть суммарное число заявок в~отдельных очередях.
-Несомненный интерес представляет нахождение
-совместного стационарного распределения числа заявок в~накопителе 
-и~на приборах, а~также числа заявок в~отдельных очередях в~БП.
-В~\cite{pr2015} приводится система уравнений
-равновесия для соответствующего совместного стационарного распределения
-и упоминается, что она допускает рекуррентное решение.
-В~данной работе покажем, что
-традиционный подход, предполагающий нахождение
-стационарных вероятностей состояний
-в~терминах ПФ, применим также и~в~данном \mbox{случае}.
-
-Статья организована следующим образом.
-В~разд.~2 дается описание системы.
-В~разд.~3 приводится система уравнений равновесия для совместного стационарного
-распределения. Раздел~4 посвящен анализу системы равновесия
-в~терминах ПФ.
-Здесь показано, что ПФ можно также находить рекуррентным образом.
-В~заключении сформулированы основные результаты работы.
-
-\section{Описание системы}
-
-Рассмотрим функционирующую в~непрерывном времени
-$N$-ли\-ней\-ную ($N\hm\ge 2$) СМО с~на\-ко\-пителем
-неограниченной емкости, входящим пу\-ассоновским
-потоком заявок интенсивности~$\lambda$\linebreak
- и~экспоненциальным распределением времени
-обслуживания заявки каждым прибором с~пара\-мет\-ром~$\mu$.
-
-
-При поступлении в~систему всем заявкам  присваивается
-порядковый номер.
-На выходе из СМО сохраняется порядок между заявками,
-установленный при входе в~нее.
-Заявки, завершившие обслуживание и~нарушившие
-установленный порядок, накапливаются на выходе
-сис\-те\-мы в~БП и~покидают СМО только
-после того, как закончится обслуживание всех заявок 
-с~меньшими номерами.
-Такая СМО носит название системы с~переупорядочением заявок.
-
-Предполагается также выполнение необходимого и~достаточного условия 
-${\tilde{\rho}\hm=\rho/N\hm<1}$ существования
-стационарного режима функционирования СМО,
-где ${\rho\hm=\lambda/\mu}$.
-
-\section{Система уравнений равновесия для стационарных вероятностей состояний}
-
-Пусть на приборах находится~$n$ ($n\hm=\overline{1,N}$) заявок. Тогда заявкой
-1-го уровня будем называть ту из них, которая в~систему поступила
-последней, второго уровня~--- предпоследней, $\ldots,$ $n$-го уровня~--- 
-первой. При этом если $n\hm=N$ (все приборы заняты), то находящиеся
-в~БП заявки, поступившие между заявками 2-го и~1-го уровней,
-будем называть заявками 1-й очереди, заявки, поступившие между
-заявками 3-го и~2-го уровней,~--- заявками 2-й очереди,
-$\ldots,$ заявки, поступившие между заявками $N$-го и~$(N-1)$-го
-уровней,~--- заявками $(N\hm-1)$-й очереди. Если же $n\hm<N$, то  заявками
-1-й очереди будем называть заявки из БП, поступившие после заявки
-1-го уровня, заявками 2-й очереди~--- заявки, поступившие
-между заявками 2-го и~3-го уровней, и~т.\,д.
-
-При $n\ge N$ обозначим через
-$p_{n;i_1,\ldots,i_m}$, $m\hm=\overline{1,N-1}$, $i_1,\ldots,i_m\hm\ge 0$,
-стационарную вероятность того, что в~системе на
-приборах и~в накопителе находится~$n$~заявок, а~в~БП
-имеется~$i_1$~заявок 1-й очереди, $i_2$ заявок
-2-й очереди, $\ldots,$ $i_{m}$ заявок $m$-й очереди.
-Через $p_{n;i_1,\ldots,i_m}$, $m\hm=\overline{1,n}$,
-$i_1,\ldots,i_m\hm\ge 0$, обозначим аналогичную
-стационарную вероятность при $n\hm=\overline{1,N-1}$.
-Наконец, через~$p_0$ обозначим стационарную вероятность отсутствия заявок в~системе.
-
-Через $p_n$, ${n\hm\ge 0}$, обозначим
-стационарную веро\-ят\-ность того, что в~системе на
-приборах и~в~нако\-пи\-те\-ле (без учета числа заявок в~БП) находится~$n$~заявок.
-Очевидно, что стационарные вероятности~$p_n$ определяются теми же самыми формулами, что 
-и~в~обычной марковской СМО $M/M/N/\infty$
-(см., например,~\cite{rior}):
-\begin{align}
-%\label{3-1}
-p_{0} &= \left( \sum\limits_{i=0}^{N-1} \fr{\rho^i}{i!}
-+ \fr{\rho^N }{(N-1)!\, (N-\rho)}
-\right)^{\!-1}\, ;\notag
-\\
-%\label{3-2}
-p_{i} &= \fr{\rho^i}{i!}\, p_{0}\,, \enskip i=\overline{1,N}\,;\notag
-\\
-\label{3-3}
-p_{i} &= \fr{\rho^i}{N!\, N^{i-N}}\, p_{0}
-= \tilde{\rho}^{i-N} p_{N}\,, \enskip i\ge N+1\,.
-\end{align}
-
-Поскольку целью настоящей работы является нахождение вероятностей
-в~терминах ПФ, то не будем подробно останавливаться
-на системе уравнений равновесия и~лишь заметим следующее.
-Для того чтобы ее выписать, сначала рассматриваются
- уравнения глобального баланса для вероятностей
-$p_{n;i_1}$, $n\hm\ge 1$, $i_1 \hm\ge 0$,
-затем для $p_{n;i_1,i_2}$, $n\hm\ge2$, $i_1,i_2 \hm\ge 0$,
-и~т.\,д. В~последнюю очередь составляются уравнения для вероятностей
-$p_{n;i_1,\ldots,i_{N-1}}$, $n\hm\ge N-1$, $i_1,\ldots,i_{N-1} \hm\ge 0$.
-Произведя данные действия, можно получить следующий набор
-уравнений, которые приводим без пояснений.
-
-Для вероятностей $p_{n;i}$, $n\hm\ge N$, $i\hm \ge 0$, справедливы уравнения:
-\begin{align}
-\label{eq-1-1}
- p_{n;0} (\lambda+N\mu) &=
-p_{n-1;0} \lambda + p_{n+1} (N-1) \mu\,,\notag\\
-&\hspace*{25mm}n\ge N\,;
-\\
-\label{eq-1-2} 
-p_{n;i} (\lambda+N\mu) &=
-p_{n-1;i} \lambda + p_{n+1;i-1} \mu\,,\ \notag\\ 
-&\hspace*{25mm}n\ge N\,,\ \ i \ge 1\,.
-\end{align}
-
-Соотношения для вероятностей $p_{N-1;i}$, $i \hm\ge 0$,
-имеют вид:
-\begin{align}
-\label{eq-1-3}
-p_{N-1;0} [\lambda+(N-1)\mu]
-&= p_{N-2} \lambda + p_{N} (N-1)\mu \,;
-\\
-\label{eq-1-4}
-p_{N-1;i} [\lambda+(N-1)\mu] &= p_{N;i-1} \mu \,,\ \ i \ge 1\,.
-\end{align}
-
-Наконец, для вероятностей $p_{n;i}$, $n\hm=\overline{1,N-2}$,
-$i \hm\ge 0$, имеют место следующие уравнения:
-\begin{align}
-\label{eq-1-5}
-p_{n;0} (\lambda+n\mu) &= p_{n-1} \lambda +
-p_{n+1;0} n\mu \,,\notag\\
-& \hspace*{15mm}n=\overline{1,N-2}\,;
-\\
-p_{n;i} (\lambda+n\mu) &= p_{n+1;i} n\mu +
-\sum\limits_{j=0}^{i-1} p_{n+1;i-j-1,j} \mu \,,\notag\\ 
-&\hspace*{15mm}n=\overline{1,N-2}\,,\ \ i \ge 1\,.
-\label{eq-1-6}
-\end{align}
-
-Начиная с~вероятностей
-$p_{n;i_1,i_2}$, $n\hm\ge2$, $i_1,i_2 \hm\ge 0$,
-и~до вероятностей $p_{n;i_1,\ldots,i_{N-1}}$, $n\hm\ge N-1$, $i_1,\ldots,i_{N-1} \hm\ge 0$,
-уравнения получаются практически одинаковыми.
-Поэтому приведем их сразу в~общем виде.
-Далее для сокращения записи примем соглашение, что
-$\sum\limits_{i=0}^{-1} a_i \hm= 0$.
-Тогда уравнения для вероятностей $p_{n;i_1,\ldots,i_{m}}$, $m\hm=\overline{2,N-1}$, 
-$n \hm\ge m$, $i_1,\ldots,i_{N-1} \hm\ge 0$, можно записать в~следующем виде:
-\begin{multline}
-\label{bat-1}
-p_{n;0,i_2,\ldots,i_m} (\lambda+N\mu) = p_{n-1;0,i_2,\ldots,i_m} \lambda+{}\\
-{}+ p_{n+1;i_2,\ldots,i_m} (N-m) \mu +{}
-\\
-{}+ \sum\limits_{j=0}^{i_2-1} p_{n+1;j,i_2-j-1,i_3,\ldots,i_m} \mu
-+ \cdots {}\\
-{}\cdots + \sum\limits_{j=0}^{i_m-1} p_{n+1;i_2,\ldots,i_{m-1},j,i_m-j-1} \mu\,,\\
- n\ge N\,,\ \ i_2,\ldots,i_m \ge 0\,;
-\end{multline}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\label{bat-2}
-p_{n;i_1,\ldots,i_{m}} (\lambda+N\mu) ={}\\
-{}= p_{n-1;i_1,\ldots,i_{m}} \lambda
-+
-p_{n+1;i_1-1,i_2,\ldots,i_{m}} \mu\,,\\ 
-n\ge N\,,\ \ i_1\ge 1\,,\ \ i_2,\ldots,i_{m}\ge 0\,;
-\end{multline}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\label{bat-3}
-p_{N-1;0,i_2,\ldots,i_{m}} [\lambda+(N-1)\mu] =
-p_{N-2;i_2,\ldots,i_{m}} \lambda+{}\\
-{}+
-p_{N;i_2,\ldots,i_{m}} (N-m) \mu
-+{}\\
-{}+
-\sum\limits_{j=0}^{i_2-1} p_{N;j,i_2-j-1,i_3,\ldots,i_{m}} \mu
-+ \cdots{}\\
-{}\cdots + \sum\limits_{j=0}^{i_m-1} p_{N;i_2,\ldots,i_{m-1},j,i_m-j-1} \mu\,,\\ 
-i_2,\ldots,i_{m} \ge 0\,;
-\end{multline}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\label{bat-4}
-p_{N-1;i_1,\ldots,i_{m}} [\lambda+(N-1)\mu]
-=
-p_{N;i_1-1,i_2,\ldots,i_{m}} \mu\,,\\ 
-i_1\ge 1\,,\ \ i_2,\ldots,i_{m}\ge 0\,,
-\end{multline}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\label{bat-5}
-p_{n;0,i_2,\ldots,i_{m}} (\lambda+n\mu)
-= p_{n-1;i_2,\ldots,i_{m}} \lambda
-+{}\\
-{}+
-p_{n+1;0,i_2,\ldots,i_{m}} (n-m+1) \mu
-+{}\\
-{}+
-\sum\limits_{j=0}^{i_2-1}
-p_{n+1;0,j,i_2-j-1,i_3,\ldots,i_{m}} \mu
-+ \cdots{}\\
-{}\cdots + \sum\limits_{j=0}^{i_m-1} p_{n+1;0,i_2,\ldots,i_{m-1},j,i_m-j-1} \mu\,,\\ 
-m\ne N-1\,, \ \ n=\overline{m,N-2}\,,\ \ i_2,\ldots,i_{m} \ge 0\,;
-\end{multline}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\label{bat-6}
-p_{n;i_1,\ldots,i_{m}} (\lambda+n\mu)
-= p_{n+1;i_1,\ldots,i_{m}} (n-m+1) \mu
-+ {}\\
-{}+\sum\limits_{j=0}^{i_1-1} p_{n+1;j,i_1-j-1,i_2,\ldots,i_{m}} \mu
-+  \cdots {}\\
-{}\cdots +
-\sum\limits_{j=0}^{i_m-1} p_{n+1;i_1,\ldots,i_{m-1},j,i_m-j-1,} \mu\,,\ \  
-m\ne N-1\,,\\
- n=\overline{m,N-2}\,,\ \ i_1 \ge 1\,,\ \ i_2,\ldots,i_{m}\ge 0\,.
-\end{multline}
-
-Как указано в~\cite{pr2015}, данную систему можно решить рекуррентным образом.
-Однако традиционный подход, предполагающий нахождение
-стационарных вероятностей состояний
-в~терминах ПФ, применим также и~для рас\-смат\-ри\-ва\-емой системы,
-что и~будет показано в~сле\-ду\-ющем разделе.
-Забегая вперед, отметим, что решение получается алгоритмическим.
-
-\section{Уравнения для~производящих функций}
-
-Введем ПФ
-\begin{multline*}
-p_{n}(z_1,\ldots,z_m) = \sum\limits_{i_1,\dots , i_m=0}^{\infty}
-z_1^{i_1} \cdots z_m^{i_m} p_{n;i_1,\ldots,i_m}\,,\\ 
-n\ge1, \  m=\overline{1,\min(n,N-1)},  \  0<z_k \le 1, \  k=\ov{1,m};
-\end{multline*}
-
-\vspace*{-24pt}
-
-\noindent
-\begin{multline*}
-P(u,z_1,\ldots,z_m) = \sum\limits_{n=N}^{\infty} u^{n-N} p_{n}(z_1,\ldots,z_m)\,, \\ 
-m=\overline{1,\min(n,N-1)}\,,  \ \ 0< u \le 1\,.
-\end{multline*}
-Учитывая~\eqref{3-3}, положим также
-$$ 
-P(u) = \sum\limits_{n=N}^{\infty} u^{n-N} p_{n} =
-\fr{1}{1 - \tilde{\rho} u}\, p_N \,, \ \ 0< u \le 1\,.
-$$
-
-Умножая теперь \eqref{eq-1-1} и~\eqref{eq-1-2} на $z^i$ 
-и~суммируя по всем возможным значениям $i$, получаем
-\begin{multline*}
-%\label{eq-z-1}
-(\lambda+N\mu) p_{n}(z) = {}\\
-{}=\lambda p_{n-1}(z) + (N-1) \mu p_{n+1} 
-+
-\mu z p_{n+1}(z) \,,\ \ n\ge N\,.
-\end{multline*}
-Умножая последнее выражение
-%\eqref{eq-z-1}
-на $u^{N-n}$ и~суммируя по~$n$ от~$N$ до бесконечности, приходим к~уравнению
-\begin{multline}
-\label{eq-z-2}
-(\lambda+N\mu) P(u,z) = \lambda p_{N-1}(z) +
-\lambda u P(u,z) + {}\\
-{}+\fr{(N-1) \mu}{u} \left[P(u) - p_{N}\right]
-+ {}\\
-{}+\fr{\mu z }{u}\, \left[P(u,z)-p_{N}(z)\right] \,.
-\end{multline}
-Обратимся к~уравнениям~\eqref{eq-1-3} и~\eqref{eq-1-4}.
-Умножая их на~$z^i$ и~производя традиционные преобразования, получаем уравнение
-\begin{multline}
-\label{eq-z-3}
-[\lambda+(N-1)\mu] p_{N-1}(z) ={}\\
-{}= \lambda p_{N-2} +
-(N-1)\mu p_{N} + \mu z p_N(z)\,.
-\end{multline}
-Наконец, из уравнений~\eqref{eq-1-5} и~\eqref{eq-1-6}
-после домножения на~$z^i$ и~суммирования получаем соотношение
-\begin{multline}
-\label{eq-z-4}
-(\lambda+n\mu) p_{n}(z) = \lambda p_{n-1}+ n\mu p_{n+1}(z)+
-\mu z p_{n+1}(z,z) \,,\\ 
-n=\overline{1,N-2}\,.
-%,\ \ m=\ov{0,N-1}
-%,\ \ i_1,\ldots,i_m\ge 0.
-\end{multline}
-Отметим, что нахождение уравнений, которым удовле\-тво\-ря\-ют ПФ $p_{n}(z_1,\ldots,z_m)$ 
-и~$P(u,z_1,\ldots,z_m)$ при фиксированном~$m$, осуществляется в~4~шага:
-\begin{enumerate}[(1)]
-\item находится ПФ $p_{n}(z_1,\ldots,z_{m})$ при $n \hm\ge N$;
-\item находится выражение для двойной $ПФ P(u,z_1,\ldots,z_m)$;
-\item находится ПФ $p_{N-1}(z_1,\ldots,z_{m})$; 
-\item находится ПФ $p_{n}(z_1,\ldots,z_{m})$, $n\hm=\overline{m,N-2}$.
-\end{enumerate}
- Действуя подобным образом, уравнения~\eqref{bat-1}--\eqref{bat-6} в~терминах введенных ПФ
- можно привести к~виду:
- \begin{multline*}
-%\label{bat-z-1}
-(\lambda+N\mu) p_{n}\left(z_1,\ldots,z_{m}\right) =
-\lambda p_{n-1}\left(z_1,\ldots,z_{m}\right) +{}\\
-{}+
-(N-m) \mu p_{n+1}(z_2,\ldots,z_{m}) +{}
-\\
-{}+
-\mu z_1 p_{n+1}\left(z_1,\ldots,z_{m}\right) +
-\mu z_2 p_{n+1}\left(z_2,z_2,\ldots,z_{m}\right) +{}\\
-{}+
-\mu z_3 p_{n+1}\left(z_2,z_3,z_3,\ldots,z_{m}\right) + \cdots{}\\
-{}\cdots + \mu z_m p_{n+1}\left(z_2,\ldots,z_{m},z_{m}\right)\,,\ \ n\ge N\,;
-\end{multline*}
-
-\vspace*{-24pt}
-
-\noindent
-\begin{multline}
-\label{bat-z-2}
-(\lambda+N\mu) P\left(u,z_1,\ldots,z_{m}\right)
-= \lambda p_{N-1}\left(z_1,\ldots,z_{m}\right) +{}\\
-{}+
-\lambda u P\left(u,z_1,\ldots,z_{m}\right) +{}
-\\
-+
-\fr{(N-m) \mu}{u}
-\left[P\left(u,z_2,\ldots,z_{m}\right) - p_{N}\left(z_2,\ldots,z_{m}\right)\right] +{}\\
-{}+
-\fr{\mu z_1}{u}\left[P\left(u,z_1,\ldots,z_{m}\right) - p_{N}\left(z_1,\ldots,z_{m}\right)\right]
-+{}
-\\
-{}+ \fr{\mu z_2}{u}\left[P\left(u,z_2,z_2,\ldots,z_{m}\right)
-- p_{N}\left(z_2,z_2,\ldots,z_{m}\right)\right]+{}
-\\
-{}+
-\fr{\mu z_3}{u}\left[P(u,z_2,z_3,z_3,\ldots,z_{m}) -{}\right.\\
-\left.{}-
-p_{N}(z_2,z_3,z_3,\ldots,z_{m})\right]+\cdots{}
-\\
-{} \cdots + \fr{\mu z_m}{u}\left[P\left(u,z_2,\ldots,z_{m},z_m\right)-\right.\\
-\left.{}-p_{N}\left(z_2,\ldots,z_{m},z_m\right)\right]\,,
-\end{multline}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\label{bat-z-3}
-\left[\lambda+(N-1)\mu\right] p_{N-1}\left(z_1,\ldots,z_{m}\right)={}\\
-{}=
-\lambda p_{N-2}\left(z_2,\ldots,z_{m}\right)+{}\\
-{}+(N-m) \mu p_{N}\left(z_2,\ldots,z_{m}\right)
-+{}
-\\
-{}+ \mu z_1 p_{N}\left(z_1,\ldots,z_{m}\right) + \mu z_2 p_{N}\left(z_2,z_2,\ldots,z_{m}\right)
-+{}
-\\
-{}+
-\mu z_3 p_{N}\left(z_2,z_3,z_3,\ldots,z_{m}\right) +
-\cdots{}\\
-{}\cdots + \mu z_m p_{N}\left(z_2,\ldots,z_{m},z_m\right)\,;
-\end{multline}
-
-\vspace*{-12pt}
-
-\noindent
-\begin{multline}
-\label{bat-z-4}
-(\lambda+n\mu) p_{n}\left(z_1,\ldots,z_{m}\right)
-= \lambda p_{n-1}(z_2,\ldots,z_{m}) +{}\\
-{}+
-(n-m+1) \mu p_{n+1}\left(z_1,\ldots,z_{m}\right)
-+{}
-\\
-{}+
-\mu z_1 p_{n+1}\left(z_1,z_1,\ldots,z_{m}\right)+{}\\
-{}+ \mu z_2 p_{n+1}\left(z_1,z_2,z_2,\ldots,z_{m}\right)
-+\cdots{}
-\\
-{} \cdots +
-\mu z_m p_{n+1}\left(z_1,\ldots,z_{m},z_m\right)\,,\\ 
-m \ne N-1\,, \ \ 
-n=\overline{m,N-2}\,.
-\end{multline}
-
-Нахождение выражений для ПФ $P(u,z)$, $p_{N-1}(z)$, $p_{n}(z)$, 
-$P(u,z_1,\ldots,z_{m})$,  $p_{N-1}(z_1,\ldots,z_{m})$, $m\hm=\overline{2,N-1}$, 
-$p_{n}(z_1,\ldots,z_{m})$, $m\hm=\overline{2,N-2}$, $n\hm=\overline{m,N-2}$,
-можно свести к~последовательному решению систем линейных уравнений.
-
-Сначала находятся ПФ числа заявок в~накопителе
-и суммарного числа заявок в~бункере.
-Если положить $z_1\hm=\cdots=z_m\hm=z$ в~ПФ
-$P(u,z_1,\ldots,z_{m})$, то функция
-$P(u,z,\ldots,z)$ будет представлять собой
-не что иное, как ПФ суммарного числа заявок 
-в~\mbox{1-й}, \mbox{2-й}, $\ldots,$ $m$-й очередях 
-и~вероятность того, что заняты все приборы (в системе
-на приборах и~в очереди не менее~$N$~заявок).
-Аналогично $p_n(u,z,\ldots,z)$~---
-ПФ суммарного числа заявок в~\mbox{1-й}, \mbox{2-й},\
-$\ldots,$ $m$-й очередях и~вероятность того, что
-занято ровно~$n$~приборов.
-Как показано в~\cite{p1},
-при $z_1=\cdots=z_m=z$ система уравнений~\eqref{eq-z-2}--\eqref{eq-z-4}
-и~\eqref{bat-z-2}--\eqref{bat-z-4} решается рекуррентным образом.
-
-Алгоритм нахождения
-$P(u,z_1,\ldots,z_{m})$, $m\hm=\overline{m,N-1}$,  $p_{N-1}(z_1,\ldots,z_{m})$, 
-$n\hm=\overline{m,N-1}$, $p_{n}(z_1,\ldots,z_{m})$, $m\hm=\overline{2,N-2}$, 
-$n\hm=\overline{m,N-2}$,
-при фиксированном~$N$ состоит из $(N\hm-1)$ шага.
-На первом шаге находятся ПФ    $p_{N}(z_1,z_{2})$, $p_{N-1}(z_1,z_2)$, $P(u,z_1,z_2)$.
-На втором шаге сначала последовательно находятся ПФ:
-\begin{itemize}
-\item $p_{N-1}(z_1,z_2,z_2)$,  $p_{N}(z_1,z_{2},z_2)$, $P(u,z_1,z_2,z_2)$;
-
-\item $p_{N-1}(z_1,z_1,z_2)$,  $p_{N}(z_1,z_{1},z_2)$, $p_{N-2}(z_1,z_2)$, $P(u,z_1,z_1,z_2)$;
-
-\item $p_{N-1}(z_1,z_2,z_3)$,  $p_{N}(z_1,z_{2},z_3)$, $P(u,z_1,z_2,z_3)$.
-\end{itemize}
-
-На третьем шаге ПФ рассчитываются в~сле\-ду\-ющей последовательности:
-\begin{itemize}
-
-\item $p_{N-1}(z_1,z_2,z_2,z_2)$, $p_{N}(z_1,z_{2},z_2,z_2)$,\\
- $P(u,z_1,z_2,z_2,z_2)$;
-
-\item $p_{N-1}(z_1,z_1,z_2,z_2)$,  $p_{N}(z_1,z_{1},z_2,z_2)$,\\
- $p_{N-2}(z_1,z_2,z_2)$, $P(u,z_1,z_1,z_2,z_2)$;
-
-\item $p_{N-1}(z_1,z_1,z_1,z_2)$,  $p_{N}(z_1,z_{1},z_1,z_2)$,\\
- $p_{N-2}(z_1,z_1,z_2)$, $p_{N-3}(z_1,z_2)$, $P(u,z_1,z_1,z_1,z_2)$;
-
-\item $p_{N-1}(z_1,z_2,z_2,z_3)$,  $p_{N}(z_1,z_{2},z_2,z_3)$,\\
- $P(u,z_1,z_2,z_2,z_3)$;
-
-\item $p_{N-1}(z_1,z_2,z_3,z_3)$,  $p_{N}(z_1,z_{2},z_3,z_3)$,\\
- $P(u,z_1,z_2,z_3,z_3)$;
-
-\item $p_{N-1}(z_1,z_1,z_2,z_3)$,  $p_{N}(z_1,z_{1},z_2,z_3)$,\\
- $p_{N-2}(z_1,z_2,z_3)$, $P(u,z_1,z_1,z_2,z_3)$;
-
-\item $p_{N-1}(z_1,z_2,z_3,z_4)$,  $p_{N}(z_1,z_{2},z_3,z_4)$,\\
- $P(u,z_1,z_2,z_3,z_4)$.
-\end{itemize}
-
-Дальнейшие шаги, практически не отличающиеся от третьего шага, позволяют
-рассчитывать все остальные ПФ, последней из которых является ПФ 
-$P(u,z_1,\ldots,z_{N-1})$.
-Алгоритм вычисления ПФ можно описать и~по-дру\-го\-му, если
-ввести упорядочение, или отношение линейного
-порядка на множестве векторов 
-$$
-{\vec z}_{nm}=(\underbrace{z_1,z_2,\dots, z_m}_n),\ 
-n = \overline{1,N-1},\ m = \overline{1,N-1}.
-$$
- Здесь $n$~--- размерность, 
-а~$m$~--- порядок вектора.
-Если два вектора ${\vec z}_{n_1,m}$ и~${\vec z}_{n_2,m}$ имеют порядок $n_1\hm<n_2$,
-то будем писать ${\vec z}_{n_1,m} \prec {\vec z}_{n_2,m}$. Для двух
-векторов  ${\vec z}_{n,m_1}$ и~${\vec z}_{n,m_2}$ одинаковой размерности
-порядка $m_1\hm<m_2$ будем писать
-${\vec z}_{n,m_1} \prec {\vec z}_{n,m_2}$.
-Если же векторы ${\vec z}^{\,(1)}_{nm}$ и~${\vec z}^{\,(2)}_{nm}$
-имеют одинаковую размерность и~порядок, то
-${\vec z}^{(1)}_{nm} \prec {\vec z}^{(2)}_{nm}$,
-если индексы их первых~$k$~координат
-совпадают, а~индекс $(k+1)$-й координаты ${\vec z}^{\,(1)}_{nm}$
-больше индекса $(k+1)$-й координаты ${\vec z}^{\,(2)}_{nm}$.
-Таким образом, для заданной размерности~$n$ и~порядка~$m$
-в~совокупности векторов ${\vec z}_{nm}$
-имеет место следующий порядок:
-
-\noindent
-\begin{align*}
-{\vec z}_{nm}&=\left(z_1,z_2,\dots,z_{m-2}, z_{m-1}, z_m, z_m, \dots, z_m, z_m\right)\,;
-\\
-{\vec z}_{nm}&=\\
-&\hspace*{-3.5mm}{}=\left(z_1,z_2,\dots,z_{m-2}, z_{m-1}, z_{m-1}, z_m, \dots, z_m, z_m\right)\,;
-\\
-{\vec z}_{nm}&=\\
-&\hspace*{-7mm}{}=\left(z_1,z_2,\dots,z_{m-2}, z_{m-1}, z_{m-1}, z_{m-1}, \dots, z_m, z_m\right)\,;
-\\
-\dots&  \dots \dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots
-\\
-{\vec z}_{nm}&=\\
-&\hspace*{-3.5mm}{}=\left(z_1,z_2,\dots,z_{m-2}, z_{m-2}, z_{m-1}, z_m, \dots, z_m, z_m\right)\,;
-\\
-\dots&  \dots \dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots
-\\
-{\vec z}_{nm}&=\left(z_1,z_1,\dots,z_{1}, z_{2}, z_3, \dots, z_{m-1}, z_m\right)\,.
-\end{align*}
-Теперь ПФ 
-\begin{multline*}
-P\left(u,z_1,\ldots,z_{m}\right)\hm=P(u,{\vec z}_{nm})\,,\\
-n=\overline{m,N-1}\,, 
-\enskip
-m=\overline{m,N-1}\,,
-\end{multline*}
-можно вычислить последовательно от минимального вектора ${\vec z}_{11}$ к~максимальному
-${\vec z}_{nn}$ по порядку ${\vec z}_{11} \prec {\vec z}_{21} \prec {\vec z}_{22} 
-\prec {\vec z}_{31} \prec \dots \prec {\vec z}_{nn}$. Тогда на каж\-дом этапе вычислений 
-будут использоваться уже известные функции.
-
-\section{Заключение}
-
-В настоящей работе рассмотрена функционирующая в~непрерывном времени $N$-ка\-наль\-ная 
-сис\-те\-ма обслуживания с~накопителем бесконечной емкости и~переупорядочением заявок.
-В~систему\linebreak поступа\-ет пуассоновский поток заявок, время
-обслуживания каждым прибором распределено по экспоненциальному закону с~одним и~тем же параметром.
-Заявки, завершившие обслуживание и~нарушившие
-установленный порядок, формируют в~БП
-(неограниченной емкости) очереди разных уровней.
-В~работе показано, что совместное стационарное распределение
-общего числа заявок в~накопителе и~на приборах, а~также числа заявок
-в~1-й, 2-й, $\ldots,$ $m$-й очередях в~БП
-можно найти в~терминах ПФ, причем
-решение получается алгоритмическим.
-
-Несомненный интерес представляет обобщение уже полученных результатов
-на случай неоднородных приборов, что может стать предметом дальнейших исследований.
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-
-\bibitem{new7}
-\Au{Boxma O., Koole G., Liu Z.} 
-Queueing-theoretic solution methods for models of parallel and distributed systems~// 
-Performance evaluation of parallel and distributed systems: Solution methods.~--- 
-CWI tract ser.~---  Torino, Italy: CWI, 1994.
-Vol.~105-106. P.~1--24. {\sf http://oai.cwi.nl/oai/asset/1479/1479a.pdf}.
-\bibitem{new8}
-\Au{Dimitrov B.\,D., Green Jr.\,D., Rykov~V.\,V., Stanchev~P.\,L.}
-On performance evaluation and optimization problems in queues with resequencing~//
-Advances in stochastic modelling~/
-Eds. J.\,R.~Artalejo, A.~Krishnamoorthy.~---
-NJ, USA: Notable Publications Inc.,  2002. P.~55--72.
-
-
-\bibitem{new11}
-\Au{Gogate N.\,R., Panwar S.\,S.} 
-Assigning customers to two parallel servers with resequencing~//
-IEEE Commun. Lett., 1999. Vol.~3. No.\,4. P.~119--121.
-
-\bibitem{new5} %4
-\Au{Huisman T., Boucherie R.\,J.} 
-The sojourn time distribution in an infinite server resequencing queue with dependent interarrival and service times~//
-J.~Appl. Probab., 2002. Vol.~39. No.\,3. P.~590--603.
-
-
-\bibitem{new9} %5
-\Au{Lelarge M.}
-Packet reordering in networks with heavy-tailed delays~//
-Math. Method. Oper. Res., 2008. Vol.~67. P.~341--371.
-
-\bibitem{cpr23} %6
-\Au{Xia~Y., Tse D.\,N.\,C.}
-On the large deviations of resequencing
-queue size: 2-$M/M/1$ case~// IEEE Trans. Inform. Theory, 2008.
-Vol.~54. No.\,9. P.~4107--4118.
-
-\bibitem{cpr13-1} %7
-\Au{Leung K., Li V.\,O.\,K.}
-A~resequencing model for high-speed packet-switching networks~//
-Comput. Commun., 2010. Vol.~33. Iss.~4. P.~443--453.
-
-\bibitem{cpr22} %8
-\Au{Матюшенко С.\,И.} 
-Стационарные характеристики двухканальной системы обслуживания 
-с~переупорядочиванием заявок и~распределениями фазового типа~// 
-Информатика и~её применения, 2010. Т.~4. Вып.~4. С.~67--71.
-
-
-\bibitem{p1} %9
-\Au{Печинкин А.\,В., Разумчик~Р.\,В.}
-Совместное стационарное распределение числа заявок в~накопителе 
-и~в~бункере переупорядочения в~многоканальной сис\-те\-ме обслуживания 
-с~переупорядочением заявок~// Информатика и~её применения, 2014. Т.~8. Вып.~4. С.~3--10.
-
-\bibitem{a8} %10
-\Au{Pechinkin A.\,V., Caraccio~I., Razumchik~R.\,V.}
-On joint stationary distribution in exponential
-multiserver reordering queue~// 12th  Conference (International) on
-Numerical Analysis and Applied Mathematics Proceedings, 2015. 
-Vol.~1648. 250003. 4~p.
-
-\bibitem{pr2015} %11
-\Au{Pechinkin A.\,V., Razumchik~R.\,V.} Joint stationary distribution
-of queues in multiserver resequencing queue~// 
-18th  Conference (International) on Distributed Computer and
-Communication Networks: Control, Computation, Communications Proceedings, 2015
-(in print).
-
-\bibitem{rior}
-\Au{Riordan J.} \textit{Stochastic service systems.}~--- 
-New York, NY, USA: Wiley, 1962. 139~p.
- \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 1.07.15}}
-
-%\newpage
-
-\vspace*{12pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-%\vspace*{12pt}
-
-\def\tit{JOINT STATIONARY DISTRIBUTION OF~{\boldmath{$m$}}~QUEUES 
- IN~THE~{\boldmath{$N$}}-SERVER QUEUEING SYSTEM WITH~REORDERING}
-
-\def\titkol{Joint stationary distribution of~$m$~queues 
- in~the~$N$-server queueing system with~reordering}
-
-\def\aut{\fbox{A.\,V.~Pechinkin} and R.\,V.~Razumchik$^{1,2}$}
-
-\def\autkol{A.\,V.~Pechinkin and R.\,V.~Razumchik}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-
-\noindent
-$^1$Institute of Informatics Problems,
-Federal Research Center ``Computer Science and Control'' of
-the Russian\linebreak
-$\hphantom{^1}$Academy of Sciences, 44-2 Vavilov Str.,
-Moscow 119333, Russian Federation 
-
-\noindent
-$^2$Peoples' Friendship University
-of Russia, 6 Miklukho-Maklaya Str., Moscow 117198, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 3}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2015\ \ \ volume~9\ \ \ issue\ 3
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}
-
-
-\Abste{The paper considers a continuous-time $N$-server queueing system with 
-a~buffer of infinite capacity and customer reordering. The Poisson flow of customers 
-arrives at the system. Service times of customers at each server are exponentially 
-distributed with the same parameter. Each customer obtains a~sequential number upon 
-arrival. The order of customers upon arrival should be preserved upon departure 
-from the system. Customers which violated the order form different queues in the 
-reordering buffer which has infinite capacity. If there are $n$, $n=\overline{1,N}$, 
-customers in servers, then the latest customer to occupy a server  is called the 1st 
-level customer, the last but one~--- the 2nd  level customer,\ \ldots , 
-the first~--- the $n$th level customer. Customers in the reordering buffer that 
-arrived between the 1st  level and the 2nd level customers, form the queue number one. 
-Customers, which arrived between the 2nd level and the 3rd level customers, form the 
-queue number two, etc. Customers, which arrived between the $N$th level and the $(N-1)$th 
-level customers, form the queue number $(N-1)$ in the reordering buffer. Mathematical 
-relations in terms of Z-transform, which make it possible to calculate the joint 
-stationary distribution of the number of customers in the buffer, servers, and in 
-the 1st, 2nd,\ \ldots, $m$th queues ($m=\overline{1,N-1}$) 
-in the reordering buffer, are obtained.}
-
-
-\KWE{multiserver queueing system; reordering; separate queues; joint stationary distribution}
-
-\DOI{10.14357/19922264150303}
-
-\Ack
-\noindent
-The work was supported by the Russian Foundation for Basic Research (project 13-07-00223).
-
-
-
-%\vspace*{3pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
-
-
-\bibitem{new7-1}
-\Aue{Boxma, O., G.~Koole, and Z.~Liu.} 1994. 
-Queueing-theoretic solution methods for models of parallel and distributed systems.
-\textit{Performance evaluation of parallel and distributed systems: Solution methods}. 
-CWI tract ser. Torino, Italy: CWI. 105-106:1--24. Available at: 
-{\sf http://oai.cwi.nl/oai/asset/1479/1479a.pdf} (accessed August~7, 2015).
-
-
-\bibitem{new8-1}
-\Aue{Dimitrov, B.\,D., D.~Green, Jr., V.\,V.~Rykov, and P.\,L.~Stanchev.} 2002.
-On performance evaluation and optimization problems in queues with resequencing.
-\textit{Advances in stochastic modelling}. Eds. J.\,R.~Artalejo
-and A.~Krishnamoorthy.
- NJ: Notable Publications Inc. 55--72.
-
-\bibitem{new11-1}
-\Aue{Gogate, N.\,R., and S.\,S.~Panwar.} 1999. 
-Assigning customers to two parallel servers with resequencing.
-\textit{IEEE Commun. Lett.} 3(4):119--121.
-
-\bibitem{new5-1}
-\Aue{Huisman, T., and R.\,J.~Boucherie.} 2002. 
-The sojourn time distribution in an infinite server resequencing queue with dependent interarrival and service times.
-\textit{J.~Appl. Probab}. 39(3):590--603.
-
-
-
-\bibitem{new9-1} %5
-\Aue{Lelarge, M.} 2008.
-Packet reordering in networks with heavy-tailed delays.
-\textit{Math. Method. Oper. Res.} (67):341--371.
-
-\bibitem{cpr23-1} %6
-\Aue{Xia,~Y., and D.N.C. Tse} 2008.
-On the large deviations of resequencing
-queue size: 2-$M/M/1$ case. \textit{IEEE Trans. Information Theory} 54(9):4107--4118.
-
-
-\bibitem{cpr13-1-1} %7
-\Aue{Leung, K., and V.\,O.\,K.~Li.} 2010.
-A~resequencing model for high-speed packet-switching networks.
-\textit{Comput. Commun.} 33(4):443--453.
-
-
-\bibitem{cpr22-1} %8
-\Aue{Matyushenko, S.\,I.} 2010.
-Statsionarnye kha\-rak\-te\-ri\-sti\-ki dvukhkanal'noy sistemy obsluzhivaniya 
-s~pe\-re\-upo\-rya\-do\-chi\-va\-ni\-em zayavok i~raspredeleniyami fazovogo tipa 
-[Stationary characteristics of the two-channel queueing system with
-reordering customers and distributions of phase type]. 
-\textit{Informatika i~ee Primeneniya}~--- \textit{Inform. Appl}. 4(4):67--71.
-
-\bibitem{p1-1} %9
-\Aue{Pechinkin, A.\,V., and R.\,V.~Razumchik.} 2014.
-Sovmestnoe statsionarnoe raspredelenie chisla zayavok v~nakopitele i~v~bunkere 
-pereuporyadocheniya v~mnogokanal'noy sisteme obsluzhivaniya s~pereuporyadocheniem 
-zayavok [Joint stationary distribution of the number of customers in the system and 
-reordering buffer in the multiserver reordering queue].
-\textit{Informatika i~ee Primeneniya}~--- \textit{Inform. Appl}. 8(4):3--10.
-
-\bibitem{a8-1} %10
-\Aue{Pechinkin, A.\,V., I. Caraccio, and R.\,V.~Razumchik.} 2015.
-On joint stationary distribution in exponential
-multiserver reordering queue
-\textit{12th  Conference (International) on
-Numerical Analysis and Applied Mathematics Proceedings}. 1648:250003. 4~p.
-
-
-\bibitem{pr2015-1} %11
-\Aue{Pechinkin, A.\,V., and R.\,V.~Razumchik.} 2015 (in print).
-Joint stationary distribution of queues in multiserver resequencing
-queue. \textit{18th  Conference (International) on Distributed Computer and 
-Communication Networks: Control, Computation, Communications Proceedings}. Moscow. 
-
-\bibitem{rior-1}
-\Aue{Riordan, J.} 1962.
-\textit{Stochastic service systems}. New York, NY: Wiley. 139~p.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Received July 1, 2015}}
-
-
-\Contr
-
-\noindent
-\textbf{Pechinkin Alexander V.} (1946--2014)~--- professor, Doctor
-of Science in physics and mathematics
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Razumchik Rostislav V.} (b.\ 1984) --- Candidate
-of Science (PhD) in physics and mathematics,
-senior scientist, Institute of Informatics Problems, 
-Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
-Sciences,
-44-2 Vavilov Str.,
-Moscow 119333, Russian Federation; associate professor,
-Peoples' Friendship University of Russia,
-6 Miklukho-Maklaya Str., Moscow 117198, Russian Federation; rrazumchik@ieee.org
-
-
-\label{end\stat}
-
-
-\renewcommand{\bibname}{\protect\rm Литература}

@@ -1,564 +1,0 @@
-\def\stat{bronshtein}
-
-
-
-\def\tit{ОБ ОПТИМАЛЬНОЙ ДОСТАВКЕ ГРУЗОВ ТРАНСПОРТНЫМ
-СРЕДСТВОМ С~УЧЕТОМ ЗАВИСИМОСТИ СТОИМОСТИ
-ПЕРЕВОЗОК ОТ~ЗАГРУЗКИ ТРАНСПОРТНЫХ СРЕДСТВ
-ПО~НЕСКОЛЬКИМ ЦИКЛИЧЕСКИМ МАРШРУТАМ$^*$}
-
-\def\titkol{Об оптимальной доставке грузов транспортным
-средством с~учетом зависимости стоимости
-перевозок от~загрузки} % транспортных средств по~нескольким циклическим маршрутам}
-
-\def\aut{Е.\,М. Бронштейн$^1$, П.\,А.~Зелёв$^2$}
-
-\def\autkol{Е.\,М. Бронштейн, П.\,А.~Зелёв}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Работа выполнена при поддержке РФФИ (проект 13-01-00005).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Уфимский государственный авиационный технический университет, bro-efim@yandex.ru}
-\footnotetext[2]{Уфимский государственный авиационный технический университет, pz1988@yandex.ru}
-
-  \Abst{Рассматривается задача построения маршрута доставки грузов
-потребителям от одного производителя (базы, склада) транспортным средством
-(ТС) с~минимальными затратами на перевозки. При этом учитывается
-зависимость стоимости транспортировки от загрузки ТС и~качества дороги.
-Предполагается, что ТС может возвращаться на базу для дозагрузки. Построена
-соответствующая математическая модель. Для случая линейной зависимости
-стоимости проезда от загрузки получена линейная целочисленная модель. Для
-решения поставленной задачи наряду с~точным алгоритмом предложена
-модификация известного эвристического алгоритма Клар\-ка--Рай\-та.
-Проведен вычислительный эксперимент.}
-
-  \KW{эвристический алгоритм; построение маршрута; транспортировка;
-задача маршрутизации}
-
-\DOI{10.14357/19922264140407}
-
-
-\vskip 12pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-
-  Систематическое изучение оптимизационных задач транспортной логистики
-(Vehicle Routing Problem, VRP) началось с~работы~[1]. За последние полвека
-поставлено множество задач этого типа, развиты как точные, так
-и~эвристические методы решения. Частным случаем подобных задач является
-известная задача коммивояжера.
-  Классификация оптимизационных задач транспортной логистики приведена,
-например, в~[2].
-
-  Задача, рассматриваемая в~данной работе, перекликается с~CVRP
-(Capacitated VRP), в~этих задачах учитываются ограничения на вместимость
-ТС (см., например,~[3]). В~большинстве случаев при постановке задач
-маршрутизации стоимость транспортировки является функцией, зависящей
-только от расстояния между городами.
-
-  В работе~[4] предлагается при постановке задач маршрутизации учитывать
-ряд дополнительных факторов, часть из которых рассматривается в~настоящей
-работе. В~частности, предполагается, что стоимость транспортировки зависит
-от загрузки ТС и~состояния дороги.
-
-  Рассматриваемая задача является NP-труд\-ной, как обобщение задачи
-коммивояжера, в~связи с~чем точные методы применимы лишь при малых
-размерностях задач (менее 10), а~значит, актуальной задачей является
-разработка эвристических методов ее решения.
-
-\section{Постановка задачи}
-
-  Груз следует доставить потребителям из пункта производства
-ТС грузоподъемностью~$Q$. Известны значения $q_i$~--- потребности
-в~грузе $i$-го пункта потребления ($i\hm=1, \ldots, n$), $n$~--- число пунктов
-потребления. Для единообразия будем считать пункт производства (базу, склад)
-нулевым пунктом. Предполагается, что ТС, доставив груз в~некоторые пункты,
-возвращается на базу и~загружается для доставки другим потребителям.
-
-  Дороги между пунктами характеризуются двумя показателями:
-расстоянием~$l_{ij}$ ($i, j\hm=0, \ldots , n$) и~коэффициен\-том слож\-ности
-дороги~$k_{ij}$ между пунктами~$i$ и~$j$. Расстояние~$l_{ij}$ может зависеть от
-направления движения (например, есть дороги с~односторонним движением),
-коэффициент слож\-ности дороги влияет на расход топлива, его величина также
-может зависеть от направления маршрута (пример: подъем в~гору или спуск
-с~горы)~[5].
-
-  Каждый пункт посещается в~точности один раз (не допускается split
-delivery~[6]). Очевидно, что задача имеет решение тогда и~только тогда, когда
-вместимость ТС не меньше потребности в~грузе в~каждом из пунктов
-потребления. Число циклов, за которые происходит доставка, не
-превосходит~$n$. Будем считать, что оно равно~$n$, но среди них могут быть
-пустые.
-
-  Предполагается известной зависимость $f(q)$ расхода топлива на единицу
-пути дороги стандартного качества.
-
-  Функция расхода топлива в~зависимости от веса перевозимого груза
-является возрастающей и~(как правило) вогнутой на всем интервале области
-определения функции  $[0;\,Q]$.
-
-  Введем булевы переменные~$X_{ij}^t$ ($i,j,\,t\hm=0, \ldots , n$), равные~1
-тогда и~только тогда, когда следующим после $i$-го пункта на пути
-следования ТС в~$t$-м цикле является $j$-й пункт. Должны выполняться
-следующие условия:
-  \begin{align}
-  \sum\limits_{i=0}^n X^t_{i0} &= \sum\limits_{j=0}^n X^t_{0j} =1\,,\enskip
-t=1,\ldots ,n\,;\label{e1-br}\\
-  \sum\limits_{t=1}^n \sum\limits_{i=0}^n X_{ij}^t &=1\,,\enskip j=1,\ldots,
-n\,;\label{e2-br}\\
-  \sum\limits_{t=1}^n \sum\limits_{i=0}^n X_{ij}^t &=1\,,\enskip i=1,\ldots, n\,.
-  \label{e3-br}
-  \end{align}
-
-  Ограничение~(1) означает наличие в~каждом цик\-ле одного пункта
-потребления (или базы для нулевого маршрута), из которого ТС попадает
-непосредственно на базу, и~ровно одного пункта потребления (или базы для
-нулевого маршрута), в~который ТС выезжает с~базы; ограничения~(2) и~(3)
-описывают условие однократного посещения каж\-до\-го пункта потребления.
-
-  Введем целочисленные переменные  $v_i^t$ ($i,t\hm=1,\ldots ,n)$), имеющие
-смысл номеров потребителей в~порядке прохождения в~$t$-м цикле,
-содержащем все пункты, за исключением начального:
-  \begin{gather}
-  1\leq v_i^t \leq \sum\limits_{i=0}^n \sum\limits_{j=0}^n X_{ij}^t\,, \enskip
-i,t=1,\ldots, n\,;\label{e4-br}\\
-  \left( v_i^t -v_j^t\right) +nX^t_{ij} \leq n-1\,,\enskip i,j,t=1,\ldots, n\,.
-  \label{e5-br}
-  \end{gather}
-
-  Из условий~(4) и~(5) следует отсутствие под\-цик\-лов.
-
-  Введем, наконец, булевы переменные $Z^t_{is}$, равные~1 тогда и~только
-тогда, когда $v_s^t\hm>v_i^t$ ($i,s,t\hm=1,\ldots ,n$). Ограничения на введенные
-переменные имеют следующий вид:
-  \begin{equation}
-  nZ_{is}^t \geq v_s^t -v_i^t\,,\enskip i,s,t=1,\ldots, n\,.
-  \label{e6-br}
-  \end{equation}
-
-
-  Это условие обеспечивает выполнение равенства $Z_{is}^t\hm= 1$ при
-$v_s^t\hm>v_i^t$.
-
-  Для обеспечения равенства $Z_{is}^t\hm=0$ при $v_s^t\hm\leq v_i^t$
-заметим, что число величин~$v_i^t$, меньших~$v_s^t$, равно $v_s^t\hm-1$.
-Таким образом, выполнение нужного свойства обеспечивается равенствами:
-  \begin{equation}
-  \sum\limits_{i=1}^n Z_{is}^t =v_s^t -1\,, s\,,t=1,\ldots, n\,.
-  \label{e7-br}
-  \end{equation}
-
-     Ограничение на вместимость:
-     \begin{equation}
-     \sum\limits_{i=0}^n \sum\limits_{j=0}^n q_i X_{ij}^t \leq Q\,,\enskip
-t=1,\ldots, n\,.
-     \label{e8-br}
-     \end{equation}
-
-  Целью является минимизация расходов на транспортировку:
-  \begin{multline}
-  R(X) = {}\\
-  {}=\sum\limits_{t=1}^n \sum\limits_{j=0}^n \sum\limits_{i=0}^n X_{ij}^t f
-\left ( \sum\limits_{s=0}^n Z^t_{is} q_i\right) l_{ij} k_{ij} \to \min\,.
-  \label{e9-br}
-  \end{multline}
-
-\section{Линейная целочисленная модель}
-
-  Предположим, что стоимость транспортировки является линейной функцией
-от массы перевозимого груза:
-$$
-f(q)=vq+w\,.
-$$
-%
- Тогда при сохранении
-условий~(1)--(8) целевая функция~(\ref{e9-br}) примет вид:
-  \begin{multline}
-  R(X) =v \sum\limits_{t=1}^n \sum\limits_{s=0}^n \sum\limits_{j=0}^n
-\sum\limits_{i=0}^n X_{ij}^t Z_{is}^t q_s l_{ij} k_{ij} +{}\\
- {}+w \sum\limits_{t=1}^n
-\sum\limits_{j=0}^n \sum\limits_{i=0}^n X_{ij}^t l_{ij} k_{ij} \to \min\,.
-  \label{e10-br}
-  \end{multline}
-
-  Для приведения целевой функции к линейной форме введем булевы
-переменные $P^t_{ijs} \hm= X_{ij}^t Z_{is}^t$ ($i,j,s,t\hm= 0,\ldots ,n$). Это
-условие равносильно выполнению следующей системы неравенств:
-  \begin{alignat}{2}
-  P^t_{ijs} &\geq X_{ij}^t +Z_{is}^t -1\,, &\enskip i,j,s,t&=0,\ldots, n\,;\label{e11-br}\\
-  P_{ijs}^t &\leq X_{ij}^t\,, &\enskip i,j,s,t&=0,\ldots ,n\,;\label{e12-br}\\
-  P_{ijs}^t&\leq Z_{is}^t\,, &\enskip i,j,s,t&=0,\ldots, n\,.\label{e13-br}
-  \end{alignat}
-%
-  Тогда целевая функция~(10) примет вид:
-  \begin{multline}
-  R(X) =v\sum\limits_{t=1}^n \sum\limits_{s=0}^n \sum\limits_{j=0}^n
-\sum\limits_{i=0}^n P^t_{ijs} q_s l_{ij} k_{ij} +{}\\
-{}+w \sum\limits_{t=1}^n
-\sum\limits_{j=0}^n \sum\limits_{i=0}^n X_{ij}^t l_{ij} k_{ij}\to \min\,.
-  \label{e14-br}
-  \end{multline}
-
-  Как число переменных задачи~(1)--(8), (11)--(14), так и~число ограничений
-имеют порядок $O(n^4)$.
-
-\section{Модифицированный алгоритм Кларка--Райта}
-
-  Для решения задачи был модифицирован эвристический алгоритм
-  Клар\-ка--Рай\-та~[7, 8]. Достоинствами метода являются его простота,
-надежность и~гибкость.
-
-  Опишем основные идеи алгоритма.
-
-  Метод Кларка--Райта является итерационным, причем на каждой итерации
-осуществляется попытка сращивания двух циклических маршрутов по
-определенным правилам. Модификация метода Клар\-ка--Рай\-та заключается
-в~возможности варьирования глубины сращивания маршрутов~$p$, а~также
-в~учете зависимости стоимости перевозки от направления прохождения цикла.
-В~классическом алгоритме Клар\-ка--Рай\-та глубина $p\hm=0$.
-
-  Изначально генерируются~$n$~цик\-лов вида 0--$i$--0
-($i\hm=\overline{1,n}$). На каждом из последующих шагов рассматриваются
-всевозможные допустимые пары циклов (т.\,е.\ такие, для которых суммарная
-загрузка не превосходит~$Q$), для каждой из которых строится не более
-8~цик\-лов при $p\hm =0$ и~не более $16p$~цик\-лов при $p\hm\geq 1$
-следующим образом: каждый из новых циклов состоит из начального или
-конечного отрезка (длиной не более~$p$) одного из циклов, затем проходится
-второй цикл (без нулевой вершины), затем продолжается движение по первому
-циклу. При этом учитывается возможность изменения направления движения
-по каждому из циклов на противоположное, поскольку задача не
-предполагается симметричной и~загрузка ТС зависит от порядка прохождения
-пунктов.
-
-  Например, сращивание циклов $a_1^1,a_2^1,\ldots, a^1_{k_1}$ и~$a_1^2,
-a_2^2,\ldots, a^2_{k_2}$ (с исключенной нулевой вершиной) при единичных
-начальном и~конечном отрезках дает следующие циклы:
-  \begin{gather*}
-  0, a_1^1, a_1^2, a_2^2,\ldots, a^2_{k_2}, a_2^1,\ldots, a^1_{k_1}, 0;\\
-   0, a_1^1, a^2_{k_2}, a^2_{k_2-1},\ldots , a_1^2, a_2^1,\ldots, a^1_{k_1},0;\\
-  0,a_{k_1}^1, a^1_{k_1-1}, \ldots, a_2^1, a_1^2, a_2^2,\ldots, a^2_{k_2},
-a_1^1,0;\\
-  0,a^1_{k_1}, a^1_{k_1-1},\ldots , a_2^1, a^2_{k_2}, a^2_{k_2-1},\ldots, a_1^2,
-a_1^1,0\,.
-  \end{gather*}
-
-  Еще четыре цикла возникнут при добавлении части второго цикла между
-пунктами $a^1_{k_1}$ и~$a^1_{k_1-1}$. Затем первый и~второй циклы можно
-поменять мес\-та\-ми, тогда получим еще 8~циклов.
-
-  В каждом случае вычисляется разность между суммой расходов на доставку
-грузов по отдельным циклам и~расходов на доставку грузов по их
-объединению и~выбирается объединенный цикл, для которого эта разность
-максимальная. При этом в~модификации алгоритма Клар\-ка--Рай\-та для
-каждой пары циклов перебираются все возможные варианты их сращивания
-при всех значениях глубины сращивания от~0 до заданного пользователем
-значения~$p$. Процесс прекращается при невозможности дальнейшего
-сращивания циклов или отсутствии пары циклов, сращивание которых
-выгодно~[7,~8].
-
-\vspace*{-9pt}
-
-\section{Вычислительный эксперимент}
-
-\vspace*{-2pt}
-
-  Задача (1)--(8), (11)--(14) решалась двумя способами: точным методом
-и~модифицированным алгоритмом Клар\-ка--Рай\-та, которые были
-реализованы в~среде Scilab-4.1.2. Поскольку на задачах с~размерностями
-$n\hm\geq 8$ время решения линейной целочисленной задачи оказалось весьма
-продолжительным (в~некоторых случаях более 45~ч), сравнение
-алгоритмов производилось для случайно сгенерированных задач при
-размерностях $n\hm=\overline{4,8}$. Для каж\-дой размерности было решено по
-20~задач каж\-дым из алгоритмов.
-
-  Генерация тестовых примеров осуществлялась для значений
-грузоподъемности ТС $Q\hm\in [1{,}5,\,5]$ (т); элементы матрицы~$L$
-протяженности дорог между пунктами генерировались из диапазона
-$L_{ij}\hm\in [1,\,100]$, $i,j\hm=\overline{1,n}$ (км); элементы матрицы
-коэффициентов сложности дорог между пунктами генерировались целыми из
-диапазона $[1,\,5]$; вектор потребностей пунктов в~грузе генерировался из
-диапазона $q_i\hm\in [300,\,1500]$ (кг). Функция расхода топлива для
-используемого типа ТС задана полиномом первой степени от величины
-загрузки ТС в~виде $f(q)\hm=15\hm+3q$.
-
-  Все сгенерированные задачи были решены при помощи точного алгоритма,
-а~также с~помощью модифицированного алгоритма Клар\-ка--Рай\-та при
-значении параметра $p\hm=3$. Для каждого значения $n\hm= \overline{4,8}$
-в~таблице приведены результаты численного эксперимента~--- средние
-значения отклонения\linebreak от оптимального значения расхода топлива, среднее время
-работы точного алгоритма и~модифицированного алгоритма Клар\-ка--Рай\-та.
-Также приведены сведения о доле задач, решение которых алгорит\-мом
-  Клар\-ка--Рай\-та совпало с~оптимальным.
-
-\begin{table*}\small
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|}
-\multicolumn{5}{c}{Результаты численного эксперимента}\\[6pt]
-\hline
-&Точный алгоритм&\multicolumn{3}{c|}{Модифицированный алгоритм
-Кларка--Райта}\\
-\cline{2-5}
-\tabcolsep=0pt\begin{tabular}{c}$n$\\ \ \end{tabular}&
-\tabcolsep=0pt\begin{tabular}{c}Среднее время\\ работы алгоритма, с\end{tabular}&
-\tabcolsep=0pt\begin{tabular}{c}Среднее время\\ работы алгоритма, с\end{tabular}&
-\tabcolsep=0pt\begin{tabular}{c}Среднее отклонение\\ расхода топлива, \%\end{tabular}
-&\tabcolsep=0pt\begin{tabular}{c}Совпадения результатов\\ с~оптимумом, \%\end{tabular}\\
-\hline
-4&2,70&17,57&3,08&85\\
-5&13,74&20,82&4,47&75\\
-6&213,85&24,36&3,04&65\\
-7&6050,91&46,40&9,15&50\\
-8&100\,084&54,60&14,26\hphantom{9}&25\\
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
-
-
-
-  Как видно из таблицы, модифицированный алгоритм Клар\-ка--Рай\-та на
-небольших размерностях показывает хорошие результаты. Вычислительное
-время, затрачиваемое точным алгоритмом, оказывается неприемлемо велико
-(более 27~ч уже при $n\hm=8$), в~то время как вычислительное время,
-затрачиваемое модифицированным алгоритмом Клар\-ка--Рай\-та, остается
-приемлемым при существенном увеличении размерности
-
-  Рисунок иллюстрирует зависимость времени работы эвристического
-алгоритма от размерности за-\linebreak\vspace*{-12pt}
- \begin{center}
- \mbox{%
- \epsfxsize=77.428mm
- \epsfbox{bro-1.eps}
- }
- \end{center}
-% \vspace*{-9pt}
-
-\noindent
-{\small Зависимость вычислительного времени работы модификации алгоритма
-Клар\-ка--Рай\-та от размерности задач}
-
-\vspace*{9pt}
-
-
-\noindent
-дачи. По горизонтали указаны значения~$n$~---
-размерности задачи, по вертикали~--- среднее время вычисления (в секундах).
-Как видно, при увеличении размерности время работы модифицированного
-алгоритма Клар\-ка--Рай\-та возрастает, однако точный алгоритм на
-идентичных размерностях работает несравнимо дольше.
-
-
-
-\section{Заключение}
-
-  Рассматриваемая проблема является актуальной прикладной задачей.
-Полученные результаты позволяют сделать вывод о~целесообразности
-использования модификации алгоритма Клар\-ка--Рай\-та для решения задачи
-транспортировки грузов с~учетом загрузки ТС для
-снижения отклонения получаемых результатов от точно найденного оптимума.
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{9}
-\bibitem{1-br}
-\Au{Dantzig G.\,B., Ramser J.\,H.} The truck dispatching problem~// Management
-Sci., 1959. No.\,1. P.~80--91.
-\bibitem{2-br}
-\Au{Бронштейн Е.\,М., Заико Т.\,А}. Детерминированные оптимизационные
-задачи транспортной логистики~// Автоматика и~телемеханика, 2010. №\,10.
-С.~133--147.
-\bibitem{3-br}
-\Au{Ralphs T.\,K., Kopman L., Pulleyblank~W.\ R., Trotter~L.\,E., Jr.} On the
-capacitated vehicle routing problem~// Math. Program. Ser. B, 2003. Vol.~94.
-P.~343--359.
-\bibitem{4-br}
-\Au{Kara I., Kara B.\,Y., Kadri Yetis~M.} Energy minimizing vehicle routing
-problem~// Combinatorial optimization and applications~/
-Eds. Dress~A.\,W.\,M., Xu~Y., Zhu~B.
-Lecture notes in computer science ser.~--- Springer, 2007. Vol.~4616.
-P.~62--71.
-\bibitem{5-br}
-\Au{Зелёв П.\,А., Бронштейн Е.\,М.} Задача транспортной логистики с~учетом
-зависимости расходов на транспортировку от загрузки транспортного
-средства~// Логистика и~управление цепями поставок, 2010. №\,4. С.~39--45.
-\bibitem{6-br}
-\Au{Dror M., Laporte G., Trudeau~P.} Vehicle routing with split deliveries~//
-Discrete Appl. Math., 1994. Vol.~50. P.~239--254.
-
-\bibitem{8-br}
-\Au{Clarke G., Right J.\,W.} Scheduling of vehicles from a central depot to a~number
-of delivery points~// Oper. Res., 1963. No.\,11. P.~568--581.
-
-\bibitem{7-br} %8
-\Au{Бронштейн Е.\,М., Зелёв П.\,А.} Задача маршрутизации транспортного
-средства с~учетом зависимости стоимости перевозок от загрузки~//
-Информационные технологии, 2014. №\,4. С.~33--37.
-
- \end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в редакцию 06.02.14}}
-
-\newpage
-
-%\vspace*{12pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-%\hrule
-
-%\vspace*{12pt}
-
-\def\tit{ABOUT OPTIMUM DELIVERY OF FREIGHTS BY~THE~VEHICLE TAKING INTO ACCOUNT DEPENDENCE
-OF~COST OF~TRANSPORTATIONS ON~LOADING OF~VEHICLES ON~SEVERAL CYCLIC ROUTES}
-
-\def\titkol{About optimum delivery of freights by~the vehicle
-taking into account dependence of~cost
-of~transportations on~loading of~vehicles} % on several cyclic routes}
-
-\def\aut{E.\,M.~Bronshtein and P.\,A.~Zelyov}
-
-\def\autkol{E.\,M.~Bronshtein and P.\,A.~Zelyov}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-9pt}
-
-\noindent
-Ufa State Aviation Technical University,
-12 K.~Marx Str., Ufa 450000, Russian Federation
-
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2014\ \ \ volume~8\ \ \ issue\ 4}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2014\ \ \ volume~8\ \ \ issue\ 4
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}
-
-
-
-
-  \Abste{The problem of creation of a route of freights delivery from
-  one producer (base, a warehouse) to consumers by the vehicle with
-  the minimum costs of transportations is considered. Dependence of cost
-  of transportation on loading of the vehicle and quality of the road is
-  thus considered. It is supposed that the vehicle can come back to the base
-  for additional charge. The corresponding mathematical model is constructed;
-  for a case of linear dependence of fare from loading, the linear integer model
-  is received. For the solution of an objective along with the exact algorithm,
-  modification
-  of the known heuristic algorithm of Clark and Right is suggested. Computing experiment
-  has been made.}
-
-  \KWE{heuristic algorithm; creation of a route; transportation; problem of routing}
-
-
-  \DOI{10.14357/19922264140407}
-
-
-\Ack
-\noindent
-The work was financially supported by the Russian  Foundation for
-Basic Research (project 13-01-00005).
-
-
-
-%\vspace*{3pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{9}
-\bibitem{1-br-1}
-\Aue{Dantzig, G.\,B., and J.\,H.~Ramser}. 1959. The truck dispatching problem.
-\textit{Management Sci.} 1:80--91.
-\bibitem{2-br-1}
-\Aue{Bronshtein, E.\,M., and T.\,A.~Zaiko}. 2010. Deterministic optimizational
-problems of transportation logistics. \textit{Automation Remote Control}
-10:2132--2144.
-\bibitem{3-br-1}
-\Aue{Ralphs, T.\,K., L. Kopman, W.\,R.~Pulleyblank, and L.\,E.~Trotter, Jr.} 2003.
-On the capacitated vehicle routing problem. \textit{Math. Program. Ser. B}.
-94:343--359.
-\bibitem{4-br-1}
-\Au{Kara, I., B.\,Y. Kara, and M.~Kadri Yetis}. 2007. Energy minimizing vehicle
-routing problem. \textit{Combinatorial optimization and applications}.
-Eds.\ A.\,W.\,M.~Dress, Y.~Xu, and B.~Zhu.
-Lecture notes in computer science ser. 4616:62--71.
-\bibitem{5-br-1}
-\Aue{Zelev, P.\,A., and E.\,M. Bronshteyn}. 2010. Zadacha transportnoy logistiki s~uchetom zavisimosti raskhodov na transportirovku ot zagruzki transportnogo sredstva
-[The problem of transportation logistics, taking into account transportation costs,
-depending on the load of the vehicle]. \textit{Logistika i~Upravlenie Tsepyami
-Postavok} [Logistics and Supply Chain Management] 4:39--45.
-\bibitem{6-br-1}
-\Aue{Dror, M., G. Laporte, and P.~Trudeau}. 1994. Vehicle routing with split
-deliveries. \textit{Discrete Appl. Math.} 50:239--254.
-\bibitem{7-br-1} %8
-\Aue{Bronshteyn, E.\,M., and P.\,A.~Zelev}. 2014. Zadacha marsh\-ru\-ti\-za\-tsii
-transportnogo sredstva s~uchetom zavisimosti stoimosti perevozok ot zagruzki
-[Vehicle routing problem, taking into account the cost of transportаtion, depending
-on the load]. \textit{Informatsionnye Tekhnologii} [Information Technologies]
-4:33--37.
-\bibitem{8-br-1} %7
-\Aue{Clarke, G., and J.\,W.~Right}. 1963. Scheduling of vehicles from a~central
-depot to a~number of delivery points. \textit{Oper. Res.} 11:568--581.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received February 6, 2014}}
-
-\vspace*{-18pt}
-
-\Contr
-
-\noindent
-\textbf{Bronshtein Efim M.}\ (b.\ 1946)~--- Doctor of Science in physics and mathematics; professor,
-Ufa State Aviation Technical University, 12 K.~Marx Street, Ufa 450000, Russian Federation; bro-efim@yandex.ru
-
-\vspace*{3pt}
-
-\noindent
-\textbf{Zelyov Pavel A.}\ (b.\ 1988)~---
-PhD student,  Ufa State Aviation Technical University, 12 K.~Marx Street, Ufa 450000, Russian Federation;
-pz1988@yandex.ru
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}
-		
-

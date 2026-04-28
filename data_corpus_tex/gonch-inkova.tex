@@ -1,851 +1,0 @@
-
-
-\def\stat{gonch+inkova}
-
-\def\tit{ИЗВЛЕЧЕНИЕ ЗНАНИЙ О~СРЕДСТВАХ ВЫРАЖЕНИЯ ЛОГИКО-СЕМАНТИЧЕСКИХ 
-ОТНОШЕНИЙ\\ ПРИ~ПОМОЩИ НАДКОРПУСНОЙ БАЗЫ ДАННЫХ}
-
-\def\titkol{Извлечение знаний о~средствах выражения логико-семантических 
-отношений при~помощи НБД} %надкорпусной базы данных}
-
-\def\aut{А.\,А.~Гончаров$^1$, О.\,Ю.~Инькова$^2$}
-
-\def\autkol{А.\,А.~Гончаров, О.\,Ю.~Инькова}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Гончаров А.\,А.}
-\index{Инькова О.\,Ю.} 
-\index{Goncharov A.\,A.}
-\index{Inkova O.\,Yu.}
-
-%{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-%{Работа выполнена в~Институте проблем информатики ФИЦ ИУ РАН при поддержке РФФИ (проект  
-%20-012-00166).}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Институт проблем информатики Федерального исследовательского центра <<Информатика 
-и~управление>> Российской академии наук, \mbox{a.gonch48@gmail.com}}
-\footnotetext[2]{Институт проблем информатики Федерального исследовательского центра <<Информатика 
-и~управление>> Российской академии наук, \mbox{olyainkova@yandex.ru}}
-
-\vspace*{-9pt}
-
-
-
-\Abst{Цель статьи~--- показать продуктивность использования параллельных текстов и~их 
-аннотирования в~надкорпусной базе данных (НБД) коннекторов для извлечения знаний об 
-альтернативных средствах выражения ло\-ги\-ко-семантических отношений (ЛСО). На примере 
-наиболее известных дискурсивно аннотированных корпусов~--- Penn Discourse Treebank (PDTB), 
-Prague Dependency Treebank (PDT) и~Rhetorical Structure Theory  Discourse Treebank (RST-DT)~--- авторы 
-показывают, что в~существующих исследованиях нет консенсуса относительно того, какие 
-языковые средства относить к~классу коннекторов (прототипических показателей  
-ЛСО), а~какие~--- к~альтернативным средствам. 
-В~исследовании продемонстрировано, что применение сопоставительного метода 
-и~использование возможностей НБД коннекторов позволяет не только извлекать новое 
-знание о~средствах выражения ЛСО в~изучаемых языках, но и~создавать тезаурусы таких 
-средств, в~том числе альтернативных коннекторам. Кроме того, 
-информация, хранящаяся в~НБД, дает возможность получать новые знания о том, какие 
-ЛСО могут быть выражены неспециализированными средствами и~какова частотность  
-использования этих средств для каждого ЛСО в~каждом из изучаемых языков.}
-
-\KW{надкорпусная база данных; логико-семантические отношения; коннекторы; 
-извлечение новых знаний; параллельные тексты}
-
-\DOI{10.14357/19922264210214}
-
-\vspace*{4pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Вводные замечания}
-
-\vspace*{-6pt}
-
-Логико-семантические, или, шире, дискурсивные, отношения, 
-обеспечивающие связность текста на естественном языке, привлекают 
-внимание лингвистов и~специалистов по информатике уже не один десяток 
-лет: первые исследования начали появляться в~1970-х~гг.\ (например, работы 
-Дж.~Хоббса~[1, 2]). Однако многие вопросы до сих пор остаются 
-дискуссионными: это, в~первую очередь, и~само понятие <<дискурсивное 
-отношение>>, и~понятие <<коннектор>> (единицы этого класса считаются 
-прототипическими эксплицитными показателями таких отношений). Нет 
-консенсуса и~относительно того, можно ли создать исчерпывающий список 
-коннекторов для исследуемого языка. Тем не менее важность списков 
-коннекторов для разработки дискурсивных парсеров и, шире, средств 
-автоматической обработки текста и~автоматического извлечения информации 
-из текста подчеркивается в~ряде работ (см.,\ например,~[3, с.~55]). В~[4], где 
-описываются результаты разработки дискурсивного парсера для русского 
-языка, отмечается, что наличие показателя 
-ЛСО служит наиболее надежным признаком для определения 
-того, каким именно отношением связаны фрагменты текста.
-
-В то же время в~[5] показано, что в~зависимости от типа текста и~вида ЛСО 
-коннекторы используются лишь в~30\%--40\% случаев. Остальные случаи 
-представляют собой либо имплицитные ЛСО (подробнее об этом понятии 
-см., например,~[6]), либо ЛСО, показателем которого являются языковые 
-средства, отличные от коннекторов. Следовательно, качество результатов 
-автоматической обработки текстов на естественном языке непосредственно 
-зависит от уровня наших знаний не только о коннекторах, но и~об этих, 
-альтернативных, средствах выражения ЛСО. Цель статьи состоит в~том, 
-чтобы показать продуктивность использования параллельных текстов 
-и~поисковых возможностей НБД коннекторов, разработанной в~ИПИ ФИЦ 
-ИУ РАН (подробнее см.~\cite{7-in, 8-in, 9-in}), для извлечения знаний об 
-альтернативных средствах выражения ЛСО.
-
-\vspace*{-8pt}
-
-\section{Существующие подходы}
-
-\vspace*{-1pt}
-
-Отправной точкой для активных исследований средств выражения ЛСО, 
-альтернативных коннекторам, стала статья~[10], отражающая подход 
-создателей Пенсильванского дискурсивно аннотированного корпуса (PDTB)~[11] к~этому вопросу. При аннотировании 
-корпуса выяснилось, что если два фрагмента текста связаны ка\-ки\-м-ли\-бо 
-ЛСО (дискурсивным отношением в~терминах PDTB), то это отношение 
-может: ($i$)~выражаться коннектором\footnote{К~коннекторам относятся 
-сочинительные и~подчинительные союзы, а~также некоторые другие языковые единицы, 
-за которыми грамматиками английского языка традиционно признается связующая 
-функция.}; ($ii$)~не выражаться коннектором, причем какой-либо коннектор 
-можно добавить (=\;импли\-цит\-ные ЛСО); ($iii$)~не выражаться коннектором, 
-причем никакой коннектор не может быть добавлен из-за возникающей 
-в~этом случае семантической из-\linebreak быточности. Авторы пришли к~выводу, что 
-такая\linebreak избыточность вызвана наличием альтернативных коннекторам 
-лексических средств выражения ЛСО~--- <<альтернативных 
-лексикализаций>> (alternative lexicalizations, AltLex).
-
-Если в~PDTB в~разряд коннекторов попадает ограниченный круг языковых 
-единиц, то разработчики Пражского корпуса синтаксических зависимостей 
- (PDT) трактуют понятие коннектор более 
-широко, включая в~этот класс большинство лексических средств, которые так 
-или иначе могут выражать ЛСО~\cite{3-in, 12-in}. Коннекторы при этом 
-разделяются на <<первичные>> (primary) и~<<вторичные>> (secondary), 
-довольно разнообразные по своей морфологической природе. Не включаются в~чис\-ло коннекторов лишь так называемые <<неуниверсальные>>, или 
-<<свободные связующие сочетания>> (non-\linebreak universal\,/\,free connecting 
-phrases), образующие третий класс средств выражения ЛСО. Ср.~(1)--(4) 
-из~\cite[с.~51, 68]{3-in}:
-{\small
-\begin{enumerate}[(1)]
-\item Fred didn't stop joking. \textbf{As a result}, his friends enjoyed hilarity throughout the 
-evening.
-
-`Фред не переставал шутить. \textbf{В~результате} его друзья смеялись весь 
-вечер'.\footnote[2]{Здесь и~далее в~отсутствие других указаний перевод авторов статьи.}
-
-\item  I had all the necessary qualifications. \textbf{Despite this}, I~didn't get the job.
-
-`Я~удовлетворял всем квалификационным требованиям. \textbf{Несмотря на это}, на 
-работу меня не приняли'.
-
-\item 
-Fred didn't stop joking. This \textbf{caused} hilarity among his friends for the whole evening.
-
-`Фред не переставал шутить. Это \textbf{вызывало} смех его друзей весь вечер'.
-
-\item 
- Fred has pneumonia. \textbf{Because of this illness}, he will be absent from his work for 
-two weeks.
-
-`У~Фреда пневмония. \textbf{Вследствие этой болезни} его не будет на работе две 
-недели'.
-\end{enumerate}
-}
-
-Так, в~(1) причинно-следственные ЛСО выражены союзом \textit{as 
-a~result}~--- <<первичным коннектором>>. В~(2) и~(3) используются 
-<<вторичные коннекторы>>: в~(2) это сочетание предлога \textit{despite} 
-с~анафорическим выражением \textit{this}, отсылающим к~ситуации 
-\textit{I~had all the necessary qualifications}, которое выражает уступительные 
-ЛСО; в~(3) <<вторичным коннектором>> считается глагол \textit{caused}, 
-вы\-ра\-жа\-ющий причинные ЛСО. Наконец, в~(4) \textit{because of this illness} 
-рассматривается как <<неуниверсальное>>, или <<свободное связующее 
-сочетание>>, поскольку оно непосредственно связано с~предыдущим 
-контекстом (в~котором упомянута пневмония Фреда), в~отличие от 
-\textit{despite this} в~(3), имеющего более общее значение. 
-
-<<Альтернативным лексикализациям>> в~подходе PDTB соответствуют 
-второй и~третий классы единиц в~PDT~\cite[с.~54]{3-in}. Такого же широкого 
-подхода к~<<коннекторам>> придерживаются \mbox{разработчики} русского 
-дискурсивно аннотированного корпуса~\cite{13-in}.
-
-Подчеркнем, что во всех описанных случаях во внимание принимаются лишь 
-лексические средства выражения ЛСО. В~\cite[с.~62]{3-in} даже особо 
-отмечается, что <<коннекторами>> не считаются синтаксические 
-и~морфологические средства, например относительные придаточные или 
-деепричастия, которые в~ряде языков способны выражать ЛСО (см.\ ниже). 
-Подчеркивая важность создания лексиконов связующих средств, 
-разработчики Пражского корпуса не дают, тем не менее, списка 
-<<вторичных коннекторов>>.
-
-В последней версии PDTB~(3.0) появился класс показателей ЛСО AltLexC 
-(где <<С>> означает \textit{Construction}), включающий лексико-син\-так\-си\-че\-ские 
-средства выражения ЛСО~\cite[с.~9--10, 76]{14-in}. Однако 
-если для <<первичных коннекторов>> приводится список языковых единиц, 
-то ни для <<альтернативных лексикализаций>>, ни для нового класса 
-AltLexC списков не дается. В~\cite[с.~75--76]{14-in} приводятся лишь ЛСО, 
-которые выражают те единицы этих классов, что зафиксированы в~последней 
-версии корпуса PDTB.
-
-В рамках Теории риторической структуры (Rhetorical Structure Theory, RST) 
-принципы классификации языковых единиц, способных выражать 
-риторические (в~данной терминологии) отношения, даны  
-в~работе~\cite[с.~8, 9]{15-in}, которая служит пособием по аннотированию 
-показателей риторических отношений в~корпусе RST Discourse Treebank 
-(RST-DT). Поскольку объем понятия <<риторическое отношение>> шире, 
-чем ЛСО, так как включает не только отношения связности, которые могут 
-быть выражены коннектором, то и~набор показателей этих отношений шире. 
-К~<<первичным>> коннекторам добавляются показатели самой 
-разнообразной природы: лексические, морфологические (временн$\acute{\mbox{ы}}$е формы), 
-семантические (синонимия, антонимия и~др.), синтаксические (различные 
-виды придаточных и~др.), графические (знаки препинания и~др.) и~т.\,д.; 
-причем эти средства могут также комбинироваться друг 
-с~другом\footnote[1]{Заметим, что в~более ранних версиях корпусов, размеченных 
-в~соответствии с~RST, во всех таких случаях риторическое отношение считалось 
-имплицитным. Согласно версии, представленной в~\cite{15-in}, оно оказывается 
-эксплицитным, а в~тех случаях, когда никакой из потенциальных показателей отношения 
-не может быть идентифицирован, проставляется метка \textit{unsure}.}. Однако 
-в~пособии по аннотированию приводятся лишь типы показателей 
-риторических отношений, а~не их список.
-{\looseness=1
-
-}
-
-\section{Альтернативные средства~выражения логико-семантических отношений в~надкорпусной
-базе данных коннекторов}
-
-Если во всех упомянутых выше работах средства выражения ЛСО изучаются 
-на одноязычном материале, то НБД коннекторов позволяет проводить 
-исследования на материале параллельных текстов, используя методы 
-сопоставительной лингвистики. Аннотирование употреблений коннекторов 
-в~параллельных текстах позволило заметить, что в~некоторых случаях 
-использованный в~оригинале коннектор переведен не коннектором, а~другим 
-языковым средством (или наоборот, в~оригинале коннектор отсутствует, но 
-появляется в~переводе). С~точки зрения сопоставительного подхода такие 
-случаи представляют собой примеры <<дивергентного 
-перевода>>\footnote[2]{Термин <<дивергентный перевод>> заимствован из 
-работы~\cite{16-in}, посвященной использованию многоязычных корпусов 
-в~контрастивных исследованиях; он был уточнен для исследования коннекторов 
-в~\cite{17-in}.}.
-
-Для обозначения языковых единиц, не являющихся коннекторами, но 
-способными выражать ЛСО, предлагается использовать термин 
-<<альтернативные коннекторам средства выражения ЛСО>>. В НБД такие 
-средства делятся на ($i$)~лексические; ($ii$)~грамматические 
-и~($iii$)~пунктуационные.
-
-\subsection{Лексические средства}
-
-В примере~(5) коннектор \textit{то есть}, выражающий ЛСО 
-переформулирования, двумя переводчиками передан альтернативными 
-коннекторам лексическими средствами~--- `я~имею в~виду' и~`я~хочу 
-сказать' соответственно.
-{\small 
-\begin{enumerate}[(1)]
-\setcounter{enumi}{4}
-\item 
- Моя теща, \textbf{то есть} мать жены моей, тоже ничего не видит. [Н.\,В.~Гоголь. Нос 
-(1832--1833)]
-
-`Ma belle-m$\grave{\mbox{e}}$re, \textbf{j'entends} la m$\grave{\mbox{e}}$re de ma 
-femme, a, elle aussi, la vue faible.' [Tr.\,H.~Mongault (1938)]
-
-`Ma belle-m$\grave{\mbox{e}}$re, \textbf{je veux dire}, la m$\grave{\mbox{e}}$re de ma 
-femme, elle non plus, elle n'y voit rien du tout.' [Tr.\,A.~Markowitz (2007)]
-\end{enumerate}
-}
-
-\subsection{Грамматические средства}
-
-В примере~(6) для передачи коннектора \textit{потому что}, выражающего 
-ЛСО причины, также два переводчика используют форму причастия 
-настоящего времени, которая во французском языке способна выражать это 
-отношение.
-{\small
-\begin{enumerate}[(1)]
-\setcounter{enumi}{5}
-\item В~заключение прибавлял, что он <<был бы счастлив, если б удалось ему на себе 
-оправдать свое убеждение, но что достичь этого он не надеется, \textbf{потому что} это 
-очень трудно>>. [И.\,А.~Гончаров. Обломов (1848--1859)]
-
-`Et il concluait en ajoutant qu'il serait tout $\grave{\mbox{a}}$~fait heureux s'il parvenait 
-$\grave{\mbox{a}}$~justifier ses id$\acute{\mbox{e}}$es par son comportement, mais qu'il 
-n'esp$\acute{\mbox{e}}$rait pas y~parvenir, cette ad$\acute{\mbox{e}}$quation 
-$\acute{\mbox{\textbf{e}}}$\textbf{tant} fort difficile $\grave{\mbox{a}}$~atteindre.' 
-[Tr.\,A.~Adamov (1959)]
-
-`En guise de conclusion il ajoutait <<qu'il serait heureux s'il pouvait justifier ses convictions 
-par sa propre vie, mais qu'il ne l'esp$\acute{\mbox{e}}$rait pas, cet objectif 
-$\acute{\mbox{\textbf{e}}}$\textbf{tant} trop difficile $\grave{\mbox{a}}$~atteindre>>.' 
-[Tr.\,L.~Jurgenson (1988)]
-\end{enumerate}
-}
-
-\subsection{Пунктуационные средства}
-
-В~(7) уже упоминавшийся выше коннектор \textit{потому что} передан 
-в~двух переводах двоеточием.
-{\small
-\begin{enumerate}[(1)]
-\setcounter{enumi}{6}
-\item
-$\ldots$но коллежский асессор Ковалев не мог слышать запаха, \textbf{потому что} 
-закрылся платком и~потому что самый нос его находился бог знает в~каких местах. 
-[Н.\,В.~Гоголь. Нос (1832--1833)]
-
-`$\ldots$Mais l'assesseur de coll$\grave{\mbox{e}}$ge Kovaliov ne pouvait pas s'en rendre 
-compte\textbf{:} il avait cach$\acute{\mbox{e}}$ son visage sous un mouchoir, et d'ailleurs son nez 
-se trouvait en cet instant Dieu sait o$\grave{\mbox{u}}$.' [Tr.\,B.~de Schloezer (1925)]
-
-`$\ldots$Cependant le major Kovaliov ne s'en trouvait point incommod$\acute{\mbox{e}}$\textbf{:} 
-il tenait son mouchoir sur son visage, et d'ailleurs son nez se promenait$\ldots$ Dieu sait 
-o$\grave{\mbox{u}}$.' [Tr.\,H.~Mongault (1938)]
-\end{enumerate}
-}
-
-Тот факт, что в~примерах~(5)--(7) несколько переводчиков выбирают 
-альтернативные средства выражения ЛСО, свидетельствует о~том, что эти 
-средства выражают ЛСО на регулярной основе, а~не являются единичными 
-переводческими ре\-ше\-ни\-ями.
-{\looseness=1
-
-}
-
-\begin{table*}[b]\small %tabl1
-\begin{center}
-\Caption{Виды ПС для коннекторов русского языка в~НБД (направление перевода 
-рус\-ский--фран\-цуз\-ский)}
-\vspace*{2ex}
-
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Всего&Конгруэнтное ПС&Дивергентное ПС&Конгруэнтно-дивергентное 
-ПС&\tabcolsep=0pt\begin{tabular}{c}Эксплицитная\\ языковая\\ единица\\ отсутствует\end{tabular}\\
-\hline
-11\,175 
-(100\%)&8\,948 
-(80,07\%)&942 
-(8,43\%)&167 
-(1,5\%)&1\,118 
-(10\%)\\
-\hline
-\end{tabular}
-\end{center}
-%\end{table*}
-%\begin{table*}[b]\small %tabl2
-\vspace*{8pt}
-\begin{center}
-\parbox{358pt}{\Caption{Наиболее употребительные дивергентные ПС, зафиксированные в~НБД 
-(на\-прав\-ле\-ние перевода рус\-ский--фран\-цуз\-ский)}
-}
-
-\vspace*{2ex}
-
-\begin{tabular}{|c|l|c|}
-\hline
-№&\multicolumn{1}{c|}{Средство выражения ЛСО 
-в~переводе}&\tabcolsep=0pt\begin{tabular}{c}Число ПС\\ (с коннектором\\ 
-в~оригинале)\end{tabular}\\
-\hline
-1&Придаточное определительное предложение &47\\
-2&Форма деепричастия настоящего времени&35\\
-3&Конструкция с~местоименным повтором&20\\
-4&Форма деепричастия настоящего времени в~сочетании с~\textit{tout}&20\\
-5&Форма причастия настоящего времени&17\\
-$\ldots$&$\ldots$&$\ldots$\\
-46\hphantom{9}&\textit{Il n'y a que$\ldots$\ qui}&\hphantom{9}1\\
-\hline
-&&246\hphantom{9}\\
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
-
-
-
-
-Промежуточное положение между коннекторами и~альтернативными им 
-средствами выражения ЛСО занимают языковые единицы, пред\-став\-ля\-ющие 
-собой сочетание коннектора и~лексического и/или грамматического средства. 
-Так, в~(8) при переводе коннектора \textit{так как} на французский язык\linebreak 
-использовано сочетание коннектора \textit{puisque} и~формы причастия 
-настоящего времени. Для обо\-значения таких сочетаний используется термин 
-<<комбинированные средства выражения ЛСО>>, а~переводное 
-соответствие считается кон\-гру\-энт\-но-ди\-вер\-гент\-ным.
-{\small
-\begin{enumerate}[(1)]
-\setcounter{enumi}{7}
-\item Предприятия, расположенные в~городе и~севернее города, не выполнили своих 
-обязательств перед государством, \textbf{так как} находятся в~районе военных 
-действий. [В.\,С.~Гроссман. Жизнь и~судьба (1960)]
-
-`Les entreprises situ$\acute{\mbox{e}}$es dans la ville, ou un peu au nord, n'avaient pu 
-remplir leurs obligations envers l'$\acute{\mbox{E}}$tat, \textbf{puisque se trouvant} en 
-pleine zone d'op$\acute{\mbox{e}}$rations militaires.' [Tr.\,A.~Berelowitch (1980)]
-\end{enumerate}
-}
-
-Похожая группа появляется в~последней версии PDTB (3.0)~--- <<AltLex 
-Relations Linked with Explicits>>~\cite[с.~80]{14-in}. Она, однако, не 
-аналогична классу комбинированных средств выражения ЛСО, так как 
-включает единицы, относимые нами к~коннекторам, такие как \textit{and in 
-general, but in general}.
-
-В табл.~1 приводятся данные (по состоянию на 02.03.2021) о числе 
-зафиксированных в~НБД коннекторов переводных соответствий (далее~--- 
-ПС), где в~русском языке (языке оригинала) исследуемая языковая единица 
-является коннектором. Для сравнения: в~Пражском корпусе на <<вторичные 
-коннекторы>>, при довольно широкой трактовке этого термина, 
-приходится~5\%~\cite[с.~456]{12-in}, а~в~PDTB~3.0 на AltLex и~AltLexC~--- 
-в~сумме чуть более~3\%~\cite[с.~5]{14-in}.
-{\looseness=1
-
-}
-
-
-По данным НБД, в~дивергентных ПС коннектор чаще всего передается 
-лексическими средствами, а~реже всего~--- знаками препинания. На 
-грамматические средства, которые совсем не учитываются в~Пражском 
-корпусе и~лишь недавно стали аннотироваться в~PDTB, приходится 
-более~26\% альтернативных средств. Этим, видимо, можно объяснить более 
-высокую долю дивергентных соответствий в~НБД. В~табл.~2 приводятся 
-наиболее употребительные грамматические средства выражения ЛСО. На 
-данный момент они не разделены на более мелкие подклассы, но фасетная 
-классификация, используемая в~НБД (см.~\cite{18-in}), позволяет решить эту 
-задачу.
-{\looseness=-1
-
-}
-
-
-В табл.~3 сравниваются, с~одной стороны, данные о том, какие ЛСО могут 
-передаваться с~использованием альтернативных средств при переводе 
-с~русского языка на французский, и,~с~другой стороны, данные о том, какие 
-ЛСО могут выражаться альтернативными средствами в~англоязычном 
-корпусе PDTB~3.0. В~работе~\cite{14-in} отсутствуют данные об общем 
-числе примеров для каждого ЛСО, поэтому в~табл.~3 приводятся только 
-абсолютные цифры. В~четвертом столбце табл.~3 указано общее число 
-примеров для AltLex и~AltLexC, так как обе группы соответствуют 
-альтернативным средствам выражения ЛСО в~НБД. Данные из табл.~3 
-показывают, что использование параллельных текстов позволяет извлечь 
-знания об альтернативных средствах выражения большего числа ЛСО, чем 
-анализ одноязычного материала.
-
-\begin{table*}\small %tabl3
-\begin{center}
-\Caption{Альтернативные коннекторам средства выражения в~НБД и~в~PDTB}
-\vspace*{2ex}
-
-\tabcolsep=2.5pt
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{Отношение в~НБД}&\tabcolsep=0pt\begin{tabular}{c}\textbf{Дивер-}\\ 
-\textbf{гентных}\\ \textbf{ПС}\end{tabular}&\textbf{Отношение в~PDTB}&
-\textbf{AltLex}\\
-\hline
-\tabcolsep=0pt\begin{tabular}{c}Исключение\\  Исключение из 
-рассмотрения\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}131\hphantom{9}\\ 27 
-\end{tabular}&Exception.Arg2-as-excpt&\hphantom{9}3\\
-\hline
-<<Вопреки ожидаемому>>&47&\multicolumn{1}{|c|}{\raisebox{-36pt}[0pt][0pt]{Contrast}}&
-\multicolumn{1}{|c|}{\raisebox{-36pt}[0pt][0pt]{41}}\\
-Сопоставительные&35&&\\
-<<Вопреки ожидаемому>> иллокутивные&19&&\\
-Возместительное противопоставление&12&&\\
-Противительно-уступительные иллокутивные&\hphantom{9}4&&\\
-Противительно-уступительные&\hphantom{9}5&&\\
-Контраст&\hphantom{9}2&&\\
-Противопоставление&\hphantom{9}2&&\\
-\hline
-\tabcolsep=0pt\begin{tabular}{c}Аддитивные иллокутивные\\ Аддитивные пропозициональные\\
-Соединительные\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}45\\ 16\\ 28\end{tabular}&Conjunction&139\hphantom{9}\\
-\hline
-Замещение&73&\tabcolsep=0pt\begin{tabular}{c}Substitution.Arg1-as-subst;\\ 
-Substitution.Arg2-as-subst\end{tabular}&29\\
-\hline
-Переформулирование&68&Equivalence&10\\
-\hline
-Спецификация&60&\tabcolsep=0pt\begin{tabular}{c}Instantiation.Arg2-as-instance;\\ 
-Level-of-detail.Arg2-as-detail\end{tabular}&106\hphantom{9}\\
-\hline
-Временные & 53 & Asynchronous.Precedence;&\\ 
-\cline{1-2}
-Временные 
-метаязыковые& \hphantom{9}4&\tabcolsep=0pt\begin{tabular}{c} 
-Asynchronous.Succession;\\ Synchronous\end{tabular}&
-\tabcolsep=0pt\begin{tabular}{c} 160\hphantom{9}\\ \ \end{tabular}\\
-\hline
-Пропозициональное сопутствование&42&---&\hphantom{9}0\\
-\hline
-Уступительные&42&\tabcolsep=0pt\begin{tabular}{c}Concession.Arg1-as-denier; 
-\\Concession.Arg2-as-denier\end{tabular}&39\\
-\hline
-\tabcolsep=0pt\begin{tabular}{c}Условные\\ Метаязыковые 
-условные\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}36\\ \hphantom{9}1 
-\end{tabular}&\tabcolsep=0pt\begin{tabular}{c}Condition.Arg1-as-cond; \\Condition.Arg2-as-cond\end{tabular}&74\\
-\hline
-Коррекция&32&---&\hphantom{9}0\\
-\hline
-Пропозициональная причина&32&Cause.Reason&281\hphantom{9}\\
-\hline
-Сравнительные&31&Similarity&63\\
-\hline
-Неединственности&25&---&\hphantom{9}0\\
-\hline
-Аналогия&18&---&\hphantom{9}0\\
-\hline
-Иллокутивная причина&16&Cause+Belief.Reason+Belief&\hphantom{9}6\\
-\hline
-Иллокутивное сопутствование&16&---&\hphantom{9}0\\
-\hline
-\tabcolsep=0pt\begin{tabular}{c}Пропозициональная альтернатива\\ Гипотетическая альтернатива\end{tabular}
-&\tabcolsep=0pt\begin{tabular}{c}15\\ \hphantom{9}1 \end{tabular}&Disjunction&\hphantom{9}0\\
-\hline
-\tabcolsep=0pt\begin{tabular}{c}Экстенсиональная генерализация\\ Интенсиональная генерализация\end{tabular}
-&\tabcolsep=0pt\begin{tabular}{c} \hphantom{9}7\\ \hphantom{9}5 \end{tabular}&Instantiation.Arg1-as-instance&\hphantom{9}1\\
-\hline
-Тождество&11&---&\hphantom{9}0\\
-\hline
-Несоответствие&\hphantom{9}6&---&\hphantom{9}0\\
-\hline
-Обобщающее переформулирование&\hphantom{9}6&Level-of-detail.Arg1-as-detail&16\\
-\hline
-\tabcolsep=0pt\begin{tabular}{c}Отрицательная альтернатива\\ Оговорка\end{tabular}&
-\tabcolsep=0pt\begin{tabular}{c}\hphantom{9}4\\ \hphantom{9}2\end{tabular}&
-%\tabcolsep=0pt\begin{tabular}{l}
-Negative-condition.Arg2-as-negCond%\end{tabular}
-&\hphantom{9}2\\
-\hline
-Следствие&\hphantom{9}4&\tabcolsep=0pt\begin{tabular}{c}Cause.Result;  Cause.negResult;\\
-Cause+Belief.Result+Belief\end{tabular}&663\hphantom{9}\\
-\hline
-Уступительные иллокутивные&\hphantom{9}4&
-%\tabcolsep=0pt\begin{tabular}{l}
-Concession+SpeechAct.Arg2-as-denier+SpeechAct%\end{tabular}
-&\hphantom{9}1\\
-\hline
-Отрицание тождества&\hphantom{9}1&---&\hphantom{9}0\\
-\hline
-Цель&\hphantom{9}0&\tabcolsep=0pt\begin{tabular}{c}Purpose.Arg1-as-goal; \\Purpose.Arg2-as-goal\end{tabular}&35\\
-\hline
----&\hphantom{9}0&\tabcolsep=0pt\begin{tabular}{c}Manner.Arg1-as-manner;\\ Manner.Arg2-as-manner\end{tabular}&\hphantom{9}3\\
-\hline
-&988\hphantom{9}&&1672\hphantom{99}\\
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
-
-\section{Заключительные замечания}
-
-Таким образом, исследование ЛСО с~использованием параллельных текстов 
-и~аннотирование их показателей в~НБД позволяет, во-пер\-вых, извлекать 
-новое знание о~средствах выражения ЛСО (в~том числе альтернативных 
-коннекторам) и~создавать тезаурусы таких средств в~изучаемых языках;  
-во-вто\-рых, на основе информации, хранящейся в~НБД, получать новые 
-знания о~том, какие ЛСО могут быть выражены неспециализированными 
-средствами и~какова частность их использования для каждого ЛСО в~каждом 
-из изучаемых языков. Все это способно улучшить работу дискурсивных 
-парсеров за счет пополнения спектра признаков, на основании которых 
-принимаются решения о наличии того или иного ЛСО между фрагментами 
-текста.
-
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-%\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-\bibitem{1-in}
-\Au{Hobbs J.\,R.} A~computational approach to discourse analyses.~--- 
-New York, NY, USA: Department of Computer Science, City College, City University of New 
-York, 1976.  Research Report 76-2.
-\bibitem{2-in}
-\Au{Hobbs J.\,R.} Why is discourse coherent?~--- Menlo Park, CA, 
-USA: SRI International, 1978.  SRI Technical Note~176.
-\bibitem{3-in}
-\Au{Danlos L., Rysov$\acute{\mbox{a}}$~K., Rysov$\acute{\mbox{a}}$~M., Stede~M.} Primary 
-and secondary discourse connectives: Definitions and lexicons~// Dialogue Discourse, 2018. 
-Vol.~9. No.\,1. P.~50--78.
-\bibitem{4-in}
-\Au{Chistova~E.\,V., Shelmanov~A.\,O., Kobozeva~M.\,V., Pisarevskaya~D.\,B., Smirnov~I.\,V., 
-Toldova~S.\,Yu.} Classification models for RST discourse parsing of texts in Russian~// 
-Компьютерная лингвистика и~интеллектуальные технологии: По мат-лам ежегодной 
-Междунар. конф. <<Диалог>>.~--- М.: РГГУ, 2019. Вып.~18(25). С.~163--176.
-\bibitem{5-in}
-\Au{Taboada M.} Discourse markers as signals (or not) of rhetorical relations~// J.~Pragmatics, 
-2006. Vol.~38. No.\,4. P.~567--592.
-\bibitem{6-in}
-\Au{Гончаров А.\,А., Инькова~О.\,Ю.} Имплицитные логико-се\-ман\-ти\-че\-ские отношения 
-и~метод их поиска в~параллельных текстах~// Компьютерная лингвистика 
-и~интеллектуальные технологии: По мат-лам ежегодной Междунар. конф.  
-<<Диалог>>.~--- М.: РГГУ, 2020. Вып.~19(26). С.~310--320.
-\bibitem{7-in}
-\Au{Зацман И.\,М., Инькова~О.\,Ю., Кружков~М.\,Г., Попкова~Н.\,А.} Представление 
-кроссязыковых знаний о~коннекторах в~надкорпусных базах данных~// Информатика и~её 
-применения, 2016. Т.~10. Вып.~1. С.~106--118.
-\bibitem{8-in}
-\Au{Зацман И., Кружков~М., Лощилова~Е.} Методы и~средства информатики для 
-описания структуры неоднословных коннекторов~// Структура коннекторов и~методы ее 
-описания~/ Под ред. О.\,Ю.~Иньковой.~--- М.: ТОРУС ПРЕСС, 2019. С.~205--230.
-\bibitem{9-in}
-Семантика коннекторов: количественные методы описания~/
-Под ред.\ О.~Иньковой.~--- Bern/Berlin: Peter Lang, 2021. 276~с.
-\bibitem{10-in}
-\Au{Prasad R., Joshi~A., Webber~B.} Realization of discourse relations by other means: 
-Alternative lexicalizations~// 23rd Conference (International) on Computational 
-Linguistics Proceedings.~--- 
-Beijing, China, 2010. P.~1023--1031. {\sf https://www.aclweb.org/anthology/C10-2118.pdf}.
-\bibitem{11-in}
-Penn Discourse Treebank Project (PDTB). {\sf https://www.\linebreak seas.upenn.edu/$\sim$pdtb}.
-\bibitem{12-in}
-\Au{Rysov$\acute{\mbox{a}}$~M., Rysov$\acute{\mbox{a}}$~K.} The centre and periphery of 
-discourse connectives~// 28th Pacific Asia Conference on Language, Information and 
-Computing Proceedings.~--- Phuket: Department of Linguistics, Chulalongkorn University, 
-2014. P.~452--459. {\sf https://www.aclweb.org/ anthology/Y14-1052.pdf}.
-\bibitem{13-in}
-Ru-RSTreebank. Русскоязычный дискурсивный корпус. {\sf https://rstreebank.ru}.
-\bibitem{14-in}
-\Au{Webber B., Prasad~R., Lee~A., Joshi~A.} The Penn Discourse Treebank~3.0: Annotation 
-Manual, 2019. {\sf https://\linebreak catalog.ldc.upenn.edu/docs/LDC2019T05/PDTB3-Annotation-Manual.pdf}.
-\bibitem{15-in}
-\Au{Das D., Taboada~M.} RST Signalling Corpus: Annotation Manual, 2014. {\sf 
-https://www.sfu.ca/$\sim$mtaboada/docs/\linebreak publications/RST\_Signalling\_Corpus\_Annotation\_\linebreak Manual.pdf}.
-\bibitem{16-in}
-\Au{Johansson S.} Seeing through multilingual corpora: On the use of corpora in contrastive 
-studies.~--- Amsterdam/Philadelphia: John Benjamins, 2007. 377~p.
-\bibitem{17-in}
-\Au{Инькова О.\,Ю.} Аннотирование параллельных текстов: понятие <<дивергентный 
-перевод>>~// Компьютерная лингвистика и~интеллектуальные технологии: По мат-лам 
-ежегодной Междунар. конф. <<Диалог>>.~--- М.: РГГУ, 2019. Вып.~18(25). С.~227--238.
-\bibitem{18-in}
-\Au{Зацман И.\,М., Инькова~О.\,Ю., Нуриев~В.\,А.} По\-стро\-ение классификационных схем: 
-методы и~технологии экспертного формирования~// На\-уч\-но-тех\-ни\-че\-ская 
-информация. Сер.~2: Информационные процессы и~сис\-те\-мы, 2017. №\,1. С.~8--22.
- \end{thebibliography}
-
-}
-}
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-\hfill{\small\textit{Поступила в~редакцию 06.04.2021}}
-
-%\vspace*{8pt}
-
-%\pagebreak
-
-\newpage
-
-\vspace*{-28pt}
-
-%\hrule
-
-%\vspace*{2pt}
-
-%\hrule
-
-%\vspace*{-2pt}
-
-\def\tit{EXTRACTING KNOWLEDGE ABOUT~MEANS\\ OF~EXPRESSION 
- OF~LOGICAL-SEMANTIC RELATIONS\\ FROM~THE~SUPRACORPORA DATABASE}
-
-
-\def\titkol{Extracting knowledge about~means of~expression 
- of~logical-semantic relations from~the~supracorpora database}
-
-\def\aut{A.\,A.~Goncharov and~O.\,Yu.~Inkova}
-
-\def\autkol{A.\,A.~Goncharov and~O.\,Yu.~Inkova}
-
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-11pt}
-
-
-
-
-\noindent
-Institute of Informatics Problems, Federal Research Center ``Computer Science and Control''
- of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation
-
- 
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 2}
-}%
-\def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2021\ \ \ volume~15\ \ \ issue\ 2
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt}
-
-
-
-
-\Abste{The goal of this paper is to demonstrate how parallel texts annotated with a supracorpora 
-database (SCDB) can be efficiently used to extract knowledge about alternative means of 
-expression of logical-semantic relations (LSR). The authors review the most prominent 
-discursively annotated corpora (Penn Discourse Treebank, Prague Dependency Treebank, 
-and Rhetorical Structure Theory Discourse Treebank) to support the observation that 
-there is no consensus among the researchers as to which linguistic means are to be considered 
-connectives (i.\,e., prototypical markers of LSR) and which means are 
-deemed ``alternative.'' The research shows that application of the comparative method while 
-leveraging the capabilities of the SCDB of connectives makes it possible not only to extract new 
-knowledge about LSR markers but also to create thesauri of various means of LSR expression in 
-the languages involved, including the alternative ones. In addition, the SCDB data makes it 
-possible to generate new knowledge on correlations between specific LSRs and unconventional 
-means of LSR expression and calculate frequencies of utilization of these means for the studied 
-languages.}
-
-\KWE{supracorpora database; logical-semantic relations; connectives; knowledge generation; 
-parallel texts}
-
-\DOI{10.14357/19922264210214}
-
-%\vspace*{-15pt}
-
-% \Ack
-%\noindent
-
-
-\vspace*{3pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
- 
- \vspace*{-3pt}
- 
-\bibitem{1-in-1}
-\Aue{Hobbs, J.\,R.} 1976. A~computational approach to discourse analyses.  New York, NY: Department of Computer Science, City College, City University of New 
-York.  Research Report  
-76-2.
-\bibitem{2-in-1}
-\Aue{Hobbs, J.\,R.} 1978. Why is discourse coherent?  Menlo Park, 
-CA: SRI International. SRI Technical Note~176.
-\bibitem{3-in-1}
-\Aue{Danlos, L., K.~Rysov$\acute{\mbox{a}}$, M.~Rysov$\acute{\mbox{a}}$, and 
-M.~Stede.} 2018. Primary and secondary discourse connectives: Definitions and lexicons. 
-\textit{Dialogue Discourse} 9(1):50--78.
-\bibitem{4-in-1}
-\Aue{Chistova, E.\,V., A.\,O.~Shelmanov, M.\,V.~Kobozeva, D.\,B.~Pisarevskaya, 
-I.\,V.~Smirnov, and S.\,Yu.~Toldova.} 2019. Classification models for RST discourse parsing of 
-texts in Russian. \textit{Komp'yuternaya lingvistika i~intellektual'nye tekhnologii: po mat-lam 
-Mezhdunar. konf. ``Dialog''} [Computational Linguistics and Intellectual Technologies: Papers 
-from the Annual Conference (International) ``Dialogue'']. Moscow: RSHI. 18(25):163--176.
-\bibitem{5-in-1}
-\Aue{Taboada, M.} 2006. Discourse markers as signals (or not) of rhetorical relations. 
-\textit{J.~Pragmatics} 38(4):567--592.
-\bibitem{6-in-1}
-\Aue{Goncharov, A.\,A., and O.\,Yu.~Inkova.} 2020. Implitsitnye logiko-semanticheskie 
-otnosheniya i~metod ikh poiska v~parallel'nykh tekstakh [Implicit logical-semantic relations and 
-a~method of their identification in parallel texts]. \textit{Komp'yuternaya lingvistika 
-i~intellektual'nye tekhnologii: po mat-lam Mezhdunar. konf. ``Dialog''} [Computational 
-Linguistics and Intellectual Technologies: Papers from the Annual Conference (International) 
-``Dialogue'']. Moscow: RSHI. 19(26):310--320.
-\bibitem{7-in-1}
-\Aue{Zatsman, I.\,M., O.\,Yu.~Inkova, M.\,G.~Kruzhkov, and N.\,A.~Popkova.} 2016. 
-Predstavlenie kross-yazykovykh znaniy o~konnektorakh v~nadkorpusnykh bazakh dannykh 
-[Representation of cross-lingual knowledge about connectors in suprocorpora databases]. 
-\textit{Informatika i~ee Primeneniya~--- Inform. Appl.} 10(1):106--118.
-\bibitem{8-in-1}
-\Aue{Zatsman, I., M.~Kruzhkov, and E.~Loshchilova.} 2019. Metody i~sredstva informatiki 
-dlya opisaniya struktury neodnoslovnykh konnektorov [Methods and means of informatics for 
-multiword connectives structure description]. \textit{Struktura konnektorov i~metody ee 
-opisaniya} [Connectives structure and methods of its description]. Ed. O.\,Yu.~Inkova. Moscow: 
-TORUS PRESS. 205--230.
-\bibitem{9-in-1}
-Inkova, O., ed. 2021. \textit{Semantika konnektorov: kolichestvennye metody opisaniya} 
-[Semantics of connectives: Quantitative methods of analysis]. Bern/Berlin: Peter Lang. 276~p.
-\bibitem{10-in-1}
-\Aue{Prasad, R., A.~Joshi, and B.~Webber.} 2010. Realization of discourse relations by other 
-means: Alternative lexicalizations. \textit{23rd Conference (International) on Computational 
-Linguistics Proceedings}. Beijing, China. 1023--1031.
-Available at: {\sf https://www.aclweb.org/anthology/C10-2118.pdf}
-(accessed June~15, 2021).
-\bibitem{11-in-1}
-Penn Discourse Treebank Project. Available at: {\sf https:// www.seas.upenn.edu/$\sim$pdtb/} 
-(accessed May~19, 2021).
-\bibitem{12-in-1}
-\Aue{Rysov$\acute{\mbox{a}}$, M., and K.~Rysov$\acute{\mbox{a}}$.} 2014. The centre and 
-periphery of discourse connectives. \textit{28th Pacific Asia Conference on Language, 
-Information and Computing Proceedings}. Phuket: Department of Linguistics, Chulalongkorn 
-University. 452--459. 
-Available at: {\sf https://www.aclweb.org/\linebreak anthology/Y14-1052.pdf}
-(accessed June~15, 2021).
-\bibitem{13-in-1}
-Ru-RSTreebank: Russkoyazychnyy diskursivnyy korpus [Ru-RSTreebank: Russian discourse 
-corpus]. Available at: {\sf https://rstreebank.ru/} (accessed May~19, 2021)
-\bibitem{14-in-1}
-\Aue{Webber, B., R.~Prasad, A.~Lee, and A.~Joshi.} 2019. The Penn Discourse Treebank~3.0: 
-Annotation manual. Available at: {\sf  
-https://catalog.ldc.upenn.edu/docs/\linebreak LDC2019T05/PDTB3-Annotation-Manual.pdf} (accessed 
-May~19, 2021)
-\bibitem{15-in-1}
-\Aue{Das, D., and M.~Taboada.} 2014. RST signalling corpus: Annotation manual. Available 
-at:  {\sf https://www.\linebreak sfu.ca/$\sim$mtaboada/docs/publications/RST\_Signalling\_\linebreak Corpus\_Annotation\_Manual.pdf} 
-(accessed May~19, 2021)
-\bibitem{16-in-1}
-\Aue{Johansson, S.} 2007. \textit{Seeing through multilingual corpora: On the use of corpora in 
-contrastive studies}. Amsterdam/Philadelphia: John Benjamins. 377~p.
-\bibitem{17-in-1}
-\Aue{Inkova, O.\,Yu.} 2019. Annotirovanie parallel'nykh tekstov: ponyatie ``divergentnyy 
-perevod'' [Annotation of parallel texts: The concept of divergent translation]. 
-\textit{Komp'yuternaya lingvistika i~intellektual'nye tekhnologii: po mat-lam Mezhdunar. konf. 
-``Dialog''} [Computational Linguistics and Intellectual Technologies: Papers from the Annual 
-Conference (International) ``Dialogue'']. Moscow: RSHI. 18(25):227--238.
-\bibitem{18-in-1}
-\Aue{Zatsman, I., O.~Inkova, and V.~Nuriev.} 2017. The construction of classification schemes: 
-Methods and technologies of expert formation. \textit{Autom. Doc. Math. 
-Linguist.} 51(1):27--41.
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-3pt}
-
-  \hfill{\small\textit{Received April~6, 2021}}
-
-
-%\pagebreak
-
-%\vspace*{-8pt}  
-
-\Contr
-
-\noindent
-\textbf{Goncharov Alexander A.} (b.\ 1994)~--- junior scientist, Institute of Informatics 
-Problems, Federal Research Center``Computer Science and Control'' of the Russian Academy of 
-Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{a.gonch48@gmail.com}
-
-\vspace*{6pt}
-
-\noindent
-\textbf{Inkova Olga Yu.} (b.\ 1965)~--- Doctor of Science  in philology, senior scientist, 
-Institute of Informatics Problems, Federal Research Center ``Computer Science and Control'' of 
-the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; 
-\mbox{olyainkova@yandex.ru}
-
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература}

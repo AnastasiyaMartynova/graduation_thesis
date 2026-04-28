@@ -1,829 +1,0 @@
-\def\stat{budzko-sochenkov}
-
-\def\tit{ОБ ОДНОМ ПОДХОДЕ К ФОРМИРОВАНИЮ\\ В~УСЛОВИЯХ 
-ВЫСОКОЙ НЕОПРЕДЕЛЕННОСТИ\\ МАРКЕРОВ КОНФИДЕНЦИАЛЬНОСТИ 
-В~СИСТЕМАХ\\ ИНТЕНСИВНОГО ИСПОЛЬЗОВАНИЯ ДАННЫХ$^*$}
-
-\def\titkol{Об одном подходе к~формированию в~условиях высокой неопределенности 
-маркеров конфиденциальности в~СИИД} %системах интенсивного использования данных}
-
-\def\aut{В.\,И.~Будзко$^1$, В.\,В.~Ядринцев$^2$, 
-И.\,В.~Соченков$^3$, В.\,И.~Королёв$^4$, 
-В.\,Г.~Беленков$^5$}
-
-\def\autkol{В.\,И.~Будзко, В.\,В.~Ядринцев, 
-И.\,В.~Соченков и~др.}
-%$^3$, В.\,И.~Королёв, В.\,Г.~Беленков}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\index{Будзко В.\,И.}
-\index{Ядринцев В.\,В.}
-\index{Соченков И.\,В.}
-\index{Королёв В.\,И.}
-\index{Беленков В.\,Г.}
-\index{Budzko V.\,I.}
-\index{Yadrintsev V.\,V.}
-\index{Sochenkov I.\,V.}
-\index{Korolev V.\,I.}
-\index{Belenkov V.\,G.}
-
-
-{\renewcommand{\thefootnote}{\fnsymbol{footnote}} \footnotetext[1]
-{Работа выполнена при частичной финансовой поддержке РФФИ (проект 18-29-03215), 
-экспериментальные исследования выполнены при поддержке Программы РУДН <<5-100>>.}}
-
-
-\renewcommand{\thefootnote}{\arabic{footnote}}
-\footnotetext[1]{Федеральный исследовательский центр <<Информатика 
-и~управление>> Российской академии наук, \mbox{vbudzko@ipiran.ru}}
-\footnotetext[2]{Федеральный исследовательский центр <<Информатика 
-и~управление>> Российской академии наук; Российский университет дружбы народов, 
-\mbox{vvyadrincev@gmail.com}}
-\footnotetext[3]{Федеральный исследовательский центр <<Информатика 
-и~управление>> Российской академии наук, \mbox{sochenkov@isa.ru}}
-\footnotetext[4]{Федеральный исследовательский центр <<Информатика 
-и~управление>> Российской академии наук, \mbox{vkorolev@ipiran.ru}}
-\footnotetext[5]{Федеральный исследовательский центр <<Информатика 
-и~управление>> Российской академии наук, \mbox{vbelenkov@ipiran.ru}}
-
-\vspace*{-10pt}
-
-\Abst{Основные задачи, результаты решения которых отражены в~статье, связаны 
-с~формированием маркеров конфиденциальности (МК) при их применении в~системах 
-интенсивного использования данных (СИИД) в~условиях, когда состав и~структура охраняемых 
-сведений не может быть заранее определена в~связи с~отсутствием данных или с~высокой 
-динамикой их изменения либо их определение нецелесообразно в~связи с~большим (или 
-неограниченным) количеством сущностей, сведения о которых подлежат охране. В~данной 
-работе предложен подход к~формированию в~указанных условиях МК
- текстовых материалов. Сформулирована логика процесса 
-семантической обработки текста, позволяющего в~условиях высокой неопределенности 
-состава и~структуры охраняемых сведений формировать МК при 
-их применении для обеспечения информационной безопас\-ности в~СИИД. 
-Полученные экспериментальные результаты позволяют перейти 
-к~практической реализации рассмотренного подхода в~СИИД.}
-
-\KW{маркер конфиденциальности; информационная безопасность; интенсивное 
-использование данных; кластер; семантика; технические средства обеспечения безопас\-ности; 
-интеллектуальные задачи безопас\-ности; текстовая классификация; обнаружение 
-текстовых заимствований}
-
-\DOI{10.14357/19922264200410} 
-  
-%\vspace*{9pt}
-
-
-\vskip 10pt plus 9pt minus 6pt
-
-\thispagestyle{headings}
-
-\begin{multicols}{2}
-
-\label{st\stat}
-
-\section{Введение}
-
-\vspace*{-2pt}
-
-  Рассмотрение проблематики формирования МК
-текстовых материалов при их применении для обеспечения информационной 
-безопас\-ности (далее~--- формирование МК) 
-в~СИИД (Data Intensive Domains~--- DID) 
-продолжает прикладные исследования, результаты которых отражены 
-авторами  
-в~работах~[1--7].
-   
-  Рассматриваемый в~работе возможный подход к~формированию МК
-   основан на использовании методов анализа содержания 
-текстов и~не зависит от конфиденциальности материала. Также выполнено 
-экспериментальное исследование, в~рамках которого промоделирована 
-применимость методов анализа текстов к~решению задач предотвращения 
-утечек информации ограниченного доступа.
-  
-  При рассмотрении подхода используются следующие основные 
-определения и~понятия: 
-  
-  \textit{Системы интенсивного использования данных}~--- 
-автоматизированные информационные системы, обеспечивающие анализ  
-и~управ\-ле\-ние данными, обработку информации и~решение 
-функциональных исследовательских и~прикладных задач в~различных 
-областях с~DID. 
-  
-  \textit{Артефакт}~--- обособленный каким-либо образом контент или 
-фрагмент контента, рас\-смат\-ри\-ва\-емый как единое целое совместно с~его 
-атрибутикой: учетными и~иными сопровождающими данными. 
-  
-  \textit{Сущность}~--- именование конкретной области деятельности, либо 
-принадлежащего ей объекта, либо по\-ка\-за\-те\-ля/ха\-рак\-те\-ри\-сти\-ки/ви\-да 
-сведений, упоминание или конкретная информация о~которых подлежат 
-защите.
-  
-  \textit{Маркер конфиденциальности}~--- метка ка\-ко\-го-либо рода 
-(например, слово), в~явном виде определяющая необходимость защиты 
-и~уровень конфиденциальности сведений фрагмента или \mbox{конкретного} артефакта в~целом.
-  
-  \textit{Частный маркер конфиденциальности}~--- метка какого-ли\-бо 
-рода (например, слово, текст, агрегат текстов и/или данных), в~явном виде 
-опре\-деляющая необходимость защиты и~уровень конфиденциальности 
-сведений, относящихся к~{конкретному} упоминанию сущности в~контенте 
-артефакта.
-  
-  Маркер конфиденциальности  относятся к~результату обработки запроса 
-  в~целом или к~его разделам~--- объектам доступа для пользователя, выдавшего 
-запрос (далее~--- объекты доступа). Они отражают наличие в~результате или 
-в~его разделах следующих сведений, которые относятся или могут относиться 
-к~охраняемым сведениям в~этих областях деятельности:
-  \begin{itemize}
-\item информация о конкретных областях деятельности;
-\item информация о конкретном объекте;
-\item информация о показателях/характеристиках конкретного объекта или 
-конкретной области деятельности.
-  \end{itemize}
-  
-  Маркер конфиденциальности также отражает уровни доступности 
-сведений, содержащихся в~результате обработки запроса или в~его разделах, 
-относящихся:
-  \begin{itemize}
-  \item к~конкретным областям деятельности или к~конкретным объектам;
-\item в~целом к~результату обработки запроса или к~его разделу.
-\end{itemize}
-
-  Далее в~статье будет представлен процесс семантической обработки текста, 
-позволяющий в~условиях высокой неопределенности состава и~структуры 
-охраняемых сведений формировать МК при их 
-применении для обеспечения информационной\linebreak безопас\-ности в~СИИД.
- Для решения задач выявления 
-конфиденциального содержимого пред\-ла\-га\-ется использовать методы поиска 
-тематически похожих документов на основе автоматически формируемых 
-наборов МК, а также методов поиска семантически сходных фрагментов 
-текстов. Оба предложенных подхода экспериментально проверены в~ходе 
-настоящего исследования. 
-
-\section{Формирование маркеров и~определение уровня 
-конфиденциальности материала на основе анализа его текста} %2
-     
-  Последовательность действий по формированию маркеров и~определению 
-уровня конфиденциальности материала на основе анализа его текста 
-приведена в~\cite{1-bs}. Она включает следующие основные шаги: 
-  \begin{enumerate}[(1)]
-  \item приведение артефакта к~единому формату представления (например, 
-txt);
-\item определение в~артефакте или его фрагменте позиций именований 
-сущностей;
-\item приведение артефакта или его фрагмента к~единому именованию 
-сущностей;
-\item замена личных местоимений на именования сущностей;
-\item проверка принадлежности и~формирование перечня сущностей, 
-упоминания или конкретные сведения о которых подлежат защите; 
-\item определение отнесения фрагментов текстов  
-к~име\-но\-ва\-ни\-ям/упо\-ми\-на\-ни\-ям конкретных 
-показателей/характеристик/видов сведений; 
-\item определение уровней конфиденциальности сведений об объектах 
-и~областях де\-я\-тель\-ности;
-\item определение уровня конфиденциальности артефакта/его фрагмента;
-\item формирование МК ар\-те\-фак\-та/его фрагмента.
-\end{enumerate}
-
-  Указанный процесс не позволяет определить МК
-текста в~условиях, когда состав и~структура охраняемых сведений:
-  \begin{itemize}
-  \item не может быть заранее определена в~связи с~отсутствием данных;
-\item их определение нецелесообразно в~связи с~высокой динамикой их 
-изменения либо в~связи с~большим (или неограниченным) количеством 
-сущностей, сведения о которых подлежат \mbox{охране}.
-  \end{itemize}
-  
-  В указанных условиях для формирования маркеров конфиденциальности 
-текстовых материалов должен быть использован иной подход, например 
-основанный на смысловом сопоставлении конфиденциальных материалов 
-с~текстами, передаваемыми в~сообщениях. Рассмотрим далее эти подходы более 
-подробно.
-
-\section{Формирование маркеров конфиденциальности текстов 
-на~основе определения их~близости к~одному из~кластеров 
-конфиденциальных материалов} %3
-  
-  Суть предлагаемого подхода состоит в~прямом (не пошаговом) 
-формировании МК текста в~целом без разрешения в~явном виде 
-неопределенности состава и~структуры сведений, охраняемых в~конкретной 
-области (областях) деятельности.
-  
-  Для этого заблаговременно в~каждой рассматриваемой области 
-деятельности:
-  \begin{itemize}
-  \item  по каждой коллекции, содержащей охра\-ня\-емые сведения одного 
-уровня кон\-фи\-ден\-ци\-аль\-ности, осуществляется формирование клас\-те\-ров. 
-С~каж\-дым  
-клас\-те\-ром связывается \mbox{набор} ключевых слов и~словосочетаний (НКСС) и~МК, соответствующий уровню конфиденциальности;
-  \item при определении МК текста осуществляется проверка его бли\-зости 
-или принадлежности к~одному из клас\-те\-ров (близости к~его НКСС); текс\-ту 
-присваивается МК, определенный для кластера, к~которому  
-при\-над\-ле\-жит\,/\,на\-и\-бо\-лее близок этот текст; при отсутствии 
-однозначности в~определении принадлежности текс\-та к~одному из клас\-те\-ров 
-текс\-ту присваивается МК, отвечающий НКСС с~наивысшим уровнем 
-конфиденциальности.
-  \end{itemize}
-   
-  Подход хорошо согласуется с~условиями обработки сведений, не 
-относящихся к~высшим уровням конфиденциальности (например, 
-с~обработкой сведений, не составляющих государственную тайну).
-  
-  В работе~\cite{8-bs} описан способ обучения классификатора, 
-предназначенного для определения категории документа в~задаче 
-предотвращения утечек информации (\textit{англ}.\ DLP~--- Data Leak 
-Prevention);\linebreak
- DLP-сис\-те\-ма должна быть способна определить 
-принадлежность документа к~классу конфиденциальных документов (или 
-других, в~зависимости от об\-ласти применения сис\-те\-мы). В~патенте на 
-изоб\-ре\-те\-ние~\cite{9-bs} описаны система и~способ определения текста, 
-содержащего конфиденциальные данные. В~основе способа лежит поиск 
-ключевых слов и~вычисление их плотности. Способ предназначен для 
-выявления шаблонных конфиденциальных документов.
-  
-  Также отметим, что DLP-системам важно уметь предотвращать утечку 
-дубликатов документов. Для выявления таких документов предлагается 
-использовать методы поиска текстовых заимствований~[10, 11], дополненные 
-методами машинного обучения для тематической классификации текс\-тов.
-   
-  Основная идея применения методов ма\-шин\-ного обучения и~анализа 
-текстовой информации заключается  
-в~сле\-ду\-ющем. Предполагается, что организация имеет определенное 
-множество конфиденциальных документов. Это множество может быть 
-динамически пополняемым, при этом DLP-сис\-те\-ма дополнительно 
-индексирует вновь регистрируемые конфиденциальные документы.
-  
-  На этапе фильтрации система сопоставляет с~помощью эффективных 
-методов анализа текстов те материалы, которые передаются сотрудниками 
-организации по каналам связи, конт\-ро\-ли\-ру\-емых DLP-сис\-те\-мой. При 
-выявлении конфиденциальной по тематике и~содержанию информации 
-в~исходящем сообщении регистрируется соответствующее нарушение политики 
-конфиденциальности и~создается оповещение. Само сообщение в~таком 
-случае может быть заблокировано (не передано). 
-  
-  Для \textit{определения близости или принадлежности текста} к~одному 
-или  нескольким клас\-те\-рам целесообразно использовать подход машинного 
-обучения, описанный в~разд.~4. В~разд.~5 будут приведены результаты 
-экспериментов по применению методов выявления текстовых заимствований 
-(в~том чис\-ле перефразированных) для предотвращения утечек 
-конфиденциальных документов. В~модельных экспериментах будет 
-предполагаться, что конфиденциальная информация передается фрагментами 
-(не обязательно в~форме целых документов без модификаций).
-
-\begin{table*}\small %tabl1
-\begin{center}
-     \Caption{Результаты классификации}
-     \vspace*{3pt}
-     
-     \begin{tabular}{|l|p{100mm}|c|c|}
-     \hline
-\multicolumn{1}{|c|}{Метод} &\multicolumn{1}{c|}{Наиболее важные признаки 
-(в порядке убывания)}&\textbf{NB}&\textbf{LR}\\
-\hline
-\multicolumn{1}{|l|}{\raisebox{-12pt}[0pt][0pt]{\textbf{Count Vectors}}}&\textit{исследования, г, фиг, м, н, л, работы, развития, диссертации, 
-е, т, р, деятельности, п, изобретения, д, наук, устройство, анализ, способ, проблемы, 
-научно, конференции, основные, результаты}&0,861& 0,975\\
-\hline
-\multicolumn{1}{|l|}{\raisebox{-18pt}[0pt][0pt]{\textbf{WordLevel  
-TF-IDF}}}&\textit{фиг, новости, news, компании, компания, адрес, исследования, диссертации, 
-изобретения, способ, устройство, изобретение, р, н, м, л, е, г, отличающийся, словам, масс, 
-т, рис, v, диссертационного, наук, ит, году, корпуса, д}&0,908&\textbf{0,976}\\
-\hline
-\multicolumn{1}{|l|}{\raisebox{-18pt}[0pt][0pt]{\textbf{N-Gram Vectors}}}&\textit{адрес новости, адрес новости news, новости news, 
-изобретение относится, п л, п отличающийся, читайте также, меньшей мере, ключевые 
-слова, технический результат, диссертационного совета, изобретения 
-является}&0,926&0,963\\
-\hline
-\multicolumn{1}{|l|}{\raisebox{-6pt}[0pt][0pt]{\textbf{CharLevel Vectors}}}&\textit{ti, on, s, at, мпа, es, en, in, n, ion, io, e, al, tio, re, исс, фиг, 
-зоб, er, пан, y, nt, ati, st, l, p, te, иг, ed, an, s, ic, мс, al}&0,809&0,948\\
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
-
-\section{Методы обработки естественного языка 
-для~формирования маркеров конфиденциальности} %4
-  
-  В данном разделе рассматриваются методы обработки естественного языка 
-для формирования МК, применимые для выявления кон\-фи\-ден\-ци\-альной 
-информации по тематике. Информация, использованная в~проведенных 
-модельных экспериментах, не относится к~конфиденциальной. 
-Соответственно, маркеры или признаки документов, выделяемых для 
-коллекций, индицируют неконфиденциальные охраняемые сведения. Но 
-отметим, что рассматриваемые методы применимы и~к~текстовым 
-документам, содержащим конфиденциальную информацию.
-  
-  Случайным образом были выбраны по 10~тыс.\ случайных текстов для  
-сле\-ду\-ющих~4~<<жанров>> (классов): патентные документы; авторефераты; 
-российские журналы; российские средства массовой информации. Для проведения экспериментов 
-применены известные подходы на основе сле\-ду\-ющих открытых библиотек 
-языка программирования Python: NumPy, Pandas, sklearn, NLTK и~др. 
-Использованы следующие подходы к~формированию обучающей матрицы:
-  \begin{itemize}
-\item подсчет слов (\textbf{Count Vectors}), число признаков не 
-ограничено;
-\item TF-IDF (максимальное число признаков~--- 5\,000) на уровнях: 
-\begin{itemize}
-\item Слов~--- \textbf{WordLevel TF-IDF};
-\item N-грамм (от 2 до 3)~--- \textbf{N-Gram Vectors};
-\item символьных N-грамм (от~2 до~3)~--- \textbf{CharLevel 
-Vectors}.
-  \end{itemize}
-  \end{itemize}
-  
-  Для оценки моделей использована мера~$f_1$ с~мак\-ро\-усред\-не\-ни\-ем 
-(скользящая средняя при $K\hm=5$). В~табл.~1 приведены результаты 
-классификации: в~первом столбце приведен метод формирования матрицы 
-признаков, во втором~--- наиболее важные признаки (выделенные с~помощью 
-метода главных компонент) в~порядке убывания, в~третьем и~четвертом 
-столбцах~--- оценки для следующих обучаемых моделей соответственно: 
-\mbox{Na$\ddot{\mbox{\ptb{\!\!\i}}}$ve} Bayes (\textbf{NB}) и~логистическая регрессия (\textbf{LR}).
-  
-
-  
-  Таким образом, для первичного выявления попыток нарушения 
-конфиденциальности применимы методы текстовой классификации, которые 
-обеспечивают высокую полноту и~точность на \mbox{уровне} выше~97\% (такой 
-результат показал подход \textbf{WordLevel TF-IDF} с~обуча\-емой моделью 
-\textbf{LR}).
-  
-  Завершая данный раздел, отметим следующее:
-  \begin{itemize}
-\item методы текстовой классификации успешно решают задачу 
-\textit{определения бли\-зости или принадлежности текста};
-\item при помощи анализа главных компонент можно получить неявные 
-маркеры (слова, словосочетания, последовательность символов и~др.\ 
-в~зависимости от метода), которые, в~том чис\-ле, могут быть 
-\textit{маркерами конфиденциальных данных}.
-\end{itemize}
-
-\section{Смысловой поиск заимствований для~предотвращения 
-утечки конфиденциальной информации} %5
-
-\vspace*{-6pt}
-     
-  Рассмотренный в~данном разделе эксперимент на практике соответствует 
-ситуации, когда сущность 
- ка\-ко\-го-ли\-бо изобретения передается сотрудником организации не 
-непосредственным копированием материалов (выявление этого случая не 
-представляет сложности), а~излагается в~свободной форме путем 
-переписывания или изложения собственными словами.
-  
-  В качестве набора, содержащего <<конфиденциальную>> информацию, 
-используется коллекция <<Российские журналы>> (далее~--- тестируемая 
-коллекция) объемом 1,85~млн документов; в~качестве <<исходного>> набора 
-документов (содержимое которых раскрывается в~неизменном или 
-перефразированном виде)~--- коллекция патентных документов Федерального института промышленной собственности 
-(далее~--- исходная коллекция) объемом около 800~тыс.\ документов. 
-  
-  Анализ выполнен в~режиме сплошной фильтрации тестируемой коллекции, 
-т.\,е.\ для каждого документа из нее проводился поиск по предварительно 
-проиндексированной исходной коллекции. Далее описывается метод 
-измерения сходства предложений, который лежит в~основе алгоритма 
-смыслового сопоставления текстов. Предложения~$s_e$ и~$s_t$ из 
-документов~$d_e$ и~$d_t$ соответственно представляются в~виде множества 
-пар слов $N(s_e,s_t)$, где первый элемент взят из предложения~$s_e$, а 
-второй~--- из~$s_t$. Сопоставление двух предложений основано на парах слов из 
-$N(s_e,s_t)$. Оценка сходства вычисляется с~учетом сле\-ду\-ющих 
-показателей: $I_1$ (IDF-ме\-ра), $I_2$ (показатель на основе TF-IDF) и~$I_3$ 
-(сопоставление синтаксических структур предложений): 
-  \begin{itemize}
-  \item[$\bullet$]
-  $I_1\left(s_e,s_t\right)= \displaystyle \sum\limits_{(w_e,w_t)\in N(s_e,s_t)} 
-\mathrm{IDF}\left( w_e\right).$
-  \begin{itemize}
-  \item[$\circ$]
-Здесь $\mathrm{IDF}\,(w_e)\hm= \log_{\vert D\vert} \left( \vert 
-D\vert/m(w_e,D)\right)$, где $D$~---  набор документов; 
-$m(w_e,D)$~--- количество документов, содержащих 
-слово~$w_e$; 
-\end{itemize}
-\item[$\bullet$]
-$I_2\left( s_e,s_t\right)=\displaystyle\hspace*{-6mm} \sum\limits_{(w_e,w_t)\in N(s_e,s_t)}\hspace*{-8mm} 
-f\left( w_e,w_t\right)\mathrm{IDF}(w_e)\mathrm{TF}\left(w_t,d_t\right).$
-  \begin{itemize}
-  \item[$\circ$]
-Здесь $\mathrm{TF}(w_t,d_t)=\log_{\vert d_t\vert}\left( k(w_t,d_t)\right)$, где $\vert 
-d_t\vert$~--- число слов в~документе~$d_t$; $k(w_t,d_t)$~---  
-число встречаемых слов~$w_t$ в~$d_t$; $f(w_e, w_t)$ служит 
-штрафом за несоответствие~$w_e$ и~$w_t$;
-\end{itemize}
-\item[$\bullet$]
-$I_3\left(s_e, s_t\right)=$\\
-$= \displaystyle
-\hspace*{-16pt}{\sum\limits_{(w_h,\sigma,w_d)\in 
-(\mathrm{Syn}(s_e)\cap \mathrm{Syn}(s_t))} \hspace*{-17pt}\mathrm{IDF}(w_h)}\Big /
-\displaystyle\hspace*{-16pt}{\sum\limits_{(w_h,\sigma,w_d)\in 
-\mathrm{Syn}(s_e)} \hspace*{-17pt}\mathrm{IDF}(w_h)}\,.$
-  \begin{itemize}
-  \item[$\circ$]
-Каждое предложение представляется в~виде набора $\mathrm{Syn}(s_e)$ 
-триплетов $(w_h,\sigma, w_d)$, где~$w_h$ и~$w_d$~--- 
-нормализованные главное и~зависимое слова соответственно; 
-$\sigma$~--- тип синтаксического отношения (например, именная 
-группа).
-  \end{itemize}
-  \end{itemize}
-  
-  Общее сходство предложений определяется как линейная комбинация 
-вышеприведенных мер: 
-  \begin{multline*}
-  \mathrm{Sim}\left(s_e, s_t\right) =\mathrm{WIdf}\cdot
-  I_1\left( s_e,s_t\right)+{}\\
-  {}+\mathrm{WTfIdf}\cdot I_2\left( 
-s_e,s_t\right)+\mathrm{WSynt}\cdot I_3\left( s_e, s_t\right)\,,
-  \end{multline*}
-    где $\mathrm{WIdf}$, $\mathrm{WTfIdf}$  и~$\mathrm{WSynt}$~--- относительный вклад 
-каждой меры. Полное описание метода индексации и~смыслового 
-сопоставления текстов приведено в~работах~[10, 11]. Там же приведены 
-метрики качества реализованного метода.
-  
-  В табл.~2 представлен результат в~виде кумулятивной статистики поиска 
-заимствований. Во втором столбце отражено распределение количе-\linebreak\vspace*{-12pt}
-
-\vspace*{6pt}
-
-\begin{center}
-\noindent
-\parbox{71mm}{{{\tablename~2}\ \ \small{
-Распределение документов по уровню заимствований 
-}}}
-
-\vspace*{6pt}
-
-
-{\small \begin{tabular}{|c|r|r|}
-\hline
-\multicolumn{1}{|c|}{Заимствования}&  \textbf{в} документе &  \textbf{из} документа\\
-\hline
-$>0{,}1$ & 17\,279\hspace*{5mm}& 18\,990\hspace*{5mm}\\
-$>0{,}2$& 4\,385\hspace*{5mm}& 5\,863\hspace*{5mm}\\
-$>0{,}3$& 2\,066\hspace*{5mm}& 2\,647\hspace*{5mm}\\
-$>0{,}4$& 1\,109\hspace*{5mm}& 1\,011\hspace*{5mm}\\
-$>0{,}5$& 612\hspace*{5mm} & 512\hspace*{5mm}\\
-$>0{,}6$& 301\hspace*{5mm}& 279\hspace*{5mm}\\
-$>0{,}7$& 122\hspace*{5mm}& 147\hspace*{5mm}\\
-$>0{,}8$& 54\hspace*{5mm}& 99\hspace*{5mm}\\
-$>0{,}9$& 27\hspace*{5mm}& 81\hspace*{5mm}\\
-\hline
-\end{tabular}
-}
-\vspace*{3pt}
-\end{center}
-%\end{table*}
-
-%\vspace*{9pt}
-  
-  
-  \noindent
-  ства 
-документов по общему уровню заимствований \textbf{в}~документе (т.\,е.\ по 
-общей доле заимствованного текста), а~в~третьем столбце~--- по уровню 
-заимствований \textbf{из} документа (т.\,е.\ по доле текста, которая 
-заимствована \textbf{из} одного документа).
-   
-
-  
-  Анализ данных, приведенных в~табл.~2, показывает, что:
-  \begin{itemize}
-  \item 27 документов имеют общий уровень заимствований более 90\%; 
-свыше 600~документов~--- более 50\%. 
-\item 81 раз встречаются документы, \textbf{из} которых заимствовано 
-более~90\%; свыше 500~раз~--- более 50\%.
-\end{itemize} 
-
-%\begin{table*}
-%\small %tabl2
-
-
-
-  Отметим, что задача анализа характера заимствований с~точки зрения 
-академической этики или с~юридической точки зрения не ставилась. Отметим 
-лишь, что у большинства пар документов (заимствующий документ  
-и~до\-ку\-мент-ис\-точ\-ник) с~большой долей заимствования наблюдаются 
-пересечения авторов. Это говорит о~том, что один и~тот же текст одного 
-автора (или научной группы) использовался как для патентного документа, 
-так и~для публикации статьи, возможно с~некоторыми изменениями. 
-
-\section{Заключение}
-     
-  В статье рассмотрен возможный подход к~формированию 
-МК при их использовании в~СИИД в~условиях, когда состав 
-и~структура охраняемых сведений не может быть заранее определена в~связи 
-с~отсутствием данных или высокой динамикой их изменения, либо их 
-определение нецелесообразно в~связи большим (или неограниченным) 
-количеством сущностей, сведения о которых подлежат охране. В~основе 
-подхода к~формированию МК лежит:
-  \begin{itemize}
-  \item  предварительное формирование кластеров, к~каждому из которых 
-относятся документы, содержащие охраняемые сведения, и~НКСС этих 
-кластеров;
-  \item определение близости или принадлежности конкретного текста 
-  к~одному из таких кластеров;
-  \item  реализация на регулярной основе процедуры актуализации состава и~структуры кластеров и~их НКСС.
-  \end{itemize}
-  
-  Предлагаемый подход не зависит от конфиденциальности обрабатываемых 
-материалов и~позволяет осуществить формирование МК в~указанных 
-условиях. Инструменты, использованные для получения результатов, 
-описанных в~разд.~4 и~5, применимы, например, для решения следующих 
-задач:
-  \begin{itemize} 
-  \item классификация документов для определения потенциальных 
-документов, подлежащих дальнейшему анализу;
-\item выявление важных характеристик текстовых документов;
-\item поиск возможной утечки информации (при условии наличия 
-заранее подготовленной коллекции конфиденциальных данных);
-\item поиск похожих или дублирующих документов для использования 
-в~автоматизированных сис\-те\-мах документооборота.
-  \end{itemize}
-  
-{\small\frenchspacing
-{%\baselineskip=10.8pt
-%\addcontentsline{toc}{section}{References}
-\begin{thebibliography}{99}
-
-\bibitem{6-bs} %1
-\Au{Будзко В.\.И., Беленков В.\,Г., Борохов~С.\,В.} Проб\-ле\-мы обеспечения 
-информационной безопас\-ности при интенсивном использовании данных~// 
-Информационные технологии и~математическое моделирование сис\-тем: Тр. 
-Междунар. 
-на\-учн.-тех\-нич. конф.~--- Одинцово: ЦИТП РАН, 2017. С.~122--124.
-\bibitem{7-bs} %2
-\Au{Беленков В.\,Г., Борохов С.\,В., Будзко~В.\,И., Кейер~П.\,А., Королев~В.\,И.} Вопросы 
-обеспечения информационной безопас\-ности информационных систем, реализующих 
-интенсивное использование данных~//\linebreak Аналитика и~управ\-ле\-ние данными в~областях 
-с~интенсивным использованием данных: Сб. научных тр. XIX Междунар. конф. 
-DAMDID/RCDL.~--- М: ФИЦ ИУ РАН, 2017. С.~155--158.
-  
-
-\bibitem{3-bs}
-\Au{Будзко В.\,И., Беленков В.\,Г., Королев~В.\,И.} Элементы конфиденциальности и~перспективы их использования  
-в~сис\-те\-мах, реализующих интенсивное использование данных~// Сис\-те\-мы высокой 
-до\-ступ\-ности, 2018. Т.~14. №\,4. С.~55--60.
-\bibitem{4-bs}
-\Au{Будзко В.\,И., Беленков В.\,Г., Королев~В.\,И}. Об одном концептуальном подходе к~защите информации 
-в~сис\-те\-мах, реализующих DID~// Информационные технологии и~
-математическое моделирование сис\-тем: Тр. Междунар. на\-учн.-тех\-нич. конф.~--- 
-Одинцово: ЦИТП РАН, 2018. С.~43--46.
-\bibitem{5-bs}
-\Au{Будзко В.\,И., Беленков В.\,Г., Королев~В.\,И.} Об особенностях использования средств и~методов ОИБ в~сис\-те\-мах, реализующих DID~// Информационные технологии 
-и~математическое моделирование сис\-тем: Тр. Междунар. на\-учн.-тех\-нич. конф.~--- 
-Одинцово: ЦИТП РАН, 2018. С.~47--50.
-
-\bibitem{1-bs} %6
-\Au{Будзко В.\,И., Королев~В.\,И., Беленков~В.\,Г.} Особенности использования 
-маркеров конфиден\-ци\-аль\-ности в~системах интенсивного использования данных~// 
-Сис\-те\-мы высокой до\-ступ\-ности, 2019. Т.~15. №\,2. С.~57--65.
-\bibitem{2-bs} %7
-\Au{Будзко В.\,И., Королев В.\,И., Беленков~В.\,Г.} Архитектура инструментального 
-комплекса извлечения информации с~учетом встроенных экстрактов конфиденциальности и~интеграции извлеченных данных~// Сис\-те\-мы высокой до\-ступ\-ности, 2020. Т.~16. 
-№\,2. С.~5--21.
-
-\bibitem{8-bs}
-\Au{Дорогой Д.\,С., Шаров А.\,В., Тузовский~А.\,А., Терещенко~И.\,А.} Способ обучения 
-классификатора, предназначенного для определения категории документа. Патент на 
-изобретение №\,2672395 с~приоритетом от 29.09.2017. Опубл. 14.11.2018, бюл. №\,32.
-\bibitem{9-bs}
-\Au{Дорогой Д.\,С.} Система и~способ определения текста, содержащего 
-конфиденциальные данные. Патент на изобретение №\,2665915 с~приоритетом от 
-16.06.2017. Опубл. 04.09.2018, бюл. №\,25.
-\bibitem{11-bs} %10
-\Au{Zubarev D.\,V., Sochenkov I.\,V.} Using sentence similarity measure for plagiarism source 
-retrieval~// CEUR Workshop Proceedings: Cross Language Evaluation Forum, 2014. Vol.~1180.
-P.~1027--1034.
-\bibitem{10-bs} %11
-\Au{Zubarev D.\,V., Sochenkov I.\,V., Tikhomirov~I.\,A., Grigoriev~O.\,G.} Double funding of 
-scientific projects: Similarity and plagiarism detection~// Аналитика и~управ\-ле\-ние данными 
-в~областях с~интенсивным использованием данных: Сб. научных тр. XIX Междунар. конф. 
-\mbox{DAMDID}/RCDL.~--- М.: ФИЦ ИУ РАН, 2017. С.~282--285.
-
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Поступила в~редакцию 23.06.20}}
-
-\vspace*{7pt}
-
-%\pagebreak
-
-%\newpage
-
-%\vspace*{-28pt}
-
-\hrule
-
-\vspace*{2pt}
-
-\hrule
-
-\vspace*{8pt}
-
-\def\tit{EXTRACTION OF CONFIDENTIALITY MARKERS\\ FROM TEXTS 
-UNDER CONDITIONS OF HIGH UNCERTAINTY\\ IN SYSTEMS WITH DATA 
-INTENSIVE USAGE}
-
-
-\def\titkol{Extraction of confidentiality markers from texts under conditions of 
-high uncertainty in systems with data intensive usage}
-
-
-\def\aut{V.\,I.~Budzko$^1$, V.\,V.~Yadrintsev$^{1,2}$, I.\,V.~Sochenkov$^1$, 
-V.\,I.~Korolev$^1$, and~V.\,G.~Belenkov$^1$}
-
-\def\autkol{V.\,I.~Budzko, V.\,V.~Yadrintsev, I.\,V.~Sochenkov, et al.}
-%V.\,I.~Korolev$^1$, and~V.\,G.~Belenkov}
-
-\titel{\tit}{\aut}{\autkol}{\titkol}
-
-\vspace*{-15pt}
-
-\noindent
-$^1$Federal Research Center ``Computer Science and Control'' of the Russian Academy of Sciences, 
-44-2~Vavilov\linebreak
-$\hphantom{^1}$Str., Moscow 119333, Russian Federation
-
-\noindent
-$^2$Peoples' Friendship University of Russia (RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198,\linebreak
-$\hphantom{^1}$Russian Federation
-
-\def\leftfootline{\small{\textbf{\thepage}
-\hfill INFORMATIKA I EE PRIMENENIYA~--- INFORMATICS AND
-APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4}
-}%
- \def\rightfootline{\small{INFORMATIKA I EE PRIMENENIYA~---
-INFORMATICS AND APPLICATIONS\ \ \ 2020\ \ \ volume~14\ \ \ issue\ 4
-\hfill \textbf{\thepage}}}
-
-\vspace*{3pt} 
-
-\Abste{The main tasks, the results of the solution of which are reflected in the article, 
-are associated with the formation of confidentiality markers when they
-are used in 
-data-intensive systems under conditions when the
-composition and structure of the 
-protected information cannot be determined in advance due to the lack of data\linebreak\vspace*{-12pt}}
-
-\Abstend{ or the 
-high dynamics of their change, or their definition is not advisable due to the large 
-number of entities whose
-information is subject to protection. In this paper, an 
-approach is proposed for the formation of confidentiality markers for text materials in 
-the indicated conditions. The article presents the semantic text analysis, which forms 
-confidentiality markers when used to ensure information security in data-intensive 
-systems under high uncertainty in the composition and structure of protected 
-information. The obtained experimental results show that practical implementation of 
-the considered approach in data-intensive systems is promising.}
-     
-     \KWE{confidentiality marker; information security; data-intensive domains; topical 
-cluster; semantics; data leak prevention; intelligent security tasks; text classification; 
-detection of text reuse}
-     
-\DOI{10.14357/19922264200410} 
-
-\vspace*{-12pt}
-
-\Ack
-\noindent
-The research was supported in part by the Russian Foundation for Basic Research in the framework of 
-scientific project No.\,18-29-03215, and experimental research was supported by the ``RUDN University 
-Program 5-100.''
-
-
-%\vspace*{6pt}
-
-  \begin{multicols}{2}
-
-\renewcommand{\bibname}{\protect\rmfamily References}
-%\renewcommand{\bibname}{\large\protect\rm References}
-
-{\small\frenchspacing
- {%\baselineskip=10.8pt
- \addcontentsline{toc}{section}{References}
- \begin{thebibliography}{99}
- 
- \bibitem{6-bs-1} %1
-\Aue{Budzko, V.\,I., V.\,G.~Belenkov, and S.\,V.~Borokhov.} 2017. Problemy obespecheniya 
-informatsionnoy bezopas\-nosti pri intensivnom ispol'zovanii dannykh [Problems of ensuring information 
-security with intensive-data use]. \textit{Scientific and Technical Conference 
-(International) ``Information Technologies and Mathematical Modeling of Systems'' Proceedings}. 
-Odintsovo. 122--124.
-\bibitem{7-bs-1} %2
-\Aue{Belenkov, V.\,G., S.\,V. Borokhov, V.\,I.~Budzko, P.\,A.~Keyer, and V.\,I.~Korolev.} 2017. 
-Voprosy obespecheniya informatsionnoy bezopasnosti informatsionnykh sistem, re\-a\-li\-zu\-yushchikh 
-intensivnoe ispol'zovanie dannykh [Issues of ensuring information security of information systems that 
-implement intensive data use]. \textit{19th Conference (International) ``Data 
-Analytics and Management in Data Intensive Domains'' Proceedings}. Moscow: FRC CSC RAS. 155--158.
-
-
-\bibitem{3-bs-1}
-\Aue{Budzko, V.\,I., V.\,I.~Korolev, and V.\,G.~Belenkov.} 2018. Elementy konfidentsial'nosti 
-i~perspektivy ikh ispol'zovaniya v~sistemakh, realizuyushchikh intensivnoe ispol'zovanie dannykh 
-[Privacy elements and prospects of their use in data intensive
-systems]. 
-\textit{Highly Available Systems} 14(4):55--60.
-\bibitem{4-bs-1}
-\Aue{Budzko, V.\,I., V.\,G.~Belenkov, and V.\,I.~Korolev.} 2018. Ob odnom kontseptual'nom 
-podkhode k~zashchite in\-for\-ma\-tsii v~sistemakh, realizuyushchikh DID [About one conceptual approach to 
-information security in DID-systems]. \textit{Scientific and Technical Conference 
-(International) ``Information Technologies and Mathematical Modeling of Systems'' Proceedings}. 
-Odintsovo. 43--46. 
-\bibitem{5-bs-1}
-\Aue{Budzko, V.\,I., V.\,G.~Belenkov, and V.\,I.~Korolev.} 2018. Ob osobennostyakh ispol'zovaniya 
-sredstv i~metodov OIB v~sistemakh, realizuyushchikh DID [On the features of the use of tools and 
-methods of information security in DID-systems]. \textit{Scientific and Technical Conference (International) ``Information Technologies and Mathematical 
-Modeling of Systems'' Proceedings}. Odintsovo. 47--50.
-\bibitem{1-bs-1} %6
-\Aue{Budzko, V.\,I., V.\,I. Korolev, and V.\,G.~Belenkov.} 2019. Osobennosti ispol'zovaniya markerov 
-konfidentsial'nosti v~sistemakh intensivnogo ispol'zovaniya dannykh [Features of use privacy 
-tokens in systems that implement intensive use of data]. \textit{Highly Available Systems} 
-15(2):57--65.
-\bibitem{2-bs-1} %7
-\Aue{Budzko, V.\,I., V.\,I.~Korolev, and V.\,G.~Belenkov.} 2020. Arkhitektura instrumental'nogo 
-kompleksa izvlecheniya informatsii s~uchetom vstroennykh ekstraktov konfidentsial'nosti i~integratsii 
-izvlechennykh dannykh [Architecture of the information extraction tool complex with built-in privacy 
-elements and integration of extracted data]. \textit{Highly Available Systems}  
-16(2):5--21.
-
-\bibitem{8-bs-1}
-\Aue{Dorogoy, D.\,S., A.\,V. Sharov, A.\,A.~Tuzovskiy, and I.\,A.~Tereshchenko.} 2018. Sposob 
-obucheniya klassifikatora, prednaznachennogo dlya opredeleniya kategorii dokumenta [A~method of 
-training a~classifier designed to determine the category of a document]. Patent RF No.\,2672395.
-\bibitem{9-bs-1}
-\Aue{Dorogoy, D.\,S.} 2017. Sistema i~sposob opredeleniya teks\-ta, soderzhashchego konfidentsial'nye 
-dannye [System and method for determining text containing confidential data]. Patent RF No.\,2665915.
-\bibitem{11-bs-1} %10
-\Aue{Zubarev, D.\,V., and I.\,V. Sochenkov.} 2014. Using sentence similarity measure for plagiarism 
-source retrieval. \textit{CEUR Workshop Proceedings: Cross Language Evaluation Forum}. 
-1180:1027--1034. 
-\bibitem{10-bs-1} %11
-\Aue{Zubarev, D.\,V., I.\,V. Sochenkov, I.\,A.~Tikhomirov, and O.\,G.~Grigoriev.} 2017. Double 
-funding of scientific projects: Similarity and plagiarism detection. \textit{19th  
-Conference (International) ``Data Analytics and Management in Data Intensive Domains'' Proceedings}. 
-Moscow: FRC CSC RAS. 282--285.
-
-\end{thebibliography}
-
- }
- }
-
-\end{multicols}
-
-\vspace*{-6pt}
-
-\hfill{\small\textit{Received June 23, 2020}}
-
-%\pagebreak
-
-\vspace*{-16pt}
-
-
-\Contr
-
-\vspace*{-3pt}
-
-\noindent
-\textbf{Budzko Vladimir I.} (b.\ 1944)~--- Doctor of Science in technology, Academician of the 
-Academy of Cryptography of the Russian Federation, principal scientist, Federal Research Center 
-``Computer Science and Control'' of the Russian Academy of Sciences, 44-2~Vavilov Str., Moscow 
-119333, Russian Federation; \mbox{vbudzko@ipiran.ru}
-     
-    \pagebreak
-     
-     \noindent
-     \textbf{Yadrintsev Vasiliy V.} (b.\ 1993)~--- PhD student, Peoples' Friendship University of Russia 
-(RUDN University), 6~Miklukho-Maklaya Str., Moscow 117198, Russian Federation; 
-engineer-researcher, Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
-Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{vvyadrincev@gmail.com}
-     
-     \vspace*{3pt}
-     
-     \noindent
-\textbf{Sochenkov Ilya V.} (b.\ 1985)~--- Candidate of Science (PhD) in physics and mathematics, Head 
-of Department, Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
-Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{sochenkov@isa.ru}
-     
-     \vspace*{3pt}
-     
-     \noindent
-     \textbf{Korolev Vadim I.} (b.\ 1943)~--- Doctor of Science in technology, professor, leading 
-scientist, Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
-Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; professor, Financial University under 
-the Government of the Russian Federation, 49~Leningradskiy Prosp., Moscow 125993, Russian 
-Federation; \mbox{vkorolev@ipiran.ru}
-     
-     \vspace*{3pt}
-     
-     \noindent
-     \textbf{Belenkov Viktor G.} (b.\ 1952)~--- Candidate of Science (PhD) in technology, leading 
-scientist, Federal Research Center ``Computer Science and Control'' of the Russian Academy of 
-Sciences, 44-2~Vavilov Str., Moscow 119333, Russian Federation; \mbox{vbelenkov@ipiran.ru}
-\label{end\stat}
-
-\renewcommand{\bibname}{\protect\rm Литература} 
-  
